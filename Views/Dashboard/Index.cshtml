@@ -1,0 +1,219 @@
+﻿@model PPWLib.Models.DashboardModel
+@{
+    ViewBag.Title = Resources.Resource.Dashboard;
+    var rand = CommonHelper.GetVersionRandomNo();
+    var today = DateTime.Today;
+    var tomorrow = DateTime.Now.AddDays(1);
+    var month = new DateTime(today.Year, today.Month, 1);
+    var frmdate = CommonHelper.FormatDate(month.AddMonths(-1), true);
+    var todate = CommonHelper.FormatDate(tomorrow, true);
+    var hlfilename = Model.hlfilename + ".jpeg";
+    var chfilename = Model.chfilename + ".jpeg";
+}
+@*<link href="~/Content/c3.css" rel="stylesheet" />*@
+
+
+<div class="container">
+
+    <div class="row">
+        <div id="d1" class="col-12 col-sm-12">
+            <h4 class="dashboardheader">@Resources.Resource.Contact</h4>
+            <div id="ciChart"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div id="d1-1" class="col-12 col-sm-6 border-bottom">
+            <h6 class="alert alert-warning">@string.Format(Resources.Resource.Imminent, Resources.Resource.FollowUpDates)</h6>
+            <ul>
+                @foreach (var contact in Model.ImminentContactList)
+                {
+                    <li data-id="@contact.ContactId" class="blinking">@contact.Name <span class="warning">(@contact.FollowUpDateDisplay)</span></li>
+                }
+            </ul>
+
+        </div>
+        <div id="d1-2" class="col-12 col-sm-6 border-bottom">
+            <h6 class="alert alert-primary">@Resources.Resource.ContactsTakenCareBySalesPeople</h6>
+            <div id="salescontact"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div id="d2" class="col-12 col-sm-12 border-bottom">
+            <h4 class="dashboardheader">@Resources.Resource.Enquiry</h4>
+            <div id="enChart"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div id="d2-1" class="col-12 col-sm-12 border-bottom">
+            <h6 class="alert alert-primary">@Resources.Resource.EnquiriesTakenCareBySalesPeople</h6>
+            <div id="salesenquiry"></div>
+        </div>
+        
+    </div>
+
+    <div class="row">
+        <div id="d3" class="col-12 col-sm-6 border-right">
+            <h4 class="dashboardheader">@Resources.Resource.HotList</h4>
+            <img src="~/Images/@hlfilename" alt="@Resources.Resource.NoOfContactsInHotList" title="@Resources.Resource.NoOfContactsInHotList" />
+        </div>
+        <div id="d4" class="col-12 col-sm-6">
+            <h4 class="dashboardheader">@Resources.Resource.CallHistory</h4>
+            <div id="chBarChart"></div>
+            <img src="~/Images/@chfilename" alt="@Resources.Resource.NoOfContactsInCallHistory" title="@Resources.Resource.NoOfContactsInCallHistory" />
+        </div>
+    </div>
+
+
+</div>
+
+
+
+@Html.Partial("_WaitingModal")
+<div id="infoblk" data-jsonenqstat="@Model.JsonEnquiryStat" data-enquirytxt="@Resources.Resource.Enquiry" data-preferenceinenquirytxt="@string.Format(Resources.Resource.PreferencesInFormat,Resources.Resource.Enquiry)" data-subjecttxt="@Resources.Resource.Subject" data-jsoncontactindustrystat="@Model.JsonContactIndustryStat" data-industriesincontactstxt="@Resources.Resource.IndustriesInContacts" data-salespersontxt="@Resources.Resource.SalesPerson" data-salespeopletxt="@Resources.Resource.SalesPeople" data-contactstakencaretxt="@Resources.Resource.ContactsTakenCareBySalesPeople" data-enquiriestakencaretxt="@Resources.Resource.EnquiriesTakenCareBySalesPeople" data-numbertxt="@Resources.Resource.Number" data-jsonsalescontactstatlist="@Model.JsonSalesContactStatList" data-jsonsalesenquirystatlist="@Model.JsonSalesEnquiryStatList" data-contactcounttxt="@Resources.Resource.ContactCount"></div>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="~/Scripts/ts/js/crm/dashboard.js?v=@rand"></script>
+
+<script>
+    $(document).ready(function () {
+        google.charts.load('current', {
+            packages: ['corechart','bar']
+        });
+        google.charts.setOnLoadCallback(drawAxisTickColors);
+
+        function drawAxisTickColors() {
+            var statlist = $infoblk.data('jsonenqstat');
+            var statarr = [];
+            var data = new google.visualization.DataTable();
+
+            data.addColumn('string', 'Subject');
+            data.addColumn('number', 'CountCurrent');
+            data.addColumn('number', 'CountLast');
+
+            $.each(statlist, function (i, e) {
+                var arr = [e.Subject, e.CountCurrent, e.CountLast];
+                statarr.push(arr);
+            });
+
+            console.log(statarr);
+            data.addRows(statarr);
+
+            var options = {
+                title: $infoblk.data('preferenceinenquirytxt'),
+                width: 1200,
+                    height: 450,
+                @*colors: ['#e0440e', '#e6693e', '#ec8f6e', '#f3b49f', '#f6c7b6'],*@
+                is3D: true
+            };
+            var chart = new google.visualization.PieChart(document.getElementById('enChart'));
+            chart.draw(data, options);
+
+            statlist = $infoblk.data('jsoncontactindustrystat');
+            statarr = [];
+            data = new google.visualization.DataTable();
+
+            data.addColumn('string', 'Name');
+            data.addColumn('number', 'Count');
+
+            $.each(statlist, function (i, e) {
+                var arr = [e.Name, e.Count];
+                statarr.push(arr);
+            });
+
+            console.log(statarr);
+            data.addRows(statarr);
+
+            options = {
+                title: $infoblk.data('industriesincontactstxt'),
+                width: 1200,
+                height: 450,
+                colors: ['#e0440e', '#e6693e', '#ec8f6e', '#f3b49f', '#f6c7b6', '#CEE5D0', '#94B49F', '#F37878', '#FAD9A1'],
+                is3D: true
+            };
+            chart = new google.visualization.PieChart(document.getElementById('ciChart'));
+            chart.draw(data, options);
+
+            //sales contact:
+            statlist = $infoblk.data('jsonsalescontactstatlist');
+            statarr = [];
+            data = new google.visualization.DataTable();
+            data.addColumn('string', 'SalesName');
+            data.addColumn('number', 'ContactCount');
+
+            $.each(statlist, function (i, e) {
+                var arr = [e.SalesName, e.ContactCount];
+                statarr.push(arr);
+            });
+            data.addRows(statarr);
+
+            options = {
+                title: $infoblk.data('contactstakencaretxt'),
+                colors: ['#9575cd', '#33ac71'],
+                hAxis: {
+                    title: $infoblk.data('salespeopletxt'),
+                    viewWindow: {
+                        min: [7, 30, 0],
+                        max: [17, 30, 0]
+                    }
+                },
+                vAxis: {
+                    title: $infoblk.data('contactcounttxt')
+                }
+            };
+
+            chart = new google.visualization.ColumnChart(document.getElementById('salescontact'));
+            console.log('chart#salescontact:', chart);
+            chart.draw(data, options);
+
+            //sales enquiry:
+            statlist = $infoblk.data('jsonsalesenquirystatlist');
+            statarr = [];
+            data = new google.visualization.DataTable();
+            data.addColumn('string', 'SalesName');
+            data.addColumn('number', 'EnquiryCount');
+
+            $.each(statlist, function (i, e) {
+                var arr = [e.SalesName, e.EnquiryCount];
+                statarr.push(arr);
+            });
+            data.addRows(statarr);
+
+            options = {
+                title: $infoblk.data('enquiriesstakencaretxt'),
+                colors: ['#9575cd', '#33ac71'],
+                hAxis: {
+                    title: $infoblk.data('salespeopletxt'),
+                    viewWindow: {
+                        min: [7, 30, 0],
+                        max: [17, 30, 0]
+                    }
+                },
+                vAxis: {
+                    title: $infoblk.data('enquirycounttxt')
+                }
+            };
+
+            chart = new google.visualization.ColumnChart(document.getElementById('salesenquiry'));
+            console.log('chart#salesenquiry:', chart);
+            chart.draw(data, options);
+        }
+
+        intervalHandler = setInterval(blinker, 4000);
+        $('.blinking').mouseover(function () {
+            if (intervalHandler) {
+                clearInterval(intervalHandler);
+                intervalHandler = null;
+            }
+        });
+
+        $('.blinking').mouseout(function () {
+            if (!intervalHandler) {
+                intervalHandler = setInterval(blinker, 4000);
+            }
+        });
+        
+    });
+</script>

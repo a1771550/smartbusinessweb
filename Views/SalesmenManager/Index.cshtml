@@ -1,0 +1,74 @@
+﻿@model SalesmenManagerEditModel
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = Resources.Resource.SalesmenManager;
+}
+<h2>@ViewBag.Title</h2>
+
+<p class="my-3">
+    @*@Html.ActionLink(Resources.Resource.Add, "Create", null, new { @class = "btn btn-info" })*@
+</p>
+@using (Html.BeginForm("Index", "SalesmenManager", FormMethod.Get, new { @Id = "frmSalesman" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-inline mb-2 my-4">
+        <div class="form-group">
+            <input type="text" class="form-control" id="txtKeyword" placeholder="@Resources.Resource.KeywordRequired" />
+            <button id="btnSearch" type="button" class="btn btn-default ml-4">@Resources.Resource.Search</button>
+            <button id="btnReload" type="button" class="btn btn-default ml-4">@Resources.Resource.Reload</button>
+        </div>
+    </div>
+    <table id="tblSalesman" class="table table-bordered  table-hover table-condensed">
+        <colgroup>
+            <col width="100">     
+            <col width="300" />        
+            <col width="130">
+        </colgroup>
+        <thead class="gray-header">
+            <tr>
+                <th class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">
+                    @Resources.Resource.Manager
+                </th> 
+                <th class="text-center">
+                    @Resources.Resource.Salesmen
+                </th>              
+                <th></th>
+            </tr>
+        </thead>
+        
+        @foreach (var item in Model.ManagerList)
+        {
+            string url = item.ManagerId > 0 ? "" : string.Format("/SalesmenManager/Edit?managerId={0}",item.surUID);
+            string linkcls = string.IsNullOrEmpty(url) ? "isDisabled" : "";
+            string salesmen = item.SalesmenNameList!=null? string.Join(",", item.SalesmenNameList) :"N/A";
+            <tr>
+                <td class="text-center">
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                <td class="text-center">
+                    @salesmen
+                </td>
+              
+
+                <td>                    
+                    <a href="@url" class="@linkcls">@Resources.Resource.Edit</a>
+                </td>
+            </tr>
+        }
+    </table>
+
+    <div id="pagingblk" class="mx-3">
+        <div class="row">
+            @Html.PagedListPager(Model.ManagerList, PageNo => Url.Action("Index",
+new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
+        </div>
+    </div>
+
+    <input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+    <input type="hidden" id="sortcol" value="@Model.SortCol" />
+
+    @Html.Partial("_WaitingModal")
+}
+<div id="infoblk" class="hide"></div>
+<script src="~/Scripts/ts/js/crm/salesmen/salesmenmanager.js?v=@CommonHelper.GetVersionRandomNo()"></script>

@@ -1,0 +1,71 @@
+﻿@model PPWLib.Models.PendingInvoices
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = Resources.Resource.OutOfStockItems;
+    int rand = CommonHelper.GetVersionRandomNo();
+}
+<link rel="stylesheet" href="~/Content/Sales.css?v=@rand" />
+<link rel="stylesheet" href="~/Content/stock.css?v=@rand" />
+
+<h2>@ViewBag.Title</h2>
+
+@if (Model.PagingGroupedZeroStockList.Count == 0)
+{
+    <div class="alert alert-info">@Resources.Resource.NoDataFound</div>
+}
+else
+{
+    <table id="tblInvoices" class="table table-bordered  table-hover table-condensed">
+        <thead class="gray-header">
+            <tr>
+                <th class="text-left colheader" data-col="0" data-keyword="">@Resources.Resource.InvoiceNo</th>
+                <th class="text-left colheader" data-col="0" data-keyword="">@Resources.Resource.ItemDetail (@Resources.Resource.ItemCode | @Resources.Resource.Description | @Resources.Resource.DateTime)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var group in Model.PagingGroupedZeroStockList)
+            {
+                <tr>
+                    <td>
+                        @group.Key
+                    </td>
+                    <td>
+                        <table class="table table-borderless">
+                            @foreach (var item in group)
+                            {
+                                string itemdesc = item.wslDesc;
+                                <tr>
+                                    <td class="alert alert-danger">
+                                        @item.Item.itmCode
+                                    </td>
+                                    <td class="alert alert-danger">
+                                        @itemdesc
+                                    </td>
+                                    <td class="alert alert-danger">
+                                        @item.wsTimeDisplay
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div id="pagingblk" class="mx-3">
+
+        <div class="row">
+            @Html.PagedListPager(Model.PagingGroupedZeroStockList, PageNo => Url.Action("ZeroStocks",
+                new { Model.wscode, PageNo }))
+        </div>
+    </div>
+
+    <script>
+        $(function () {
+            $target = $('.pagination');
+            $target.wrap('<nav aria-label="Page navigation"></nav>').find('li').addClass('page-item').find('a').addClass('page-link');
+        });
+    </script>
+}
+

@@ -1,0 +1,37 @@
+﻿@model IEnumerable<GlobalAttributeModel>
+
+<div id="gAttrFilterModal" data-count="@Model.Count()">
+    <div class="form-group required">
+        <label id="lblGattr" class="control-label" for="drpGattr">@Resources.Resource.CustomAttribute</label>
+        <select id="drpGattr" class="form-control">
+            <option value="">-- @Resources.Resource.Select --</option>
+            @foreach (var attr in Model)
+            {
+                <option value="@attr.attrName">@attr.attrName</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group required">
+        <label id="lblOperator" class="control-label" for="drpOperator">@Resources.Resource.Operator</label>
+        <select id="drpOperator" class="form-control">
+            <option value="">-- @Resources.Resource.Select --</option>
+            <option value="=">@Resources.Resource.Equal</option>
+            <option value="!=">@Resources.Resource.NotEqual</option>
+            <option value=">">></option>
+            <option value="<"><</option>
+            <option value="c">@Resources.Resource.Contains</option>
+            <option value="nc">@Resources.Resource.NotContains</option>
+        </select>
+    </div>
+
+    <div id="nondateblk" class="form-group required">
+        <label id="lblAttrVal" class="control-label" for="txtAttrVal">@Resources.Resource.Value</label>
+        <input id="txtAttrVal" type="text" class="form-control txtattrval" />
+    </div>
+
+    <div id="dateblk" class="form-group required hide">
+        <label class="control-label" for="txtAttrVal_d">@Resources.Resource.Value</label>
+        <input id="txtAttrVal_d" type="datetime" class="form-control datepicker txtattrval" />
+    </div>
+</div>

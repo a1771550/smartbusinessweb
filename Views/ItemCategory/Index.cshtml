@@ -1,0 +1,79 @@
+﻿@model ItemCategoryEditModel
+@using PagedList.Mvc;
+@{
+    int rand = CommonHelper.GetVersionRandomNo();
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p class="my-3">
+    @Html.ActionLink(Resources.Resource.Add, "Edit", null, new { @class = "btn btn-info" })
+</p>
+
+@using (Html.BeginForm("Index", "ItemCategory", FormMethod.Get, new { @Id = "frmCategory" }))
+{
+    <div class="form-inline mb-2 my-4">
+        <div class="form-group">
+            <input type="text" class="form-control" id="txtKeyword" name="Keyword" value="@Model.Keyword" placeholder="@Resources.Resource.KeywordRequired" />
+            <button id="btnSearch" type="submit" class="btn btn-success ml-4">@Resources.Resource.Search</button>
+
+            <button id="btnReload" type="button" class="btn btn-warning ml-4">@Resources.Resource.Reload</button>
+        </div>
+    </div>
+
+    <div id="norecord" class="alert alert-warning hide">@Resources.Resource.NoDataFound</div>
+    <table id="tblCategory" class="table table-bordered  table-hover table-condensed">
+        <thead class="gray-header">
+            <tr>
+                <th scope="col" class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">
+                    @Resources.Resource.Name
+                </th>
+                <th scope="col" class="text-center colheader" data-col="1" data-keyword="@Model.Keyword">
+                   @Resources.Resource.CreateTime
+                </th>
+                <th scope="col" class="text-center colheader" data-col="2" data-keyword="@Model.Keyword">
+                   @Resources.Resource.ModifyTime
+                </th>
+                <th></th>
+            </tr>
+            </thead>
+            @foreach (var item in Model.PagingCategoryList)
+            {
+                <tr>
+                    <td class="text-center">
+                        @Html.DisplayFor(modelItem => item.catName)
+                    </td>
+                    <td class="text-center">
+                        @Html.DisplayFor(modelItem => item.CreateTimeDisplay)
+                    </td>
+                    <td class="text-center">
+                        @Html.DisplayFor(modelItem => item.ModifyTimeDisplay)
+                    </td>                    
+                    <td>
+                        @Html.ActionLink(Resources.Resource.Edit,"Edit",new { Id=item.Id }, new {@class="btn btn-info", @role="button"})
+                     @{ 
+                         string disabled = item.Removable ? "" : "disabled";
+                     }
+                        @Html.ActionLink(Resources.Resource.Remove,null, new { Id=item.Id }, new { @class = "btn btn-danger remove " + disabled, @role = "button" })
+                    </td>
+                </tr>
+            }
+
+    </table>
+
+    <div id="pagingblk" class="mx-3">
+        <div class="row">
+                @Html.PagedListPager(Model.PagingCategoryList, PageNo => Url.Action("Index",
+new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
+        </div>
+    </div>
+    
+    <input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+    <input type="hidden" id="sortcol" value="@Model.SortCol" />
+}
+
+@Html.Partial("_WaitingModal")
+<div id="infoblk"></div>
+
+<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+<script src="/Scripts/ts/js/item/category.js?v=@rand"></script>

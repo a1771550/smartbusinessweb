@@ -1,0 +1,91 @@
+﻿@model PPWLib.Models.Item.ItemQtyPromotionEditModel
+@{
+    bool edit = Model.proId > 0;
+    int rand = CommonHelper.GetVersionRandomNo();
+
+    List<int> itemCatIds = new List<int>();//for debug only
+}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<h2>@ViewBag.Title</h2>
+@using (Html.BeginForm("Edit", "ItemPromotion", FormMethod.Get, new { @Id = "frmPromotion", @class = "my-4" }))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(model => model.ipIds)
+
+    <div class="row">
+        <div class="col-12 col-md-4">
+            <div class="form-group required">
+                <label class="d-block">@string.Format(Resources.Resource.ItemFormat, Resources.Resource.Category)</label>
+                <select id="drpCategories" class="form-control s2" multiple="multiple">
+                    @if (edit)
+                    {
+                        foreach (var cat in Model.CategoryList)
+                        {
+                            string selected = Model.SelectedCategories.Contains(cat.Id) ? "selected" : "";
+                            <option value="@cat.Id" @selected data-catid="@cat.Id">@cat.NameDisplay</option>
+                        }
+
+                    }
+                    else
+                    {
+                        foreach (var cat in Model.CategoryList)
+                        {
+                            <option value="@cat.Id">@cat.NameDisplay</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4" data-itemcatids="@string.Join(",",itemCatIds)">
+            <div class="form-group">
+                <label class="d-block">@Resources.Resource.Item</label>
+                <select id="drpItems" class="form-control s2" multiple="multiple">
+                    @if (edit)
+                    {
+                        foreach (var item in Model.DicPromotionItems[Model.proId.ToString()])
+                        {
+                            var selected = edit && item.itemCode == item.itemCode ? "selected" : "";
+                            <option value="@item.itemCode" @selected>@item.itmName</option>
+                        }
+                    }
+
+                </select>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="form-group">
+                <label class="d-block">@Resources.Resource.Promotion</label>
+                <select id="drpPromotion" name="proId" class="form-control s2">
+                    @foreach (var pro in Model.PromotionList)
+                    {                        
+                        if (edit)
+                        {
+                            foreach (var item in Model.DicPromotionItems[Model.proId.ToString()])
+                            {
+                                string selected = item.proId == pro.Id ? "selected" : "";
+                                <option value="@pro.Id" @selected>@pro.NameDisplay</option>
+                            }
+                        }
+                        else
+                        {
+                            <option value="@pro.Id">@pro.NameDisplay</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" id="btnSaveIQ" class="btn btn-success">@Resources.Resource.Save</button>
+}
+<div>
+    @Html.ActionLink(Resources.Resource.BackToList, "Index")
+</div>
+@Html.Partial("_WaitingModal")
+<div id="infoblk" data-jsondicpromotionitems="@Model.JsonDicPromotionItems" data-selecteditemcodes="@string.Join(",",Model.SelectedItemCodes)"></div>
+<script src="~/Scripts/ts/js/promotion/itemqtypromotionedit.js?v=@rand"></script>
+

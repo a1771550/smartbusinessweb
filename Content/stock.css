@@ -1,0 +1,11 @@
+﻿.colheader{
+	cursor:pointer;	
+}
+.colheader::before{
+	padding-right:.5em;
+}
+.fa{
+	display:block!important;
+	line-height:1.5!important;
+}
+

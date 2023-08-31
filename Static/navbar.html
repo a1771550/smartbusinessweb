@@ -1,0 +1,236 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/png" href="/Content/favicon_io/favicon-16x16.png">
+    <link href="/bundles/maincss?v=cSQftYOSEYyHCtnUT3CA2lrAblOZ3g9BQYp31jqfxpE1" rel="stylesheet">
+
+    <!-- The following two files must not be bundled!!! -->
+    <link href="/Content/fontawesome/font-awesome.min.css">
+    <link href="/Content/fontawesome/css/all.min.css" rel="stylesheet">
+    <!--load all styles -->
+    <script src="/bundles/mainjs?v=y_hGYvoOJg7g__KLGRzWXO0CUTaG0bYy64No21A9LW01"></script>
+
+
+    <link href="/bundles/misccss?v=BYbWfmTIXy7n1yvQDQn1-j_SKV3bbuhkz5awIBuFqlU1" rel="stylesheet">
+
+    <script src="/bundles/miscjs?v=RyntGfXRnQub_xs-YHwQ4PViQv8bsXVElH0PRKSdgSk1"></script>
+
+    <script src="/bundles/fancyjpower?v=8iu7fZVk0_KUOT5ErbsJvkk0IVd9DWc2ZifrHtNelIQ1"></script>
+
+
+    <script id="commonfunc" src="/Scripts/commonfunc.js?v=11219" data-dateformat="dd/MM/yyyy"></script>
+    <link href="/Content/Site.css?v=11219" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" role="navigation" data-accessmode="pos" data-defaultcheckoutportal="Abss">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/" title="SmartBusiness"><img src="/Images/logo.jpg" alt="SmartBusiness" title="SmartBusiness"></a>
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#sb-navbar" aria-expanded="true">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+
+            <div id="sb-navbar" class="navbar-collapse collapse" style="">
+                <ul class="navbar-nav nav">
+                    <!-- POS Dropdown -->
+                    <li class="dropdown">
+
+                        <a class="nav-link  dropdown-toggle" href="#" data-toggle="dropdown">零售</a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+
+                                <a class="dropdown-item " href="/POSFunc/Sales">零售單</a>
+                            </li>
+                            <li>
+
+                                <a class="dropdown-item " href="/POSFunc/Refund">退款單</a>
+                            </li>
+                            <li>
+
+                                <a class="dropdown-item " href="/POSFunc/Deposit">訂金單</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="dropdown-item " href="/POSFunc/DayEnds">店鋪日結</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!--customer-->
+                    <li class="dropdown">
+
+                        <a href="#" class="nav-link" data-toggle="dropdown">
+                            <span class="dropdown-toggle">客戶</span>
+                        </a>
+                        <div class="dropdown-menu">
+
+                            <a class="dropdown-item" href="/Customer/Index">客戶管理</a>
+
+                            <a class="dropdown-item " href="/PriceLevels/Index">積分級別</a>
+
+                            <a class="dropdown-item " href="/PGCustomer/Index">新增客戶</a>
+
+
+                            <a class="dropdown-item " href="/Enquiry/Index">查詢</a>
+                        </div>
+                    </li>
+                    <!--item-->
+                    <li class="dropdown">
+
+                        <a href="#" class="nav-link " data-toggle="dropdown">
+                            <span class="dropdown-toggle">商品</span>
+                        </a>
+
+                        <ul class="dropdown-menu" data-portal="Abss">
+
+                            <li><a class="dropdown-item " href="/PGItem/Index">新增商品</a></li>
+
+
+                            <li><a class="dropdown-item " href="/Item/Stock">庫存</a></li>
+
+                            <li>
+
+                                <a class="dropdown-item " href="/Transfer/Index">存貨調配</a>
+                            </li>
+                            <li>
+
+                                <a class="dropdown-item " href="/Transfer/List">轉倉單</a>
+                            </li>
+
+                            <li>
+
+                                <a class="dropdown-item " href="/ItemCategory/Index">類別</a>
+                            </li>
+
+
+                            <li>
+                                <a class="dropdown-item " href="/Item/ZeroStocks">缺貨商品</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- Promotion Dropdown -->
+                    <li class="dropdown">
+
+                        <a href="#" class="nav-link dropdown-toggle " data-toggle="dropdown">
+                            <span>推廣</span>
+                        </a>
+                        <ul class="dropdown-menu">
+
+                            <li>
+
+                                <a class="dropdown-item " href="/ItemPeriodPromotion/Index">商品週期推廣</a>
+                            </li>
+
+                            <li>
+
+                                <a class="dropdown-item " href="/ItemQtyPromotion/Index">商品數量推廣</a>
+                            </li>
+
+                            <li>
+
+                                <a class="dropdown-item " href="/Promotion/Index">推廣清單</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- Wholesales Dropdown -->
+                    <li class="dropdown">
+
+                        <a href="#" class="nav-link dropdown-toggle " data-toggle="dropdown">
+                            <span>批發</span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item " href="/WholeSales/Edit/0?type=order">新增訂單</a><a class="dropdown-item " href="/WholeSales/Index">訂單管理</a><a class="dropdown-item " href="/WholeSales/SalesOrderList">銷售訂單清單</a>
+
+                        </div>
+                    </li>
+                    <!-- Purchase Dropdown -->
+                    <li class="dropdown">
+
+                        <a href="#" class="nav-link dropdown-toggle " data-toggle="dropdown">
+                            <span>採購</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+
+                                <a class="dropdown-item " href="/Purchase/Edit/0?type=order">新增採購單</a>
+                            </li>
+
+                            <li>
+
+                                <a class="dropdown-item " href="/Purchase/Index">採購單管理</a>
+                            </li>
+
+                            <a class="dropdown-item " href="/Purchase/PurchaseOrderList">採購單清單</a>
+
+                            <li>
+
+                                <a class="dropdown-item " href="/Supplier/Index">供應商管理</a>
+                            </li>
+
+                        </ul>
+                    </li>
+                    <!-- DataTransfer Dropdown Menu -->
+                    <li class="dropdown">
+
+                        <a href="#" class="nav-link " data-toggle="dropdown">
+                            <span class="dropdown-toggle">資料整合</span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="/DataTransfer/DayendsImportFrmCentral" class="dropdown-item ">ABSS 至 SB</a>
+                            <a href="/DataTransfer/DayendsExportFrmShop" class="dropdown-item ">SB 至 ABSS</a>
+
+
+                        </div>
+                    </li>
+                    <!-- Reports Dropdown Menu -->
+                    <li class="dropdown">
+
+                        <a href="#" class="nav-link dropdown-toggle " data-toggle="dropdown">
+                            報表  <span class="caret"></span>
+                        </a>
+                        <div class="dropdown-menu">
+
+
+                            <a class="dropdown-item " href="/Report/ShowTXD">交易明細</a><a class="dropdown-item " href="/Report/ShowPMD">付款方式明細</a><a class="dropdown-item " href="/Report/ShowITS">貨品銷售明細</a>
+                        </div>
+                    </li>
+                    <!-- Setup Dropdown Menu -->
+                    <li class="dropdown">
+
+                        <a href="#" class="nav-link " data-toggle="dropdown">
+                            <span class="dropdown-toggle">設定</span>
+                        </a>
+
+                        <div class="dropdown-menu" data-debug="False">
+
+                            <a class="dropdown-item " href="/PaymentTypes/Index">付款方式</a><a class="dropdown-item " href="/Receipt/Index">印單設定</a><a class="dropdown-item " href="/OtherSettings/Index">基本設定</a><a class="dropdown-item " href="/EmailSettings/Index">電郵設定</a>
+
+                            <a class="dropdown-item " href="/AccessRight/Index">用戶管理</a>
+
+                            <a href="/Othersettings/ExchangeRate" class="dropdown-item ">匯率設定</a>
+
+
+                        </div>
+                    </li>
+                    <!-- Search -->
+                    <li class="nav-item">
+
+                        <a class="nav-link " href="/POSFunc/Search">搜索</a>
+                    </li>
+
+                </ul>
+
+
+
+                <input type="hidden" id="checkoutportal" value="abss">
+                <input type="hidden" id="shop" value="office">
+
+
+
+            </div>
+
+        </div>
+    </nav>
+</body>
+</html>

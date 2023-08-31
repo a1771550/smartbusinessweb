@@ -1,0 +1,43 @@
+﻿@model PPWLib.Models.SetupModel
+
+@{
+    ViewBag.Title = Resources.Resource.StaffAR;
+    var rand = CommonHelper.GetVersionRandomNo();
+    //string btncls = "";
+    var btncls = string.Concat("btn btn-info", " ", Model.BtnClass);
+}
+
+<h3>@ViewBag.Title</h3>
+
+<p class="my-3" data-btncls="@Model.BtnClass">
+	<button id="btnAdd" type="button" class="@btncls" data-href="/AccessRight/Edit?userId=0" data-userlicensefullprompt="@Resources.Resource.UserLicensedFullPrompt" >@Resources.Resource.Add</button>
+  @*  @Html.ActionLink(Resources.Resource.Add, "Edit", new { userId = 0 }, new { @class = @btncls,@id="btnAdd" })*@
+</p>
+<table class="table table-bordered  table-hover table-condensed">
+	<thead class="gray-header">
+        <tr>
+            <td>@Resources.Resource.StaffCode</td>
+            <td>@Resources.Resource.StaffName</td>
+            @*<td>@Resources.Resource.Status</td>*@
+            <td></td>
+        </tr>
+	</thead>
+	<tbody>
+		@foreach (var user in Model.Users)
+		{
+			if (user.UserCode.ToLower() != "superadmin")
+			{
+				//string status = (bool)user.surIsActive ? Resources.Resource.Active : Resources.Resource.Inactive;
+				<tr><td>@user.UserCode</td><td>@user.UserName</td>
+		@*<td>@status</td>*@
+		<td><button type="button" class="btn btn-info btnedit mx-2" data-userid="@user.surUID">@Resources.Resource.Edit</button>
+            <button type="button" class="btn btn-danger btndelete" data-userid="@user.surUID">@Resources.Resource.Remove</button>
+			</td></tr>
+			}
+
+		}
+	</tbody>
+</table>
+
+<div id="infoblk" data-userlicensedfullprompt="@Resources.Resource.UserLicensedFullPrompt"></div>
+<script src="~/Scripts/ts/js/pos/accessrights.js?v=@rand"></script>

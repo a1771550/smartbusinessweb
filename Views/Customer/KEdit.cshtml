@@ -1,0 +1,178 @@
+﻿@model KingdeeLib.Models.Sales.SalesCustomerModel
+
+@{
+    ViewBag.Title = "KingdeeEdit";
+    var rand = CommonHelper.GetVersionRandomNo();
+    bool edit = Model.Id > 0;
+    ViewBag.Title = edit ? string.Format(Resources.Resource.EditFormat, Resources.Resource.Customer) : string.Format(Resources.Resource.AddFormat, Resources.Resource.Customer);
+    string mandatory = Resources.Resource.StarMarkedMandatory.Replace("*", "<span class='asterisk'>*</span>");
+    var selected = string.Empty;
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <h6>@Html.Raw(mandatory)</h6>
+
+    <div class="form-horizontal">
+
+        @Html.HiddenFor(model => model.Id)
+
+        <div class="form-group required">
+            <label class="control-label col-md-2" for="CustName">@Resources.Resource.Name</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CustName, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group required">
+            <label class="control-label col-md-2" for="CustCurrency">@Resources.Resource.Currency</label>
+            <div class="col-md-10">
+                <select class="form-control" id="drpCurrency">
+                    @{
+                        var rmdseelcted = Model.CustCurrency == "PRE001" ? "selected" : "";
+                        var hkdseelcted = Model.CustCurrency == "PRE002" ? "selected" : "";
+                        var usdseelcted = Model.CustCurrency == "PRE007" ? "selected" : "";
+                    }
+                    <!--PRE001 人民币  CNY
+                PRE002 香港元  HKD
+                PRE007 美元  USD-->
+                    <option value="">-- @Resources.Resource.Select --</option>
+                    <option value="PRE001" @rmdseelcted>@Resources.Resource.RMB</option>
+                    <option value="PRE002" @hkdseelcted>@Resources.Resource.HKD</option>
+                    <option value="PRE007" @usdseelcted>@Resources.Resource.USD</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="CustEmail">@Resources.Resource.Email</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CustEmail, new { htmlAttributes = new { @class = "form-control email", @type = "email" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="CustPhone">@Resources.Resource.Phone</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CustPhone, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="CustMobile">@Resources.Resource.Mobile</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CustMobile, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="CustFax">@Resources.Resource.Fax</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CustFax, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        @for (int i = 1; i <= 3; i++)
+        {
+            string lbl = $"{Resources.Resource.Address}{i}";
+            string _id = $"CustAddress{i}";
+            <div class="form-group" data-lbl="@lbl">
+                <label class="control-label col-md-2" for="">@lbl</label>
+                <div class="col-md-10">
+                    <input type="text" id="@_id" class="form-control address" style="max-width:none;" value="@Model.CustAddress[i - 1]" />
+                </div>
+            </div>
+        }
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="CustCity">@Resources.Resource.City</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CustCity, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="CustCountry">@Resources.Resource.Country</label>
+            <div class="col-md-10">
+                <select class="form-control" id="drpCountry">
+                    @{
+                        var chinaseelcted = Model.CustCountry == "China" ? "selected" : "";
+                        var usaseelcted = Model.CustCountry == "America" ? "selected" : "";
+                    }
+                    <!--PRE001 人民币  CNY
+                PRE002 香港元  HKD
+                PRE007 美元  USD-->
+                    <option value="">@Resources.Resource.Select</option>
+                    <option value="China" @chinaseelcted>@Resources.Resource.China</option>
+                    <option value="America" @usaseelcted>@Resources.Resource.America</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="CustCountry">@Resources.Resource.ZipCode</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CustZip, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="cusAddrWeb">@Resources.Resource.Website</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CustWebsite, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="CustBankName">@string.Format(Resources.Resource.NameFormat, Resources.Resource.Bank)</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CustBankName, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="CustBankCode">@string.Format(Resources.Resource.CodeFormat, Resources.Resource.Bank)</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CustBankCode, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="CustBankAccountName">@string.Format(Resources.Resource.BankFormat, string.Format(Resources.Resource.AccountFormat, Resources.Resource.Name))</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CustBankAccountName, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="CustBankAccountCode">@string.Format(Resources.Resource.BankFormat, string.Format(Resources.Resource.AccountFormat, Resources.Resource.Code))</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CustBankAccountCode, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="CustPointsSoFar">@Resources.Resource.Points</label>
+            <div class="col-md-10">
+                <input type="number" id="points" class="form-control" data-oldpoints="@Model.CustPointsActive" value="@Model.CustPointsActive" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input id="btnSave" type="button" value="@Resources.Resource.Save" class="btn btn-primary" />
+            </div>
+        </div>
+
+    </div>
+}
+<div>
+    @Html.ActionLink(Resources.Resource.BackToList, "Index")
+</div>
+
+@Html.Partial("_WaitingModal")
+<div id="infoblk" data-customernamerequiredtxt="@Resources.Resource.CustomerNameRequired" data-currencyrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Currency)"></div>
+<script src="~/Scripts/ts/js/customer/kingdeecustomeredit.js?v=@rand"></script>

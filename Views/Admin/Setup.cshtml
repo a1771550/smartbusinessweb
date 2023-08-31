@@ -1,0 +1,86 @@
+﻿@model PPWLib.Models.SetupModel
+@{
+	ViewBag.Title = string.Concat(Resources.Resource.System, Resources.Resource.Setup);
+	int idx = 0;
+}
+
+@if (Model.MainFuncs.Count > 0)
+{
+	<ul class="nav nav-tabs" role="tablist">		
+			@foreach (var item in Model.MainFuncs)
+			{
+				string activecls = idx == 0 ? "active" : "";
+			
+					<li class="nav-item">
+						<a class="nav-link @activecls" data-toggle="tab" href="#@item.sfnCode">@item.DisplayName</a>
+					</li>
+			
+				idx++;
+			}
+	</ul>
+	<div class="tab-content">
+		@{ idx = 0;}
+		@foreach (var item in Model.MainFuncs)
+		{
+			string activecls = idx == 0 ? "active" : "";
+
+			<div id="@item.sfnCode" class="container tab-pane @activecls">
+				<br>
+				<h3>@item.DisplayName</h3>
+				@if (item.sfnCode.ToLower() == "accessrights")
+				{
+					
+				}
+
+				@if (item.sfnCode.ToLower() == "receipt")
+				{
+					
+				}
+				@if (item.sfnCode.ToLower() == "paymenttypes")
+				{
+
+				}
+				@if (item.sfnCode.ToLower() == "othersettings")
+				{
+
+				}
+			</div>
+			idx++;
+		}
+	</div>
+}
+
+<script>
+	$(document).ready(function () {
+		let tab = getParameterByName("tab");
+		console.log('tab:' + tab);
+		if (tab !== null) {
+			$('.nav-tabs .nav-item').find('a').removeClass('active');
+			$('.tab-content').find('.tab-pane').removeClass('active');
+			$('.nav-tabs .nav-item').filter(function (i) {
+				console.log('i:' + i);
+				return i == tab;
+			}).find('a').addClass('active');
+			$('.tab-content .tab-pane').filter(function (i) {
+				return i == tab;
+			}).addClass('active');
+		}
+	});
+
+	$(document).on('click', '.btnedit', function () {
+		window.location.href = '/AccessRight/Edit?userId=' + $(this).data('userid');
+	});
+
+	function getParameterByName(name, url = window.location.href) {
+		name = name.replace(/[\[\]]/g, '\\$&');
+		var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+			results = regex.exec(url);
+		if (!results)
+			return null;
+		if (!results[2])
+			return '';
+		return decodeURIComponent(results[2].replace(/\+/g, ' '));
+	}
+
+</script>
+

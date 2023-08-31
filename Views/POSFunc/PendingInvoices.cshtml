@@ -1,0 +1,66 @@
+﻿@model PPWLib.Models.PendingInvoices
+@using PagedList.Mvc;
+@{
+	ViewBag.Title = Resources.Resource.OutOfStockItems;
+	int rand = CommonHelper.GetVersionRandomNo();
+}
+<link rel="stylesheet" href="~/Content/Sales.css?v=@rand" />
+<link rel="stylesheet" href="~/Content/stock.css?v=@rand" />
+
+<h2>@ViewBag.Title</h2>
+
+<table id="tblInvoices" class="table table-bordered  table-hover table-condensed">
+	<thead class="gray-header">
+		<tr>
+			<th class="text-left colheader" data-col="0" data-keyword="">@Resources.Resource.InvoiceNo</th>
+			<th class="text-left colheader" data-col="0" data-keyword="">@Resources.Resource.ItemDetail (@Resources.Resource.ItemCode | @Resources.Resource.Description | @Resources.Resource.DateTime)</th>
+			@*<th class="text-left colheader" data-col="0" data-keyword="">@Resources.Resource.ItemCode</th>
+			<th class="text-left colheader" data-col="1" data-keyword="">@Resources.Resource.Description</th>
+		<th class="text-right colheader" data-col="2" data-keyword="">@Resources.Resource.DateTimeHeader</th>*@
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var group in Model.PendingList)
+		{
+			<tr>
+				<td>
+					@group.Key
+				</td>
+				<td>
+					<table class="table table-borderless">
+						@foreach (var item in group)
+						{
+							string itemdesc = item.rtlDesc == null ? item.Item.itmDesc : item.rtlDesc;
+							<tr>
+								<td class="alert alert-danger">
+									@item.Item.itmCode
+								</td>
+								<td class="alert alert-danger">
+									@itemdesc
+								</td>
+								<td class="alert alert-danger">
+									@item.SalesTimeDisplay
+								</td>
+							</tr>
+						}
+					</table>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+<div id="pagingblk" class="mx-3">
+
+	<div class="row">
+		@Html.PagedListPager(Model.PendingList, PageNo => Url.Action("PendingInvoices",
+			new { PageNo}))
+	</div>
+</div>
+
+<script>
+	$(document).ready(function () {
+		$target = $('.pagination');
+		$target.wrap('<nav aria-label="Page navigation"></nav>').find('li').addClass('page-item').find('a').addClass('page-link');
+	});
+</script>

@@ -1,0 +1,142 @@
+﻿@model PPWLib.Models.Item.TransferEditModel
+
+@{
+    ViewBag.Title = Resources.Resource.PrintPreview;
+    ComInfo comInfo = Model.ComInfo;
+    Layout = null;
+    string cssbsfile = HttpContext.Current.Session["CssBSFile"] == null ? @"Content/bs4" : HttpContext.Current.Session["CssBSFile"].ToString();
+    string scriptbsfile = HttpContext.Current.Session["ScriptBSFile"] == null ? @"Scripts/bs4" : HttpContext.Current.Session["ScriptBSFile"].ToString();
+    var groupedtransferList = Model.GroupedTransferList;
+    //var printcss = $@"<link rel=""stylesheet"" type=""text/css"" media=""print"" href=""/Content/stocktransfer.css?v={CommonHelper.GetVersionRandomNo()}""";
+    var loadcsstxt = $"\"/Content/stockTransfer.css?v={CommonHelper.GetVersionRandomNo()}\"";
+}
+<!DOCTYPE html>
+<html>
+@Html.Partial("_Head", null, new ViewDataDictionary { { "cssbsfile", cssbsfile }, { "scriptbsfile", scriptbsfile }, { "PageTitle", ViewBag.Title } })
+
+<body style="padding-top:0!important;">
+    
+
+    @foreach (var g in groupedtransferList)
+    {
+        var key = g.Key.Split(':');
+        var sender = key[0];
+        var receiver = key[1];
+        string intxt = $"({Resources.Resource.ItemIn})";
+        var outtxt = $"({Resources.Resource.ItemOut})";
+
+        var inqtytxt = string.Concat(Resources.Resource.Qty, " ", Html.Raw(intxt));
+        var outqtytxt = string.Concat(Resources.Resource.Qty, " ", Html.Raw(outtxt));
+
+        if (!string.IsNullOrEmpty(sender) && !string.IsNullOrEmpty(receiver))
+        {
+            <div id="printblk" style="">
+                <div class="d-flex justify-content-center">
+                    <h1>@Resources.Resource.CompanyName</h1>
+                </div>
+                <div class="d-flex justify-content-center my-3">
+                    <div class="card" style="border: 1px solid black !important; border-radius: 0.75rem !important;">
+                        <div class="card-body" style="padding: 10px 30px !important;">
+                            <h4 class="card-title">@Resources.Resource.StockTransferOrder</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Resources.Resource.StockTransferNumber <span class="badge badge-dark">@Model.TransferNumber</span></h4>
+                        <h4>@Resources.Resource.StockTransferDate <span class="badge badge-dark">@Model.TransferDateDisplay</span></h4>
+                        <h4>@Resources.Resource.OutStock <span class="badge badge-dark">@sender</span></h4>
+                        <h4>@Resources.Resource.InStock <span class="badge badge-dark">@receiver</span></h4>
+                    </div>
+                    <div>
+                        <h4>@Resources.Resource.RunDate <span class="badge badge-dark">@CommonHelper.FormatDate(DateTime.Now.Date, true)</span></h4>
+                        <h4>@Resources.Resource.Page <span id="pageFooter" class="badge badge-dark"></span></h4>
+                    </div>
+                </div>
+
+
+                <!--Signature | From (Location) | Qty (Out) | Item Number | Item Name | Receiver (Location) | Qty (In) | Counted | Signature-->
+                <table class="table table-bordered my-4">
+                    <thead class="resizable">
+                        <tr>                          
+                            <td style="text-align: center; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.Signature</td>
+                            <td style="text-align: right; border: 1px solid black !important;" class="font-weight-bold">@outqtytxt</td>
+                            <td style="text-align: center; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.ItemNumber</td>
+                            <td style="text-align: center; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.ItemName</td> 
+                            <td style="text-align: right; border: 1px solid black !important;" class="font-weight-bold">@inqtytxt</td>
+                            <td style="text-align: right; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.CountedQty</td>
+                            <td style="text-align: right; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.Variance4Stock</td>
+                            <td style="text-align: center; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.Signature</td>
+                        </tr>
+                    </thead>
+
+               @*     @{int seq = 0; }*@
+                    @foreach (var v in g)
+                    {
+                        if (v.stSender == sender && v.stReceiver == receiver && !string.IsNullOrEmpty(v.stSender) && !string.IsNullOrEmpty(v.stReceiver))
+                        {
+                            //seq++;
+
+                            <tr>
+                                @*<td style="border: 1px solid black !important;width:20px!important;max-width:20px!important;">@seq</td>*@
+                                <td style="border: 1px solid black !important;width:120px!important;min-width:120px!important;">
+                                </td>
+                                @*<td style="border: 1px solid black !important; width: 120px!important; max-width: 120px!important;" class="text-center">
+                                    @sender
+                                </td>*@
+                                <td class="text-right" style="border: 1px solid black !important; width: 120px !important; max-width: 120px !important;">
+                                    @v.outQty
+                                </td>
+                                <td class="text-center" style="border: 1px solid black !important; width:140px;min-width:140px;">
+                                    @v.itmCode
+                                </td>
+                                <td class="text-center" style="border: 1px solid black !important; width: 140px; min-width: 140px;">
+                                    @v.itmNameDesc
+                                </td>
+                                @*<td class="text-center" style="border: 1px solid black !important; width: 120px !important; max-width: 120px !important;">
+                                    @receiver
+                                </td>*@
+                                <td class="text-right" style="border: 1px solid black !important; width: 120px !important; max-width: 120px !important;">
+                                    @v.inQty
+                                </td>
+                                <td style="border: 1px solid black !important; width: 90px !important; max-width: 90px !important;">
+                                </td>
+                                <td style="border: 1px solid black !important; width: 90px !important; min-width: 90px !important;">
+                                </td>
+                                <td style="border: 1px solid black !important; width: 120px !important; min-width: 120px !important;">
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+
+                <div id="remarkblk">
+                    <h4>@Resources.Resource.Remark</h4>
+                    <div style="border:1px solid black!important; height:100px;"></div>               
+                </div>                   
+               
+            </div>
+
+            //ADD class "display" and id.
+            <div class="display" id="break_page" style='page-break-after: always;'></div>
+        }
+
+    }
+    <script src="~/Scripts/printthis/printThis.js"></script>
+    <script>
+        $(function () {
+            setTimeout(function () {
+                $('#printblk, #break_page').printThis({                    
+                    importCSS: true,
+                    importStyle: true,//thrown in for extra measure
+                    loadCSS: @Html.Raw(loadcsstxt),
+                    //header: '<h1> Table Report</h1>'
+                    header:null,
+                });
+            },1000);
+            
+        });
+    </script>
+</body>
+</html>

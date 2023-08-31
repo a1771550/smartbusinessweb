@@ -1,0 +1,150 @@
+﻿@model PPWLib.Models.Item.PromotionModel
+
+@{
+    bool edit = Model.Id > 0;
+    int rand = CommonHelper.GetVersionRandomNo();
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("Edit", "Promotion", FormMethod.Get, new { @Id = "frmPromotion", @class = "my-4" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model=>model.IsObsolete)
+    <div class="row">
+        <div class="col-12 col-md-4">
+            <div class="form-group required">
+                <label for="proName">@Resources.Resource.Name (@Resources.Resource.EN)</label>
+                @Html.EditorFor(model => model.proName, new { htmlAttributes = new { @class = "form-control name" } })
+                @Html.ValidationMessageFor(model => model.proName, Resources.Resource.NameRequired, new { @class = "text-danger hide" })
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="form-group">
+                <label for="proName">@Resources.Resource.Name (@Resources.Resource.TC)</label>
+                @Html.EditorFor(model => model.proNameTC, new { htmlAttributes = new { @class = "form-control name" } })
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="form-group">
+                <label for="proName">@Resources.Resource.Name (@Resources.Resource.SC)</label>
+                @Html.EditorFor(model => model.proNameSC, new { htmlAttributes = new { @class = "form-control name" } })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-md-4">
+            <div class="form-group">
+                <label for="proDesc">@Resources.Resource.Description (@Resources.Resource.EN)</label>
+                <textarea id="proDesc" name="proDesc" rows="4" class="form-control desc">@Model.proDesc</textarea>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="form-group">
+                <label for="proDesc">@Resources.Resource.Description (@Resources.Resource.TC)</label>
+                <textarea id="proDescTC" name="proDescTC" rows="4" class="form-control desc">@Model.proDescTC</textarea>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="form-group">
+                <label for="proDesc">@Resources.Resource.Description (@Resources.Resource.SC)</label>
+                <textarea id="proDescSC" name="proDescSC" rows="4" class="form-control desc">@Model.proDescSC</textarea>
+            </div>
+        </div>
+    </div>
+
+    var pchecked = edit ? Model.pro4Period ? "checked" : "" : "checked";
+    var qchecked = edit ? !Model.pro4Period ? "checked" : "" : "";
+
+    <div class="row my-3">
+        <div class="col-12 col-md-2">
+            <div class="alert alert-success">
+                <div class="form-check">
+                    <input class="form-check-input protype" type="radio" name="protype" id="radPeriod" value="period" @pchecked>
+                    <label class="form-check-label" for="radPeriod">
+                        @Resources.Resource.Period
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-2">
+            <div class="alert alert-warning">
+                <div class="form-check">
+                    <input class="form-check-input protype" type="radio" name="protype" id="radQty" value="qty" @qchecked>
+                    <label class="form-check-label" for="radQty">
+                        @Resources.Resource.Qty
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    var phide = edit ? Model.pro4Period ? "" : "hide" : "";
+    var qhide = edit ? !Model.pro4Period ? "" : "hide" : "hide";
+
+    <div id="periodblk" class="row mb-3 @phide">
+        <div class="col-12 col-md-4">
+            <div class="form-group">
+                <label for="proDateFrm">@Resources.Resource.StartDate</label>
+                @Html.EditorFor(model => model.proDateFrm, new { htmlAttributes = new { @class = "form-control", @type = "datetime" } })
+                @Html.ValidationMessageFor(model => model.proDateFrm, Resources.Resource.DateStartRequired, new { @class = "text-danger hide" })
+                @Html.HiddenFor(model=>model.DateFrmDisplay)
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="form-group">
+                <label for="proDateTo">@Resources.Resource.EndDate</label>
+                @Html.EditorFor(model => model.proDateTo, new { htmlAttributes = new { @class = "form-control", @type = "datetime" } })
+                @Html.ValidationMessageFor(model => model.proDateTo, Resources.Resource.DateEndRequired, new { @class = "text-danger hide" })
+                @Html.HiddenFor(model => model.DateToDisplay)
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="form-group">
+                <label>@Resources.Resource.Discount (%)</label>
+                <input type="number" min="0" class="form-control prodiscpc" name="proDiscPc" value="@Model.DiscountDisplay" />
+                @Html.ValidationMessageFor(model => model.proDiscPc, string.Format(Resources.Resource.Required, Resources.Resource.DiscountItemHeader), new { @class = "text-danger hide" })
+            </div>
+        </div>
+    </div>
+
+    <div id="qtyblk" class="row mb-3 @qhide">
+        <div class="col-12 col-md-4">
+            <div class="form-group">
+                <label for="proQty">@Resources.Resource.Qty</label>
+                @Html.EditorFor(model => model.proQty, new { htmlAttributes = new { @class = "form-control", @type = "number", @min = "0" } })
+                @Html.ValidationMessageFor(model => model.proQty, string.Format(Resources.Resource.Required, Resources.Resource.Qty), new { @class = "text-danger hide" })
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="form-group">
+                <label for="proPrice">@Resources.Resource.Price (@Model.ComInfo.Currency)</label>
+                @*@Html.EditorFor(model => model.proPrice, new { htmlAttributes = new { @class = "form-control pd", @type = "number", @min = "0" } })
+        @Html.ValidationMessageFor(model => model.proPrice, Resources.Resource.PriceDiscountEitherRequired, new { @class = "text-danger hide pderr" })*@
+            <input class="form-control pd text-box single-line" data-val="true" data-val-number="The field proPrice must be a number." id="proPrice" min="0" name="proPrice" type="number" value="@Model.PriceDisplay">
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="form-group">
+                <label>@Resources.Resource.Discount (%)</label>
+                <input type="number" min="0" class="form-control prodiscpc pd" name="proDiscPc" value="@Model.DiscountDisplay" />
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="form-group">
+        <button id="btnSave" type="button" class="btn btn-success">@Resources.Resource.Save</button>
+    </div>
+}
+
+@Html.Partial("_WaitingModal")
+
+<div>
+    @Html.ActionLink(Resources.Resource.BackToList, "Index")
+</div>
+
+<div id="infoblk"></div>
+<script src="~/Scripts/ts/js/promotion/promotionedit.js?v=@rand"></script>

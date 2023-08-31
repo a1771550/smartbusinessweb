@@ -1,0 +1,8 @@
+﻿@{ 
+    Layout = "~/Views/Shared/_DemoLayout.cshtml";
+    var rand = CommonHelper.GetVersionRandomNo();
+}
+<input type="text" id="txtTest" value="test" />
+
+<script src="~/Scripts/ts/js/home.js?v=@rand"></script>
+

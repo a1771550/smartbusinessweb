@@ -1,0 +1,23 @@
+﻿@{
+    string currency = ViewData["currency"] != null ? (string)ViewData["currency"] : "";
+    string priceheader = ViewData["priceheader"] != null ? (string)ViewData["priceheader"] : Resources.Resource.SellingPrice;
+    bool forpurchase = ViewData["forpurchase"] != null ? (bool)ViewData["forpurchase"] : false;
+    bool forwholesales = ViewData["forwholesales"] != null ? (bool)ViewData["forwholesales"] : false;
+    bool forsales = ViewData["forsales"] != null ? (bool)ViewData["forsales"] : false;
+}
+
+<div id="itemModal">
+
+    <div class="form-inline mb-2 my-4">
+        <div class="form-group">
+            <input type="text" class="form-control mr-3" id="txtItem" placeholder="@Resources.Resource.EnterItemCodeName" style="max-width:none;" />
+            <span class="warning"></span>
+        </div>
+        <div class="form-group">
+            <button class="btn btn-default" id="btnSearchItem">@Resources.Resource.Search</button>
+        </div>
+    </div>
+
+    @Html.Partial("_tblItem", null, new ViewDataDictionary { { "currency", currency }, { "priceheader", Resources.Resource.UnitPrice },{ "forpurchase", forpurchase },{"forwholesales",forwholesales },{ "forsales", forsales } })
+
+</div>

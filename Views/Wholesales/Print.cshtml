@@ -1,0 +1,625 @@
+﻿@model PPWLib.Models.WholeSales.WholeSalesEditModel
+
+@{
+    ViewBag.Title = Resources.Resource.PrintPreview;
+    ComInfo comInfo = Model.ComInfo;
+    PPWLib.Models.WholeSales.WholeSalesModel ws = Model.WholeSales;
+    Layout = null;
+    string cssbsfile = HttpContext.Current.Session["CssBSFile"] == null ? @"Content/bs4" : HttpContext.Current.Session["CssBSFile"].ToString();
+    string scriptbsfile = HttpContext.Current.Session["ScriptBSFile"] == null ? @"Scripts/bs4" : HttpContext.Current.Session["ScriptBSFile"].ToString();
+    var receipt = Model.Receipt;
+    int rand = CommonHelper.GetVersionRandomNo();
+}
+<!DOCTYPE html>
+<html>
+@Html.Partial("_PrintHead", null, new ViewDataDictionary { { "cssbsfile", cssbsfile }, { "scriptbsfile", scriptbsfile }, { "PageTitle", ViewBag.Title } })
+<body style="padding-top:0!important;">
+    <link href="~/Content/wholesalesprint.css?v=@rand" type="text/css" media="print" rel="stylesheet" />
+    <style>
+        .signatureblk {
+            padding: 0;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+            .signatureblk.flex-row {
+                display: flex;
+            }
+
+            .signatureblk .wrapper {
+                border-bottom: 1px solid #4b00ff;
+            }
+
+        canvas.signature-pad {
+            background: #fff;
+            width: 100%;
+            height: 80%;
+            cursor: crosshair;
+        }
+
+        #tblHeader td, #tblItem td {
+            border: none !important;
+        }
+
+        #tblHeader td {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+
+        #borderblk {
+            border: 2px solid black;
+        }
+
+        #tblItem {
+            margin: 0;
+        }
+
+            #tblItem thead th {
+                border: 1px solid black !important;
+                border-top: none !important;
+            }
+
+            #tblItem tbody td:not(:last-child), #tblItem tfoot td:not(:last-child) {
+                border-right: 1px solid black !important;
+            }
+
+            #tblItem tbody ul, #tblItem tfoot ul {
+                font-size: 0.8em;
+            }
+
+            #tblItem tbody ul {
+                padding: 0;
+                list-style-type: none;
+                margin: 0;
+            }
+
+            #tblItem tfoot ul {
+                margin-top: 16px;
+            }
+
+        .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+    <div id="printblk" class="printele" style="padding-top:0!important;">
+        <div class="text-center">
+            <h3>@receipt.CompanyName</h3>
+        </div>
+
+        <hr style="border:1px solid black;" />
+
+        <div class="d-flex justify-content-center my-3">
+            <div class="card" style="border: 1px solid black !important; border-radius: 0.75rem !important;">
+                <div class="card-body" style="padding: 10px 30px !important;">
+                    @{ string title = "";
+                        if (ws.wsStatus == WholeSalesStatus.order.ToString())
+                        {
+                            title = Resources.Resource.WholeSaleOrder;
+                        }
+                        if (ws.wsStatus == WholeSalesStatus.deliver.ToString()|| ws.wsStatus == WholeSalesStatus.partialdeliver.ToString())
+                        {
+                            if (Model.printType == WholeSalesStatus.deliverorder.ToString())
+                            {
+                                title = Resources.Resource.DeliveryOrder;
+                            }
+                            else
+                            {
+                                title = Resources.Resource.Invoice;
+                            }
+                        }
+                    }
+                    <h4 class="card-title">@title</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <table id="tblHeader" class="table">
+                <tr>
+                    <td class="text-right">
+                        <h5 class="font-weight-bold">@Resources.Resource.Customer</h5>
+                    </td>
+                    <td class="">
+                        <h5 class="font-weight-normal">
+                            @ws.CustomerName
+                        </h5>
+                    </td>
+                    <td>
+                        <div style="margin:0 8em;"></div>
+                    </td>
+                    <td class="text-right">
+                        <h5 class="font-weight-bold">@string.Format(Resources.Resource.NumberFormat, Resources.Resource.WholeSales)</h5>
+                    </td>
+                    <td>
+                        <h5 class="font-weight-normal">@ws.WSCodeDisplay</h5>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="text-right">
+                        <h5 class="font-weight-bold">@Resources.Resource.Contact</h5>
+                    </td>
+                    <td class="">
+                        <h5 class="font-weight-normal">
+                            @ws.Customer.cusContact
+                        </h5>
+                    </td>
+                    <td>
+                        <div style="margin:0 8em;"></div>
+                    </td>
+                    @{ var orderdatetxt = ws.wsStatus == WholeSalesStatus.deliver.ToString() ? string.Format(Resources.Resource.TimeFormat, Resources.Resource.Delivery) : Resources.Resource.WholeSalesTime;}
+                    <td class="text-right">
+                        <h5 class="font-weight-bold">@orderdatetxt</h5>
+                    </td>
+                    <td>
+                        <h5 class="font-weight-normal">@ws.WsTimeDisplay</h5>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="text-right">
+                        <h5 class="font-weight-bold">@Resources.Resource.Phone</h5>
+                    </td>
+                    <td class="">
+                        <h5 class="font-weight-normal">
+                            @ws.Customer.cusPhone
+                        </h5>
+                    </td>
+                    <td>
+                        <div style="margin:0 8em;"></div>
+                    </td>
+                    <td class="text-right">
+                        <h5 class="font-weight-bold">@Resources.Resource.SalesPerson</h5>
+                    </td>
+                    <td>
+                        <h5 class="font-weight-normal">@ws.CreateBy</h5>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="text-right">
+                        <h5 class="font-weight-bold">@Resources.Resource.Email</h5>
+                    </td>
+                    <td class="">
+                        <h5 class="font-weight-normal">
+                            @ws.Customer.cusEmail
+                        </h5>
+                    </td>
+                    <td>
+                        <div style="margin:0 8em;"></div>
+                    </td>
+                    <td class="text-right">
+                        <h5 class="font-weight-bold">@string.Format(Resources.Resource.PrintFormat, Resources.Resource.Time)</h5>
+                    </td>
+                    <td>
+                        <h5 class="font-weight-normal">@CommonLib.Helpers.CommonHelper.FormatDateTime(DateTime.Now, true)</h5>
+                    </td>
+                </tr>
+
+                @if (Model.printType == WholeSalesStatus.deliverorder.ToString())
+                {
+                    <tr>
+                        <td class="text-right">
+                            <h5 class="font-weight-bold">@string.Format(Resources.Resource.DeliveryFormat, Resources.Resource.Address)</h5>
+                        </td>
+                        <td colspan="4">
+                            @{ string address = "";
+                                for (var i = 0; i < 4; i++)
+                                {
+                                    address += ws.Customer.StreetLines[i] + " ";
+                                }
+                            }
+                            <h5 class="font-weight-normal">@address</h5>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+
+        @if (Model.printType != WholeSalesStatus.deliverorder.ToString())
+        {
+            <div class="row justify-content-end mx-5 mt-4">
+                @{ decimal exrate = ws.wsExRate == null ? 1 : (decimal)ws.wsExRate;}
+                <b>@Resources.Resource.Currency:</b> @ws.wsCurrency
+                <b class="ml-2">@Resources.Resource.ExchangeRate:</b> @exrate.ToString("0.00")
+            </div>
+        }
+
+
+        <div id="borderblk" class="mx-4">
+            <table id="tblItem" class="table">
+                @{ decimal totalamt = 0; decimal discamt = 0; }
+
+                <thead style="border: 1px solid black !important; border-top: none !important;">
+                    <tr>
+                        <th style="text-align: center;border-left:none!important; border-right: 1px solid black !important; border-bottom: 1px solid black !important;">@Resources.Resource.Description</th>
+                        @if (ws.wsStatus == WholeSalesStatus.deliver.ToString())
+                        {
+                            <th style="text-align: center; ">@Resources.Resource.Batch</th>
+                            <th style="text-align: center;">@Resources.Resource.SerialNo</th>
+                            <th style="text-align: center;">@Resources.Resource.ExpiryDate</th>
+                        }
+
+                        <th style="text-align: right; ">@Resources.Resource.Qty</th>
+                        <th style="text-align: center;">@Resources.Resource.Unit</th>
+
+                        @if (Model.printType != WholeSalesStatus.deliverorder.ToString())
+                        {
+
+                            <th style="text-align: right;">@Resources.Resource.UnitPrice (@ws.Currency)</th>
+                            <th style="text-align: right;">@Resources.Resource.Discount (%)</th>
+                            if (ws.EnableTax && !ws.InclusiveTax)
+                            {
+                                <th style="text-align: right;">@Resources.Resource.TaxItemHeader</th>
+                            }
+
+                            <th style="text-align: right; border-right: none !important; border-left: 1px solid black !important; border-bottom: 1px solid black !important;">@Resources.Resource.Amount (@ws.Currency)</th>
+                        }
+
+
+                    </tr>
+                </thead>
+
+                @if (ws.wsStatus == WholeSalesStatus.order.ToString())
+                {
+                    <tbody>
+                        @foreach (var item in ws.WholeSalesLns)
+                        {
+                            <tr>
+                                <td style="">
+                                    @item.wslItemCode<br />
+                                    @string.Concat("> ", @item.itmNameDesc)
+                                </td>
+
+                                <td class="text-right" style="">
+                                    @item.LnQty
+                                </td>
+                                <td class="text-right" style="">
+                                    @item.wslSellUnit
+                                </td>
+                                <td class="text-right" style="">
+                                    @item.wslSellingPrice
+                                </td>
+                                <td class="text-right" style="">
+                                    @{ discamt += (decimal)item.wslLineDiscAmt;}
+                                    @item.wslLineDiscPc
+                                </td>
+                                @if (ws.EnableTax && !ws.InclusiveTax)
+                                {
+                                    <td class="text-right" style="">@item.wslTaxPc</td>
+                                }
+                                <td class="text-right" style="">
+                                    @{ totalamt += (decimal)(item.wslSalesAmt + item.wslLineDiscAmt);}
+                                    @item.wslSalesAmt
+                                </td>
+
+
+                            </tr>
+                        }
+
+                        @for (var i = 0; i < 5; i++)
+                        {
+                            <tr>
+                                @for (var j = 0; j < 6; j++)
+                                {
+                                    <td></td>
+                                }
+
+                            </tr>
+                        }
+                        <tr>
+                            @for (var j = 0; j < 6; j++)
+                            {
+                                var borderleft = j == 0 ? "border-left:none!important;" : "border-left: 1px solid black !important;";
+                                <td style="border-right: none !important; @borderleft border-bottom: 1px solid black !important;">
+                                    @if (j == 0)
+                                    {
+                                        <span class="font-weight-bold" style="font-size:1.2em;"><u>@Resources.Resource.PaymentTerms</u></span>
+                                        <ul style="font-size:0.8em;">
+                                            @foreach (var pt in Model.PaymentTermsList.Where(x => !string.IsNullOrEmpty(x)).ToList())
+                                            {
+                                                <li>@pt</li>
+                                            }
+                                        </ul>
+                                    }
+                                </td>
+                            }
+                        </tr>
+                    </tbody>
+                }
+
+                @if (ws.wsStatus == WholeSalesStatus.deliver.ToString()|| ws.wsStatus == WholeSalesStatus.partialdeliver.ToString() || Model.printType == WholeSalesStatus.deliverorder.ToString())
+                {
+                    <tbody data-printtype="@Model.printType">
+
+                        @foreach (var group in ws.GroupedDeliveryItems)
+                        {
+                            var item = group.FirstOrDefault();
+                            <tr data-groupcount="@group.Count()">
+                                <td style="width: 200px; max-width: 200px;">
+                                    @item.itmCode<br />
+                                    @string.Concat("> ", item.Item.NameDescTxt)
+                                </td>
+
+                                <td class="text-right" style="width: 100px; max-width: 100px;">
+                                    @{ string battxt = "N/A";}
+                                    @if (item.dlBatch != null)
+                                    {
+                                        foreach (var g in group)
+                                        {
+                                            battxt = g.dlBatch;
+                                            <span>@battxt</span>
+                                            <br />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        foreach (var g in group)
+                                        {
+                                            <span>@battxt</span><br />
+                                        }
+                                    }
+                                </td>
+                                <td class="text-right" style="width: 100px; max-width: 100px;">
+                                    @{ string sntxt = "N/A";}
+                                    @if (item.dlHasSN)
+                                    {
+                                        foreach (var g in group)
+                                        {
+                                            sntxt = g.snoCode;
+                                            <span>@sntxt</span>
+                                            <br />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        foreach (var g in group)
+                                        {
+                                            <span>@sntxt</span>
+                                            <br />
+                                        }
+                                    }
+                                </td>
+                                <td class="text-center" style="width: 100px; max-width: 100px;">
+                                    @{ string vttxt = "N/A";}
+                                    @if (item.dlValidThru != null)
+                                    {
+                                        foreach (var g in group)
+                                        {
+                                            vttxt = g.VtDisplay;
+                                            <span>@vttxt</span>
+                                            <br />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        foreach (var g in group)
+                                        {
+                                            <span>@vttxt</span><br />
+                                        }
+                                    }
+                                </td>
+                                <td class="text-right" style="width: 60px; max-width: 60px;">
+                                    @group.Sum(x => x.dlQty)
+                                </td>
+                                <td class="text-right" style="width: 50px; max-width: 50px;">
+                                    @item.dlBaseUnit
+                                </td>
+
+                                @if (Model.printType != WholeSalesStatus.deliverorder.ToString())
+                                {
+                                    <td class="text-right" style="width: 60px; max-width: 60px;">
+                                        @{ decimal price = item.dlUnitPrice;}
+                                        @price.ToString("0.00")
+                                    </td>
+                                    <td class="text-right" style="width: 60px; max-width: 60px;">
+                                        @{ decimal discpc = (decimal)item.dlDiscPc; 
+                                            discamt += price * (discpc/100) * group.Sum(x => x.dlQty);}
+                                        @discpc.ToString("0.00")
+                                    </td>
+                                    if (ws.EnableTax && !ws.InclusiveTax)
+                                    {
+                                        @*<td class="text-right" style="">@item.wslTaxPc</td>*@
+                                    }
+                                    <td class="text-right" style="width: 60px; max-width: 60px;">
+                                        @{
+                                            decimal salesamt = 0;
+                                            if (ws.EnableTax)
+                                            {
+
+                                            }
+                                            else
+                                            {
+                                                salesamt = (decimal)(item.dlUnitPrice * group.Sum(x => x.dlQty)) * (decimal)(1 - item.dlDiscPc/100);
+                                                totalamt += salesamt;
+                                            }
+                                        }
+                                        @salesamt.ToString("0.00")
+                                    </td>
+                                }
+
+                            </tr>
+                        }
+
+                        @if (Model.printType != WholeSalesStatus.deliverorder.ToString())
+                        {
+                            for (var i = 0; i < 5; i++)
+                            {
+                                <tr>
+                                    @for (var j = 0; j < 9; j++)
+                                    {
+                                        <td></td>
+                                    }
+
+                                </tr>
+                            }
+                            <tr>
+                                @for (var j = 0; j < 9; j++)
+                                {
+                                    var borderleft = j == 0 ? "border-left:none!important;" : "border-left: 1px solid black !important;";
+                                    <td style="border-right: none !important; @borderleft border-bottom: 1px solid black !important;">
+                                        @if (j == 0)
+                                        {
+                                            <span class="font-weight-bold" style="font-size:1.2em;"><u>@Resources.Resource.PaymentTerms</u></span>
+                                            <ul>
+                                                @foreach (var pt in Model.PaymentTermsList.Where(x => !string.IsNullOrEmpty(x)).ToList())
+                                                {
+                                                    <li>@pt</li>
+                                                }
+                                            </ul>
+                                        }
+                                    </td>
+                                }
+                            </tr>
+                        }
+
+
+                    </tbody>
+                }
+
+                @if (Model.printType != WholeSalesStatus.deliverorder.ToString())
+                {
+                    <tfoot>
+                        <tr>
+                            @{ int colspan = ws.wsStatus == WholeSalesStatus.deliver.ToString() ? 5 : 2;}
+                            <td colspan="@colspan" class="" style="border-right:none!important;">
+                                <ul>
+                                    @foreach (var d in Model.DisclaimerList)
+                                    {
+                                        <li>@d</li>
+                                    }
+                                </ul>
+                            </td>
+                            <td class="text-justify" style="border-left:none!important;">
+                                <h4>@Resources.Resource.Remark</h4>
+                                <p style="font-size:0.8em;">@ws.TrimmedRemark</p>
+                            </td>
+                            <td colspan="2" class="text-right" style="border-left:none!important;">
+                                <h3>@Resources.Resource.SubTotal:</h3>
+                                <h3>@Resources.Resource.DiscAmt:</h3>
+                                <h3>@Resources.Resource.Total:</h3>
+                            </td>
+                            <td class="text-right">
+                                @{ decimal subtotal = 0;}
+                                @if (ws.wsStatus == WholeSalesStatus.deliver.ToString())
+                                {
+                                    { subtotal = totalamt + discamt;}
+                                    <h3>@subtotal.ToString("0.00")</h3>
+                                    <h3>@discamt.ToString("0.00")</h3>
+                                    <h3>@totalamt.ToString("0.00")</h3>
+                                }
+                                else
+                                {
+                                    { subtotal = totalamt - discamt; }
+                                    <h3>@totalamt.ToString("0.00")</h3>
+                                    <h3>@discamt.ToString("0.00")</h3>
+                                    <h3>@subtotal.ToString("0.00")</h3>
+                                }
+
+                            </td>
+                        </tr>
+                    </tfoot>
+                }
+
+            </table>
+        </div>
+
+        @{ var forbehalftxt = CultureHelper.CurrentCulture == 2 ? Resources.Resource.ForBehalfOf : string.Concat(Resources.Resource.ForBehalfOf, " (For and on behalf of)");
+            var receivedbytxt = CultureHelper.CurrentCulture == 2 ? Resources.Resource.ReceivedBy : string.Concat(Resources.Resource.ReceivedBy, " (Received By)");
+
+
+        }
+        <div class="container-fluid my-4">
+            @if (Model.printType == WholeSalesStatus.deliverorder.ToString())
+            {
+                <table>
+                    <tr>
+                        <td class="">
+                            <table class="ml-4">
+                                <tr><td>@receivedbytxt</td></tr>
+                                <tr><td><div class="mb-5"></div></td></tr>
+                                <tr>
+                                    <td class="">
+                                        <div class="signatureblk flex-row">
+                                            <div class="wrapper">
+                                                <canvas class="signature-pad" width="400" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class=""><span style="letter-spacing:.2em;">@Resources.Resource.CompanyChopSignature</span></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td><div style="margin:0 11em;"></div></td>
+                        <td>
+                            <table>
+                                <tr><td class="text-left">@forbehalftxt</td></tr>
+                                <tr><td class="text-left"><h5><b>@receipt.CompanyName</b></h5></td></tr>
+                                <tr>
+                                    <td class="text-left">
+                                        <div class="signatureblk flex-row">
+                                            <div class="wrapper">
+                                                <canvas class="signature-pad" width="400" height="150"></canvas>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span style="letter-spacing:.2em;">@Resources.Resource.AuthorizedSignature</span></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            }
+            else
+            {
+                <div class="d-flex justify-content-end">
+                    <table>
+                        <tr><td class="text-left">@forbehalftxt</td></tr>
+                        <tr><td class="text-left"><h5><b>@receipt.CompanyName</b></h5></td></tr>
+                        <tr>
+                            <td class="text-left">
+                                <div class="signatureblk flex-row">
+                                    <div class="wrapper">
+                                        <canvas class="signature-pad" width="400" height="150"></canvas>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span style="letter-spacing:.2em;">@Resources.Resource.AuthorizedSignature</span></td>
+                        </tr>
+                    </table>
+                </div>
+            }
+        </div>
+
+
+        <div class="row justify-content-center mt-3">
+            @{ var phonespan1 = Html.Raw(" <span class=\"mx-3 fa fa-phone\">:");}
+            @string.Concat(receipt.CompanyAddress, " ", receipt.CompanyAddress1)
+            <span class="mx-1 fa fa-phone">:@receipt.CompanyPhone</span>
+            <span class="mx-1 fa fa-globe">:@receipt.CompanyWebSite</span>
+        </div>
+    </div>
+
+
+    <script src="~/Scripts/printthis/printThis.js"></script>
+    <script>
+        $(function () {
+            setTimeout(() => {
+                $('#printblk').printThis({
+                    importCSS: true,
+                    importStyle: true,//thrown in for extra measure
+                    });
+            }, 2000); //wait for downloading image
+        });
+    </script>
+</body>
+</html>

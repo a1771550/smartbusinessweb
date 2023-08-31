@@ -1,0 +1,111 @@
+﻿@model LoginUserModel
+@{
+    string sitename = ViewBag.SiteName ?? Resources.Resource.SiteName;
+    int currentculture = HttpContext.Current.Session["CurrentCulture"] == null ? int.Parse(ConfigurationManager.AppSettings["CultureOnLogin"]) : (int)HttpContext.Current.Session["CurrentCulture"];
+    string usercode = Resources.Resource.UserName;
+    string password = Resources.Resource.Password;
+
+    bool debug = ConfigurationManager.AppSettings["Debug"] == "1";
+    var rand = CommonHelper.GetVersionRandomNo();
+    //bool multishopmode = (bool)Model.ComInfo.MultiShopMode;
+    //bool multidevicemode = (bool)Model.ComInfo.MultiDeviceMode;
+    //string[] shops = Model.ComInfo.Shops.Split(',');
+    //string[] devices = Model.ComInfo.Devices.Split(',');
+    string shop = Model.SelectedShop;
+    string device = Model.SelectedDevice;
+    bool enableCRM = Model.enableCRM;
+}
+<a id="logolnk" href="/"><img src="~/Images/logo.png" title="@sitename" alt="@sitename" class="mb-sm-4" /></a>
+
+
+@using (Html.BeginForm("", "", FormMethod.Post, new { @id = "frmLogin", @redirectUrl = Model.RedirectUrl }))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(model => model.SelectedShop)
+    @Html.HiddenFor(model => model.SelectedDevice)
+    @Html.HiddenFor(model=>model.RedirectUrl)
+
+<div class="form-horizontal" data-debug="@currentculture" data-sitename="@sitename">
+
+    <div class="mx-3 my-3">
+
+        @*@if (multishopmode)
+            {
+                <div class="form-group">
+                    <label class="" for="shop">@Resources.Resource.Shop</label>
+                    <select class="form-control" id="shop">
+                        @foreach (var s in shops)
+                        {
+                            <option value="@s">@s</option>
+                        }
+                    </select>
+                </div>
+            }
+
+            @if (multidevicemode)
+            {
+                <div class="form-group">
+                    <label class="" for="device">@Resources.Resource.Device</label>
+                    <select class="form-control" id="device">
+                        @foreach (var d in devices)
+                        {
+                            <option value="@d">@d</option>
+                        }
+                    </select>
+                </div>
+            }*@
+
+        @*@if (enableCRM)
+            {*@
+        <div id="loginmodeblk" class="hide">
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="LoginMode" id="radpos" value="pos" checked>
+                <label class="form-check-label" for="radpos">POS</label>
+            </div>
+
+
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="LoginMode" id="radcrm" value="crm">
+                <label class="form-check-label" for="radcrm">CRM</label>
+            </div>
+        </div>
+
+        <input type="hidden" id="loginMode" name="LoginMode" value="" />
+
+    </div>
+
+
+    <div id="loginblk">
+        <div class="form-group">
+
+            <label for="Email">@Resources.Resource.Email</label>
+
+            <input type="email" class="form-control" id="Email" name="Email" />
+
+        </div>
+        <div class="form-group">
+            <label for="Password">@Resources.Resource.Password</label>
+
+            @Html.PasswordFor(model => model.Password, new { @class = "form-control", placeholder = password })
+
+
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <button id="btnLogin" type="button" class="btn btn-success">@Resources.Resource.Login</button>
+    </div>
+
+    <div id="msg" class="alert alert-danger hide d-inline-block my-2"></div>
+
+</div>
+    @Html.HiddenFor(model => model.LoginMode)
+
+}
+
+
+@Html.Partial("_WaitingModal")
+<div id="infoblk" data-debug="@debug" data-useremailrequiredtxt="@Resources.Resource.EmailRequired" data-passwordrequiredtxt="@Resources.Resource.PasswordRequired" data-shop="@shop" data-device="@device" data-redirecturl="@Model.RedirectUrl" data-enablecrm="@Model.enableCRM" data-islocal="@Request.IsLocal"></div>
+<script src="~/Scripts/ts/js/login.js?v=@rand"></script>

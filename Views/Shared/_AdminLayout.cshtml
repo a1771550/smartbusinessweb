@@ -1,0 +1,57 @@
+﻿@using PPWLib.Models;
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width" />
+	<link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+	<link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" />
+	<script src="~/Scripts/modernizr-2.8.3.js"></script>
+
+	@{
+		int randv = new Random().Next(10000, 100000);
+		string sitename = (string)ViewBag.SiteName;
+	}
+	<link href="~/Content/ErrorStyles.css?v=@randv" rel="stylesheet" type="text/css" />
+	<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+	<script src="~/Scripts/bootstrap.min.js"></script>
+	<script src="~/Scripts/moment.min.js"></script>
+	<script src="~/Scripts/respond.min.js"></script>
+	<title>@ViewBag.Title - @sitename</title>
+</head>
+<body>
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				@Html.ActionLink("Access Rights", "Index", "Admin", new { area = "" }, new { @class = "navbar-brand" })
+				@{
+					SysUser user = (SysUser)HttpContext.Current.Session["User"];
+					if (user.UserCode == "superadmin")
+					{
+						@Html.ActionLink("Users", "Index", "User", new { area = "" }, new { @class = "navbar-brand" });
+					}
+				}
+
+				@Html.ActionLink("Reports", "ShowInventory", "Home", new { area = "" }, new { @class = "navbar-brand" })
+				@Html.ActionLink("Maintenance", "Maintenance", "Admin", new { area = "" }, new { @class = "navbar-brand" })
+			</div>
+			@Html.Partial("_LoginPartial")
+		<div>
+			@if (TempData["message"] != null)
+			{
+				<div class="alert alert-success">@TempData["message"]</div>
+			}
+			@if (TempData["warning"] != null)
+			{
+				<div class="alert alert-danger">@TempData["warning"]</div>
+			}
+		</div>
+		</div>
+	</div>
+
+	<div class="container body-content">
+		@RenderBody()
+		<hr />
+		@Html.Partial("_Footer")
+	</div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+﻿@{
+    bool editmode = (bool)ViewData["editmode"];
+    string status = (string)ViewData["status"];
+    bool ismanager = (bool)ViewData["ismanager"];
+    //Response.Write(editmode);
+}
+@if (editmode && status != WholeSalesStatus.invoice.ToString())
+{
+    <a role="button" href="#" id="btnInvoice" class="btn btn-primary mr-2">@Resources.Resource.Invoice</a>
+    <a role="button" href="#" class="btn btn-success mr-2 hide btnSave">@Resources.Resource.Save</a>
+}
+
+else if (status == WholeSalesStatus.created.ToString())
+{
+    <a role="button" href="#" id="btnEdit" class="btn btn-info mr-2">@Resources.Resource.Edit</a>
+    if (!ismanager)
+    {
+        <button id="" type="button" class="btn btn-primary mr-2 my-2 request makeorder btnRequestApproval hide" style="height:5em;">@Resources.Resource.Request4Approval</button>
+    }
+}
+
+else
+{
+    <a role="button" href="#" class="btn btn-success mr-2 btnSave">@Resources.Resource.Save</a>
+}
+
+
+@if (editmode)
+{
+    <button type="button" class="btn btn-warning" id="btnFile">@Resources.Resource.UploadFile</button>
+    <button type="button" class="btn btn-primary ml-2 hide" id="btnViewFile">@Resources.Resource.ViewFile</button>
+    <button type="button" class="btn btn-info ml-2" id="btnReload">@Resources.Resource.Reload</button>
+}

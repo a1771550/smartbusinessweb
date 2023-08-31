@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tns="http://tempuri.org/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="ReadMYOB">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="dsn" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="sql" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReadMYOBResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReadMYOBResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="WriteMYOBBulk">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="connectionString" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="sqllist" type="tns:ArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="WriteMYOBBulkResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="WriteMYOB">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="connectionString" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="sql" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="WriteMYOBResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="WriteMYOBResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="WriteTest">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="itemcode" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="salescode" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="salesdate" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="location" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="job" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="shopkeeper" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="WriteTestResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="WriteTestResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="TestMyobConnection">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="dsn" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="TestMyobConnectionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="TestMyobConnectionResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AsynTest">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="test" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AsynTestResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="AsynTestResult" type="tns:Task" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="Task" />
+      <s:element name="ParameterTest">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="salescode" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ParameterTestResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ParameterTestResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ConsoleArgs">
+        <s:complexType />
+      </s:element>
+      <s:element name="ConsoleArgsResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="CheckConnected">
+        <s:complexType />
+      </s:element>
+      <s:element name="CheckConnectedResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CheckConnectedResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="MoveFile">
+        <s:complexType />
+      </s:element>
+      <s:element name="MoveFileResponse">
+        <s:complexType />
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="ReadMYOBSoapIn">
+    <wsdl:part name="parameters" element="tns:ReadMYOB" />
+  </wsdl:message>
+  <wsdl:message name="ReadMYOBSoapOut">
+    <wsdl:part name="parameters" element="tns:ReadMYOBResponse" />
+  </wsdl:message>
+  <wsdl:message name="WriteMYOBBulkSoapIn">
+    <wsdl:part name="parameters" element="tns:WriteMYOBBulk" />
+  </wsdl:message>
+  <wsdl:message name="WriteMYOBBulkSoapOut">
+    <wsdl:part name="parameters" element="tns:WriteMYOBBulkResponse" />
+  </wsdl:message>
+  <wsdl:message name="WriteMYOBSoapIn">
+    <wsdl:part name="parameters" element="tns:WriteMYOB" />
+  </wsdl:message>
+  <wsdl:message name="WriteMYOBSoapOut">
+    <wsdl:part name="parameters" element="tns:WriteMYOBResponse" />
+  </wsdl:message>
+  <wsdl:message name="WriteTestSoapIn">
+    <wsdl:part name="parameters" element="tns:WriteTest" />
+  </wsdl:message>
+  <wsdl:message name="WriteTestSoapOut">
+    <wsdl:part name="parameters" element="tns:WriteTestResponse" />
+  </wsdl:message>
+  <wsdl:message name="TestMyobConnectionSoapIn">
+    <wsdl:part name="parameters" element="tns:TestMyobConnection" />
+  </wsdl:message>
+  <wsdl:message name="TestMyobConnectionSoapOut">
+    <wsdl:part name="parameters" element="tns:TestMyobConnectionResponse" />
+  </wsdl:message>
+  <wsdl:message name="AsynTestSoapIn">
+    <wsdl:part name="parameters" element="tns:AsynTest" />
+  </wsdl:message>
+  <wsdl:message name="AsynTestSoapOut">
+    <wsdl:part name="parameters" element="tns:AsynTestResponse" />
+  </wsdl:message>
+  <wsdl:message name="ParameterTestSoapIn">
+    <wsdl:part name="parameters" element="tns:ParameterTest" />
+  </wsdl:message>
+  <wsdl:message name="ParameterTestSoapOut">
+    <wsdl:part name="parameters" element="tns:ParameterTestResponse" />
+  </wsdl:message>
+  <wsdl:message name="ConsoleArgsSoapIn">
+    <wsdl:part name="parameters" element="tns:ConsoleArgs" />
+  </wsdl:message>
+  <wsdl:message name="ConsoleArgsSoapOut">
+    <wsdl:part name="parameters" element="tns:ConsoleArgsResponse" />
+  </wsdl:message>
+  <wsdl:message name="CheckConnectedSoapIn">
+    <wsdl:part name="parameters" element="tns:CheckConnected" />
+  </wsdl:message>
+  <wsdl:message name="CheckConnectedSoapOut">
+    <wsdl:part name="parameters" element="tns:CheckConnectedResponse" />
+  </wsdl:message>
+  <wsdl:message name="MoveFileSoapIn">
+    <wsdl:part name="parameters" element="tns:MoveFile" />
+  </wsdl:message>
+  <wsdl:message name="MoveFileSoapOut">
+    <wsdl:part name="parameters" element="tns:MoveFileResponse" />
+  </wsdl:message>
+  <wsdl:portType name="DayendsSoap">
+    <wsdl:operation name="ReadMYOB">
+      <wsdl:input message="tns:ReadMYOBSoapIn" />
+      <wsdl:output message="tns:ReadMYOBSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="WriteMYOBBulk">
+      <wsdl:input message="tns:WriteMYOBBulkSoapIn" />
+      <wsdl:output message="tns:WriteMYOBBulkSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="WriteMYOB">
+      <wsdl:input message="tns:WriteMYOBSoapIn" />
+      <wsdl:output message="tns:WriteMYOBSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="WriteTest">
+      <wsdl:input message="tns:WriteTestSoapIn" />
+      <wsdl:output message="tns:WriteTestSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="TestMyobConnection">
+      <wsdl:input message="tns:TestMyobConnectionSoapIn" />
+      <wsdl:output message="tns:TestMyobConnectionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AsynTest">
+      <wsdl:input message="tns:AsynTestSoapIn" />
+      <wsdl:output message="tns:AsynTestSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ParameterTest">
+      <wsdl:input message="tns:ParameterTestSoapIn" />
+      <wsdl:output message="tns:ParameterTestSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ConsoleArgs">
+      <wsdl:input message="tns:ConsoleArgsSoapIn" />
+      <wsdl:output message="tns:ConsoleArgsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CheckConnected">
+      <wsdl:input message="tns:CheckConnectedSoapIn" />
+      <wsdl:output message="tns:CheckConnectedSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="MoveFile">
+      <wsdl:input message="tns:MoveFileSoapIn" />
+      <wsdl:output message="tns:MoveFileSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="DayendsSoap" type="tns:DayendsSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="ReadMYOB">
+      <soap:operation soapAction="http://tempuri.org/ReadMYOB" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WriteMYOBBulk">
+      <soap:operation soapAction="http://tempuri.org/WriteMYOBBulk" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WriteMYOB">
+      <soap:operation soapAction="http://tempuri.org/WriteMYOB" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WriteTest">
+      <soap:operation soapAction="http://tempuri.org/WriteTest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TestMyobConnection">
+      <soap:operation soapAction="http://tempuri.org/TestMyobConnection" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AsynTest">
+      <soap:operation soapAction="http://tempuri.org/AsynTest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ParameterTest">
+      <soap:operation soapAction="http://tempuri.org/ParameterTest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConsoleArgs">
+      <soap:operation soapAction="http://tempuri.org/ConsoleArgs" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CheckConnected">
+      <soap:operation soapAction="http://tempuri.org/CheckConnected" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="MoveFile">
+      <soap:operation soapAction="http://tempuri.org/MoveFile" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="DayendsSoap12" type="tns:DayendsSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="ReadMYOB">
+      <soap12:operation soapAction="http://tempuri.org/ReadMYOB" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WriteMYOBBulk">
+      <soap12:operation soapAction="http://tempuri.org/WriteMYOBBulk" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WriteMYOB">
+      <soap12:operation soapAction="http://tempuri.org/WriteMYOB" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WriteTest">
+      <soap12:operation soapAction="http://tempuri.org/WriteTest" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TestMyobConnection">
+      <soap12:operation soapAction="http://tempuri.org/TestMyobConnection" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AsynTest">
+      <soap12:operation soapAction="http://tempuri.org/AsynTest" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ParameterTest">
+      <soap12:operation soapAction="http://tempuri.org/ParameterTest" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConsoleArgs">
+      <soap12:operation soapAction="http://tempuri.org/ConsoleArgs" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CheckConnected">
+      <soap12:operation soapAction="http://tempuri.org/CheckConnected" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="MoveFile">
+      <soap12:operation soapAction="http://tempuri.org/MoveFile" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Dayends">
+    <wsdl:port name="DayendsSoap" binding="tns:DayendsSoap">
+      <soap:address location="http://localhost:8585/Dayends.asmx" />
+    </wsdl:port>
+    <wsdl:port name="DayendsSoap12" binding="tns:DayendsSoap12">
+      <soap12:address location="http://localhost:8585/Dayends.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

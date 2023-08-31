@@ -1,0 +1,83 @@
+﻿@model PPWLib.Models.CountPaymentSummary
+
+@{
+	ViewBag.Title = Resources.Resource.CountPaymentsSummary;
+}
+<div id="printblk" style="font-size:1.3em!important;">
+	<div class="row justify-content-center mb-4">
+		<h2 class="text-center">@ViewBag.Title</h2>
+		<h2 class="text-center">@Model.Device.dvcName</h2>
+	</div>
+
+	<div class="row justify-content-around mb-4">
+		<div class="col-5">
+			<table class="table table-borderless">
+				<thead><tr><td colspan="2" class="text-center" style="border: 1px solid black!important;">@Resources.Resource.TransactionSummary</td></tr></thead>
+				<tbody class="table-borderless">
+					<tr>
+						<td style="border-left: 1px solid black !important;">@Resources.Resource.TotalSalesAmount ($)</td>
+
+						<td class="text-right" style="border-right: 1px solid black !important; ">
+							@Model.SalesTotal
+
+						</td>
+
+					</tr>
+					<tr>
+						<td style="border-left: 1px solid black !important;">@Resources.Resource.MonthlyPay ($)</td>
+
+						<td class="text-right" style="border-right: 1px solid black !important; ">
+							@Model.MonthlyPayTotal
+
+						</td>
+
+					</tr>
+					<tr>
+						<td style="border-bottom: 1px solid black !important; border-left: 1px solid black !important;">@Resources.Resource.TotalRefundAmount ($)</td>
+						<td class="text-right" style="border-bottom: 1px solid black !important; border-right: 1px solid black !important; ">@Model.RefundTotal</td>
+					</tr>
+				</tbody>
+			</table>
+
+		</div>
+		<div class="col-7 text-right">
+			<span class="d-block">@Resources.Resource.StartTime : @Model.Frmtime</span>
+			<span class="d-block">@Resources.Resource.EndTime : @Model.Totime</span>
+		</div>
+
+	</div>
+
+	<div class="row mx-1">
+		<table class="table table-borderless">
+			<thead class="font-weight-bold">
+				<tr><td class="text-center" style="border-bottom: 1px solid black !important;">@Resources.Resource.PaymentType</td><td class="text-right" style="border-bottom: 1px solid black !important;">@Resources.Resource.ExpectedAmt ($)</td><td class="text-right" style="border-bottom: 1px solid black !important;">@Resources.Resource.ActualAmt ($)</td><td class="text-right" style="border-bottom: 1px solid black !important;">@Resources.Resource.DifferenceAmt ($)</td></tr>
+			</thead>
+			<tbody class="table-borderless">
+				@foreach (var item in Model.SessionLnViews)
+				{
+					decimal diff = (decimal)item.selAmtSys - (decimal)item.selAmtCount;
+
+					if (Model.DicPayTypes.ContainsKey(item.selPayMethod))
+					{
+						<tr><td class="text-center">@Model.DicPayTypes[item.selPayMethod]</td><td class="text-right">@item.selAmtSys</td><td class="text-right">@item.selAmtCount</td><td class="text-right">@diff</td></tr>
+					}
+				}
+			</tbody>
+			<tfoot class="table-borderless font-weight-bold" style="border-top:1px solid black!important;">
+				<tr><td class="text-center">@Resources.Resource.Totals</td><td class="text-right">@Model.TotalExpectedAmt</td><td class="text-right">@Model.TotalActualAmt</td><td class="text-right">@Model.TotalDiffAmt</td></tr>
+
+			</tfoot>
+		</table>
+	</div>
+</div>
+
+
+<div class="row justify-content-center my-3">
+	<button type="button" id="btnPrintPreview" class="btn btn-success">@Resources.Resource.PrintPreview</button>
+</div>
+<script src="~/Scripts/printthis/printThis.js"></script>
+<script>
+	$(document).on('click', '#btnPrintPreview', function () {
+		$('#printblk').printThis();
+	});
+</script>

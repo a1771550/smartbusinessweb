@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "removeComments": false,
+    "sourceMap": true,
+    "target": "es2020",
+    "outDir": "js",
+    "checkJs": true,
+    "allowJs": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "types": [ "jquery","node" ],
+    "typeRoots": [ "../node_modules/@types" ],    
+    "lib": [
+      "dom",
+      "es2020"
+      //"es2015.iterable"
+    ]
+  },
+  "compileOnSave": true,
+  //"include": ["ts/*"],
+  "exclude": [
+    "node_modules",
+    "wwwroot",
+    "js/*"
+  ]
+}

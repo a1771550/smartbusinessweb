@@ -1,0 +1,80 @@
+﻿@model PPWLib.Models.AdminViewModel
+
+@{
+    ViewBag.Title = "Backend";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<h2>Access Rights</h2>
+<div class="table-responsive">
+	<table id="tbllist" class="table table-bordered table-condensed  table-hover">
+		<tr>
+			<th>
+				User
+			</th>
+			<th>
+				Report/Page
+			</th>
+			<th></th>
+		</tr>
+		@{ List<string> namelist = new List<string>();}
+		@foreach (var item in Model.AdminViews)
+		{
+			string username = namelist.Contains(item.User.UserName) ? "" : item.User.UserName;
+	<tr>
+		<td>
+			@username
+		</td>
+		@{
+			string strhtml = item.ReportDisplayName;
+			string salespeople = "";
+			if (item.ReportName == "Quotation")
+			{
+				foreach (var usersales in Model.UserSalesPeople)
+				{
+					if (item.User.Id == usersales.UserId)
+					{
+						salespeople = Model.SalesPeople.Where(x => x.ID == usersales.SalesPersonId).Select(x => x.Name).FirstOrDefault();
+						strhtml += " <span class='small'>(" + salespeople + ")</span>";
+					}
+				}
+			}
+
+		}
+		<td>
+			@Html.Raw(strhtml)
+		</td>
+		@if (!namelist.Contains(item.User.UserName))
+		{
+			<td>
+				@Html.ActionLink("Edit", "Edit", new { id = item.User.Id })
+			</td>
+		}
+		else
+		{
+			<td></td>
+		}
+
+	</tr>
+			namelist.Add(item.User.UserName);
+		}
+
+	</table>
+</div>
+
+<script>
+    $(document).ready(function () {
+		var tbl = $('#tbllist');
+		var target = tbl.find('tr:gt(0)');
+		$.each(target, function (i, e) {
+			var td = $(e).find('td');			
+			$.each(td, function (idx, ele) {				
+				if (idx === 1 && $(ele).text().trim()==='Admin') {
+					td.closest('tr').remove();					
+						return false;
+				}
+			});			
+			
+		});
+	
+    });
+</script>

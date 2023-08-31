@@ -1,0 +1,178 @@
+﻿@model PPWLib.Models.Purchase.PurchaseEditModel
+
+@{
+    ViewBag.Title = Resources.Resource.PrintPreview;
+    ComInfo comInfo = Model.ComInfo;
+    PPWLib.Models.Purchase.PurchaseModel ps = Model.Purchase;
+    Layout = null;
+    string cssbsfile = HttpContext.Current.Session["CssBSFile"] == null ? @"Content/bs4" : HttpContext.Current.Session["CssBSFile"].ToString();
+    string scriptbsfile = HttpContext.Current.Session["ScriptBSFile"] == null ? @"Scripts/bs4" : HttpContext.Current.Session["ScriptBSFile"].ToString();
+}
+<!DOCTYPE html>
+<html>
+@Html.Partial("_PrintHead", null, new ViewDataDictionary { { "cssbsfile", cssbsfile }, { "scriptbsfile", scriptbsfile }, { "PageTitle", ViewBag.Title } })
+<body style="padding-top:0!important;">
+    <div id="printblk" class="printele" style="padding-top:0!important;">
+
+        <div class="d-flex justify-content-center">
+            <h3>@comInfo.comName</h3>
+        </div>
+        <div class="d-flex justify-content-center my-3">
+            <div class="card" style="border: 1px solid black !important; border-radius: 0.75rem !important;">
+                <div class="card-body" style="padding: 10px 30px !important;">
+                    <h4 class="card-title">@Resources.Resource.PurchaseOrder</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col col-md-6">
+                    <div class="row">
+                        <div class="col-1">
+                            <h5 class="font-weight-bold">@Resources.Resource.To4Supplier</h5>
+                        </div>
+                        <div class="col-5 text-left">
+                            <h5 class="font-weight-normal">
+                                @*@ps.supCode <br />*@
+                                @ps.SupplierName
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col col-md-6 text-right">
+                    <h5 class="font-weight-bold">@string.Format(Resources.Resource.NumberFormat, Resources.Resource.Purchase)<span class="font-weight-normal ml-3">@ps.PSCodeDisplay</span></h5>
+                    <h5 class="font-weight-bold">@Resources.Resource.OrderDate<span class="font-weight-normal ml-3">@ps.CreateTimeDisplay</span></h5>
+
+                </div>
+            </div>
+        </div>
+
+        <table class="table table-bordered my-4">
+            <colgroup>
+                <col width="50">
+                <col width="150">
+                <col width="200">
+                <col width="90">
+                <col width="90">
+               @if (Model.PrintMode.ToUpper() == "PO")
+                {
+                    <col width="110">
+                    <col width="60">
+                    if (ps.EnableTax && !ps.InclusiveTax)
+                    {
+                        <col width="60">
+                    }
+                    <col width="120">
+                }
+            </colgroup>
+            <thead class="resizable">
+                <tr>
+                    <td class="jexcel_selectall" style="border:1px solid black!important;"></td>
+                    <td title="@Resources.Resource.ItemCode" style="text-align: center; border: 1px solid black !important;">@Resources.Resource.ItemCode</td>
+                    <td title="@Resources.Resource.ItemName" style="text-align: center; border: 1px solid black !important;">@Resources.Resource.ItemName</td>
+                    <td title="@Resources.Resource.BaseUnit" style="text-align: center; border: 1px solid black !important;">@Resources.Resource.BaseUnit</td>
+                    <td title="@Resources.Resource.Qty" style="text-align: right; border: 1px solid black !important;">@Resources.Resource.Qty</td>
+                    @if (Model.PrintMode.ToUpper() == "PO")
+                    {
+                        <td title="@Resources.Resource.UnitPrice" style="text-align: right; border: 1px solid black !important;">@Resources.Resource.UnitPrice (@ps.Currency)</td>
+
+                        <td title="@Resources.Resource.DiscPc" style="text-align: right; border: 1px solid black !important;">@Resources.Resource.DiscPc</td>
+                        if (ps.EnableTax && !ps.InclusiveTax)
+                        {
+                            <td title="@Resources.Resource.Tax" style="text-align: right; border: 1px solid black !important;">@Resources.Resource.TaxItemHeader</td>
+                        }
+
+                        <td title="@Resources.Resource.Amount" style="text-align: right; border: 1px solid black !important;">@Resources.Resource.Amount (@ps.Currency)</td>
+                    }
+                </tr>
+            </thead>
+
+            @foreach (var item in ps.PurchaseItems)
+            {
+                // var amt = ps.EnableTax ? item.piAmtPlusTax : item.piAmt;
+                <tr>
+                    <td style="border: 1px solid black !important;">@item.piSeq</td>
+                    <td style="border: 1px solid black !important;">
+                        @item.itmCode
+                    </td>
+                    <td style="border: 1px solid black !important;">
+                        @item.itmName
+                    </td>
+
+                    <td class="text-right" style="border: 1px solid black !important;">
+                        @item.piBaseUnit
+                    </td>
+                    <td class="text-right" style="border: 1px solid black !important;">
+                        @item.piQty
+                    </td>
+                    @if (Model.PrintMode.ToUpper() == "PO")
+                    {
+                        <td class="text-right" style="border: 1px solid black !important;">
+                            @item.piUnitPrice
+                        </td>
+                        <td class="text-right" style="border: 1px solid black !important;">
+                            @item.piDiscPc
+                        </td>
+                        if (ps.EnableTax && !ps.InclusiveTax)
+                        {
+                            <td class="text-right" style="border: 1px solid black !important;">@item.piTaxPc</td>
+                        }
+                        <td class="text-right" style="border: 1px solid black !important;">
+                            @item.piAmtPlusTax
+                        </td>
+                    }
+
+                </tr>
+            }
+        </table>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-6">
+                    <h4>@Resources.Resource.Remark</h4>
+                    @ps.pstRemark
+                </div>
+                @if (Model.PrintMode.ToUpper() == "PO")
+                {
+                    <div class="col-6 text-right">
+                        @{
+                            var subtotal = ps.PurchaseItems.Sum(x => x.piUnitPrice * x.piQty);
+                            var formatsubtotal = CommonHelper.FormatMoney(ps.Currency, subtotal);
+                            var disctotal = ps.PurchaseItems.Sum(x => x.piUnitPrice * x.piDiscPc);
+                            var formatdisctotal = CommonHelper.FormatMoney(ps.Currency, (decimal)disctotal);
+                            var taxtotal = ps.PurchaseItems.Sum(x => x.piTaxAmt);
+                            var formattaxtotal = CommonHelper.FormatMoney(ps.Currency, (decimal)taxtotal);
+                            var total = ps.PurchaseItems.Sum(x => x.piAmtPlusTax);
+                            var formattotal = CommonHelper.FormatMoney(ps.Currency, (decimal)total);
+                        }
+                        <h4>@Resources.Resource.SubTotal<span class="font-weight-normal ml-3">@formatsubtotal</span></h4>
+                        <h4>@Resources.Resource.Discount<span class="font-weight-normal ml-3">@formatdisctotal</span></h4>
+
+                        @if (ps.EnableTax)
+                        {
+                            <h4>@Resources.Resource.Tax<span class="font-weight-normal ml-3">@formattaxtotal</span></h4>
+                        }
+
+                        <h4>@Resources.Resource.Total<span class="font-weight-normal ml-3">@formattotal</span></h4>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+
+
+    <script src="~/Scripts/printthis/printThis.js"></script>
+    <script>
+        $(function () {
+            setTimeout(() => {
+                $('#printblk').printThis({
+                    importCSS: true,
+                    importStyle: true,//thrown in for extra measure
+                });
+            }, 3000); //wait for downloading image
+        });
+    </script>
+</body>
+</html>

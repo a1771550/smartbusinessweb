@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Select2 Demo</title>
+    <link rel="icon" type="image/png" href="../Content/favicon_io/favicon-16x16.png">
+    <link href="../Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Content/fontawesome/font-awesome.min.css" />
+    
+
+    <script src="../Scripts/jquery-ui/external/jquery/jquery.js"></script>
+    <script src="../Scripts/bootstrap.min.js"></script>
+    <script src="../Scripts/moment.min.js"></script>
+    <script src="../Scripts/respond.min.js"></script>
+    <script src="../Scripts/modernizr-2.8.3.js"></script>
+    
+
+</head>
+<body>
+    <div class="container">
+        <div id="dropdownModal">
+            <div class="form-group required">
+                <label id="lblattname" class="control-label" for="attrName"></label>
+                <select class="form-control select2multiple dropdown" name="Test[]" multiple="multiple">
+                    <option value="test1">Test 1</option>
+                    <option value="test2">Test 2</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="../Content/select2/select2.min.css" />
+    <script type="text/javascript" src="../Scripts/select2/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            /*$('.select2multiple').select2({
+                allowClear: true,
+                width: 'resolve',
+            });*/
+            let $dropdown = $('.select2multiple');
+            $dropdown.select2({
+                allowClear: true,
+                width: 'resolve',
+                placeholder: 'Select',
+            });
+        });
+    </script>
+</body>
+</html>

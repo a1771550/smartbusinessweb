@@ -1,0 +1,110 @@
+﻿@model TransferEditModel
+@using PagedList.Mvc;
+@{
+
+    int rand = CommonHelper.GetVersionRandomNo();
+    var islistnull = Model.TransferPagingList == null;
+}
+
+<h2>@ViewBag.Title</h2>
+
+
+@using (Html.BeginForm("List", "Transfer", FormMethod.Get, new { @Id = "frmTransferList" }))
+{
+    <div class="row justify-content-center py-3" style="margin-left:-5em;">
+        @Html.Partial("_DatesRange", null, new ViewDataDictionary { { "DateFromTxt", Model.DateFromTxt }, { "DateToTxt", Model.DateToTxt } })
+    </div>
+
+    <div class="d-flex justify-content-center form-inline mb-2 my-4" data-paginglist="@islistnull">
+        <div class="form-group">
+            <input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Model.Keyword" />
+            <button id="btnSearch" type="submit" class="btn btn-primary ml-4">@Resources.Resource.Search</button>
+            <button id="btnReload" type="button" class="btn btn-warning ml-4">@Resources.Resource.Reload</button>
+        </div>
+    </div>
+    <input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+    <input type="hidden" id="sortcol" name="SortCol" value="@Model.SortCol" />
+    <input type="hidden" id="currentsortorder" value="@Model.CurrentSortOrder" />
+}
+@if (Model.TransferPagingList == null || Model.TransferPagingList.Count == 0)
+{
+    <div id="norecord" class="alert alert-warning">@Resources.Resource.NoDataFound</div>
+}
+else
+{
+    <table id="tblTransferList" class="table table-bordered  table-hover table-condensed">
+       
+        <thead class="gray-header">
+            <tr>
+                <th class="text-center colheader" data-col="0" data-order="@Model.SortOrder" data-keyword="@Model.Keyword">@Resources.Resource.StockTransferNoHeader</th>
+                <th class="text-center">@Resources.Resource.Shipper</th>
+                <th class="text-center">@Resources.Resource.ItemNumber</th>
+                <th class="text-center">@Resources.Resource.ItemName</th>
+                <th class="text-center">@Resources.Resource.ItemReceiver</th>
+                <th class="text-center colheader" data-col="1" data-order="@Model.SortOrder" data-keyword="@Model.Keyword">@Resources.Resource.TotalOutStock</th>
+                <th class="text-center">@Resources.Resource.Checked4Transfer</th>
+                <th class="text-center colheader" data-col="2" data-order="@Model.SortOrder" data-keyword="@Model.Keyword">@Resources.Resource.Date</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        @foreach (var item in Model.TransferPagingList)
+        {
+            <tr>
+                <td class="text-center">
+                    @Html.DisplayFor(modelTransferStock => item.stCode)
+                </td>
+                <td class="text-center">
+                    @item.SenderList
+                </td>
+                <td class="text-center">
+                    <span class="small">@Html.DisplayFor(modelTransferStock => item.ItemCodeList)</span>
+                </td>
+                <td class="text-center">
+                    <span class="small">@Html.DisplayFor(modelTransferStock => item.ItemNameDescList)</span>
+                </td>
+                <td class="text-center">
+                    @Html.DisplayFor(modelTransferStock => item.stReceiver)
+                </td>
+                <td class="text-right">
+                    @Html.DisplayFor(modelTransferStock => item.outQtySum)
+                </td>
+                <td class="text-right">
+                    @Html.DisplayFor(modelTransferStock => item.CheckedDisplay)
+                </td>
+                <td class="text-center">
+                    @Html.DisplayFor(modelTransferStock => item.TransferDateDisplay)
+                </td>
+                <td>
+                    <a class="btn btn-info edit mx-2" role="button" href="/Transfer/Edit?code=@item.stCode">@Resources.Resource.Edit</a>
+                    <a class="btn btn-primary print" role="button" href="/Transfer/PrintByCode?code=@item.stCode" target="_blank">@Resources.Resource.Print</a>
+                </td>
+            </tr>
+        }
+
+    </table>
+
+    <div id="pagingblk" class="mx-3">
+
+        <div class="row">
+            @Html.PagedListPager(Model.TransferPagingList, PageNo => Url.Action("Index",
+    new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
+        </div>
+    </div>
+}
+
+@Html.Partial("_WaitingModal")
+
+<div id="infoblk" class="hide"></div>
+<script type="text/javascript" src="~/Scripts/daterangepicker/moment.min.js"></script>
+<script type="text/javascript" src="~/Scripts/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="~/Scripts/daterangepicker/daterangepicker.css" />
+
+<script>
+    $(document).ready(function () {
+        initDatePickers(StartDayEnum.LastMonth, 'YYYY-MM-DD');
+    });
+</script>
+<script src="~/Scripts/ts/js/itemtransfer/transferlist.js?v=@rand"></script>
+
+

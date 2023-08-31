@@ -1,0 +1,123 @@
+﻿@model PPWLib.Models.ReceiptViewModel
+
+@{
+    ViewBag.Title = Resources.Resource.ReceiptSettings;
+    int rand = new Random().Next(10000, 100000);
+}
+<link rel="stylesheet" type="text/css" href="~/Content/Receipt.css?v=@rand" />
+
+
+@using (Html.BeginForm("Edit", "Receipt", FormMethod.Post, new { @id = "frmReceipt" }))
+{
+    @Html.AntiForgeryToken()
+
+    <h3 class="text-center">@ViewBag.Title</h3>
+
+    <div class="form-horizontal my-5">
+
+        @Html.HiddenFor(model => model.Id)
+
+        <div class="form-group">
+            <div class="row justify-content-around">
+
+                <div class="col-3 text-right"><label class="control-label">@Resources.Resource.CompanyName1</label></div>
+                <div class="col-9">
+                    @Html.EditorFor(model => model.CompanyName, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="row justify-content-around">
+                <div class="col-3 text-right"><label class="control-label">@Resources.Resource.Address</label></div>
+                <div class="col-9">
+                    @Html.EditorFor(model => model.CompanyAddress, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.EditorFor(model => model.CompanyAddress1, new { htmlAttributes = new { @class = "form-control mt-3" } })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="row justify-content-around">
+
+                <div class="col-3 text-right"><label class="control-label">@Resources.Resource.Phone</label></div>
+                <div class="col-9">
+                    @Html.EditorFor(model => model.CompanyPhone, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="row justify-content-around">
+
+                <div class="col-3 text-right"><label class="control-label">@Resources.Resource.Website</label></div>
+                <div class="col-9">
+                    @Html.EditorFor(model => model.CompanyWebSite, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group mt-5">
+            <div class="row justify-content-around">
+
+                <div class="col-3 text-right"><label class="control-label">@Resources.Resource.HeaderMessage</label></div>
+                <div class="col-9">
+                    @Html.EditorFor(model => model.HeaderTitle, new { htmlAttributes = new { @class = "form-control" } })
+
+                    @Html.TextAreaFor(model => model.HeaderMessage, new { @class = "form-control mt-3", @rows = 10 })
+                </div>
+            </div>
+
+        </div>
+
+        <div class="form-group mt-5">
+            <div class="row justify-content-around">
+
+                <div class="col-3 text-right"><label class="control-label">@Resources.Resource.FooterMessage</label></div>
+                <div class="col-9">
+                    @Html.EditorFor(model => model.FooterTitle1, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.EditorFor(model => model.FooterTitle2, new { htmlAttributes = new { @class = "form-control mt-3" } })
+                    @Html.EditorFor(model => model.FooterTitle3, new { htmlAttributes = new { @class = "form-control mt-3" } })
+                    @Html.TextAreaFor(model => model.FooterMessage, new { @class = "form-control mt-3", @rows = 10 })
+                </div>
+            </div>
+
+        </div>
+
+        <div class="form-group mt-5">
+            <div class="row justify-content-around">
+                <div class="col-3 text-right"><label class="control-label">@Resources.Resource.Disclaimer</label></div>
+                <div class="col-9">
+                    @{ int idx = 0;}
+                    @foreach (var d in Model.DisclaimerTxtList)
+                    {
+                        <input type="text" value="@d" class="form-control mb-1" name="disclaimer[@idx]" />
+                        idx++;
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group mt-5">
+            <div class="row justify-content-around">
+                <div class="col-3 text-right"><label class="control-label">@Resources.Resource.PaymentTerms</label></div>
+                <div class="col-9">
+                    @{ idx = 0;}
+                    @foreach (var d in Model.PaymentTermsTxtList)
+                    {
+                        <input type="text" value="@d" class="form-control mb-1" name="paymentterms[@idx]" />
+                        idx++;
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class=" text-center">
+                <button id="btnSave" type="button" class="btn btn-success">@Resources.Resource.Save</button>
+            </div>
+        </div>
+    </div>
+}
+<div id="infoblk"></div>
+<script src="~/Scripts/ts/js/pos/receipt.js?v=@rand"></script>

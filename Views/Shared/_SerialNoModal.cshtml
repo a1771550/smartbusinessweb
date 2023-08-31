@@ -1,0 +1,67 @@
+﻿@{
+    bool forpurchase = ViewData["forpurchase"] != null;
+    bool forwholesales = ViewData["forwholesales"] != null;
+    bool forsales = ViewData["forsales"] != null;
+}
+<div id="serialModal">
+    <span id="seq" class="d-inline-block float-right small font-weight-bold"></span>
+    <div class="form-inline mb-2 my-4">
+        <div class="form-group">
+            <label for="txtStaticItemCode" class="mr-3">@Resources.Resource.ItemCode</label>
+            <input type="text" class="form-control" id="txtStaticItemCode" readonly />
+        </div>
+        <div class="form-group mx-sm-3">
+            <label for="txtStaticItemName" class="mr-3">@Resources.Resource.ItemName</label>
+            <input type="text" class="form-control" id="txtStaticItemName" readonly />
+        </div>
+        <div class="form-group">
+            <label for="txtStaticQty" class="mr-3">@Resources.Resource.Qty</label>
+            <input type="text" class="form-control" id="txtStaticQty" readonly />
+        </div>
+        
+    </div>
+
+    @{ var frmcls = "";}
+    <div class="form-inline mb-2 my-4">
+        @if (!forwholesales && !forsales)
+        {
+            frmcls = "ml-sm-5";
+            <div class="form-group">
+                <input type="text" class="form-control" id="txtSerialNo" placeholder="@Resources.Resource.SerialNo" />
+            </div>
+        }
+
+        <div class="form-group @frmcls">
+            <input type="text" class="form-control" id="txtSearchSN" placeholder="@Resources.Resource.Search" />
+            <button id="btnSearchSN" type="button" class="btn btn-default ml-4">@Resources.Resource.Search</button>
+        </div>
+    </div>
+
+    <table id="tblSerial" class="table table-bordered  table-hover table-condensed">
+        <thead class="gray-header">
+            <tr>
+                @if (!forwholesales && !forsales)
+                {
+                    <th style="width:6%;"></th>
+                }
+
+                <th>@Resources.Resource.SerialNo (@Resources.Resource.PurchaseOrder)</th>
+                @if (forpurchase || forwholesales||forsales)
+                {
+                    <th>@Resources.Resource.ValidThru</th>
+                }
+                @if (forwholesales||forsales)
+                {
+                    <th>@Resources.Resource.Select</th>
+                }
+                @if (!forwholesales && !forsales)
+                {
+                    <th style="width:10%;"></th>
+                }
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <p class="warning"></p>
+
+</div>

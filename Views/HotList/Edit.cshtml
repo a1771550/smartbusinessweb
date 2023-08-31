@@ -1,0 +1,62 @@
+﻿@model PPWLib.Models.HotListModel
+@{
+    string action = Model.Id == 0 ? Resources.Resource.Add : Resources.Resource.Edit;
+    ViewBag.Title = CultureHelper.CurrentCulture == 2 ? string.Concat(action, " ", Resources.Resource.HotList) : string.Concat(action, "", Resources.Resource.HotList);
+    int rand = CommonHelper.GetVersionRandomNo();
+}
+
+<h3>@ViewBag.Title</h3>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CreateTimeDisplay)
+    @Html.HiddenFor(model => model.ModifyTimeDisplay)
+    <div class="form-group required">
+        <label class="control-label col-md-2" for="hoName">@Resources.Resource.Name</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.hoName, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+    </div>
+
+    <div class="form-group required" data-salesmanid="@Model.hoSalesmanResponsible">
+        <label class="control-label col-md-4" for="drpSalesmen">@string.Format(Resources.Resource.InChargeFormat, Resources.Resource.SalesPerson)</label>
+        <div class="col-md-8">
+            <select class="form-control" id="drpSalesmen">
+                <option value="0">-- @Resources.Resource.Select --</option>
+                @foreach (var item in Model.SalesmanList)
+                {
+                    var selected = Model.hoSalesmanResponsible == item.surUID ? "selected" : "";
+                    <option value="@item.surUID" @selected>@item.SalesmanName</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2" for="hoDescription">@Resources.Resource.Description</label>
+        <div class="col-md-10">
+           <textarea id="hoDescription" name="hoDescription" rows="5" cols="50" class="form-control">@Model.hoDescription</textarea>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <button id="btnSave" type="button" role="button" class="btn btn-success">@Resources.Resource.Save</button>
+        </div>
+    </div>
+</div>
+}
+
+<div>
+    @Html.ActionLink(Resources.Resource.BackToList, "Index")
+</div>
+
+<div id="infoblk" class="hide" data-honamerequiredtxt="@string.Format(Resources.Resource.Required, string.Format(Resources.Resource.NameFormat, Resources.Resource.HotList))" data-salesmanrequiredtxt="@string.Format(Resources.Resource.RequiredSelectTxt,string.Format(Resources.Resource.InChargeFormat, Resources.Resource.SalesPerson))"></div>
+
+<script src="~/Scripts/ts/js/crm/contact/hotlist/hotlist_edit.js?v=@rand"></script>

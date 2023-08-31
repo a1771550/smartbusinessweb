@@ -1,0 +1,106 @@
+﻿@model IEnumerable<PPWLib.Models.GlobalAttributeModel>
+@{
+    List<CustomAttributeView> CustomAttributeList = ViewData["CustomAttributeList"] as List<CustomAttributeView>;
+    var rand = CommonHelper.GetVersionRandomNo();
+}
+
+<h3>@Resources.Resource.Attribute</h3>
+@if (Model != null&&Model.Count()>0)
+{
+    <div id="gattrblk">
+        <div class="row small">
+            <div class="col-12 col-md-4">
+                <form>
+                    <fieldset class="default-border">
+                        <legend class="default-border">@Resources.Resource.Text</legend>
+                        @for (int i = 1; i <= 10; i++)
+                        {
+                            var id = $"txt{i}";
+                            var attr = Model.FirstOrDefault(x => x.gattrId == id);
+                            var lbltxt = attr.attrName;
+                            var cattr = CustomAttributeList.FirstOrDefault(x => x.gattrId == id);
+                            var val = cattr.attrValue;
+                            <div class="form-group">
+                                <label class="pointer attr" for="@id">@lbltxt</label>
+                                <input type="text" class="form-control text labeltxt my-1 hide" data-attrtype="label" data-id="@id" data-oldname="@lbltxt" />
+                                <input type="text" class="form-control text attr" id="@id" placeholder="@lbltxt" data-attrvalue="@attr.attrValue" data-attrname="@attr.attrName" data-attrtype="text" data-isdefault="1" data-isglobal="1" value="@val" data-ng-required="1">
+
+                                <input type="hidden" class="info" data-attrid="@attr.attrId" data-gattrid="@attr.gattrId" data-order="@attr.attrOrder" />
+                            </div>
+                        }
+                    </fieldset>
+                </form>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <form>
+                    <fieldset class="default-border">
+                        <legend class="default-border">@Resources.Resource.Text</legend>
+                        @for (int i = 11; i <= 20; i++)
+                        {
+                            var id = $"txt{i}";
+                            var attr = Model.FirstOrDefault(x => x.gattrId == id);
+                            var lbltxt = attr.attrName;
+                            var cattr = CustomAttributeList.FirstOrDefault(x => x.gattrId == id);
+                            var val = cattr.attrValue;
+                            <div class="form-group">
+                                <label class="pointer attr" for="@id">@lbltxt</label>
+                                <input type="text" class="form-control text labeltxt hide" data-attrtype="label" data-id="@id" data-oldname="@lbltxt" />
+                                <input type="text" class="form-control text attr" id="@id" placeholder="@lbltxt" data-attrvalue="@attr.attrValue" data-attrname="@attr.attrName" data-attrtype="text" data-isdefault="1" data-isglobal="1" value="@val" data-ng-required="0">
+                            </div>
+                        }
+                    </fieldset>
+                </form>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <form>
+                    <fieldset class="default-border">
+                        <legend class="default-border">@Resources.Resource.DropDown</legend>
+                        @for (int i = 21; i <= 30; i++)
+                        {
+                            var id = $"drp{i}";
+                            var attr = Model.FirstOrDefault(x => x.gattrId == id);
+                            var lbltxt = attr.attrName;
+                            var cattr = CustomAttributeList.FirstOrDefault(x => x.gattrId == id);
+                            var val = cattr.attrValue;
+                            if (string.IsNullOrEmpty(val))
+                            {
+                                val = attr.attrValue;
+                            }
+                            if (val.StartsWith("||"))
+                            {
+                                val = val.Remove(0, 2);
+                            }
+                            if (val.EndsWith("||"))
+                            {
+                                val = val.Remove(val.Length - 2);
+                            }
+                            <div class="form-group">
+                                <label class="pointer attr" for="@id">@lbltxt</label>
+                                <input type="text" class="form-control text labeltxt hide" data-attrtype="label" data-id="@id" data-oldname="@lbltxt" />
+                                <input type="text" class="form-control combo attr" id="@id" data-id="@id" data-attrname="@attr.attrName" data-attrvalue="@val" placeholder="@lbltxt" value="@val" data-attrtype="dropdown" data-isdefault="1" data-isglobal="1" data-ng-required="1" />
+                                <span class="border" data-order="@i" data-id="@id">....</span>
+                            </div>
+                        }
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+
+       
+        <h6 class="font-weight-bold" style="margin-bottom:0;margin-left:-.5em;">@Resources.Resource.CustomAttribute</h6>
+        <div id="cattrlist" class="row">
+            <input type="text" class="form-control cattr" style="max-width:none;" />
+        </div>
+
+        <div class="row my-2 small">
+            <button type="button" id="btnSaveGattr" class="btn btn-info">@string.Format(Resources.Resource.SaveFormat, Resources.Resource.Attribute)</button>
+            <span id="gattrMsg" class="mx-2 my-auto text-info d-inline-block small"></span>
+        </div>
+    </div>
+}
+
+
+
+

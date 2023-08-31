@@ -1,0 +1,379 @@
+﻿<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales - SmartBusiness</title>
+
+    <link href="/Content/bs4/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/Content/bs4/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+    <link href="/Content/fontawesome/font-awesome.min.css">
+    <link href="/Content/DataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" type="text/css">
+
+    <script src="/Scripts/jquery-ui/external/jquery/jquery.js"></script>
+    <script src="/Scripts/bs4/bootstrap.min.js"></script>
+    <script src="/Scripts/moment.min.js"></script>
+    <script src="/Scripts/respond.min.js"></script>
+    <script src="/Scripts/modernizr-2.8.3.js"></script>
+    <script src="/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script src="/Scripts/DataTables/dataTables.select.min.js"></script>
+    <script src="/Scripts/DataTables/dataTables.bootstrap4.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/Scripts/jquery-ui/jquery-ui.min.css">
+    <script src="/Scripts/jquery-ui/jquery-ui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/Scripts/fancybox/jquery.fancybox.css">
+    <script src="/Scripts/fancybox/jquery.fancybox.min.js"></script>
+    <script src="/Scripts/fancybox/fancybox-plugin.js"></script>
+    <link href="/Content/fontawesome/css/all.css" rel="stylesheet"> <!--load all styles -->
+    <link href="/Content/Site.css?v=34598" rel="stylesheet" type="text/css">
+    <link href="/Content/printreceipt.css?v=34598" rel="stylesheet" type="text/css">
+
+</head>
+<body style="padding-top:0;" cz-shortcut-listen="true">
+    <script src="/Scripts/ts/js/app.js?v=34598"></script>
+
+    <div id="printblk" style="font-size:2.5em;padding-left:.5em;padding-right:1.5em;">
+        <style>
+            @media print {
+                footer {
+                    page-break-after: always !important;
+                }
+
+                .header {
+                    page-break-after: avoid;
+                }
+            }
+        </style>
+        <div class="container">
+            <div class="header">
+                <div style="text-align:center;margin-bottom:8px;">
+
+                    <img id="receiptlogo" src="http://localhost:8888/ReceiptLogo/UNITED/logo.png">
+                    <h2 style="font-weight:700;font-size:1.5em;">
+                        United Technologies (Int'l) Ltd.
+                    </h2>
+                    <div style="font-size:.8em;">
+                        Rm1501, FL15, No.20 Westlands Rd.,
+                    </div>
+
+                    <div style="font-size:.8em;">
+                        Quarry Bay, North Point, HK.
+                    </div>
+                    <div style="font-size:.8em;">
+                        <span class="mx-3 fa fa-phone">:66666666</span><span class="mx-3 fa fa-globe">:https://united.com.hk</span>
+                    </div>
+                    <div>
+                        歡迎光臨
+                    </div>
+                    <h2 class="py-1" style="font-size:1.2em;text-align:center;">
+                        Receipt
+                    </h2>
+                    <div class="row mx-1">
+                        <div class="text-left font-weight-bold">
+                            P10-SA000008
+                        </div>
+                    </div>
+                    <div class="row mx-1">
+                        <div class="text-left font-weight-bold">
+                            07/02/2023 11:59:13
+                        </div>
+                    </div>
+                    <div class="row mx-1">
+                        <div class="text-left font-weight-bold">
+                            Admin
+                        </div>
+                    </div>
+                    <div class="row mx-1 my-3">
+
+                        <table class="table table-borderless" style="font-size:1.2em;">
+                            <thead class="font-weight-bold">
+                                <tr>
+                                    <th class="text-left bordertopbottom">Item</th>
+                                    <th class="text-right bordertopbottom">Qty</th>
+                                    <th class="text-right bordertopbottom">Price</th>
+                                    <th class="text-right bordertopbottom">Disc%</th>
+                                    <th class="text-right bordertopbottom">Amount</th>
+                                </tr>
+                            </thead>
+                        </table>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <table class="table table-borderless" style="font-size:1.2em;">
+                <tbody class="table-borderless">
+                    <tr>
+                        <td colspan="5" class="text-left">TEST005</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-center">
+                            <div class="row justify-content-center">
+                                <table class="tblitem table-borderless" style="line-height:.9;">
+                                    <tbody>
+                                        <tr>
+                                            <td>Test Item 005</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;"><strong>Expiry Date:</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;">27/2/2023 12:00:00 am</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td class="text-right">1</td>
+                        <td class="text-right">$22.00</td>
+                        <td class="text-right">-</td>
+                        <td class="text-right">$22.00</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-left">TEST014</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-center">
+                            <div class="row justify-content-center">
+                                <table class="tblitem table-borderless" style="line-height:.9;">
+                                    <tbody>
+                                        <tr>
+                                            <td>Test Item 014 desc</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;"><strong>Batch No.:</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;"><strong>Batch No.: </strong>btest1</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;"><strong>SN:</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;">g2</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td class="text-right">1</td>
+                        <td class="text-right">$14.00</td>
+                        <td class="text-right">-</td>
+                        <td class="text-right">$14.00</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-left">IPHONE14</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-center">
+                            <div class="row justify-content-center">
+                                <table class="tblitem table-borderless" style="line-height:.9;">
+                                    <tbody>
+                                        <tr>
+                                            <td>IPHONE 14 desc</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;"><strong>Batch No.:</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;"><strong>Batch No.: </strong>btest2</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;"><strong>SN:</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;">c3</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;"><strong>Expiry Date:</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;">7/2/2023 12:00:00 am</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td class="text-right">1</td>
+                        <td class="text-right">$12,000.00</td>
+                        <td class="text-right">-</td>
+                        <td class="text-right">$12,000.00</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-left">TEST013</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-center">
+                            <div class="row justify-content-center">
+                                <table class="tblitem table-borderless" style="line-height:.9;">
+                                    <tbody>
+                                        <tr>
+                                            <td>Test Item 013 desc</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;"><strong>Batch No.:</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;"><strong>Batch No.: </strong>btest1</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;"><strong>Expiry Date:</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;">28/2/2023 12:00:00 am</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td class="text-right">1</td>
+                        <td class="text-right">$33.00</td>
+                        <td class="text-right">-</td>
+                        <td class="text-right">$33.00</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-left">TEST012</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-center">
+                            <div class="row justify-content-center">
+                                <table class="tblitem table-borderless" style="line-height:.9;">
+                                    <tbody>
+                                        <tr>
+                                            <td>Test Item 012 desc</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;"><strong>SN:</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;">a6</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td class="text-right">1</td>
+                        <td class="text-right">$32.00</td>
+                        <td class="text-right">-</td>
+                        <td class="text-right">$32.00</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-left">4890008311248</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-center">
+                            <div class="row justify-content-center">
+                                <table class="tblitem table-borderless" style="line-height:.9;">
+                                    <tbody>
+                                        <tr>
+                                            <td>Vitamin Water</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;"><strong>Batch No.:</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;"><strong>Batch No.: </strong>btest2</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td class="text-right">1</td>
+                        <td class="text-right">$15.00</td>
+                        <td class="text-right">-</td>
+                        <td class="text-right">$15.00</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-left">TEST008</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-center">
+                            <div class="row justify-content-center">
+                                <table class="tblitem table-borderless" style="line-height:.9;">
+                                    <tbody>
+                                        <tr>
+                                            <td>Test Item 008 desc</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;"><strong>SN:</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;">b6</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;"><strong>Expiry Date:</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" style="font-size:20pt;">27/2/2023 12:00:00 am</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td class="text-right">1</td>
+                        <td class="text-right">$85.00</td>
+                        <td class="text-right">-</td>
+                        <td class="text-right">$85.00</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <footer class="mx-1 my-4 py-4 px-2">               
+                <div class="row justify-content-center">
+                    <table class="table table-borderless" style="font-size:1.2em;">
+                        <tbody class="font-weight-bold">
+                            <tr>
+                                <td colspan="2" class="text-left bordertop">
+                                    <div class="text-center">
+                                        <h4>
+                                            Remark
+                                        </h4><span>test</span>
+                                    </div>
+                                </td>
+                                <td colspan="2" class="text-right bordertop">SubTotal</td>
+                                <td class="text-right bordertop">$12,201.00</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="text-right">Total</td>
+                                <td class="text-right">$12,201.00</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="text-right">現金</td>
+                                <td class="text-right">$12,201.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+
+
+    <div id="infoblk" class="hide" data-monthlypaytxt="Monthly Pay" data-issales="1" data-salesrefundcode="SA000008" data-salesrefunddate="07/02/2023 11:59:13" data-remark="" data-monthlypay="False" data-roundings="0.00" data-change="0.00" data-totalamt="12201.00" data-roundingstxt="Roundings" data-changetxt="Change" data-url=""></div>
+
+    <!--<script src="/Scripts/ts/js/pos/print.js?v=52562"></script>-->
+
+</body>
+</html>

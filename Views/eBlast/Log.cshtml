@@ -1,0 +1,97 @@
+﻿@model PPWLib.Models.eBlastEditModel
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = CultureHelper.CurrentCulture == 2 ? string.Concat(Resources.Resource.eBlast, " ", Resources.Resource.Log) : string.Concat(Resources.Resource.eBlast, "", Resources.Resource.Log);
+    int rand = CommonHelper.GetVersionRandomNo();
+}
+<style>
+    .fc-content {
+        max-width: none;
+    }
+</style>
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("Log", "eBlast", FormMethod.Get, new { @Id = "frmBlast" }))
+{
+    <div class="form-inline mb-2 my-4">
+        <div class="form-group">
+            <input type="text" class="form-control" id="txtKeyword" placeholder="@Resources.Resource.KeywordRequired" />
+            <button id="btnSearch" type="button" class="btn btn-default ml-4">@Resources.Resource.Search</button>
+            <button id="btnReload" type="button" class="btn btn-default ml-4">@Resources.Resource.Reload</button>
+        </div>
+    </div>
+
+    <table id="tbleBlastLog" class="table table-bordered  table-hover table-condensed">
+        <colgroup>
+            <col width="100">
+            <col width="50">
+            <col width="120">
+            <col width="120">
+            <col width="50">
+            <col width="50">
+            <col width="50">
+        </colgroup>
+        <thead class="gray-header">
+            <tr>
+                <th class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">@Resources.Resource.Subject</th>
+                <th class="text-center">@Resources.Resource.Format</th>
+                <th class="text-center colheader" data-col="1" data-keyword="@Model.Keyword">@Resources.Resource.SendTime</th>
+                <th class="text-center colheader" data-col="2" data-keyword="@Model.Keyword">@Resources.Resource.FinishTime</th>
+                <th class="text-center colheader" data-col="3" data-keyword="@Model.Keyword">@Resources.Resource.SendExpected</th>
+                <th class="text-center colheader" data-col="4" data-keyword="@Model.Keyword">@Resources.Resource.SentActual</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        @foreach (var blast in Model.eBlastList)
+        {
+            string format = blast.blHtml ? "HTML" : Resources.Resource.Text;
+            
+            <tr>
+                <td class="text-center">
+                    @Html.DisplayFor(modeleBlast => blast.blSubject)                    
+                </td>
+                <td class="text-center">
+                    @format
+                </td>
+                <td>@blast.blSendTime</td>
+                <td>@blast.blFinishTime</td>
+                <td class="text-center">
+                    @Html.DisplayFor(modeleBlast => blast.blSendExpected)
+                </td>
+                <td class="text-center">
+                    @Html.DisplayFor(modeleBlast => blast.blSentActual)
+                </td>
+                <td class="text-center">
+                    <a href="#" class="btn btn-danger content" data-id="@blast.Id" role="button">@Resources.Resource.Content</a>
+                    @Html.Hidden("blcontent", blast.blContent, new {@class="blcontent"})
+                </td>
+            </tr>
+        }
+
+    </table>
+
+    <div id="pagingblk" class="mx-3">
+        <div class="row">
+            @Html.PagedListPager(Model.eBlastList, PageNo => Url.Action("Log",
+new { Model.eBlast.Id, PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
+        </div>
+    </div>
+
+    <input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+    <input type="hidden" id="sortcol" value="@Model.SortCol" />
+
+    
+}
+<div>
+    @Html.ActionLink(Resources.Resource.BackToList, "Index")
+</div>
+
+@Html.Partial("_WaitingModal")
+
+<div id="infoblk" class="hide" data-scheduledsendtimetxt="@Resources.Resource.ScheduledSendTime" data-id="@Model.eBlastId"></div>
+
+@Html.AntiForgeryToken()
+<script src="~/Scripts/ts/js/crm/eblast/eblastlog.js?v=@rand"></script>
+

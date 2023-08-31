@@ -1,0 +1,95 @@
+﻿@{
+    bool editmode = (bool)ViewData["editmode"];
+    ItemVariationModel ItemVari = ViewData["ItemVari"] == null ? null : ViewData["ItemVari"] as ItemVariationModel;
+    ItemView Item = ViewData["Item"] == null ? null : (ItemView)ViewData["Item"];
+    ItemView PGItem = ViewData["PGItem"] == null ? null : (ItemView)ViewData["PGItem"];
+    int qty = 0;
+    bool itemvarinull = ItemVari == null;
+    string[] Shops = ViewData["Shops"] != null ? ViewData["Shops"] as string[] : new string[0];
+}
+<div id="locationblk" class="my-4" data-editmode="@editmode" data-shops="@Shops.Count()">
+    @*@{ return;}*@
+    <h4>@Resources.Resource.StockQty</h4><span class="danger small">@Resources.Resource.StockQtyZeroOnInitNote</span>
+    <table class="table table-bordered">
+        <thead class="gray-header">
+            <tr>
+                @if (editmode)
+                {
+                    if (ItemVari != null && ItemVari.DicLocQty!=null)
+                    {
+                        foreach (var shop in ItemVari.DicLocQty.Keys)
+                        {
+                            <th>@shop.Trim()</th>
+                        }
+                    }
+
+                    if (Item != null && Item.DicLocQty != null)
+                    {
+                        foreach (var shop in Item.DicLocQty.Keys)
+                        {
+                            <th>@shop.Trim()</th>
+                        }
+                    }
+
+
+                    if (PGItem != null && PGItem.DicLocQty!=null)
+                    {
+                        foreach (var shop in PGItem.DicLocQty.Keys)
+                        {
+                            <th>@shop.Trim()</th>
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var shop in Shops)
+                    {
+                        <th>@shop.Trim()</th>
+                    }
+                }
+
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                @if (editmode)
+                {
+                    if (ItemVari != null && ItemVari.DicLocQty!=null)
+                    {
+                        foreach (var shop in ItemVari.DicLocQty.Keys)
+                        {
+                            qty = ItemVari.DicLocQty[shop];
+                            <td><input type="number" name="QuantityAvailable" class="form-control stqty" min="0" data-location="@shop.Trim()" value="@qty" /></td>
+                        }
+                    }
+
+                    if (Item != null && Item.DicLocQty!=null)
+                    {
+                        foreach (var shop in Item.DicLocQty.Keys)
+                        {
+                            qty = Item.DicLocQty[shop];
+                            <td><input type="number" name="QuantityAvailable" class="form-control stqty" min="0" data-location="@shop.Trim()" value="@qty" /></td>
+                        }
+                    }
+                    if (PGItem != null && PGItem.DicLocQty!=null)
+                    {
+                        foreach (var shop in PGItem.DicLocQty.Keys)
+                        {
+                            qty = PGItem.DicLocQty[shop];
+                            <td><input type="number" name="QuantityAvailable" class="form-control stqty" min="0" data-location="@shop.Trim()" value="@qty" /></td>
+                        }
+                    }
+                }
+                else
+                {
+                    for (var i = 0; i < Shops.Count(); i++)
+                    {
+                        //qty = i == 0 ? 1 : 0;
+                        qty = 0;
+                        <td><input type="number" name="QuantityAvailable" class="form-control stqty" min="0" data-location="@Shops[i].Trim()" value="@qty" /></td>
+                    }
+                }
+            </tr>
+        </tbody>
+    </table>
+</div>

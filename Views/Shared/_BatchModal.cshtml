@@ -1,0 +1,40 @@
+﻿@{ 
+    string status = ViewData["status"] == null ? "" : (string)ViewData["status"];
+    bool isdeliver = (!string.IsNullOrEmpty(status) && (status == "deliver" || status == "partialdeliver"));
+    string poqtylbl = string.Concat("(",Resources.Resource.PurchaseOrder, ")");
+}
+<div id="batchModal">
+    <div class="container">
+        <h4 id="batchLocSeqItem"></h4>
+
+        <table id="tblBatch" class="table table-bordered table-condensed">
+            <thead class="gray-header">
+                <tr>
+                    <th>@Resources.Resource.BatchNo</th>
+                    <th>@Resources.Resource.SerialNo (@Resources.Resource.ExpiryDate) @poqtylbl</th>
+                    <th class="text-right">@Resources.Resource.ExpiryDate @poqtylbl</th>
+                    @if (!isdeliver)
+                    {
+                        <th class="text-right">@Resources.Resource.DeliveredQty</th>
+                        <th class="text-right">@Resources.Resource.CurrentBatchTypeSellableQty/@string.Format(Resources.Resource.TotalFormat, Resources.Resource.Qty)</th>
+                    }
+                </tr>
+            </thead>
+            <tbody></tbody>
+
+            <tfoot>
+                <tr class="my-auto">
+                    <td colspan="5">
+                        <div class="form-group row justify-content-end my-auto">
+                            <label for="totalbatdelqty" class="col-form-label">@string.Format(Resources.Resource.DeliveryFormat, Resources.Resource.Qty)</label>
+
+                            <input type="number" class="form-control mx-3" readonly id="totalbatdelqty" />
+
+                        </div>
+
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>

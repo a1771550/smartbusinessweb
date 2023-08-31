@@ -1,0 +1,26 @@
+﻿@{
+    bool isassignable = ViewData["isassignable"]!=null? (bool)ViewData["isassignable"] : (ViewData["iscrmadmin"] != null ? (bool)ViewData["iscrmadmin"]:false);
+}
+<div id="assignedContactModal">
+    <div class="container">
+        <table id="tblassignedContacts" class="table table-bordered  table-hover table-condensed">
+            <thead class="gray-header">
+                <tr>
+                    <th scope="col">@Resources.Resource.Email</th>
+                    <th scope="col">@Resources.Resource.Phone</th>
+                    <th scope="col">@Resources.Resource.Organization</th>
+                    <th scope="col">@Resources.Resource.Contact</th>
+                    @if (isassignable)
+                    {
+                        <th></th>
+                    }
+
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <div id="pagination-assignedcontacts"></div>
+    </div>
+</div>

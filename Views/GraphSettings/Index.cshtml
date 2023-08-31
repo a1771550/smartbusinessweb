@@ -1,0 +1,123 @@
+﻿@model PPWLib.Models.GraphSettingsEditModel
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = string.Format(Resources.Resource.SettingsFormat, Resources.Resource.Office365);
+    int rand = CommonHelper.GetVersionRandomNo();
+    string idlist = string.Join(",", Model.IdList);
+    var graphsettingsdetailtxt = string.Format(Resources.Resource.DetailFormat, ViewBag.Title);
+}
+<link href="~/Scripts/paginationjs/pagination.css" rel="stylesheet" type="text/css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/graphsettings.css?v=@rand" />*@
+
+<h3>@ViewBag.Title</h3>
+
+<p class="my-3">
+    @Html.ActionLink(Resources.Resource.Add, "Edit", null, new { @class = "btn btn-info" })
+</p>
+
+@*<div id="norecordfound" class="container hide">@Resources.Resource.NoDataFound</div>
+<div class="container">
+    <div class="row justify-content-center py-3" style="margin-left:-5em;">
+        <span class="label mx-3">@Resources.Resource.From</span>
+        <input class="col-12 col-md-3 form-control-range" type="text" id="datetimesmin" name="DateFrmTxt" />
+        <span class="mx-3">@Resources.Resource.To</span>
+        <input class="col-12 col-md-3 form-control-range" type="text" id="datetimesmax" name="DateToTxt" />
+    </div>
+
+    <div class="row justify-content-center mb-2">
+        <button id="btnFilter" type="button" class="btn btn-success mr-sm-3">@Resources.Resource.Submit</button>
+        <button id="btnReload" type="button" role="button" class="btn btn-warning">@Resources.Resource.Reload</button>
+    </div>
+</div>
+
+<hr />
+
+<div class="container" style="width:105%;">
+    <div id="searchblk" class="row justify-content-center form-inline mb-2 my-4">
+        <form id="frmenquiry">
+            <div class="form-group">
+                <input type="text" class="form-control" id="txtKeyword" placeholder="@Resources.Resource.KeywordRequired" />
+                <button id="btnSearch" type="button" role="button" class="btn btn-primary ml-4">@Resources.Resource.Search</button>
+                <button id="btnReset" type="button" role="button" class="btn btn-secondary ml-4">@Resources.Resource.Reset</button>
+            </div>
+        </form>
+    </div>
+</div>*@
+
+<table id="tblgraphsettings" class="table table-bordered  table-hover table-condensed">
+    <thead class="gray-header">
+        <tr>
+            <th>
+                @string.Format(Resources.Resource.NameFormat, Resources.Resource.Application)
+            </th>
+            @*<th>@string.Format(Resources.Resource.IdFormat, Resources.Resource.Client)</th>
+            <th>@string.Format(Resources.Resource.IdFormat, Resources.Resource.Tenant)</th>*@
+            <th>
+                @Resources.Resource.CreateTime
+            </th>
+            <th>
+                @Resources.Resource.ModifyTime
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.PagingGraphSettingsList)
+        {
+            
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.gsAppName)
+                </td>
+                
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreateTimeDisplay)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ModifyTimeDisplay)
+                </td>
+                <td>
+                    @Html.ActionLink(Resources.Resource.Edit, "Edit", new { id = item.Id }, new {@class="btn btn-success mr-2"})                    
+                    <a class="btn btn-info mr-2 detail" data-id="1" href="#" role="button">@Resources.Resource.Detail</a>
+                    @*@Html.ActionLink(Resources.Resource.Remove, "Delete", new { id = item.Id }, new { @class = "btn btn-danger" })*@
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div id="pagingblk" class="mx-3">
+    <div class="row">
+        @Html.PagedListPager(Model.PagingGraphSettingsList, PageNo => Url.Action("Index",
+new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
+    </div>
+</div>
+
+<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+<input type="hidden" id="sortcol" value="@Model.SortCol" />
+
+<div id="infoblk" class="hide" data-apid="@ConfigurationManager.AppSettings["AccountProfileId"]" data-idlist="@idlist" data-graphsettingsdetailtxt="@graphsettingsdetailtxt" data-appnametxt=""></div>
+
+<script type="text/javascript" src="~/Scripts/daterangepicker/moment.min.js"></script>
+<script type="text/javascript" src="~/Scripts/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="~/Scripts/daterangepicker/daterangepicker.css" />
+
+<script src="~/Scripts/paginationjs/pagination.js"></script>
+
+<script>
+    $(document).ready(function () {
+        initModals();
+        initDatePickers(StartDayEnum.LastMonth, 'YYYY-MM-DD');
+        $target = $('.pagination');
+        $target.wrap('<nav aria-label="Page navigation"></nav>').find('li').addClass('page-item').find('a').addClass('page-link');
+
+        let keyword = getParameterByName('Keyword');
+        if (keyword !== null) {
+            $('#txtKeyword').val(keyword);
+        }
+        $('.pagination li').addClass('page-item');
+        $('#txtKeyword').focus();
+    });
+</script>
+
+<script src="~/Scripts/ts/js/crm/graphsettings/graphsettings.js?v=@rand"></script>

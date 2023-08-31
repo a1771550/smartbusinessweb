@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Accordian Demo</title>
+    <link href="../Content/bs4/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Scripts/jquery-ui/jquery-ui.css" rel="stylesheet" />
+    <link href="../Content/fontawesome/font-awesome.min.css" />
+    <link href="../Content/fontawesome/css/all.min.css" rel="stylesheet">
+    <script src="../Scripts/jquery-3.6.0.min.js"></script>
+    <script src="../Scripts/jquery-ui/jquery-ui.js"></script>
+    <script src="../Scripts/bs4/bootstrap.min.js"></script>
+    <link href="../Content/Site.css" rel="stylesheet" />
+</head>
+<body class="p-4">
+
+    <!--<script src="../Scripts/ts/js/app.js"></script>-->
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-md-4">
+
+            </div>
+            <div class="col-12 col-md-8">
+                <h4>Custom Attribute</h4> <i class="btn btn-primary small fa fa-plus open"></i>
+                <div id="accordion" class="my-2"></div>
+            </div>
+        </div>
+        
+    </div>
+   
+    <div id="itemAttrModal">
+        <div class="container">
+            <i class="btn btn-outline-success fa fa-plus attr small"></i>
+            
+        </div>
+    </div>
+
+    <script>
+        let itemAttrModal;
+        let cusattrlist = [];
+        let Ids = [];
+
+        $(document).on('click', '.fa-plus.attr', function () {
+            addAttrRow();
+        });
+
+        $(document).on('click', '.fa-plus.open', function () {
+            openItemCustomAttrModal();
+            if(cusattrlist.length===0)
+                addAttrRow();
+        });
+
+        $(function () {
+            if ($('#itemAttrModal').length) {
+                itemAttrModal = $('#itemAttrModal').dialog({
+                    width: 550,
+                    title: 'Attribute',
+                    autoOpen: false,
+                    open: function (e) {
+                        //$(e.target).parent().css('background-color', '#fefbf5').find('.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix').css('background-color', '#fefbf5');
+                    },
+                    modal: true,
+                    buttons:
+                        [
+                            {
+                                class: 'savebtn',
+                                text: 'OK',
+                                click: function () {
+                                    itemAttrModal.find('.row').each(function (i, e) {                                        
+                                        if ($(e).find('input').val() !== '') {
+                                            let Id = `attr#${i}`;
+                                            let attr = { Id , name: $(e).find('input:eq(0)').val(), val: $(e).find('input:eq(1)').val() };
+                                            if (!Ids.includes(Id)) {
+                                                cusattrlist.push(attr);
+                                                Ids.push(Id);
+                                            }
+                                        }
+                                    });
+                                    closeItemCustomAttrModal();
+
+                                    if (cusattrlist.length > 0) {                                        
+                                        populateAccordion();
+                                        //$('#accordion').show();
+                                    }
+                                },
+                            },
+                            {
+                                class: 'secondarybtn',
+                                text: 'Cancel',
+                                click: closeItemCustomAttrModal
+                            },
+                        ],
+                });
+            }            
+        });
+
+        const populateAccordion = () => {
+            //console.log(cusattrlist);
+            let html = [];
+            html = cusattrlist.map((c) => {
+                return `
+<h3>${c.name}</h3>
+<div class="row">
+                <div class="col-12 col-md-3">
+                    <label>Name</label>
+                    <input type="text" class="form-control attrname" placeholder="Attribute Name" value="${c.name}" />
+                </div>
+                <div class="col-12 col-md-6">
+<label>Value(s)</label>
+                    <input type="text" class="form-control attrval" placeholder="Attribute Values (separated by | )" value="${c.val}"  />
+                </div>
+                <div class="col-12 col-md-3 small">
+<div class="row d-flex">
+<div class="form-check">
+  <input class="form-check-input my-auto" type="checkbox" value="" id="defaultCheck1">
+  <label class="form-check-label" for="defaultCheck1">
+    Visible on Sales Page
+  </label>
+</div>
+<div class="form-check">
+  <input class="form-check-input my-auto" type="checkbox" value="" id="defaultCheck1">
+  <label class="form-check-label" for="defaultCheck1">
+    Used for Variations
+  </label>
+</div>
+</div>
+
+</div>
+            </div>`
+            });            
+
+            if ($('#accordion').find('.row').hasClass('ui-accordion-content')) {
+                $('#accordion').accordion('destroy');
+            }
+
+            $("#accordion").empty().append(html).accordion({
+                collapsible: true,
+                active: 'none',
+            });
+        };
+
+        function openItemCustomAttrModal() {
+            itemAttrModal.dialog("open");
+        }
+        function closeItemCustomAttrModal() {
+            itemAttrModal.dialog("close");
+        }
+
+        const addAttrRow = () => {
+            let html = `<div class="row my-2">
+                <div class="col-12 col-md-4">
+                    <input type="text" class="form-control attrname" placeholder="Attribute Name" />
+                </div>
+                <div class="col-12 col-md-8">
+                    <input type="text" class="form-control attrval" placeholder="Attribute Values (separated by | )" />
+                </div>
+            </div>`;
+            if (itemAttrModal.find('.row').length)
+                itemAttrModal.find('.row').last().after(html);
+            else
+                itemAttrModal.find('.fa').after(html);
+
+            itemAttrModal.find('.attrname').last().focus();
+        };
+
+        
+    </script>
+</body>
+</html>

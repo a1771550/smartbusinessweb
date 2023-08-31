@@ -1,0 +1,8 @@
+bin/
+obj/
+packages/
+Rotativa/
+Uploads/
+Images/
+Content/xml/
+Scripts/node_modules/

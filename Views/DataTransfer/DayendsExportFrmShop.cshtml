@@ -1,0 +1,90 @@
+﻿@model PPWLib.Models.DayEndsModel
+@{
+    int lang = (int)HttpContext.Current.Session["CurrentCulture"];
+    bool iscentral = Model.IsCentral;
+    int SelectedAccountProfile = Model.SelectedAccountProfileId;
+    string absschecked = ViewBag.DefaultCheckoutPortal.ToLower() == "abss" ? "checked" : "";
+    string kingdeechecked = ViewBag.DefaultCheckoutPortal.ToLower() == "kingdee" ? "checked" : "";
+    int rand = CommonHelper.GetVersionRandomNo();
+    ViewBag.Title = HttpContext.Current.Session["ImportFrmShopPageTitle"].ToString();
+}
+
+<h3>@ViewBag.Title</h3>
+@using (Html.BeginForm("DoExportFrmShop", "DataTransfer", FormMethod.Post, new { @id = "frmExport" }))
+{
+    @Html.AntiForgeryToken()
+    @*<div class="row justify-content-end mx-1">
+        <div class="form-check form-check-inline">
+            <input class="form-check-input checkoutportal" type="radio" id="abss" disabled value="abss" @absschecked>
+            <label class="form-check-label" for="abss">ABSS</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input checkoutportal" type="radio" id="kingdee" disabled value="kingdee" @kingdeechecked>
+            <label class="form-check-label" for="kingdee">@Resources.Resource.Kingdee</label>
+        </div>
+    </div>*@
+    <div class="form-inline justify-content-end my-2">
+        <label for="drpLocation">@Resources.Resource.Location:</label>
+        <select class="custom-select mx-2" id="drpLocation" name="location">
+           @foreach(var shop in Model.ShopCodeList)
+           {
+               string selected = Model.ShopCode == shop ? "selected" : "";
+                    <option value="@shop" @selected>@shop</option>
+                }
+        </select>
+    </div>
+
+    <div class="row justify-content-center py-5 px-3">
+        <span class="label mx-3">@Resources.Resource.ExportDatePrompt</span>
+        <input class="col-12 col-md-3 form-control-range" type="text" id="datetimesmin" name="SalesDateFrmTxt" />
+        <span class="mx-3">@Resources.Resource.To</span>
+        <input class="col-12 col-md-3 form-control-range" type="text" id="datetimesmax" name="SalesDateToTxt" />
+    </div>
+
+
+
+    <div class="row justify-content-end mx-1 my-2">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="1" name="chkUploaded" id="chkUploaded">
+            <label class="form-check-label" for="chkUploaded">
+                @Resources.Resource.IncludeUploadedInvoices
+            </label>
+        </div>
+    </div>
+
+    <div class="row justify-content-end mx-1">
+        <button type="button" class="btn btn-success mr-2 export sales" data-type="sales">@string.Format(Resources.Resource.ExportFormat, Resources.Resource.RetailOrder)</button>
+        <button type="button" class="btn btn-primary mr-2 export purchase" data-type="purchase">@string.Format(Resources.Resource.ExportFormat, Resources.Resource.Purchase)</button>
+        <button type="button" class="btn btn-secondary mr-2 export wholesales" data-type="wholesales">@string.Format(Resources.Resource.ExportFormat, Resources.Resource.WholeSales)</button>
+        <button type="button" class="btn btn-info mr-2 export customer" data-type="customer">@string.Format(Resources.Resource.ExportFormat, Resources.Resource.Customer) (@Resources.Resource.IncludingVIP)</button>
+        <button type="button" class="btn btn-outline-info mr-2 export supplier" data-type="supplier">@string.Format(Resources.Resource.ExportFormat, Resources.Resource.Supplier)</button>
+        <button type="button" class="btn btn-warning export item" data-type="item">@string.Format(Resources.Resource.ExportFormat, Resources.Resource.Item)</button>
+    </div>
+
+    <div id="exportedpathmsg" class="alert alert-success my-3 hide"></div>
+
+    <div class="row mx-1">
+        <div id="result"></div>
+    </div>
+
+    <input type="hidden" id="exportType" name="type" />
+}
+
+@Html.Partial("_WaitingModal")
+
+
+<script type="text/javascript" src="~/Scripts/daterangepicker/moment.min.js"></script>
+<script type="text/javascript" src="~/Scripts/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="~/Scripts/daterangepicker/daterangepicker.css" />
+<script type="text/javascript" src="~/Scripts/DataTables/dataTables.dateTime.min.js"></script>
+
+<div id="infoblk" class="hide" data-lang="@lang" data-confirmtxt="@Resources.Resource.ExportPOSToABSSReminder" data-exporttxt="@Resources.Resource.Export" data-exportpathtxt="@Resources.Resource.ExportBasePath" data-isoffline="@Model.IsOffLine" data-checkoutportal="@ConfigurationManager.AppSettings["DefaultCheckoutPortal"]" data-importdonemsg="@HttpContext.Current.Session["SBToABSSOK"].ToString()" data-importngmsg="@Resources.Resource.SBToABSSNG"></div>
+
+<script src="~/Scripts/ts/js/datatransfer/exportfrmshop.js?v=@rand"></script>
+
+<script>
+    $(function () {
+        initModals();
+        initDatePickers();
+    });
+</script>

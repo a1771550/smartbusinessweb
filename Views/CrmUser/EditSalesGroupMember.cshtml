@@ -1,0 +1,83 @@
+﻿@model PPWLib.Models.CrmUserEditModel
+
+@{
+    ViewBag.Title = string.Format(Resources.Resource.EditFormat, Resources.Resource.SalesGroup);
+    int rand = CommonHelper.GetVersionRandomNo();
+}
+
+<h3>@ViewBag.Title</h3>
+
+
+
+<div id="assignmanagerblk" class="my-4">
+    @foreach (var group in Model.CrmSalesGroupList)
+    { 
+        <div class="float-right">
+            <button type="button" class="btn btn-info editgroup" data-id="@group.Id">@Resources.Resource.Edit</button>
+            <button type="button" class="btn btn-danger deletegroup" data-id="@group.Id">@Resources.Resource.Remove</button>
+        </div>
+        <h5>@group.sgName</h5>
+
+        <div class="form-group border-bottom-dashed py-3">
+            <label for="drpAssignManager_@group.Id">@Resources.Resource.AssignSalesGroupManager</label>
+            <select id="drpAssignManager_@group.Id" class="form-control assignmanager" data-gpid="@group.Id">
+                <option value="0">-- @Resources.Resource.Select --</option>
+                @foreach (var e in Model.NonCrmAdminEmployees)
+                {
+                    var _selected = (Model.DicCrmSalesManager.Keys.Contains(group.Id.ToString()) && Model.DicCrmSalesManager[group.Id.ToString()] == e.surUID)?"selected": ""; 
+                    <option value="@e.surUID" @_selected>@e.UserName</option>
+                }
+            </select>
+        </div>
+    }
+</div>
+
+<div id="assignmemberblk" class="my-4 hide">
+    @foreach (var group in Model.CrmSalesGroupList)
+    {
+        <div class="float-right">
+            <button type="button" class="btn btn-info editgroup" data-id="@group.Id">@Resources.Resource.Edit</button>
+            <button type="button" class="btn btn-danger deletegroup" data-id="@group.Id">@Resources.Resource.Remove</button>
+        </div>
+        <h5>@group.sgName</h5>
+
+        <label>@Resources.Resource.AssignSalesGroupMembers</label>
+        <div class="form-group border-bottom-dashed py-3" data-gpid="@group.Id"></div>
+    }
+</div>
+
+
+<div class="form-group my-4">
+    <button id="btnSave" type="button" class="btn btn-success">@Resources.Resource.Save</button>
+    <button id="btnNext" type="button" class="btn btn-primary" data-assignmanagertxt="@Resources.Resource.AssignSalesGroupManager" data-assignmembertxt="@Resources.Resource.AssignSalesGroupMembers">@Resources.Resource.AssignSalesGroupMembers</button>
+    <button id="btnAddGroup" type="button" class="btn btn-info">@string.Format(Resources.Resource.AddFormat, Resources.Resource.SalesGroup)</button>
+</div>
+@Html.AntiForgeryToken()
+
+<div>
+    @Html.ActionLink(Resources.Resource.BackToList, "Index")
+</div>
+
+@Html.Partial("_WaitingModal")
+
+<div id="salesgroupModal">
+    <div class="container">
+        <div class="form-group required">
+            <label for="sgName">@string.Format(Resources.Resource.NameFormat, Resources.Resource.SalesGroup)</label>
+            <input type="text" class="form-control" id="sgName" name="sgName" />
+        </div>
+        <div class="form-group">
+            <label for="sgDesc">@Resources.Resource.Description</label>
+            <textarea class="form-control" name="sgDesc" id="sgDesc" cols="50" rows="5"></textarea>
+        </div>
+        <div class="form-group">
+            <button id="btnSaveGroup" class="btn btn-success">@Resources.Resource.Save</button>
+            <input type="hidden" id="sgId" name="Id" />
+        </div>
+    </div>
+</div>
+
+<div id="infoblk" data-jsondicgroupmemberlist="@Model.JsonDicGroupMemberList" data-assignmanagertxt="@Resources.Resource.PlsAssignSalesGroupManager" data-assignsalesmemberstxt="@Resources.Resource.PlsAssignSalesGroupMembers" data-jsonnoncrmadminemployees="@Model.JsonNonCrmAdminEmployees" data-jsondiccrmsalesmanager="@Model.JsonDicCrmSalesManager" data-salesgroupnamerequiredtxt="@string.Format(Resources.Resource.Required,string.Format(Resources.Resource.NameFormat,Resources.Resource.SalesGroup))"></div>
+
+<script src="~/Scripts/ts/js/crm/usermanagement/user/editsalesgroup.js?v=@rand"></script>
+

@@ -1,0 +1,80 @@
+﻿@model IEnumerable<CustomerAttributeView>
+@using CommonLib.Models;
+@{
+    bool edit = this.ViewData.ContainsKey("edit") ? (bool)this.ViewData["edit"] : false;
+    var defaultlist = Model.Where(x => x.attrIsGlobal == false).ToList();
+}
+<link href="~/Content/gloalattribute.css?v=@CommonHelper.GetVersionRandomNo()" rel="stylesheet" type="text/css" />
+<style>
+    #tblDefault input, #tblDefault select, #tblDefault textarea {
+        max-width: none;
+    }
+</style>
+
+<div class="container" data-listcount="@defaultlist.Count()">    
+
+    <table id="tblDefault" class="table table-bordered  table-hover table-condensed tblattribute">
+        <colgroup>
+            <col width="100" />           
+            <col width="100" />
+        </colgroup>
+        <thead class="gray-header">
+            <tr>
+                <th class="text-left" data-col="0">@Resources.Resource.Name</th>            
+                <th class="text-left" data-col="2">@Resources.Resource.Value</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            @foreach (var item in defaultlist)
+            {               
+                string dateselected = item.attrType == AttributeType.date.ToString() ? "selected" : "";
+                string attval = "";
+                string display = "";
+                string placetxt = String.Empty;
+                string required = string.Empty;
+                string datecls = item.attrType == "date" ? "datepicker" : "";
+
+                if (edit)
+                {
+                    display = attval = item.attrValue;
+                }
+                else
+                {
+                    if (item.attrName.ToLower() == "followup date")
+                    {
+                        placetxt = Resources.Resource.FollowUpDateRequired;
+
+                    }
+                }
+
+                if (item.attrName.ToLower() == "followup date")
+                {
+                    required = "required";
+                }
+
+                <tr data-attrid="@item.attrId" data-contactid="@item.contactId" data-attrname="@item.attrName" data-attrtype="@item.attrType" data-apid="@item.AccountProfileId" data-datetime="@DateTime.Now" data-placetxt="@placetxt" data-required="@required">
+                    <td><input type="text" class="form-control attname" value="@item.attrName" readonly /></td>                    
+                    <td>
+                        <input type="text" id="@item.attrName" class="form-control @datecls @required @item.attrType default attr" data-date-format="yyyy-mm-dd" data-attrvalue="@attval" value="@display" data-oldval="@attval" data-attrname="@item.attrName" data-attrtype="@item.attrType" data-isdefault="1" data-isglobal="0" data-apid="@item.AccountProfileId" data-requird="@required" autocomplete="off" />
+                    </td>
+
+                </tr>
+
+            }
+        </tbody>
+
+        @if (edit)
+        {
+            <tfoot id="savedefaultblk">
+                <tr>
+                    <td colspan="3" class="text-right">
+                        <a id="btnSaveDefault" role="button" href="#" class="btn btn-info text">@Resources.Resource.Save</a>
+                        @Html.AntiForgeryToken()
+                    </td>
+                </tr>
+            </tfoot>
+        }
+    </table>
+</div>

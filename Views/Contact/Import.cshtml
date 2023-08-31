@@ -1,0 +1,113 @@
+﻿@model int?
+@{
+    ViewBag.Title = string.Format(Resources.Resource.ImportFrmFormat, "Excel");
+    var rand = CommonHelper.GetVersionRandomNo();
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("Import", "Contact", null, FormMethod.Post, new { @Id = "frmImport", enctype = "multipart/form-data" }))
+{
+    <div class="container mt-4">
+        <ul>
+            <li><a href="~/Document/@ConfigurationManager.AppSettings["crm_contact_import_template_filename"]" target="_blank" class="">@string.Format(Resources.Resource.DownloadFormat, Resources.Resource.Template)</a></li>
+            <li><a href="~/Document/@ConfigurationManager.AppSettings["crm_contact_import_sample_filename"]" target="_blank" class="">@Resources.Resource.Sample</a></li>
+        </ul>
+    </div>
+
+    <div class="info2 my-2">
+        <h5>@Resources.Resource.BrowseFile4Upload</h5>
+        @Html.AntiForgeryToken()
+
+        <div class="form-group" name="Fichier1">
+            <!-- COMPONENT START -->
+            <div class="form-group">
+                <div class="input-group input-file">
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary btn-choose" type="button">@Resources.Resource.Choose</button>
+                    </span>
+                    <input id="fakefile" type="text" class="form-control mx-2" placeholder='@Resources.Resource.ChooseFile...' />
+                    <span id="uploadsizeprompt" class="small alert alert-info pointer" style="padding:.5em;" title="@Resources.Resource.UploadFileSizeExceedPrompt">@string.Format(Resources.Resource.MaxUploadSizeFormat, ConfigurationManager.AppSettings["MaxUploadSize"]) MB</span>
+                </div>
+            </div>
+            @*<input type="file" id="dataFile" name="upload" />*@
+
+        </div>
+
+        <div class="form-group">
+            @*<input type="submit" value="Upload" class="btn btn-success" />*@
+            <button type="button" id="btnUpload" class="btn btn-success">@Resources.Resource.Upload</button>
+        </div>
+
+    </div>    
+}
+
+@if (!Html.ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        @Html.ValidationSummary()
+    </div>
+}
+
+@Html.Partial("_WaitingModal")
+
+<div id="infoblk" class="hide" data-nofileerrtxt="@Resources.Resource.NoFileSelected" data-imported="@Model" data-uploadedtxt="@Resources.Resource.UploadOkMsg" data-maxuploadsize="@ConfigurationManager.AppSettings["MaxUploadSize"]"></div>
+
+<script src="~/Scripts/ts/js/crm/contact/import/importcontact.js?v=@rand"></script>
+<script>
+    $('#uploadsizeprompt').powerTip();
+    $('#btnUpload').on('click', function (e) {
+        e.stopPropagation();
+        if ($('#fakefile').val() == '') {
+            $.fancyConfirm({
+                title: '',
+                message: $infoblk.data('nofileerrtxt'),
+                shownobtn: false,
+                okButton: oktxt,
+                noButton: notxt,
+                callback: function (value) {
+                    if (value) {
+                        $('#fakefile').focus();
+                    }
+                }
+            });
+        }
+        else if (!isExcel($('#fakefile').val())) {
+            $.fancyConfirm({
+                title: '',
+                message: onlyfileallowedformattxt.replace('{0}', 'Excel'),
+                shownobtn: false,
+                okButton: oktxt,
+                noButton: notxt,
+                callback: function (value) {
+                    if (value) {
+                        $('#fakefile').val('').focus();
+                    }
+                }
+            });
+        }
+        else {
+            let filesize = $('#dataFile')[0].files[0].size;
+            console.log('filesize:'+ filesize+';maxuploadsize:'+_maxuploadsize);
+            if (filesize > _maxuploadsize) {
+                //filesizeexceedsmaxuploadsizetxt
+                $.fancyConfirm({
+                    title: '',
+                    message: filesizeexceedsmaxuploadsizetxt,
+                    shownobtn: false,
+                    okButton: oktxt,
+                    noButton: notxt,
+                    callback: function (value) {
+                        if (value) {
+                            $('#fakefile').val('').focus();
+                        }
+                    }
+                });
+            } else {                
+                openWaitingModal();
+                $('#frmImport').submit();
+            }
+                
+    }
+})
+</script>

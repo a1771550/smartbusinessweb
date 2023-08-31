@@ -1,0 +1,31 @@
+﻿@{
+    List<string> imglist = ViewData["imglist"] as List<string>;
+    List<string> filelist = ViewData["filelist"] as List<string>;
+}
+
+<div id="viewFileModal">
+    <div class="container">        
+        @if (imglist.Count > 0)
+        {          
+
+        <ul class="nostylelist">
+            @foreach (var img in imglist)
+            {
+                <li>@Html.Raw(img)</li>
+            }
+        </ul>
+                
+             
+        }
+
+        @if (filelist.Count > 0)
+        {
+            <ul>
+                @foreach (var file in filelist)
+                {
+                    <li>@Html.Raw(file)</li>
+                }
+            </ul>
+        }
+    </div>    
+</div>

@@ -1,0 +1,41 @@
+﻿@{
+    var currency = ViewData["currency"] == null ? ConfigurationManager.AppSettings["Currency"] : ViewData["currency"] as string;
+}
+<div id="recurOrderModal">
+    <div class="container">
+        <div id="recurnameblk" class="hide mt-3">
+            <label for="txtRecurName">@Resources.Resource.Name</label>
+            <input type="text" id="txtRecurName" class="form-control" />
+        </div>
+        <div id="recurlistblk" class="hide mt-3">
+            <form class="form-inline mb-3">
+                <label class="sr-only" for="txtRecurKeyword">@Resources.Resource.Search</label>
+                <input type="text" id="txtRecurKeyword" class="form-control mb-2 mr-sm-2" placeholder="@Resources.Resource.Search" />
+
+                <button id="btnSearchOrder" type="button" class="btn btn-primary mb-2">@Resources.Resource.Submit</button>
+            </form>
+
+            <table id="tblRecurOrder" class="table table-bordered  table-hover table-condensed">
+                <thead class="gray-header">
+                    <tr class="">
+                        <th class="text-left colheader" data-col="0" data-category="name">@Resources.Resource.Name</th>
+                        <th class="text-left">@Resources.Resource.Item</th>
+                        <th class="text-left colheader" data-col="1" data-category="lastposteddate"><span class="small font-weight-bold">@Resources.Resource.LastPosted4Order</span></th>
+                        <th class="text-right colheader" data-col="2" data-category="totalamt">@Resources.Resource.TotalAmount @currency</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody></tbody>
+            </table>
+            <br />
+            <div class="RecurPager"></div>
+
+            <input type="hidden" id="sortorder" value="desc" />
+            <input type="hidden" id="sortcol" value="0" />
+        </div>
+    </div>
+
+   
+</div>
+

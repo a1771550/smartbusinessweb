@@ -1,0 +1,78 @@
+﻿@model PPWLib.Models.AccessRightEditView
+@using PPWLib.Models
+
+@{
+	ViewBag.Title = "Edit";
+	Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@using (Html.BeginForm("Edit", "Admin"))
+{
+	@Html.AntiForgeryToken()
+
+	<h2>Edit Access Rights</h2>
+	<span>User: @Model.UserName</span>
+	<hr />
+	<h3>Reports</h3>
+	<div class="form-inline">
+
+		@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+		@foreach (Report report in Model.Reports)
+		{
+
+			string selected = Model.AccessRightViews.Any(x => x.ReportId == report.Id) ? " checked" : "";
+
+			<div class="form-check-inline">
+				<label class="form-check-label">
+					<input type="checkbox" class="form-check-input" name="ReportId[]" value="@report.Id" @selected>@report.DisplayName
+				</label>
+			</div>
+
+		}
+	</div>
+
+	<div id="salespeopleblock" class="form-group my-3">
+		<h3>Sales People</h3>
+		@foreach (Employee employee in Model.SalesPeople)
+		{
+
+			string selected = Model.UserSalesPeople != null && Model.UserSalesPeople.Any(x => x.UserId == Model.UserId && x.SalesPersonId == employee.ID) ? " checked" : "";
+
+			<div class="form-check-inline">
+				<label class="form-check-label">
+					<input type="checkbox" class="form-check-input" name="SalesPersonId[]" value="@employee.ID" @selected>@employee.Name
+				</label>
+			</div>
+
+		}
+	</div>	
+
+	<div class="form-group my-4">
+		@*<div class="col-md-offset-2 col-md-10">*@
+		<input type="submit" value="Save" class="btn btn-default" />
+		@Html.Hidden("UserId", Model.UserId)
+		@Html.Hidden("UserName", Model.UserName)
+		@*</div>*@
+	</div>
+}
+
+<div>
+	@Html.ActionLink("Back to List", "Index")
+</div>
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<script>
+	$(document).ready(function () {
+		var showblock = '@Model.ShowSalesPeopleBlock';
+		var $spb = $('#salespeopleblock');
+		if (showblock === 'True') {
+			$spb.show();
+		} else {
+			$spb.hide();
+		}
+	});
+</script>

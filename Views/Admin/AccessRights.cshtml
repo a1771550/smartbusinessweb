@@ -1,0 +1,33 @@
+﻿@model PPWLib.Models.SetupModel
+
+@{
+	ViewBag.Title = Resources.Resource.AccessRights;
+}
+
+<h3>@ViewBag.Title</h3>
+<div class="row justify-content-end my-3 mr-1">
+	<a role="button" class="btn btn-success" href="@Url.Action("Edit","AccessRight", new{ userId=0 })">@Resources.Resource.Add</a>
+</div>
+
+<table class="table table-bordered  table-hover table-condensed">
+	<thead class="gray-header">
+		<tr><td>@Resources.Resource.StaffCode</td><td>@Resources.Resource.DocketName</td><td>@Resources.Resource.Status</td><td></td></tr>
+	</thead>
+	<tbody>
+		@foreach (var user in Model.Users)
+		{
+			if (user.UserCode.ToLower() != "superadmin")
+			{
+				string status = (bool)user.surIsActive ? Resources.Resource.Active : Resources.Resource.Inactive;
+				<tr><td>@user.UserCode</td><td>@user.UserName</td><td>@status</td><td><button type="button" class="btn btn-default btnedit" data-userid="@user.surUID">@Resources.Resource.Edit</button></td></tr>
+			}
+
+		}
+	</tbody>
+</table>
+
+<script>
+	$(document).on('click', '.btnedit', function () {
+		window.location.href = '/AccessRight/Edit?userId=' + $(this).data('userid');
+	});
+</script>

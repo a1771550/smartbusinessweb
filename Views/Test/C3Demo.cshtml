@@ -1,0 +1,90 @@
+﻿<link href="~/Content/c3.css" rel="stylesheet" />
+
+@{
+    ViewBag.Title = "C3Demo";
+}
+
+<h2>C3Demo</h2>
+
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <div id="pieChart"></div>
+        </div>
+        <div class="col-6">
+            <div id="barChart"></div>
+        </div>
+    </div>
+  
+</div>
+
+
+
+<script src="~/Scripts/c3.min.js"></script>
+<script src="~/Scripts/d3.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            type: "GET",
+            url: "/Test/Charts",
+            data: {},
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                successFunc(response);
+            },
+        });
+
+        function successFunc(jsondata) {
+            var countries = jsondata.Countries.slice(0);
+            var populations = jsondata.Populations.slice(0);
+            console.log('pop:', populations);
+            var data = {};
+            var countryNames = [];
+            countries.forEach(function (e) {
+                countryNames.push(e.CountryName);
+                data[e.CountryName] = e.CountryPopulation;
+            })
+            var piechart = c3.generate({
+                bindto: '#pieChart',
+                data: {
+                    json: [data],
+                    keys: {
+                        value: countryNames,
+                    },
+                    type: 'pie'
+                },
+                color: {
+                    pattern: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5']
+                },
+                @*pie: {
+                    label: {
+                        format: function (value, ratio, id) {
+                            return value;
+                        }
+                    }
+                }*@ 
+            });
+
+            var barchart = c3.generate({
+                bindto: '#barChart',
+                data: {
+                    json: populations,
+                    keys: {
+                        value: ['Male', 'Female', 'Others'],
+                    },
+                    columns: ['Male', 'Female', 'Others'],
+                    type: 'bar',
+                    /*groups: [
+                        ['Male', 'Female', 'Others']
+                    ]*/
+                },
+                color: {
+                    pattern: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5']
+                },
+               
+            });  
+        }
+    });
+</script>
+

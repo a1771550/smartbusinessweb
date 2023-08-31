@@ -1,0 +1,309 @@
+﻿@using PPWLib.Models;
+@model eBlastEditModel
+@{
+    bool editmode = Model.eBlast != null;
+    string mandatory = Resources.Resource.StarMarkedMandatory.Replace("*", "<span class='asterisk'>*</span>");
+    string edittxt = editmode ? Resources.Resource.Edit : Resources.Resource.Add;
+    ViewBag.Title = edittxt + " " + Resources.Resource.eBlast;
+    int rand = CommonHelper.GetVersionRandomNo();
+    int lang = (int)HttpContext.Current.Session["CurrentCulture"];
+    string _htmlchecked = "checked";
+    string _textchecked = "";
+    eBlastModel tmpblast = new eBlastModel();
+
+    if (editmode)
+    {
+        tmpblast = Model.eBlast;
+        if (tmpblast.blHtml)
+        {
+            _htmlchecked = "checked";
+            _textchecked = "";
+        }
+        else
+        {
+            _textchecked = "checked";
+            _htmlchecked = "";
+        }
+    }
+
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/datetimepicker/jquery.datetimepicker.min.css">
+<script src="~/Scripts/datetimepicker/jquery.datetimepicker.full.min.js"></script>
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("Edit", "eBlast", FormMethod.Post, new { @Id = "frmeBlast" }))
+{
+    @Html.AntiForgeryToken()
+    if (editmode)
+    {
+        @Html.Hidden("Id", tmpblast.Id)
+    }
+
+
+    <h6>@Html.Raw(mandatory)</h6>
+    <div class="my-4" data-editmode="@editmode" data-ishtml="@tmpblast.blHtml">
+        <div class="form-group">
+            <div class="form-check form-check-inline">
+                <input class="form-check-input format" type="radio" name="format" id="formathtml" value="html" @_htmlchecked>
+                <label class="form-check-label" for="formathtml">@Resources.Resource.Html</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input format" type="radio" name="format" id="formattext" value="text" @_textchecked>
+                <label class="form-check-label" for="formattext">@Resources.Resource.Text</label>
+            </div>
+        </div>
+
+        @Html.Hidden("blHtml", tmpblast.blHtml)
+
+        <div class="form-group required">
+            <label class="control-label col-md-2" for="blSubject">@Resources.Resource.Subject</label>
+            <div class="col-md-10">
+                <input type="text" class="form-control" id="blSubject" name="blSubject" value="@tmpblast.blSubject" />
+            </div>
+        </div>
+
+        @{
+            string contentnotetag = string.Concat("<div style='margin-top:-.5em;'><span class='small alert'>(", $"<span class='font-weight-bold font-italic'>{Resources.Resource.Note}: </span>", Resources.Resource.eBlastContentNotes, ")</span></div>");
+        }
+        <div id="textblk" class="form-group required">
+            <label class="control-label col-md-2" for="textContent">@Resources.Resource.Content</label>
+            @Html.Raw(contentnotetag)
+            <div class="col-md-10">
+                <textarea class="form-control" id="textContent" name="textContent" rows="10" style="max-width:none;">@tmpblast.blContent</textarea>
+            </div>
+        </div>
+
+        <div id="htmlblk" class="form-group required">
+            <label class="control-label col-md-2" for="htmlContent">@Resources.Resource.Content</label>
+            @Html.Raw(contentnotetag)
+            <div class="col-md-10">
+                <textarea class="" id="htmlContent" name="htmlContent">@tmpblast.blContent</textarea>
+            </div>
+        </div>
+
+        <div class="form-group required">
+            <label class="control-label col-md-3" for="blSendTime">@Resources.Resource.ScheduledSendTime</label>
+            <div class="col-md-9">
+                <input type="datetime" class="form-control datetimepicker" id="blSendTime" name="blSendTime" value="@tmpblast.blSendTime" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-4" for="blPause">@Resources.Resource.PauseSendLabel</label>
+            <div class="col-md-10">
+                <input type="number" class="form-control" id="blPause" name="blPause" value="@tmpblast.blPause" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <a role="button" href="#" id="btnSave" class="btn btn-success">@Resources.Resource.Save</a>
+            </div>
+        </div>
+
+        <input type="hidden" id="AccountProfileId" name="AccountProfieId" value="@Model.AccountProfileId" />
+        <input type="hidden" id="blContent" name="blContent" />
+    </div>
+}
+
+<div>
+    @Html.ActionLink(Resources.Resource.BackToList, "Index")
+</div>
+
+<div id="infoblk" data-accountprofileid="@Model.AccountProfileId" data-subjectrequired="@Resources.Resource.SubjectRequired" data-contentrequired="@Resources.Resource.ContentRequired" data-sendtimerequired="@Resources.Resource.ScheduledSendTimeRequired" data-contentnotetxt="@Resources.Resource.eBlastContentNotes"></div>
+
+@Html.Partial("_WaitingModal")
+
+
+@{ 
+   string postbackurl = Request.IsLocal ? string.Concat("http://", UriHelper.GetLocalIPAddress()) : "https://app.united.com.hk";
+    postbackurl = string.Concat("/Api/UnsubscribeEblast?cusId=##CUSID##");
+}
+<!-- TinyMCE Script Reference -->
+<script src="~/Scripts/tinymce/tinymce.min.js"></script>
+<!-- Script to wire up your TinyMCE editor -->
+<script type="text/javascript">
+    // Initialize your tinyMCE Editor with your preferred options
+    tinyMCE.init({
+        selector: 'textarea#htmlContent',
+        setup: function (editor) {
+            editor.on('init', function (e) {
+                if (!editmode) {
+                    editor.setContent(`<p>##NAME##</p><p>Content</p><p>##IMG##</p><p style="font-size: 80%; font-weight: bold;">@Resources.Resource.UnsubscriptionMsg</p>
+<p style="font-size: 80%; font-weight: bold;"><a href="@postbackurl" role="button">@Resources.Resource.UnSubscribeFrmEblast</a></p>`);
+                }
+            });
+        },
+        @*auto_focus: 'htmlContent',*@
+        // General options
+        @*mode: "textareas",*@
+        theme: "silver",
+        width: 900,
+        height: 600,
+        plugins: [
+            'advlist', 'autolink', 'link', 'image', 'lists', 'charmap', 'preview', 'anchor', 'pagebreak',
+            'searchreplace', 'wordcount', 'visualblocks', 'code', 'fullscreen', 'insertdatetime', 'media',
+            'table', 'emoticons', 'template', 'help'
+        ],
+        toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | ' +
+            'bullist numlist outdent indent | link image | print preview media fullscreen | ' +
+            'forecolor backcolor emoticons | help',
+        menu: {
+            favs: { title: 'My Favorites', items: 'code visualaid | searchreplace | emoticons' }
+        },
+        menubar: 'favs file edit view insert format tools table help',
+        extended_valid_elements: "script[charset|defer|language|src|type]",
+        /* enable title field in the Image dialog*/
+        image_title: true,
+        /* enable automatic uploads of images represented by blob or data URIs*/
+        automatic_uploads: true,
+        /*
+          URL of our upload handler (for more details check: https://www.tiny.cloud/docs/configure/file-image-upload/#images_upload_url)
+          images_upload_url: 'postAcceptor.php',
+          here we add custom filepicker only to Image dialog
+        */
+        file_picker_types: 'image',
+        /* and here's our custom image picker*/
+        file_picker_callback: function (cb, value, meta) {
+            var input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+
+            /*
+              Note: In modern browsers input[type="file"] is functional without
+              even adding it to the DOM, but that might not be the case in some older
+              or quirky browsers like IE, so you might want to add it to the DOM
+              just in case, and visually hide it. And do not forget do remove it
+              once you do not need it anymore.
+            */
+
+            input.onchange = function () {
+                var file = this.files[0];
+
+                var reader = new FileReader();
+                reader.onload = function () {
+                    /*
+                      Note: Now we need to register the blob in TinyMCEs image blob
+                      registry. In the next release this part hopefully won't be
+                      necessary, as we are looking to handle it internally.
+                    */
+                    var id = 'blobid' + (new Date()).getTime();
+                    var blobCache = tinymce.activeEditor.editorUpload.blobCache;
+                    var base64 = reader.result.split(',')[1];
+                    var blobInfo = blobCache.create(id, file, base64);
+                    blobCache.add(blobInfo);
+
+                    /* call the callback and populate the Title field with the file name */
+                    cb(blobInfo.blobUri(), { title: file.name });
+                };
+                reader.readAsDataURL(file);
+            };
+
+            input.click();
+        },
+
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
+
+        // Example content CSS (should be your site CSS)
+        //content_css: "css/example.css",
+    });
+</script>
+
+<script src="~/Scripts/ts/js/crm/eblast/eblastedit.js?v=@rand"></script>
+
+<script>
+    function validform_eblast() {
+        let msg = '';
+
+        let $subject = $('#blSubject');
+        let _content = ishtml ? tinymce.activeEditor.getContent() : $('#textContent').val();
+        let $sendtime = $('#blSendTime');
+
+        if ($subject.val() === '') {
+            msg += $infoblk.data('subjectrequired') + "<br>";
+        }
+
+        let _contenterr = false;
+        if (_content === '') {
+            msg += $infoblk.data('contentrequired') + "<br>";
+            _contenterr = true;
+        } else if (_content.indexOf('##NAME##') === -1 || _content.indexOf('##IMG##') === -1) {
+            msg += $infoblk.data('contentnotetxt') + "<br>";
+            _contenterr = true;
+        }
+
+        if ($sendtime.val() === '') {
+            msg += $infoblk.data('sendtimerequired') + "<br>";
+        }
+
+        if (msg !== '') {
+            $.fancyConfirm({
+                title: '',
+                message: msg,
+                shownobtn: false,
+                okButton: oktxt,
+                noButton: notxt,
+                callback: function (value) {
+                    if (value) {
+                        if ($subject.val() === '') {
+                            $subject.trigger("focus");
+                        }
+                        else if (_contenterr) {
+                            $('.tox-tinymce').css({ 'border': '1px solid red' });
+                        }
+                        else if ($sendtime.val() === '') {
+                            $sendtime.trigger("focus");
+                        }
+                    }
+                }
+            });
+        }
+        return msg === '';
+    }
+
+    $(document).on('click', '#btnSave', function () {   
+
+        if (validform_eblast()) {
+            let _blast = initeBlast();
+
+            if (editmode) {
+                _blast.Id = $('#Id').val();
+            }
+
+            _blast.blSubject = $('#blSubject').val();
+            _blast.blContent = (ishtml) ? tinymce.activeEditor.getContent() : $('#textContent').val();
+
+            @*if (!editmode) {
+                _blast.blContent += `<span style="display:none;">##EMAIL##</span>`;
+            }*@            
+
+            console.log('content:' + _blast.blContent);
+
+            _blast.blSendTime = $('#blSendTime').val();
+            _blast.blPause = $('#blPause').val();
+            _blast.blHtml = ishtml;
+
+            console.log('blast:', _blast);
+           // return false;
+
+            $.ajax({
+                type: "POST",
+                url: editmode ? '/eBlast/Edit' : '/eBlast/Create',
+                data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val(), 'model': _blast },
+                success: function (data) {
+                    if (data.msg !== '') {
+                        window.location.href = '/eBlast/Index';
+                    }
+                },
+                dataType: 'json'
+            });
+        }
+    });
+
+    if (tinymce.activeEditor !== null) {
+        let _content = tinymce.activeEditor.getContent();
+        $('#blContent').val(_content);
+    }
+</script>

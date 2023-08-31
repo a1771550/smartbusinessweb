@@ -1,0 +1,265 @@
+﻿@model PPWLib.Models.RefundViewModel
+
+@{
+    ViewBag.Title = Resources.Resource.Refunds;
+    int rand = new Random().Next(10000, 100000);
+    int ispng = Model.IsPNG ? 1 : 0;
+    string devicecode = (HttpContext.Current.Session["Device"] as DeviceModel).dvcCode;
+}
+
+<link rel="stylesheet" href="~/Content/Sales.css?v=@rand" />
+<h2 class="text-center">@Resources.Resource.MakeRefund</h2>
+<div class="d-flex justify-content-center">
+    <div class="form-inline mb-2 my-4">
+        <div class="form-group">
+            <label for="txtReceiptNo" class="col-form-label mx-sm-3">@Resources.Resource.DeviceCode</label>
+            <input id="txtDeviceCode" class="form-control" value="@devicecode" />
+            <label for="txtReceiptNo" class="col-form-label mx-sm-3">@Resources.Resource.ReceiptNo</label>
+            <input id="txtReceiptNo" class="form-control" />
+            <label for="txtPhoneNo" class="col-form-label mx-sm-3">@Resources.Resource.PhoneNo</label>
+            <input id="txtPhoneNo" class="form-control" />
+            <button type="button" id="btnSearchReceipt" class="btn btn-default ml-3">@Resources.Resource.SearchReceipt</button>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-center">
+    <form id="frmCus" class="form-inline mb-2">
+        <div class="form-group">
+            <label for="txtCustomerCode" class="col-form-label mx-sm-3">@Resources.Resource.Customer</label>
+            <input type="hidden" id="txtCustomerCode" />
+            <input type="text" readonly class="form-control" id="txtStaticCustomerName" />
+        </div>
+
+        <div class="form-group ml-sm-3">
+            <label for="txtPoints" class="col-form-label mx-sm-3">@Resources.Resource.Points</label>
+            <input type="number" readonly class="form-control" id="txtPoints">
+        </div>
+        <div class="form-group ml-sm-3">
+            <label for="txtPriceLevel" class="col-form-label mx-sm-3">@Resources.Resource.PriceLevel</label>
+            <input type="text" readonly class="form-control" id="txtPriceLevel">
+        </div>
+        <div class="form-group ml-sm-3">
+            <label for="txtPhone" class="col-form-label mx-sm-3">@Resources.Resource.PhoneNo</label>
+            <input type="text" readonly class="form-control" id="txtPhone" />
+        </div>
+    </form>
+</div>
+
+
+<h4 class="text-center mt-4">@Resources.Resource.SalesHistory</h4>
+
+<div style="overflow-x:auto;">
+    <table id="tblsales" class="table table-bordered table-condensed table-hover ">
+        <colgroup>
+            <col width="60">
+            <col width="120">
+            <col width="85">
+            <col width="90">
+            <col width="90">
+            <col width="100">
+            <col width="150">
+            <col width="85">
+            <col width="120">
+            <col width="150">
+            <col width="80" />
+            <col width="90">
+        </colgroup>
+        <thead class="resizable black-header">
+            <tr>
+                <td class="text-center">@Resources.Resource.Sequence</td>
+                <td class="text-center">@Resources.Resource.ItemCode</td>
+                <td class="text-right">@Resources.Resource.Qty</td>
+                <td class="text-right">@Resources.Resource.Price</td>
+                <td class="text-right">@Resources.Resource.DiscountItemHeader</td>
+                <td class="text-right">@Resources.Resource.AmountItemHeader</td>
+                <td class="text-center">@Resources.Resource.SalesDate</td>
+                <td class="text-right">@Resources.Resource.RefundedQty</td>
+                <td class="text-right">@Resources.Resource.RefundAmtHeader</td>
+                <td class="text-center">@Resources.Resource.RefundDateHeader</td>
+                <td class="text-center">@Resources.Resource.Location</td>
+                <td class="text-center">@Resources.Resource.Detail</td>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+
+<div id="salesremarkblk" class="row justify-content-center" style="display:none;">
+    <h5 style="width:100%;" class="text-center">@Resources.Resource.SalesNotes</h5>
+    <span></span>
+</div>
+<hr />
+
+<h4 class="text-center font-weight-bold mt-4">@Resources.Resource.Refunds</h4>
+
+
+<div id="partialrefundnote" class="alert alert-danger text-center hide ">(@Resources.Resource.Note: @Resources.Resource.ePayPartialRefundNotSupported)</div>
+<div class="d-flex justify-content-center">
+    <div style="overflow-x:auto;">
+        <table id="tblRefund" class="jexcel jexcel_overflow" cellpadding="0" cellspacing="0" unselectable="yes" style="width:100%;">
+            <colgroup>
+                <col width="150">
+                <col width="150">
+                <col width="70">
+
+                <col width="90">
+                <col width="90">
+                <col width="90">
+
+                <col width="100">
+                <col width="100">
+
+                @if (Model.EnableTax && !Model.InclusiveTax)
+                {
+                    <col width="100">
+                }
+                <col width="100" />
+                <col width="70">
+                <col width="100">
+                <col width="50">
+            </colgroup>
+            @{ int idx = (Model.EnableTax && !Model.InclusiveTax) ? 11 : 10;}
+            <thead class="resizable">
+                <tr>
+                    <td data-x="1" title="@Resources.Resource.ItemCode" style="text-align: center;">@Resources.Resource.ItemCode</td>
+                    <td data-x="2" title="@Resources.Resource.Description" style="text-align: center;">@Resources.Resource.Description</td>
+                    <td data-x="3" title="@Resources.Resource.RefundedQty" style="text-align: right;">@Resources.Resource.RefundedQty</td>
+
+                    <td data-x="4" style="text-align: center;">@Resources.Resource.Batch</td>
+                    <td data-x="5" style="text-align: center;">@Resources.Resource.SerialNoItemHeader</td>
+                    <td data-x="6" style="text-align: center;">@Resources.Resource.ExpiryDate</td>
+
+                    <td data-x="7" title="@Resources.Resource.Price" style="text-align: right;">@Resources.Resource.Price</td>
+                    <td data-x="8" title="@Resources.Resource.DiscountItemHeader" style="text-align: right;">@Resources.Resource.DiscountItemHeader</td>
+
+                    @if (Model.EnableTax && !Model.InclusiveTax)
+                    {
+                        <td data-x="10" title="@Resources.Resource.TaxItemHeader" style="text-align: right;">@Resources.Resource.TaxItemHeader</td>
+                    }
+                    <td data-x="9" title="@Resources.Resource.Location" style="text-align: center;">@Resources.Resource.Location</td>
+                    <td data-x="@idx" title="@Resources.Resource.RefundQty" style="text-align: right;">@Resources.Resource.RefundQty</td>
+
+                    @{ idx++;}
+                    <td data-x="@idx" title="@Resources.Resource.RefundAmtHeader" style="text-align: right;">@Resources.Resource.RefundAmtHeader</td>
+                    @{ idx++;}
+                    <td data-x="@idx" class="text-center">@Resources.Resource.Sequence</td>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+
+<div class="row mr-1 my-5">
+    <div class="col-6">
+        <p class="formfield">
+            <label for="txtNotes" class="mx-sm-3">@Resources.Resource.Notes</label>
+            <textarea class="form-control d-inline-block" id="txtNotes" name="Notes" cols="250" rows="5"></textarea>
+        </p>
+    </div>
+
+    <div class="col-6">
+        <div class="row justify-content-end">
+            <div class="form-inline mb-2">
+                <div class="form-group">
+                    <label for="txtTotal" class="col-form-label mx-sm-3">@Resources.Resource.TotalAmount</label>
+                    <input type="number" class="form-control" id="txtTotal" readonly name="TotalAmount" value="0.00" />
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row justify-content-end">
+            <div class="form-inline mb-2">
+                <div class="form-group">
+                    <a id="btnRefund" href="#" role="button" class="btn btn-primary mr-3">@Resources.Resource.ProcessRefund</a>
+                    <a id="btnNewRefund" href="#" role="button" class="btn btn-info">@string.Format(Resources.Resource.AddFormat, Resources.Resource.Refund)</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_BatchModal")
+
+@Html.Partial("_SerialNoModal", null, new ViewDataDictionary { { "forsales", true } })
+
+@Html.Partial("_ValidThruModal")
+
+<div id="itemModal">
+
+    <div class="form-inline mb-2 my-4">
+        <div class="form-group">
+            <input type="text" class="form-control" id="txtItem" placeholder="@Resources.Resource.EnterItemCodeName" />
+            <button id="btnSearch" type="button" class="btn btn-default ml-4">@Resources.Resource.Search</button>
+        </div>
+    </div>
+
+    <table id="tblItem" class="table table-bordered  table-hover table-condensed">
+        <thead class="gray-header">
+            <tr><th>@Resources.Resource.ItemCode</th><th>@Resources.Resource.ItemName</th><th>@Resources.Resource.BaseSellingPrice</th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <p class="warning"></p>
+
+
+</div>
+
+@Html.Partial("_DescModal")
+
+@Html.Partial("_PayModal",null,new ViewDataDictionary { { "forrefund",true}, { "PaymentTypes", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes } })
+@*<div id="payModal">
+    <div class="row">
+        <div class="col-4">
+            <h2>@Resources.Resource.RefundAmt</h2>
+        </div>
+        <div class="col-8 text-right">
+            <h2><span id="refundamount"></span></h2>
+        </div>
+    </div>
+
+    <input type="hidden" id="epaytype" />
+
+    <div id="normalPayblk" class="form-inline px-sm-1 my-2">
+        <table id="tblPay" class="table table-bordered table-hover  table-condensed">
+            <thead class="gray-header">
+                <tr><th>@Resources.Resource.PaymentType</th><th class="text-right">@Resources.Resource.Amount</th></tr>
+            </thead>
+            <tbody>
+                @foreach (PaymentType payment in Model.PaymentTypes)
+                {
+                    if (payment.pmtCode != "Coupon")
+                    {
+                        <tr data-code="@payment.pmtCode"><td>@Model.DicPayTypes[payment.pmtCode]</td><td class="text-right"><input type="number" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype" value="0" /></td></tr>
+                    }
+
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <p class="warning"></p>
+
+</div>*@
+
+<div id="changeModal">
+    <div class="row justify-content-center">
+        <h4>@Resources.Resource.TotalRefundAmount <span id="totalrefundamt"></span></h4>
+    </div>
+    <h3 class="my-4 text-center">@Resources.Resource.SalesChange</h3>
+    <h2 class="text-center"><span id="changeamt"></span></h2>
+    <p class="warning"></p>
+</div>
+
+@Html.Partial("_WaitingModal")
+
+<div id="infoblk" data-ispng="@ispng" data-inclusivetax="@Model.InclusiveTax" data-inclusivetaxrate="@Model.InclusiveTaxRate" data-printurl="@Url.Action("Index", "Print")" data-checkoutportal="@Model.ComInfo.DefaultCheckoutPortal"></div>
+<link rel="stylesheet" type="text/css" href="~/Scripts/jspreadsheet/dist/jexcel.css" />
+<link rel="stylesheet" type="text/css" href="~/Scripts/jsuites/dist/jsuites.css" />
+<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+<script src="~/Scripts/ts/js/pos/refund.js?v=@rand"></script>

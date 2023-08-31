@@ -1,0 +1,65 @@
+﻿@model PPWLib.Models.Item.ItemCategoryModel
+
+@{
+    bool edit = Model.Id > 0;
+    int rand = CommonHelper.GetVersionRandomNo();
+}
+<h2>@ViewBag.Title</h2>
+@using (Html.BeginForm("Edit", "ItemCategory", FormMethod.Get, new { @Id = "frmCategory",@class="my-4" }))
+{
+    @Html.AntiForgeryToken()
+
+
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model=>model.Removable)
+
+
+<div class="row">
+    <div class="col-12 col-md-4">
+        <div class="form-group required">
+            <label>@Resources.Resource.Name (@Resources.Resource.EN)</label>
+            @Html.EditorFor(model => model.catName, new { htmlAttributes = new { @class = "form-control catname" } })
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="form-group">
+            <label>@Resources.Resource.Name (@Resources.Resource.TC)</label>
+            @Html.EditorFor(model => model.catNameTC, new { htmlAttributes = new { @class = "form-control catname" } })
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="form-group">
+            <label>@Resources.Resource.Name (@Resources.Resource.SC)</label>
+            @Html.EditorFor(model => model.catNameSC, new { htmlAttributes = new { @class = "form-control catname" } })
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 col-md-4">
+        <div class="form-group">
+            <label>@Resources.Resource.Description (@Resources.Resource.EN)</label>
+            @Html.TextAreaFor(model => model.catDesc, new { @class = "form-control", @rows = 3 })
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="form-group">
+            <label>@Resources.Resource.Description (@Resources.Resource.TC)</label>
+            @Html.TextAreaFor(model => model.catDescTC, new { @class = "form-control", @rows = 3 })
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="form-group">
+            <label>@Resources.Resource.Description (@Resources.Resource.SC)</label>
+            @Html.TextAreaFor(model => model.catDescSC, new { @class = "form-control", @rows = 3 })
+        </div>
+    </div>
+</div>
+
+    <button type="button" id="btnSaveCat" class="btn btn-success">@Resources.Resource.Save</button>
+}
+<div>
+    @Html.ActionLink(Resources.Resource.BackToList, "Index")
+</div>
+@Html.Partial("_WaitingModal")
+<div id="infoblk"></div>
+<script src="~/Scripts/ts/js/item/categoryedit.js?v=@rand"></script>

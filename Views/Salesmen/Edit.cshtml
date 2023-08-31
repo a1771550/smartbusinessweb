@@ -1,0 +1,107 @@
+﻿@model SalesmanModel
+
+@{
+    var lang = CultureHelper.CurrentCulture;
+    var action = Model.surUID == 0 ? Resources.Resource.Add : Resources.Resource.Edit;
+    ViewBag.Title = (lang == 2) ? String.Concat(action, " ", Resources.Resource.SalesPerson) : String.Concat(action, "", Resources.Resource.SalesPerson);
+    int icheckpass = -1;
+    var rand = CommonHelper.GetVersionRandomNo();
+    var usercode = Model.surUID == 0 ?Model.MaxSalesCode:Model.UserCode;
+}
+
+@using (Html.BeginForm("Edit", "Salesmen", FormMethod.Post, new { @id = "salesmenform" }))
+{
+    @Html.AntiForgeryToken()
+
+    <h2 class="mb-4">@ViewBag.Title</h2>
+
+    <div class="form-horizontal">
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="UserCode">@Resources.Resource.UserCode</label>
+            <div class="col-md-10">
+                    <input type="text" readonly="readonly" id="UserCode" name="UserCode" class="form-control" value="@usercode" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="UserName">@Resources.Resource.UserName</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control" } })
+
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="Email">@Resources.Resource.Email</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+
+            </div>
+        </div>
+
+        <div class="form-group required">
+            <label for="drpManager" class="control-label col-md-2">@Resources.Resource.AssignManager</label>
+            <div class="col-md-10">
+                <select class="form-control" id="drpManager">
+                    <option value="0">-- @Resources.Resource.Select --</option>
+                    @foreach (var manager in Model.Managers)
+                    {
+                        var selected = Model.ManagerId == manager.surUID ? "selected" : "";
+                        <option value="@manager.surUID" @selected>@manager.UserName</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-left:1em;">
+            <div id="chkpassblk" class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="chkpass">
+                <label class="form-check-label" for="chkpass">
+                    @Resources.Resource.ChangePass
+                </label>
+
+            </div>
+        </div>
+
+        <div id="passblk" class="hide" data-pass="@Model.Password">
+            <div class="form-group">
+                <label class="control-label col-md-2" for="Password">@Resources.Resource.Password</label>
+                <div class="col-md-10">
+                    @Html.PasswordFor(model => model.Password, new { @class = "form-control", @id = "Password" })
+
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2" for="ConfirmPassword">@Resources.Resource.ConfirmPassword</label>
+                <div class="col-md-10">
+                    @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "form-control",@id="ConfirmPassword" })
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="form-group my-4">
+        <button id="btnSave" type="button" class="btn btn-success">@Resources.Resource.Save</button>
+        @Html.Hidden("UserID", Model.surUID)
+        @if (Model.surUID > 0)
+        {
+            icheckpass = Model.checkpass ? 1 : 0;
+            @Html.HiddenFor(model => model.checkpass, new { @Id = "checkpass" })
+        }
+        <input type="hidden" name="userstatus" id="userstatus" value="1" />
+        <input type="hidden" id="currpass" name="Password" value="@Model.Password" />
+        <input type="hidden" id="icheckpass" name="icheckpass" value="@icheckpass" />
+    </div>
+}
+
+<div>
+    @Html.ActionLink(Resources.Resource.BackToList, "Index", "Salesmen")
+</div>
+<div id="infoblk" class="hide" data-apid="@Model.AccountProfileId" data-managerrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Manager)"></div>
+<script src="~/Scripts/ts/js/crm/usermanagement/salesmen/salesmenedit.js?v=@rand"></script>
+

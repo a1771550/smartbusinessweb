@@ -1,0 +1,26 @@
+﻿@{
+    bool isassignable = (bool)ViewData["isassignable"];
+}
+<div id="assignedEnquiryModal">
+    <div class="container">
+        <table id="tblassignedEnquiries" class="table table-bordered  table-hover table-condensed">
+            <thead class="gray-header">
+                <tr>
+                    <th style="width:140px;max-width:140px;" scope="col">@Resources.Resource.Email</th>
+                    <th scope="col">@Resources.Resource.Phone</th>
+                    <th scope="col">@Resources.Resource.Organization</th>
+                    <th scope="col">@Resources.Resource.Contact</th>
+                    @*@if (isassignable)
+                    {*@
+                        <th style="width:80px;max-width:80px;"></th>
+                    @*}*@
+
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <div id="pagination-assignedenquiries"></div>
+    </div>
+</div>

@@ -1,0 +1,118 @@
+﻿@model PPWLib.Models.CrmUserEditModel
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = Resources.Resource.UserManagement;
+    int rand = CommonHelper.GetVersionRandomNo();
+    SessUser user = HttpContext.Current.Session["User"] as SessUser;
+    //bool iscrmadmin = user.Roles.Any(x => x == RoleType.CRMAdmin);
+    //bool isassignable = iscrmadmin;
+    List<RoleType> salesmanroles = new List<RoleType>();
+    List<RoleType> salesmanagerroles = new List<RoleType>();
+    salesmanroles.Add(RoleType.CRMSalesPerson);
+    salesmanagerroles.Add(RoleType.CRMSalesPerson);
+    salesmanagerroles.Add(RoleType.CRMSalesManager);
+}
+<link href="~/Scripts/paginationjs/pagination.css" rel="stylesheet" type="text/css" />
+
+<h3>@ViewBag.Title</h3>
+
+<div class="row justify-content-end my-3 mr-1">
+    @*<a role="button" class="btn btn-info mx-3 @Model.AddBtnCls" href="@Url.Action("Edit","CrmUser", new{ userId=0,roles=$"{string.Join(",",salesmanroles)}" })">@string.Format(Resources.Resource.AddFormat, Resources.Resource.SalesPerson)</a>*@
+    <button id="btnAdd" type="button" class="btn btn-info mx-3 @Model.AddBtnCls" data-href="@Url.Action("Edit","CrmUser", new{ userId=0,roles=$"{string.Join(",",salesmanroles)}" })" data-userlicensefullprompt="@Resources.Resource.UserLicensedFullPrompt">@string.Format(Resources.Resource.AddFormat, Resources.Resource.SalesPerson)</button>
+        @*<a role="button" class="btn btn-info mx-3 @Model.AddBtnCls" href="@Url.Action("Edit","CrmUser", new{ userId=0,roles=$"{string.Join(",",salesmanagerroles)}"})">@string.Format(Resources.Resource.AddFormat, Resources.Resource.SalesManager)</a>*@
+
+        <a role="button" class="btn btn-warning mx-3" href="@Url.Action("EditSalesGroupMember", "CrmUser", new {crmadminId=user.surUID})">@string.Format(Resources.Resource.EditFormat, string.Format(Resources.Resource.MemberFormat, Resources.Resource.SalesGroup))</a>
+  
+</div>
+
+<div id="norecordfound" class="container hide">@Resources.Resource.NoDataFound</div>
+@using (Html.BeginForm("Index", "CrmUser", FormMethod.Post, new { @id = "frmcrmuser" }))
+{
+    <div class="container" style="width:105%;">
+        <div id="searchblk" class="row justify-content-center form-inline mb-2 my-4">
+            <div class="form-group">
+                <input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Model.Keyword" />
+                <button id="btnSearch" type="submit" role="button" class="btn btn-primary ml-4">@Resources.Resource.Search</button>
+                <button id="btnReset" type="button" role="button" class="btn btn-secondary ml-4">@Resources.Resource.Reset</button>
+            </div>
+        </div>
+    </div>
+}
+<table id="tblcrmuser" class="table table-bordered  table-hover table-condensed">
+    <thead class="gray-header">
+        <tr>
+            @*<th>
+                @Resources.Resource.Code
+            </th>*@
+            <th>@Resources.Resource.Name</th>
+            <th>
+                @Resources.Resource.Role
+            </th>
+            <th>
+                @Resources.Resource.Email
+            </th>
+            <th>@Resources.Resource.Manager</th>
+            @*<th></th>*@
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.PagingCrmUserList)
+        {
+            var lnkcls = "";
+            if(item.RoleTypes.Any(x=>x== RoleType.CRMAdmin))
+            {
+                lnkcls = item.surUID != user.surUID ? "linkdisabled" : "";
+            }
+            <tr data-id="@item.surUID" data-roletypes="@string.Join(",",item.RoleTypes)">
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.UserCode)
+                </td>*@
+                <td>@Html.DisplayFor(modelItem => item.UserName)</td>
+                <td style="width:220px;max-width:220px;">
+                    @Html.DisplayFor(modelItem => item.RoleNames)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ManagerName)
+                </td>
+                @*<td style="width:190px;max-width:190px;">
+                    <button type="button" class="btn btn-primary btngetassignedcontacts" data-userid="@item.surUID">@string.Format(Resources.Resource.AssignedFormat, Resources.Resource.Contacts)</button>
+                </td>*@
+            <td>
+                <a href="#" class="btn btn-info btnedit @lnkcls" data-userid="@item.surUID" data-roles="@string.Join(",",item.RoleTypes)" role="button">@Resources.Resource.Edit</a>
+                @if (!item.RoleTypes.Contains(RoleType.CRMAdmin))
+                {
+                    <a href="#" class="btn btn-danger btnremove @lnkcls" data-userid="@item.surUID" role="button">@Resources.Resource.Remove</a>
+                }
+
+            </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@Html.Partial("_WaitingModal")
+
+@Html.Partial("_AssignedContacts", null, new ViewDataDictionary { { "isassignable", true } })
+
+@Html.AntiForgeryToken()
+
+<div id="pagingblk" class="mx-3">
+    <div class="row">
+        @Html.PagedListPager(Model.PagingCrmUserList, PageNo => Url.Action("CrmUser",
+new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
+    </div>
+</div>
+
+<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+<input type="hidden" id="sortcol" value="@Model.SortCol" />
+
+@{ int pagelength = (int)(HttpContext.Current.Session["ComInfo"] as ComInfo).PageLength;}
+<div id="infoblk" class="hide" data-apid="@ConfigurationManager.AppSettings["AccountProfileId"]" data-confirmremovetxt="@Resources.Resource.ConfirmRemove" data-unassigntxt="@Resources.Resource.Unassign" data-confirmunassigntxt="@string.Format(Resources.Resource.ConfirmFormat,Resources.Resource.Unassign)" data-pagesize="@pagelength"></div>
+
+
+<script src="~/Scripts/paginationjs/pagination.js"></script>
+<script src="~/Scripts/ts/js/crm/usermanagement/user/list.js?v=@rand"></script>

@@ -1,0 +1,81 @@
+﻿@model PPWLib.Models.SessionItemSales
+
+@{
+	ViewBag.Title = Resources.Resource.SessionItemSales;
+}
+
+<div id="printblk" style="font-size:1.3em!important;">
+	<div class="row justify-content-center mb-4">
+		<h2 class="text-center">@ViewBag.Title</h2>
+		<h2 class="text-center">@Model.Device.dvcName</h2>
+	</div>
+
+	<div class="text-right">@Resources.Resource.StartTime : @Model.Frmtime</div>
+	<div class="text-right">@Resources.Resource.EndTime : @Model.Totime</div>
+
+	<div class="row mx-1 my-5">
+		<table class="table table-borderless">
+			<thead class="font-weight-bold">
+				<tr><td class="text-left" style="border-bottom: 1px solid black !important;">@Resources.Resource.ItemCode</td><td class="text-left" style="border-bottom: 1px solid black !important;">@Resources.Resource.Description</td><td class="text-right" style="border-bottom: 1px solid black !important;">@Resources.Resource.QuantitySold</td><td class="text-right" style="border-bottom: 1px solid black !important;">@Resources.Resource.Amount ($)</td></tr>
+			</thead>
+			<tbody class="table-borderless">
+				@{ List<string> commonkeys = new List<string>();}
+
+				@if (Model.GroupedItemRefunds.Count > 0)
+				{
+					foreach (var sg in Model.GroupedItemSales)
+					{
+						foreach (var rg in Model.GroupedItemRefunds)
+						{
+							if (sg.Key == rg.Key)
+							{
+								var qty = sg.Sum(x => x.rtlQty) + rg.Sum(x => x.rtlQty);
+								var amt = sg.Sum(x => x.rtlSalesAmt) + rg.Sum(x => x.rtlSalesAmt);
+								<tr>
+									<td class="text-left">@sg.Key</td>
+									<td class="text-left">@sg.FirstOrDefault().Item.itmDesc</td>
+									<td class="text-right">@qty</td>
+									<td class="text-right">@amt</td>
+								</tr>
+								commonkeys.Add(sg.Key);
+							}
+						}
+
+					}
+				}
+
+				@foreach (var sg in Model.GroupedItemSales.Where(x => !commonkeys.Contains(x.Key)))
+				{
+					var qty = sg.Sum(x => x.rtlQty);
+					var amt = sg.Sum(x => x.rtlSalesAmt);
+					<tr>
+						<td class="text-left">@sg.Key</td>
+						<td class="text-left">@sg.FirstOrDefault().Item.itmDesc</td>
+						<td class="text-right">@qty</td>
+						<td class="text-right">@amt</td>
+					</tr>
+				}
+
+
+
+			</tbody>
+			<tfoot class="table-borderless font-weight-bold">
+				<tr><td colspan="2" class="text-right" style="border-top: 1px solid black !important;">@Resources.Resource.Total</td><td class="text-right" style="border-top: 1px solid black !important;"><span id="totalqty">@Model.TotalQty</span></td><td class="text-right" style="border-top: 1px solid black !important;"><span id="totalamt">@Model.TotalAmt</span></td></tr>
+
+			</tfoot>
+		</table>
+	</div>
+
+</div>
+
+
+<div class="row justify-content-center my-3">
+	<button type="button" id="btnPrintPreview" class="btn btn-success">@Resources.Resource.PrintPreview</button>
+</div>
+<script src="~/Scripts/printthis/printThis.js"></script>
+<script>
+	$(document).on('click', '#btnPrintPreview', function () {
+		$('#printblk').printThis();
+	});
+</script>
+

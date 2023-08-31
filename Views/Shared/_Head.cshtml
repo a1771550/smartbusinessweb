@@ -1,0 +1,37 @@
+﻿@{
+    string dateformat = ConfigurationManager.AppSettings["DateFormat"];
+    string sitename = Resources.Resource.SiteName;
+    int rand = CommonHelper.GetVersionRandomNo();
+    //string cssbsfile = ViewData["cssbsfile"] == null ? @"Content/bs4" : ViewData["CssBSFile"].ToString();
+    //string scriptbsfile = ViewData["scriptbsfile"] == null ? @"Scripts/bs4" : ViewData["ScriptBSFile"].ToString();
+    string pagetitle = ViewData["PageTitle"] == null ? @"" : ViewData["PageTitle"].ToString();
+    //string printcss = ViewData["printcss"] == null ? "" : ViewData["printcss"].ToString();
+}
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="28800">
+    <title>@pagetitle - @sitename</title>
+    <link rel="icon" type="image/png" href="~/Content/favicon_io/favicon-16x16.png">
+    @Styles.Render("~/bundles/maincss")
+    <!-- The following two files must not be bundled!!! -->
+    <link href="~/Content/fontawesome/css/fontawesome.css" rel="stylesheet" />
+    <link href="~/Content/fontawesome/css/brands.css" rel="stylesheet">
+    <link href="~/Content/fontawesome/css/solid.css" rel="stylesheet">
+    @*<link href="~/Content/fontawesome/css/all.min.css" rel="stylesheet">*@
+    <!--load all styles -->
+    @Scripts.Render("~/bundles/mainjs")
+    @*<link rel="stylesheet" type="text/css" href="~/Scripts/jquery-ui/jquery-ui.min.css">
+        <script src="~/Scripts/jquery-ui/jquery-ui.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="~/Scripts/fancybox/jquery.fancybox.css" />
+        <script type="text/javascript" src="~/Scripts/node_modules/jquery-powertip/dist/jquery.powertip.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="~/Scripts/node_modules/jquery-powertip/dist/css/jquery.powertip.min.css" />*@
+    @Styles.Render("~/bundles/misccss")
+    @Scripts.Render("~/bundles/miscjs")
+    @Scripts.Render("~/bundles/fancyjpower")
+
+    <script id="commonfunc" src="~/Scripts/commonfunc.js?v=@rand" data-dateformat="@dateformat"></script>
+    <link href="~/Content/Site.css?v=@rand" rel="stylesheet" type="text/css" />
+
+    <script src="https://kit.fontawesome.com/1dc29bcabd.js" crossorigin="anonymous"></script>
+</head>

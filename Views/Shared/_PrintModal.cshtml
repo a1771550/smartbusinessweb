@@ -1,0 +1,18 @@
+﻿@{
+	bool issales = this.ViewData.ContainsKey("issales") ? (bool)this.ViewData["issales"] : false;	
+}
+
+<div id="printblk" style="font-size:2.5em;padding-left:.5em;padding-right:1.5em;">
+    <style>
+        @@media print {
+            footer {
+                page-break-after: always !important;
+            }
+
+            .header {
+                page-break-after: avoid;
+            }
+        }
+    </style>
+    <div class="container"></div>
+</div>

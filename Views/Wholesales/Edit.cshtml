@@ -1,0 +1,357 @@
+﻿@model PPWLib.Models.WholeSales.WholeSalesModel
+@{
+    bool editmode = Model.wsUID > 0;
+    string edittxt = editmode ? Resources.Resource.Edit : Resources.Resource.Add;
+    ViewBag.Title = edittxt + " " + Resources.Resource.WholeSales;
+    int rand = CommonHelper.GetVersionRandomNo();
+
+    if (!editmode)
+    {
+        Model.wsSalesLoc = HttpContext.Current.Session["ComInfo"] == null ? "" : (HttpContext.Current.Session["ComInfo"] as ComInfo).Shop;
+    }
+    bool approvalmode = (bool)Model.ComInfo.ApprovalMode;
+    var currency = Model.ComInfo.Currency;
+    bool showrecur = (bool)Model.ComInfo.ShowRecurOrderOption;
+    SessUser user = System.Web.HttpContext.Current.Session["User"] as SessUser;
+    bool isapprover = user.Roles.Any(x => x == RoleType.Admin || x == RoleType.SalesManager);
+    bool ismanager = user.Roles.Any(x => x == RoleType.SalesManager);
+}
+<link rel="stylesheet" type="text/css" href="~/Scripts/jspreadsheet/dist/jexcel.css" />
+<link rel="stylesheet" type="text/css" href="~/Scripts/jsuites/dist/jsuites.css" />
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<h2 class="mb-4">@ViewBag.Title</h2>
+
+@using (Html.BeginForm("Edit", "WholeSales", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.wsUID)
+    @Html.HiddenFor(model => model.wsCode)
+    @Html.HiddenFor(model => model.wsRefCode)
+    @Html.HiddenFor(model => model.wsDvc)
+    @Html.HiddenFor(model => model.wsType)
+    @Html.HiddenFor(model => model.UseForexAPI)
+    @Html.HiddenFor(model => model.wsSalesLoc)
+    @Html.HiddenFor(model => model.wsAllLoc)
+    @Html.HiddenFor(model => model.wsDeliveryAddressId)
+    @Html.HiddenFor(model => model.wsExRate)
+    @Html.HiddenFor(model => model.wsChkManualDelAddr)
+
+    <div class="row justify-content-between my-4 px-4">
+
+        @if (showrecur)
+        {
+            <button type="button" id="btnUseRecur" class="btn btn-outline-info">@Resources.Resource.UseRecurring</button>
+        }
+        <h5 id="status" class="">@Model.wsStatus.ToUpper()</h5>
+        @Html.HiddenFor(model => model.wsStatus)
+
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12 col-md-3">
+            <div class="form-group">
+                <label class="control-label">@string.Format(Resources.Resource.WholeSalesFormat, Resources.Resource.Code)</label>
+                <input type="text" class="form-control" id="wsCode" name="wsCode" value="@Model.wsCode" readonly />
+            </div>
+        </div>
+        <div class="col-12 col-md-3">
+            <div class="form-group required">
+                <label class="control-label">@string.Format(Resources.Resource.DateFormat, Resources.Resource.WholeSales)</label>
+
+                <input type="datetime" class="form-control datepicker" id="wholesalesDate" />
+                @Html.HiddenFor(model => model.wsDate)
+                @Html.HiddenFor(model => model.WholesalesDateDisplay)
+
+            </div>
+        </div>
+
+        @{
+            var wscurrency = Model.wsCurrency ?? "HKD";
+        }
+        <div class="col-12 col-md-3">
+            @Html.Partial("_ExRateModal", null, new ViewDataDictionary { { "fieldname", "wsCurrency" }, { "currency", wscurrency }, { "required", "required" }, { "exratestyle", "margin-top:-1rem;" } })
+        </div>
+
+        <div class="col-12 col-md-3">
+            <div class="form-group required">
+                <label class="control-label" for="drpLocation">@Resources.Resource.Location</label>
+
+                <select id="drpLocation" name="wsSalesLoc" class="form-control">
+                    @* <option value="">-- @Resources.Resource.Select --</option>*@
+                    @foreach (var item in Model.LocationList)
+                    {
+                        string selected = "";
+                        if (editmode)
+                        {
+                            selected = Model.wsSalesLoc == item.Value ? "selected" : "";
+                        }
+
+                        <option value="@item.Value" @selected>@item.Text</option>
+                    }
+                </select>
+                @{ var _checked = editmode && Model.wsAllLoc != null ? (bool)Model.wsAllLoc ? "checked" : "" : "";}
+                @Html.Partial("_ApplyToAllSalesLocation", null, new ViewDataDictionary { { "checked", _checked } })
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-md-2">
+            <div class="form-group required">
+                <label class="control-label" for="drpCustomer">@Resources.Resource.Customer</label>
+
+                <select id="drpCustomer" name="wsCusID" class="form-control card">
+                    <option value="">-- @Resources.Resource.Select --</option>
+                    @foreach (var item in Model.CustomerList)
+                    {
+                        var selected = Model.wsCusCode == item.Value ? "selected" : "";
+                        <option value="@item.Value" @selected>@item.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        @{
+            var drphide = !editmode ? "" : (bool)Model.wsChkManualDelAddr ? "hide" : "";
+            var txthide = !editmode ? "hide" : (bool)Model.wsChkManualDelAddr ? "" : "hide";
+            var chkdel = !editmode ? "" : (bool)Model.wsChkManualDelAddr ? "checked" : "";
+        }
+
+        <div class="col-12 col-md-4">
+            <div class="form-group">
+                <label for="drpDeliveryAddr" class="mr-4">@string.Format(Resources.Resource.DeliveryFormat, Resources.Resource.Address)</label>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="chkDelAddr" value="1" @chkdel>
+                    <label class="form-check-label small" for="chkDelAddr">@Resources.Resource.ManualEntry</label>
+                </div>
+                <input type="text" id="txtDelAddr" class="form-control @txthide" style="max-width:none;" value="@Model.wsDeliveryAddress1" max="250" />
+                <select id="drpDeliveryAddr" class="form-control @drphide" style="max-width:none;">
+                </select>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-2">
+            <div class="form-group">
+                <label class="control-label" for="wsCustomerTerms">@Resources.Resource.CustomerTerms</label>
+                <input type="text" class="form-control pointer" id="wsCustomerTerms" name="wsCustomerTerms" readonly value="@Model.wsCustomerTerms" />
+            </div>
+        </div>
+        <div class="col-12 col-md-2">
+            <div class="form-group">
+                <label class="control-label" for="wsCustomerPO">@Resources.Resource.CustomerPO</label>
+                <input type="text" class="form-control" id="wsCustomerPO" name="wsCustomerPO" value="@Model.wsCustomerPO" />
+            </div>
+        </div>
+        <div class="col-12 col-md-2">
+            <div class="form-group">
+                <label for="deliveryDate" class="mx-sm-2">@Resources.Resource.DeliveryDate</label>
+                <input type="datetime" id="deliveryDate" class="form-control datepicker" />
+                @Html.HiddenFor(model => model.wsDeliveryDate)
+                @Html.HiddenFor(model => model.DeliveryDateDisplay)
+            </div>
+        </div>
+    </div>
+
+
+    <div class="d-flex justify-content-center my-4" data-status="@Model.wsStatus" data-enabletax="@Model.EnableTax" data-inclusivetax="@Model.InclusiveTax">
+        @{ var colcls = (Model.wsStatus == WholeSalesStatus.invoice.ToString() || Model.wsStatus == WholeSalesStatus.deliver.ToString() || Model.wsStatus == WholeSalesStatus.partialdeliver.ToString()) ? "" : "hide";}
+        <table id="tblWSI" class="jexcel jexcel_overflow" cellpadding="0" cellspacing="0" style="width:100%;">
+            <thead class="resizable">
+                <tr>
+                    <td class="" style="width:50px;max-width:50px;"></td>
+                    <td title="@Resources.Resource.ItemCode" style="text-align: center;width:100px;">@Resources.Resource.ItemCode</td>
+                    <td title="@Resources.Resource.ItemName" style="text-align: center;width:100px;">@Resources.Resource.ItemName</td>
+                    <td title="@Resources.Resource.BaseUnit" style="text-align: right; width: 50px;">@Resources.Resource.BaseUnit</td>
+                    <td title="@Resources.Resource.Qty" style="text-align: right; width: 80px;">@Resources.Resource.Qty</td>
+
+                    <td title="@Resources.Resource.DeliveryQty" class="text-right @colcls" style="text-align: right; width: 80px;">@Resources.Resource.DeliveryQty</td>
+
+                    <td title="@Resources.Resource.Batch" class="text-center @colcls" style="text-align: center; width: 100px;">@Resources.Resource.Batch</td>
+                    <td title="@Resources.Resource.SerialNo" class="text-center @colcls" style="text-align: center; width: 100px;">@Resources.Resource.SerialNoItemHeader</td>
+                    <td title="@Resources.Resource.ExpiryDate" class="text-center @colcls" style="text-align: center; width: 100px;">@Resources.Resource.ExpiryDate</td>
+
+                    <td style="text-align: right; width: 100px;">@Resources.Resource.SellingPrice (@Model.Currency)</td>
+                    <td title="@Resources.Resource.DiscPc" style="text-align: right; width: 100px;">@Resources.Resource.DiscPc</td>
+                    @if (Model.EnableTax && !Model.InclusiveTax)
+                    {
+                        <td title="@Resources.Resource.Tax" style="text-align: right; width: 100px;">@Resources.Resource.TaxItemHeader</td>
+                    }
+                    <td class="text-center" style="width: 100px;">@Resources.Resource.Location</td>
+                    <td class="text-center" style="width: 100px;">@Resources.Resource.Job4Myob</td>
+                    <td title="@Resources.Resource.Amount" style="text-align: right; width: 100px;">@Resources.Resource.Amount (@Model.Currency)</td>
+
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    var decimaltotal = CommonHelper.FormatNumber(Model.Total);
+    <div class="row mx-1">
+        <div class="col-12 col-md-4">
+            <div class="form-group">
+                <label class="control-label" for="wsRemark">@Resources.Resource.Remark</label>
+                <textarea class="form-control" id="wsRemark" name="wsRemark" rows="5" placeholder="">@Model.wsRemark</textarea>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-8">
+            <div class="float-right">
+                <div class="form-group">
+                    <label for="txtTotal" class="col-form-label mx-sm-3 font-weight-bold">@Resources.Resource.TotalAmount (@Model.Currency)</label>
+                    <input type="number" class="form-control" id="txtTotal" readonly name="TotalAmount" value="@decimaltotal" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    //{ approvalmode = false; }
+
+    <div id="btnblk" class="row justify-content-end px-4">
+
+
+
+        @if (approvalmode)
+        {
+            <input type="hidden" id="mode" value="@Model.Mode" />
+
+            if (isapprover)
+            {
+                if (ismanager)
+                {
+                    if (editmode && Model.wsStatus != WholeSalesStatus.invoice.ToString())
+                    {
+                        <div class="text-right">
+                            @Html.Partial("_NormalSaveBlk4WholeSales", null, new ViewDataDictionary { { "editmode", editmode }, { "status", Model.wsStatus }, { "ismanager", ismanager } })
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-none d-md-block text-right">
+                            <a role="button" href="#" class="btn btn-success mr-2 btnSave">@Resources.Resource.Save</a>
+                            @if (showrecur)
+                            {
+                                <button id="" type="button" class="btn btn-info ml-3 my-2 btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
+                            }
+                            @*<button id="" type="button" class="btn btn-success ml-3 my-2 btnNewSales">@string.Format(Resources.Resource.NewFormat, Resources.Resource.WholeSales)</button>*@
+                        </div>
+
+                        <div class="d-block d-sm-block d-md-none text-right">
+                            <a role="button" href="#" class="btn btn-success d-flex my-2 btnSave">@Resources.Resource.Save</a>
+                            @if (showrecur)
+                            {
+                                <button id="" type="button" class="btn btn-info d-flex my-2 btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
+                            }
+                            @*<button id="" type="button" class="btn btn-success d-flex my-2 btnNewSales">@string.Format(Resources.Resource.NewFormat, Resources.Resource.WholeSales)</button>*@
+                        </div>
+                    }
+                }
+                else if (!ismanager)
+                {
+                    <div class="d-none d-md-block text-right" data-approve="@Resources.Resource.Approve" data-reject="@Resources.Resource.Reject">
+                        <button type="button" id="" class="btn btn-primary mr-2 respond btnApprove" data-type="approve" data-code="">@Resources.Resource.Approve</button>
+                        <button type="button" id="" class="btn btn-danger mr-4 respond btnReject" data-type="reject" data-code="">@Resources.Resource.Reject</button>
+                    </div>
+                    <div class="d-block d-md-none">
+                        <button type="button" id="" class="btn btn-primary d-flex respond my-2 btnApprove" data-type="approve" data-code="">@Resources.Resource.Approve</button>
+                        <button type="button" id="" class="btn btn-danger d-flex respond my-2 btnReject" data-type="reject" data-code="">@Resources.Resource.Reject</button>
+                    </div>
+                }
+            }
+            else if (!isapprover)
+            {
+                if (editmode && Model.wsStatus != WholeSalesStatus.invoice.ToString())
+                {
+                    <div class="text-right">
+                        @Html.Partial("_NormalSaveBlk4WholeSales", null, new ViewDataDictionary { { "editmode", editmode }, { "status", Model.wsStatus }, { "ismanager", ismanager } })
+                    </div>
+                }
+                else
+                {
+                    <div class="d-none d-md-block text-right">
+                        <button id="" type="button" class="btn btn-primary ml-3 my-2 request makeorder btnRequestApproval" style="height:5em;">@Resources.Resource.Request4Approval</button>
+                        @if (showrecur)
+                        {
+                            <button id="" type="button" class="btn btn-info ml-3 my-2 btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
+                        }
+                        <button id="" type="button" class="btn btn-success ml-3 my-2 btnNewSales">@string.Format(Resources.Resource.NewFormat, Resources.Resource.WholeSales)</button>
+                    </div>
+
+                    <div class="d-block d-sm-block d-md-none text-right">
+                        <button id="" type="button" class="btn btn-primary d-flex my-2 request btnRequestApproval makeorder">@Resources.Resource.Request4Approval</button>
+                        @if (showrecur)
+                        {
+                            <button id="" type="button" class="btn btn-info d-flex my-2 btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
+                        }
+                        <button id="" type="button" class="btn btn-success d-flex my-2 btnNewSales">@string.Format(Resources.Resource.NewFormat, Resources.Resource.WholeSales)</button>
+                    </div>
+                }
+            }
+
+        }
+        else
+        {
+            @Html.Partial("_NormalSaveBlk4WholeSales", null, new ViewDataDictionary { { "editmode", editmode }, { "status", Model.wsStatus } })
+        }
+    </div>
+}
+
+<div>
+    @{
+        string page = "Index";
+        if (Model.wsStatus == "quote")
+        {
+            page = "QuotationList";
+        }
+        if (Model.wsStatus == "order")
+        {
+            page = "Index";
+        }
+        if (Model.wsStatus == "open")
+        {
+            page = "OpenBillList";
+        }
+        if (Model.wsStatus == "closed")
+        {
+            page = "ClosedBillList";
+        }
+    }
+    @Html.ActionLink(Resources.Resource.BackToList, page)
+</div>
+
+
+@Html.Partial("_RecurOrderModal", null, new ViewDataDictionary { { "currency", Model.Currency } })
+
+@Html.Partial("_ItemModal", null, new ViewDataDictionary { { "currency", Model.Currency }, { "priceheader", Resources.Resource.SellingPrice }, { "forwholesales", true } })
+
+@Html.Partial("_DescModal")
+
+@Html.Partial("_WaitingModal")
+
+@Html.Partial("_SerialNoModal", null, new ViewDataDictionary { { "forwholesales", true } })
+
+@Html.Partial("_BatchModal", null, new ViewDataDictionary { { "status", Model.wsStatus } })
+@Html.Partial("_ValidThruModal", null, new ViewDataDictionary { { "status", Model.wsStatus } })
+
+@Html.Partial("_CurrencyModal")
+
+@Html.Partial("_CustomerTermsModal", null, new ViewDataDictionary { { "MyobCustomer", Model.Customer } })
+
+
+@Html.Partial("_TextAreaModal")
+
+@{
+    string UploadSizeLimitMB = ConfigurationManager.AppSettings["MaxUploadSize"];
+    string exceeduploadfilelimittxt = string.Format(Resources.Resource.ExceedUploadSizeLimitWarning, UploadSizeLimitMB);
+}
+
+<div id="infoblk" data-supplierrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Supplier)" data-locationrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Location)" data-emptyitemwarning="@string.Format(Resources.Resource.EnterAtLeastOneFormat,Resources.Resource.ItemStock)" data-subtotal="@Model.SubTotal" data-disctotal="@Model.DiscTotal" data-total="@Model.Total" data-currencyrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Currency)" data-priceeditable="@Model.PriceEditable" data-disceditable="@Model.DiscEditable" data-enabletax="@Model.EnableTax" data-enablesn="@Model.EnableSerialNo" data-jsondiccurrencyexrate="@Model.JsonDicCurrencyExRate" data-batchtxt="@Resources.Resource.Batch" data-sntxt="@Resources.Resource.SerialNoItemHeader" data-validthrutxt="@Resources.Resource.ValidThru" data-type="@Model.wsStatus" data-jsonwholesaleslns="@Model.JsonWholeSalesLns" data-customerrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Customer)" data-jsondicinvoiceitemseqserialnolist="@Model.JsonDicInvoiceItemSeqSerailNoList" data-jsondiclocbatch="@Model.JsonDicLocBatch" data-jsonpoitembatvqlist="@Model.JsonPoItemBatVQList" data-jsondicitemsnbatvtlist="@Model.JsonDicItemSnBatVtList" data-jsondicitemvtqtylist="@Model.JsonDicItemVtQtyList" data-jsondicitemoptions="@Model.JsonDicItemOptions" data-jsondicitembatchqty="@Model.JsonDicItemBatchQty" data-jsondicitembvlist="@Model.JsonDicItemBVList" data-jsondicitemsnvtlist="@Model.JsonDicItemSnVtList" data-jsondicitembatdelqty="@Model.JsonDicItemBatDelQty" data-jsondicitemvtdelqtylist="@Model.JsonDicItemVtDelQtyList" data-itemsrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Item)" data-jscustomer="@Model.JsCustomer" data-approvalmode="@approvalmode" data-whatsapplinkurl="@ConfigurationManager.AppSettings["WhatsappLinkUrl"]" data-isapprover="@isapprover" data-delqtymustnotgtorderqtytxt="@Resources.Resource.DeliveryQtyMustNotGtOrderQty" data-jsondiclocation="@Model.JsonDicLocation" data-shop="@Model.ComInfo.Shop" data-jsonjoblist="@Model.JsonJobList" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-filecode="@Model.wsCode" data-uploadurl="/WholeSales/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@Model.UploadFileName" data-jsondicbattotalqty="@Model.JsonDicBatTotalQty" data-jsondicseqdeliveryitems="@Model.JsonDicSeqDeliveryItems" data-jsondicitembatsnvt="@Model.JsonDicItemBatSnVt"></div>
+
+
+<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+<script src="~/Scripts/ts/js/wholesales/wholesalesedit.js?v=@rand"></script>
+
+@Html.Partial("_UploadFileModal", null, new ViewDataDictionary { { "uploadUrl", "/WholeSales/UploadFile" } })

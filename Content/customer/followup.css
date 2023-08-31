@@ -1,0 +1,12 @@
+﻿.card {
+    border-radius: 4px;
+    box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.16);
+    background-color:#fefbf5;
+}
+.card-link + .card-link {
+    margin-left: 0.5rem;
+}
+.card-body .float-right{
+    font-size:smaller;
+    font-style: italic;
+}

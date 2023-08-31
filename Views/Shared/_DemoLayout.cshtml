@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+@{
+    string dateformat = ConfigurationManager.AppSettings["DateFormat"];
+    string sitename = Resources.Resource.SiteName;
+    int rand = CommonHelper.GetVersionRandomNo();
+    string cssbsfile = ViewData["cssbsfile"] == null ? @"Content/bs4" : ViewData["CssBSFile"].ToString();
+    string scriptbsfile = ViewData["scriptbsfile"] == null ? @"Scripts/bs4" : ViewData["ScriptBSFile"].ToString();
+    string pagetitle = ViewData["PageTitle"] == null ? @"" : ViewData["PageTitle"].ToString();
+}
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link rel="icon" type="image/png" href="~/Content/favicon_io/favicon-16x16.png">
+
+    <link href="~/@cssbsfile/bootstrap.min.css?v=@rand" rel="stylesheet" type="text/css" />
+    <link href="~/@cssbsfile/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/fontawesome/font-awesome.min.css" />
+    <link href="~/Content/DataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" type="text/css" />
+
+    <script src="~/Scripts/jquery-ui/external/jquery/jquery.js"></script>
+    <script src="~/@scriptbsfile/bootstrap.bundle.min.js"></script>
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/respond.min.js"></script>
+    <script src="~/Scripts/modernizr-2.8.3.js"></script>
+    <script type="text/javascript" src="~/Scripts/node_modules/jquery-powertip/dist/jquery.powertip.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="~/Scripts/node_modules/jquery-powertip/dist/css/jquery.powertip.min.css" />
+    <script type='text/javascript' src='~/Scripts/ts/js/app.js?v=@rand'></script>
+
+</head>
+<body>
+    @RenderSection("scripts", required: false)
+    <div>
+        @RenderBody()
+    </div>
+</body>
+</html>

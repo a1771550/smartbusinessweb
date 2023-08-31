@@ -1,0 +1,168 @@
+﻿@model PPWLib.Models.ViewTrackModel
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = Resources.Resource.TrackResult;
+    var glist = Model.GlobalAttributeList;
+}
+<link rel="stylesheet" href="~/Content/select2/select2.min.css" />
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("TrackResult", "eTrack", FormMethod.Get, new { id = "filterform" }))
+{
+    <div class="row justify-content-center my-3">
+        @Html.Partial("_DatesRange", null, new ViewDataDictionary { { "DateFromTxt", Model.DateFromTxt }, { "DateToTxt", Model.DateToTxt } })
+
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-3">
+            <select id="blastid" name="blastid[]" class="form-control select2multiple" multiple="multiple" style="width:100%;">
+                @*<option value="">-- Blast ID --</option>*@
+
+                @foreach (var bid in Model.BlastIds)
+                {
+                    string selected = Model.CurrentBlastId != null && Model.CurrentBlastId.Contains(bid) ? " selected" : "";
+                    <option value="@bid" @selected>@bid</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-3">
+            <select id="contact" name="contactname" class="form-control select2multiple" multiple="multiple" style="width:100%;">
+                @*<option value="">-- Contact Name --</option>*@
+                @foreach (string contact in Model.ContactNames)
+                {
+                    string _contact = contact.Replace("+", " ").Trim();
+                    string selected = Model.CurrentContactName == _contact ? " selected" : "";
+                    <option value="@_contact" @selected>@_contact</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-3">
+            <select id="organ" name="organization" class="form-control select2multiple" multiple="multiple" style="width:100%;">
+                @*<option value="">-- Organization --</option>*@
+
+                @foreach (string organ in Model.Organizations)
+                {
+                    if (!string.IsNullOrEmpty(organ))
+                    {
+                        string _organ = organ.Replace("+", " ").Trim();
+                        string selected = Model.CurrentOrganization == _organ ? " selected" : "";
+                        <option value="@_organ" @selected>@_organ</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="col-3">
+            <select id="viewdate" name="viewdate" class="form-control select2multiple" multiple="multiple" style="width:100%;">
+                @*<option value="">-- Date --</option>*@
+                @{
+                    List<string> dates = new List<string>();
+                    foreach (DateTime date in Model.ViewDates)
+                    {
+                        string _date = date.ToString("yyMMdd");
+                        if (!dates.Contains(_date))
+                        {
+                            string selected = Model.CurrentViewDate == date.Date.ToString() ? " selected" : "";
+                            <option value="@date.Date" @selected>@_date</option>
+                            dates.Add(_date);
+                        }
+                    }
+                }
+            </select>
+        </div>
+
+    </div>
+
+    <div class="row justify-content-center mb-2">
+        <button id="btnFilter" type="button" class="btn btn-success mr-sm-3">@Resources.Resource.Submit</button>
+        <button id="btnReset" type="button" class="btn btn-secondary mr-sm-3">@Resources.Resource.Reset</button>
+        <button id="btnReload" type="button" class="btn btn-warning mr-sm-3">@Resources.Resource.Reload</button>
+        <button id="btnAdvSearch" type="button" class="btn btn-danger mr-sm-3">@Resources.Resource.AdvancedSearch</button>
+    </div>
+
+    <hr />
+
+    <span id="norecord" class="d-inline-block alert alert-warning hide">@Resources.Resource.NoDataFound</span>
+
+    <div class="row justify-content-between mx-2">
+        <div class="col-12 col-sm-4 my-auto">
+            <span class="font-weight-bold">@Resources.Resource.Total: <span id="totalrecord" class="text-primary">@Model.PagingInfo.TotalItems</span></span>
+        </div>
+        <div class="col-12 col-sm-4 my-auto">
+            <span class="font-weight-bold">@Resources.Resource.Contact: <span id="contactcount" class="text-warning">@Model.ContactCount</span></span>
+        </div>
+        <div class="col-12 col-sm-4 my-auto pb-2 small">
+            <div class="float-right">
+                <div class="form-inline">
+                    <input type="number" class="form-control mr-2" id="iPageSize" placeholder="" value="@Model.PagingInfo.ItemsPerPage" min="@Model.PagingInfo.ItemsPerPage" style="width:30%;" />
+                    <label for="iPageSize">@Resources.Resource.RecordsPerPage</label>
+                </div>
+
+            </div>
+        </div>
+
+
+
+    </div>
+
+    <table id="tblTrack" class="table table-bordered table-hover table-responsive-md small">
+        <thead class="gray-header">
+            <tr>
+                <th>@Resources.Resource.Subject</th>
+                @*<th>Contact ID</th>*@
+                <th>@Resources.Resource.Contact</th>
+                <th>@Resources.Resource.Organization</th>
+                <th>@Resources.Resource.ViewDateTime</th>
+                <th>@Resources.Resource.Phone</th>
+                <th>@Resources.Resource.Email</th>
+                <th>IP</th>
+            </tr>
+        </thead>
+        @foreach (var log in Model.PagingEtrackList)
+        {
+            @Html.Partial("_MailTrackSummary", log)
+        }
+    </table>
+    <!-- model.CurrentOrganization = organization;
+                model.CurrentContactName = contactname;
+                model.CurrentBlastId = blastid;
+                model.CurrentViewDate = viewdate;-->
+    <div id="pagingblk" class="mx-3">
+        <div class="row">
+            @Html.PagedListPager(Model.PagingEtrackList, PageNo => Url.Action("TrackResult",
+new { Pass = Model.CurrentToken, PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword, strfrmdate = Model.DateFromTxt, strtodate = Model.DateToTxt, blastid = Model.CurrentBlastId, contactname = Model.CurrentContactName, organization = Model.CurrentOrganization, viewdate = Model.CurrentViewDate, CustomAttribute = Model.CurrentAttribute, PageSize = Model.PagingInfo.ItemsPerPage }))
+        </div>
+    </div>
+
+    <input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+    <input type="hidden" id="sortcol" value="@Model.SortCol" />
+    <input type="hidden" name="pass" value="@Model.CurrentToken" />
+    <input type="hidden" id="keyword" value="@Model.Keyword" />
+    <input type="hidden" id="pageno" value="@Model.PagingInfo.CurrentPage" />
+    <input type="hidden" id="blastId" value="@Model.CurrentBlastId" />
+    @*<input type="hidden" id="strfrmdate" value="@Model.DateFromTxt" />
+    <input type="hidden" id="strtodate" value="" />*@
+}
+
+
+@Html.Partial("_AdvancedSearchModal", Model.GlobalAttributeList)
+
+@Html.Partial("_WaitingModal")
+<div id="infoblk" data-url="@HttpContext.Current.Request.Url.ToString()" data-token="@Model.CurrentToken" data-subjecttxt="@Resources.Resource.Subject" data-viewdatetxt="@Resources.Resource.ViewDate" data-pagesizenoltzerotxt="@string.Format(Resources.Resource.NoLtZero, Resources.Resource.RecordsPerPage)" data-reloadurl="/eTrack/TrackResult?pass=@Model.CurrentToken"></div>
+<script src="~/Scripts/select2/select2.min.js"></script>
+<script type="text/javascript" src="~/Scripts/daterangepicker/moment.min.js"></script>
+<script type="text/javascript" src="~/Scripts/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="~/Scripts/daterangepicker/daterangepicker.css" />
+<script type="text/javascript" src="~/Scripts/DataTables/dataTables.dateTime.min.js"></script>
+<script src="~/Scripts/ts/js/crm/eblast/etrack.js?v=@CommonHelper.GetVersionRandomNo()"></script>
+<script>
+    $(function () {
+        @*initModals();*@
+        closeWaitingModal();
+        initDatePickers(StartDayEnum.LastWeek, 'YYYY-MM-DD');
+    });
+</script>

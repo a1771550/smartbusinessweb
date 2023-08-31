@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Unsubscribe Demo</title>
+    <link rel="icon" type="image/png" href="../Content/favicon_io/favicon-16x16.png">
+    <link href="../Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Content/fontawesome/font-awesome.min.css" />
+    <script src="../Scripts/jquery-ui/external/jquery/jquery.js"></script>
+    <script src="../Scripts/bootstrap.min.js"></script>
+    <script src="../Scripts/moment.min.js"></script>
+    <script src="../Scripts/respond.min.js"></script>
+    <script src="../Scripts/modernizr-2.8.3.js"></script>
+</head>
+<body>
+    <form>
+        <!--<div class="form-check">
+            <input type="checkbox" class="form-check-input" id="chkunsubscribe">
+            <label class="form-check-label" for="chkunsubscribe">Unsubscribe</label>
+        </div>
+        <input type="hidden" id="contactId" value="47" />-->
+
+        <p style="font-size:80%;font-weight:bold;">如果您不再希望收到我們的電子營銷消息，請單擊以下取消訂閱按鈕。</p><button type="button" onclick="$.post('/Api/UnsubscribeEblast', { cusId:'8', eblastId:'2' }, function () { alert('We are sorry to hear your unsubscription. You will no longer receive our e-marketing message.'); });">退訂網絡行銷</button>
+    </form>
+
+    <script>
+        function unsubscribe(cusId, eblastId) {            
+            $.post("/Api/UnsubscribeEblast", { cusId, eblastId }, function (data) { console.log(data); });
+        }
+        $('#chkunsubscribe').on('change', function () {
+            if ($(this).is(':checked')) {
+                unsubscribe();
+            }
+        });        
+    </script>
+</body>
+</html>

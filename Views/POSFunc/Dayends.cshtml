@@ -1,0 +1,146 @@
+﻿@model PPWLib.Models.DayEndsModel
+@{
+	ViewBag.Title = Resources.Resource.DayEnds;
+	int rand = new Random().Next(10000, 100000);
+	string cashdrawamtstarttxt = string.Format(Resources.Resource.IncludeCashDrawerAmtStart, Model.CashDrawerAmtStartTxt);
+	string lastsessionmsg = string.Format(Resources.Resource.LastDayendsSessionTimeMsg, Model.LastDayendsSessionTimeDisplay);
+}
+<link rel="stylesheet" href="~/Content/Sales.css?v=@rand" />
+<link rel="stylesheet" href="~/Content/dayendscheckinout.css?v=@rand" />
+
+<span class="hide" data-debug="@Model.DayEndsItems.Count"></span>
+@if (Model.DayEndsItems.Count > 1)
+{
+	<ul class="nav nav-tabs" role="tablist">
+		@{
+			int i = 0;
+			string active = "";
+			foreach (var item in Model.DayEndsItems)
+			{
+				if (i == 0)
+				{
+					active = "active";
+				}
+				else
+				{
+					active = "";
+				}
+				<li class="nav-item">
+					<a class="nav-link @active" data-toggle="tab" href="#@item.Code">@item.Name</a>
+				</li>
+				i++;
+			}
+
+		}
+	</ul>
+	<div class="tab-content">
+		@foreach (var item in Model.DayEndsItems)
+		{
+			<div id="@item.Code" class="container tab-pane active">
+				<br>
+
+				@if (item.Code.ToLower() == "countpayment")
+				{
+					<h3>@item.Name</h3>
+
+					<div id="paymentBlk">
+
+						<div class="form-inline px-sm-1 my-2">
+							<table id="tblPay" class="table table-bordered table-hover  table-condensed">
+								<thead class="gray-header">
+									<tr><th>@Resources.Resource.PaymentType</th><th class="text-right">@Resources.Resource.ExpectedAmt</th><th>@Resources.Resource.ActualAmt</th></tr>
+								</thead>
+								<tbody>
+									@foreach (PaymentType payment in Model.PaymentTypes)
+									{
+										<tr><td>@Model.DicPayTypes[payment.pmtCode]</td><td class="text-right"><input type="number" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype" value="0" /></td></tr>
+									}
+								</tbody>
+							</table>
+						</div>
+
+						<div class="row justify-content-around">
+							<button type="button" id="btnSubmit" class="btn btn-success">@Resources.Resource.OK</button>
+							<button type="button" id="btnCancel" class="btn btn-default">@Resources.Resource.Cancel</button>
+						</div>
+					</div>
+				}
+
+			</div>
+		}
+	</div>
+
+}
+else
+{
+	<h3 class="mb-3">@Model.DayEndsItems[0].Name</h3>
+
+	<span class="alert alert-info d-inline-block my-3 mx-1">@lastsessionmsg</span>
+
+    <div id="paymentBlk">
+        @using (Html.BeginForm("CountPayments", "POSFunc", FormMethod.Post, new { @id = "dayendsfrm" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-inline px-sm-1 my-2">
+                <table id="tblPay" class="table table-bordered table-hover  table-condensed">
+                    <thead class="gray-header">
+                        <tr><th>@Resources.Resource.PaymentType</th><th class="text-right">@Resources.Resource.ExpectedAmt (@Model.Currency)</th><th class="text-right">@Resources.Resource.ActualAmt (@Model.Currency)</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (PaymentType payment in Model.PaymentTypes)
+                        {
+                            string staticcode = "static" + payment.pmtCode;
+                            string sysname = "sys" + payment.pmtCode;
+                            string countname = "count" + payment.pmtCode;
+                            if (payment.pmtCode != "MonthlyPay")
+                            {
+                                <tr>
+                                    <td>@Model.DicPayTypes[payment.pmtCode]</td>
+                                    <td class="text-right">
+                                        <input type="number" id="@staticcode" name="@sysname" class="form-control paymenttype" value="0" readonly />
+                                    </td>
+                                    <td class="text-right"><input type="number" id="@payment.pmtCode" name="@countname" class="form-control paymenttype entry" data-type="@payment.pmtCode.ToLower()" value="0" /></td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row mx-1 mt-3 justify-content-between counttotal">
+                <span>@Resources.Resource.CountTotal</span>
+                <span id="lblTotal"></span>
+            </div>
+
+            <div class="row my-5">
+                <div class="col-5">
+                    <p class="formfield">
+                        <label for="txtNotes">@Resources.Resource.Notes</label>
+                        <textarea class="form-control d-inline-block" id="txtNotes" name="Notes" cols="250" rows="5"></textarea>
+                    </p>
+                </div>
+                <div class="col-3">
+                    <div id="msg" class="alert alert-success hide"></div>
+                    <div id="warn" class="alert alert-danger hide"></div>
+                </div>
+                <div class="col-4 mb-auto text-right">
+                    <button type="button" id="btnSubmit" class="btn btn-success">@Resources.Resource.OK</button>
+                </div>
+            </div>
+
+            <input type="hidden" id="monthlypaytotal" name="monthlypaytotal" />
+            <input type="hidden" id="dicCountPay" name="dicCountPay" />
+            <input type="hidden" id="payIds" name="payIds" />
+        }
+    </div>
+}
+
+<div id="waitingModal">
+	<img src="~/Images/giphy.gif" alt="@Resources.Resource.PleaseWait" />
+</div>
+
+<div id="infoblk" class="hide" data-cashdrawamtstarttxt="@cashdrawamtstarttxt" data-enablecashdrawer="@Model.EnableCashDrawer"></div>
+
+	<script src="~/Scripts/ts/js/pos/dayends.js?v=@rand"></script>
+

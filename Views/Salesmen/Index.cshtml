@@ -1,0 +1,96 @@
+﻿@model PPWLib.Models.SalesmanEditModel
+
+@{
+    ViewBag.Title = Resources.Resource.SalesPeople;
+    int rand = CommonHelper.GetVersionRandomNo();
+    SessUser user = Session["User"] as SessUser;
+    bool iscrmadmin = user.Roles.Any(x => x == RoleType.CRMAdmin);
+    bool iscrmsalesmanager = user.Roles.Any(x => x == RoleType.CRMSalesManager);
+    bool isassignable = user.Roles.Any(x => x == RoleType.CRMAdmin || x == RoleType.CRMSalesManager);
+}
+<link href="~/Scripts/paginationjs/pagination.css" rel="stylesheet" type="text/css" />
+
+<h3>@ViewBag.Title</h3>
+
+@if (iscrmadmin)
+{
+    @*<div class="row justify-content-end my-3 mr-1">
+        <a role="button" class="btn btn-info" href="@Url.Action("Edit","Salesmen", new{ userId=0 })">@Resources.Resource.Add</a>
+    </div>*@
+    
+    if (Model.ContactGroupList.Count > 0) { 
+    <table class="table table-bordered  table-hover table-condensed my-3">
+        <thead class="gray-header">
+            <tr>
+                <th>@Resources.Resource.SalesGroup</th>
+                <th>@Resources.Resource.Contact</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cg in Model.ContactGroupList)
+            {
+                <tr>
+                    <td>@cg.GroupName</td>
+                    <td>@cg.ContactName</td>
+                    <td>
+                        <button type="button" class="btn btn-danger btnunassignfrmgroup mx-2" data-contactid="@cg.contactId" data-groupid="@cg.groupId" onclick="unassignContactFrmGroup(@cg.contactId,@cg.groupId);">@Resources.Resource.Unassign</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    }
+    
+}
+
+
+<table class="table table-bordered  table-hover table-condensed">
+    <thead class="gray-header">
+        <tr>
+            <th>@Resources.Resource.Code</th>
+            <th>@Resources.Resource.Name</th>
+            <th>
+                @Resources.Resource.Email
+            </th>
+            <th>@Resources.Resource.Manager</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var sales in Model.SalesmanList)
+        {
+            <tr>
+                <td data-usercode="@sales.UserCode">@sales.UserCode</td>
+                <td>@sales.UserName</td>
+                <td>@sales.Email</td>
+                <td>@sales.ManagerName</td>
+                <td>
+                    <button type="button" class="btn btn-success btngetassignedenquiries mx-2" data-userid="@sales.surUID">@string.Format(Resources.Resource.AssignedFormat, Resources.Resource.Enquiries)</button>
+                    <button type="button" class="btn btn-primary btngetassignedcontacts mx-2" data-userid="@sales.surUID" data-managerid="@sales.ManagerId">@string.Format(Resources.Resource.AssignedFormat, Resources.Resource.Contacts)</button>
+                    @if (iscrmadmin)
+                    {
+                        <button type="button" class="btn btn-info btnedit mx-2" data-userid="@sales.surUID">@Resources.Resource.Edit</button><button type="button" class="btn btn-danger btnremove" data-userid="@sales.surUID">@Resources.Resource.Remove</button>
+                    }
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@Html.Partial("_WaitingModal")
+
+@Html.Partial("_AssignedEnquiries", null, new ViewDataDictionary { { "isassignable", isassignable } })
+@Html.Partial("_AssignedContacts", null, new ViewDataDictionary { { "isassignable", isassignable } })
+
+@Html.Partial("_GroupSalesmen")
+
+@Html.AntiForgeryToken()
+@{ 
+    int pagelength = (int)(HttpContext.Current.Session["ComInfo"] as ComInfo).PageLength;
+}
+<div id="infoblk" data-confirmremovetxt="@Resources.Resource.ConfirmRemove" data-unassigntxt="@Resources.Resource.Unassign" data-confirmunassigntxt="@string.Format(Resources.Resource.ConfirmFormat,Resources.Resource.Unassign)" data-pagesize="@pagelength" data-iscrmadmin="@iscrmadmin" data-iscrmsalesmanager="@iscrmsalesmanager" data-isassignable="@isassignable"></div>
+
+<script src="~/Scripts/paginationjs/pagination.js"></script>
+<script src="~/Scripts/ts/js/crm/usermanagement/salesmen/salesmen.js?v=@rand"></script>

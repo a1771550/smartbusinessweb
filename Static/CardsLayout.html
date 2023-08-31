@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Cards Layout</title>
+    <link href="../Content/bs4/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <script src="../Scripts/jquery-3.6.0.min.js"></script>
+    <script src="../Scripts/bs4/bootstrap.min.js"></script>
+    <link href="../Content/fontawesome/font-awesome.min.css" />
+    <link href="../Content/fontawesome/css/all.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+    <style>
+        .card {
+            border-radius: 4px;
+            box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.16);
+        }
+
+        .card-link + .card-link {
+            margin-left: 0.5rem;
+        }
+    </style>
+    <div class="container">
+        <h3>Chan Tai Man FollowUp</h3>
+        <div class="row justify-content-end">
+            <form>
+                <div class="form-group p-3">
+                    <input type="text" class="form-control" id="txtSearch" placeholder="Search...">
+                </div>
+            </form>
+        </div>
+
+        <div>
+            Follow Up Record <a href="#"><i class="fas fa-plus"></i></a>
+        </div>
+
+        <div class="row my-3"></div>
+        <div class="row my-3"></div>
+        <div class="row my-3"></div>
+
+        <div id="pagingblk" class="mx-3">
+            <div class="row">
+                <div class="pagination-container"><nav aria-label="Page navigation"><ul class="pagination"><li class="active page-item"><a class="page-link">1</a></li><li class="page-item"><a href="/Customer/Index?PageNo=2&amp;SortOrder=desc" class="page-link">2</a></li><li class="page-item"><a href="/Customer/Index?PageNo=3&amp;SortOrder=desc" class="page-link">3</a></li><li class="page-item"><a href="/Customer/Index?PageNo=4&amp;SortOrder=desc" class="page-link">4</a></li><li class="page-item"><a href="/Customer/Index?PageNo=5&amp;SortOrder=desc" class="page-link">5</a></li><li class="page-item"><a href="/Customer/Index?PageNo=6&amp;SortOrder=desc" class="page-link">6</a></li><li class="page-item"><a href="/Customer/Index?PageNo=7&amp;SortOrder=desc" class="page-link">7</a></li><li class="page-item"><a href="/Customer/Index?PageNo=8&amp;SortOrder=desc" class="page-link">8</a></li><li class="PagedList-skipToNext page-item"><a href="/Customer/Index?PageNo=2&amp;SortOrder=desc" rel="next" class="page-link">»</a></li></ul></nav></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            let html = '';
+            for (let c = 1; c <= 3; c++) {
+                html += `<div class="col-12 col-md-4">
+                    <div class="card">
+<div class="text-right px-2">
+<a href="#" class="card-link small"><i class="fas fa-edit"></i></a>
+        <a href="#" class="card-link small"><i class="fas fa-window-close"></i></a>
+</div>
+                        <div class="card-body">
+
+                            FollowUp Message FollowUp Message FollowUp Message #${c}.
+
+
+                        </div>
+                    </div>
+                </div>`;
+            }
+            $('.row').eq(1).html(html);
+
+            html = '';
+            for (let c = 4; c <= 6; c++) {
+                html += `<div class="col-12 col-md-4">
+                    <div class="card">
+<div class="text-right px-2">
+<a href="#" class="card-link small"><i class="fas fa-edit"></i></a>
+        <a href="#" class="card-link small"><i class="fas fa-window-close"></i></a>
+</div>
+                        <div class="card-body">
+
+                            FollowUp Message FollowUp Message FollowUp Message #${c}.
+
+
+                        </div>
+                    </div>
+                </div>`;
+            }
+            $('.row').eq(2).html(html);
+
+            html = '';
+            for (let c = 7; c <= 9; c++) {
+                html += `<div class="col-12 col-md-4">
+                    <div class="card">
+<div class="text-right px-2">
+<a href="#" class="card-link small"><i class="fas fa-edit"></i></a>
+        <a href="#" class="card-link small"><i class="fas fa-window-close"></i></a>
+</div>
+                        <div class="card-body">
+
+                            FollowUp Message FollowUp Message FollowUp Message #${c}.
+
+
+                        </div>
+                    </div>
+                </div>`;
+            }
+            $('.row').eq(3).html(html);
+        });
+    </script>
+</body>
+</html>

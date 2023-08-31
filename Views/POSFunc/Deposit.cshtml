@@ -1,0 +1,224 @@
+﻿@model PPWLib.Models.DepositViewModel
+
+@{
+    ViewBag.Title = Resources.Resource.Deposit;
+    int rand = new Random().Next(10000, 100000);
+    int ispng = Model.IsPNG ? 1 : 0;
+    string devicecode = (HttpContext.Current.Session["Device"] as DeviceModel).dvcCode;
+}
+
+<link rel="stylesheet" href="~/Content/Sales.css?v=@rand" />
+
+<h2 class="text-center">@ViewBag.Title</h2>
+<div class="d-flex justify-content-center">
+
+    <div class="form-inline mb-2 my-4">
+        <div class="form-group">
+            <label for="txtReceiptNo" class="col-form-label mx-sm-3">@Resources.Resource.DeviceCode</label>
+            <input id="txtDeviceCode" class="form-control" value="@devicecode" />
+            <label for="txtReceiptNo" class="col-form-label mx-sm-3">@Resources.Resource.ReceiptNo</label>
+            <input id="txtReceiptNo" class="form-control" />
+            <label for="txtPhoneNo" class="col-form-label mx-sm-3">@Resources.Resource.PhoneNo</label>
+            <input id="txtPhoneNo" class="form-control" />
+            <button type="button" id="btnSearchReceipt" class="btn btn-default ml-3">@Resources.Resource.SearchReceipt</button>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-center">
+    <form id="frmCus" class="form-inline mb-2 my-4">
+        <div class="form-group">
+            <label for="txtCustomerCode" class="col-form-label mx-sm-3">@Resources.Resource.Customer</label>
+            <input type="hidden" id="txtCustomerCode" />
+            <input type="text" readonly class="form-control" id="txtStaticCustomerName" />
+        </div>
+
+        <div class="form-group ml-sm-3">
+            <label for="txtPoints" class="col-form-label mx-sm-3">@Resources.Resource.Points</label>
+            <input type="number" readonly class="form-control" id="txtPoints">
+        </div>
+        <div class="form-group ml-sm-3">
+            <label for="txtPriceLevel" class="col-form-label mx-sm-3">@Resources.Resource.PriceLevel</label>
+            <input type="text" readonly class="form-control" id="txtPriceLevel">
+        </div>
+        <div class="form-group ml-sm-3">
+            <label for="txtPhone" class="col-form-label mx-sm-3">@Resources.Resource.PhoneNo</label>
+            <input type="text" readonly class="form-control" id="txtPhone" />
+        </div>
+    </form>
+</div>
+
+<h4 class="text-center">@Resources.Resource.SalesHistory</h4>
+
+<div style="overflow-x:auto;">
+    <table id="tblSales" class="table table-bordered table-condensed table-hover ">
+        <colgroup>
+            @*<col width="50">*@
+            <col width="60">
+            <col width="120">
+            <col width="90">
+            <col width="90">
+            <col width="90">
+            <col width="100">
+            <col width="160">
+            <col width="120">
+            <col width="120">
+            <col width="100">
+        </colgroup>
+        <thead class="resizable black-header">
+            <tr>
+                @*<td class="jexcel_selectall"></td>*@
+                <td class="text-center">@Resources.Resource.Sequence</td>
+                <td class="text-center">@Resources.Resource.ItemCode</td>
+                <td class="text-right">@Resources.Resource.Qty</td>
+                <td class="text-right">@Resources.Resource.Price (@Model.Currency)</td>
+                <td class="text-right">@Resources.Resource.DiscountItemHeader</td>
+                <td class="text-right">@Resources.Resource.AmountItemHeader (@Model.Currency)</td>
+                <td class="text-center">@Resources.Resource.SalesDate</td>
+                <td class="text-right">@Resources.Resource.DepositAmt (@Model.Currency)</td>
+                <td class="text-center">@Resources.Resource.DepositDate</td>
+                <td class="text-center">@Resources.Resource.Location</td>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+<div id="salesremarkblk" class="row justify-content-center" style="display:none;">
+    <h5 style="width:100%;" class="text-center">@string.Concat(Resources.Resource.Sales, Resources.Resource.Notes)</h5>
+    <span></span>
+</div>
+
+
+<div class="row mr-1 my-5">
+    <div class="col-12 col-md-6">
+        <p class="formfield">
+            <label for="txtNotes" class="mx-sm-3">@Resources.Resource.Notes</label>
+            <textarea class="form-control d-inline-block misc" id="txtNotes" name="Notes" cols="250" rows="5"></textarea>
+        </p>
+    </div>
+
+    <div class="col-12 col-md-6">
+        <div class="row justify-content-end">
+            <div class="form-inline mb-2">
+                <div class="form-group">
+                    <label for="txtTotalRemain" class="col-form-label mx-sm-3">@Resources.Resource.RemainAmt (@Model.Currency)</label>
+                    <input type="number" class="form-control misc" id="txtTotalRemain" readonly name="TotalRemain" value="0.00" />
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-end">
+            <div class="form-inline mb-2">
+                <div class="form-group">
+                    <button id="btnPayment" type="button" class="btn btn-primary mr-3">@Resources.Resource.ProcessPayments</button>
+                    <a id="btnReload" href="#" role="button" class="btn btn-secondary">@Resources.Resource.Reload</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="itemModal">
+
+    <div class="form-inline mb-2 my-4">
+        <div class="form-group">
+            <input type="text" class="form-control" id="txtItem" placeholder="@Resources.Resource.EnterItemCodeName" />
+            <button id="btnSearch" type="button" class="btn btn-default ml-4">@Resources.Resource.Search</button>
+        </div>
+    </div>
+
+    <table id="tblItem" class="table table-bordered  table-hover table-condensed">
+        <thead class="gray-header">
+            <tr><th>@Resources.Resource.ItemCode</th><th>@Resources.Resource.ItemName</th><th>@Resources.Resource.BaseSellingPrice</th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <p class="warning"></p>
+
+
+</div>
+
+<div id="descModal"></div>
+
+@Html.Partial("_PayModal", null, new ViewDataDictionary { { "fordeposit", true }, { "PaymentTypes", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes } })
+
+@*<div id="payModal">
+        <div class="row">
+            <div class="col-5">
+                <h2>@Resources.Resource.Remainder</h2>
+            </div>
+            <div class="col-7 text-right">
+                <h2><span id="totalremainamt"></span></h2>
+            </div>
+        </div>
+
+        <div class="row justify-content-end mx-1 smaller">
+            <div id="remainblk" class="alert alert-success"><span id="remaintxt" class="font-weight-bold mx-2">@Resources.Resource.Remain: </span><span id="remainamt"></span></div>
+        </div>
+
+        <div class="form-inline px-sm-1 my-1">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="1" id="monthlypay">
+                <label class="form-check-label" for="monthlypay">@Resources.Resource.MonthlyPay</label>
+            </div>
+            <table id="tblPay" class="table table-bordered table-hover  table-condensed">
+                <thead class="gray-header">
+                    <tr><th>@Resources.Resource.PaymentType</th><th class="text-right">@Resources.Resource.Amount</th></tr>
+                </thead>
+                <tbody>
+                    @{ int idx = 0;}
+                    @foreach (PaymentType payment in Model.PaymentTypes)
+                    {
+                        string chkId = string.Concat("chk" + payment.pmtCode);
+                        string _checked = idx == 0 ? "checked" : "";
+                        string _readonly = idx == 0 ? "" : "readonly";
+                        <tr data-idx="@idx">
+                            <td>
+                                <div class="row justify-content-start mx-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="mx-2 chkpayment" data-type="@payment.pmtCode" id="@chkId" @_checked />
+                                        <label class="form-check-label" for="@chkId">
+                                            @Model.DicPayTypes[payment.pmtCode]
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </td>
+                            <td class="text-right"><input type="number" min="0" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype" value="0" @_readonly /></td>
+                        </tr>
+
+                        idx++;
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <p class="warning"></p>
+
+    </div>*@
+
+<div id="changeModal">
+    <div class="row justify-content-center">
+        <h4>@Resources.Resource.Remain <span class="totalremainamt"></span></h4>
+    </div>
+    <h3 class="my-4 text-center">@Resources.Resource.SalesChange</h3>
+    <h2 class="text-center"><span id="changeamt"></span></h2>
+    <p class="warning"></p>
+</div>
+
+
+
+<div id="waitingModal">
+    <img src="~/Images/giphy.gif" alt="@Resources.Resource.PleaseWait" />
+</div>
+
+<div id="infoblk" class="hide" data-ispng="@ispng" data-devicecode="@Model.DeviceCode" data-inclusivetax="@Model.InclusiveTax" data-inclusivetaxrate="@Model.InclusiveTaxRate" data-printurl="@Url.Action("Index", "Print")"></div>
+
+<link rel="stylesheet" type="text/css" href="~/Scripts/jspreadsheet/dist/jexcel.css" />
+<link rel="stylesheet" type="text/css" href="~/Scripts/jsuites/dist/jsuites.css" />
+
+<script src="~/Scripts/ts/js/pos/deposit.js?v=@rand"></script>
+

@@ -1,0 +1,62 @@
+﻿@model PPWLib.Models.SalesModel
+@{
+	Layout = null;
+	//Response.Write(Model == null);
+	//return;
+	string sitename = Resources.Resource.SiteName;
+	bool issales = (bool)TempData["issales"];
+	//string strPrintFields = (string)TempData["PrintFields"];
+	bool monthbase = Model.rtsMonthBase;
+	string salesrefundcode = Model.rtsCode;
+	string salesrefunddate = Model.DateTimeDisplay;
+	decimal totalamount = (decimal)Model.rtsFinalTotal;
+	int rand = CommonHelper.GetVersionRandomNo();
+	string cssbsfile = HttpContext.Current.Session["CssBSFile"] == null ? @"Content/bs4" : HttpContext.Current.Session["CssBSFile"].ToString();
+	string scriptbsfile = HttpContext.Current.Session["ScriptBSFile"] == null ? @"Scripts/bs4" : HttpContext.Current.Session["ScriptBSFile"].ToString();
+}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>@ViewBag.Title - @sitename</title>
+
+	<link href="~/@cssbsfile/bootstrap.min.css" rel="stylesheet" type="text/css" />
+	<link href="~/@cssbsfile/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+	<link href="~/Content/fontawesome/font-awesome.min.css" />
+	<link href="~/Content/DataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css" />
+	<link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" type="text/css" />
+
+	<script src="~/Scripts/jquery-ui/external/jquery/jquery.js"></script>
+	<script src="~/@scriptbsfile/bootstrap.min.js"></script>
+	<script src="~/Scripts/moment.min.js"></script>
+	<script src="~/Scripts/respond.min.js"></script>
+	<script src="~/Scripts/modernizr-2.8.3.js"></script>
+	<script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+	<script src="~/Scripts/DataTables/dataTables.select.min.js"></script>
+	<script src="~/Scripts/DataTables/dataTables.bootstrap4.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="~/Scripts/jquery-ui/jquery-ui.min.css">
+	<script src="~/Scripts/jquery-ui/jquery-ui.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="~/Scripts/fancybox/jquery.fancybox.css" />
+	<script src="~/Scripts/fancybox/jquery.fancybox.min.js"></script>
+	<script src="~/Scripts/fancybox/fancybox-plugin.js"></script>
+	<link href="~/Content/fontawesome/css/all.css" rel="stylesheet"> <!--load all styles -->
+	<link href="~/Content/Site.css?v=@rand" rel="stylesheet" type="text/css" />
+	<link href="~/Content/printreceipt.css?v=@rand" rel="stylesheet" type="text/css"/>		
+</head>
+
+<body style="padding-top:0;">
+   
+    <script src="~/Scripts/ts/js/app.js?v=@CommonHelper.GetVersionRandomNo()"></script>
+
+    @Html.Partial("_PrintModal", null, new ViewDataDictionary { { "issales", true } })
+
+    @{
+        int _issales = issales ? 1 : 0;
+
+    }
+    <div id="infoblk" class="hide" data-monthlypaytxt="@Resources.Resource.MonthlyPay" data-issales="@_issales" data-salesrefundcode="@salesrefundcode" data-salesrefunddate="@salesrefunddate" data-remark="@Model.rtsRmks" data-monthlypay="@monthbase" data-roundings="@Model.Roundings" data-change="@Model.Change" data-totalamt="@Model.rtsFinalTotal" data-roundingstxt="@Resources.Resource.Roundings" data-changetxt="@Resources.Resource.SalesChange" data-url="@HttpUtility.HtmlEncode(Model.url)"></div>
+
+    <script src="~/Scripts/ts/js/pos/print.js?v=@CommonHelper.GetVersionRandomNo()"></script>
+</body>
+</html>

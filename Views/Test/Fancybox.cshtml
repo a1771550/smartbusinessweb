@@ -1,0 +1,28 @@
+﻿
+@{
+	ViewBag.Title = "Fancybox";
+
+}
+
+	<h2>Fancybox</h2>
+	<a id="fancy" href="#">Fancy Test</a>
+	<a class="fancybox" data-fancybox-group="gallery" title="" href="~/Images/sample500.jpg">
+		<img src="~/Images/logo.jpg">
+	</a>
+	@*<div id="alert" class="fancybox">This is a test</div>*@
+	<script>
+
+		$("#fancy").click(function () {
+
+			// Open customized confirmation dialog window
+			falert('Alert!', 'This is an alert.');
+		});
+
+
+
+		$(document).ready(function () {
+
+			@*$('.fancybox').fancybox();*@
+
+		});
+	</script>

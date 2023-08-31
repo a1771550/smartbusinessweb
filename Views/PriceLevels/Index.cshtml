@@ -1,0 +1,281 @@
+﻿@model IEnumerable<PPWLib.Models.CustomerPointPriceLevelModel>
+
+@{
+	ViewBag.Title = Resources.Resource.PriceLevel;
+	int rand = new Random().Next(10000, 100000);
+	bool iseng = (int)HttpContext.Current.Session["CurrentCulture"] == 2;
+	string cuspttxt = (iseng) ? string.Concat(Resources.Resource.Customer, " ", Resources.Resource.Points) : string.Concat(Resources.Resource.Customer, Resources.Resource.Points);
+	string pltxt = (iseng) ? string.Concat(Resources.Resource.PriceLevel, " ", Resources.Resource.Code) : string.Concat(Resources.Resource.PriceLevel, Resources.Resource.Code);
+	string desctxt = (iseng) ? string.Concat(Resources.Resource.PriceLevel, " ", Resources.Resource.Description) : string.Concat(Resources.Resource.PriceLevel, Resources.Resource.Description);
+}
+<link rel="stylesheet" type="text/css" href="~/Content/pricelevels.css?v=@rand" />
+<h3 class="text-center">@ViewBag.Title</h3>
+
+<div class="text-right">
+	<button type="button" id="btnAdd" class="btn btn-success">@Resources.Resource.Add</button>
+</div>
+<table id="tblPL" class="table  table-bordered table-hover table-condensed my-4">
+	<colgroup><col style="width:20%;"><col style="width:20%;"><col style="width:40%;"><col style="width:20%;"></colgroup>
+	<thead class="gray-header">
+		<tr>
+			<th>
+				@cuspttxt
+			</th>
+			<th>
+				@pltxt
+			</th>
+			<th>
+				@desctxt
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+
+
+	@foreach (var item in Model)
+	{
+		<tr data-id="@item.Id">
+			<td>
+				@Html.DisplayFor(modelItem => item.CustomerPoint)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.PriceLevelID)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.PriceLevelDescription)
+			</td>
+			<td>
+				<button type="button" class="btn btn-info btnEdit mr-3" data-id="@item.Id">@Resources.Resource.Edit</button><button type="button" class="btn btn-danger btnDelete" data-id="@item.Id">@Resources.Resource.Remove</button>
+			</td>
+		</tr>
+	}
+
+</table>
+<div id="editModal">
+	<div class="form-group">
+		<div class="row">
+			<div class="col-3 text-right"><label for="txtPoint" class="form-label">@cuspttxt</label></div>
+			<div class="col-9"><input type="number" id="txtPoint" class="form-control" /></div>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="row">
+			<div class="col-3 text-right"><label for="txtPlID" class="form-label">@pltxt</label></div>
+			<div class="col-9"><input type="text" id="txtPlID" class="form-control" maxlength="3" /></div>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="row">
+			<div class="col-3 text-right"><label for="txtDesc" class="form-label">@desctxt</label></div>
+			<div class="col-9"><input type="text" id="txtDesc" class="form-control" maxlength="30" /></div>
+		</div>
+	</div>
+	@Html.AntiForgeryToken()
+</div>
+
+<script>
+	let editModal = null;
+	let mode = 0;
+	let pricelevel = {};
+	let cuspttxt = '@cuspttxt';
+	let pltxt = '@pltxt';
+	let requiredtxt = '@Resources.Resource.Required';
+
+	$(document).on('click', '.btnDelete', function () {
+		let _token = editModal.find('input[name="__RequestVerificationToken"]').val();
+		let id = parseInt($(this).data('id'));
+		$.fancyConfirm({
+			title: '',
+			message: '@Resources.Resource.ConfirmRemove',
+			shownobtn: true,
+			okButton: oktxt,
+			noButton: canceltxt,
+			callback: function (value) {
+				if (value) {
+					$.ajax({
+						type: "POST",
+						url: '/PriceLevels/Delete',
+						data: { Id: id, '__RequestVerificationToken': _token },
+						success: function (data) {
+							if(data.msg)
+								window.location.reload(true);
+						},
+						dataType: 'json'
+					});
+				}
+			}
+		});
+	});
+
+	$(document).on('click', '#btnAdd', function () {
+		model = 0;
+		openModal();
+	});
+	$(document).on('click', '.btnEdit', function () {
+		mode = 1;
+		let id = $(this).data('id');
+		let $tr = $(this).parent('td').parent('tr');
+		openModal();
+		fillForm(genPriceLevel(id,$tr));
+	});
+	$(document).on('dblclick', '#tblPL tbody tr', function () {
+		mode = 1;
+		let id = $(this).data('id');
+		let $tr = $(this);
+		openModal();
+		fillForm(genPriceLevel(id, $tr));
+	});
+
+	function genPriceLevel(id,$tr) {
+		pricelevel = {
+			id: id,
+			point: parseInt($tr.find('td:eq(0)').html().trim()),
+			plID: $tr.find('td:eq(1)').html().trim(),
+			description: $tr.find('td:eq(2)').html()
+		};
+		console.log('pricelevel:', pricelevel);
+		return pricelevel;
+	}
+
+	function fillForm(pricelevel) {
+		$('#txtPoint').val(pricelevel.point);
+		$('#txtPlID').val(pricelevel.plID.trim());
+		$('#txtDesc').val(pricelevel.description.trim());
+	}
+
+	function openModal() {
+		editModal.dialog("option", { "width": 600, "title": "@Resources.Resource.PriceLevel" });
+		editModal.dialog("open");
+	}
+
+	function checkIfDuplicatedPlID(plID) {
+		let duplicated = false;
+		$('#tblPL tbody tr').each(function (i, e) {
+			let _plid = $(this).find('td:eq(1)').html().trim();
+			console.log('_plid:' + _plid.toLowerCase() + ';plid:' + plID.toLowerCase());
+			if (_plid.toLowerCase() === plID.toLowerCase()) {
+				duplicated = true;
+				return false;
+			}
+		});
+		return duplicated;
+	}
+
+	function checkIfDuplicatedPoint(pt) {
+		let duplicated = false;
+		$('#tblPL tbody tr').each(function (i, e) {
+			let _pt = $(this).find('td:eq(0)').html().trim();
+			console.log('_pt:' + _pt + ';pt:' + pt);
+			if (_pt == pt) {
+				duplicated = true;
+				return false;
+			}
+		});
+		return duplicated;
+	}
+
+	function validForm(data) {
+		let msg = '';
+		if (data.CustomerPoint === '') {
+			msg += requiredtxt.replace('{0}', cuspttxt) + "<br>";
+		}
+		if (data.PriceLevelID === '') {
+			msg += requiredtxt.replace('{0}', pltxt) + "<br>";
+		} else {
+			if (data.PriceLevelID.trim().length > 3) {
+				msg += '@Resources.Resource.PriceLevelIDLengthErr' + "<br>";
+			}
+		}
+		console.log('mode:' + mode);
+		if (mode === 0) {
+			if (checkIfDuplicatedPoint(data.CustomerPoint)) {
+				$.fancyConfirm({
+					title: '',
+					message: '@Resources.Resource.DuplicatedCusPointsWarning',
+					shownobtn: false,
+					okButton: oktxt,
+					noButton: canceltxt,
+					callback: function (value) {
+						if (value) {
+							$('#txtPoint').focus();
+						}
+					}
+				});
+				return false;
+			}
+			if (checkIfDuplicatedPlID(data.PriceLevelID)) {
+				$.fancyConfirm({
+					title: '',
+					message: '@Resources.Resource.DuplicatedPLIDWarning',
+					shownobtn: false,
+					okButton: oktxt,
+					noButton: canceltxt,
+					callback: function (value) {
+						if (value) {
+							$('#txtPlID').focus();
+						}
+					}
+				});
+				return false;
+			}
+		}
+
+		if (msg !== '') {
+			falert(msg, oktxt);
+		}
+		return msg === '';
+	}
+
+	function submitForm() {
+		let url = mode === 0 ? '/PriceLevels/Create' : '/PriceLevels/Edit';
+		let _token = editModal.find('input[name="__RequestVerificationToken"]').val();
+		let data = {
+			CustomerPoint: $('#txtPoint').val(),
+			PriceLevelID: $('#txtPlID').val(),
+			PriceLevelDescription: $('#txtDesc').val(),
+			'__RequestVerificationToken': _token
+		};
+		if (mode === 1) {
+			data.Id = pricelevel.id;
+		}		
+
+		if (validForm(data)) {
+			@*console.log('data:', data);
+			return false;*@
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: data,
+				success: function (data) {
+					if (data.msg) {
+						window.location.reload(true);
+					}
+				},
+				dataType: 'json'
+			});
+		}
+	}
+
+	function closeModal() {
+		editModal.dialog('close');
+	}
+
+	$(document).ready(function () {
+		editModal = $('#editModal').dialog({
+			autoOpen: false,
+			modal: true,
+			buttons:
+				[
+					{
+						text: "@Resources.Resource.Save",
+						"class": "saveBtnCls",
+						click: submitForm,
+					},
+					{
+						text: "@Resources.Resource.Cancel",
+						click: closeModal,
+					},
+				],
+		});
+	});
+</script>

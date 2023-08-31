@@ -1,0 +1,118 @@
+﻿@model SalesmenManagerEditModel
+@using PagedList.Mvc;
+@{
+    @*bool editmode = Model.Salesman.surUID > 0;*@
+bool editmode = true;
+string edittxt = editmode ? Resources.Resource.Edit : Resources.Resource.Add;
+ViewBag.Title = edittxt + " " + Resources.Resource.SalesmenManager;
+string codelist = string.Join(",", Model.SalesmanCodeList);
+int rand = CommonHelper.GetVersionRandomNo();
+int lang = (int)HttpContext.Current.Session["CurrentCulture"];
+@*UserModel User = Model.Salesman;*@
+}
+<link href="~/Content/Item.css?v=@rand" type="text/css" rel="stylesheet" />
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("Edit", "SalesmanManager", FormMethod.Post, new { @Id = "frmSalesman" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("surUID", User.surUID)
+
+<div class="form-horizontal my-4">
+
+    <div class="form-group">
+        <label class="control-label col-md-2" for="UserCode">@Resources.Resource.UserCode</label>
+        <div class="col-md-10">
+            <input type="text" class="form-control" maxlength="@Model.MaxCodeLength" id="UserCode" name="UserCode" value="@User.UserCode" readonly />
+            <span class="small font-weight-bold">(@string.Format(Resources.Resource.MaxChar, Model.MaxCodeLength))</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2" for="UserName">@Resources.Resource.UserName</label>
+        <div class="col-md-10">
+            <input type="text" class="form-control" id="UserName" name="UserName" value="@User.UserName" />
+        </div>
+    </div>
+
+    @{
+        string _checked = editmode && User.surIsActive ? "checked" : "checked";
+    }
+    <div class="form-check mx-3 my-3">
+        <input class="form-check-input" type="checkbox" value="1" id="isActive" name="isActive" @_checked>
+        <label class="form-check-label" for="isActive">
+            @Resources.Resource.Active
+        </label>
+    </div>
+
+    <h4>@Resources.Resource.AssignSalesmen</h4>
+    <table id="tblManager" class="table table-bordered  table-hover table-condensed" style="width:102%;" data-debug="@Model.SalesmanList.Count">
+        <colgroup>
+            <col width="100">           
+            <col width="300">            
+            <col width="80" />
+            <col width="100"/>
+        </colgroup>
+        <thead class="gray-header">
+            <tr>
+                <th class="text-left colheader" data-col="0" data-keyword="@Model.Keyword">@Resources.Resource.Name</th>
+                <th class="text-left">@Resources.Resource.Manager</th>
+                <th class="text-left colheader" data-col="2" data-keyword="@Model.Keyword">@Resources.Resource.Status</th>
+                <th>@Resources.Resource.Assign</th>
+            </tr>
+        </thead>
+
+        @foreach (var salesman in Model.SalesmanList)
+        {
+            var statustxt = salesman.surIsActive ? Resources.Resource.Active : Resources.Resource.Inactive;
+            _checked = User.ManagerId == salesman.surUID ? "checked" : "";          
+            <tr>
+                <td>@salesman.UserName</td>
+                <td>@salesman.ManagerName</td>
+                <td>@statustxt</td>
+                <td>
+                    <div class="form-check">
+                        <input class="form-check-input salesman" type="checkbox" value="@salesman.surUID" @_checked>
+                    </div>
+                </td>
+            </tr>
+        }
+
+    </table>
+    <div id="pagingblk" class="mx-3">
+        <div class="row">
+            @Html.PagedListPager(Model.ManagerList, PageNo => Url.Action("Index",
+new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
+        </div>
+    </div>
+
+    <input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+    <input type="hidden" id="sortcol" value="@Model.SortCol" />
+
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <a role="button" href="#" id="btnSave" class="btn btn-success">@Resources.Resource.Save</a>
+        </div>
+    </div>
+
+    <input type="hidden" id="IsActive" name="IsActive" value="@User.IsActive" />
+    <input type="hidden" id="codeinuse" value="@User.UserCode" />
+    <input type="hidden" id="AccountProfileId" name="AccountProfieId" value="@User.AccountProfileId" />  
+    <input type="hidden" id="UserCode" name="UserCode" value="@User.UserCode"/>
+    <input type="hidden" id="surUID" name="surUID" value="@User.surUID"/>
+</div>
+@Html.AntiForgeryToken()
+}
+
+<div>
+    @Html.ActionLink(Resources.Resource.BackToList, "Index")
+</div>
+
+<div id="infoblk" class="hide" data-codelist="@codelist" data-accountprofileid="@User.AccountProfileId"></div>
+
+@Html.Partial("_WaitingModal")
+
+
+<script src="~/Scripts/ts/js/crm/salesmen/salesmanmanageredit.js?v=@rand"></script>

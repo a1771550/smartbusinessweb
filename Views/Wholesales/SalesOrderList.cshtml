@@ -1,0 +1,249 @@
+﻿@model PPWLib.Models.POS.Sales.SalesOrderEditModel
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = string.Format(Resources.Resource.ListFormat, Resources.Resource.SalesOrder);
+    var rand = CommonHelper.GetVersionRandomNo();
+    bool approvalmode = Model.ApprovalMode;    
+    SessUser user = HttpContext.Current.Session["User"] as SessUser;
+    bool isapprover = user.Roles.Any(x => x == RoleType.Admin || x == RoleType.SalesManager);
+}
+<link href="~/Scripts/paginationjs/pagination.css" rel="stylesheet" type="text/css" />
+
+<h3>@ViewBag.Title</h3>
+
+@if (Model.PagingWholeSalesOrderList == null || Model.PagingWholeSalesOrderList.Count == 0)
+{
+    <div class="alert alert-info d-inline-block" id="norecordfound">@Resources.Resource.NoDataFound</div>
+}
+else
+{
+    <div class="container" data-count="@Model.PagingWholeSalesOrderList.Count">
+        @using (Html.BeginForm("SalesOrderList", "WholeSales", FormMethod.Get, new { @Id = "frmSalesOrderList" }))
+        {
+            var _salespersonchecked = "";
+            var _salesorderchecked = "";
+            var _itemchecked = "";
+            var _customerchecked = "";
+            if (!string.IsNullOrEmpty(Model.Keyword))
+            {
+                var arrSearchMode = Model.SearchModeList.Split(',');
+                _salespersonchecked = arrSearchMode.Contains("0") ? "checked" : "";
+                _salesorderchecked = arrSearchMode.Contains("1") ? "checked" : "";
+                _itemchecked = arrSearchMode.Contains("2") ? "checked" : "";
+                _customerchecked = arrSearchMode.Contains("3") ? "checked" : "";
+            }
+
+            <div class="d-flex justify-content-center my-4">
+
+                <input type="text" class="form-control mr-2" id="txtKeyword" name="Keyword" value="@Model.Keyword" placeholder="@Resources.Resource.KeywordRequired" />
+
+                <div class="form-check form-check-inline small">
+                    <input class="form-check-input searchmode" type="checkbox" id="chkSalesPerson" name="SearchMode[]" value="0" @_salespersonchecked>
+                    <label class="form-check-label" for="chkSalesPerson">銷售員</label>
+                </div>
+                <div class="form-check form-check-inline small">
+                    <input class="form-check-input searchmode" type="checkbox" id="chkSalesOrder" name="SearchMode[]" value="1" @_salesorderchecked>
+                    <label class="form-check-label" for="chkSalesOrder">銷售單資料</label>
+                </div>
+                <div class="form-check form-check-inline small">
+                    <input class="form-check-input searchmode" type="checkbox" id="chkItem" name="SearchMode[]" value="2" @_itemchecked>
+                    <label class="form-check-label" for="chkItem">商品資料</label>
+                </div>
+                <div class="form-check form-check-inline small">
+                    <input class="form-check-input searchmode" type="checkbox" id="chkCustomer" name="SearchMode[]" value="3" @_customerchecked>
+                    <label class="form-check-label" for="chkCustomer">客戶資料</label>
+                </div>
+
+                <input type="hidden" id="searchmode" name="searchmode" value="@Model.SearchModeList" />
+            </div>
+            <div class="row justify-content-center py-3 mb-2">
+                @Html.Partial("_DatesRange", null, new ViewDataDictionary { { "DateFromTxt", Model.DateFromTxt }, { "DateToTxt", Model.DateToTxt } })
+            </div>
+
+            <div class="row justify-content-center mb-2">
+                <button id="btnFilter" type="submit" name="filter" value="1" class="btn btn-success mr-sm-3">@Resources.Resource.Submit</button>
+                <button id="btnReload" type="button" role="button" class="btn btn-warning">@Resources.Resource.Reload</button>
+            </div>
+
+            <input type="hidden" id="sortorder" name="SortOrder" value="@Model.SortOrder" />
+            <input type="hidden" id="sortname" name="SortName" value="@Model.SortName" />
+            <input type="hidden" id="currentsortorder" value="@Model.CurrentSortOrder" />
+
+        }
+    </div>
+
+    <div id="tblblk" class="py-3" data-count="@Model.PagingWholeSalesOrderList.Count" style="overflow-x:scroll;">
+        <table id="tblsalesorder" class="table table-bordered  table-hover table-condensed">
+            <thead class="gray-header">
+                <tr>
+                    <th class="text-left colheader" data-col="0" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="wsCode">
+                        @Resources.Resource.InvoiceNo
+                    </th>
+                    <th class="text-left colheader" data-col="1" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="SalesName">
+                        @Resources.Resource.SalesPerson
+                    </th>
+                    <th class="text-left colheader" data-col="2" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="CusName">
+                        @Resources.Resource.Customer
+                    </th>
+                    <th class="text-left">
+                        @Resources.Resource.Remark
+                    </th>
+                    <th class="text-left colheader" data-col="3" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="wsStatus">
+                        @Resources.Resource.Status
+                    </th>
+                    <th class="text-center colheader" data-col="4" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="wsTime">@Resources.Resource.InvoiceTime</th>
+                    <th class="text-center colheader" data-col="5" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="wsDeliveryDate">@Resources.Resource.DeliveryDate</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.PagingWholeSalesOrderList)
+                {
+                    string bgclr = "";
+                    string approvedisabled = "";
+                    string rejectdisabled = "";
+                    string voiddisabled = "";
+                    //string passdisabled = "";
+                    string btncls = item.wsType == "WS" ? "" : "disabled";
+                    string statustxt = "";
+                    string _readonly = "1";
+
+                    if (item.wsStatus == "REQUESTING" && item?.wsSpecialApproval != null && (bool)item?.wsSpecialApproval)
+                    {
+                        bgclr = "requesting_sp_statusbg";
+                        statustxt = "特批申請中";
+                        _readonly = "0";
+                    }
+                    else
+                    {
+                        switch (item.wsStatus)
+                        {
+                            case "VOIDED":
+                                bgclr = "voidedstatusbg";
+                                voiddisabled = "disabled";
+                                statustxt = "廢單";
+                                break;
+                            case "PASSED":
+                                bgclr = "passedstatusbg";
+                                //passdisabled = "disabled";
+                                statustxt = "經理待批";
+                                break;
+                            case "deliver":
+                            case "order":
+                            case "APPROVED":
+                            case "created":
+                            case "CREATED":
+                                bgclr = item?.wsSpecialApproval != null && (bool)item?.wsSpecialApproval ? "approved_sp_statusbg" : "approvedstatusbg";
+                                approvedisabled = "disabled";
+                                rejectdisabled = "disabled";
+                                voiddisabled = "disabled";
+                                //passdisabled = "disabled";
+                                statustxt = item?.wsSpecialApproval != null && (bool)item?.wsSpecialApproval ? "特批已批核" : "已批核";
+                                break;
+                            case "REJECTED":
+                                bgclr = "rejectedstatusbg";
+                                rejectdisabled = "disabled";
+                                statustxt = "拒絕";
+                                break;
+                            case "KPENDING":
+                                bgclr = "kpendingstatusbg";
+                                statustxt = "期貨單";
+                                break;
+                            default:
+                            case "REQUESTING":
+                                bgclr = "requestingstatusbg";
+                                statustxt = "申請中";
+                                _readonly = "0";
+                                break;
+                        }
+                    }
+
+
+                    <tr data-code="@item.wsCode" data-sp="@item.wsSpecialApproval" data-status="@item.wsStatus">
+                        <td>
+                            @item.wsCode
+                        </td>
+                        <td>@item.SalesPersonName</td>
+                        <td class="customer" data-code="@item.Customer.cusCode" data-name="@item.Customer.cusName">@item.Customer.cusName</td>
+
+                        @{
+                            var remark = item.wsRemark != null && item.wsRemark.Length > 20 ? string.Concat(item.wsRemark.Substring(0, 20), "...") : item.wsRemark ?? "";
+                        }
+
+                        <td style="width:150px;max-width:150px;" data-remark="@item.wsRemark" class="remark">@remark</td>
+
+                        <td class="@bgclr">
+                            @statustxt
+                        </td>
+                        <td>@item.SalesTimeDisplay</td>
+                        <td data-date="@item.wsDeliveryDate">@item.DeliveryDateDisplay</td>
+                        <td class="button">
+
+                            @if (approvalmode)
+                            {
+                                if (isapprover)
+                                {
+                                    <button class="btn btn-info detail mr-2 @btncls" data-id="@item.wsUID" data-code="@item.wsCode" data-readonly="1">@Resources.Resource.Detail</button>
+                                    <button class="btn btn-secondary copy mr-2 @btncls" data-id="@item.wsUID">@Resources.Resource.Copy</button>
+                                }
+                               
+                                if ((item.wsStatus == "REQUESTING"||item.wsStatus=="KPENDING") && isapprover)
+                                {
+                                    <button class="btn btn-primary respond mr-2 @approvedisabled" data-type="approve" data-id="@item.wsUID" data-code="@item.wsCode">@Resources.Resource.Approve</button>
+                                    <button class="btn btn-danger respond mr-2 @rejectdisabled" data-type="reject" data-id="@item.wsUID" data-code="@item.wsCode">@Resources.Resource.Reject</button>
+                                
+                                    <button class="btn btn-outline-danger void @voiddisabled" data-type="void" data-id="@item.wsUID" data-code="@item.wsCode">@Resources.Resource.Void4Order</button>
+                                }
+
+
+                                if (!isapprover)
+                                {
+                                    string edittxt = _readonly == "" ? Resources.Resource.Edit : Resources.Resource.Detail;
+                                    <button class="btn btn-info edit mr-2" data-id="@item.wsUID" data-code="@item.wsCode" data-readonly="@_readonly">@edittxt</button>
+                                    <button class="btn btn-secondary copy mr-2 @btncls" data-id="@item.wsUID">@Resources.Resource.Copy</button>
+                                    <button class="btn btn-primary whatsapp mr-2" data-id="@item.wsUID" data-code="@item.wsCode"><span class="small">重發 WhatsApp 訊息</span></button>
+                                }
+                            }
+
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div id="pagingblk" class="mx-3">
+            <div class="row">
+                @Html.PagedListPager(Model.PagingWholeSalesOrderList, PageNo => Url.Action("SalesOrderList",
+        new { PageNo, SortOrder = Model.SortOrder, SortName = Model.SortName, Keyword = Model.Keyword, strfrmdate = Model.DateFromTxt, strtodate = Model.DateToTxt }))
+            </div>
+        </div>
+    </div>
+    @Html.AntiForgeryToken()
+}
+
+@Html.Partial("_RecurOrderModal", null, new ViewDataDictionary { { "currency", ConfigurationManager.AppSettings["Currency"] } })
+
+@Html.Partial("_WhatsAppLinkModal")
+
+@Html.Partial("_TextAreaModal")
+
+@Html.Partial("_WaitingModal")
+
+<div id="infoblk" class="hide" data-apid="@ConfigurationManager.AppSettings["AccountProfileId"]" data-approvedmsg="@Resources.Resource.ApprovedInvoiceMsgFormat" data-rejectedmsg="@Resources.Resource.RejectedInvoiceMsgFormat" data-whatsapplinkurl="@ConfigurationManager.AppSettings["WhatsappLinkUrl"]" data-approvalmode="@approvalmode" data-usercode="@user.UserCode"></div>
+
+<script type="text/javascript" src="~/Scripts/daterangepicker/moment.min.js"></script>
+<script type="text/javascript" src="~/Scripts/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="~/Scripts/daterangepicker/daterangepicker.css" />
+
+<script src="~/Scripts/paginationjs/pagination.js"></script>
+
+<script>
+    $(function () {
+        initDatePickers(StartDayEnum.LastMonthToday, 'YYYY-MM-DD');
+    });
+</script>
+
+<script src="~/Scripts/ts/js/wholesales/salesorderlist.js?v=@rand"></script>
+
+
+

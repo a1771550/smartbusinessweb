@@ -1,0 +1,14 @@
+﻿
+@{
+    ViewBag.Title = "AjaxPostList";
+    int rand = CommonHelper.GetVersionRandomNo();
+}
+
+<h2>AjaxPostList</h2>
+
+@Html.AntiForgeryToken()
+
+<button type="button" id="btnPost" class="btn btn-success">Post</button>
+
+<script src="~/Scripts/ts/js/ajaxpostlist.js?v=@rand"></script>
+

@@ -1,0 +1,85 @@
+﻿@model PPWLib.Models.CrmUserEditModel
+
+@{
+    int rand = CommonHelper.GetVersionRandomNo();
+    string mandatory = Resources.Resource.StarMarkedMandatory.Replace("*", "<span class='asterisk'>*</span>");
+    bool edit = Model.CrmUser.surUID > 0;
+    var strrole = Model.CrmUser.RoleTypes.Any(x => x == RoleType.CRMSalesManager) ? Resources.Resource.SalesManager : Resources.Resource.SalesPerson;
+    ViewBag.Title = edit ? Resources.Resource.Edit : Resources.Resource.Add + " " + strrole;
+    int icheckpass = -1;
+}
+
+<h3>@ViewBag.Title</h3>
+@using (Html.BeginForm("Edit", "CrmUser", FormMethod.Get, new { @Id = "frmCrmUser" }))
+{
+    @Html.AntiForgeryToken()
+    <h6>@Html.Raw(mandatory)</h6>
+    <div class="form-horizontal">
+       
+        @Html.HiddenFor(model=>model.CrmUser.UserCode)
+
+        <div class="form-group required">
+            <label class="control-label col-md-2" for="UserName">@Resources.Resource.UserName</label>
+            <div class="col-md-10">
+                <input type="text" id="UserName" name="UserName" class="form-control" value="@Model.CrmUser.UserName" />               
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="Email">@Resources.Resource.Email</label>
+            <div class="col-md-10">
+                <input type="email" id="Email" name="Email" class="form-control" value="@Model.CrmUser.Email" />
+            </div>
+        </div>      
+
+        <div class="form-group" style="margin-left:1em;">
+            <div id="chkpassblk" class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="chkpass">
+                <label class="form-check-label" for="chkpass">
+                    @Resources.Resource.ChangePass
+                </label>
+
+            </div>
+        </div>
+
+        <div id="passblk" class="hide" data-pass="@Model.CrmUser.Password">
+            <div class="form-group">
+                <label class="control-label col-md-2" for="Password">@Resources.Resource.Password</label>
+                <div class="col-md-10">
+                    <input type="password" id="Password" name="Password" class="form-control" value="@Model.CrmUser.Password" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2" for="ConfirmPassword">@Resources.Resource.ConfirmPassword</label>
+                <div class="col-md-10">
+                    <input type="password" id="ConfirmPassword" name="ConfirmPassword" class="form-control" value="@Model.CrmUser.ConfirmPassword" />
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="form-group my-4">
+        <button id="btnSave" type="button" class="btn btn-success">@Resources.Resource.Save</button>
+        @Html.Hidden("UserID", Model.CrmUser.surUID)
+        @if (Model.CrmUser.surUID > 0)
+        {
+            icheckpass = Model.CrmUser.checkpass ? 1 : 0;            
+            @Html.HiddenFor(model => model.CrmUser.checkpass, new { @Id = "checkpass" })
+        }
+        <input type="hidden" name="userstatus" id="userstatus" value="1" />
+        <input type="hidden" id="currpass" name="Password" value="@Model.CrmUser.Password" />
+        <input type="hidden" id="icheckpass" name="icheckpass" value="@icheckpass" />
+        <input type="hidden" id="crmsalesgroupidlist" value="@string.Join(",",Model.CrmUser.CrmSalesGroupIdList)" />
+        <input type="hidden" id="crmsalesgroupmemberidlist" value="@string.Join(",",Model.CrmUser.CrmSalesGroupMemberIdList)" />
+    </div>
+}
+<div>
+    @Html.ActionLink(Resources.Resource.BackToList, "Index")
+</div>
+
+@Html.Partial("_WaitingModal")
+<div id="infoblk" data-apid="@Model.CrmUser.AccountProfileId" data-userroles="@string.Join(",",Model.CrmUser.RoleTypes)"></div>
+<script src="~/Scripts/ts/js/crm/usermanagement/user/edit.js?v=@rand"></script>

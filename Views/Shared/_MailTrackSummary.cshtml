@@ -1,0 +1,9 @@
+﻿@model eTrackModel
+@{ 
+//string _organ = (Model.Organization != null)  ? Model.Organization.Replace("+", " ").Trim() : "";
+}
+<tr>
+	<td style="width:140px;max-width:140px;">@Model.BlastId</td>
+	@*<td>@Model.ContactId</td>*@
+	<td>@Model.ContactName</td><td>@Model.Organization</td><td>@Model.ViewDateTimeDisplay</td><td>@Model.Phone</td><td>@Model.Email</td><td>@Model.IP</td>
+</tr>

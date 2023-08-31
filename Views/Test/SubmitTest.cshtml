@@ -1,0 +1,47 @@
+﻿@model SmartBusinessWeb.Controllers.TestModel
+
+@{
+    ViewBag.Title = "SubmitTest";
+}
+
+<h2>SubmitTest</h2>
+
+@using (Html.BeginForm("SubmitTest", "Test", FormMethod.Post, new { @Id = "frmTest" }))
+{
+
+    <table class="table">
+        <tr>
+            <th>Email</th>
+        </tr>
+
+        @foreach (var item in Model.MailList)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.emEmail)
+                </td>
+            </tr>
+        }
+
+    </table>
+
+    <button type="button" id="btnTest" class="btn btn-primary">Test</button>
+}
+
+<p>attr name:@Html.DisplayFor(modelItem => Model.attrname)</p>
+<p>attr val:@Html.DisplayFor(modelItem => Model.attrval)</p>
+
+
+<script>
+    $(document).on('click', '#btnTest', function () {
+        $("<input />").attr("type", "hidden")
+            .attr("name", "attrname")
+            .attr("value", 'test')
+            .appendTo("#frmTest");
+        $("<input />").attr("type", "hidden")
+            .attr("name", "attrval")
+            .attr("value", 'test1')
+            .appendTo("#frmTest");
+        $('#frmTest').submit();
+    });
+</script>

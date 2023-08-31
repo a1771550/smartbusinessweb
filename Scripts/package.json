@@ -1,0 +1,20 @@
+{
+  "name": "scripts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "ASPSnippets_Pager.min.js",
+  "dependencies": {
+    "jquery-powertip": "^1.3.2",
+    "moment": "^2.29.4"
+  },
+  "devDependencies": {
+    "@types/jquery": "^3.5.17",
+    "@types/node": "^20.5.7",
+    "jquery": "^3.7.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

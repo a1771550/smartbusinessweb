@@ -1,0 +1,11 @@
+﻿@{ 
+    string cls = ViewData!=null ? (string)ViewData["cls"]:"";
+}
+
+<div id="dropdownModal">
+    <div class="form-group required">
+        <label id="lblattrname" class="control-label" for="attrName"></label>
+        <select class="form-control dropdown @cls">
+        </select>
+    </div>
+</div>

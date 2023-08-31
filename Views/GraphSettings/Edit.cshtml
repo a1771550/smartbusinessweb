@@ -1,0 +1,90 @@
+﻿@model PPWLib.Models.GraphSettingsModel
+@{
+    string action = Model.Id == 0 ? Resources.Resource.Add : Resources.Resource.Edit;
+    var graphsettingstxt = string.Format(Resources.Resource.SettingsFormat, string.Format(Resources.Resource.ApiFormat, Resources.Resource.Office365));
+    ViewBag.Title = CultureHelper.CurrentCulture == 2 ? string.Concat(action, " ", graphsettingstxt) : string.Concat(action, "", graphsettingstxt);
+    int rand = CommonHelper.GetVersionRandomNo();
+}
+<style>
+    .long{
+        max-width:none;
+    }
+</style>
+<h3>@ViewBag.Title</h3>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal my-4">
+
+    @Html.HiddenFor(model => model.Id)
+
+    <div class="form-group required">
+        <label class="control-label col-md-3" for="gsAppName">@string.Format(Resources.Resource.NameFormat, string.Format(Resources.Resource.RegisteredFormat, Resources.Resource.Application))</label>
+        <div class="col-md-9">
+            @Html.EditorFor(model => model.gsAppName, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+    </div>
+
+    <div class="form-group required">
+        <label class="control-label col-md-2" for="gsAuthority">Authority</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.gsAuthority, new { htmlAttributes = new { @class = "form-control long" } })
+        </div>
+    </div>
+
+    <div class="form-group required">
+        <label class="control-label col-md-2" for="gsEmailResponsible">@string.Format(Resources.Resource.InChargeFormat,Resources.Resource.Email)</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.gsEmailResponsible, new { htmlAttributes = new { @class = "form-control long" } })
+        </div>
+    </div>
+
+    <div class="form-group required">
+        <label class="control-label col-md-2" for="gsClientId">@string.Format(Resources.Resource.IdFormat, Resources.Resource.Client)</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.gsClientId, new { htmlAttributes = new { @class = "form-control long" } })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2" for="gsTenantId">@string.Format(Resources.Resource.IdFormat, Resources.Resource.Directory)</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.gsTenantId, new { htmlAttributes = new { @class = "form-control long" } })
+        </div>
+    </div>
+
+
+
+    <div class="form-group required">
+        <label class="control-label col-md-2" for="gsRedirectUri">@Resources.Resource.RedirectUri</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.gsRedirectUri, new { htmlAttributes = new { @class = "form-control long" } })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2" for="gsClientSecretVal">@string.Format(Resources.Resource.SecretValFormat, Resources.Resource.Client)</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.gsClientSecretVal, new { htmlAttributes = new { @class = "form-control long" } })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <button id="btnSave" type="button" role="button" class="btn btn-success">@Resources.Resource.Save</button>
+        </div>
+    </div>
+    @Html.HiddenFor(model => model.CreateTimeDisplay)
+    @Html.HiddenFor(model => model.ModifyTimeDisplay)
+</div>
+}
+
+<div>
+    @Html.ActionLink(Resources.Resource.BackToList, "Index")
+</div>
+
+<div id="infoblk" class="hide" data-defaultmsalauthority="@ConfigurationManager.AppSettings["DefaultMsalAuthority"]" data-namerequiredtxt="@string.Format(Resources.Resource.Required,string.Format(Resources.Resource.NameFormat,Resources.Resource.Application))" data-authorityrequiredtxt="@string.Format(Resources.Resource.Required,"Authority")" data-emailrequiredtxt="@string.Format(Resources.Resource.Required,string.Format(Resources.Resource.InChargeFormat,Resources.Resource.Email))" data-clientidrequiredtxt="@string.Format(Resources.Resource.Required,string.Format(Resources.Resource.IdFormat,Resources.Resource.Client))" data-redirecturirequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.RedirectUri)" data-secretvalrequiredtxt="@string.Format(Resources.Resource.Required,string.Format(Resources.Resource.SecretValFormat, Resources.Resource.Client))"></div>
+
+<script src="~/Scripts/ts/js/crm/graphsettings/graphsettings_edit.js?v=@rand"></script>

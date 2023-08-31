@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>API Post Test</title>
+    <link rel="icon" type="image/png" href="../Content/favicon_io/favicon-16x16.png">
+    <link href="../Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Content/fontawesome/font-awesome.min.css" />
+    <script src="../Scripts/jquery-ui/external/jquery/jquery.js"></script>
+    <script src="../Scripts/bootstrap.min.js"></script>
+    <script src="../Scripts/moment.min.js"></script>
+    <script src="../Scripts/respond.min.js"></script>
+    <script src="../Scripts/modernizr-2.8.3.js"></script>
+</head>
+<body>
+
+    <script>
+
+        let cities = JSON.stringify({ 'cities': [{ Id: 1, Name: "Hong Kong" }, { Id: 2, Name: "Pei Jing" }] });
+        console.log(cities);
+        
+        $.ajax({
+            contentType: 'application/json; charset=utf-8',
+            type: "POST",
+            url: '/api/PostTest',
+            data: cities,
+            success: function (data) {
+                console.log(data);
+            },
+            dataType: 'json'
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,335 @@
+﻿@model PPWLib.Models.ContactModel
+@using PagedList.Mvc;
+@{
+    @*string nospecialcharsallowedtxt = string.Format(Resources.Resource.NoSpecialCharactersAllowedFormat, ConfigurationManager.AppSettings["ForbiddenCharacters"]);*@
+    string plsentertxt = string.Format(Resources.Resource.PlsEnterFormat, string.Format(string.Format(Resources.Resource.ValueFormat, string.Format(Resources.Resource.AllFormat, string.Format(Resources.Resource.DropDownFormat, Resources.Resource.CustomAttribute)))));
+
+
+    bool edit = Model.cusContactID > 0;
+    if (string.IsNullOrEmpty(Model.SelectedType))
+    {
+        ViewBag.Title = edit ? Resources.Resource.Edit : Resources.Resource.Add + " " + Resources.Resource.Contact;
+    }
+    else
+    {
+        ViewBag.Title = Resources.Resource.CustomAttribute;
+    }
+    string codelist = string.Join(",", Model.CusPhoneList);
+    string maillist = string.Join(",", Model.CusEmailList);
+    int rand = CommonHelper.GetVersionRandomNo();
+    string mandatory = Resources.Resource.StarMarkedMandatory.Replace("*", "<span class='asterisk'>*</span>");
+    string _organchecked = Model.cusIsOrganization ? "checked" : "";
+    string _indivchecked = Model.cusIsOrganization ? "" : "checked";
+    string _checked = "checked";
+    bool isorgan = true;
+    int iorgan = 1;
+    var tmpcust = new ContactModel();
+    if (edit)
+    {
+        isorgan = _organchecked == "checked";
+        tmpcust = Model;
+    }
+    else
+    {
+        _organchecked = "checked";
+        _indivchecked = "";
+    }
+    string maxcharlengthallowedtxt = string.Format("({0})", string.Format(Resources.Resource.MaxChar, ConfigurationManager.AppSettings["MaxCoNameLength"]));
+    iorgan = isorgan ? 1 : 0;
+    int frmenquiry = Model.FrmEnquiry ? 1 : 0;
+}
+<link rel="stylesheet" href="~/Content/attributecommon.css?v=@rand" />
+<h3>@ViewBag.Title</h3>
+@using (Html.BeginForm("Edit", "Contact", FormMethod.Get, new { @Id = "frmContact" }))
+{
+    @Html.AntiForgeryToken()
+
+    <h6>@Html.Raw(mandatory)</h6>
+    @*<p class="alert-danger small col-3">@nospecialcharsallowedtxt</p>*@
+
+    <div class="form-horizontal my-4" data-edit="@edit" data-organchecked="@_organchecked" data-frmenquiry="@Model.FrmEnquiry" data-contactid="@Model.cusContactID">
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        @Html.HiddenFor(model => model.cusContactID)
+        @Html.HiddenFor(model => model.AccountProfileId)
+
+        @if (string.IsNullOrEmpty(Model.SelectedType))
+        {
+            <div class="form-group mb-3 mx-3">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input isorgan" type="radio" name="cusIsOrganization" id="Organization" value="1" @_organchecked>
+                    <label class="form-check-label" for="Organization">@Resources.Resource.Organization</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input isorgan" type="radio" name="cusIsOrganization" id="Individual" value="0" @_indivchecked>
+                    <label class="form-check-label" for="Individual">@Resources.Resource.Individual</label>
+                </div>
+            </div>
+            <input type="hidden" id="IsOrgan" value="@iorgan" />
+
+            <div id="colastname" class="form-group required">
+                <label class="control-label col-md-2" for="cusName">@Resources.Resource.Name</label>
+                <div class="col-md-10">
+                    <input type="text" class="form-control" maxlength="@ConfigurationManager.AppSettings["MaxCoNameLength"]" id="cusName" name="cusName" value="@Html.Raw(Model.cusName)" />
+
+                </div>
+                <span id="maxlength" class="alert small">@maxcharlengthallowedtxt</span>
+            </div>
+
+            <div id="namesblk" class="hide" data-lastname="@Html.Raw(Model.cusName)">
+                <div class="form-group required">
+                    <label class="control-label col-md-2" for="cusFirstName">@Resources.Resource.FirstName</label>
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.cusFirstName, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2" for="cusLastName">@Resources.Resource.LastName</label>
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.cusLastName, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group required">
+                <label class="control-label col-md-2" for="cusCode">@Resources.Resource.Phone</label>
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.cusPhone, new { htmlAttributes = new { @class = "form-control" } })
+                    <span id="phonewarning" class="d-block my-2 warningalert alert-warning small hide">@Resources.Resource.ContactPhoneDuplicatedAlert</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2" for="cusAddrPhone1">@Resources.Resource.Mobile 1</label>
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.cusAddrPhone1, new { htmlAttributes = new { @class = "form-control mobile" } })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2" for="cusAddrPhone2">@Resources.Resource.Mobile 2</label>
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.cusAddrPhone2, new { htmlAttributes = new { @class = "form-control mobile" } })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2" for="cusAddrPhone3">@Resources.Resource.Mobile 3</label>
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.cusAddrPhone3, new { htmlAttributes = new { @class = "form-control mobile" } })
+                </div>
+            </div>
+
+            <div class="form-group required">
+                <label class="control-label col-md-2" for="cusContact">@Resources.Resource.Contact</label>
+                <div class="col-md-10">
+                    <input type="text" class="form-control" id="cusContact" name="cusContact" value="@Html.Raw(Model.cusContact)" />
+                </div>
+            </div>
+
+            for (int i = 1; i <= 4; i++)
+            {
+                string lbl = $"{Resources.Resource.Address}{i}";
+                string _id = $"cusAddrStreetLine{i}";
+                <div class="form-group">
+                    <label class="control-label col-md-2" for="">@lbl</label>
+                    <div class="col-md-10">
+                        <input type="text" id="@_id" class="form-control address" style="max-width:none;" value="@Model.StreetLines[i - 1]" />
+                    </div>
+                </div>
+            }
+
+            <div class="form-group">
+                <label class="control-label col-md-2" for="cusCity">@Resources.Resource.City</label>
+                <div class="col-md-10">
+                    <input type="text" id="cusCity" name="cusCity" class="form-control" value="@tmpcust.cusAddrCity" />
+                </div>
+            </div>
+
+            {
+                bool nullcountry = string.IsNullOrEmpty(Model.cusAddrCountry);
+            }
+            <div class="form-group">
+                <label class="control-label col-md-2" for="cusCountry">@Resources.Resource.Country</label>
+                <div class="col-md-10">
+                    <select id="cusCountry" class="form-control">
+                        <option value="">-- @Resources.Resource.Select --</option>
+                        @foreach (var country in Model.Countries)
+                        {
+                            var _selected = "";
+                            if (edit)
+                            {
+                                if (country == null)
+                                {
+                                    _selected = Model.IpCountry.Contains(country) ? "selected" : "";
+                                }
+                                else
+                                {
+                                    _selected = Model.cusAddrCountry == country ? "selected" : "";
+                                }
+                            }
+                            else
+                            {
+                                _selected = Model.IpCountry.Contains(country) ? "selected" : "";
+                            }
+
+                            <option value="@country" @_selected>@country</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2" for="cusAddrWeb">@Resources.Resource.Website</label>
+                <div class="col-md-10">
+                    <input type="text" id="cusAddrWeb" name="cusAddrWeb" class="form-control" value="@tmpcust.cusAddrWeb" />
+                </div>
+            </div>
+
+            @*<div class="form-group">
+                    <label class="control-label col-md-2" for="cusName">@Resources.Resource.Points</label>
+                    <div class="col-md-10">
+                        <input type="number" id="cusPointsSoFar" name="cusPointsSoFar" class="form-control" value="@Model.cusPointsActive" />
+                    </div>
+                </div>*@
+
+            <div class="form-group">
+                <label class="control-label col-md-2" for="cusEmail">@Resources.Resource.Email</label>
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.cusEmail, new { htmlAttributes = new { @class = "form-control email" } })
+                    <span id="emailwarning" class="d-block my-2 warningalert alert-warning small hide">@Resources.Resource.DuplicatedEmailAlert</span>
+                </div>
+            </div>
+        }
+        @*else
+            {
+                <div class="container">
+                    <div class="row my-3 justify-content-between">
+                        <div>@Html.ActionLink(string.Format(Resources.Resource.AddFormat, Resources.Resource.CustomAttributes), "Create", "CustomAttribute", new { contactId = Model.cusContactID, apId = Model.AccountProfileId }, new { @class = "btn btn-info" })</div>
+                    </div>
+                </div>
+            }*@
+
+
+        @if (edit && !Model.FrmEnquiry)
+        {
+
+            <div class="form-group" data-cusattrcount="@Model.CustomAttributes.Count" data-pagingcount="@Model.PagingCustomAttributes.Count">
+
+                <h4>@Resources.Resource.CustomAttributes</h4>
+                <div class="col-md-10">
+                    <a href="#" data-contactid="@Model.cusContactID" data-apid="@Model.AccountProfileId" id="btnAddCustomAttr" class="btn btn-info float-right mb-1" role="button">@string.Format(Resources.Resource.AddFormat, string.Format(Resources.Resource.CustomFormat, Resources.Resource.CustomAttribute))</a>
+
+                    <table id="tblAttribute" class="table table-bordered  table-hover table-condensed tblattribute">
+                        <thead class="gray-header">
+                            <tr>
+                                <th class="text-left colheader" data-col="0">@Resources.Resource.Name</th>
+                                <th class="text-left colheader" data-col="1">@Resources.Resource.Value</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        @{ int idx = 0;}
+                        @foreach (var item in Model.PagingCustomAttributes)
+                        {
+                            string txtselected = item.attrType == "text" ? "selected" : "";
+                            string dateselected = item.attrType == "date" ? "selected" : "";
+                            @*string comboselected = item.attrType == "combo" ? "selected" : "";*@
+                            string attval = item.attrValue ?? string.Empty;
+
+                            <tr data-idx="@idx" data-attid="@item.attrId" data-contactid="@item.contactId" data-attname="@item.attrName" data-atttype="@item.attrType" data-apid="@item.AccountProfileId" data-datetime="@DateTime.Now">
+                                <td><input type="text" class="form-control attrname" value="@item.attrName" /></td>
+                                <td>
+                                    <input type="text" class="form-control attrvalue @item.attrType" data-date-format="yyyy-mm-dd" data-attval="@attval" value="@attval" />
+                                </td>
+                                <td>
+                                    <a role="button" href="#" class="btn btn-info @item.attrType attrsave" data-attrid="@item.attrId">@Resources.Resource.Save</a>
+                                    <a role="button" href="#" class="btn btn-danger remove attrremove" data-attrid="@item.attrId">@Resources.Resource.Remove</a>
+                                </td>
+                            </tr>
+                            idx++;
+                        }
+
+                    </table>
+
+                </div>
+            </div>
+
+            if (Model.CustomAttributes.Count > (int)(HttpContext.Current.Session["ComInfo"] as ComInfo).PageLength)
+            {
+                <div id="pagingblk" class="mx-4">
+                    <div class="row">
+                        @Html.PagedListPager(Model.PagingCustomAttributes, PageNo => Url.Action("Index",
+new { PageNo, SortOrder = Model.SortOrder, Keyword = Model.Keyword }))
+                    </div>
+                </div>
+            }
+
+
+            <input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+            <input type="hidden" id="sortcol" value="@Model.SortCol" />
+
+        }
+        else
+        {
+            <div id="JsonDefaultAttrVals" data-jsondefaultattrvals="@Model.JsonDefaultAttrVals"></div>
+
+        }
+
+        <hr />
+
+        <h4 data-edit="@edit">@Resources.Resource.DefaultAttributes</h4>
+
+        @Html.Partial("_GlobalAttributes", Model.GlobalAttributeList, new ViewDataDictionary { { "mode", "contact" } })
+        @Html.Partial("_DropDownModal", null, new ViewDataDictionary { { "cls", "default" } })
+
+        @Html.Partial("_DefaultAttributes", Model.DefaultAttributes, new ViewDataDictionary { { "edit", edit } })
+
+
+
+        @{ _checked = "checked"; int isactive = 1;}
+        @if (edit)
+        {
+
+            _checked = Model.cusIsActive ? "checked" : "";
+            isactive = Model.cusIsActive ? 1 : 0;
+        }
+        <div class="form-check mx-3 my-3" id="statusblk">
+            <input class="form-check-input" type="checkbox" value="1" id="isActive" name="isActive" @_checked>
+            <label class="form-check-label" for="isActive">
+                @Resources.Resource.Active
+            </label>
+        </div>
+
+        <div class="form-group" id="saveblk">
+            <div class="col-md-offset-2 col-md-10">
+                <a role="button" href="#" id="btnEdit" class="btn btn-success">@Resources.Resource.Save</a>
+            </div>
+        </div>
+
+        <input type="hidden" id="IsActive" name="IsActive" value="@isactive" />
+        <input type="hidden" id="codeinuse" value="@Model.cusCode" />
+        <input type="hidden" id="AccountProfileId" name="AccountProfileId" value="@Model.AccountProfileId" />
+        <input type="hidden" id="FrmEnquiry" name="FrmEnquiry" value="@Model.FrmEnquiry" />
+        <input type="hidden" id="enqEmail" name="enqEmail" value="@Model.cusEmail" />
+        <input type="hidden" id="SelectedType" name="SelectedType" value="@Model.SelectedType" />
+        <input type="hidden" id="OverWrite" name="OverWrite" value="@Model.OverWrite" />
+    </div>
+}
+
+
+<div>
+    @Html.ActionLink(Resources.Resource.BackToList, "Index")
+</div>
+
+@Html.Partial("_WaitingModal")
+
+@Html.Partial("_CustomAttributeModal", Model.CustomerAttributeView, new ViewDataDictionary { { "action", "Create" } })
+
+@Html.AntiForgeryToken()
+<div id="infoblk" class="hide" data-codelist="@codelist" data-maillist="@maillist" data-contactnamerequired="@Resources.Resource.ContactNameRequired" data-contactphonerequired="@Resources.Resource.ContactPhoneRequired" data-contactphoneduplicatederr="@Resources.Resource.ContactPhoneDuplicatedAlert" data-returnurl="Contact/Edit" data-edit="@edit" data-followupdaterequired="@Resources.Resource.FollowUpDateRequired" data-contactid="@Model.cusContactID" data-apid="@Model.AccountProfileId" data-maxconamelength="@ConfigurationManager.AppSettings["MaxCoNameLength"]" data-contactrequired="@Resources.Resource.ContactRequired" data-duplicatedemailalert="@Resources.Resource.DuplicatedEmailAlert" data-ipcountry="@Model.IpCountry" data-selectatleastoneitemtxt="@Resources.Resource.SelectAtLeastOneItemRequired" data-firstnamerequired="@Resources.Resource.FirstNameRequired" data-plsenteralldropdownattrvals="@plsentertxt" data-enablecrm="@Model.enableCRM" data-frmenquiry="@frmenquiry" data-jsondicattrs="@Model.JsonDicAttrs" data-jsondicattrvals="@Model.JsonDicAttrVals" data-attrvaldelimiter="@ConfigurationManager.AppSettings["AttributeValuesDelimiter"]" data-followupdaterequiredtxt="@Resources.Resource.FollowUpDateRequired"></div>
+
+<script src="~/Scripts/ts/js/crm/contact/attributes/attributecommon.js?v=@rand"></script>
+<script src="~/Scripts/ts/js/crm/contact/contactedit.js?v=@rand"></script>
+

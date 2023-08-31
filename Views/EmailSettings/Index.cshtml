@@ -1,0 +1,135 @@
+﻿@model EmailModel
+
+@{
+    ViewBag.Title = Resources.Resource.EmailSettings;
+    string mandatory = Resources.Resource.StarMarkedMandatory.Replace("*", "<span class='asterisk'>*</span>");
+    var rand = CommonHelper.GetVersionRandomNo();
+    bool enableCRM = Model.enableCRM;
+    bool approvalmode = ConfigurationManager.AppSettings["ApprovalMode"] == "1";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <h6>@Html.Raw(mandatory)</h6>
+    <div class="form-horizontal my-4">
+
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.emOffice365)
+        @Html.HiddenFor(model => model.iOffice365)
+        @Html.HiddenFor(model => model.AccountProfileId)
+        @Html.HiddenFor(model => model.emSMTP_Auth)
+        <div class="form-check required mx-3 my-3">
+            <input type="checkbox" class="form-check-input" id="chk365">
+            <label class="form-check-label" for="chk365">@Resources.Resource.Office365</label>
+        </div>
+
+        <div class="form-group required">
+            <label class="control-label col-md-2" for="emDisplayName">@string.Format(Resources.Resource.NameFormat, Resources.Resource.Display)</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.emDisplayName, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div id="emailblk" class="form-group">
+            <label class="control-label col-md-2" for="emEmail">@Resources.Resource.Email</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.emEmail, new { htmlAttributes = new { @class = "form-control", @type = "email" } })
+            </div>
+        </div>
+
+        <div class="form-group required">
+            <label class="control-label col-md-2" for="emSMTP_Server">@Resources.Resource.SMTP_Server</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.emSMTP_Server, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group required">
+            <label class="control-label col-md-2" for="emSMTP_Port">@Resources.Resource.SMTP_Port</label>
+            <div class="col-md-10">
+                <input type="number" class="form-control" name="emSMTP_Port" id="emSMTP_Port" value="@Model.emSMTP_Port" />
+            </div>
+        </div>
+
+        <div class="form-check required mx-3 my-3">
+            <input class="form-check-input" type="checkbox" value="" id="enableSSL">
+            <label class="form-check-label" for="enableSSL">
+                @string.Format(Resources.Resource.EnableFormat, "SSL")
+            </label>
+            @Html.HiddenFor(model=>model.emSMTP_EnableSSL)
+        </div>
+        
+
+      
+            <div class="form-group required">
+                <label class="control-label col-md-2" for="emEmailsPerSecond">@Resources.Resource.EmailsPerSecond</label>
+                <div class="col-md-10">
+                    <input type="number" class="form-control" name="emEmailsPerSecond" id="emEmailsPerSecond" value="@Model.emEmailsPerSecond" />
+                </div>
+            </div>
+
+            <div class="form-group required">
+                <label class="control-label col-md-2" for="emMaxEmailsFailed">@Resources.Resource.MaxEmailsFailed</label>
+                <div class="col-md-10">
+                    <input type="number" class="form-control" name="emMaxEmailsFailed" id="emMaxEmailsFailed" value="@Model.emMaxEmailsFailed" />
+                </div>
+
+            </div>
+
+            <div class="form-group required">
+                <label class="control-label col-md-2" for="emEmailTrackingURL">@Resources.Resource.EmailTrackingURL</label>
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.emEmailTrackingURL, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2" for="emTestEmail">@string.Format(Resources.Resource.TestFormat, Resources.Resource.Email)</label>
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.emTestEmail, new { htmlAttributes = new { @class = "form-control", @type = "email" } })
+                </div>
+            </div>
+     
+
+
+        <div class="form-group mx-3">
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="SMTP_Auth" value="">
+                <label class="form-check-label" for="SMTP_Auth">@Resources.Resource.SMTP_Auth</label>
+            </div>
+        </div>
+
+        <div id="authblk">
+            <div class="form-group">
+                <label class="control-label col-md-2" for="emSMTP_UserName">@Resources.Resource.SMTP_Username</label>
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.emSMTP_UserName, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2" for="emSMTP_Pass">@Resources.Resource.SMTP_Pass</label>
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.emSMTP_Pass, new { htmlAttributes = new { @class = "form-control", @type = "password" } })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="button" id="btnSave" class="btn btn-success">@Resources.Resource.Save</button>
+            </div>
+        </div>
+    </div>
+}
+
+@Html.Partial("_WaitingModal")
+
+<div id="infoblk" class="hide" data-smtpserverrequiredtxt="@Resources.Resource.SmtpServerRequired" data-smtpportrequiredtxt="@Resources.Resource.SmtpPortRequired" data-smtpusernamerequiredtxt="@Resources.Resource.SmtpUserNameRequired" data-smtppassrequiredtxt="@Resources.Resource.SmtpPassRequired" data-emailspersecondrequiredtxt="@Resources.Resource.EmailsPerSecondRequired" data-maxemailsfailedrequiredtxt="@Resources.Resource.MaxEmailsFailedRequired" data-emailtrackingurlrequiredtxt="@Resources.Resource.EmailTrackingUrlRequired" data-emailrequiredtxt="@Resources.Resource.EmailRequired" data-emailformaterrtxt="@Resources.Resource.EmailFormatErrMsg" data-displaynamerequiredtxt="@string.Format(Resources.Resource.Required,string.Format(Resources.Resource.NameFormat,Resources.Resource.Display))" data-enablecrm="@enableCRM"></div>
+
+<script src="~/Scripts/ts/js/emailsetting.js?v=@rand"></script>
+

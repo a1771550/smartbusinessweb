@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Slide Demo</title>
+    <link href="../Content/bs4/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <script src="../Scripts/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../scripts/slick/slick.css" />  
+    <link rel="stylesheet" type="text/css" href="../scripts/slick/slick-theme.css" />
+</head>
+<body>
+    <style>        
+        img {
+            width:50%;
+        }
+        .slick-arrow{
+            background-color:black;
+        }
+    </style>
+    <div class="container">
+        <div class="responsive-slide slider responsive" role="toolbar" style="">
+            <button type="button" class="slick-prev slick-arrow">Previous</button>
+            <div><img src="../Images/samples/photo1.jpg" /></div>
+            <div><img src="../Images/samples/photo2.jpg" /></div>
+            <div><img src="../Images/samples/photo3.jpg" /></div>
+            <div><img src="../Images/samples/photo4.jpg" /></div>
+            <div><img src="../Images/samples/photo5.jpg" /></div>
+            <div><img src="../Images/samples/photo6.jpg" /></div>
+            <!--<div><a class="btn btn-success" href="../Docs/POS4KAWADA.pdf" target="_blank">POS4KAWADA.pdf</a></div>-->
+            <button type="button" class="slick-next slick-arrow">Next</button>
+        </div>
+    </div>
+     
+   
+    <script type="text/javascript" src="../scripts/slick/slick.min.js"></script>
+   <script>
+       $(function () {
+           $('.responsive-slide').slick({
+               //centerMode: true,
+               //centerPadding:'50px',
+               arrows:true,
+               //autoplay:true,
+               dots: true,
+               infinite: true,
+               speed: 300,
+               slidesToShow: 4,
+               slidesToScroll: 4,
+               responsive: [
+                   {
+                       breakpoint: 1024,
+                       settings: {
+                           slidesToShow: 3,
+                           slidesToScroll: 3,
+                           infinite: true,
+                           dots: true
+                       }
+                   },
+                   {
+                       breakpoint: 600,
+                       settings: {
+                           slidesToShow: 2,
+                           slidesToScroll: 2
+                       }
+                   },
+                   {
+                       breakpoint: 480,
+                       settings: {
+                           slidesToShow: 1,
+                           slidesToScroll: 1
+                       }
+                   }
+                   // You can unslick at a given breakpoint now by adding:
+                   // settings: "unslick"
+                   // instead of a settings object
+               ]
+            });
+       });
+   </script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+﻿@model  PPWLib.Models.CustomerEditModel
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = Resources.Resource.Customer;
+    int rand = CommonHelper.GetVersionRandomNo();
+    bool iscentral = Model.IsCentral == 1;
+    var addtoeblasttxt = string.Format(Resources.Resource.AddTo, Resources.Resource.eBlast);
+    var addtohotlisttxt = string.Format(Resources.Resource.AddTo, Resources.Resource.HotList);
+    string selectatleastonecustomertxt = string.Format(Resources.Resource.SelectAtLeastOne, Resources.Resource.Customer);
+    var CusIdList = Model.CusIdList;
+    string idlist = string.Join(",", CusIdList);
+    bool nonabss = Model.NonABSS;
+    var customerList = Model.CustomerList;
+}
+<link href="~/Content/customer/index.css?v=@rand" rel="stylesheet" type="text/css" />
+
+<h2 data-count="@customerList.Count">@ViewBag.Title</h2>
+
+@using (Html.BeginForm("Index", "Customer", FormMethod.Get, new { @Id = "frmCustomer" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="form-inline mb-2 my-4">
+        <div class="form-group">
+            <input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Model.Keyword" />
+            <button id="btnSearch" type="button" class="btn btn-success ml-3">@Resources.Resource.Search</button>
+            <button id="btnReload" type="button" class="btn btn-warning ml-3">@Resources.Resource.Reload</button>
+            <button id="btnAdvSearch" type="button" class="btn btn-danger ml-3">@Resources.Resource.AdvancedSearch</button>
+            <button id="btnHotList" type="button" class="btn btn-info ml-3">@Resources.Resource.AddContactsToHotList</button>
+            <button id="btnBlast" type="button" class="btn btn-primary ml-3">@Resources.Resource.AddContactsToEblast</button>
+        </div>
+    </div>
+
+    <div id="norecord" class="alert alert-warning hide">@Resources.Resource.NoDataFound</div>
+    <table id="tblCustomer" class="table table-bordered table-hover table-condensed small" data-idlist="@string.Join(",", CusIdList)">
+        <thead class="gray-header font-weight-bold">
+            <tr>
+                @if (Model.CheckoutPortal.ToLower() == "kingdee")
+                {
+                    <th scope="col" class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">@Resources.Resource.Name</th>
+                    <th scope="col" class="text-center colheader" data-col="1" data-keyword="@Model.Keyword">@Resources.Resource.Email</th>
+                    <th scope="col" class="text-center">@string.Format(Resources.Resource.PendingFormat, Resources.Resource.Upload)</th>
+                    <th scope="col"></th>
+                }
+                else
+                {
+                    <th scope="col" class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">@Resources.Resource.Name</th>
+                    <th scope="col" class="text-center colheader" data-col="1" data-keyword="@Model.Keyword">@Resources.Resource.Contact</th>
+                    <th scope="col" class="text-center colheader" data-col="2" data-keyword="@Model.Keyword">@Resources.Resource.Email</th>
+                    <th class="text-center">@Resources.Resource.CustomAttributes</th>
+                    <th scope="col" class="text-center colheader" data-col="3" data-keyword="@Model.Keyword">@Resources.Resource.CreateTime</th>
+                    <th scope="col" class="text-center colheader" data-col="4" data-keyword="@Model.Keyword">@string.Format(Resources.Resource.FollowUpFormat, Resources.Resource.Status)</th>
+                    <th scope="col" class="text-center colheader" data-col="5" data-keyword="@Model.Keyword">@Resources.Resource.FollowUpDate</th>
+                    <th scope="col"></th>
+
+
+                }
+            </tr>
+        </thead>
+
+        @if (Model.CheckoutPortal.ToLower() == "kingdee")
+        {
+            foreach (var customer in Model.KCustomerList)
+            {
+                var email = string.IsNullOrEmpty(customer.CustEmail) ? "N/A" : customer.CustEmail;
+                var checkouttxt = customer.IsCheckout ? Resources.Resource.No : Resources.Resource.Yes;
+                var blinkcls = customer.IsCheckout ? "" : "blinking";
+                <tr data-ischeckout="@customer.IsCheckout" class="small">
+                    <td style="width:110px;max-width:110px;" class="text-center @blinkcls">@customer.CustName</td>
+                    <td style="width:110px;max-width:110px;" class="text-center @blinkcls">@email</td>
+                    <td style="width:110px;max-width:110px;" class="text-center @blinkcls">@checkouttxt</td>
+                    <td style="width:125px;max-width:125px;">
+                        <a class="btn btn-info" role="button" href="/Customer/Edit?customerId=@customer.Id"><span class="small">@Resources.Resource.Edit</span></a>
+
+                        <a class="btn btn-danger kremove" role="button" href="#" data-id="@customer.Id"><span class="small">@Resources.Resource.Remove</span></a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            foreach (var customer in customerList)
+            {
+                var email = string.IsNullOrEmpty(customer.cusEmail) ? "N/A" : customer.cusEmail;
+                string cname = customer.cusIsOrganization ? customer.cusName : string.Concat(customer.cusFirstName, " ", customer.cusName);
+                <tr class="@customer.statuscls pointer" data-id="@customer.cusCustomerID">
+                    <td style="width:110px;max-width:110px;" class="text-center">@cname</td>
+                    <td style="width:100px;max-width:100px;" class="text-center">@customer.cusContact</td>
+                    <td style="width:110px;max-width:110px;" class="text-center">@email</td>
+                    <td style="width:110px;max-width:110px;" class="text-center">@Html.Raw(customer.CustomAttributes)</td>
+                    <td style="width:110px;max-width:110px;" class="text-center">@customer.CreateTimeDisplay</td>
+                    <td style="width:70px;max-width:70px;" class="text-center">@customer.FollowUpStatusDisplay</td>
+                    <td style="width:110px;max-width:110px;" class="text-center">@customer.FollowUpDateDisplay</td>
+
+                    <td style="width:120px;max-width:120px;">
+                        <a class="btn btn-info btnsmall" role="button" href="/Customer/Edit?customerId=@customer.cusCustomerID">@Resources.Resource.Edit</a>
+                        <a class="btn btn-danger btnsmall remove" role="button" href="#" data-id="@customer.cusCustomerID" data-apid="@customer.AccountProfileId">@Resources.Resource.Remove</a>
+                    </td>
+                </tr>
+            }
+        }
+    </table>
+
+    <div id="pagingblk" class="mx-3">
+        <div class="row">
+            @if (Model.CheckoutPortal == "abss" || Model.CheckoutPortal.ToLower() == "nonabss")
+            {
+                @Html.PagedListPager(customerList, PageNo => Url.Action("Index",
+new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
+            }
+            else
+            {
+                @Html.PagedListPager(Model.KCustomerList, PageNo => Url.Action("Index",
+new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
+            }
+
+        </div>
+    </div>
+
+
+    <input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+    <input type="hidden" id="sortcol" value="@Model.SortCol" />
+    <a href="#" id="btnOpenAction" class="btn btn-success" role="button" onclick="javascript:openActionModal();">@Resources.Resource.OpenCustomerPointActionLog</a>
+    <div id="actionModal">
+
+        <table id="tblActionLog" class="table table-bordered  table-hover table-condensed">
+            <thead class="gray-header">
+                <tr>
+                    <th class="text-left colheader colheader_a" data-col="0" data-keyword="@Model.Keyword_a">@Resources.Resource.UserCode</th>
+                    <th class="text-left colheader colheader_a" data-col="1" data-keyword="@Model.Keyword_a">@Resources.Resource.ActionType</th>
+                    <th class="text-left colheader colheader_a" data-col="1" data-keyword="@Model.Keyword_a">@Resources.Resource.CustomerPhone</th>
+                    <th class="text-left colheader colheader_a" data-col="2" data-keyword="@Model.Keyword_a">@Resources.Resource.OldValue</th>
+                    <th class="text-left colheader colheader_a" data-col="3" data-keyword="@Model.Keyword_a">@Resources.Resource.NewValue</th>
+                    <th class="text-left colheader colheader_a" data-col="6" data-keyword="@Model.Keyword_a">@Resources.Resource.DateTime</th>
+                </tr>
+            </thead>
+
+
+            @foreach (var actionlog in Model.ActionLogList)
+            {
+                <tr>
+                    <td>@actionlog.actUserCode</td>
+                    <td>@actionlog.actType</td>
+                    <td>@actionlog.actCusCode</td>
+                    <td>@actionlog.actOldValue</td>
+                    <td>@actionlog.actNewValue</td>
+                    <td>@actionlog.actLogTime</td>
+                </tr>
+            }
+
+        </table>
+        <div id="pagingblk_a" class="mx-3">
+            <div class="row">
+                @Html.PagedListPager(Model.ActionLogList, PageNo_a => Url.Action("Index", new { PageNo_a, SortOrder_a = Model.CurrentSortOrder_a, Keyword_a = Model.Keyword_a }))
+            </div>
+        </div>
+
+        <input type="hidden" name="SortOrder_a" id="sortorder_a" value="@Model.SortOrder_a" />
+        <input type="hidden" id="sortcol_a" value="@Model.SortCol_a" />
+    </div>
+}
+
+@Html.Partial("_AdvancedSearchModal",Model.GlobalAttrList)
+
+@Html.Partial("_WaitingModal")
+<div id="infoblk" class="hide" data-actionhistory="@Resources.Resource.ActionHistory" data-selectatleastonecustomertxt="@selectatleastonecustomertxt"></div>
+
+<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+<script src="/Scripts/ts/js/customer/customer.js?v=@rand"></script>

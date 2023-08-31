@@ -1,0 +1,308 @@
+﻿@model PPWLib.Models.TransactionDetail
+
+@{
+    ViewBag.Title = Resources.Resource.TransactionDetails;
+    int rand = CommonHelper.GetVersionRandomNo();
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/reports.css?v=@rand" />
+
+
+
+<div id="printblk" class="printele" style="font-size:1.3em!important;">
+
+    <h2 class="text-center mb-4">@ViewBag.Title</h2>
+
+
+
+
+    @using (Html.BeginForm("ShowTXD", "Report", FormMethod.Post, new { @Id = "frmtxd", @class = "form-inline" }))
+    {
+        <div id="filterblk my-3">
+
+            @Html.AntiForgeryToken()
+            <div class="row justify-content-between">
+
+                <div class="col-12 col-md-5 small input-group my-auto mx-auto text-center">
+                    <input class="form-control" type="text" id="datetimesmin" name="datetimesmin" />
+                    <span class="mx-2 d-inline-block my-auto">@Resources.Resource.To</span>
+                    <input class="form-control" type="text" id="datetimesmax" name="datetimesmax" />
+
+                </div>
+                <div class="col-12 col-md-5 small input-group my-auto mx-auto text-center">
+                    <select class="form-control mx-2" id="drpShop" name="SelectedShop">
+                        @foreach (var shop in Model.ComInfo.Shops.Split(','))
+                        {
+                            string _selected = shop == Model.ComInfo.Shop ? "selected" : "";
+                            <option value="@shop" @_selected>@shop</option>
+                        }
+                    </select>
+                    <select class="form-control" id="drpDevice" name="SelectedDevice">
+                        @foreach (var device in Model.ComInfo.Devices.Split(','))
+                        {
+                            string _selected = device == Model.ComInfo.Device ? "selected" : "";
+                            <option value="@device" @_selected>@device</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-2 text-right input-group">
+                    <button id="btnSubmit" class="btn btn-success">@Resources.Resource.Submit</button>
+                </div>
+            </div>
+
+        </div>
+    }
+
+    @if (Model.SalesList.Count > 0)
+    {
+        <div class="text-right small">@Resources.Resource.StartDate : @Model.FrmDate</div>
+        <div class="text-right small">@Resources.Resource.EndDate : @Model.ToDate</div>
+
+        <div class="row mx-1 my-5">
+
+            <table class="table table-borderless">
+                <thead class="font-weight-bold">
+                    <tr><td class="text-center" style="border-bottom: 1px solid black !important;">@Resources.Resource.DateTimeHeader</td><td class="text-center" style="border-bottom: 1px solid black !important;">@Resources.Resource.SalesNo</td><td class="text-center" style="border-bottom: 1px solid black !important;">@Resources.Resource.Roundings</td><td class="text-center" style="border-bottom: 1px solid black !important;">@Resources.Resource.PaymentType</td><td class="text-right" style="border-bottom: 1px solid black !important;">@Resources.Resource.Amount ($)</td></tr>
+                </thead>
+                <tbody class="table-borderless">
+                    @{ int idx = 0; int listlength = Model.SalesList.Count; string bgstyle = "";}
+                    @foreach (var item in Model.SalesList)
+                    {
+                        //bgstyle = idx % 2 == 0 ? "background-color:#95CD41!important;" : "background-color:transparent!important;";
+                        string bottomstyle = listlength - 1 == idx ? "border-bottom: none!important;" : "border-bottom: 3px dotted #95CD41!important;";
+                        <tr style="@bgstyle" data-idx="@idx">
+                            <td class="text-center">@item.rtsTime</td>
+                            <td class="text-center">@item.rtsCode</td>
+                            <td class="text-center">@item.Roundings</td>
+                            @if (item.rtsMonthBase)
+                            {
+                                <td class="text-center">@Resources.Resource.MonthlyPay</td>
+                                <td class="text-right">@item.rtsFinalTotal</td>
+                            }
+                            else
+                            {
+                                <td class="text-center">
+                                    <table class="table table-borderless">
+                                        <tbody>
+                                            @foreach (var payln in item.PayLnViews)
+                                            {
+                                                string paymentname = Model.DicPayTypes[payln.pmtCode];
+                                                <tr><td style="padding:0!important;">@paymentname</td></tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td>
+                                    <table class="table table-borderless">
+                                        <tbody>
+                                            @foreach (var payln in item.PayLnViews)
+                                            {
+                                                <tr><td style="padding:0!important;text-align:right!important;">@payln.Amount</td></tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </td>
+                            }
+
+
+                        </tr>
+                        @*<tr><td colspan="5" style="text-align: center !important; border-top: 1px dotted !important;">&nbsp;</td></tr>*@
+                        <tr style="@bgstyle">
+                            <td colspan="5" style="@bottomstyle">
+                                <table class="table table-borderless">
+                                    <thead>
+                                        <tr>
+                                            <th style="padding:0!important;text-align:left!important;font-size:small!important;font-weight:bold;">@Resources.Resource.ItemCode</th>
+                                            <th style="padding:0!important;text-align:left!important;font-size:small!important;font-weight:bold;">@Resources.Resource.Description</th>
+                                            @*<th style="padding:0!important;text-align:right!important;font-size:small!important;font-weight:bold;">@Resources.Resource.UnitPrice</th>*@
+                                            <th style="padding:0!important;text-align:right!important;font-size:small!important;font-weight:bold;">@Resources.Resource.SellingPrice</th>
+                                            <th style="padding:0!important;text-align:right!important;font-size:small!important;font-weight:bold;">@Resources.Resource.Qty</th>
+                                            <th style="padding:0!important;text-align:right!important;font-size:small!important;font-weight:bold;">@Resources.Resource.DiscPc</th>
+                                            <th style="padding:0!important;text-align:right!important;font-size:small!important;font-weight:bold;">@Resources.Resource.DiscAmt</th>
+                                            <th style="padding:0!important;text-align:right!important;font-size:small!important;font-weight:bold;">@Resources.Resource.Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var salesln in Model.SalesLnViews)
+                                        {
+                                            if (salesln.rtlCode == item.rtsCode)
+                                            {
+                                                string sellingprice = CommonHelper.FormatMoney("", (decimal)salesln.rtlSellingPrice, false);
+
+                                                <tr>
+                                                    <td style="padding:0!important;text-align:left!important;font-size:small!important;">@salesln.Item.itmCode</td>
+                                                    <td style="padding: 0 !important; text-align: left !important; font-size: small !important;">@salesln.Item.itmDesc</td>
+                                                    @*<td style="padding: 0 !important; text-align: right !important; font-size: small !important;">@CommonHelper.FormatMoney("", Convert.ToDecimal(salesln.Item.UnitPrice), false)</td>*@
+                                                    <td style="padding: 0 !important; text-align: right !important; font-size: small !important;">@sellingprice</td>
+                                                    <td style="padding: 0 !important; text-align: right !important; font-size: small !important;">@salesln.Qty</td>
+                                                    <td style="padding: 0 !important; text-align: right !important; font-size: small !important;">@salesln.rtlLineDiscPc</td>
+                                                    <td style="padding: 0 !important; text-align: right !important; font-size: small !important;">@salesln.rtlLineDiscAmt</td>
+                                                    <td style="padding: 0 !important; text-align: right !important; font-size: small !important;">@salesln.rtlSalesAmt</td>
+                                                </tr>
+
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+
+                        idx++;
+                    }
+
+                    @if (Model.RefundList.Count > 0)
+                    {
+                        idx = 0; listlength = Model.RefundList.Count;
+                        //bool transzero = false;
+                        foreach (var item in Model.RefundList)
+                        {
+                            //if (idx == 0)
+                            //{
+                            //    if (bgstyle.Contains("transparent"))
+                            //    {
+                            //        bgstyle = bgstyle.Replace("transparent", "#95CD41");
+                            //        transzero = true;
+                            //    }
+                            //    else
+                            //    {
+                            //        bgstyle = bgstyle.Replace("#95CD41", "transparent");
+                            //        transzero = false;
+                            //    }
+                            //}
+                            //else
+                            //{
+                            //    if (transzero)
+                            //    {
+                            //        bgstyle = idx % 2 == 0 ? "background-color:#95CD41!important;" : "background-color:transparent!important;";
+                            //    }
+                            //    else
+                            //    {
+                            //        bgstyle = idx % 2 == 0 ? "background-colortransparent!important;" : "background-color:#95CD41!important;";
+                            //    }
+                            //}
+
+                            //string bottomstyle = listlength - 1 == idx ? "border-bottom: none!important;" : "border-bottom: 1px dotted !important;";
+                            string bottomstyle = listlength - 1 == idx ? "border-bottom: none!important;" : "border-bottom: 3px dotted #95CD41!important;";
+                            <tr style="@bgstyle">
+                                <td class="text-center">@item.rtsTime</td>
+                                <td class="text-center">@item.rtsCode</td>
+                                <td class="text-center">N/A</td>
+                                @if (item.rtsMonthBase)
+                                {
+                                    <td class="text-center">@Resources.Resource.MonthlyPay</td>
+                                    <td class="text-right">@item.rtsFinalTotal</td>
+                                }
+                                else
+                                {
+                                    <td class="text-center">
+                                        <table class="table table-borderless">
+                                            <tbody>
+                                                @foreach (var payln in item.PayLnViews)
+                                                {
+                                                    string paymentname = Model.DicPayTypes[payln.pmtCode];
+                                                    <tr><td style="padding:0!important;">@paymentname</td></tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table class="table table-borderless">
+                                            <tbody>
+                                                @foreach (var payln in item.PayLnViews)
+                                                {
+                                                    <tr><td style="padding:0!important;text-align:right!important;">@payln.Amount</td></tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                }
+
+                            </tr>
+                            @*<tr><td colspan="5" style="text-align: center !important; border-top: 1px dotted !important;">&nbsp;</td></tr>*@
+                            <tr style="@bgstyle">
+                                <td colspan="5" style="@bottomstyle">
+                                    <table class="table table-borderless">
+                                        <thead>
+                                            <tr>
+                                                <th style="padding:0!important;text-align:left!important;font-size:small!important;font-weight:bold;">@Resources.Resource.ItemCode</th>
+                                                <th style="padding:0!important;text-align:left!important;font-size:small!important;font-weight:bold;">@Resources.Resource.Description</th>
+                                                @*<th style="padding:0!important;text-align:right!important;font-size:small!important;font-weight:bold;">@Resources.Resource.UnitPrice</th>*@
+                                                <th style="padding:0!important;text-align:right!important;font-size:small!important;font-weight:bold;">@Resources.Resource.SellingPrice</th>
+                                                <th style="padding:0!important;text-align:right!important;font-size:small!important;font-weight:bold;">@Resources.Resource.Qty</th>
+                                                <th style="padding:0!important;text-align:right!important;font-size:small!important;font-weight:bold;">@Resources.Resource.DiscPc</th>
+                                                <th style="padding:0!important;text-align:right!important;font-size:small!important;font-weight:bold;">@Resources.Resource.DiscAmt</th>
+                                                <th style="padding:0!important;text-align:right!important;font-size:small!important;font-weight:bold;">@Resources.Resource.Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var refundln in Model.RefundLnViews)
+                                            {
+                                                if (refundln.rtlCode == item.rtsCode)
+                                                {
+
+                                                    string sellingprice = CommonHelper.FormatMoney("", -1 * (decimal)refundln.rtlSellingPrice, false);
+                                                    <tr>
+                                                        <td style="padding: 0 !important; text-align: left !important; font-size: small !important;">@refundln.Item.itmCode</td>
+                                                        <td style="padding: 0 !important; text-align: left !important; font-size: small !important;">@refundln.Item.itmDesc</td>
+                                                        @*<td style="padding: 0 !important; text-align: right !important; font-size: small !important;">@unitprice</td>*@
+                                                        <td style="padding: 0 !important; text-align: right !important; font-size: small !important;">@sellingprice</td>
+                                                        <td style="padding: 0 !important; text-align: right !important; font-size: small !important;">@refundln.Qty</td>
+                                                        <td style="padding: 0 !important; text-align: right !important; font-size: small !important;">@refundln.rtlLineDiscPc</td>
+                                                        <td style="padding: 0 !important; text-align: right !important; font-size: small !important;">@refundln.rtlLineDiscAmt</td>
+                                                        <td style="padding: 0 !important; text-align: right !important; font-size: small !important;">@refundln.rtlSalesAmt</td>
+                                                    </tr>
+
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            idx++;
+                        }
+                    }
+
+                </tbody>
+                <tfoot class="table-borderless font-weight-bold">
+                    <tr><td colspan="5"></td></tr>
+                    <tr><td colspan="4" class="text-right" style="border-top: 1px solid black !important;">@Resources.Resource.Totals</td><td class="text-right" style="border-top: 1px solid black !important;">@Model.TotalPayAmt</td></tr>
+
+                </tfoot>
+            </table>
+        </div>
+    }
+
+
+</div>
+
+
+<div class="row justify-content-center my-3 printele">
+    <button type="button" id="btnPrintPreview" class="btn btn-success">@Resources.Resource.PrintPreview</button>
+</div>
+
+
+
+<script src="~/Scripts/printthis/printThis.js"></script>
+<script type="text/javascript" src="~/Scripts/daterangepicker/moment.min.js"></script>
+<script type="text/javascript" src="~/Scripts/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="~/Scripts/daterangepicker/daterangepicker.css" />
+<script type="text/javascript" src="~/Scripts/DataTables/dataTables.dateTime.min.js"></script>
+<script>
+    //let minDate = '', maxDate = '';
+
+    $(document).ready(function () {
+        initDatePickers();
+    });
+
+    function doFilter() {
+        if (minDate !== '' && maxDate !== '') {
+            $('#frmtxd').submit();
+        }
+    }
+
+    $(document).on('click', '#btnPrintPreview', function () {
+        $('#printblk').printThis();
+    });
+</script>

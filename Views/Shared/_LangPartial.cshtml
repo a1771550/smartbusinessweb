@@ -1,0 +1,31 @@
+﻿@{
+	int currentculture = HttpContext.Current.Session["CurrentCulture"] == null ? 0 : (int)HttpContext.Current.Session["CurrentCulture"];
+	bool islogin = this.ViewData.ContainsKey("pagename")?(string)this.ViewData["pagename"]=="login":false;
+
+}
+
+<li class="nav-item dropdown" data-debug="@islogin">
+	<a href="#" class="nav-link dropdown-toggle langlnk" data-toggle="dropdown" data-culture="@currentculture">
+		@Resources.Resource.Lang <span class="caret"></span>
+	</a>
+	<ul class="dropdown-menu langbar" role="menu">
+		
+        <li>@Html.ActionLink("繁", "ChangeCurrentCulture", "Home", new { Id = 0 }, new { @class = "dropdown-item lang", @data_culture = "0" })</li>
+        <li>@Html.ActionLink("简", "ChangeCurrentCulture", "Home", new { Id = 1 }, new { @class = "dropdown-item lang", @data_culture = "1" })</li>
+        <li>@Html.ActionLink("Eng", "ChangeCurrentCulture", "Home", new { Id = 2 }, new { @class = "dropdown-item lang", @data_culture = "2" })</li>
+		
+	</ul>
+</li>
+
+
+<script>
+	$(function () {
+		var selectedculture = $.grep($('.dropdown-menu a'), function (e, i) {
+			return $(e).data('culture') === $('.langlnk').data('culture');
+		});
+		$('.langlnk').text($(selectedculture).text());
+	});
+	$(document).on('click', ".dropdown-menu a", function () {
+		$('.langlnk').text($(this).text());
+	});
+</script>

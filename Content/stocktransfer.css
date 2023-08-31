@@ -1,0 +1,34 @@
+﻿@media print {
+    html, body
+
+{
+    height: 99%;
+}
+
+}
+
+#content {
+    display: table;
+}
+
+#pageFooter {
+    /*display: table-footer-group;*/
+    display: inline;
+}
+
+    #pageFooter:after {
+        counter-increment: page;
+        content: counter(page);
+    }
+
+textarea {
+    max-width: none;
+    width: 100%;
+    border: 1px solid black;
+}
+
+#remarkblk {
+    position: fixed;
+    bottom: 30px;
+    width: 100%;
+}

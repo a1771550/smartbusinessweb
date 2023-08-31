@@ -1,0 +1,13 @@
+﻿.transactionsummary, .transactionsummary thead td{	
+	border:1px solid black;
+}
+.table{
+	background-color:transparent!important;
+}
+
+.table td{
+	padding-bottom:0!important;
+	margin-bottom:0!important;
+}
+
+	

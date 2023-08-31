@@ -1,0 +1,151 @@
+﻿@model PPWLib.Models.CountPaymentDetail
+
+@{
+	ViewBag.Title = Resources.Resource.CountPaymentsDetail;
+}
+
+<div id="printblk" style="font-size:1.3em!important;">
+	<div class="row justify-content-center mb-4">
+		<h2 class="text-center">@ViewBag.Title</h2>
+		<h2 class="text-center">@Model.Device.dvcName</h2>
+	</div>
+
+	<div class="text-right">@Resources.Resource.StartTime : @Model.Frmtime</div>
+	<div class="text-right">@Resources.Resource.EndTime : @Model.Totime</div>
+
+	<div class="row mx-1 my-5">
+		<table class="table table-borderless">
+			<thead class="font-weight-bold">
+				<tr><td class="text-center" style="border-bottom: 1px solid black !important;">@Resources.Resource.DateTimeHeader</td><td class="text-center" style="border-bottom: 1px solid black !important;">@Resources.Resource.SalesNo</td><td class="text-center" style="border-bottom: 1px solid black !important;">@Resources.Resource.Staff</td><td class="text-center" style="border-bottom: 1px solid black !important;">@Resources.Resource.PaymentType</td><td class="text-right" style="border-bottom: 1px solid black !important;">@Resources.Resource.Amount ($)</td></tr>
+			</thead>
+			<tbody class="table-borderless">				
+				@foreach (var item in Model.SalesList)
+				{
+					<tr>
+						<td class="text-center">@item.rtsTime</td>
+						<td class="text-center">@item.rtsCode</td>
+						<td class="text-center">@item.rtsUpLdLog</td>
+						<td class="text-center">
+
+							@*@if (item.rtsMonthBase)
+							{
+								@Resources.Resource.MonthlyPay
+							}
+							else
+							{*@
+								<table class="table table-borderless">
+									<tbody>
+										@foreach (var payln in item.PayLnViews)
+										{
+											string paymentname = Model.DicPayTypes[payln.pmtCode];
+											<tr><td style="padding:0!important;">@paymentname</td></tr>
+										}
+									</tbody>
+								</table>
+							@*}*@
+						</td>
+						<td>
+							@*@if (item.rtsMonthBase)
+							{
+								@item.rtsFinalTotal
+							}
+							else
+							{*@
+								<table class="table table-borderless">
+									<tbody>
+										@foreach (var payln in item.PayLnViews)
+										{											
+											<tr><td style="padding:0!important;text-align:right!important;">@payln.Amount</td></tr>
+										}
+									</tbody>
+								</table>
+							@*}*@
+
+						</td>
+
+					</tr>
+				}
+
+
+				@foreach (var item in Model.RefundList)
+				{
+					<tr>
+						<td class="text-center">@item.rtsTime</td>
+						<td class="text-center">@item.rtsCode</td>
+						<td class="text-center">@item.rtsUpLdLog</td>
+						<td class="text-center">
+							<table class="table table-borderless">
+								<tbody>
+									@foreach (var payln in item.PayLnViews)
+									{
+										string paymentname = Model.DicPayTypes[payln.pmtCode];
+										<tr><td style="padding:0!important;">@paymentname</td></tr>
+									}
+								</tbody>
+							</table>
+						</td>
+						<td>
+							<table class="table table-borderless">
+								<tbody>
+									@foreach (var payln in item.PayLnViews)
+									{										
+										<tr><td style="padding:0!important;text-align:right!important;">@payln.Amount</td></tr>
+									}
+								</tbody>
+							</table>
+						</td>
+
+					</tr>
+				}				
+				
+			</tbody>
+			<tfoot class="table-borderless font-weight-bold">
+				<tr><td colspan="4" class="text-right" style="border-top: 1px solid black !important;">@Resources.Resource.Totals</td><td class="text-right" style="border-top: 1px solid black !important;">@Model.TotalPayAmt</td></tr>
+
+			</tfoot>
+		</table>
+	</div>
+
+	<div class="row mx-1">
+		<div class="col-6">
+			<table class="table table-borderless">
+				<thead><tr><td colspan="2" class="text-center" style="border: 1px solid black!important;">@Resources.Resource.TransactionSummary</td></tr></thead>
+				<tbody class="table-borderless">
+					<tr><td style="border-left: 1px solid black !important;">@Resources.Resource.TotalSalesAmount ($)</td><td class="text-right" style="border-right: 1px solid black !important; ">@Model.SalesTotal</td></tr>
+					<tr><td style="border-left: 1px solid black !important;">@Resources.Resource.MonthlyPay ($)</td><td class="text-right" style="border-right: 1px solid black !important; ">@Model.MonthlyPayTotal</td></tr>
+					<tr><td style="border-bottom: 1px solid black !important; border-left: 1px solid black !important;">@Resources.Resource.TotalRefundAmount ($)</td><td class="text-right" style="border-bottom: 1px solid black !important; border-right: 1px solid black !important; ">@Model.RefundTotal</td></tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="col-6">
+			<table class="table table-borderless">
+				<thead><tr><td colspan="2" class="text-center" style="border: 1px solid black!important;">@Resources.Resource.PaymentsSummary</td></tr></thead>
+                <tbody class="table-borderless">
+                    @{ int idx = 0; int viewlength = Model.DicPayAmt.Count; string bottomstyle = "";}
+                    @foreach (var item in Model.DicPayAmt.Keys)
+                    {
+
+                        bottomstyle = idx == viewlength - 1 ? "border-bottom:1px solid black!important;" : "";
+
+
+                        <tr><td style="border-left: 1px solid black !important;@bottomstyle">@Model.DicPayTypes[item]</td><td class="text-right" style="border-right: 1px solid black !important;@bottomstyle">@Model.DicPayAmt[item]</td></tr>
+                        idx++;
+                    }
+
+
+                </tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+<div class="row justify-content-center my-3">
+	<button type="button" id="btnPrintPreview" class="btn btn-success">@Resources.Resource.PrintPreview</button>
+</div>
+<script src="~/Scripts/printthis/printThis.js"></script>
+<script>
+	$(document).on('click', '#btnPrintPreview', function () {
+		$('#printblk').printThis();
+	});
+</script>

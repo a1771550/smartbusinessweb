@@ -1,0 +1,23 @@
+﻿@{
+    ViewBag.Title = string.Format(Resources.Resource.ImportFrmFormat, "ABSS");
+    var rand = CommonHelper.GetVersionRandomNo();
+    var msg = ViewBag.Msg ?? "";
+}
+
+<h2>@ViewBag.Title</h2>
+<span id="msg" class="infomsg alert-info">@msg</span>
+@using (Html.BeginForm("DoImportFrmABSSAsync", "Api", FormMethod.Post, new { @id = "frmImport" }))
+{
+    <div class="container">
+        <div class="row justify-content-end">
+            <a href="#" role="button" class="btn btn-success mr-3" id="btnImportCustomer">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Customer)</a>
+        </div>
+    </div>
+    @Html.AntiForgeryToken()
+}
+
+@Html.Partial("_WaitingModal")
+<div id="infoblk" data-confirmimporttxt="@string.Format(Resources.Resource.ConfirmFormat, Resources.Resource.Import)"></div>
+
+<script src="~/Scripts/ts/js/crm/contact/import/importfrmabss.js?v=@rand"></script>
+

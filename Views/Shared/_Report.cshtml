@@ -1,0 +1,11 @@
+﻿@using PPWLib.Models;
+@model IEnumerable<Report>
+<div class="form-group">
+	<select id="report" class="form-control">
+		<option value="">-- Reports --</option>
+		@foreach (Report report in Model)
+		{
+			<option value="@report.Name">@report.DisplayName</option>
+		}
+	</select>
+</div>

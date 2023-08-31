@@ -1,0 +1,45 @@
+﻿@{
+    var example = $"{{0}}1{{1}} {Resources.Resource.Carton} = {{2}}12{{3}} {Resources.Resource.Box}";
+    var examplehtml = string.Format(example, "<span class=\"font-weight-bold\">", "</span>", "<span class=\"font-weight-bold\">", "</span>");   
+    ItemVariationModel ItemVari = ViewData["ItemVari"] == null ? null : ViewData["ItemVari"] as ItemVariationModel;
+    ItemModel Item = ViewData["Item"] == null ? null : (ItemModel)ViewData["Item"];
+    PGItemModel PGItem = ViewData["PGItem"] == null ? null : (PGItemModel)ViewData["PGItem"];
+    string buyunit = "";
+    string sellunit = "";
+    int sellunitqty = 0;
+    if (ItemVari != null)
+    {        
+        buyunit = ItemVari.itmBuyUnit;
+        sellunit = ItemVari.itmSellUnit;
+        sellunitqty = ItemVari.itmSellUnitQuantity == null ? 0 : (int)ItemVari.itmSellUnitQuantity;
+    }
+    if (Item != null)
+    {
+        buyunit = Item.itmBuyUnit;
+        sellunit = Item.itmSellUnit;
+        sellunitqty = Item.itmSellUnitQuantity == null ? 0 : (int)Item.itmSellUnitQuantity;
+    }
+    if (PGItem != null)
+    {
+        buyunit = PGItem.itmBuyUnit;
+        sellunit = PGItem.itmSellUnit;
+        sellunitqty = PGItem.itmSellUnitQuantity == null ? 0 : (int)PGItem.itmSellUnitQuantity;
+    }
+}
+<div id="itemBuySellUnitsModal">
+    <div class="container">
+        <div class="form-group">
+            <label for="txtBuyUnit">@string.Format(Resources.Resource.BaseUnitFormat, Resources.Resource.Buy)</label>
+            <input type="text" class="form-control" id="txtBuyUnit" placeholder="@Resources.Resource.Carton" value="@buyunit">
+        </div>
+        <div class="form-group">
+            <label for="txtSellUnit">@string.Format(Resources.Resource.BaseUnitFormat, Resources.Resource.Sell)</label>
+            <input type="text" class="form-control" id="txtSellUnit" placeholder="@Resources.Resource.Box" value="@sellunit">
+        </div>
+        <div class="form-group">
+            <label for="">@Resources.Resource.ItemQtyPerSellUnit</label>
+            <input type="number" min="1" id="txtItmSellUnitQuantity" class="form-control" placeholder="12" value="@sellunitqty" />
+            <span class="small">(<span class="font-weight-bold">@Resources.Resource.Example:</span> @Html.Raw(examplehtml))</span>
+        </div>
+    </div>
+</div>

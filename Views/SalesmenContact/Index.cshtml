@@ -1,0 +1,95 @@
+﻿@model PPWLib.Models.UserEditModel
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = Resources.Resource.SalesmanContact;
+    int rand = CommonHelper.GetVersionRandomNo();
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p class="my-3">
+    @*@Html.ActionLink(Resources.Resource.Add, "Create", null, new { @class = "btn btn-info" })*@
+</p>
+@using (Html.BeginForm("Index", "SalesmanContact", FormMethod.Get, new { @Id = "frmStaff" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-inline mb-2 my-4">
+        <div class="form-group">
+            <input type="text" class="form-control" id="txtKeyword" placeholder="@Resources.Resource.KeywordRequired" />
+            <button id="btnSearch" type="button" class="btn btn-default ml-4">@Resources.Resource.Search</button>
+            <button id="btnReload" type="button" class="btn btn-default ml-4">@Resources.Resource.Reload</button>
+        </div>
+    </div>
+    <table id="tblStaff" class="table table-bordered  table-hover table-condensed">
+        <colgroup>
+            <col width="100">
+            <col width="100">
+            <col width="100">
+            <col width="100">
+            <col width="80">
+            <col width="130">
+        </colgroup>
+        <thead class="gray-header">
+            <tr>
+                <th class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">
+                    @Resources.Resource.UserName
+                </th>
+                <th class="text-center colheader" data-col="1" data-keyword="@Model.Keyword">
+                    @Resources.Resource.Device
+                </th>
+                <th class="text-center colheader" data-col="2" data-keyword="@Model.Keyword">
+                    @Resources.Resource.Shop
+                </th>
+                <th class="text-center colheader" data-col="3" data-keyword="@Model.Keyword">
+                    @Resources.Resource.Manager
+                </th>
+                <th class="text-center colheader" data-col="4" data-keyword="@Model.Keyword">
+                    @Resources.Resource.Status
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        @foreach (var item in Model.UserList)
+        {
+            string status = item.surIsActive ? Resources.Resource.Active : Resources.Resource.Inactive;
+            <tr>
+                <td class="text-center">
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                <td class="text-center">
+                    @Html.DisplayFor(modelItem => item.dvcCode)
+                </td>
+                <td class="text-center">
+                    @Html.DisplayFor(modelItem => item.shopCode)
+                </td>
+                <td class="text-center">
+                    @Html.DisplayFor(modelItem => item.ManagerName)
+                </td>
+                <td class="text-center">
+                    @status
+                </td>
+
+                <td>
+                    <a href="#" class="detail" data-id="@item.surUID">@Resources.Resource.Detail</a> |
+                    <a href="/SalesmanContact/Edit?salesmanId=@item.surUID">@Resources.Resource.Edit</a>
+                   
+                </td>
+            </tr>
+        }
+    </table>
+
+    <div id="pagingblk" class="mx-3">
+        <div class="row">
+            @Html.PagedListPager(Model.UserList, PageNo => Url.Action("Index",
+new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
+        </div>
+    </div>
+
+    <input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+    <input type="hidden" id="sortcol" value="@Model.SortCol" />
+
+    @Html.Partial("_WaitingModal")
+}
+<div id="infoblk" class="hide"></div>
+<script src="~/Scripts/ts/js/crm/salesmen/staffcustomer.js?v=@rand"></script>

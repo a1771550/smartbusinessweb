@@ -1,0 +1,18 @@
+﻿<div id="currencyModal">
+    <div class="container">
+        <table id="tblCurrency" class="table table-bordered  table-condensed table-hover">
+            <thead class="gray-header">
+                <tr><th>@Resources.Resource.Currency</th><th>@Resources.Resource.ExchangeRate</th></tr>
+            </thead>
+            <tbody>
+                @if (Model.DicCurrencyExRate != null)
+                {
+                    foreach (var item in Model.DicCurrencyExRate)
+                    {
+                        <tr class="currency" data-key="@item.Key" data-value="@item.Value"><td>@item.Key</td><td>@item.Value</td></tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

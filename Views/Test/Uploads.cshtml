@@ -1,0 +1,81 @@
+﻿@model PPWLib.Models.WholeSales.WholeSalesEditModel
+
+@{
+	Layout = null;
+	int rand = CommonHelper.GetVersionRandomNo();
+	string imgfiles = Resources.Resource.ImageFiles;
+	string UploadSizeLimitMB = ConfigurationManager.AppSettings["MaxUploadSize"];
+	string exceeduploadfilelimittxt = string.Format(Resources.Resource.ExceedUploadSizeLimitWarning, UploadSizeLimitMB);
+}
+
+<!DOCTYPE html>
+
+<html>
+@Html.Partial("_Head", null, new ViewDataDictionary { { "PageTitle", ViewBag.Title } })
+<body>
+    <script src="~/Scripts/ts/js/app.js?v=@rand"></script>
+    <div class="container">
+        <form action="/Test/UploadsPost" method="post" enctype="multipart/form-data">
+            <input type="file" name="wsFile" id="wsFile" />
+            <button type="button" class="btn btn-success" id="btnUpload">Upload</button>
+            @Html.AntiForgeryToken()
+        </form>
+
+        <div id="uploadmsg" class="d-inline-block alert alert-warning hide"></div>
+    </div>
+    @Html.Partial("_WaitingModal")
+    <div id="infoblk" data-uploadsizelimit="@ConfigurationManager.AppSettings["UploadSizeLimitBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["UploadSizeLimit"]"></div>
+    <script>
+          $(document).on('click', '#btnUpload', function () {
+
+	// Checking whether FormData is available in browser
+	if (window.FormData !== undefined) {
+
+		var fileUpload = $("#wsFile").get(0);
+		var files = fileUpload.files;
+
+		// Create FormData object
+		var fileData = new FormData();
+
+		// Looping over all files and add it to FormData object
+		for (var i = 0; i < files.length; i++) {
+			if (files[i].size > uploadsizelimit) {
+				falert('@exceeduploadfilelimittxt', oktxt);
+				closeWaitingModal();
+				return false;
+			}
+			fileData.append(files[i].name, files[i]);
+		}
+
+
+		openWaitingModal();
+		// Adding one more key to FormData object
+		let _token = $('input[name="__RequestVerificationToken"]').val();
+		fileData.append('__RequestVerificationToken', _token);
+		let wscode = "WS100054";
+        fileData.append('wscode', wscode);
+
+		$.ajax({
+            url: '/Test/UploadsPost',
+			type: "POST",
+			contentType: false, // Not to set any content header
+			processData: false, // Not to process data
+			data: fileData,
+			success: function (result) {
+				closeWaitingModal();
+				/*falert(result.msg, oktxt);*/
+                $("#uploadmsg").removeClass("hide").html(result.msg);
+				//$('#receiptlogo').attr('src', result.imgpath);
+			},
+			error: function (err) {
+				alert(err.statusText);
+			}
+		});
+	} else {
+		alert("FormData is not supported.");
+	}
+});
+    </script>
+    <script src="~/Scripts/ts/js/test.js?v=@rand"></script>
+</body>
+</html>

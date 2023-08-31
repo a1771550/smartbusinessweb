@@ -1,0 +1,82 @@
+﻿@model ItemQtyPromotionEditModel
+@using PagedList.Mvc;
+@{
+    int rand = CommonHelper.GetVersionRandomNo();
+}
+
+<h2>@ViewBag.Title</h2>
+<p class="my-3">
+    @Html.ActionLink(Resources.Resource.Add, "Edit", null, new { @class = "btn btn-info" })
+</p>
+
+@using (Html.BeginForm("Index", "ItemQtyPromotion", FormMethod.Get, new { @Id = "frmItemQtyPromotion" }))
+{
+    <div class="form-inline mb-2 my-4">
+        <div class="form-group">
+            <input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" />
+            <button id="btnSearch" type="submit" class="btn btn-success ml-4">@Resources.Resource.Search</button>
+
+            <button id="btnReload" type="button" class="btn btn-warning ml-4">@Resources.Resource.Reload</button>
+        </div>
+    </div>
+
+    if (Model.PagingItemQtyPromotionList.Count == 0)
+    {
+        <div id="norecord" class="alert alert-warning">@Resources.Resource.NoDataFound</div>
+    }
+    else
+    {
+<table id="tblItemQtyPromotion" class="table table-bordered  table-hover table-condensed" data-count="@Model.PagingItemQtyPromotionList.Count">
+    <thead class="gray-header">
+        <tr>
+            <th scope="col" class="text-center">@Resources.Resource.Item</th>
+            <th scope="col" class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">@Resources.Resource.Promotion</th>
+            <th scope="col" class="text-center colheader" data-col="1" data-keyword="@Model.Keyword">@Resources.Resource.Qty</th>
+            <th scope="col" class="text-center colheader" data-col="2" data-keyword="@Model.Keyword">@Resources.Resource.Price (@Model.Currency)</th>
+            <th scope="col" class="text-center colheader" data-col="3" data-keyword="@Model.Keyword">@Resources.Resource.DiscPc</th>
+            <th scope="col" class="text-center colheader" data-col="4" data-keyword="@Model.Keyword">@Resources.Resource.CreateTime</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    @{
+        var groupedIPList = Model.PagingItemQtyPromotionList.GroupBy(x => x.proId).ToList();
+        foreach (var group in groupedIPList)
+        {
+            var promotion = group.FirstOrDefault();
+            var itemcodes = string.Join(", ",group.Select(x => x.itemCode).ToList());
+        <tr>
+            <td style="width:110px;min-width:250px;" class="text-center">@itemcodes</td>
+            <td style="width:110px;max-width:110px;" class="text-center">@promotion.proNameDisplay</td>
+            <td style="width:100px;max-width:100px;" class="text-center">@promotion.proQty</td>
+            <td style="width:110px;max-width:110px;" class="text-center">@promotion.PriceDisplay</td>
+            <td style="width:110px;max-width:110px;" class="text-center">@promotion.DiscPcDisplay</td>
+            <td style="width:110px;max-width:110px;" class="text-center">@promotion.IPCreateTimeDisplay</td>
+            <td style="width:125px;max-width:125px;">
+                <a class="btn btn-info" role="button" href="/ItemQtyPromotion/Edit?proId=@promotion.proId"><span class="small">@Resources.Resource.Edit</span></a>
+                <a class="btn btn-danger remove" role="button" href="#" data-id="@promotion.Id"><span class="small">@Resources.Resource.Remove</span></a>
+            </td>
+        </tr>
+        }
+    }
+
+</table>
+
+        <div id="pagingblk" class="mx-3">
+            <div class="row">
+                @Html.PagedListPager(Model.PagingItemQtyPromotionList, PageNo => Url.Action("Index",
+    new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
+            </div>
+        </div>
+
+
+        <input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+        <input type="hidden" id="sortcol" value="@Model.SortCol" />
+    }
+}
+
+@Html.Partial("_WaitingModal")
+<div id="infoblk"></div>
+
+<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+<script src="/Scripts/ts/js/promotion/itemqtypromotion.js?v=@rand"></script>
+

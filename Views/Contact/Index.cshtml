@@ -1,0 +1,137 @@
+﻿@model  PPWLib.Models.ContactEditModel
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = Resources.Resource.Contact;
+    int rand = CommonHelper.GetVersionRandomNo();
+    var totaltxt = CultureHelper.CurrentCulture == 2 ? string.Concat(Resources.Resource.Total, " ", Resources.Resource.Record, "s") : String.Concat(Resources.Resource.Total, "", Resources.Resource.Record);
+    bool iscentral = Model.IsCentral == 1;
+    var addtoeblasttxt = string.Format(Resources.Resource.AddTo, Resources.Resource.eBlast);
+    var addtohotlisttxt = string.Format(Resources.Resource.AddTo, Resources.Resource.HotList);
+    string selectatleastonecontacttxt = string.Format(Resources.Resource.SelectAtLeastOne, Resources.Resource.Contact);
+    string keyword = string.IsNullOrEmpty(Model.Keyword) ? Model.AttrVal : Model.Keyword;
+    var user = HttpContext.Current.Session["User"] as SessUser;
+    bool iscrmadmin = user.Roles.Any(x => x == RoleType.CRMAdmin);
+    string returnMsg = ViewData["retMsg"] == null ? "" : ViewData["retMsg"].ToString();
+}
+<h2>@ViewBag.Title</h2>
+
+@if (!iscentral)
+{
+    var actionname = "Edit";
+    <p class="my-3">
+        @Html.ActionLink(Resources.Resource.Add, actionname, null, new { @class = "btn btn-info" })
+    </p>
+}
+
+
+@using (Html.BeginForm("Index", "Contact", FormMethod.Post, new { @Id = "frmContact" }))
+{
+    <div class="form-inline mb-2 my-5" data-modelkeyword="@Model.Keyword" data-attrname="@Model.AttrName" data-attrval="@Model.AttrVal" data-keyword="@keyword" data-totalcontactcount="@Model.TotalContactCount">
+        <div class="form-group">
+            <input type="text" class="form-control" id="txtKeyword" name="keyword" placeholder="@Resources.Resource.KeywordRequired" value="@keyword" />
+            <button id="btnSearch" type="submit" class="btn btn-default ml-4">@Resources.Resource.Search</button>
+
+            <a href="#" id="btnSearchAttr" role="button" class="btn btn-secondary ml-4">@Resources.Resource.SearchByAttribute</a>
+            @if (iscrmadmin)
+                {
+                    <button type="button" id="btnAssign" class="btn btn-outline-primary ml-4">@Resources.Resource.AssignContactsToGroup</button>
+                }
+            <button id="btnBlast" type="button" class="btn btn-primary ml-4">@addtoeblasttxt</button>
+            <button id="btnHotList" type="button" class="btn btn-danger ml-4">@addtohotlisttxt</button>
+
+            <button id="btnReload" type="button" class="btn btn-warning ml-4">@Resources.Resource.Reload</button>
+        </div>
+    </div>
+
+
+    <div class="d-flex" style="width:120%;">
+        <div class="mt-auto"><span>@totaltxt: <span id="totalcount" class="font-weight-bold">@Model.TotalContactCount</span></span></div>
+        <div class="mt-auto ml-auto" style="">
+
+            <div class="form-inline">
+                <div class="form-group">
+                    <label for="iPageSize" style="margin-bottom:-1em;">@Resources.Resource.RecordsPerPage: </label>
+                    <input type="number" class="form-control ml-2" id="iPageSize" placeholder="" value="@Model.PageSize" style="width:25%;" min="@Model.PageSize" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <div id="norecord" class="alert alert-warning hide">@Resources.Resource.NoDataFound</div>
+    <table id="tblcontact" class="table table-bordered  table-hover table-condensed" style="width:110%;">
+        <thead class="gray-header">
+            <tr>
+                <th scope="col"><input id="chkall" type="checkbox" class="" /></th>
+                <th scope="col" class="text-center colheader" data-col="0" data-keyword="@keyword">@Resources.Resource.Name</th>
+                <th scope="col" class="text-center colheader" data-col="1" data-keyword="@keyword">@Resources.Resource.Contact</th>
+                <th scope="col" class="text-center colheader" data-col="2" data-keyword="@keyword">@Resources.Resource.Email</th>
+                <th scope="col" class="text-center colheader" data-col="3" data-keyword="@keyword">@Resources.Resource.Phone</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+
+        @foreach (var contact in Model.PagingContactList)
+        {
+            var email = string.IsNullOrEmpty(contact.cusEmail) ? "N/A" : contact.cusEmail;
+            @*string salesman = contact.SalesPerson == null ? "N/A" : contact.SalesPerson.UserName;*@
+            var phone = string.IsNullOrEmpty(contact.cusPhone) ? "N/A" : contact.cusPhone;
+            string cname = contact.cusIsOrganization ? contact.cusName : string.Concat(contact.cusFirstName, " ", contact.cusName);
+            cname = cname ?? "N/A";
+            <tr>
+
+                <td style="width:5px;max-width:5px;" class="text-center"><input type="checkbox" class="chk" data-id="@contact.cusContactID"></td>
+
+                <td style="width:130px;max-width:130px;" class="text-center">@cname</td>
+                <td style="width:100px;max-width:100px;" class="text-center">@contact.cusContact</td>
+                <td style="width:130px;max-width:130px;" class="text-center">@email</td>
+                <td style="width:50px;max-width:50px;" class="text-center">@phone</td>
+
+                <td style="width:60px;max-width:60px;"><a href="#" class="btn btn-success detail" role="button" data-id="@contact.cusContactID">@Resources.Resource.Detail</a></td>
+
+                <td style="width:75px;max-width:75px;"><a href="/CallHistory/Index?contactId=@contact.cusContactID" class="btn btn-outline-warning" role="button" data-id="@contact.cusContactID"><span class="small">@Resources.Resource.CallHistory</span></a></td>
+                <td style="width:70px;max-width:70px;"><a class="btn btn-primary" role="button" href="/Contact/Edit?contactId=@contact.cusContactID&accountProfileId=@contact.AccountProfileId&SelectedType=attribute">@Resources.Resource.CustomAttribute</a></td>
+
+                <td style="width:95px;max-width:95px;">
+                    <a class="btn btn-info" role="button" href="/Contact/Edit?contactId=@contact.cusContactID&accountProfileId=@contact.AccountProfileId"><span class="small">@Resources.Resource.Edit</span></a>
+                    <a class="btn btn-danger remove" role="button" href="#" data-id="@contact.cusContactID" data-apid="@contact.AccountProfileId"><span class="small">@Resources.Resource.Remove</span></a>
+                </td>
+            </tr>
+        }
+
+    </table>
+
+    <div id="pagingblk" class="mx-3">
+        <div class="row">
+            @Html.PagedListPager(Model.PagingContactList, PageNo => Url.Action("Index",
+new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword, PageSize = Model.PageSize }))
+        </div>
+    </div>
+
+
+    <input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+    <input type="hidden" id="sortcol" value="@Model.SortCol" />
+    <input type="hidden" id="keyword" value="@Model.Keyword" />
+    <input type="hidden" id="pageno" value="@Model.PageNo" />
+
+    @Html.AntiForgeryToken()
+
+
+@Html.Partial("_WaitingModal")
+}
+
+<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+@Html.Partial("_HotListModal")
+
+@Html.Partial("_GattrFilterModal", Model.GlobalAttributeList)
+
+@Html.Partial("_SalesGroupMemberModal")
+<div id="infoblk" class="hide" data-actionhistory="@Resources.Resource.ActionHistory" data-iscentral="@Model.IsCentral" data-selectatleastonecontacttxt="@selectatleastonecontacttxt" data-salesmantxt="@Resources.Resource.SalesPerson" data-idlist="@string.Join(",",Model.IdList)" data-totalcontactcount="@Model.TotalContactCount" data-currenteblastid="@Model.CurrentEblastId" data-jsoneblastcontactlist="@Model.JsonEblastContactList" data-jsonhotlistcontactlist="@Model.JsonHotListContactList" data-contactaddedeblastmsg="@Resources.Resource.ContactAddedToEblastMsg" data-contactaddedhotlistmsg="@Resources.Resource.ContactAddedToHotListMsg" data-pagesizenoltzerotxt="@string.Format(Resources.Resource.NoLtZero, Resources.Resource.RecordsPerPage)" data-assignedcontactstxt="@string.Format(Resources.Resource.AreAsFollowsFormat,Resources.Resource.ContactsAssignedGroup)" data-returnmsg="@returnMsg"></div>
+
+
+<script src="/Scripts/ts/js/crm/contact/contact.js?v=@rand"></script>

@@ -1,0 +1,106 @@
+﻿@model TransferEditModel
+
+@{
+    bool editmode = true;
+    string edittxt = editmode ? Resources.Resource.Edit : Resources.Resource.Add;
+    ViewBag.Title = edittxt + " " + Resources.Resource.StockTransferOrder;
+    int rand = CommonHelper.GetVersionRandomNo();
+    var st = Model.TransferList.FirstOrDefault();
+    var stCode = st.stCode;
+    var stdatedisplay = CommonHelper.FormatDate(st.stDate, true);
+}
+
+<h2 class="mb-4">@ViewBag.Title</h2>
+
+@using (Html.BeginForm("Edit", "StockTransfer", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="container">
+        <div class="d-flex justify-content-between">
+            <div>
+                <h4>@Resources.Resource.StockTransferNumber <span class="badge badge-dark">@st.stCode</span></h4>
+                <h4>@Resources.Resource.StockTransferDate <span class="badge badge-dark">@stdatedisplay</span></h4>
+                <h4>@Resources.Resource.ItemReceiver <span class="badge badge-dark">@st.stReceiver</span></h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center my-4">
+        <table id="tblTransferEdit" class="table table-bordered table-hover  overflow-auto">
+            <thead class="gray-header">
+                <tr>
+                    <th class="small text-center">@string.Format(Resources.Resource.SignedByFormat, Resources.Resource.ItemShipper)</th>
+                    <th class="text-center">@Resources.Resource.ItemShipper</th>
+                    <th class="small text-right">@Resources.Resource.StockQutQty</th>
+                    <th class="text-center">@Resources.Resource.ItemNumber</th>
+                    <th class="text-center">@Resources.Resource.ItemName</th>
+                    <th class="small text-right">@Resources.Resource.StockInQty</th>
+                    <th class="small text-right">@Resources.Resource.CountedQty</th>
+                    <th class="small text-right">@Resources.Resource.Variance4Stock</th>
+                    <th class="text-center small">@string.Format(Resources.Resource.SignedByFormat, Resources.Resource.ItemReceiver)</th>
+                    <th class="text-center">@Resources.Resource.Remark</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int idx = 0;}
+                @foreach(var item in Model.TransferList)
+                {
+                    var remarktxt = string.IsNullOrEmpty(item.stRemark) ? "" : "...";
+                    var varibgcls = item.stVariance >= 0 ? "okbalance" : "outofbalance";
+                    <tr data-idx="@idx" data-id="@item.Id">
+                        <td style="width:70px;max-width:70px;" class="text-center">
+                            <input type="checkbox" class="signedbyshipper signup" value="@item.stSignedUp_Sender" checked="@item.stSignedUp_Sender" />
+                        </td>
+                        <td style="width: 100px; max-width: 100px;" class="text-center">
+                            <span>@item.stSender</span>
+                          @*  <input type="text" class="form-control shipper text-center" value="" readonly />*@
+                        </td>
+                        <td style="width: 80px; max-width: 80px;" class="text-right">
+                            <span class="outqty">@item.outQty</span>
+                            @*<input type="number" class="form-control outqty text-right" value="" readonly />*@
+                        </td>
+                        <td style="width: 120px; min-width: 120px;" class="text-center">
+                            <span class="small">@item.itmCode</span>
+                           @* <input type="text" class="form-control itemcode text-center" value="" readonly />*@
+                        </td>
+                        <td style="" class="text-center pointer">
+                            <span class="small">@item.itmNameDesc</span>
+                        </td>
+                        <td style="width: 80px; max-width: 80px;" class="text-right">
+                            <span class="inqty">@item.inQty</span>
+                           @* <input type="number" class="form-control inqty text-right" value="" readonly />*@
+                        </td>
+                        <td style="width: 80px; max-width: 80px;" class="text-right">
+                            <input type="number" class="form-control counted qty text-right" value="@item.stCounted" />
+                        </td>
+                        <td style="width: 80px; max-width: 80px;" class="text-right">
+                            <input type="number" class="form-control variance qty text-right @varibgcls" readonly value="@item.stVariance" />
+                        </td>
+                        <td style="width: 70px; max-width: 70px;" class="text-center">
+                            <input type="checkbox" class="signedbyreceiver signup" value="@item.stSignedUp_Receiver" checked="@item.stSignedUp_Receiver" />
+                        </td>
+                        <td style="width: 70px; max-width: 70px;" class="text-center">
+                            <input type="text" class="form-control pointer remark" data-remark="" readonly value="@remarktxt"  />
+                        </td>
+                        <td style="width:100px;max-width:100px;" class="text-center">
+                            <button type="button" class="btn btn-success save">@Resources.Resource.Save</button>
+                        </td>
+                    </tr>
+                    idx++;
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<button type="button" id="btnPrint" class="btn btn-primary" data-code="@stCode">@Resources.Resource.Print</button>
+
+@Html.Partial("_WaitingModal")
+@*@Html.Partial("_DescModal")*@
+@Html.Partial("_TextAreaModal")
+
+<div id="infoblk"></div>
+
+<script src="~/Scripts/ts/js/itemtransfer/transferedit.js?v=@rand"></script>

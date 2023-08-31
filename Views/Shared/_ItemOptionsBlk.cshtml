@@ -1,0 +1,41 @@
+﻿@{
+    string _checked;
+    string disabled = ViewData["disabled"] == null ? "" : (string)ViewData["disabled"];
+    ItemView Item = ViewData["Item"] == null ? null : ViewData["Item"] as ItemView;
+    bool editmode = ViewData["editmode"] == null ? false : (bool)ViewData["editmode"];
+    bool showSaveBtn = ViewData["showSaveBtn"] == null ? false : (bool)ViewData["showSaveBtn"];
+    string alertcls = ViewData["alertcls"] == null ? string.Empty : (string)ViewData["alertcls"];
+}
+<div class="alert alert-warning" style="@alertcls">
+    <p><span class="alert-danger">@Resources.Resource.ItemOptionsNote</span> <span class="small font-weight-bold">(@Resources.Resource.IrreversibleWarning)</span></p>
+    @{
+        _checked = editmode && Item != null && Item.chkBat ? "checked" : "";
+    }
+    <div class="form-check form-check-inline">
+        <input class="form-check-input itemoption" type="checkbox" id="chkBatch" value="bat" @_checked @disabled>
+        <label class="form-check-label" for="chkBatch">@Resources.Resource.Batch</label>
+    </div>
+    @{
+        _checked = editmode && Item != null && Item.chkSN ? "checked" : "";
+    }
+    <div class="form-check form-check-inline">
+        <input class="form-check-input itemoption" type="checkbox" id="chkSN" value="sn" @_checked @disabled>
+        <label class="form-check-label" for="chkSN">@Resources.Resource.SerialNo</label>
+    </div>
+    @{
+        _checked = editmode && Item != null && Item.chkVT ? "checked" : "";
+    }
+    <div class="form-check form-check-inline">
+        <input class="form-check-input itemoption" type="checkbox" id="chkExpiry" value="vt" @_checked @disabled>
+        <label class="form-check-label" for="chkExpiry">@Resources.Resource.ExpiryDate</label>
+    </div>
+
+    @if (showSaveBtn)
+    {
+        <div class="form-check form-check-inline" style="font-size:140%;">
+            <span class="fa fa-save pointer" title="@Resources.Resource.Save" id="btnSaveItemOptions"></span>            
+        </div>
+      
+    }
+
+</div>

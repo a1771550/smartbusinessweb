@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>DateTime Picker Demo</title>
+    <link rel="icon" type="image/png" href="../Content/favicon_io/favicon-16x16.png">
+    <link href="../Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Content/fontawesome/font-awesome.min.css" />
+
+
+    <script src="../Scripts/jquery-ui/external/jquery/jquery.js"></script>
+    <script src="../Scripts/bootstrap.min.js"></script>
+    <script src="../Scripts/moment.min.js"></script>
+    <script src="../Scripts/respond.min.js"></script>
+    <script src="../Scripts/modernizr-2.8.3.js"></script>
+
+   
+</head>
+<body>
+    <div class="container">
+        <form>
+            <div class="form-group">
+                <label for="demo">DateTime</label>
+                <input type="datetime" class="form-control datetimepicker" id="demo" />
+            </div>
+        </form>
+    </div>
+   
+    <link rel="stylesheet" type="text/css" href="../Content/datetimepicker/jquery.datetimepicker.min.css" />   
+    <script src="../Scripts/datetimepicker/jquery.datetimepicker.full.min.js"></script>
+    <script>
+       
+        $(document).ready(function () {
+            var m = new Date();
+            var dateString =
+                ("0" + m.getDate()).slice(-2) + " " +
+                ("0" + (m.getMonth() + 1)).slice(-2) + "-" +
+                m.getFullYear() + "-" +
+                ("0" + m.getHours()).slice(-2) + ":" +
+                ("0" + m.getMinutes()).slice(-2);
+
+            console.log(dateString);
+            
+            $('#demo').datetimepicker({
+                format: 'd-m-Y H:i',
+                //'setDate': new Date()
+            }).val(dateString);
+        });
+
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+﻿.form-control-plaintext {
+	background-color: #fbf5d3;
+	border: 1px solid #dcd9d9;
+}
+#txtStaticCustomerName{
+	width:190px;
+}
+#txtPoints {
+	width: 100px;
+}
+
+#txtPriceLevel {
+	width: 150px;
+}
+
+#txtPhone {
+/*	width: 150px;*/
+}
+/*#tblSales{
+	width:98%;
+}*/
+.formfield * {
+	vertical-align: top !important;
+}
+
+.text-larger {
+	font-size: larger;
+}
+
+.text-large {
+	font-size: large;
+}
+
+i.fa-plus, i.fa-minus {
+	cursor: pointer;
+}
+
+.smallfont {
+	font-size: xx-small;
+}
+/*.jexcel tbody tr td:nth-of-type(3){
+	font-size:10px;
+}*/
+#itemModal {
+	min-width: 5em;
+}
+
+#payModal .form-inline .form-control {
+	width: 100% !important;
+}
+
+.navbar {
+	padding: 0;
+}
+
+
+
+.fc-content .list-group-item {
+	border: none;
+}
+
+#tblPay .form-control.paymenttype {
+	min-width: 100%;
+}
+
+.counttotal {
+	font-size: 2em;
+	font-weight: bold;
+}
+
+#tblCus tbody tr td {
+	cursor: pointer;
+}
+
+#receiptlogo {
+	margin-bottom: 1em;
+}
+
+#salesColblk .form-control{
+	margin-bottom:1em;
+}
+
