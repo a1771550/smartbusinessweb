@@ -46,13 +46,15 @@
                 }
 
                 <th>@Resources.Resource.SerialNo (@Resources.Resource.PurchaseOrder)</th>
-                @if (forpurchase || forwholesales||forsales)
+                @if (forpurchase || forwholesales || forsales)
                 {
                     <th>@Resources.Resource.ValidThru</th>
                 }
-                @if (forwholesales||forsales)
+                @if (forwholesales || forsales)
                 {
+                    <th>@Resources.Resource.PurchaseOrder</th>
                     <th>@Resources.Resource.Select</th>
+
                 }
                 @if (!forwholesales && !forsales)
                 {

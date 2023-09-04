@@ -8971,7 +8971,7 @@ function writeSN(
 
     if (!forwholesales && !forsales) html += `<td>${_snseq}</td>`;
 
-    html += `<td>${_sn} (${pocode})</td>`;
+    html += `<td>${_sn}</td>`;
 
     if (forwholesales || forsales) {
         if (!itemOptions.WillExpire) _validthru = "N/A";
@@ -8994,6 +8994,8 @@ function writeSN(
                 }
             });
         }
+
+        html += `<td>${pocode}</td>`;
 
         html += `<td><input type="checkbox" id="chksnvt${_sn}" class="chksnvt" data-pocode="${pocode}" data-sn="${_sn}" data-vt="${_validthru}" ${_checked} ${_disabled}></td>`;
     }
@@ -9229,13 +9231,13 @@ function confirmSNs() {
     let lnqty: number = 0;
     if (forwholesales || forsales) {
         $("#tblSerial tbody tr").each(function (i, e) {
-            $target = $(e).find("td:eq(2)").find(".chksnvt");
+            $target = $(e).find("td:eq(3)").find(".chksnvt");
             let snvtId = $target.attr("id");
             let pocode = $target.data("pocode");
             let _snvt = {
                 pocode: pocode,
                 sn: $(e).find("td:eq(0)").text() as string,
-                vt: $(e).find("td:eq(1)").text() as string,
+                vt: $(e).find("td:eq(1)").text().toString().trim(),
                 selected: $target.is(":checked"),
             };
 
@@ -12176,7 +12178,8 @@ function handlePoSn4Confirm($tr: JQuery, itemcode: string): string {
         }
 
         $target = $tr.find("td:eq(2)").find(".posnvt");
-        let validthru: string = $target.val() as string;
+        let validthru: any = $target.val();
+        if (validthru) validthru = validthru.toString().trim();
         if (itemOptions && itemOptions.WillExpire) {
             if (validthru === "") {
                 msg += `#${serial.snseq}${rowtxt} ${expirydaterequiredtxt}<br>`;
@@ -12463,7 +12466,8 @@ function _confirmPoBatch($tr: JQuery): string {
         if (itemOptions.WillExpire) {
             idx++;
             $target = $tr.find("td").eq(idx).find(".pobavt");
-            let validthru: string = $target.val() as string;
+            let validthru: any = $target.val();
+            if (validthru) validthru.toString().trim();
             if (itemOptions.WillExpire) {
                 if (validthru === "") {
                     msg += `#${seq}${rowtxt} ${expirydaterequiredtxt}<br>`;
@@ -12571,7 +12575,7 @@ function confirmVtQty() {
                     deliveryItem.pstCode = $(v).data("pocode") as string;
                     deliveryItem!.dlQty = deliveryItem!.newvtqty;
                     deliveryItem.dlCode = $(v).attr("id") as string;
-                    deliveryItem.JsVt = $(v).data("vt") as string;
+                    deliveryItem.JsVt = $(v).data("vt").toString().trim();
                     deliveryItem.itmCode = $(v).data("itemcode") as string;
 
                     deliveryItem.vtseq = Number($(v).data("vtseq"));
@@ -12699,7 +12703,7 @@ function confirmBatchSnQty() {
                         deliveryItem.pstCode = $(v).data("pocode") as string;
                         deliveryItem.dlCode = $(v).attr("id") as string;
                         deliveryItem.dlBatch = $(v).data("batch") as string;
-                        deliveryItem.JsVt = $(v).data("batvt") as string;
+                        deliveryItem.JsVt = $(v).data("batvt").toString().trim();
                         deliveryItem.itmCode = selectedItemCode.toString();
                         deliveryItem.batseq = $(v).data("batseq") as number;
                         deliveryItem.dlBatId = Number($(v).data("batid"));
@@ -12736,7 +12740,7 @@ function confirmBatchSnQty() {
                     let sn: string = $target.val() as string;
                     let batId: string = $target.attr("id") as string;
                     let batcode: string = $target.data("batcode") as string;
-                    let vt: string = $target.data("snvt") as string;
+                    let vt: string = $target.data("snvt").toString().trim();
                     let pocode: string = $target.data("pocode") as string;
 
                     if ($target.is(":checked")) {
