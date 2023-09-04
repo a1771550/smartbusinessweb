@@ -31,7 +31,7 @@ $(document).on("click", "#btnTransfer", function () {
         $target = $("#tblTransfer tr:gt(0)");
         $target.each(function (i, e) {
             $(e)
-                .find("td:gt(2)")
+                .find("td:gt(3)")
                 .each(function (k, v) {
                     let $input = $(v).find("input");
                     //console.log('has class locqty?', $input.hasClass('locqty'));
@@ -40,7 +40,7 @@ $(document).on("click", "#btnTransfer", function () {
                         let Id: number = <number>$input.data("id");
                         let itmCode: string = $input.data("code") as string;
                         //console.log('id:' + Id);
-                        if (Id > 0) {
+                        //if (Id > 0) {
                             jsstock.Id = Id;
                             let shop: any = $input.data("shop");
                             if (!isNaN(shop)) {
@@ -52,13 +52,13 @@ $(document).on("click", "#btnTransfer", function () {
                             jsstock.Qty = Number($input.val());
                             //   console.log("qty:" + jsstock.Qty);
                             JsStockList.push(jsstock);
-                        }
+                        //}
                     }
                 });
         });
-        // console.log("JsStockList:", JsStockList);
-        // console.log("transferlist:", TransferList);
-        // return false;
+         //console.log("JsStockList:", JsStockList);
+         //console.log("transferlist:", TransferList);
+         //return false;
 
         if (JsStockList.length > 0 && TransferList.length > 0) {
             $.ajax({

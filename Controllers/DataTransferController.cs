@@ -33,6 +33,7 @@ using PPWLib.Helpers;
 using PPWLib.Models.Purchase;
 using PPWLib.Models.WholeSales;
 using PPWLib.Models.POS.Customer;
+using PPWLib.Models.Item;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -169,7 +170,7 @@ namespace SmartBusinessWeb.Controllers
         {
             string msg = Resources.Resource.ImportDoneMsg;
             string url = "";
-            int accountprofileId = ComInfo.AccountProfileId;
+            int apId = ComInfo.AccountProfileId;
             DateTime dateTime = DateTime.Now;
             int kqtype = 0;
             SessUser curruser = Session["User"] as SessUser;
@@ -448,7 +449,7 @@ namespace SmartBusinessWeb.Controllers
                         try
                         {
                             /* remove current records first: */
-                            List<MyobJob> jobss = context.MyobJobs.Where(x => x.AccountProfileId == accountprofileId).ToList();
+                            List<MyobJob> jobss = context.MyobJobs.Where(x => x.AccountProfileId == apId).ToList();
                             context.MyobJobs.RemoveRange(jobss);
                             context.SaveChanges();
                             /*********************************/
@@ -474,7 +475,7 @@ namespace SmartBusinessWeb.Controllers
                                     StartDate = job.StartDate,
                                     FinishDate = job.FinishDate,
                                     CustomerID = job.CustomerID,
-                                    AccountProfileId = accountprofileId,
+                                    AccountProfileId = apId,
                                     CreateTime = DateTime.Now,
                                     ModifyTime = DateTime.Now
                                 });
@@ -514,7 +515,7 @@ namespace SmartBusinessWeb.Controllers
                         try
                         {
                             /* remove current records first: */
-                            List<MyobCurrency> currencys = context.MyobCurrencies.Where(x => x.AccountProfileId == accountprofileId && x.CompanyId == ComInfo.Id).ToList();
+                            List<MyobCurrency> currencys = context.MyobCurrencies.Where(x => x.AccountProfileId == apId && x.CompanyId == ComInfo.Id).ToList();
                             context.MyobCurrencies.RemoveRange(currencys);
                             context.SaveChanges();
                             /*********************************/
@@ -537,7 +538,7 @@ namespace SmartBusinessWeb.Controllers
                                     DecimalPlaceSymbol = currency.DecimalPlaceSymbol,
                                     NegativeFormat = currency.NegativeFormat,
                                     UseLeadingZero = currency.UseLeadingZero,
-                                    AccountProfileId = accountprofileId,
+                                    AccountProfileId = apId,
                                     CompanyId = ComInfo.Id,
                                     CreateTime = DateTime.Now,
                                     ModifyTime = DateTime.Now
@@ -572,7 +573,7 @@ namespace SmartBusinessWeb.Controllers
 
                 if (filename.StartsWith("Suppliers_"))
                 {
-                    ModelHelper.SaveSuppliersFrmCentral(context, accountprofileId, ComInfo.Id);
+                    ModelHelper.SaveSuppliersFrmCentral(context, apId, ComInfo.Id);
                 }
 
                 if (filename.StartsWith("Employees_"))
@@ -583,12 +584,12 @@ namespace SmartBusinessWeb.Controllers
                         try
                         {
                             /* remove current records first: */
-                            List<MyobEmployee> employees = context.MyobEmployees.Where(x => x.AccountProfileId == accountprofileId && x.CompanyId == ComInfo.Id).ToList();
+                            List<MyobEmployee> employees = context.MyobEmployees.Where(x => x.AccountProfileId == apId && x.CompanyId == ComInfo.Id).ToList();
                             context.MyobEmployees.RemoveRange(employees);
                             context.SaveChanges();
                             /*********************************/
 
-                            List<SysUser> users = context.SysUsers.Where(x => x.AccountProfileId == accountprofileId && x.surIsAbss && x.CompanyId == ComInfo.Id).ToList();
+                            List<SysUser> users = context.SysUsers.Where(x => x.AccountProfileId == apId && x.surIsAbss && x.CompanyId == ComInfo.Id).ToList();
                             context.SysUsers.RemoveRange(users);
                             context.SaveChanges();
                             /*
@@ -617,7 +618,7 @@ namespace SmartBusinessWeb.Controllers
                                 memployee.empCustomField3 = employee.empCustomField3;
                                 memployee.empCreateTime = dateTime;
                                 memployee.empModifyTime = dateTime;
-                                memployee.AccountProfileId = accountprofileId;
+                                memployee.AccountProfileId = apId;
                                 memployee.CompanyId = ComInfo.Id;
 
                                 if (memployee.empCode.ToLower() != "admin")
@@ -648,7 +649,7 @@ namespace SmartBusinessWeb.Controllers
                                         shopCode = curruser.Device.dvcShop,
                                         ManagerId = posAdminId,
                                         surScope = "pos",
-                                        AccountProfileId = accountprofileId,
+                                        AccountProfileId = apId,
                                         UserRole = "SalesPerson",
                                         Email = email,
                                         surIsAbss = true,
@@ -954,7 +955,7 @@ namespace SmartBusinessWeb.Controllers
                         {
                             #region remove current data first:
                             //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Item]");
-                            List<MyobLocation> locations = context.MyobLocations.Where(x => x.AccountProfileId == accountprofileId).ToList();
+                            List<MyobLocation> locations = context.MyobLocations.Where(x => x.AccountProfileId == apId).ToList();
                             context.MyobLocations.RemoveRange(locations);
                             context.SaveChanges();
                             #endregion
@@ -970,7 +971,7 @@ namespace SmartBusinessWeb.Controllers
                                     IsInactive = location.IsInactive,
                                     LocationName = location.LocationName,
                                     LocationIdentification = location.LocationIdentification,
-                                    AccountProfileId = accountprofileId,
+                                    AccountProfileId = apId,
                                     CreateTime = dateTime,
                                 });
                             }
@@ -1010,7 +1011,7 @@ namespace SmartBusinessWeb.Controllers
                         {
                             #region remove current data first:
                             //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Item]");
-                            List<MyobItem> items = context.MyobItems.Where(x => x.AccountProfileId == accountprofileId).ToList();
+                            List<MyobItem> items = context.MyobItems.Where(x => x.AccountProfileId == apId).ToList();
                             context.MyobItems.RemoveRange(items);
                             context.SaveChanges();
                             #endregion
@@ -1018,7 +1019,7 @@ namespace SmartBusinessWeb.Controllers
                             List<MyobItem> newitems = new List<MyobItem>();
                             foreach (var item in itemlist)
                             {
-                                var pgItem = context.PGItems.Where(x => x.AccountProfileId == accountprofileId && x.itmCode == item.ItemNumber).FirstOrDefault();
+                                var pgItem = context.PGItems.Where(x => x.AccountProfileId == apId && x.itmCode == item.ItemNumber).FirstOrDefault();
 
                                 MyobItem _item = new MyobItem
                                 {
@@ -1043,7 +1044,7 @@ namespace SmartBusinessWeb.Controllers
                                     itmCreateTime = dateTime,
                                     itmModifyTime = dateTime,
                                     itmItemID = item.ItemID,
-                                    AccountProfileId = accountprofileId,
+                                    AccountProfileId = apId,
                                     itmIsNonStock = item.ItemIsInventoried == 'N',
                                     itmIsSold = item.ItemIsSold == 'Y',
                                     itmIsBought = item.ItemIsBought == 'Y',
@@ -1084,63 +1085,103 @@ namespace SmartBusinessWeb.Controllers
                     #endregion
 
                     #region Handle Stock
-                    using (var transaction = context.Database.BeginTransaction())
+
+                    #region backup & remove current data first
+                    //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [LocStock]");
+                    List<MyobLocStock> stocks = context.MyobLocStocks.Where(x => x.AccountProfileId == apId).ToList();
+                    Dictionary<LocItem, int> DicLocItemQty = new Dictionary<LocItem, int>();
+                    foreach(var stock in stocks)
                     {
-                        try
+                        LocItem locitem = new LocItem
                         {
-                            #region remove current data first
-                            //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [LocStock]");
-                            List<MyobLocStock> stocks = context.MyobLocStocks.Where(x => x.AccountProfileId == accountprofileId && x.CompanyId == ComInfo.Id).ToList();
-                            context.MyobLocStocks.RemoveRange(stocks);
-                            context.SaveChanges();
-                            #endregion
+                            LocCode = stock.lstStockLoc,
+                            itmCode = stock.lstItemCode
+                        };
+                        DicLocItemQty[locitem] = stock.lstQuantityAvailable??0;
+                    }
+                    context.MyobLocStocks.RemoveRange(stocks);
+                    context.SaveChanges();
+                    #endregion
 
-                            List<MyobLocStock> newstocks = new List<MyobLocStock>();
+                    stocks = new List<MyobLocStock>();
+                    List<MyobLocStock> newstocks = new List<MyobLocStock>();
 
-                            //itemloclist = itemloclist.Take(1000).ToList();
+                    var activeLocationList = locationlist.Where(x => x.IsInactive != null && !(bool)x.IsInactive).ToList();
+                    var addedstockcode = new List<string>();
 
-                            foreach (var item in itemloclist)
-                            {
-                                MyobLocStock locStock = new MyobLocStock();
-                                locStock.lstItemLocationID = item.ItemLocationID;
-                                locStock.lstItemID = item.ItemID;
-                                locStock.lstItemCode = item.ItemCode;
-                                locStock.lstStockLoc = item.LocationCode;
-                                locStock.lstAbssQty = locStock.lstQuantityAvailable = item.QuantityOnHand;
-                                locStock.lstCreateTime = dateTime;
-                                locStock.lstModifyTime = dateTime;
-                                locStock.AccountProfileId = accountprofileId;
-                                locStock.CompanyId = ComInfo.Id;
-                                newstocks.Add(locStock);
-                            }
-
-                            context.MyobLocStocks.AddRange(newstocks);
-                            ModelHelper.WriteLog(context, "Import Item Location data from Central done;added office stock:" + newstocks.Where(x => x.lstStockLoc == "office").Count(), "ExportFrmCentral");
-                            context.SaveChanges();
-                            transaction.Commit();
-
-                        }
-                        catch (DbEntityValidationException e)
+                    foreach (var item in itemloclist)
+                    {
+                        var inCurrLoc = itemloclist.Where(x => x.ItemCode == item.ItemCode);
+                        if (inCurrLoc.Count() == activeLocationList.Count)
                         {
-                            transaction.Rollback();
-                            StringBuilder sb = new StringBuilder();
-                            foreach (var eve in e.EntityValidationErrors)
+                            stocks.Add(new MyobLocStock
                             {
-                                sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                                foreach (var ve in eve.ValidationErrors)
-                                {
-                                    sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                        ve.PropertyName,
-                        eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                        ve.ErrorMessage);
-                                }
-                            }
-                            //throw new Exception(sb.ToString());
-                            ModelHelper.WriteLog(context, string.Format("Import stock data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
-                            context.SaveChanges();
+                                lstItemLocationID = item.ItemLocationID,
+                                lstItemID = item.ItemID,
+                                lstItemCode = item.ItemCode,
+                                lstStockLoc = item.LocationCode,
+                                lstAbssQty = item.QuantityOnHand,
+                                lstQuantityAvailable = item.QuantityOnHand,
+                                lstCreateTime = dateTime,
+                                lstModifyTime = dateTime,
+                                AccountProfileId = apId,
+                                CompanyId = ComInfo.Id,
+                            });
+                            addedstockcode.Add(item.ItemCode);
                         }
                     }
+
+                    if (stocks.Count > 0)
+                    {
+                        context.MyobLocStocks.AddRange(stocks);
+                        context.SaveChanges();
+                    }
+
+                    //if (addedstockcode.Count > 0)
+                    //{
+                    var _itemlist = addedstockcode.Count > 0 ? itemlist.Where(x => !addedstockcode.Contains(x.ItemNumber)) : itemlist;
+                    long lastId = context.MyobLocStocks.Count() > 0 ? context.MyobLocStocks.Max(x => x.lstItemLocationID) : 0;
+                    long newId = lastId + 1;
+                    foreach (var loc in activeLocationList)
+                    {
+                        foreach (var item in _itemlist)
+                        {
+                            var stock = itemloclist.FirstOrDefault(x => x.LocationCode == loc.LocationIdentification && x.ItemCode == item.ItemNumber);
+                            LocItem locitem = new LocItem
+                            {
+                                LocCode = loc.LocationIdentification,
+                                itmCode = item.ItemNumber
+                            };
+                            int qty = 0;
+                            if (DicLocItemQty.Keys.Contains(locitem))
+                            {
+                                qty = DicLocItemQty[locitem];
+                            }
+                            newstocks.Add(new MyobLocStock
+                            {
+                                lstItemLocationID = newId,
+                                lstItemID = item.ItemID,
+                                lstItemCode = item.ItemNumber,
+                                lstStockLoc = loc.LocationIdentification,
+                                lstAbssQty = stock == null ? 0 : stock.QuantityOnHand,
+                                lstQuantityAvailable = qty,
+                                lstCreateTime = dateTime,
+                                lstModifyTime = dateTime,
+                                AccountProfileId = apId,
+                                CompanyId = ComInfo.Id,
+                            });
+                            newId++;
+                        }
+                    }
+                    context.MyobLocStocks.AddRange(newstocks);
+                    context.SaveChanges();
+                    //}
+
+
+
+                    ModelHelper.WriteLog(context, "Import Item Location data from Central done;added office stock:" + newstocks.Where(x => x.lstStockLoc == "office").Count(), "ExportFrmCentral");
+                    context.SaveChanges();
+
                     #endregion
 
                     #region Handle Price
@@ -1160,7 +1201,7 @@ namespace SmartBusinessWeb.Controllers
 
                             #region remove current data first
                             //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [ItemPrice]");
-                            List<MyobItemPrice> itemprices = context.MyobItemPrices.Where(x => x.AccountProfileId == accountprofileId && x.CompanyId == ComInfo.Id).ToList();
+                            List<MyobItemPrice> itemprices = context.MyobItemPrices.Where(x => x.AccountProfileId == apId && x.CompanyId == ComInfo.Id).ToList();
                             context.MyobItemPrices.RemoveRange(itemprices);
                             context.SaveChanges();
                             #endregion
@@ -1181,7 +1222,7 @@ namespace SmartBusinessWeb.Controllers
                                 itemPrice.ChangeControl = item.ChangeControl;
                                 itemPrice.CreateTime = dateTime;
                                 itemPrice.ModifyTime = dateTime;
-                                itemPrice.AccountProfileId = accountprofileId;
+                                itemPrice.AccountProfileId = apId;
                                 itemPrice.CompanyId = ComInfo.Id;
                                 newitemprices.Add(itemPrice);
                             }
@@ -1222,7 +1263,7 @@ namespace SmartBusinessWeb.Controllers
                     foreach (var item in itemlist)
                     {
                         if (!currentItemOptions.Any(x => x.itemId == item.ItemID))
-                        {                           
+                        {
                             itemOptions.Add(new ItemOption
                             {
                                 itemId = item.ItemID,
@@ -1285,7 +1326,7 @@ namespace SmartBusinessWeb.Controllers
                             context.SaveChanges();
                             #endregion
 
-                            var items = context.MyobItems.Where(x => x.AccountProfileId == accountprofileId).ToList();
+                            var items = context.MyobItems.Where(x => x.AccountProfileId == apId).ToList();
 
                             foreach (var item in items)
                             {
@@ -1333,7 +1374,7 @@ namespace SmartBusinessWeb.Controllers
                         try
                         {
                             #region remove current data first
-                            List<Account> accounts = context.Accounts.Where(x => x.AccountProfileId == accountprofileId && x.CompanyId == ComInfo.Id).ToList();
+                            List<Account> accounts = context.Accounts.Where(x => x.AccountProfileId == apId && x.CompanyId == ComInfo.Id).ToList();
                             context.Accounts.RemoveRange(accounts);
                             context.SaveChanges();
                             #endregion
@@ -1342,7 +1383,7 @@ namespace SmartBusinessWeb.Controllers
                             foreach (var account in accountlist)
                             {
                                 Account ac = new Account();
-                                ac.AccountProfileId = accountprofileId;
+                                ac.AccountProfileId = apId;
                                 ac.AccountName = account.AccountName;
                                 ac.AccountNumber = account.AccountNumber;
                                 ac.AccountID = account.AccountID;

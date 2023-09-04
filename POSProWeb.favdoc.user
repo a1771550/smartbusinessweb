@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Favorites xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <folders>
+    <Folder>
+      <name>ts</name>
+      <folders />
+      <favorites>
+        <Favorite>
+          <name>inventorytransfer.ts</name>
+          <path>Scripts\ts\itemtransfer\inventorytransfer.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\itemtransfer\inventorytransfer.ts</absolutePath>
+        </Favorite>
+      </favorites>
+    </Folder>
+    <Folder>
+      <name>views</name>
+      <folders />
+      <favorites />
+    </Folder>
+    <Folder>
+      <name>controllers</name>
+      <folders />
+      <favorites>
+        <Favorite>
+          <name>ApiController.cs</name>
+          <path>Controllers\ApiController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\ApiController.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>DataTransferController.cs</name>
+          <path>Controllers\DataTransferController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\DataTransferController.cs</absolutePath>
+        </Favorite>
+      </favorites>
+    </Folder>
+    <Folder>
+      <name>models</name>
+      <folders />
+      <favorites />
+    </Folder>
+    <Folder>
+      <name>helpers</name>
+      <folders />
+      <favorites />
+    </Folder>
+  </folders>
+  <favorites />
+</Favorites>
