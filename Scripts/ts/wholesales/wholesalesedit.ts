@@ -1124,7 +1124,7 @@ $(function () {
     });
     //console.log("CustomerOptionList:", CustomerOptionList);
 
-    $("#drpCustomer").select2();
+    $("#drpCustomer").select2().trigger("focus");
 
     backUpCardDrpOptions();
     useForexAPI = Wholesales.UseForexAPI;

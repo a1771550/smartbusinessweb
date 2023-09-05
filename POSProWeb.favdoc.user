@@ -10,6 +10,31 @@
           <path>Scripts\ts\itemtransfer\inventorytransfer.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\itemtransfer\inventorytransfer.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>app.ts</name>
+          <path>Scripts\ts\app.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\app.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>sales.ts</name>
+          <path>Scripts\ts\pos\sales.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\sales.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>wholesalesedit.ts</name>
+          <path>Scripts\ts\wholesales\wholesalesedit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\wholesales\wholesalesedit.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>purchaseedit.ts</name>
+          <path>Scripts\ts\purchase\purchaseedit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\purchase\purchaseedit.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>itemedit.ts</name>
+          <path>Scripts\ts\item\itemedit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\item\itemedit.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -30,6 +55,11 @@
           <name>DataTransferController.cs</name>
           <path>Controllers\DataTransferController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\DataTransferController.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>POSFuncController.cs</name>
+          <path>Controllers\POS\POSFuncController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\POS\POSFuncController.cs</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

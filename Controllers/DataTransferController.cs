@@ -1534,7 +1534,6 @@ namespace SmartBusinessWeb.Controllers
         }
 
 
-
         /// <summary>
         /// for online mode only
         /// </summary>
@@ -2985,7 +2984,7 @@ namespace SmartBusinessWeb.Controllers
             string memo = "";
             if (item != null)
             {
-                salespaidamt = item.rtlRefSales.StartsWith("DE") ? Convert.ToDouble(item.rtlSalesAmt) : 0;
+                salespaidamt = item.rtlRefSales!=null && item.rtlRefSales.StartsWith("DE") ? Convert.ToDouble(item.rtlSalesAmt) : 0;
                 customerpo = approvalmode ? item.rtsCustomerPO : item.rtlRefSales;
                 memo = genMemo(item.rtsCurrency, Convert.ToDouble(item.rtsExRate), salespaidamt, "");
             }

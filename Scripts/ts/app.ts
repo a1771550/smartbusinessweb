@@ -13880,7 +13880,7 @@ $(document).on("change", ".chkbatsnvt", function () {
 
     $target = $tr.find("td.batdelqtytxt").find(".row").find(".batdeledqty");
     let currentdelqty = Number($target.text());
-    console.log("currentdelqty#0:" + currentdelqty);
+    //console.log("currentdelqty#0:" + currentdelqty);
 
     if (ischecked) {
         chkBatSnVtCount++;
@@ -13893,7 +13893,7 @@ $(document).on("change", ".chkbatsnvt", function () {
     }
 
     if (currentdelqty < 0) currentdelqty = 0;
-    console.log("currentdelqty#1:" + currentdelqty);
+    //console.log("currentdelqty#1:" + currentdelqty);
     $target.text(currentdelqty);
 
     $("#totalbatdelqty")
@@ -14484,6 +14484,10 @@ $(document).on("change", "#BaseSellingPrice", function () {
 let ItemVariations: Array<IItemVariation> = [];
 let SelectedIVList: Array<IItemVariation> = [];
 
+$(document).on("keypress", "input[type=number]", function (event) {
+    return blockSpecialChar(event);
+});
+
 function itemEditPageLoad() {
     //forsales = false;
     //forstock = true;
@@ -14950,7 +14954,7 @@ $(document).on("click", "#btnSearchAccount", function () {
     }
 });
 
-$(document).on("change", ".itemprice", function () {
+$(document).on("change", ".positive", function () {
     if (!selectedItem) {
         return;
     }
@@ -15209,7 +15213,7 @@ const fillInCurrencyModal = (currcode: string = "") => {
                     let html = "";
                     for (const [key, value] of Object.entries(data.data)) {
                         const exrate = Number(value);
-                        console.log("exrate@fill:" + exrate);
+                        //console.log("exrate@fill:" + exrate);
                         DicCurrencyExRate[key] = exrate;
                         html += `<tr class="currency" data-key="${key}" data-value="${exrate}"><td>${key}</td><td>${formatexrate(
                             exrate.toString()
@@ -16738,16 +16742,6 @@ function _submitSales() {
     Sale.rtsSalesLoc = $("#drpLocation").val() as string;
     Sale.rtsDvc = $("#drpDevice").val() as string;
     Sale.rtsAllLoc = $("#chkAllLoc").is(":checked");
-
-    //if (DeliveryItems.length > 0) {
-    //    $.each(DeliveryItems, function (i, e) {
-    //        let salesln = SalesLnList.find((d) => d.rtlSeq == e.seq);
-    //        if (salesln) {
-    //            // console.log("delitem#loop:", salesln);
-    //            salesln.DelItems.push(e);
-    //        }
-    //    });
-    //}
 
     // console.log("Sale:", Sale);
     console.log("SalesLnList:", SalesLnList);
@@ -18343,7 +18337,7 @@ $(document).on("dblclick", ".batch", function () {
                         const batcode: string = e.batcode;
                         //console.log("batcode:" + batcode);
 
-                        html += `<tr data-idx="${idx}" data-batcode="${batcode}"><td>${batcode}</td>`;
+                        html += `<tr data-idx="${idx}" data-batcode="${batcode}"><td><label>${batcode}</label></td>`;
 
                         let chksnlist: string = "";
                         let batdelqtylist: string = "";
@@ -18404,29 +18398,11 @@ $(document).on("dblclick", ".batch", function () {
                                 }
                             }
                         }
-                        console.log("inCurrDel:", inCurrDel);
+                        //console.log("inCurrDel:", inCurrDel);
                         $.each(pbvqlist, function (k, v) {
                             if (v.pocode == pocode && v.batchcode == batcode) {
                                 $.each(delbatqtylist, function (idx, ele) {
-                                    if (e.batcode == ele.batcode && pocode == ele.pocode) {
-                                        //ibatdelqty = ele.batdelqty!;
-                                        //return false;
-                                        //if (itemOptions!.ChkSN) {
-                                        //    if (itemOptions!.WillExpire) {
-                                        //        //console.log("all");
-                                        //        ibatdelqty += ele.batdelqty!;
-                                        //    }
-                                        //    else {
-                                        //        ibatdelqty += ele.batdelqty!;
-                                        //    }
-                                        //} else {
-                                        //    if (itemOptions!.WillExpire) {
-                                        //        ibatdelqty += ele.batdelqty!;
-                                        //    } else {
-                                        //        //console.log("batch only");
-                                        //        ibatdelqty += ele.batdelqty!;
-                                        //    }
-                                        //}
+                                    if (e.batcode == ele.batcode && pocode == ele.pocode) {                                        
                                         ibatdelqty += ele.batdelqty!;                                        
                                     }
                                 });
@@ -18849,8 +18825,8 @@ $(document).on("dblclick", ".validthru.pointer", function () {
         let vtqtylist: IVtQty[] = DicItemVtQtyList[selectedItemCode];
         //console.log("DicItemVtDelQtyList:", DicItemVtDelQtyList);
         let delvtqtylist: IVtDelQty[] = DicItemVtDelQtyList[selectedItemCode];
-        console.log("vtqtylist:", vtqtylist);
-        console.log("delvtqtylist:", delvtqtylist);
+        //console.log("vtqtylist:", vtqtylist);
+        //console.log("delvtqtylist:", delvtqtylist);
 
         let pocodelist: string[] = [];
         vtqtylist.forEach((x) => {
@@ -18889,7 +18865,7 @@ $(document).on("dblclick", ".validthru.pointer", function () {
                             return false;
                         }
                     });
-                    console.log("ivtdelqty:", ivtdelqty);
+                    //console.log("ivtdelqty:", ivtdelqty);
                     /**
                     * Get vtdeledqty:已出貨數量
                     */
@@ -19002,3 +18978,8 @@ ${vtInfoList}
         setTotalQty4VtModal();
     }
 });
+function blockSpecialChar(e) {
+    var k;
+    document.querySelectorAll("*") ? k = e.keyCode : k = e.which;
+    return ((k > 64 && k < 91) || (k > 96 && k < 123) || k == 8 || k == 32 || (k >= 48 && k <= 57));
+}

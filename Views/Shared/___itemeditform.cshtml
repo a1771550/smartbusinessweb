@@ -96,13 +96,13 @@
                 <div class="col-6 col-md-6">
                     <div class="form-group required">
                         <label class="control-label" for="BaseSellingPrice">@Resources.Resource.BaseSellingPrice (@Currency)</label>
-                        <input type="number" class="form-control" id="BaseSellingPrice" name="itmBaseSellingPrice" min="0" data-val="@sellingprice" placeholder="@Resources.Resource.BaseSellingPrice (@Currency)" value="@sellingprice" />
+                        <input type="number" class="form-control positive" id="BaseSellingPrice" name="itmBaseSellingPrice" min="0" data-val="@sellingprice" placeholder="@Resources.Resource.BaseSellingPrice (@Currency)" value="@sellingprice" />
                     </div>
                 </div>
                 <div class="col-6 col-md-6">
                     <div class="form-group required">
                         <label class="control-label" for="BuyStdCost">@Resources.Resource.Cost4Purchase (@Currency)</label>
-                        <input type="number" class="form-control" id="BuyStdCost" name="itmBuyStdCost" min="0" data-val="@buyingcost" placeholder="@Resources.Resource.Cost4Purchase (@Currency)" value="@buyingcost" />
+                        <input type="number" class="form-control positive" id="BuyStdCost" name="itmBuyStdCost" min="0" data-val="@buyingcost" placeholder="@Resources.Resource.Cost4Purchase (@Currency)" value="@buyingcost" />
                     </div>
                 </div>
             </div>
@@ -127,7 +127,7 @@
                                     pl = (ItemVari == null ? Item.PLA : ItemVari.PLA) ?? 0;
                                 }
                             }
-                            <input type="number" class="form-control itemprice" name="PLA" id="PLA" value="@pl" />
+                            <input type="number" class="form-control itemprice positive" name="PLA" id="PLA" value="@pl" />
                         </div>
                     </div>
                     <div class="col-12 col-md-4">
@@ -139,7 +139,7 @@
                                     pl = (ItemVari == null ? Item.PLB : ItemVari.PLB) ?? 0;
                                 }
                             }
-                            <input type="number" class="form-control itemprice" name="PLB" id="PLB" value="@pl" />
+                            <input type="number" class="form-control itemprice positive" name="PLB" id="PLB" value="@pl" />
                         </div>
                     </div>
                     <div class="col-12 col-md-4">
@@ -151,7 +151,7 @@
                                     pl = (ItemVari == null ? Item.PLC : ItemVari.PLC) ?? 0;
                                 }
                             }
-                            <input type="number" class="form-control itemprice" name="PLC" id="PLC" value="@pl" />
+                            <input type="number" class="form-control itemprice positive" name="PLC" id="PLC" value="@pl" />
                         </div>
                     </div>
                 </div>
@@ -165,7 +165,7 @@
                                     pl = (ItemVari == null ? Item.PLD : ItemVari.PLD) ?? 0;
                                 }
                             }
-                            <input type="number" class="form-control itemprice" name="PLD" id="PLD" value="@pl" />
+                            <input type="number" class="form-control itemprice positive" name="PLD" id="PLD" value="@pl" />
                         </div>
                     </div>
                     <div class="col-12 col-md-4">
@@ -177,7 +177,7 @@
                                     pl = (ItemVari == null ? Item.PLE : ItemVari.PLE) ?? 0;
                                 }
                             }
-                            <input type="number" class="form-control itemprice" name="PLE" id="PLE" value="@pl" />
+                            <input type="number" class="form-control itemprice positive" name="PLE" id="PLE" value="@pl" />
                         </div>
                     </div>
                     <div class="col-12 col-md-4">
@@ -189,7 +189,7 @@
                                     pl = (ItemVari == null ? Item.PLF : ItemVari.PLF) ?? 0;
                                 }
                             }
-                            <input type="number" class="form-control itemprice" name="PLF" id="PLF" value="@pl" />
+                            <input type="number" class="form-control itemprice positive" name="PLF" id="PLF" value="@pl" />
                         </div>
                     </div>
                 </div>
@@ -223,25 +223,25 @@
         <div class="col-12 col-md-3">
             <div class="form-group">
                 <label class="control-label">@Resources.Resource.Weight <span class="small">(@Resources.Resource.kg)</span></label>
-                <input type="number" class="form-control" name="itmWeight" min="0" id="itmWeight" placeholder="@Resources.Resource.Weight" value="@weight" />
+                <input type="number" class="form-control positive" name="itmWeight" min="0" id="itmWeight" placeholder="@Resources.Resource.Weight" value="@weight" />
             </div>
         </div>
         <div class="col-12 col-md-3">
             <div class="form-group">
                 <label class="control-label">@Resources.Resource.Width <span class="small">(@Resources.Resource.m)</span></label>
-                <input type="number" class="form-control" name="itmWidth" min="0" id="itmWidth" placeholder="@Resources.Resource.Width" value="@width" />
+                <input type="number" class="form-control positive" name="itmWidth" min="0" id="itmWidth" placeholder="@Resources.Resource.Width" value="@width" />
             </div>
         </div>
         <div class="col-12 col-md-3">
             <div class="form-group">
                 <label class="control-label">@Resources.Resource.Height <span class="small">(@Resources.Resource.m)</span></label>
-                <input type="number" class="form-control" name="itmHeight" min="0" id="itmHeight" placeholder="@Resources.Resource.Height" value="@height" />
+                <input type="number" class="form-control positive" name="itmHeight" min="0" id="itmHeight" placeholder="@Resources.Resource.Height" value="@height" />
             </div>
         </div>
         <div class="col-12 col-md-3">
             <div class="form-group">
                 <label class="control-label">@Resources.Resource.Length <span class="small">(@Resources.Resource.m)</span></label>
-                <input type="number" class="form-control" name="itmLength" id="itmLength" placeholder="@Resources.Resource.Length" value="@length" />
+                <input type="number" class="form-control positive" name="itmLength" id="itmLength" placeholder="@Resources.Resource.Length" value="@length" />
             </div>
         </div>
     </div>

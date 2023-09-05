@@ -124,7 +124,7 @@
                     </td>
                     <td class="">
                         <h5 class="font-weight-normal">
-                            @ws.CustomerName
+                            @ws.Customer.cusName
                         </h5>
                     </td>
                     <td>
@@ -161,31 +161,32 @@
 
                 <tr>
                     <td class="text-right">
-                        <h5 class="font-weight-bold">@Resources.Resource.Phone</h5>
+                        <h5 class="font-weight-bold">@Resources.Resource.Phone/@Resources.Resource.Email</h5>
                     </td>
                     <td class="">
                         <h5 class="font-weight-normal">
-                            @ws.Customer.cusPhone
+                            @{ string phoneemaildisplay = string.IsNullOrEmpty(ws.Customer.cusEmail) ? ws.Customer.cusPhone : string.Concat(ws.Customer.cusPhone,"/",ws.Customer.cusEmail); }
+                            @phoneemaildisplay
                         </h5>
                     </td>
                     <td>
                         <div style="margin:0 8em;"></div>
                     </td>
                     <td class="text-right">
-                        <h5 class="font-weight-bold">@Resources.Resource.SalesPerson</h5>
+                        <h5 class="font-weight-bold">@Resources.Resource.DeliveryDate</h5>
                     </td>
                     <td>
-                        <h5 class="font-weight-normal">@ws.CreateBy</h5>
+                        <h5 class="font-weight-normal">@ws.DeliveryDateDisplay</h5>
                     </td>
                 </tr>
 
                 <tr>
                     <td class="text-right">
-                        <h5 class="font-weight-bold">@Resources.Resource.Email</h5>
+                        <h5 class="font-weight-bold">@Resources.Resource.SalesPerson</h5>
                     </td>
                     <td class="">
                         <h5 class="font-weight-normal">
-                            @ws.Customer.cusEmail
+                            @ws.CreateBy
                         </h5>
                     </td>
                     <td>
@@ -231,11 +232,11 @@
 
         <div id="borderblk" class="mx-4">
             <table id="tblItem" class="table">
-                @{ decimal totalamt = 0; decimal discamt = 0; }
+                @{ decimal totalamt = 0; decimal discamt = 0; int collength = (ws.EnableTax && !ws.InclusiveTax) ? 7 : 6; }
 
                 <thead style="border: 1px solid black !important; border-top: none !important;">
                     <tr>
-                        <th style="text-align: center;border-left:none!important; border-right: 1px solid black !important; border-bottom: 1px solid black !important;">@Resources.Resource.Description</th>
+                        <th style="text-align: center;border-left:none!important; border-right: 1px solid black !important; border-bottom: 1px solid black !important;border-left-style:hidden!important;">@Resources.Resource.Description</th>
                         @if (ws.wsStatus == WholeSalesStatus.deliver.ToString())
                         {
                             <th style="text-align: center; ">@Resources.Resource.Batch</th>
@@ -256,7 +257,7 @@
                                 <th style="text-align: right;">@Resources.Resource.TaxItemHeader</th>
                             }
 
-                            <th style="text-align: right; border-right: none !important; border-left: 1px solid black !important; border-bottom: 1px solid black !important;">@Resources.Resource.Amount (@ws.Currency)</th>
+                            <th style="text-align: right; border-right: none !important; border-left: 1px solid black !important; border-bottom: 1px solid black !important;border-right-style:hidden!important;">@Resources.Resource.Amount (@ws.Currency)</th>
                         }
 
 
@@ -295,15 +296,14 @@
                                     @{ totalamt += (decimal)(item.wslSalesAmt + item.wslLineDiscAmt);}
                                     @item.wslSalesAmt
                                 </td>
-
-
                             </tr>
                         }
 
                         @for (var i = 0; i < 5; i++)
                         {
+                           
                             <tr>
-                                @for (var j = 0; j < 6; j++)
+                                @for (var j = 0; j < collength; j++)
                                 {
                                     <td></td>
                                 }
@@ -311,7 +311,7 @@
                             </tr>
                         }
                         <tr>
-                            @for (var j = 0; j < 6; j++)
+                            @for (var j = 0; j < collength; j++)
                             {
                                 var borderleft = j == 0 ? "border-left:none!important;" : "border-left: 1px solid black !important;";
                                 <td style="border-right: none !important; @borderleft border-bottom: 1px solid black !important;">
@@ -497,12 +497,13 @@
                                 <h4>@Resources.Resource.Remark</h4>
                                 <p style="font-size:0.8em;">@ws.TrimmedRemark</p>
                             </td>
-                            <td colspan="2" class="text-right" style="border-left:none!important;">
+                            @{ colspan = (ws.EnableTax && !ws.InclusiveTax) ? 3 : 2;}
+                            <td colspan="@colspan" class="text-right" style="border-left:none!important;">
                                 <h3>@Resources.Resource.SubTotal:</h3>
                                 <h3>@Resources.Resource.DiscAmt:</h3>
                                 <h3>@Resources.Resource.Total:</h3>
                             </td>
-                            <td class="text-right">
+                            <td class="text-right" style="border-right-style:hidden!important;border-bottom-style:hidden!important;">
                                 @{ decimal subtotal = 0;}
                                 @if (ws.wsStatus == WholeSalesStatus.deliver.ToString())
                                 {
@@ -612,14 +613,14 @@
 
     <script src="~/Scripts/printthis/printThis.js"></script>
     <script>
-        $(function () {
-            setTimeout(() => {
-                $('#printblk').printThis({
-                    importCSS: true,
-                    importStyle: true,//thrown in for extra measure
-                    });
-            }, 2000); //wait for downloading image
-        });
+        //$(function () {
+        //    setTimeout(() => {
+        //        $('#printblk').printThis({
+        //            importCSS: true,
+        //            importStyle: true,//thrown in for extra measure
+        //            });
+        //    }, 2000); //wait for downloading image
+        //});
     </script>
 </body>
 </html>
