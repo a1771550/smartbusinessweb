@@ -54,7 +54,7 @@
                 <th class="text-left">@Resources.Resource.Batch|@Resources.Resource.SerialNo|@Resources.Resource.ExpiryDate</th>
                 <th class="text-left colheader" data-col="1">@Resources.Resource.ItemName</th>
                 <th class="text-right">@Resources.Resource.OnHandStock</th>
-                @foreach (var _shop in Model.Shops)
+                @foreach (var _shop in Model.ShopNames)
                 {
                     <th class="text-right">@_shop.Trim()</th>
                 }

@@ -60,8 +60,11 @@ namespace SmartBusinessWeb.Controllers
         private int CompanyId { get { return ComInfo == null ? int.Parse(ConfigurationManager.AppSettings["CompanyId"]) : ComInfo.Id; } }
         private string CheckoutPortal { get { return ComInfo.DefaultCheckoutPortal; } }
         private string _connectionString { get { return ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString; } }
-        private string[] Shops { get { return ComInfo.Shops.Split(','); } }
+        private List<string> Shops;
         private string ShopCode { get; set; }
+
+        public List<string> ShopNames;
+
         public ApiController()
         {
         }
@@ -1154,6 +1157,8 @@ namespace SmartBusinessWeb.Controllers
             using var connection = new Microsoft.Data.SqlClient.SqlConnection(_connectionString);
             connection.Open();
             var currentIV = connection.QueryFirstOrDefault<ItemVariationModel>(@"EXEC dbo.GetItemVari @itemcode=@itemcode,@comboIvId=@comboIvId,@apId=@apId,@companyId=@companyId", new { itemcode, comboIvId, apId = AccountProfileId, companyId = CompanyId });
+
+            ModelHelper.GetShops(connection, ref Shops, ref ShopNames);
 
             if (currentIV != null)
             {
@@ -2892,7 +2897,7 @@ namespace SmartBusinessWeb.Controllers
             if (keyword == "") keyword = null;
             if (location == "") location = null;
 
-            var stockinfo = context.GetStockInfo4(apId).ToList();
+            var stockinfo = context.GetStockInfo5(apId).ToList();
 
             List<SalesItem> itemlist = ModelHelper.GetItemList(apId, context, stockinfo, startIndex, model.PageSize, out model.RecordCount, keyword, location);
             if (!string.IsNullOrEmpty(keyword)) model.RecordCount = itemlist.Count;

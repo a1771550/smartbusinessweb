@@ -169,668 +169,390 @@ namespace SmartBusinessWeb.Controllers
         public ActionResult DoImportFrmCentralAsync(string filename)
         {
             string msg = Resources.Resource.ImportDoneMsg;
-            string url = "";
             int apId = ComInfo.AccountProfileId;
             DateTime dateTime = DateTime.Now;
-            int kqtype = 0;
             SessUser curruser = Session["User"] as SessUser;
 
             using var context = new PPWDbContext();
             string ConnectionString = GetConnectionString(context, "READ", apId, CompanyId);
 
-            if (CheckoutPortal.ToLower() == "kingdee")
+            if (filename.StartsWith("Job_"))
             {
-                KingdeeAccountInfo info = null;
-                int orgId = 0;
-                info = KingdeeLib.Models.AccountInfo.KingdeeAccountInfoEditModel.Get();
-                orgId = info.OrgId;
-                string content = "";
-                if (filename.StartsWith("Customers_"))
+                List<MyobJobModel> joblist = MYOBHelper.GetJobList(ConnectionString);
+                using (var transaction = context.Database.BeginTransaction())
                 {
-                    kqtype = (int)KingdeeQueryType.Customer;
-                    url = string.Concat(kingdeeApiBaseUrl, "query?kqtype=", kqtype);
-                    //HttpClient _client = new HttpClient();
-                    //_client.MaxResponseContentBufferSize = int.MaxValue;
-                    //var content = await _client.GetStringAsync(url);
-                    if (content != null)
+                    try
                     {
-                        using (var transaction = context.Database.BeginTransaction())
+                        /* remove current records first: */
+                        List<MyobJob> jobss = context.MyobJobs.Where(x => x.AccountProfileId == apId).ToList();
+                        context.MyobJobs.RemoveRange(jobss);
+                        context.SaveChanges();
+                        /*********************************/
+
+                        List<MyobJob> newjobs = new List<MyobJob>();
+
+                        foreach (var job in joblist)
                         {
-                            try
+                            newjobs.Add(new MyobJob
                             {
-                                #region Remove current data first:
-                                //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Kingdee.PGCustomer]");
-                                List<Kingdee_Customer> kcustomers = new List<Kingdee_Customer>();
-                                kcustomers = context.Kingdee_Customer.Where(x => x.CompanyId == ComInfo.Id).ToList();
-                                if (kcustomers.Count > 0)
-                                {
-                                    context.Kingdee_Customer.RemoveRange(kcustomers);
-                                    context.SaveChanges();
-                                    //await context.SaveChangesAsync();
-                                }
-                                #endregion
-
-                                #region Import data:
-                                var _result = JsonConvert.DeserializeObject<List<List<object>>>(content);
-                                List<SalesCustomerModel> salesCustomers = new List<SalesCustomerModel>();
-                                foreach (var customer in _result)
-                                {
-                                    SalesCustomerModel salescustomer = new SalesCustomerModel
-                                    {
-                                        CustId = Convert.ToInt32(customer[0]),
-                                        CustCode = customer[1].ToString(),
-                                        CustName = customer[2].ToString(),
-                                    };
-                                    salesCustomers.Add(salescustomer);
-                                }
-                                salesCustomers = salesCustomers.OrderBy(x => x.CustName).ToList();
-
-                                var groupedCustomers = salesCustomers.GroupBy(x => x.CustCode).ToList();
-                                kcustomers = new List<Kingdee_Customer>();
-                                foreach (var customers in groupedCustomers)
-                                {
-                                    var customer = customers.FirstOrDefault();
-                                    Kingdee_Customer kcustomer = new Kingdee_Customer
-                                    {
-                                        CustId = customer.CustId,
-                                        CustCode = customer.CustCode,
-                                        CustName = customer.CustName,
-                                        IsCheckout = true,
-                                        CreateTime = dateTime,
-                                        ModifyTime = dateTime,
-                                        CompanyId = ComInfo.Id
-                                    };
-                                    kcustomers.Add(kcustomer);
-                                }
-                                context.Kingdee_Customer.AddRange(kcustomers);
-                                context.SaveChanges();
-                                #endregion
-                                transaction.Commit();
-                            }
-                            catch (DbEntityValidationException e)
-                            {
-                                transaction.Rollback();
-                                StringBuilder sb = new StringBuilder();
-                                foreach (var eve in e.EntityValidationErrors)
-                                {
-                                    sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                                    foreach (var ve in eve.ValidationErrors)
-                                    {
-                                        sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                            ve.PropertyName,
-                            eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                            ve.ErrorMessage);
-                                    }
-                                }
-                                //throw new Exception(sb.ToString());
-                                ModelHelper.WriteLog(context, string.Format("Import PGCustomer data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
-                                context.SaveChanges();
-                            }
+                                JobID = job.JobID,
+                                ParentJobID = job.ParentJobID,
+                                IsInactive = job.IsInactive,
+                                JobName = job.JobName,
+                                JobNumber = job.JobNumber,
+                                IsHeader = job.IsHeader,
+                                JobLevel = job.JobLevel,
+                                IsTrackingReimburseable = job.IsTrackingReimburseable,
+                                JobDescription = job.JobDescription,
+                                ContactName = job.ContactName,
+                                Manager = job.Manager,
+                                PercentCompleted = job.PercentCompleted,
+                                StartDate = job.StartDate,
+                                FinishDate = job.FinishDate,
+                                CustomerID = job.CustomerID,
+                                AccountProfileId = apId,
+                                CreateTime = DateTime.Now,
+                                ModifyTime = DateTime.Now
+                            });
                         }
+                        context.MyobJobs.AddRange(newjobs);
+                        context.SaveChanges();
+                        ModelHelper.WriteLog(context, "Import Job data from Central done", "ImportFrmCentral");
+                        transaction.Commit();
                     }
-                }
-                if (filename.StartsWith("Items_"))
-                {
-                    kqtype = (int)KingdeeQueryType.Item;
-                    url = string.Concat(kingdeeApiBaseUrl, "query?kqtype=", kqtype);
-                    //HttpClient _client = new HttpClient();
-                    //_client.MaxResponseContentBufferSize = int.MaxValue;
-                    //var content = await _client.GetStringAsync(url);
-                    if (content != null)
+                    catch (DbEntityValidationException e)
                     {
-                        using (var transaction = context.Database.BeginTransaction())
+                        transaction.Rollback();
+                        StringBuilder sb = new StringBuilder();
+                        foreach (var eve in e.EntityValidationErrors)
                         {
-                            try
+                            sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                            foreach (var ve in eve.ValidationErrors)
                             {
-                                #region Remove current data first:
-                                //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Kingdee.Item]");
-                                List<Kingdee_Item> kitems = new List<Kingdee_Item>();
-                                kitems = context.Kingdee_Item.Where(x => x.CompanyId == ComInfo.Id).ToList();
-                                if (kitems.Count > 0)
-                                {
-                                    context.Kingdee_Item.RemoveRange(kitems);
-                                    context.SaveChanges();
-                                }
-                                #endregion
-
-                                #region Import data:
-                                var _result = JsonConvert.DeserializeObject<List<List<object>>>(content);
-                                kitems = new List<Kingdee_Item>();
-                                foreach (var item in _result)
-                                {
-                                    Kingdee_Item kitem = new Kingdee_Item
-                                    {
-                                        ItId = Convert.ToInt32(item[0]),
-                                        ItCode = item[1].ToString(),
-                                        ItName = item[2].ToString(),
-                                        ForSell = true,
-                                        ForInventory = Convert.ToBoolean(item[3]),
-                                        MaterialGroup = Convert.ToInt32(item[4]),
-                                        ItCreateOrgId = Convert.ToInt32(item[5]),
-                                        ItUseOrgId = Convert.ToInt32(item[6]),
-                                        ItCreatorId = Convert.ToInt32(item[7]),
-                                        ItDesc = item[8].ToString(),
-                                        CreateTime = dateTime,
-                                        ModifyTime = dateTime,
-                                        CompanyId = ComInfo.Id
-                                    };
-                                    kitems.Add(kitem);
-                                }
-                                context.Kingdee_Item.AddRange(kitems);
-                                context.SaveChanges();
-                                #endregion
-
-                                #region Handle Stock:
-                                kqtype = (int)KingdeeQueryType.ItemStock;
-                                url = string.Concat(kingdeeApiBaseUrl, "query?kqtype=", kqtype);
-                                //HttpClient _client = new HttpClient();
-                                //_client.MaxResponseContentBufferSize = int.MaxValue;
-                                //var content = await _client.GetStringAsync(url);
-                                if (!string.IsNullOrEmpty(content))
-                                {
-                                    #region Remove current data first
-                                    //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Kingdee.ItemStock]");
-                                    List<Kingdee_ItemStock> kitemstocks = new List<Kingdee_ItemStock>();
-                                    kitemstocks = context.Kingdee_ItemStock.Where(x => x.CompanyId == ComInfo.Id).ToList();
-                                    if (kitemstocks.Count > 0)
-                                    {
-                                        context.Kingdee_ItemStock.RemoveRange(kitemstocks);
-                                        context.SaveChanges();
-                                    }
-                                    #endregion
-
-                                    #region Import data
-                                    var _stresult = JsonConvert.DeserializeObject<List<List<object>>>(content);
-                                    if (_stresult != null)
-                                    {
-                                        List<Kingdee_ItemStock> stlist = new List<Kingdee_ItemStock>();
-                                        foreach (var item in _result)
-                                        {
-                                            Kingdee_ItemStock st = new Kingdee_ItemStock
-                                            {
-                                                stId = Convert.ToInt32(item[0]),
-                                                ItId = Convert.ToInt32(item[1]),
-                                                Qty = Convert.ToInt32(item[2]),
-                                                stLocId = Convert.ToInt32(item[3]),
-                                                stOrgId = Convert.ToInt32(item[4]),
-                                                stOwnerId = Convert.ToInt32(item[5]),
-                                                stKeeperId = Convert.ToInt32(item[6]),
-                                                stBaseUnitId = Convert.ToInt32(item[7]),
-                                                stUnitId = Convert.ToInt32(item[8]),
-                                                ItCode = item[9].ToString(),
-                                                CreateTime = dateTime,
-                                                ModifyTime = dateTime,
-                                                CompanyId = ComInfo.Id
-                                            };
-                                            stlist.Add(st);
-                                        }
-                                        context.Kingdee_ItemStock.AddRange(stlist);
-                                        context.SaveChanges();
-                                    }
-                                    #endregion
-                                }
-                                #endregion
-
-                                #region Handle Price:
-                                kqtype = (int)KingdeeQueryType.ItemPrice;
-                                url = string.Concat(kingdeeApiBaseUrl, "query?kqtype=", kqtype);
-                                //HttpClient _client = new HttpClient();
-                                //_client.MaxResponseContentBufferSize = int.MaxValue;
-                                //var content = await _client.GetStringAsync(url);
-                                if (!string.IsNullOrEmpty(content))
-                                {
-                                    #region Remove current data first
-                                    var pllists = context.Kingdee_ItemPrice.Where(x => x.plId == info.PriceListId && x.CompanyId == ComInfo.Id).ToList();
-                                    if (pllists != null)
-                                    {
-                                        context.Kingdee_ItemPrice.RemoveRange(pllists);
-                                        context.SaveChanges();
-                                    }
-                                    #endregion
-
-                                    #region Import data
-                                    var _kresult = JsonConvert.DeserializeObject<KItemPriceModel>(content);
-                                    var itpricelist = _kresult.Result.Result.SAL_PRICELISTENTRY;
-                                    List<Kingdee_ItemPrice> itemPrices = new List<Kingdee_ItemPrice>();
-                                    foreach (var item in itpricelist)
-                                    {
-                                        Kingdee_ItemPrice ip = new Kingdee_ItemPrice
-                                        {
-                                            plId = info.PriceListId,
-                                            ItId = item.MaterialId.Id,
-                                            ItCode = item.MaterialId.Number,
-                                            ItPrice = item.Price,
-                                            ItUnit = item.UnitID.Number,
-                                            CreateTime = dateTime,
-                                            ModifyTime = dateTime,
-                                            CompanyId = ComInfo.Id
-                                        };
-                                        itemPrices.Add(ip);
-                                    }
-                                    context.Kingdee_ItemPrice.AddRange(itemPrices);
-                                    context.SaveChanges();
-                                    #endregion
-                                }
-                                #endregion
-                                transaction.Commit();
-                            }
-                            catch (DbEntityValidationException e)
-                            {
-                                transaction.Rollback();
-                                StringBuilder sb = new StringBuilder();
-                                foreach (var eve in e.EntityValidationErrors)
-                                {
-                                    sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                                    foreach (var ve in eve.ValidationErrors)
-                                    {
-                                        sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                            ve.PropertyName,
-                            eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                            ve.ErrorMessage);
-                                    }
-                                }
-                                //throw new Exception(sb.ToString());
-                                ModelHelper.WriteLog(context, string.Format("Import Item data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
-                                context.SaveChanges();
+                                sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                ve.PropertyName,
+                eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                ve.ErrorMessage);
                             }
                         }
+                        ModelHelper.WriteLog(context, string.Format("Import Job data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
+                        context.SaveChanges();
                     }
                 }
             }
-            else
+
+            if (filename.StartsWith("Currency_"))
             {
-                if (filename.StartsWith("Job_"))
+                List<MyobCurrencyModel> emplist = MYOBHelper.GetCurrencyList(ConnectionString);
+                using (var transaction = context.Database.BeginTransaction())
                 {
-                    List<MyobJobModel> joblist = MYOBHelper.GetJobList(ConnectionString);
-                    using (var transaction = context.Database.BeginTransaction())
+                    try
                     {
-                        try
+                        /* remove current records first: */
+                        List<MyobCurrency> currencys = context.MyobCurrencies.Where(x => x.AccountProfileId == apId && x.CompanyId == ComInfo.Id).ToList();
+                        context.MyobCurrencies.RemoveRange(currencys);
+                        context.SaveChanges();
+                        /*********************************/
+
+                        List<MyobCurrency> newcurrencys = new List<MyobCurrency>();
+
+                        foreach (var currency in emplist)
                         {
-                            /* remove current records first: */
-                            List<MyobJob> jobss = context.MyobJobs.Where(x => x.AccountProfileId == apId).ToList();
-                            context.MyobJobs.RemoveRange(jobss);
-                            context.SaveChanges();
-                            /*********************************/
-
-                            List<MyobJob> newjobs = new List<MyobJob>();
-
-                            foreach (var job in joblist)
+                            newcurrencys.Add(new MyobCurrency
                             {
-                                newjobs.Add(new MyobJob
+                                CurrencyID = currency.CurrencyID,
+                                CurrencyCode = currency.CurrencyCode,
+                                CurrencyName = currency.CurrencyName,
+                                ExchangeRate = currency.ExchangeRate,
+                                CurrencySymbol = currency.CurrencySymbol,
+                                DigitGroupingSymbol = currency.DigitGroupingSymbol,
+                                SymbolPosition = currency.SymbolPosition,
+                                DecimalPlaces = currency.DecimalPlaces,
+                                NumberDigitsInGroup = currency.NumberDigitsInGroup,
+                                DecimalPlaceSymbol = currency.DecimalPlaceSymbol,
+                                NegativeFormat = currency.NegativeFormat,
+                                UseLeadingZero = currency.UseLeadingZero,
+                                AccountProfileId = apId,
+                                CompanyId = ComInfo.Id,
+                                CreateTime = DateTime.Now,
+                                ModifyTime = DateTime.Now
+                            });
+                        }
+                        context.MyobCurrencies.AddRange(newcurrencys);
+                        context.SaveChanges();
+                        ModelHelper.WriteLog(context, "Import Currency data from Central done", "ImportFrmCentral");
+                        transaction.Commit();
+                    }
+                    catch (DbEntityValidationException e)
+                    {
+                        transaction.Rollback();
+                        StringBuilder sb = new StringBuilder();
+                        foreach (var eve in e.EntityValidationErrors)
+                        {
+                            sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                            foreach (var ve in eve.ValidationErrors)
+                            {
+                                sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                ve.PropertyName,
+                eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                ve.ErrorMessage);
+                            }
+                        }
+                        ModelHelper.WriteLog(context, string.Format("Import Currency data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
+                        context.SaveChanges();
+                    }
+                }
+            }
+
+            if (filename.StartsWith("Suppliers_"))
+            {
+                ModelHelper.SaveSuppliersFrmCentral(context, apId, ComInfo.Id);
+            }
+
+            if (filename.StartsWith("Employees_"))
+            {
+                List<MyobEmployeeModel> emplist = MYOBHelper.GetEmployeeList(ConnectionString);
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        /* remove current records first: */
+                        List<MyobEmployee> employees = context.MyobEmployees.Where(x => x.AccountProfileId == apId && x.CompanyId == ComInfo.Id).ToList();
+                        context.MyobEmployees.RemoveRange(employees);
+                        context.SaveChanges();
+                        /*********************************/
+
+                        List<SysUser> users = context.SysUsers.Where(x => x.AccountProfileId == apId && x.surIsAbss && x.CompanyId == ComInfo.Id).ToList();
+                        context.SysUsers.RemoveRange(users);
+                        context.SaveChanges();
+                        /*
+                         *  public static string ExportEmployeeColList { get { StringBuilder sb = new StringBuilder(); sb.AppendFormat("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13}","EmployeeID","CardRecordID","CardIdentification","Name","LastName","FirstName","IsIndividual","IsInactive","Gender","Notes","IdentifierID","CustomField1", "CustomField2", "CustomField3"); return sb.ToString(); } }
+                         */
+                        List<MyobEmployee> newemployees = new List<MyobEmployee>();
+                        List<SysUser> newusers = new List<SysUser>();
+                        int posAdminId = ModelHelper.GetPosAdminID(curruser.Device);
+                        string usercode = "";
+
+                        foreach (var employee in emplist)
+                        {
+                            MyobEmployee memployee = new MyobEmployee();
+                            memployee.empFirstName = employee.empFirstName;
+                            memployee.empId = employee.empId;
+                            memployee.empIsIndividual = employee.empIsIndividual;
+                            memployee.empIsActive = employee.empIsActive;
+                            memployee.empCode = employee.empCode.StartsWith("*") ? employee.empCardRecordID.ToString() : employee.empCode;
+                            memployee.empName = employee.empName;
+                            memployee.empFirstName = employee.empFirstName;
+                            memployee.empLastName = employee.empLastName;
+                            memployee.empGender = employee.empGender;
+                            memployee.empIdentifierID = employee.empIdentifierID;
+                            memployee.empCustomField1 = employee.empCustomField1;
+                            memployee.empCustomField2 = employee.empCustomField2;
+                            memployee.empCustomField3 = employee.empCustomField3;
+                            memployee.empCreateTime = dateTime;
+                            memployee.empModifyTime = dateTime;
+                            memployee.AccountProfileId = apId;
+                            memployee.CompanyId = ComInfo.Id;
+
+                            if (memployee.empCode.ToLower() != "admin")
+                            {
+                                newemployees.Add(memployee);
+                            }
+
+                            if (memployee.empCode.ToLower() != "admin")
+                            {
+                                usercode = ModelHelper.GetUserCode(context);
+                                AddressModel address = new AddressModel();
+                                string email = "";
+                                if (employee.AddressList.Count > 0)
                                 {
-                                    JobID = job.JobID,
-                                    ParentJobID = job.ParentJobID,
-                                    IsInactive = job.IsInactive,
-                                    JobName = job.JobName,
-                                    JobNumber = job.JobNumber,
-                                    IsHeader = job.IsHeader,
-                                    JobLevel = job.JobLevel,
-                                    IsTrackingReimburseable = job.IsTrackingReimburseable,
-                                    JobDescription = job.JobDescription,
-                                    ContactName = job.ContactName,
-                                    Manager = job.Manager,
-                                    PercentCompleted = job.PercentCompleted,
-                                    StartDate = job.StartDate,
-                                    FinishDate = job.FinishDate,
-                                    CustomerID = job.CustomerID,
+                                    address = employee.AddressList.FirstOrDefault();
+                                    email = address.Email;
+                                }
+                                SysUser user = new SysUser
+                                {
+                                    surIsActive = employee.empIsActive,
+                                    Password = "dNvpjLZKQiDwVnVF5d9voszanZ7xJOLU",
+                                    UserCode = usercode,
+                                    AbssCardID = employee.empCode.StartsWith("*") ? employee.empCardRecordID.ToString() : employee.empCode,
+                                    UserName = employee.empName,
+                                    FirstName = employee.empFirstName,
+                                    LastName = employee.empLastName,
+                                    dvcCode = curruser.Device.dvcCode,
+                                    shopCode = curruser.Device.dvcShop,
+                                    ManagerId = posAdminId,
+                                    surScope = "pos",
                                     AccountProfileId = apId,
-                                    CreateTime = DateTime.Now,
-                                    ModifyTime = DateTime.Now
-                                });
+                                    UserRole = "SalesPerson",
+                                    Email = email,
+                                    surIsAbss = true,
+                                    surLicensed = false,
+                                    surCreateTime = dateTime,
+                                    surModifyTime = dateTime,
+                                    CompanyId = ComInfo.Id
+                                };
+                                context.SysUsers.Add(user);
+                                context.SaveChanges();
+                                newusers.Add(user);
                             }
-                            context.MyobJobs.AddRange(newjobs);
-                            context.SaveChanges();
-                            ModelHelper.WriteLog(context, "Import Job data from Central done", "ImportFrmCentral");
-                            transaction.Commit();
                         }
-                        catch (DbEntityValidationException e)
+                        context.MyobEmployees.AddRange(newemployees);
+                        //context.SysUsers.AddRange(newusers);
+                        context.SaveChanges();
+                        ModelHelper.WriteLog(context, "Import Employee data from Central done", "ImportFrmCentral");
+
+                        var salesroldId = context.SysRoles.FirstOrDefault(x => x.rlCode.ToLower() == "salesperson").Id;
+                        int[] adminrolIds = new int[] { 2, 3, 5, 6, 7 };
+                        List<UserRole> newuserroles = new List<UserRole>();
+                        foreach (var newuser in newusers)
                         {
-                            transaction.Rollback();
-                            StringBuilder sb = new StringBuilder();
-                            foreach (var eve in e.EntityValidationErrors)
+                            if (newuser.AbssCardID.ToLower() != "admin")
                             {
-                                sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                                foreach (var ve in eve.ValidationErrors)
+                                ModelHelper.GrantPosUserDefaultAccessRights(newuser, context);
+                                UserRole userRole = new UserRole
                                 {
-                                    sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                    ve.PropertyName,
-                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                    ve.ErrorMessage);
-                                }
+                                    UserId = newuser.surUID,
+                                    RoleId = salesroldId,
+                                    CreateTime = dateTime,
+                                    ModifyTime = dateTime,
+                                };
+                                newuserroles.Add(userRole);
+
                             }
-                            ModelHelper.WriteLog(context, string.Format("Import Job data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
-                            context.SaveChanges();
                         }
+                        context.UserRoles.AddRange(newuserroles);
+                        context.SaveChanges();
+                        transaction.Commit();
+                    }
+                    catch (DbEntityValidationException e)
+                    {
+                        transaction.Rollback();
+                        StringBuilder sb = new StringBuilder();
+                        foreach (var eve in e.EntityValidationErrors)
+                        {
+                            sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                            foreach (var ve in eve.ValidationErrors)
+                            {
+                                sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                ve.PropertyName,
+                eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                ve.ErrorMessage);
+                            }
+                        }
+                        ModelHelper.WriteLog(context, string.Format("Import Employee data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
+                        context.SaveChanges();
                     }
                 }
+            }
 
-                if (filename.StartsWith("Currency_"))
+            if (filename.StartsWith("Customers_"))
+            {
+                List<MyobCustomListModel> customlist = MYOBHelper.GetCustomList4Customer();
+                List<MYOBCustomerModel> cuslist = MYOBHelper.GetCustomerList(ConnectionString);
+                using (var transaction = context.Database.BeginTransaction())
                 {
-                    List<MyobCurrencyModel> emplist = MYOBHelper.GetCurrencyList(ConnectionString);
-                    using (var transaction = context.Database.BeginTransaction())
+                    try
                     {
-                        try
+                        #region Remove Current Data First
+                        List<MyobCustomer> customers = context.MyobCustomers.Where(x => x.AccountProfileId == AccountProfileId).ToList();
+                        context.MyobCustomers.RemoveRange(customers);
+
+                        List<CustomerInfo4Abss> customerInfos = context.CustomerInfo4Abss.Where(x => x.AccountProfileId == AccountProfileId).ToList();
+                        context.CustomerInfo4Abss.RemoveRange(customerInfos);
+
+                        context.MyobCustomLists.RemoveRange(context.MyobCustomLists.Where(x => x.AccountProfileId == AccountProfileId));
+
+                        context.SaveChanges();
+                        #endregion
+
+                        Dictionary<int, string> DicCustomList = new Dictionary<int, string>();
+                        foreach (var custom in customlist)
                         {
-                            /* remove current records first: */
-                            List<MyobCurrency> currencys = context.MyobCurrencies.Where(x => x.AccountProfileId == apId && x.CompanyId == ComInfo.Id).ToList();
-                            context.MyobCurrencies.RemoveRange(currencys);
-                            context.SaveChanges();
-                            /*********************************/
-
-                            List<MyobCurrency> newcurrencys = new List<MyobCurrency>();
-
-                            foreach (var currency in emplist)
-                            {
-                                newcurrencys.Add(new MyobCurrency
-                                {
-                                    CurrencyID = currency.CurrencyID,
-                                    CurrencyCode = currency.CurrencyCode,
-                                    CurrencyName = currency.CurrencyName,
-                                    ExchangeRate = currency.ExchangeRate,
-                                    CurrencySymbol = currency.CurrencySymbol,
-                                    DigitGroupingSymbol = currency.DigitGroupingSymbol,
-                                    SymbolPosition = currency.SymbolPosition,
-                                    DecimalPlaces = currency.DecimalPlaces,
-                                    NumberDigitsInGroup = currency.NumberDigitsInGroup,
-                                    DecimalPlaceSymbol = currency.DecimalPlaceSymbol,
-                                    NegativeFormat = currency.NegativeFormat,
-                                    UseLeadingZero = currency.UseLeadingZero,
-                                    AccountProfileId = apId,
-                                    CompanyId = ComInfo.Id,
-                                    CreateTime = DateTime.Now,
-                                    ModifyTime = DateTime.Now
-                                });
-                            }
-                            context.MyobCurrencies.AddRange(newcurrencys);
-                            context.SaveChanges();
-                            ModelHelper.WriteLog(context, "Import Currency data from Central done", "ImportFrmCentral");
-                            transaction.Commit();
+                            if (!DicCustomList.ContainsKey(custom.CustomListID))
+                                DicCustomList[custom.CustomListID] = custom.CustomListText;
                         }
-                        catch (DbEntityValidationException e)
+
+                        Dictionary<string, int> DicTermsOfPayments = new Dictionary<string, int>();
+                        var termsofpayments = context.MyobTermsOfPayments.ToList();
+                        foreach (var term in termsofpayments)
                         {
-                            transaction.Rollback();
-                            StringBuilder sb = new StringBuilder();
-                            foreach (var eve in e.EntityValidationErrors)
-                            {
-                                sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                                foreach (var ve in eve.ValidationErrors)
-                                {
-                                    sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                    ve.PropertyName,
-                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                    ve.ErrorMessage);
-                                }
-                            }
-                            ModelHelper.WriteLog(context, string.Format("Import Currency data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
-                            context.SaveChanges();
+                            DicTermsOfPayments[term.TermsOfPaymentID.Trim()] = term.MyobID;
                         }
-                    }
-                }
 
-                if (filename.StartsWith("Suppliers_"))
-                {
-                    ModelHelper.SaveSuppliersFrmCentral(context, apId, ComInfo.Id);
-                }
+                        List<MyobCustomer> newcustomers = new List<MyobCustomer>();
+                        List<CustomerInfo4Abss> customerInfo4Absses = new List<CustomerInfo4Abss>();
 
-                if (filename.StartsWith("Employees_"))
-                {
-                    List<MyobEmployeeModel> emplist = MYOBHelper.GetEmployeeList(ConnectionString);
-                    using (var transaction = context.Database.BeginTransaction())
-                    {
-                        try
+                        foreach (var customer in cuslist)
                         {
-                            /* remove current records first: */
-                            List<MyobEmployee> employees = context.MyobEmployees.Where(x => x.AccountProfileId == apId && x.CompanyId == ComInfo.Id).ToList();
-                            context.MyobEmployees.RemoveRange(employees);
-                            context.SaveChanges();
-                            /*********************************/
-
-                            List<SysUser> users = context.SysUsers.Where(x => x.AccountProfileId == apId && x.surIsAbss && x.CompanyId == ComInfo.Id).ToList();
-                            context.SysUsers.RemoveRange(users);
-                            context.SaveChanges();
-                            /*
-                             *  public static string ExportEmployeeColList { get { StringBuilder sb = new StringBuilder(); sb.AppendFormat("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13}","EmployeeID","CardRecordID","CardIdentification","Name","LastName","FirstName","IsIndividual","IsInactive","Gender","Notes","IdentifierID","CustomField1", "CustomField2", "CustomField3"); return sb.ToString(); } }
-                             */
-                            List<MyobEmployee> newemployees = new List<MyobEmployee>();
-                            List<SysUser> newusers = new List<SysUser>();
-                            int posAdminId = ModelHelper.GetPosAdminID(curruser.Device);
-                            string usercode = "";
-
-                            foreach (var employee in emplist)
+                            string cuscode;
+                            if (ApprovalMode)
                             {
-                                MyobEmployee memployee = new MyobEmployee();
-                                memployee.empFirstName = employee.empFirstName;
-                                memployee.empId = employee.empId;
-                                memployee.empIsIndividual = employee.empIsIndividual;
-                                memployee.empIsActive = employee.empIsActive;
-                                memployee.empCode = employee.empCode.StartsWith("*") ? employee.empCardRecordID.ToString() : employee.empCode;
-                                memployee.empName = employee.empName;
-                                memployee.empFirstName = employee.empFirstName;
-                                memployee.empLastName = employee.empLastName;
-                                memployee.empGender = employee.empGender;
-                                memployee.empIdentifierID = employee.empIdentifierID;
-                                memployee.empCustomField1 = employee.empCustomField1;
-                                memployee.empCustomField2 = employee.empCustomField2;
-                                memployee.empCustomField3 = employee.empCustomField3;
-                                memployee.empCreateTime = dateTime;
-                                memployee.empModifyTime = dateTime;
-                                memployee.AccountProfileId = apId;
-                                memployee.CompanyId = ComInfo.Id;
-
-                                if (memployee.empCode.ToLower() != "admin")
+                                cuscode = customer.CardIdentification;
+                            }
+                            else
+                            {
+                                if (customer.CardIdentification.StartsWith("*"))
                                 {
-                                    newemployees.Add(memployee);
+                                    cuscode = customer.AddressList.Count > 0 ? customer.AddressList[0].Phone1 : customer.CardRecordID.ToString();
                                 }
-
-                                if (memployee.empCode.ToLower() != "admin")
-                                {
-                                    usercode = ModelHelper.GetUserCode(context);
-                                    AddressModel address = new AddressModel();
-                                    string email = "";
-                                    if (employee.AddressList.Count > 0)
-                                    {
-                                        address = employee.AddressList.FirstOrDefault();
-                                        email = address.Email;
-                                    }
-                                    SysUser user = new SysUser
-                                    {
-                                        surIsActive = employee.empIsActive,
-                                        Password = "dNvpjLZKQiDwVnVF5d9voszanZ7xJOLU",
-                                        UserCode = usercode,
-                                        AbssCardID = employee.empCode.StartsWith("*") ? employee.empCardRecordID.ToString() : employee.empCode,
-                                        UserName = employee.empName,
-                                        FirstName = employee.empFirstName,
-                                        LastName = employee.empLastName,
-                                        dvcCode = curruser.Device.dvcCode,
-                                        shopCode = curruser.Device.dvcShop,
-                                        ManagerId = posAdminId,
-                                        surScope = "pos",
-                                        AccountProfileId = apId,
-                                        UserRole = "SalesPerson",
-                                        Email = email,
-                                        surIsAbss = true,
-                                        surLicensed = false,
-                                        surCreateTime = dateTime,
-                                        surModifyTime = dateTime,
-                                        CompanyId = ComInfo.Id
-                                    };
-                                    context.SysUsers.Add(user);
-                                    context.SaveChanges();
-                                    newusers.Add(user);
-                                }
-                            }
-                            context.MyobEmployees.AddRange(newemployees);
-                            //context.SysUsers.AddRange(newusers);
-                            context.SaveChanges();
-                            ModelHelper.WriteLog(context, "Import Employee data from Central done", "ImportFrmCentral");
-
-                            var salesroldId = context.SysRoles.FirstOrDefault(x => x.rlCode.ToLower() == "salesperson").Id;
-                            int[] adminrolIds = new int[] { 2, 3, 5, 6, 7 };
-                            List<UserRole> newuserroles = new List<UserRole>();
-                            foreach (var newuser in newusers)
-                            {
-                                if (newuser.AbssCardID.ToLower() != "admin")
-                                {
-                                    ModelHelper.GrantPosUserDefaultAccessRights(newuser, context);
-                                    UserRole userRole = new UserRole
-                                    {
-                                        UserId = newuser.surUID,
-                                        RoleId = salesroldId,
-                                        CreateTime = dateTime,
-                                        ModifyTime = dateTime,
-                                    };
-                                    newuserroles.Add(userRole);
-
-                                }
-                            }
-                            context.UserRoles.AddRange(newuserroles);
-                            context.SaveChanges();
-                            transaction.Commit();
-                        }
-                        catch (DbEntityValidationException e)
-                        {
-                            transaction.Rollback();
-                            StringBuilder sb = new StringBuilder();
-                            foreach (var eve in e.EntityValidationErrors)
-                            {
-                                sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                                foreach (var ve in eve.ValidationErrors)
-                                {
-                                    sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                    ve.PropertyName,
-                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                    ve.ErrorMessage);
-                                }
-                            }
-                            ModelHelper.WriteLog(context, string.Format("Import Employee data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
-                            context.SaveChanges();
-                        }
-                    }
-                }
-
-                if (filename.StartsWith("Customers_"))
-                {
-                    List<MyobCustomListModel> customlist = MYOBHelper.GetCustomList4Customer();
-                    List<MYOBCustomerModel> cuslist = MYOBHelper.GetCustomerList(ConnectionString);
-                    using (var transaction = context.Database.BeginTransaction())
-                    {
-                        try
-                        {
-                            #region Remove Current Data First
-                            List<MyobCustomer> customers = context.MyobCustomers.Where(x => x.AccountProfileId == AccountProfileId).ToList();
-                            context.MyobCustomers.RemoveRange(customers);
-
-                            List<CustomerInfo4Abss> customerInfos = context.CustomerInfo4Abss.Where(x => x.AccountProfileId == AccountProfileId).ToList();
-                            context.CustomerInfo4Abss.RemoveRange(customerInfos);
-
-                            context.MyobCustomLists.RemoveRange(context.MyobCustomLists.Where(x => x.AccountProfileId == AccountProfileId));
-
-                            context.SaveChanges();
-                            #endregion
-
-                            Dictionary<int, string> DicCustomList = new Dictionary<int, string>();
-                            foreach (var custom in customlist)
-                            {
-                                if (!DicCustomList.ContainsKey(custom.CustomListID))
-                                    DicCustomList[custom.CustomListID] = custom.CustomListText;
-                            }
-
-                            Dictionary<string, int> DicTermsOfPayments = new Dictionary<string, int>();
-                            var termsofpayments = context.MyobTermsOfPayments.ToList();
-                            foreach (var term in termsofpayments)
-                            {
-                                DicTermsOfPayments[term.TermsOfPaymentID.Trim()] = term.MyobID;
-                            }
-
-                            List<MyobCustomer> newcustomers = new List<MyobCustomer>();
-                            List<CustomerInfo4Abss> customerInfo4Absses = new List<CustomerInfo4Abss>();
-
-                            foreach (var customer in cuslist)
-                            {
-                                string cuscode;
-                                if (ApprovalMode)
+                                else
                                 {
                                     cuscode = customer.CardIdentification;
                                 }
-                                else
+                            }
+                            var salecomment = customer.SaleComment;
+                            MyobCustomer mcustomer = new MyobCustomer();
+                            mcustomer.cusIsOrganization = customer.IsIndividual == 'N';
+                            mcustomer.cusFirstName = customer.FirstName;
+                            mcustomer.cusCustomerID = customer.CustomerID;
+                            mcustomer.cusIsActive = customer.IsInactive == 'N';
+                            mcustomer.cusChgCtrl = customer.ChangeControl;
+                            mcustomer.cusCode = cuscode;
+                            mcustomer.cusPhone = (ApprovalMode) ? (customer.AddressList != null && customer.AddressList.Count > 0) ? customer.AddressList[0].Phone1 : cuscode : cuscode;
+                            mcustomer.cusName = customer.Name ?? customer.LastName;
+                            mcustomer.cusPriceLevelID = customer.PriceLevelID;
+                            mcustomer.CreateTime = dateTime;
+                            mcustomer.ModifyTime = dateTime;
+                            mcustomer.cusTermsID = customer.TermsID;
+                            mcustomer.cusSaleComment = salecomment;
+                            //t.LatePaymentChargePercent","t.EarlyPaymentDiscountPercent","t.TermsOfPaymentID","t.DiscountDays","t.BalanceDueDays","t.ImportPaymentIsDue","t.DiscountDate","t.BalanceDueDate","p.Description                                   
+                            mcustomer.LatePaymentChargePercent = customer.Terms.LatePaymentChargePercent == null ? 0 : Convert.ToDecimal(customer.Terms.LatePaymentChargePercent);
+                            mcustomer.EarlyPaymentDiscountPercent = customer.Terms.EarlyPaymentDiscountPercent == null ? 0 : Convert.ToDecimal(customer.Terms.EarlyPaymentDiscountPercent);
+                            mcustomer.TermsOfPaymentID = customer.Terms.TermsOfPaymentID == null ? null : customer.Terms.TermsOfPaymentID.Trim();
+
+                            if (DicTermsOfPayments.ContainsKey(mcustomer.TermsOfPaymentID))
+                                mcustomer.PaymentIsDue = DicTermsOfPayments[mcustomer.TermsOfPaymentID];
+
+                            mcustomer.DiscountDays = customer.Terms.DiscountDays == null ? 0 : customer.Terms.DiscountDays;
+                            mcustomer.BalanceDueDays = customer.Terms.BalanceDueDays == null ? 0 : customer.Terms.BalanceDueDays;
+                            mcustomer.ImportPaymentIsDue = customer.Terms.ImportPaymentIsDue == null ? 0 : customer.Terms.ImportPaymentIsDue;
+                            mcustomer.DiscountDate = customer.Terms.DiscountDate == null ? null : customer.Terms.DiscountDate;
+                            mcustomer.BalanceDueDate = customer.Terms.BalanceDueDate == null ? null : customer.Terms.BalanceDueDate;
+                            mcustomer.PaymentTermsDesc = customer.PaymentTermsDesc == null ? null : customer.PaymentTermsDesc;
+
+                            mcustomer.AbssSalesID = customer.SalespersonID;
+                            mcustomer.cusStatus = "COMPLETE";
+                            mcustomer.cusAddrCountry = DicCustomList.ContainsKey(customer.CustomList1ID) ? DicCustomList[customer.CustomList1ID] : null;
+                            mcustomer.cusAddrCity = DicCustomList.ContainsKey(customer.CustomList2ID) ? DicCustomList[customer.CustomList2ID] : null;
+
+                            mcustomer.AccountProfileId = AccountProfileId;
+                            mcustomer.CurrencyID = customer.CurrencyID;
+                            mcustomer.TaxIDNumber = customer.TaxIDNumber;
+                            mcustomer.TaxCodeID = customer.TaxCodeID;
+                            //mcustomer.GSTIDNumber = customer.GSTIDNumber;
+                            //mcustomer.FreightTaxCodeID = customer.FreightTaxCodeID;
+                            // mcustomer.UseCustomerTaxCode = customer.UseCustomerTaxCode == 'Y';
+
+                            if (ApprovalMode)
+                            {
+                                mcustomer.cusWhatsappPhoneNo = customer.CustomField1;
+                                int points = 0;
+                                if (customer.AddressList.Count >= 3)
                                 {
-                                    if (customer.CardIdentification.StartsWith("*"))
-                                    {
-                                        cuscode = customer.AddressList.Count > 0 ? customer.AddressList[0].Phone1 : customer.CardRecordID.ToString();
-                                    }
-                                    else
-                                    {
-                                        cuscode = customer.CardIdentification;
-                                    }
-                                }
-                                var salecomment = customer.SaleComment;
-                                MyobCustomer mcustomer = new MyobCustomer();
-                                mcustomer.cusIsOrganization = customer.IsIndividual == 'N';
-                                mcustomer.cusFirstName = customer.FirstName;
-                                mcustomer.cusCustomerID = customer.CustomerID;
-                                mcustomer.cusIsActive = customer.IsInactive == 'N';
-                                mcustomer.cusChgCtrl = customer.ChangeControl;
-                                mcustomer.cusCode = cuscode;
-                                mcustomer.cusPhone = (ApprovalMode) ? (customer.AddressList != null && customer.AddressList.Count > 0) ? customer.AddressList[0].Phone1 : cuscode : cuscode;
-                                mcustomer.cusName = customer.Name ?? customer.LastName;
-                                mcustomer.cusPriceLevelID = customer.PriceLevelID;
-                                mcustomer.CreateTime = dateTime;
-                                mcustomer.ModifyTime = dateTime;
-                                mcustomer.cusTermsID = customer.TermsID;
-                                mcustomer.cusSaleComment = salecomment;
-                                //t.LatePaymentChargePercent","t.EarlyPaymentDiscountPercent","t.TermsOfPaymentID","t.DiscountDays","t.BalanceDueDays","t.ImportPaymentIsDue","t.DiscountDate","t.BalanceDueDate","p.Description                                   
-                                mcustomer.LatePaymentChargePercent = customer.Terms.LatePaymentChargePercent == null ? 0 : Convert.ToDecimal(customer.Terms.LatePaymentChargePercent);
-                                mcustomer.EarlyPaymentDiscountPercent = customer.Terms.EarlyPaymentDiscountPercent == null ? 0 : Convert.ToDecimal(customer.Terms.EarlyPaymentDiscountPercent);
-                                mcustomer.TermsOfPaymentID = customer.Terms.TermsOfPaymentID == null ? null : customer.Terms.TermsOfPaymentID.Trim();
-
-                                if (DicTermsOfPayments.ContainsKey(mcustomer.TermsOfPaymentID))
-                                    mcustomer.PaymentIsDue = DicTermsOfPayments[mcustomer.TermsOfPaymentID];
-
-                                mcustomer.DiscountDays = customer.Terms.DiscountDays == null ? 0 : customer.Terms.DiscountDays;
-                                mcustomer.BalanceDueDays = customer.Terms.BalanceDueDays == null ? 0 : customer.Terms.BalanceDueDays;
-                                mcustomer.ImportPaymentIsDue = customer.Terms.ImportPaymentIsDue == null ? 0 : customer.Terms.ImportPaymentIsDue;
-                                mcustomer.DiscountDate = customer.Terms.DiscountDate == null ? null : customer.Terms.DiscountDate;
-                                mcustomer.BalanceDueDate = customer.Terms.BalanceDueDate == null ? null : customer.Terms.BalanceDueDate;
-                                mcustomer.PaymentTermsDesc = customer.PaymentTermsDesc == null ? null : customer.PaymentTermsDesc;
-
-                                mcustomer.AbssSalesID = customer.SalespersonID;
-                                mcustomer.cusStatus = "COMPLETE";
-                                mcustomer.cusAddrCountry = DicCustomList.ContainsKey(customer.CustomList1ID) ? DicCustomList[customer.CustomList1ID] : null;
-                                mcustomer.cusAddrCity = DicCustomList.ContainsKey(customer.CustomList2ID) ? DicCustomList[customer.CustomList2ID] : null;
-
-                                mcustomer.AccountProfileId = AccountProfileId;
-                                mcustomer.CurrencyID = customer.CurrencyID;
-                                mcustomer.TaxIDNumber = customer.TaxIDNumber;
-                                mcustomer.TaxCodeID = customer.TaxCodeID;
-                                //mcustomer.GSTIDNumber = customer.GSTIDNumber;
-                                //mcustomer.FreightTaxCodeID = customer.FreightTaxCodeID;
-                                // mcustomer.UseCustomerTaxCode = customer.UseCustomerTaxCode == 'Y';
-
-                                if (ApprovalMode)
-                                {
-                                    mcustomer.cusWhatsappPhoneNo = customer.CustomField1;
-                                    int points = 0;
-                                    if (customer.AddressList.Count >= 3)
-                                    {
-                                        if (int.TryParse(customer.AddressList[2].WWW, out points))
-                                        {
-                                            mcustomer.cusPointsActive = mcustomer.cusPointsSoFar = points;
-                                        }
-                                        else
-                                        {
-                                            mcustomer.cusPointsActive = mcustomer.cusPointsSoFar = 0;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    int points = 0;
-                                    if (int.TryParse(customer.CustomField3, out points))
+                                    if (int.TryParse(customer.AddressList[2].WWW, out points))
                                     {
                                         mcustomer.cusPointsActive = mcustomer.cusPointsSoFar = points;
                                     }
@@ -839,590 +561,586 @@ namespace SmartBusinessWeb.Controllers
                                         mcustomer.cusPointsActive = mcustomer.cusPointsSoFar = 0;
                                     }
                                 }
-                                mcustomer.cusPointsUsed = 0;
-
-
-                                if (customer.AddressList.Count > 0)
+                            }
+                            else
+                            {
+                                int points = 0;
+                                if (int.TryParse(customer.CustomField3, out points))
                                 {
-                                    mcustomer.cusAddrLocation = customer.AddressList[0].Location;
-                                    mcustomer.cusContact = customer.AddressList[0].ContactName;
-                                    mcustomer.cusAddrPhone1 = customer.AddressList[0].Phone1;
-                                    mcustomer.cusAddrPhone2 = customer.AddressList[0].Phone2;
-                                    mcustomer.cusAddrPhone3 = customer.AddressList[0].Phone3;
-                                    mcustomer.cusEmail = customer.AddressList[0].Email;
-                                    mcustomer.cusAddrWeb = customer.AddressList[0].WWW;
-                                    //mcustomer.cusAddrCity = customer.AddressList[0].City;
-                                    //mcustomer.cusAddrCountry = customer.AddressList[0].Country;
-                                    mcustomer.cusAddrStreetLine1 = customer.AddressList[0].Street;
-                                    mcustomer.cusAddrStreetLine2 = customer.AddressList[0].StreetLine1;
-                                    mcustomer.cusAddrStreetLine3 = customer.AddressList[0].StreetLine2;
-                                    mcustomer.cusAddrStreetLine4 = customer.AddressList[0].StreetLine3;
+                                    mcustomer.cusPointsActive = mcustomer.cusPointsSoFar = points;
                                 }
-
-                                newcustomers.Add(mcustomer);
-
-                                if (customer.AddressList.Count > 0)
+                                else
                                 {
-                                    foreach (var addr in customer.AddressList)
+                                    mcustomer.cusPointsActive = mcustomer.cusPointsSoFar = 0;
+                                }
+                            }
+                            mcustomer.cusPointsUsed = 0;
+
+
+                            if (customer.AddressList.Count > 0)
+                            {
+                                mcustomer.cusAddrLocation = customer.AddressList[0].Location;
+                                mcustomer.cusContact = customer.AddressList[0].ContactName;
+                                mcustomer.cusAddrPhone1 = customer.AddressList[0].Phone1;
+                                mcustomer.cusAddrPhone2 = customer.AddressList[0].Phone2;
+                                mcustomer.cusAddrPhone3 = customer.AddressList[0].Phone3;
+                                mcustomer.cusEmail = customer.AddressList[0].Email;
+                                mcustomer.cusAddrWeb = customer.AddressList[0].WWW;
+                                //mcustomer.cusAddrCity = customer.AddressList[0].City;
+                                //mcustomer.cusAddrCountry = customer.AddressList[0].Country;
+                                mcustomer.cusAddrStreetLine1 = customer.AddressList[0].Street;
+                                mcustomer.cusAddrStreetLine2 = customer.AddressList[0].StreetLine1;
+                                mcustomer.cusAddrStreetLine3 = customer.AddressList[0].StreetLine2;
+                                mcustomer.cusAddrStreetLine4 = customer.AddressList[0].StreetLine3;
+                            }
+
+                            newcustomers.Add(mcustomer);
+
+                            if (customer.AddressList.Count > 0)
+                            {
+                                foreach (var addr in customer.AddressList)
+                                {
+                                    CustomerInfo4Abss customerInfo = new CustomerInfo4Abss
                                     {
-                                        CustomerInfo4Abss customerInfo = new CustomerInfo4Abss
-                                        {
-                                            CusCode = customer.CardIdentification,
-                                            AccountProfileId = AccountProfileId,
-                                            CusAddrLocation = addr.Location,
-                                            StreetLine1 = addr.StreetLine1,
-                                            StreetLine2 = addr.StreetLine2,
-                                            StreetLine3 = addr.StreetLine3,
-                                            StreetLine4 = addr.StreetLine4,
-                                            City = addr.City,
-                                            State = addr.State,
-                                            Postcode = addr.Postcode,
-                                            Country = addr.Country,
-                                            Phone1 = addr.Phone1,
-                                            Phone2 = addr.Phone2,
-                                            Phone3 = addr.Phone3,
-                                            Fax = addr.Fax,
-                                            Email = addr.Email,
-                                            Salutation = addr.Salutation,
-                                            ContactName = addr.ContactName,
-                                            WWW = addr.WWW
-                                        };
-                                        customerInfo4Absses.Add(customerInfo);
-                                    }
+                                        CusCode = customer.CardIdentification,
+                                        AccountProfileId = AccountProfileId,
+                                        CusAddrLocation = addr.Location,
+                                        StreetLine1 = addr.StreetLine1,
+                                        StreetLine2 = addr.StreetLine2,
+                                        StreetLine3 = addr.StreetLine3,
+                                        StreetLine4 = addr.StreetLine4,
+                                        City = addr.City,
+                                        State = addr.State,
+                                        Postcode = addr.Postcode,
+                                        Country = addr.Country,
+                                        Phone1 = addr.Phone1,
+                                        Phone2 = addr.Phone2,
+                                        Phone3 = addr.Phone3,
+                                        Fax = addr.Fax,
+                                        Email = addr.Email,
+                                        Salutation = addr.Salutation,
+                                        ContactName = addr.ContactName,
+                                        WWW = addr.WWW
+                                    };
+                                    customerInfo4Absses.Add(customerInfo);
                                 }
                             }
-                            context.MyobCustomers.AddRange(newcustomers);
-                            context.CustomerInfo4Abss.AddRange(customerInfo4Absses);
-                            context.SaveChanges();
-
-                            var _customlist = new List<MyobCustomList>();
-                            foreach (var item in customlist)
-                            {
-                                _customlist.Add(new MyobCustomList
-                                {
-                                    AccountProfileId = AccountProfileId,
-                                    CustomListID = item.CustomListID,
-                                    CustomListName = item.CustomListName,
-                                    CustomListNumber = item.CustomListNumber,
-                                    ChangeControl = item.ChangeControl,
-                                    CustomListText = item.CustomListText,
-                                    CustomListType = item.CustomListType,
-                                    CreateTime = dateTime,
-                                    ModifyTime = dateTime
-                                });
-                            }
-                            context.MyobCustomLists.AddRange(_customlist);
-                            context.SaveChanges();
-
-                            ModelHelper.WriteLog(context, "Import Customer data from Central done", "ImportFrmCentral");
-                            transaction.Commit();
-
                         }
-                        catch (DbEntityValidationException e)
-                        {
-                            transaction.Rollback();
-                            StringBuilder sb = new StringBuilder();
-                            foreach (var eve in e.EntityValidationErrors)
-                            {
-                                sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                                foreach (var ve in eve.ValidationErrors)
-                                {
-                                    sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                    ve.PropertyName,
-                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                    ve.ErrorMessage);
-                                }
-                            }
-                            ModelHelper.WriteLog(context, string.Format("Import PGCustomer data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
-                            context.SaveChanges();
-                        }
-                    }
-                }
-
-                if (filename.StartsWith("Items_"))
-                {
-                    List<MyobLocationModel> locationlist = MYOBHelper.GetLocationList(ConnectionString);
-
-                    List<MyobItemLocModel> itemloclist = MYOBHelper.GetItemLocList(ConnectionString);
-
-                    List<MyobItemModel> itemlist = MYOBHelper.GetItemList(ConnectionString);
-
-                    #region Handle Location                    
-                    using (var transaction = context.Database.BeginTransaction())
-                    {
-                        try
-                        {
-                            #region remove current data first:
-                            //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Item]");
-                            List<MyobLocation> locations = context.MyobLocations.Where(x => x.AccountProfileId == apId).ToList();
-                            context.MyobLocations.RemoveRange(locations);
-                            context.SaveChanges();
-                            #endregion
-
-                            //LocationID, LocationName,LocationIdentification,IsInactive
-                            List<MyobLocation> newlocations = new List<MyobLocation>();
-                            foreach (var location in locationlist)
-                            {
-
-                                newlocations.Add(new MyobLocation
-                                {
-                                    LocationID = location.LocationID,
-                                    IsInactive = location.IsInactive,
-                                    LocationName = location.LocationName,
-                                    LocationIdentification = location.LocationIdentification,
-                                    AccountProfileId = apId,
-                                    CreateTime = dateTime,
-                                });
-                            }
-                            context.MyobLocations.AddRange(newlocations);
-                            context.SaveChanges();
-                            ModelHelper.WriteLog(context, "Import Location data from Central done", "ImportFrmCentral");
-                            transaction.Commit();
-                        }
-                        catch (DbEntityValidationException e)
-                        {
-                            transaction.Rollback();
-                            StringBuilder sb = new StringBuilder();
-                            foreach (var eve in e.EntityValidationErrors)
-                            {
-                                sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                                foreach (var ve in eve.ValidationErrors)
-                                {
-                                    sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                        ve.PropertyName,
-                        eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                        ve.ErrorMessage);
-                                }
-                            }
-                            //throw new Exception(sb.ToString());
-                            ModelHelper.WriteLog(context, string.Format("Import item data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
-                            context.SaveChanges();
-                        }
-                    }
-                    #endregion
-
-                    #region Handle Item
-
-                    using (var transaction = context.Database.BeginTransaction())
-                    {
-                        try
-                        {
-                            #region remove current data first:
-                            //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Item]");
-                            List<MyobItem> items = context.MyobItems.Where(x => x.AccountProfileId == apId).ToList();
-                            context.MyobItems.RemoveRange(items);
-                            context.SaveChanges();
-                            #endregion
-
-                            List<MyobItem> newitems = new List<MyobItem>();
-                            foreach (var item in itemlist)
-                            {
-                                var pgItem = context.PGItems.Where(x => x.AccountProfileId == apId && x.itmCode == item.ItemNumber).FirstOrDefault();
-
-                                MyobItem _item = new MyobItem
-                                {
-                                    itmIsActive = item.IsInactive == 'N',
-                                    itmName = item.ItemName,
-                                    itmCode = item.ItemNumber,
-                                    itmDesc = item.ItemDescription,
-                                    itmUseDesc = item.UseDescription == 'Y',
-                                    itmIsTaxedWhenBought = item.ItemIsTaxedWhenBought == 'Y',
-                                    itmIsTaxedWhenSold = item.ItemIsTaxedWhenSold == 'Y',
-                                    itmBaseSellingPrice = Convert.ToDecimal(item.BaseSellingPrice),
-                                    itmSellUnit = item.SellUnitMeasure,
-                                    itmSellUnitQuantity = item.SellUnitQuantity,
-                                    itmBuyUnit = item.BuyUnitMeasure,
-                                    itmLastUnitPrice = Convert.ToDecimal(item.LastUnitPrice),
-                                    itmBuyStdCost = item.TaxExclusiveStandardCost == 0 ? item.TaxInclusiveStandardCost : item.TaxExclusiveStandardCost,
-                                    itmTaxExclusiveLastPurchasePrice = item.TaxExclusiveLastPurchasePrice,
-                                    itmTaxInclusiveLastPurchasePrice = item.TaxInclusiveLastPurchasePrice,
-                                    itmTaxExclusiveStandardCost = item.TaxExclusiveStandardCost,
-                                    itmTaxInclusiveStandardCost = item.TaxInclusiveStandardCost,
-                                    itmChgCtrl = item.ChangeControl,
-                                    itmCreateTime = dateTime,
-                                    itmModifyTime = dateTime,
-                                    itmItemID = item.ItemID,
-                                    AccountProfileId = apId,
-                                    itmIsNonStock = item.ItemIsInventoried == 'N',
-                                    itmIsSold = item.ItemIsSold == 'Y',
-                                    itmIsBought = item.ItemIsBought == 'Y',
-                                    itmSupCode = item.SupplierItemNumber,
-                                    IncomeAccountID = item.IncomeAccountID,
-                                    ExpenseAccountID = item.ExpenseAccountID,
-                                    InventoryAccountID = item.InventoryAccountID,
-                                };
-
-                                newitems.Add(_item);
-                            }
-                            context.MyobItems.AddRange(newitems);
-                            context.SaveChanges();
-                            ModelHelper.WriteLog(context, "Import Item data from Central done", "ImportFrmCentral");
-                            transaction.Commit();
-                        }
-                        catch (DbEntityValidationException e)
-                        {
-                            transaction.Rollback();
-                            StringBuilder sb = new StringBuilder();
-                            foreach (var eve in e.EntityValidationErrors)
-                            {
-                                sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                                foreach (var ve in eve.ValidationErrors)
-                                {
-                                    sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                        ve.PropertyName,
-                        eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                        ve.ErrorMessage);
-                                }
-                            }
-                            //throw new Exception(sb.ToString());
-                            ModelHelper.WriteLog(context, string.Format("Import item data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
-                            context.SaveChanges();
-                        }
-                    }
-                    #endregion
-
-                    #region Handle Stock
-
-                    #region backup & remove current data first
-                    //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [LocStock]");
-                    List<MyobLocStock> stocks = context.MyobLocStocks.Where(x => x.AccountProfileId == apId).ToList();
-                    Dictionary<LocItem, int> DicLocItemQty = new Dictionary<LocItem, int>();
-                    foreach(var stock in stocks)
-                    {
-                        LocItem locitem = new LocItem
-                        {
-                            LocCode = stock.lstStockLoc,
-                            itmCode = stock.lstItemCode
-                        };
-                        DicLocItemQty[locitem] = stock.lstQuantityAvailable??0;
-                    }
-                    context.MyobLocStocks.RemoveRange(stocks);
-                    context.SaveChanges();
-                    #endregion
-
-                    stocks = new List<MyobLocStock>();
-                    List<MyobLocStock> newstocks = new List<MyobLocStock>();
-
-                    var activeLocationList = locationlist.Where(x => x.IsInactive != null && !(bool)x.IsInactive).ToList();
-                    var addedstockcode = new List<string>();
-
-                    foreach (var item in itemloclist)
-                    {
-                        var inCurrLoc = itemloclist.Where(x => x.ItemCode == item.ItemCode);
-                        if (inCurrLoc.Count() == activeLocationList.Count)
-                        {
-                            stocks.Add(new MyobLocStock
-                            {
-                                lstItemLocationID = item.ItemLocationID,
-                                lstItemID = item.ItemID,
-                                lstItemCode = item.ItemCode,
-                                lstStockLoc = item.LocationCode,
-                                lstAbssQty = item.QuantityOnHand,
-                                lstQuantityAvailable = item.QuantityOnHand,
-                                lstCreateTime = dateTime,
-                                lstModifyTime = dateTime,
-                                AccountProfileId = apId,
-                                CompanyId = ComInfo.Id,
-                            });
-                            addedstockcode.Add(item.ItemCode);
-                        }
-                    }
-
-                    if (stocks.Count > 0)
-                    {
-                        context.MyobLocStocks.AddRange(stocks);
+                        context.MyobCustomers.AddRange(newcustomers);
+                        context.CustomerInfo4Abss.AddRange(customerInfo4Absses);
                         context.SaveChanges();
-                    }
 
-                    //if (addedstockcode.Count > 0)
-                    //{
-                    var _itemlist = addedstockcode.Count > 0 ? itemlist.Where(x => !addedstockcode.Contains(x.ItemNumber)) : itemlist;
-                    long lastId = context.MyobLocStocks.Count() > 0 ? context.MyobLocStocks.Max(x => x.lstItemLocationID) : 0;
-                    long newId = lastId + 1;
-                    foreach (var loc in activeLocationList)
-                    {
-                        foreach (var item in _itemlist)
+                        var _customlist = new List<MyobCustomList>();
+                        foreach (var item in customlist)
                         {
-                            var stock = itemloclist.FirstOrDefault(x => x.LocationCode == loc.LocationIdentification && x.ItemCode == item.ItemNumber);
-                            LocItem locitem = new LocItem
+                            _customlist.Add(new MyobCustomList
                             {
-                                LocCode = loc.LocationIdentification,
-                                itmCode = item.ItemNumber
-                            };
-                            int qty = 0;
-                            if (DicLocItemQty.Keys.Contains(locitem))
-                            {
-                                qty = DicLocItemQty[locitem];
-                            }
-                            newstocks.Add(new MyobLocStock
-                            {
-                                lstItemLocationID = newId,
-                                lstItemID = item.ItemID,
-                                lstItemCode = item.ItemNumber,
-                                lstStockLoc = loc.LocationIdentification,
-                                lstAbssQty = stock == null ? 0 : stock.QuantityOnHand,
-                                lstQuantityAvailable = qty,
-                                lstCreateTime = dateTime,
-                                lstModifyTime = dateTime,
-                                AccountProfileId = apId,
-                                CompanyId = ComInfo.Id,
-                            });
-                            newId++;
-                        }
-                    }
-                    context.MyobLocStocks.AddRange(newstocks);
-                    context.SaveChanges();
-                    //}
-
-
-
-                    ModelHelper.WriteLog(context, "Import Item Location data from Central done;added office stock:" + newstocks.Where(x => x.lstStockLoc == "office").Count(), "ExportFrmCentral");
-                    context.SaveChanges();
-
-                    #endregion
-
-                    #region Handle Price
-                    using (var transaction = context.Database.BeginTransaction())
-                    {
-                        try
-                        {
-                            List<MyobItemPriceModel> itemplist = MYOBHelper.GetItemPriceList(ConnectionString);
-                            List<MyobItemPriceModel> filterediplist = new List<MyobItemPriceModel>();
-                            foreach (var ip in itemplist)
-                            {
-                                if (ip.QuantityBreak == 1)
-                                {
-                                    filterediplist.Add(ip);
-                                }
-                            }
-
-                            #region remove current data first
-                            //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [ItemPrice]");
-                            List<MyobItemPrice> itemprices = context.MyobItemPrices.Where(x => x.AccountProfileId == apId && x.CompanyId == ComInfo.Id).ToList();
-                            context.MyobItemPrices.RemoveRange(itemprices);
-                            context.SaveChanges();
-                            #endregion
-                            List<MyobItemPrice> newitemprices = new List<MyobItemPrice>();
-
-                            foreach (var item in filterediplist)
-                            {
-                                MyobItemPrice itemPrice = new MyobItemPrice();
-                                itemPrice.ItemPriceID = item.ItemPriceID;
-                                itemPrice.ItemID = item.ItemID;
-                                itemPrice.QuantityBreak = item.QuantityBreak;
-                                itemPrice.QuantityBreakAmount = item.QuantityBreakAmount;
-                                itemPrice.PriceLevel = item.PriceLevel.ToString();
-                                itemPrice.PriceLevelNameID = item.PriceLevelNameID;
-                                itemPrice.SellingPrice = item.SellingPrice;
-                                itemPrice.UnitPrice = item.LastUnitPrice;
-                                itemPrice.ItemCode = item.ItemCode;
-                                itemPrice.ChangeControl = item.ChangeControl;
-                                itemPrice.CreateTime = dateTime;
-                                itemPrice.ModifyTime = dateTime;
-                                itemPrice.AccountProfileId = apId;
-                                itemPrice.CompanyId = ComInfo.Id;
-                                newitemprices.Add(itemPrice);
-                            }
-
-                            context.MyobItemPrices.AddRange(newitemprices);
-                            ModelHelper.WriteLog(context, "Import Item Price data from Central done", "ImportFrmCentral");
-                            context.SaveChanges();
-                            transaction.Commit();
-
-                        }
-                        catch (DbEntityValidationException e)
-                        {
-                            transaction.Rollback();
-                            StringBuilder sb = new StringBuilder();
-                            foreach (var eve in e.EntityValidationErrors)
-                            {
-                                sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                                foreach (var ve in eve.ValidationErrors)
-                                {
-                                    sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                        ve.PropertyName,
-                        eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                        ve.ErrorMessage);
-                                }
-                            }
-                            //throw new Exception(sb.ToString());
-                            ModelHelper.WriteLog(context, string.Format("Import itemprice data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
-                            context.SaveChanges();
-                        }
-                    }
-
-                    #endregion
-
-                    #region Init ItemOption if there isn't any in DB                  
-                    var currentItemOptions = context.ItemOptions.Where(x => x.AccountProfileId == apId);
-                    List<ItemOption> itemOptions = new List<ItemOption>();
-                    foreach (var item in itemlist)
-                    {
-                        if (!currentItemOptions.Any(x => x.itemId == item.ItemID))
-                        {
-                            itemOptions.Add(new ItemOption
-                            {
-                                itemId = item.ItemID,
-                                AccountProfileId = apId,
-                                chkBat = false,
-                                chkSN = false,
-                                chkVT = false,
-                                itmCode = item.ItemNumber,
-                                CreateTime = DateTime.Now,
+                                AccountProfileId = AccountProfileId,
+                                CustomListID = item.CustomListID,
+                                CustomListName = item.CustomListName,
+                                CustomListNumber = item.CustomListNumber,
+                                ChangeControl = item.ChangeControl,
+                                CustomListText = item.CustomListText,
+                                CustomListType = item.CustomListType,
+                                CreateTime = dateTime,
+                                ModifyTime = dateTime
                             });
                         }
-                    }
-                    if (itemOptions.Count > 0)
-                    {
-                        context.ItemOptions.AddRange(itemOptions);
+                        context.MyobCustomLists.AddRange(_customlist);
                         context.SaveChanges();
+
+                        ModelHelper.WriteLog(context, "Import Customer data from Central done", "ImportFrmCentral");
+                        transaction.Commit();
+
                     }
-                    #endregion
-                }
-
-
-                if (filename.StartsWith("Tax_"))
-                {
-                    List<CommonLib.Models.MYOB.TaxModel> taxlist = MYOBHelper.GetTaxList();
-                    decimal taxrate = (decimal)taxlist.FirstOrDefault().TaxPercentageRate;
-                    string taxcode = taxlist.FirstOrDefault().TaxCode;
-
-                    using (var transaction = context.Database.BeginTransaction())
+                    catch (DbEntityValidationException e)
                     {
-                        try
+                        transaction.Rollback();
+                        StringBuilder sb = new StringBuilder();
+                        foreach (var eve in e.EntityValidationErrors)
                         {
-                            #region Remove Current Data first:
-                            var currentrecords = context.MyobTaxCodes.Count() > 0 ? context.MyobTaxCodes.Where(x => x.AccountProfileId == apId) : null;
-                            if (currentrecords != null && currentrecords.Count() > 0)
+                            sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                            foreach (var ve in eve.ValidationErrors)
                             {
-                                context.MyobTaxCodes.RemoveRange(currentrecords);
-                                context.SaveChanges();
+                                sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                ve.PropertyName,
+                eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                ve.ErrorMessage);
                             }
-
-                            #endregion
-                            #region Insert Records:
-                            List<MyobTaxCode> newtaxcodes = new List<MyobTaxCode>();
-                            foreach (var tax in taxlist)
-                            {
-                                newtaxcodes.Add(new MyobTaxCode
-                                {
-                                    TaxCodeID = tax.TaxCodeID,
-                                    TaxCode = tax.TaxCode,
-                                    TaxCodeDescription = tax.TaxCodeDescription,
-                                    TaxPercentageRate = tax.TaxPercentageRate,
-                                    TaxCodeTypeID = tax.TaxCodeTypeID,
-                                    TaxCollectedAccountID = tax.TaxCollectedAccountID,
-                                    AccruedDutyAccountID = tax.AccruedDutyAccountID,
-                                    LinkedCardID = tax.LinkedCardID,
-                                    AccountProfileId = apId,
-                                    CreateTime = dateTime
-                                });
-                            }
-                            context.MyobTaxCodes.AddRange(newtaxcodes);
-                            context.SaveChanges();
-                            #endregion
-
-                            var items = context.MyobItems.Where(x => x.AccountProfileId == apId).ToList();
-
-                            foreach (var item in items)
-                            {
-                                if (item.itmIsTaxedWhenSold != null && (bool)item.itmIsTaxedWhenSold)
-                                {
-                                    item.itmTaxCode = taxcode;
-                                    item.itmTaxPc = taxrate;
-                                }
-                            }
-
-                            ModelHelper.WriteLog(context, "Import Tax data from Central done", "ExportFrmCentral");
-                            context.SaveChanges();
-                            transaction.Commit();
-
                         }
-                        catch (DbEntityValidationException e)
-                        {
-                            transaction.Rollback();
-                            StringBuilder sb = new StringBuilder();
-                            foreach (var eve in e.EntityValidationErrors)
-                            {
-                                sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                                foreach (var ve in eve.ValidationErrors)
-                                {
-                                    sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                    ve.PropertyName,
-                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                    ve.ErrorMessage);
-                                }
-                            }
-                            ModelHelper.WriteLog(context, string.Format("Import Tax data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
-                            context.SaveChanges();
-                        }
-                    }
-                }
-
-
-                if (filename.StartsWith("Account_"))
-                {
-                    List<AccountModel> accountlist = MYOBHelper.GetAccountList(ConnectionString);
-
-                    using (var transaction = context.Database.BeginTransaction())
-                    {
-                        try
-                        {
-                            #region remove current data first
-                            List<Account> accounts = context.Accounts.Where(x => x.AccountProfileId == apId && x.CompanyId == ComInfo.Id).ToList();
-                            context.Accounts.RemoveRange(accounts);
-                            context.SaveChanges();
-                            #endregion
-
-                            List<Account> newaccounts = new List<Account>();
-                            foreach (var account in accountlist)
-                            {
-                                Account ac = new Account();
-                                ac.AccountProfileId = apId;
-                                ac.AccountName = account.AccountName;
-                                ac.AccountNumber = account.AccountNumber;
-                                ac.AccountID = account.AccountID;
-                                ac.AccountClassificationID = account.AccountClassificationID;
-                                ac.AccountTypeID = account.AccountTypeID;
-                                ac.AccountLevel = account.AccountLevel;
-                                ac.CompanyId = ComInfo.Id;
-                                newaccounts.Add(ac);
-                            }
-
-                            context.Accounts.AddRange(newaccounts);
-                            ModelHelper.WriteLog(context, "Import Account data from Central done", "ExportFrmCentral");
-                            context.SaveChanges();
-                            transaction.Commit();
-
-                        }
-                        catch (DbEntityValidationException e)
-                        {
-                            transaction.Rollback();
-                            StringBuilder sb = new StringBuilder();
-                            foreach (var eve in e.EntityValidationErrors)
-                            {
-                                sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                                foreach (var ve in eve.ValidationErrors)
-                                {
-                                    sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                    ve.PropertyName,
-                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                    ve.ErrorMessage);
-                                }
-                            }
-                            ModelHelper.WriteLog(context, string.Format("Import Account data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
-                            context.SaveChanges();
-                        }
+                        ModelHelper.WriteLog(context, string.Format("Import PGCustomer data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
+                        context.SaveChanges();
                     }
                 }
             }
 
+            if (filename.StartsWith("Items_"))
+            {
+                List<MyobLocationModel> locationlist = MYOBHelper.GetLocationList(ConnectionString);
+
+                List<MyobItemLocModel> itemloclist = MYOBHelper.GetItemLocList(ConnectionString);
+
+                List<MyobItemModel> itemlist = MYOBHelper.GetItemList(ConnectionString);
+
+                #region Handle Location                    
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        #region remove current data first:
+                        //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Item]");
+                        List<MyobLocation> locations = context.MyobLocations.Where(x => x.AccountProfileId == apId).ToList();
+                        context.MyobLocations.RemoveRange(locations);
+                        context.SaveChanges();
+                        #endregion
+
+                        //LocationID, LocationName,LocationIdentification,IsInactive
+                        List<MyobLocation> newlocations = new List<MyobLocation>();
+                        foreach (var location in locationlist)
+                        {
+
+                            newlocations.Add(new MyobLocation
+                            {
+                                LocationID = location.LocationID,
+                                IsInactive = location.IsInactive,
+                                LocationName = location.LocationName,
+                                LocationIdentification = location.LocationIdentification,
+                                AccountProfileId = apId,
+                                CreateTime = dateTime,
+                            });
+                        }
+                        context.MyobLocations.AddRange(newlocations);
+                        context.SaveChanges();
+                        ModelHelper.WriteLog(context, "Import Location data from Central done", "ImportFrmCentral");
+                        transaction.Commit();
+                    }
+                    catch (DbEntityValidationException e)
+                    {
+                        transaction.Rollback();
+                        StringBuilder sb = new StringBuilder();
+                        foreach (var eve in e.EntityValidationErrors)
+                        {
+                            sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                            foreach (var ve in eve.ValidationErrors)
+                            {
+                                sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                    ve.PropertyName,
+                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                    ve.ErrorMessage);
+                            }
+                        }
+                        //throw new Exception(sb.ToString());
+                        ModelHelper.WriteLog(context, string.Format("Import item data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+                        context.SaveChanges();
+                    }
+                }
+                #endregion
+
+                #region Handle Item
+
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        #region remove current data first:
+                        //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Item]");
+                        List<MyobItem> items = context.MyobItems.Where(x => x.AccountProfileId == apId).ToList();
+                        context.MyobItems.RemoveRange(items);
+                        context.SaveChanges();
+                        #endregion
+
+                        List<MyobItem> newitems = new List<MyobItem>();
+                        foreach (var item in itemlist)
+                        {
+                            var pgItem = context.PGItems.Where(x => x.AccountProfileId == apId && x.itmCode == item.ItemNumber).FirstOrDefault();
+
+                            MyobItem _item = new MyobItem
+                            {
+                                itmIsActive = item.IsInactive == 'N',
+                                itmName = item.ItemName,
+                                itmCode = item.ItemNumber,
+                                itmDesc = item.ItemDescription,
+                                itmUseDesc = item.UseDescription == 'Y',
+                                itmIsTaxedWhenBought = item.ItemIsTaxedWhenBought == 'Y',
+                                itmIsTaxedWhenSold = item.ItemIsTaxedWhenSold == 'Y',
+                                itmBaseSellingPrice = Convert.ToDecimal(item.BaseSellingPrice),
+                                itmSellUnit = item.SellUnitMeasure,
+                                itmSellUnitQuantity = item.SellUnitQuantity,
+                                itmBuyUnit = item.BuyUnitMeasure,
+                                itmLastUnitPrice = Convert.ToDecimal(item.LastUnitPrice),
+                                itmBuyStdCost = item.TaxExclusiveStandardCost == 0 ? item.TaxInclusiveStandardCost : item.TaxExclusiveStandardCost,
+                                itmTaxExclusiveLastPurchasePrice = item.TaxExclusiveLastPurchasePrice,
+                                itmTaxInclusiveLastPurchasePrice = item.TaxInclusiveLastPurchasePrice,
+                                itmTaxExclusiveStandardCost = item.TaxExclusiveStandardCost,
+                                itmTaxInclusiveStandardCost = item.TaxInclusiveStandardCost,
+                                itmChgCtrl = item.ChangeControl,
+                                itmCreateTime = dateTime,
+                                itmModifyTime = dateTime,
+                                itmItemID = item.ItemID,
+                                AccountProfileId = apId,
+                                itmIsNonStock = item.ItemIsInventoried == 'N',
+                                itmIsSold = item.ItemIsSold == 'Y',
+                                itmIsBought = item.ItemIsBought == 'Y',
+                                itmSupCode = item.SupplierItemNumber,
+                                IncomeAccountID = item.IncomeAccountID,
+                                ExpenseAccountID = item.ExpenseAccountID,
+                                InventoryAccountID = item.InventoryAccountID,
+                            };
+
+                            newitems.Add(_item);
+                        }
+                        context.MyobItems.AddRange(newitems);
+                        context.SaveChanges();
+                        ModelHelper.WriteLog(context, "Import Item data from Central done", "ImportFrmCentral");
+                        transaction.Commit();
+                    }
+                    catch (DbEntityValidationException e)
+                    {
+                        transaction.Rollback();
+                        StringBuilder sb = new StringBuilder();
+                        foreach (var eve in e.EntityValidationErrors)
+                        {
+                            sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                            foreach (var ve in eve.ValidationErrors)
+                            {
+                                sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                    ve.PropertyName,
+                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                    ve.ErrorMessage);
+                            }
+                        }
+                        //throw new Exception(sb.ToString());
+                        ModelHelper.WriteLog(context, string.Format("Import item data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+                        context.SaveChanges();
+                    }
+                }
+                #endregion
+
+                #region Handle Stock
+
+                #region backup & remove current data first
+                //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [LocStock]");
+                List<MyobLocStock> stocks = context.MyobLocStocks.Where(x => x.AccountProfileId == apId).ToList();
+                Dictionary<string, int> DicLocItemQty = new Dictionary<string, int>();
+
+                foreach (var stock in stocks)
+                {
+                    var Key = string.Concat(stock.lstStockLoc, ":", stock.lstItemCode);
+                    DicLocItemQty[Key] = stock.lstQuantityAvailable ?? 0;
+                }
+
+                context.MyobLocStocks.RemoveRange(stocks);
+                context.SaveChanges();
+                #endregion
+
+                stocks = new List<MyobLocStock>();
+                List<MyobLocStock> newstocks = new List<MyobLocStock>();
+
+                var activeLocationList = locationlist.Where(x => x.IsInactive != null && !(bool)x.IsInactive).ToList();
+                var addedstockcode = new List<string>();
+
+                foreach (var item in itemloclist)
+                {
+                    var inCurrLoc = itemloclist.Where(x => x.ItemCode == item.ItemCode);
+                    if (inCurrLoc.Count() == activeLocationList.Count)
+                    {
+                        string Id = CommonHelper.GenerateNonce(50, false);
+                        stocks.Add(new MyobLocStock
+                        {
+                            lstItemLocationID = Id,
+                            lstItemID = item.ItemID,
+                            lstItemCode = item.ItemCode,
+                            lstStockLoc = item.LocationCode,
+                            lstAbssQty = item.QuantityOnHand,
+                            lstQuantityAvailable = item.QuantityOnHand,
+                            lstCreateTime = dateTime,
+                            lstModifyTime = dateTime,
+                            AccountProfileId = apId,
+                            CompanyId = ComInfo.Id,
+                        });
+                        addedstockcode.Add(item.ItemCode);
+                    }
+                }
+
+                if (stocks.Count > 0)
+                {
+                    context.MyobLocStocks.AddRange(stocks);
+                    context.SaveChanges();
+                }
+
+                var _itemlist = addedstockcode.Count > 0 ? itemlist.Where(x => !addedstockcode.Contains(x.ItemNumber)) : itemlist;
+               
+                foreach (var loc in activeLocationList)
+                {
+                    foreach (var item in _itemlist)
+                    {
+                        var stock = itemloclist.FirstOrDefault(x => x.LocationCode == loc.LocationIdentification && x.ItemCode == item.ItemNumber);
+
+                        var Key = string.Concat(loc.LocationIdentification,":",item.ItemNumber);
+                        
+                        int qty = DicLocItemQty.Keys.Contains(Key) ? DicLocItemQty[Key] : 0;
+                        string Id = CommonHelper.GenerateNonce(50, false);
+                        newstocks.Add(new MyobLocStock
+                        {
+                            lstItemLocationID = Id,
+                            lstItemID = item.ItemID,
+                            lstItemCode = item.ItemNumber,
+                            lstStockLoc = loc.LocationIdentification,
+                            lstAbssQty = stock == null ? 0 : stock.QuantityOnHand,
+                            lstQuantityAvailable = qty,
+                            lstCreateTime = dateTime,
+                            lstModifyTime = dateTime,
+                            AccountProfileId = apId,
+                            CompanyId = ComInfo.Id,
+                        });
+                    }
+                }
+                context.MyobLocStocks.AddRange(newstocks);
+                context.SaveChanges();
+
+                ModelHelper.WriteLog(context, "Import Item Location data from Central done;added office stock:" + newstocks.Where(x => x.lstStockLoc == "office").Count(), "ExportFrmCentral");
+                context.SaveChanges();
+
+                #endregion
+
+                #region Handle Price
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        List<MyobItemPriceModel> itemplist = MYOBHelper.GetItemPriceList(ConnectionString);
+                        List<MyobItemPriceModel> filterediplist = new List<MyobItemPriceModel>();
+                        foreach (var ip in itemplist)
+                        {
+                            if (ip.QuantityBreak == 1)
+                            {
+                                filterediplist.Add(ip);
+                            }
+                        }
+
+                        #region remove current data first
+                        //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [ItemPrice]");
+                        List<MyobItemPrice> itemprices = context.MyobItemPrices.Where(x => x.AccountProfileId == apId && x.CompanyId == ComInfo.Id).ToList();
+                        context.MyobItemPrices.RemoveRange(itemprices);
+                        context.SaveChanges();
+                        #endregion
+                        List<MyobItemPrice> newitemprices = new List<MyobItemPrice>();
+
+                        foreach (var item in filterediplist)
+                        {
+                            MyobItemPrice itemPrice = new MyobItemPrice();
+                            itemPrice.ItemPriceID = item.ItemPriceID;
+                            itemPrice.ItemID = item.ItemID;
+                            itemPrice.QuantityBreak = item.QuantityBreak;
+                            itemPrice.QuantityBreakAmount = item.QuantityBreakAmount;
+                            itemPrice.PriceLevel = item.PriceLevel.ToString();
+                            itemPrice.PriceLevelNameID = item.PriceLevelNameID;
+                            itemPrice.SellingPrice = item.SellingPrice;
+                            itemPrice.UnitPrice = item.LastUnitPrice;
+                            itemPrice.ItemCode = item.ItemCode;
+                            itemPrice.ChangeControl = item.ChangeControl;
+                            itemPrice.CreateTime = dateTime;
+                            itemPrice.ModifyTime = dateTime;
+                            itemPrice.AccountProfileId = apId;
+                            itemPrice.CompanyId = ComInfo.Id;
+                            newitemprices.Add(itemPrice);
+                        }
+
+                        context.MyobItemPrices.AddRange(newitemprices);
+                        ModelHelper.WriteLog(context, "Import Item Price data from Central done", "ImportFrmCentral");
+                        context.SaveChanges();
+                        transaction.Commit();
+
+                    }
+                    catch (DbEntityValidationException e)
+                    {
+                        transaction.Rollback();
+                        StringBuilder sb = new StringBuilder();
+                        foreach (var eve in e.EntityValidationErrors)
+                        {
+                            sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                            foreach (var ve in eve.ValidationErrors)
+                            {
+                                sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                    ve.PropertyName,
+                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                    ve.ErrorMessage);
+                            }
+                        }
+                        //throw new Exception(sb.ToString());
+                        ModelHelper.WriteLog(context, string.Format("Import itemprice data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+                        context.SaveChanges();
+                    }
+                }
+
+                #endregion
+
+                #region Init ItemOption if there isn't any in DB                  
+                var currentItemOptions = context.ItemOptions.Where(x => x.AccountProfileId == apId);
+                List<ItemOption> itemOptions = new List<ItemOption>();
+                foreach (var item in itemlist)
+                {
+                    if (!currentItemOptions.Any(x => x.itemId == item.ItemID))
+                    {
+                        itemOptions.Add(new ItemOption
+                        {
+                            itemId = item.ItemID,
+                            AccountProfileId = apId,
+                            chkBat = false,
+                            chkSN = false,
+                            chkVT = false,
+                            itmCode = item.ItemNumber,
+                            CreateTime = DateTime.Now,
+                        });
+                    }
+                }
+                if (itemOptions.Count > 0)
+                {
+                    context.ItemOptions.AddRange(itemOptions);
+                    context.SaveChanges();
+                }
+                #endregion
+            }
+
+            if (filename.StartsWith("Tax_"))
+            {
+                List<CommonLib.Models.MYOB.TaxModel> taxlist = MYOBHelper.GetTaxList();
+                decimal taxrate = (decimal)taxlist.FirstOrDefault().TaxPercentageRate;
+                string taxcode = taxlist.FirstOrDefault().TaxCode;
+
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        #region Remove Current Data first:
+                        var currentrecords = context.MyobTaxCodes.Count() > 0 ? context.MyobTaxCodes.Where(x => x.AccountProfileId == apId) : null;
+                        if (currentrecords != null && currentrecords.Count() > 0)
+                        {
+                            context.MyobTaxCodes.RemoveRange(currentrecords);
+                            context.SaveChanges();
+                        }
+
+                        #endregion
+                        #region Insert Records:
+                        List<MyobTaxCode> newtaxcodes = new List<MyobTaxCode>();
+                        foreach (var tax in taxlist)
+                        {
+                            newtaxcodes.Add(new MyobTaxCode
+                            {
+                                TaxCodeID = tax.TaxCodeID,
+                                TaxCode = tax.TaxCode,
+                                TaxCodeDescription = tax.TaxCodeDescription,
+                                TaxPercentageRate = tax.TaxPercentageRate,
+                                TaxCodeTypeID = tax.TaxCodeTypeID,
+                                TaxCollectedAccountID = tax.TaxCollectedAccountID,
+                                AccruedDutyAccountID = tax.AccruedDutyAccountID,
+                                LinkedCardID = tax.LinkedCardID,
+                                AccountProfileId = apId,
+                                CreateTime = dateTime
+                            });
+                        }
+                        context.MyobTaxCodes.AddRange(newtaxcodes);
+                        context.SaveChanges();
+                        #endregion
+
+                        var items = context.MyobItems.Where(x => x.AccountProfileId == apId).ToList();
+
+                        foreach (var item in items)
+                        {
+                            if (item.itmIsTaxedWhenSold != null && (bool)item.itmIsTaxedWhenSold)
+                            {
+                                item.itmTaxCode = taxcode;
+                                item.itmTaxPc = taxrate;
+                            }
+                        }
+
+                        ModelHelper.WriteLog(context, "Import Tax data from Central done", "ExportFrmCentral");
+                        context.SaveChanges();
+                        transaction.Commit();
+
+                    }
+                    catch (DbEntityValidationException e)
+                    {
+                        transaction.Rollback();
+                        StringBuilder sb = new StringBuilder();
+                        foreach (var eve in e.EntityValidationErrors)
+                        {
+                            sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                            foreach (var ve in eve.ValidationErrors)
+                            {
+                                sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                ve.PropertyName,
+                eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                ve.ErrorMessage);
+                            }
+                        }
+                        ModelHelper.WriteLog(context, string.Format("Import Tax data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
+                        context.SaveChanges();
+                    }
+                }
+            }
+
+            if (filename.StartsWith("Account_"))
+            {
+                List<AccountModel> accountlist = MYOBHelper.GetAccountList(ConnectionString);
+
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        #region remove current data first
+                        List<Account> accounts = context.Accounts.Where(x => x.AccountProfileId == apId && x.CompanyId == ComInfo.Id).ToList();
+                        context.Accounts.RemoveRange(accounts);
+                        context.SaveChanges();
+                        #endregion
+
+                        List<Account> newaccounts = new List<Account>();
+                        foreach (var account in accountlist)
+                        {
+                            Account ac = new Account();
+                            ac.AccountProfileId = apId;
+                            ac.AccountName = account.AccountName;
+                            ac.AccountNumber = account.AccountNumber;
+                            ac.AccountID = account.AccountID;
+                            ac.AccountClassificationID = account.AccountClassificationID;
+                            ac.AccountTypeID = account.AccountTypeID;
+                            ac.AccountLevel = account.AccountLevel;
+                            ac.CompanyId = ComInfo.Id;
+                            newaccounts.Add(ac);
+                        }
+
+                        context.Accounts.AddRange(newaccounts);
+                        ModelHelper.WriteLog(context, "Import Account data from Central done", "ExportFrmCentral");
+                        context.SaveChanges();
+                        transaction.Commit();
+
+                    }
+                    catch (DbEntityValidationException e)
+                    {
+                        transaction.Rollback();
+                        StringBuilder sb = new StringBuilder();
+                        foreach (var eve in e.EntityValidationErrors)
+                        {
+                            sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                            foreach (var ve in eve.ValidationErrors)
+                            {
+                                sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                ve.PropertyName,
+                eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                ve.ErrorMessage);
+                            }
+                        }
+                        ModelHelper.WriteLog(context, string.Format("Import Account data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
+                        context.SaveChanges();
+                    }
+                }
+            }
 
             return Json(new { msg });
         }
@@ -2984,7 +2702,7 @@ namespace SmartBusinessWeb.Controllers
             string memo = "";
             if (item != null)
             {
-                salespaidamt = item.rtlRefSales!=null && item.rtlRefSales.StartsWith("DE") ? Convert.ToDouble(item.rtlSalesAmt) : 0;
+                salespaidamt = item.rtlRefSales != null && item.rtlRefSales.StartsWith("DE") ? Convert.ToDouble(item.rtlSalesAmt) : 0;
                 customerpo = approvalmode ? item.rtsCustomerPO : item.rtlRefSales;
                 memo = genMemo(item.rtsCurrency, Convert.ToDouble(item.rtsExRate), salespaidamt, "");
             }

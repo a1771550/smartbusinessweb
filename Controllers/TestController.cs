@@ -87,7 +87,7 @@ namespace SmartBusinessWeb.Controllers
         private int lang = 0;
         private const int apId = 1;
         private const int companyId = 1;
-        private string[] Shops = ConfigurationManager.AppSettings["Shops"].Split(',');
+        private List<string> Shops;
         private string MyobConnectionString { get { return string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ;", ConfigurationManager.AppSettings["MYOBDriver"], ConfigurationManager.AppSettings["MYOBUId"], ConfigurationManager.AppSettings["MYOBPass"], ConfigurationManager.AppSettings["MYOBDb"], ConfigurationManager.AppSettings["MYOBExe"], ConfigurationManager.AppSettings["MYOBKey"]); } }
         protected string UploadsWSDir { get { return ConfigurationManager.AppSettings["UploadsWSDir"]; } }
         protected string UploadsPODir { get { return ConfigurationManager.AppSettings["UploadsPODir"]; } }
@@ -539,6 +539,7 @@ namespace SmartBusinessWeb.Controllers
             var itemcode = "4890008101238";
             var context = new PPWDbContext();
             var attrs = context.ItemAttributes.Where(x => x.itmCode == itemcode && x.CompanyId == CompanyId && x.AccountProfileId == AccountProfileId).ToList();
+           
             if (attrs.Count > 0)
             {
                 var attrIds = string.Join(",", attrs.Select(x => x.Id).ToList());
@@ -550,6 +551,8 @@ namespace SmartBusinessWeb.Controllers
                 Dictionary<string, List<IGrouping<string, ItemVariationModel>>> DicItemGroupedItemVariations = new Dictionary<string, List<IGrouping<string, ItemVariationModel>>>();
 
                 DicItemVariations[itemcode] = connection.Query<ItemVariationModel>(@"EXEC dbo.GetItemVariationsByIds1 @iaIds=@iaIds,@apId=@apId,@companyId=@companyId", new { iaIds = attrIds, apId = AccountProfileId, companyId = CompanyId }).ToList();
+
+                Helpers.ModelHelper.GetShops(connection, ref Shops, ref ShopNames);
 
                 foreach (var iv in DicItemVariations[itemcode])
                 {
@@ -3612,6 +3615,8 @@ btest3
 
 
         string[] _words = { "Sam", "Dot", "Perls" };
+        private List<string> ShopNames;
+
         string GetDivElements()
         {
             // Initialize StringWriter instance.
@@ -3899,7 +3904,7 @@ btest3
         {
             using (var context = new PPWDbContext())
             {
-                string test = context.MyobLocStocks.FirstOrDefault(x => x.lstItemLocationID == 1).lstSellUnit;
+                string test = context.MyobLocStocks.FirstOrDefault().lstSellUnit;
                 return test;
             }
         }
