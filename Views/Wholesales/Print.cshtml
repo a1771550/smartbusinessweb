@@ -1,5 +1,4 @@
 ﻿@model PPWLib.Models.WholeSales.WholeSalesEditModel
-
 @{
     ViewBag.Title = Resources.Resource.PrintPreview;
     ComInfo comInfo = Model.ComInfo;
@@ -319,7 +318,7 @@
                                     {
                                         <span class="font-weight-bold" style="font-size:1.2em;"><u>@Resources.Resource.PaymentTerms</u></span>
                                         <ul style="font-size:0.8em;">
-                                            @foreach (var pt in Model.PaymentTermsList.Where(x => !string.IsNullOrEmpty(x)).ToList())
+                                            @foreach (var pt in Model.PaymentTermsList.FindAll(x=>!string.IsNullOrEmpty(x)))
                                             {
                                                 <li>@pt</li>
                                             }
@@ -337,7 +336,7 @@
 
                         @foreach (var group in ws.GroupedDeliveryItems)
                         {
-                            var item = group.FirstOrDefault();
+                            DeliveryItemModel item = group.FirstOrDefault();
                             <tr data-groupcount="@group.Count()">
                                 <td style="width: 200px; max-width: 200px;">
                                     @item.itmCode<br />
@@ -422,20 +421,13 @@
                                     </td>
                                     if (ws.EnableTax && !ws.InclusiveTax)
                                     {
-                                        @*<td class="text-right" style="">@item.wslTaxPc</td>*@
+                                        <td class="text-right" style="">@item.dlTaxPc</td>
                                     }
                                     <td class="text-right" style="width: 60px; max-width: 60px;">
                                         @{
-                                            decimal salesamt = 0;
-                                            if (ws.EnableTax)
-                                            {
-
-                                            }
-                                            else
-                                            {
-                                                salesamt = (decimal)(item.dlUnitPrice * group.Sum(x => x.dlQty)) * (decimal)(1 - item.dlDiscPc/100);
-                                                totalamt += salesamt;
-                                            }
+                                            decimal salesamt = 0;                                           
+                                            salesamt = (decimal)(item.dlUnitPrice * group.Sum(x => x.dlQty)) * (decimal)(1 - item.dlDiscPc/100);
+                                            totalamt += salesamt;                                    
                                         }
                                         @salesamt.ToString("0.00")
                                     </td>
@@ -449,7 +441,7 @@
                             for (var i = 0; i < 5; i++)
                             {
                                 <tr>
-                                    @for (var j = 0; j < 9; j++)
+                                    @for (var j = 0; j < 10; j++)
                                     {
                                         <td></td>
                                     }
@@ -457,7 +449,7 @@
                                 </tr>
                             }
                             <tr>
-                                @for (var j = 0; j < 9; j++)
+                                @for (var j = 0; j < 10; j++)
                                 {
                                     var borderleft = j == 0 ? "border-left:none!important;" : "border-left: 1px solid black !important;";
                                     <td style="border-right: none !important; @borderleft border-bottom: 1px solid black !important;">
@@ -465,7 +457,7 @@
                                         {
                                             <span class="font-weight-bold" style="font-size:1.2em;"><u>@Resources.Resource.PaymentTerms</u></span>
                                             <ul>
-                                                @foreach (var pt in Model.PaymentTermsList.Where(x => !string.IsNullOrEmpty(x)).ToList())
+                                                @foreach (var pt in Model.PaymentTermsList.FindAll(x => !string.IsNullOrEmpty(x)))
                                                 {
                                                     <li>@pt</li>
                                                 }
@@ -613,14 +605,14 @@
 
     <script src="~/Scripts/printthis/printThis.js"></script>
     <script>
-        //$(function () {
-        //    setTimeout(() => {
-        //        $('#printblk').printThis({
-        //            importCSS: true,
-        //            importStyle: true,//thrown in for extra measure
-        //            });
-        //    }, 2000); //wait for downloading image
-        //});
+        $(function () {
+            setTimeout(() => {
+                $('#printblk').printThis({
+                    importCSS: true,
+                    importStyle: true,//thrown in for extra measure
+                    });
+            }, 2000); //wait for downloading image
+        });
     </script>
 </body>
 </html>

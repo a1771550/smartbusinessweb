@@ -40,7 +40,13 @@
     <Folder>
       <name>views</name>
       <folders />
-      <favorites />
+      <favorites>
+        <Favorite>
+          <name>transfer-Index.cshtml</name>
+          <path>Views\Transfer\Index.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Transfer\Index.cshtml</absolutePath>
+        </Favorite>
+      </favorites>
     </Folder>
     <Folder>
       <name>controllers</name>
@@ -60,6 +66,11 @@
           <name>POSFuncController.cs</name>
           <path>Controllers\POS\POSFuncController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\POS\POSFuncController.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>TestController.cs</name>
+          <path>Controllers\TestController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\TestController.cs</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

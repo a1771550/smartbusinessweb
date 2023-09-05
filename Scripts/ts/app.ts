@@ -10682,7 +10682,8 @@ function OnGetStocksOK(response) {
                 }">${handleItemDesc(item.NameDescTxt)}</td>`;
             html += `<td class="text-right">${onhandstock}<span class="text-info">(${item.AbssQty})</td>`;
 
-            $.each(shops, function (i, e) {
+            console.log("shops:", shops);
+            $.each(shops, function (i, e) {               
                 //let sbitemlist = DicLocItemList[e];
                 //let sbitem = sbitemlist.find(x => x.itemCode == itemcode);
                 //console.log("sbitem:", sbitem);
@@ -10707,6 +10708,13 @@ function OnGetStocksOK(response) {
                 let locqty: number = diclocqty[e] ?? 0;
                 let abssqty: number = dicabssqty[e] ?? 0;
                 let locqtydisplay: string = "";
+
+                //for debug only
+                if (itemcode == "ITEMITEM0001" && e=="office") {
+                    console.log("diclocqty:", diclocqty);
+                    console.log("locqty:" + locqty);
+                }
+
                 if (locqty <= 0) {
                     locqtydisplay = `<span class="danger">${locqty}<span class="text-info">(${abssqty})</span></span>`;
                 } else {
