@@ -725,6 +725,10 @@ a.disabled{
     font-size:60%;
 }
 
+.btn:not(.btnsmall){
+    font-size:90%;
+}
+
 #advancedSearchModal .form-control.attrval, #advancedSearchModal .form-inline .form-control {
     width: 100% !important;
 }

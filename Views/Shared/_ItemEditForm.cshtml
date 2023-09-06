@@ -1,5 +1,5 @@
 ﻿@{
-    string[] Shops = ViewData["Shops"] != null ? (string[])ViewData["Shops"] : new string[0];
+    List<string> Shops = ViewData["Shops"] != null ? (List<string>)ViewData["Shops"] : new List<string>();
     List<ItemVariationModel> ItemVariations = ViewData["ItemVariations"] == null ? null : ViewData["ItemVariations"] as List<ItemVariationModel>;
     ItemVariationModel ItemVari = ViewData["ItemVari"] == null ? null : ViewData["ItemVari"] as ItemVariationModel;
     List<ItemAttribute> ItemAttrList = ViewData["ItemAttrList"] == null ? null : ViewData["ItemAttrList"] as List<ItemAttribute>;

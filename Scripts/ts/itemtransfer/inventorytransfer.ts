@@ -56,8 +56,8 @@ $(document).on("click", "#btnTransfer", function () {
                     }
                 });
         });
-         //console.log("JsStockList:", JsStockList);
-         //console.log("transferlist:", TransferList);
+         console.log("JsStockList:", JsStockList);
+         console.log("transferlist:", TransferList);
          //return false;
 
         if (JsStockList.length > 0 && TransferList.length > 0) {

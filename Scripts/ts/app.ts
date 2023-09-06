@@ -1362,9 +1362,9 @@ function _writeItems(itemList: IItem[]) {
             ? handleItemDesc(ItemVari.NameDescTxt)
             : handleItemDesc(item.NameDescTxt);
         html += `<td style="max-width:250px;">${namedesc}</td>`;
-
-        const qtycolwidth: string = "150px";
-        let _qty: number = ItemVari ? ItemVari.DicLocQty[shop] : item.Qty;
+       
+        //let _qty: number = ItemVari ? ItemVari.DicLocQty[shop] : item.Qty;
+        let _qty: number = ItemVari ? ItemVari.QtySellable : item.Qty; 
 
         if (!forpurchase) {
             let tdcls = _qty > 0 ? "" : "outofstock";
@@ -10682,7 +10682,7 @@ function OnGetStocksOK(response) {
                 }">${handleItemDesc(item.NameDescTxt)}</td>`;
             html += `<td class="text-right">${onhandstock}<span class="text-info">(${item.AbssQty})</td>`;
 
-            console.log("shops:", shops);
+            //console.log("shops:", shops);
             $.each(shops, function (i, e) {               
                 //let sbitemlist = DicLocItemList[e];
                 //let sbitem = sbitemlist.find(x => x.itemCode == itemcode);
@@ -10710,10 +10710,10 @@ function OnGetStocksOK(response) {
                 let locqtydisplay: string = "";
 
                 //for debug only
-                if (itemcode == "ITEMITEM0001" && e=="office") {
-                    console.log("diclocqty:", diclocqty);
-                    console.log("locqty:" + locqty);
-                }
+                //if (itemcode == "ITEMITEM0001" && e=="office") {
+                //    console.log("diclocqty:", diclocqty);
+                //    console.log("locqty:" + locqty);
+                //}
 
                 if (locqty <= 0) {
                     locqtydisplay = `<span class="danger">${locqty}<span class="text-info">(${abssqty})</span></span>`;
@@ -14611,37 +14611,7 @@ const fillInItemForm = (setDrpItemAttrVal: boolean) => {
         selectedItem ? Number(selectedItem!.itmLength) : Number(ItemVari!.itmLength)
     );
 
-    if (ItemVariations.length === 0) {
-        $("#locationblk table tbody tr td").each(function (i, e) {
-            let $stqty = $(e).find(".stqty");
-            let location = $stqty.data("location") as string;
-            $stqty.val(selectedItem!.DicLocQty[location]);
-        });
-    } else {
-        let stockQtyAvail = 0;
-        if (selectedItem) {
-            let { stockqtyavailable, totallocqty } = getStockQtyAvailable4Item();
-            stockQtyAvail = stockqtyavailable;
-            // console.log("stockQtyAvail:" + stockQtyAvail);
-            $("#locationblk table tbody tr td").each(function (i, e) {
-                let $stqty = $(e).find(".stqty");
-                if (i === 0) {
-                    $stqty.val(stockQtyAvail);
-                } else {
-                    $stqty.val(0);
-                }
-            });
-        }
-        if (ItemVari) {
-            // let { stockqtyavailable, totallocqty } = getStockQtyAvailable4ItemVari();
-            // stockQtyAvail = stockqtyavailable;
-            $("#locationblk table tbody tr td").each(function (i, e) {
-                let $stqty = $(e).find(".stqty");
-                let location = $stqty.data("location") as string;
-                $stqty.val(ItemVari!.DicLocQty[location]);
-            });
-        }
-    }
+  
 
     $("#txtBuyUnit").val(
         selectedItem ? selectedItem!.itmBuyUnit : ItemVari!.itmBuyUnit
@@ -16751,7 +16721,7 @@ function _submitSales() {
     Sale.rtsDvc = $("#drpDevice").val() as string;
     Sale.rtsAllLoc = $("#chkAllLoc").is(":checked");
 
-    // console.log("Sale:", Sale);
+    console.log("Sale:", Sale);
     console.log("SalesLnList:", SalesLnList);
     console.log("deliveryitems:", DeliveryItems);
     //return false;

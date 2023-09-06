@@ -23,7 +23,7 @@
     string _checked = editmode && (ItemVari == null ? !Item.itmIsNonStock : !ItemVari.itmIsNonStock) ? "checked" : "";
     bool itemnull = Item == null;
     bool ivnull = ItemVari == null;
-    string[] Shops = ViewData["Shops"] != null ? (string[])ViewData["Shops"] : new string[0];
+    List<string> Shops = ViewData["Shops"] != null ? (List<string>)ViewData["Shops"] : new List<string>();
     bool isItemABSS = ItemVari == null ? Item == null ? false : Item.itmCheckout == null ? true : (bool)Item.itmCheckout : true;
     HashSet<ItemCategoryModel> CategoryList = ViewData["CategoryList"] as HashSet<ItemCategoryModel>;
     bool EditItem = Convert.ToBoolean(ViewData["EditItem"]);
@@ -246,37 +246,7 @@
         </div>
     </div>
 
-    @if (editmode)
-    {
-        if (pgitemnull)
-        {
-            if (Item == null)
-            {
-                @Html.Partial("_StockQty", null, new ViewDataDictionary { { "editmode", editmode }, { "ItemVari", ItemVari } })
-            }
-            else
-            {
-                @Html.Partial("_StockQty", null, new ViewDataDictionary { { "editmode", editmode }, { "Item", Item } })
-            }
-        }
-        else
-        {
-            if (Item == null)
-            {
-                @Html.Partial("_StockQty", null, new ViewDataDictionary { { "editmode", editmode }, { "ItemVari", ItemVari } })
-            }
-            else
-            {
-                @Html.Partial("_StockQty", null, new ViewDataDictionary { { "editmode", editmode }, { "PGItem", Item } })
-            }
-
-        }
-    }
-    else
-    {
-        @Html.Partial("_StockQty", null, new ViewDataDictionary { { "editmode", editmode }, { "Shops", Shops } })
-    }
-
+   
     @if (EnableBuySellUnits)
     {
         <div class="form-group my-4">

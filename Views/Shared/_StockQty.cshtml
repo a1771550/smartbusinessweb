@@ -5,7 +5,7 @@
     ItemView PGItem = ViewData["PGItem"] == null ? null : (ItemView)ViewData["PGItem"];
     int qty = 0;
     bool itemvarinull = ItemVari == null;
-    string[] Shops = ViewData["Shops"] != null ? ViewData["Shops"] as string[] : new string[0];
+    List<string> Shops = ViewData["Shops"] != null ? ViewData["Shops"] as List<string> : new List<string>();
 }
 <div id="locationblk" class="my-4" data-editmode="@editmode" data-shops="@Shops.Count()">
     @*@{ return;}*@

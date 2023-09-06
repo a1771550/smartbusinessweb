@@ -458,6 +458,21 @@ namespace SmartBusinessWeb.Controllers
                     {
                         #region Remove Current Data First
                         List<MyobCustomer> customers = context.MyobCustomers.Where(x => x.AccountProfileId == AccountProfileId).ToList();
+
+                        #region Backup Customer Point Information 
+                        Dictionary<string, CustomerPointInfo> DicCusPointInfo = new Dictionary<string, CustomerPointInfo>();
+                        foreach(var customer in customers)
+                        {
+                            DicCusPointInfo[customer.cusCode] = new CustomerPointInfo
+                            {
+                                PointsSoFar = customer.cusPointsSoFar??0,
+                                PointsActive = customer.cusPointsActive??0,
+                                PointsUsed = customer.cusPointsUsed??0,
+                                PriceLevelID = customer.cusPriceLevelID
+                            };
+                        }
+                        #endregion
+
                         context.MyobCustomers.RemoveRange(customers);
 
                         List<CustomerInfo4Abss> customerInfos = context.CustomerInfo4Abss.Where(x => x.AccountProfileId == AccountProfileId).ToList();
@@ -513,7 +528,7 @@ namespace SmartBusinessWeb.Controllers
                             mcustomer.cusCode = cuscode;
                             mcustomer.cusPhone = (ApprovalMode) ? (customer.AddressList != null && customer.AddressList.Count > 0) ? customer.AddressList[0].Phone1 : cuscode : cuscode;
                             mcustomer.cusName = customer.Name ?? customer.LastName;
-                            mcustomer.cusPriceLevelID = customer.PriceLevelID;
+                          
                             mcustomer.CreateTime = dateTime;
                             mcustomer.ModifyTime = dateTime;
                             mcustomer.cusTermsID = customer.TermsID;
@@ -542,40 +557,23 @@ namespace SmartBusinessWeb.Controllers
                             mcustomer.CurrencyID = customer.CurrencyID;
                             mcustomer.TaxIDNumber = customer.TaxIDNumber;
                             mcustomer.TaxCodeID = customer.TaxCodeID;
-                            //mcustomer.GSTIDNumber = customer.GSTIDNumber;
-                            //mcustomer.FreightTaxCodeID = customer.FreightTaxCodeID;
-                            // mcustomer.UseCustomerTaxCode = customer.UseCustomerTaxCode == 'Y';
-
-                            if (ApprovalMode)
+                            
+                            var customerPointInfo = DicCusPointInfo.ContainsKey(mcustomer.cusCode) ? DicCusPointInfo[mcustomer.cusCode] : null;
+                            if (customerPointInfo != null)
                             {
-                                mcustomer.cusWhatsappPhoneNo = customer.CustomField1;
-                                int points = 0;
-                                if (customer.AddressList.Count >= 3)
-                                {
-                                    if (int.TryParse(customer.AddressList[2].WWW, out points))
-                                    {
-                                        mcustomer.cusPointsActive = mcustomer.cusPointsSoFar = points;
-                                    }
-                                    else
-                                    {
-                                        mcustomer.cusPointsActive = mcustomer.cusPointsSoFar = 0;
-                                    }
-                                }
+                                mcustomer.cusPointsSoFar = customerPointInfo.PointsSoFar;
+                                mcustomer.cusPointsActive = customerPointInfo.PointsActive;
+                                mcustomer.cusPointsUsed = customerPointInfo.PointsUsed;
+                                mcustomer.cusPriceLevelID = customerPointInfo.PriceLevelID;
                             }
                             else
                             {
-                                int points = 0;
-                                if (int.TryParse(customer.CustomField3, out points))
-                                {
-                                    mcustomer.cusPointsActive = mcustomer.cusPointsSoFar = points;
-                                }
-                                else
-                                {
-                                    mcustomer.cusPointsActive = mcustomer.cusPointsSoFar = 0;
-                                }
+                                mcustomer.cusPointsSoFar = 0;
+                                mcustomer.cusPointsActive = 0;
+                                mcustomer.cusPointsUsed = 0;
+                                mcustomer.cusPriceLevelID = string.Empty;
                             }
-                            mcustomer.cusPointsUsed = 0;
-
+                           
 
                             if (customer.AddressList.Count > 0)
                             {
