@@ -1176,12 +1176,7 @@ function OnSuccess(response) {
             {},
             DicItemGroupedVariations,
             model.DicItemGroupedVariations
-        );
-        // console.log("DicItemAttrList:", DicItemAttrList);
-        // console.log("DicItemVariations:", DicItemVariations);
-        // console.log("DicItemGroupedVariations:", DicItemGroupedVariations);
-        // console.log("DicItemSelectedIVList:", DicItemSelectedIVList);
-        // console.log("DicItemPromotions:", DicItemPromotions);
+        );    
     }
 
     // console.log("here");

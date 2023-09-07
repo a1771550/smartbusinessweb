@@ -41,38 +41,6 @@ namespace SmartBusinessWeb.Controllers.Item
             return Json(msg);
         }
 
-
-        [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
-        [HttpGet]
-        public ActionResult EditIV(int itemId = 0)
-        {
-            ViewBag.ParentPage = "item";
-            ViewBag.PageName = "pgitem";
-            PGItemEditModel model = new PGItemEditModel(itemId, false);
-            return View("EditPG", model);
-        }
-        [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public JsonResult EditIV(PGItemModel Item = null, ItemVariationModel ItemVari = null, List<ItemAttributeModel> AttrList = null)
-        {
-            ViewBag.ParentPage = "item";
-            ViewBag.PageName = "pgitem";
-            if (Item != null)
-            {
-                PGItemEditModel.EditIV(Item, null, AttrList);
-            }
-            else
-            {
-                PGItemEditModel.EditIV(null, ItemVari, AttrList);
-                
-            }
-            string msg = Resources.Resource.ItemSaved;
-            return Json(msg);
-        }
-
         
         // GET: PG
         public ActionResult Index(int SortCol = 2, string SortOrder = "desc", string Keyword = "", int? PageNo = 1)
