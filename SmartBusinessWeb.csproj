@@ -4232,6 +4232,8 @@
     <Content Include="Static\slick.html" />
     <Content Include="Static\unsubscribe_demo.html" />
     <Content Include="Static\unsubscribe_zh.html" />
+    <Content Include="Views\Shared\_TransferModal.cshtml" />
+    <Content Include="Views\Transfer\Transfer.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">

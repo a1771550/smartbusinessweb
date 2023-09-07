@@ -177,8 +177,7 @@ namespace SmartBusinessWeb.Controllers.WholeSales
 
         [HandleError]
         [CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
-        [HttpGet]
-        ///Account/Login?redirectUrl=/Wholesales/EditPG?receiptno={0}&amp;salesmanemail={1}&amp;ksalesmanemail={2}
+        [HttpGet]       
         public ActionResult Edit(long Id, string type)
         {
             ViewBag.ParentPage = "wholesales";

@@ -15,7 +15,7 @@ using ShopDataModel = PPWCommonLib.Models.ShopDataModel;
 using CommonLib.Helpers;
 using FileHelper = PPWCommonLib.CommonHelpers.FileHelper;
 using ActionResult = System.Web.Mvc.ActionResult;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Data.Entity.Validation;
 using System.Text;
@@ -2944,7 +2944,11 @@ namespace SmartBusinessWeb.Controllers
                         }
                     }
                 }
-                ModelHelper.GetItemOptionsInfo(context, ref model.DicLocItemList, itemcodelist);
+                string _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+                using var connection = new SqlConnection(_connectionString);
+                connection.Open();
+                model.PrimaryLocation = ModelHelper.GetShops(connection, ref Shops, ref ShopNames);
+                ModelHelper.GetItemOptionsInfo(context, ref model.DicLocItemList, itemcodelist, Shops, connection);
             }
 
             model.DicItemOptions = ModelHelper.GetDicItemOptions(apId, context);

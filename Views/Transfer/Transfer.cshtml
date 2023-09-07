@@ -1,0 +1,15 @@
+﻿@model PPWLib.Models.Item.ItemEditModel
+
+@{
+    ViewBag.Title = string.Concat(string.Format(Resources.Resource.InventoryFormat, Resources.Resource.Transfer), Model.Item.itmCode);
+    var title = string.Concat(string.Format(Resources.Resource.InventoryFormat, Resources.Resource.Transfer), ":<span class='text-primary'>", Model.Item.itmCode, "</span>");
+    List<string> polist = Model.PoBatVQList.Select(x => x.pocode).Distinct().ToList();
+}
+
+<h4 class="mb-4">@Html.Raw(title)</h4>
+
+@foreach (var shop in Model.ShopNames)
+{
+    @Html.Partial("_TransferModal", null, new ViewDataDictionary { {"itemcode",Model.Item.itmCode }, { "shop", shop },{"polist",polist },{ "batchqtylist", Model.BatchQtyList },{ "delbatqtylist",Model.BatDelQtyList },{"pbvqlist",Model.PoBatVQList },{"qty",Model.Item.QuantityAvailable } })
+}
+

@@ -1,0 +1,63 @@
+﻿@{ 
+    var shop = (string)ViewData["shop"];
+    var polist = (List<string>)ViewData["polist"];
+    var batchqtylist = (List<BatchQty>)ViewData["batchqtylist"];
+    var itemcode = (string)ViewData["itemcode"];
+    var pbvqlist = (List<PoBatVQ>)ViewData["pbvqlist"];
+    int qty = (int)ViewData["qty"];
+    //var delbatqtylist = (List<BatDelQty>)ViewData["delbatqtylist"];
+}
+<div id="transferModal">
+    <div class="container">
+        <h6 class="shop">@shop</h6>
+        <table id="tblIPTransfer" class="table table-bordered table-condensed">
+            <thead class="gray-header">
+                <tr>
+                    <th class="text-right">@Resources.Resource.BatchNo</th>
+                    <th class="text-right">@Resources.Resource.SerialNo (@Resources.Resource.ExpiryDate)</th>
+                    <th class="text-right">@Resources.Resource.ExpiryDate</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pocode in polist)
+                {
+                    var idx = 0;
+                    foreach (var e in batchqtylist)
+                    {
+                        if (e.pocode == pocode)
+                        {
+                            //int ibatdelqty = 0;
+                            string batcode = e.batcode;
+                           
+                            <tr data-idx="@idx" data-batcode="@batcode">
+                                <td><label>@batcode</label></td>
+                                <td>
+                                    @for (int i = 0; i < pbvqlist.Count; i++)
+                                    {
+                                        var v = pbvqlist[i];
+                                        if (v.pocode == pocode && v.batchcode == batcode)
+                                        {
+                                            string batdelqtyId = $"batdelqty_{itemcode}_${i}";
+                                            int currentbdq = qty;
+                                            string vtdisplay = v.vt == "" ? "N/A" : v.vt;
+                                            int batseq = i + 1;
+                                            <div class="row form-inline justify-content-end mx-1 mb-3">
+                                                <label for="@batdelqtyId">
+                                                    @vtdisplay (@v.pocode})
+                                                </label>
+                                                <input type="text" class="form-control batdelqty mx-2" id="@batdelqtyId" data-batseq="@batseq" data-itemcode="@itemcode" data-batch="@v.batchcode" data-pocode=@v.pocode } data-batqty="@v.batchqty" data-batvt="@v.vt" min="0" max="@v.batchqty" style="max-width:80px;" value="@currentbdq">
+                                            </div>
+                                        }
+
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>

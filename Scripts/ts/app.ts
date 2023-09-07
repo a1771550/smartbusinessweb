@@ -527,7 +527,8 @@ let waitingModal: any,
     uploadFileModal: any,
     viewFileModal: any,
     advancedSearchModal: any,
-    contactModal: any;
+    contactModal: any,
+transferModal: any;
 
 let sysdateformat: string = "yyyy-mm-dd";
 //let jsdateformat: string = "dd/mm/yy";
@@ -2943,7 +2944,7 @@ function openDescModal() {
             );
     }
 
-    if (forPGItem || forstock) {
+    if (forPGItem || forstock || fortransfer) {
         $("#descModal")
             .empty()
             .append(
@@ -2959,26 +2960,7 @@ function closeItemBuySellUnitsModal() {
     itemBuySellUnitsModal.dialog("close");
 }
 
-function openBatchModal(hasFocusCls: boolean) {
-    //console.log("hasfocuscls:", hasFocusCls);
-    batchModal.dialog("open");
-    $target = $(".ui-dialog-buttonpane .ui-dialog-buttonset");
-    if (hasFocusCls) {
-        $target.find(".savebtn").show();
-        $target
-            .find(".secondarybtn")
-            .text(canceltxt)
-            .on("click", handleBatchModalCancel);
-    } else {
-        $target.find(".savebtn").hide();
-        $target.find(".secondarybtn").text(closetxt).on("click", closeBatchModal);
-    }
-}
-function closeBatchModal() {
-    batchModal.dialog("close");
-    chkbatsnvtchange = false;
-    batdelqtychange = false;
-}
+
 
 function openValidthruModal(hasFocusCls: boolean) {
     validthruModal.dialog("open");
@@ -3174,7 +3156,94 @@ function openContactModal() {
 function closeContactModal() {
     contactModal.dialog("close");
 }
+
+function openBatchModal(hasFocusCls: boolean) {
+    //console.log("hasfocuscls:", hasFocusCls);
+    batchModal.dialog("open");
+    $target = $(".ui-dialog-buttonpane .ui-dialog-buttonset");
+    if (hasFocusCls) {
+        $target.find(".savebtn").show();
+        $target
+            .find(".secondarybtn")
+            .text(canceltxt)
+            .on("click", handleBatchModalCancel);
+    } else {
+        $target.find(".savebtn").hide();
+        $target.find(".secondarybtn").text(closetxt).on("click", closeBatchModal);
+    }
+}
+function closeBatchModal() {
+    batchModal.dialog("close");
+    chkbatsnvtchange = false;
+    batdelqtychange = false;
+}
+
+function openTransferModal(hasFocusCls: boolean=false) {
+    //console.log("hasfocuscls:", hasFocusCls);
+    transferModal.dialog("open");
+    $target = $(".ui-dialog-buttonpane .ui-dialog-buttonset");
+    if (hasFocusCls) {
+        $target.find(".savebtn").show();
+        $target
+            .find(".secondarybtn")
+            .text(canceltxt)
+            .on("click", handleTransferModalCancel);
+    } else {
+        $target.find(".savebtn").hide();
+        $target.find(".secondarybtn").text(closetxt).on("click", closeTransferModal);
+    }
+}
+function closeTransferModal() {
+    transferModal.dialog("close");
+    chkbatsnvtchange = false;
+    batdelqtychange = false;
+}
 function initModals() {
+    transferModal = $("#transferModal").dialog({
+        width: 900,
+        title: transfertxt,
+        autoOpen: false,
+        modal: true,
+        buttons: [
+            {
+                class: "savebtn",
+                text: oktxt,
+                click: function () {
+                    confirmTransferQty();
+                },
+            },
+            {
+                class: "secondarybtn",
+                text: canceltxt,
+                click: function () {
+                    handleTransferModalCancel();
+                },
+            },
+        ],
+    });
+    batchModal = $("#batchModal").dialog({
+        width: 900,
+        title: batchtxt,
+        autoOpen: false,
+        modal: true,
+        buttons: [
+            {
+                class: "savebtn",
+                text: oktxt,
+                click: function () {
+                    confirmBatchSnQty();
+                },
+            },
+            {
+                class: "secondarybtn",
+                text: canceltxt,
+                click: function () {
+                    handleBatchModalCancel();
+                },
+            },
+        ],
+    });
+
     contactModal = $("#contactModal").dialog({
         width: 400,
         title: contacttxt,
@@ -4338,7 +4407,9 @@ function initModals() {
         });
     }
 }
-
+function handleTransferModalCancel() {
+    closeTransferModal();
+}
 function handleValidthruModalCancel() {
     closeValidthruModal();
 }
@@ -10314,7 +10385,7 @@ $(document).on("dblclick", ".itemdesc", function () {
             return e.wslSeq == seq;
         })[0];
     }
-    if (forPGItem || forstock) {
+    if (forPGItem || forstock || fortransfer) {
         //selectedItemCode = $(this).parent("tr").find("td").first().text();
         selectedItem = initItem();
         selectedItem.NameDescTxt = $(this).data("desc") as string;
@@ -10611,6 +10682,7 @@ function OnGetStocksOK(response) {
     var model = response;
     //console.log('modelitems:', model.Items);
     let type = forstock ? "stock" : "transfer";
+    const primaryLocation: string = model.PrimaryLocation;
 
     $("#lastupdatetime").text(model.LatestUpdateTime);
 
@@ -10629,12 +10701,10 @@ function OnGetStocksOK(response) {
             const itemcode = item.itmCode;
             //console.log('item:', item);
             DicStockTransferList[itemcode] = [];
-
-            //let assigned: boolean = false;
+           
             let itemoption: IItemOptions | null = null;
             if (DicIDItemOptions) {
                 itemoption = DicIDItemOptions[item.itmItemID!];
-                //    assigned = typeof itemoption !== "undefined";
             }
 
             html += `<tr class="{0}" data-code="${itemcode}" data-jsstocklist="${item.JsonJsStockList}" ondblclick="{1}">`;
@@ -10703,11 +10773,12 @@ function OnGetStocksOK(response) {
                 let locqty: number = diclocqty[e] ?? 0;
                 let abssqty: number = dicabssqty[e] ?? 0;
                 let locqtydisplay: string = "";
-
+                const isprimary = primaryLocation == e?1:0;
                 //for debug only
                 //if (itemcode == "ITEMITEM0001" && e=="office") {
-                //    console.log("diclocqty:", diclocqty);
-                //    console.log("locqty:" + locqty);
+                //    //console.log("diclocqty:", diclocqty);
+                //    //console.log("locqty:" + locqty);
+                //    console.log(itemoption);
                 //}
 
                 if (locqty <= 0) {
@@ -10715,9 +10786,13 @@ function OnGetStocksOK(response) {
                 } else {
                     locqtydisplay = `<span>${locqty}<span class="text-info">(${abssqty})</span></span>`;
                 }
+
+                let readonly = (!itemoption?.ChkBatch && !itemoption?.ChkSN && !itemoption?.WillExpire) ? "" : "readonly";
+                let inputcls = (!itemoption?.ChkBatch && !itemoption?.ChkSN && !itemoption?.WillExpire) ? "locqty" : "locqty itemoption";
+
                 let _html = forstock
                     ? `${locqtydisplay}`
-                    : `<input type="number" class="locqty" data-code="${item.itmCode}" style="width:70%;" data-shop="${e}" data-onhandstock="${item.OnHandStock}" data-id="${Id}" data-oldval="${locqty}" data-abssqty="${abssqty}" value="${locqty}"/>`;
+                    : `<input type="number" class="${inputcls}" data-isprimary="${isprimary}" data-code="${item.itmCode}" style="width:70%;" data-shop="${e}" data-onhandstock="${item.OnHandStock}" data-id="${Id}" data-oldval="${locqty}" data-abssqty="${abssqty}" data-itemid="${item.itmItemID}" value="${locqty}" ${readonly}/>`;
 
                 html += `<td class="text-right" style="width:${qtycolwidth};max-width:${qtycolwidth}">${_html}</td>`;
                 // $("td", row)
@@ -12545,6 +12620,9 @@ interface IBatch {
 let deliveryItem: IDeliveryItem | null;
 let deliveryQty: number = 0;
 
+function confirmTransferQty() {
+    //todo:
+}
 function resetVtQty() {
     $(".delqty").val(0);
 }

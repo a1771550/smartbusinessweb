@@ -51,6 +51,16 @@
           <path>Views\Transfer\Index.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Transfer\Index.cshtml</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>_TxtBlk.cshtml</name>
+          <path>Views\Shared\_TxtBlk.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Shared\_TxtBlk.cshtml</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>_Layout.cshtml</name>
+          <path>Views\Shared\_Layout.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Shared\_Layout.cshtml</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -76,6 +86,11 @@
           <name>TestController.cs</name>
           <path>Controllers\TestController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\TestController.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>TransferController.cs</name>
+          <path>Controllers\Item\TransferController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Item\TransferController.cs</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

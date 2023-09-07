@@ -1,5 +1,4 @@
 ﻿@model PPWLib.Models.Item.TransferEditModel
-@using PagedList.Mvc;
 @{
     ViewBag.Title = string.Format(Resources.Resource.InventoryFormat, Resources.Resource.Transfer);
     int rand = CommonHelper.GetVersionRandomNo();
@@ -29,7 +28,7 @@
             <input type="text" class="form-control" id="txtStock" placeholder="@Resources.Resource.EnterItemCodeName" />
             <button id="btnSearch" type="button" class="btn btn-primary ml-4">@Resources.Resource.Search</button>
             <button id="btnReload" type="button" class="btn btn-warning ml-4">@Resources.Resource.Reload</button>
-            <button id="btnList" type="button" class="btn btn-outline-primary ml-4" onclick="window.location.href = '/Transfer/List';">@Resources.Resource.List</button>
+            <button id="btnList" type="button" class="btn btn-info ml-4" onclick="window.location.href = '/Transfer/List';">@Resources.Resource.List</button>
         </div>
     </div>
 
@@ -69,6 +68,7 @@
 
 @Html.Partial("_WaitingModal")
 
+@Html.Partial("_DescModal")
 
 @Html.AntiForgeryToken()
 

@@ -33,7 +33,7 @@ namespace SmartBusinessWeb.Controllers.Item
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]        
+        [CustomAuthorize("item", "boss", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public JsonResult EditList(List<TransferModel> transferList, StockTransferInfo info)
@@ -87,6 +87,16 @@ namespace SmartBusinessWeb.Controllers.Item
 
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [HttpGet]
+        public ActionResult Transfer(int itemId, string location, int qty)
+        {
+            ViewBag.ParentPage = "item";
+            ItemEditModel model = new ItemEditModel(itemId, true, true, location, qty);
+            return View(model);
+        }
+
+        [HandleError]
+        [CustomAuthorize("item", "boss", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult ProcessTransfer(List<JsStock> JsStockList, List<TransferModel> TransferList)
@@ -105,7 +115,7 @@ namespace SmartBusinessWeb.Controllers.Item
             ViewBag.PageName = "transfer";
             int Size_Of_Page = (int)ComInfo.PageLength;
             TransferEditModel model = new();
-            model.GetStockList(apId,(int)PageNo, Size_Of_Page, SortCol, SortOrder, Keyword);
+            model.GetStockList(apId, (int)PageNo, Size_Of_Page, SortCol, SortOrder, Keyword);
             model.TransferNumber = model.GetTransferNumber();
             return View(model);
         }

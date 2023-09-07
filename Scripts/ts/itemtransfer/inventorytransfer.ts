@@ -192,6 +192,12 @@ function getBalance(this: any, onhandstock: number) {
     return { $balance, balance };
 }
 
+$(document).on("dblclick", ".itemoption.locqty", function () {
+    //transferModal.find("#Item").text($(this).data("code"));
+    //openTransferModal(true);
+    window.location.href = "/Transfer/Transfer?itemId=" + $(this).data("itemid")+"&location="+$(this).data("shop")+"&qty="+$(this).val();
+});
+
 $(function () {
     setFullPage();
     /*forstock = fortransfer = true;*/
