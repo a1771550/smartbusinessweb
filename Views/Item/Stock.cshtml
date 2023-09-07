@@ -74,5 +74,50 @@
 <div id="infoblk" class="hide" data-shop="@user.shopCode" data-shops="@string.Join(",",Model.Shops)" data-enablebuysellunits="@Model.EnableBuySellUnits" data-idlist="@string.Join(",",Model.ItemIdList)" data-jsondiciditemoptions="@Model.JsonDicIDItemOptions"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+<script>
+    //function txtStockKeyPress(e) {
+    //    //var txtStock = document.getElementById("txtStock");
+    //    //keyword = txtStock.value;
+    //    //console.log("barcode.value:" + barcode.value);
+    //    //keyword = barcode.value;
+    //    keyword = e.target.value;
+    //    console.log("keyword:" + keyword);
+    //    searchStock(keyword);
+    //}
+
+    //function searchStock(keyword){        
+    //    if (keyword !== "") {
+    //        console.log("keyword:" + keyword);
+    //        GetStocks(1);
+    //    }
+    //}
+    var barcode = document.querySelector("#txtStock");
+    $('#txtStock').on({
+        keypress: function (e) {
+            if (e.key !== "Enter") {
+                barcode.value += e.key;
+            }
+            e.preventDefault();            
+        },
+        keyup: function () {
+            var $field = $(this);
+            setTimeout(function () {
+                keyword = $field.val();
+                GetStocks(1);
+            },500);
+
+        }
+        //blur: function () {
+        //    //keyword = barcode.value;
+        //    //searchStock(keyword);
+        //    //barcode.value = "";
+        //    keyword = $(this).val();
+        //    searchStock(keyword);
+        //},
+        //input: function () {
+           
+        //}
+    });
+</script>
 <script src="~/Scripts/ts/js/item/stock.js?v=@rand"></script>
 

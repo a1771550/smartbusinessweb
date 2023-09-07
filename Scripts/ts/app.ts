@@ -1186,11 +1186,11 @@ function OnSuccess(response) {
 
     // console.log("here");
     if (model.Items.length > 0) {
-        if (ItemList) {
-            ItemList = [...ItemList, ...model.Items];
-        } else {
+        //if (ItemList) {
+        //    ItemList = [...ItemList, ...model.Items];
+        //} else {
             ItemList = model.Items.slice(0);
-        }
+        //}
 
         if (searchItemMode) {
             if (ItemList.length === 1) {
@@ -10610,7 +10610,7 @@ interface IDistinctItem {
 }
 let DicLocItemList: { [Key: string]: IDistinctItem[] } = {};
 function OnGetStocksOK(response) {
-    keyword = "";
+    //keyword = "";
     closeWaitingModal();
     //console.log('response:', response);
     var model = response;
@@ -10757,14 +10757,10 @@ function OnGetStocksOK(response) {
             PageSize: model.PageSize,
             RecordCount: model.RecordCount,
         });
-
-        //togglePaging(type, true);
     }
-    //else {
-    //    togglePaging(type, false);
-    //}
+    
     $("#txtStock").trigger("focus");
-    //console.log("type:" + type);
+
     togglePaging(type, model.Items.length > 0);
 }
 function handleItemDesc(itemnamedesc: string): string {

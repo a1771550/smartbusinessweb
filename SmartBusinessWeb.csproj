@@ -2871,6 +2871,7 @@
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="libman.json" />
     <Content Include="Images\unsubscribe.webp" />
+    <Content Include="Static\barcode.html" />
     <Content Include="_app_offline.htm" />
     <Content Include="PrivateSettings.config" />
     <None Include="Properties\Settings.settings">

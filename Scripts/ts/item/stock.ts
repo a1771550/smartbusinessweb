@@ -1,6 +1,7 @@
 ﻿$infoblk = $("#infoblk");
 enablebuysellunits = $infoblk.data("enablebuysellunits") == "True";
 
+
 $(document).on("change", "#drpLocation", function () {
     stocklocation = <string>$(this).val();
     GetStocks(1);
@@ -13,13 +14,6 @@ $(document).on("click", ".StockPager .page", function () {
 
 $(document).on("click", "#btnReload", function () {
     window.location.href = "/Item/Stock";
-});
-
-$(document).on("change", "#txtStock", function () {
-    keyword = <string>$(this).val();
-    if (keyword !== "") {
-        GetStocks(1);
-    }
 });
 
 $(document).on("click", "#btnSearch", function () {
@@ -46,4 +40,6 @@ $(function () {
     DicIDItemOptions = $infoblk.data("jsondiciditemoptions");
     //console.log("DicIDItemOptions", DicIDItemOptions);
     GetStocks(1);
+
+    /*$("#txtStock").trigger("focus");*/
 });
