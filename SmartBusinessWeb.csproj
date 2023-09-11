@@ -2871,6 +2871,7 @@
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="libman.json" />
     <Content Include="Images\unsubscribe.webp" />
+    <Content Include="Scripts\ts\js\itemtransfer\transfer.js" />
     <Content Include="Scripts\ts\js\pos\salesorderlist.js" />
     <Content Include="Static\barcode.html" />
     <Content Include="_app_offline.htm" />
@@ -4236,6 +4237,7 @@
     <Content Include="Views\Shared\_TransferModal.cshtml" />
     <Content Include="Views\Transfer\Transfer.cshtml" />
     <Content Include="Scripts\ts\js\pos\salesorderlist.js.map" />
+    <Content Include="Scripts\ts\js\itemtransfer\transfer.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4709,6 +4711,7 @@
     <TypeScriptCompile Include="Scripts\ts\exchangerate.ts" />
     <TypeScriptCompile Include="Scripts\ts\home.ts" />
     <TypeScriptCompile Include="Scripts\ts\itemtransfer\inventorytransfer.ts" />
+    <TypeScriptCompile Include="Scripts\ts\itemtransfer\transfer.ts" />
     <TypeScriptCompile Include="Scripts\ts\itemtransfer\transferedit.ts" />
     <TypeScriptCompile Include="Scripts\ts\itemtransfer\transferlist.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\category.ts" />

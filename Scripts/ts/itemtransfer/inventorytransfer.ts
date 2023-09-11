@@ -193,8 +193,7 @@ function getBalance(this: any, onhandstock: number) {
 }
 
 $(document).on("dblclick", ".itemoption.locqty", function () {
-    //transferModal.find("#Item").text($(this).data("code"));
-    //openTransferModal(true);
+    openWaitingModal();
     window.location.href = "/Transfer/Transfer?itemId=" + $(this).data("itemid")+"&location="+$(this).data("shop")+"&qty="+$(this).val();
 });
 
@@ -204,7 +203,7 @@ $(function () {
     fortransfer = true;
     gTblName = gFrmName = "Transfer";
     stockTransferCode = <string>$("#stCode").text();
-    shops = (<string>$infoblk.data("shops")).split(",");
+    shops = $infoblk.data("shops")? (<string>$infoblk.data("shops")).split(","):[];
 
     //console.log('sortorder:' + $('#sortorder').val() + ';sortcol:' + $('#sortcol').val());
     $target = $(".colheader").eq(parseInt(<string>$("#sortcol").val()));

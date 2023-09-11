@@ -1,63 +1,190 @@
-﻿@{ 
+﻿@{
     var shop = (string)ViewData["shop"];
     var polist = (List<string>)ViewData["polist"];
     var batchqtylist = (List<BatchQty>)ViewData["batchqtylist"];
     var itemcode = (string)ViewData["itemcode"];
     var pbvqlist = (List<PoBatVQ>)ViewData["pbvqlist"];
     int qty = (int)ViewData["qty"];
-    //var delbatqtylist = (List<BatDelQty>)ViewData["delbatqtylist"];
+    CommonLib.Models.ItemOptions itemOptions = (CommonLib.Models.ItemOptions)ViewData["itemOptions"];
+    List<BatSnVt> batsnvtlist = (List<BatSnVt>)ViewData["batsnvtlist"];
+    List<SnVt> snvtlist = (List<SnVt>)ViewData["snvtlist"];
 }
-<div id="transferModal">
-    <div class="container">
-        <h6 class="shop">@shop</h6>
-        <table id="tblIPTransfer" class="table table-bordered table-condensed">
-            <thead class="gray-header">
-                <tr>
-                    <th class="text-right">@Resources.Resource.BatchNo</th>
-                    <th class="text-right">@Resources.Resource.SerialNo (@Resources.Resource.ExpiryDate)</th>
-                    <th class="text-right">@Resources.Resource.ExpiryDate</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var pocode in polist)
+<div class="transferModal" data-polist="@string.Join(",",polist)">
+
+    <h6 class="shop">@shop</h6>
+    <table class="table table-bordered table-condensed tblTransfer">
+        <thead class="gray-header">
+            <tr>
+                <th class="text-right">@Resources.Resource.BatchNo (@Resources.Resource.PurchaseOrder)</th>
+                <th class="text-right">@Resources.Resource.SerialNo (@Resources.Resource.PurchaseOrder)</th>
+                <th class="text-right">@Resources.Resource.ExpiryDate (@Resources.Resource.PurchaseOrder)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pocode in polist)
+            {
+                if (itemOptions.ChkBatch && itemOptions.ChkSN)
                 {
-                    var idx = 0;
-                    foreach (var e in batchqtylist)
+                    //bat & sn
+                    if (itemOptions.ChkSN)
                     {
-                        if (e.pocode == pocode)
+                        var idx = 0;
+                        foreach (var e in batchqtylist)
                         {
-                            //int ibatdelqty = 0;
-                            string batcode = e.batcode;
-                           
-                            <tr data-idx="@idx" data-batcode="@batcode">
-                                <td><label>@batcode</label></td>
-                                <td>
-                                    @for (int i = 0; i < pbvqlist.Count; i++)
-                                    {
-                                        var v = pbvqlist[i];
-                                        if (v.pocode == pocode && v.batchcode == batcode)
+                            if (e.pocode == pocode)
+                            {
+                                string batcode = e.batcode;
+
+                                <tr data-idx="@idx" data-batcode="@batcode">
+                                    <td><label>@batcode (@pocode)</label></td>
+                                    <td>
+                                        @foreach (var ele in batsnvtlist)
                                         {
-                                            string batdelqtyId = $"batdelqty_{itemcode}_${i}";
-                                            int currentbdq = qty;
-                                            string vtdisplay = v.vt == "" ? "N/A" : v.vt;
-                                            int batseq = i + 1;
-                                            <div class="row form-inline justify-content-end mx-1 mb-3">
-                                                <label for="@batdelqtyId">
-                                                    @vtdisplay (@v.pocode})
-                                                </label>
-                                                <input type="text" class="form-control batdelqty mx-2" id="@batdelqtyId" data-batseq="@batseq" data-itemcode="@itemcode" data-batch="@v.batchcode" data-pocode=@v.pocode } data-batqty="@v.batchqty" data-batvt="@v.vt" min="0" max="@v.batchqty" style="max-width:80px;" value="@currentbdq">
-                                            </div>
+                                            if (ele.batcode == e.batcode && ele.pocode == pocode)
+                                            {
+                                                var Id = "chkbatsnvt" + ele.sn;
+                                                <div class="form-check">
+                                                    <input class="chkbatsnvt" type="checkbox" value="@ele.sn" data-itemcode="@itemcode" data-pocode="@pocode" data-batcode="@ele.batcode" data-snvt="@ele.vt" id="@Id">
+                                                    <label class="" for="@Id">
+                                                        @ele.sn (@pocode)
+                                                    </label>
+                                                </div>
+                                            }
+
                                         }
 
-                                    }
-                                </td>
-                            </tr>
+
+                                    </td>
+                                    <td>
+                                        @if (itemOptions.WillExpire)
+                                        {
+                                            foreach (var ele in batsnvtlist)
+                                            {
+                                                if (ele.batcode == e.batcode && ele.pocode == pocode)
+                                                {
+                                                    var vtdisplay = !string.IsNullOrEmpty(ele.vt) ? string.Concat(ele.vt, " (", pocode, ")") : "N/A";
+                                                    <div class="form-check">
+                                                        <label>@vtdisplay</label>
+                                                    </div>
+                                                }
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                            }
                         }
                     }
+                    else
+                    {
+                        //bat && vt (no sn)
+                        var idx = 0;
+                        foreach (var e in batchqtylist)
+                        {
+                            if (e.pocode == pocode)
+                            {
+                                string batcode = e.batcode;
+                                <tr data-idx="@idx" data-batcode="@batcode">
+                                    <td><label>@batcode (@pocode)</label></td>
+                                    <td></td>
+                                    <td>
+                                        @for (int i = 0; i < pbvqlist.Count; i++)
+                                        {
+                                            var v = pbvqlist[i];
+                                            if (v.pocode == pocode && v.batchcode == batcode)
+                                            {
+                                                string batdelqtyId = $"batdelqty_{itemcode}_{i}";
+                                                int currentbdq = qty;
+                                                string vtdisplay = v.vt == "" ? "N/A" : v.vt;
+                                                int batseq = i + 1;
+                                                <div class="row form-inline justify-content-end mx-1 mb-3">
+                                                    <label for="@batdelqtyId">
+                                                        @vtdisplay (@v.pocode)
+                                                    </label>
+                                                    <input type="text" class="form-control batdelqty mx-2" id="@batdelqtyId" data-batseq="@batseq" data-itemcode="@itemcode" data-batch="@v.batchcode" data-pocode="@v.pocode" data-batqty="@v.batchqty" data-batvt="@v.vt" min="0" max="@v.batchqty" style="max-width:80px;" value="@currentbdq">
+                                                </div>
+                                            }
 
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+
+                        //}
+                        //else //bat only
+                        //{
+
+                        //}
+
+                    }
                 }
 
-            </tbody>
-        </table>
-    </div>
+
+                if (!itemOptions.ChkBatch && itemOptions.ChkSN)
+                {
+                    int idx = 0;
+                    foreach (var ele in snvtlist)
+                    {
+                        <tr data-idx="@idx">
+                            <td></td>
+                            <td>
+                                @if (ele.pocode == pocode)
+                                {
+                                    var Id = "chksnvt" + ele.sn;
+                                    <div class="form-check">
+                                        <input class="chksnvt" type="checkbox" value="@ele.sn" data-itemcode="@itemcode" data-pocode="@pocode" data-snvt="@ele.vt" id="@Id">
+                                        <label class="" for="@Id">
+                                            @ele.sn (@pocode)
+                                        </label>
+                                    </div>
+                                }
+
+
+
+
+                            </td>
+                            <td>
+                                @if (itemOptions.WillExpire)
+                                {
+                                    if (ele.pocode == pocode)
+                                    {
+                                        var vtdisplay = !string.IsNullOrEmpty(ele.vt) ? string.Concat(ele.vt, " (", pocode, ")") : "N/A";
+                                        <div class="form-check">
+                                            <label>@vtdisplay</label>
+                                        </div>
+                                    }
+
+                                }
+                            </td>
+                        </tr>
+
+                        idx++;
+                    }
+
+                    ////sn & vt
+                    //if (itemOptions.WillExpire)
+                    //{
+
+                    //}
+                    //else //sn only
+                    //{
+
+                    //}
+                }
+
+                if (!itemOptions.ChkBatch && !itemOptions.ChkSN)
+                {
+                    //vt only
+                }
+            }
+
+
+
+
+
+
+        </tbody>
+    </table>
+
 </div>

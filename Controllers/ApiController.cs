@@ -3036,13 +3036,13 @@ namespace SmartBusinessWeb.Controllers
                 if (string.IsNullOrEmpty(mode) || mode == "search")
                 {
                     var customerlist = ModelHelper.GetCustomers4Sales(context, pageIndex, pagesize, keyword, true, true);
-                    model.RecordCount = string.IsNullOrEmpty(keyword) ? (int)context.GetCustomerCount4Sales1(apId).FirstOrDefault() : customerlist.Count;
+                    model.RecordCount =  (int)context.GetCustomerCount4Sales2(apId, keyword).FirstOrDefault();
                     model.MyobCustomers = customerlist;
                 }
                 else
                 {
                     var customerlist = ModelHelper.GetPGCustomerList(context, false, pageIndex, pagesize, keyword);
-                    model.RecordCount = string.IsNullOrEmpty(keyword) ? (int)context.GetPGCustomerCount2(apId).FirstOrDefault() : customerlist.Count;
+                    model.RecordCount = (int)context.GetPGCustomerCount3(apId, keyword).FirstOrDefault();
                     model.PGCustomers = customerlist;
                 }
 
@@ -3067,7 +3067,7 @@ namespace SmartBusinessWeb.Controllers
                     var customerlist = ModelHelper.GetCustomers4Sales(context, pageIndex, pagesize, keyword, false, false);
                     if (string.IsNullOrEmpty(keyword))
                     {
-                        model.RecordCount = (int)context.GetCustomerCount4Sales1(apId).FirstOrDefault();
+                        model.RecordCount = (int)context.GetCustomerCount4Sales2(apId, keyword).FirstOrDefault();
                     }
                     else
                     {
@@ -3080,7 +3080,7 @@ namespace SmartBusinessWeb.Controllers
                     var customerlist = ModelHelper.GetPGCustomerList(context, false, pageIndex, pagesize, keyword);
                     if (string.IsNullOrEmpty(keyword))
                     {
-                        model.RecordCount = (int)context.GetPGCustomerCount2(apId).FirstOrDefault();
+                        model.RecordCount = (int)context.GetPGCustomerCount3(apId, keyword).FirstOrDefault();
                     }
                     else
                     {

@@ -45,6 +45,11 @@
           <path>Scripts\ts\pos\salesorderlist.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\salesorderlist.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>transfer.ts</name>
+          <path>Scripts\ts\itemtransfer\transfer.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\itemtransfer\transfer.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
