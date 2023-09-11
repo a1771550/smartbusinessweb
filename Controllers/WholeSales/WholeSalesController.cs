@@ -120,7 +120,7 @@ namespace SmartBusinessWeb.Controllers.WholeSales
             ViewBag.ParentPage = "wholesales";
             ViewBag.PageName = "salesorderlist";
             SalesOrderEditModel model = new();
-            model.GetSalesOrderList(strfrmdate, strtodate, (int)PageNo, SortName, SortOrder, Keyword, filter, searchmode);
+            model.GetWholeSalesOrderList(strfrmdate, strtodate, (int)PageNo, SortName, SortOrder, Keyword, filter, searchmode);
             return View(model);
         }
 

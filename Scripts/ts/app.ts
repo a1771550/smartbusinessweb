@@ -14,6 +14,7 @@ let batdelqtychange: boolean = false;
 let chkbatsnvtchange: boolean = false;
 let vtdelqtychange: boolean = false;
 let stockTransferCode: string = "";
+let isapprover: boolean = false;
 let isadmin: boolean = false;
 let minDate = "",
     maxDate = "";
@@ -10748,9 +10749,7 @@ function OnGetStocksOK(response) {
             html += `<td class="text-right">${onhandstock}<span class="text-info">(${item.AbssQty})</td>`;
 
             //console.log("shops:", shops);
-            $.each(shops, function (i, e) {               
-                //let sbitemlist = DicLocItemList[e];
-                //let sbitem = sbitemlist.find(x => x.itemCode == itemcode);
+            $.each(shops, function (i, e) {  
                 //console.log("sbitem:", sbitem);
                 let st: IStockTransfer = initStockTransfer();
                 st.itmCode = itemcode;
@@ -10773,7 +10772,8 @@ function OnGetStocksOK(response) {
                 let locqty: number = diclocqty[e] ?? 0;
                 let abssqty: number = dicabssqty[e] ?? 0;
                 let locqtydisplay: string = "";
-                const isprimary = primaryLocation == e?1:0;
+                const isprimary = primaryLocation == e ? 1 : 0;
+
                 //for debug only
                 //if (itemcode == "ITEMITEM0001" && e=="office") {
                 //    //console.log("diclocqty:", diclocqty);
@@ -10795,11 +10795,7 @@ function OnGetStocksOK(response) {
                     : `<input type="number" class="${inputcls}" data-isprimary="${isprimary}" data-code="${item.itmCode}" style="width:70%;" data-shop="${e}" data-onhandstock="${item.OnHandStock}" data-id="${Id}" data-oldval="${locqty}" data-abssqty="${abssqty}" data-itemid="${item.itmItemID}" value="${locqty}" ${readonly}/>`;
 
                 html += `<td class="text-right" style="width:${qtycolwidth};max-width:${qtycolwidth}">${_html}</td>`;
-                // $("td", row)
-                //   .eq(idx)
-                //   .css({ width: qtycolwidth, "max-width": qtycolwidth })
-                //   .html(html);
-                // idx++;
+               
                 DicStockTransferList[item.itmCode].push(st);
             });
             if (fortransfer) {
@@ -16351,6 +16347,7 @@ function initRecurOrder(): IRecurOrder {
         Mode: "",
         pstUID: 0,
         pstCode: "",
+        rtsUID:0,
     };
 }
 let recurOrder: IRecurOrder | null = null;
@@ -16366,6 +16363,7 @@ interface IRecurOrder {
     Mode: string;
     pstCode: string | null;
     pstUID: number | null;
+    rtsUID: number | null;
 }
 let selectedRecurCode: string = "";
 // let jsdateformat: string = "dd/mm/yy";
@@ -18328,9 +18326,7 @@ $(document).on("dblclick", ".batch", function () {
                 //console.log("batch && vt(no sn) or batch only");
                 html += `<td class="text-right">${batdelqtylist}</td>`;
             }
-            //html += `<td class="text-right batdelqtytxt">${batdeledqtylist}</td>`;
-
-            //html += `<td class="text-right batInfo">${batInfoList}</td>`;
+            
             html += `</tr>`;
         });
         openBatchModal(hasFocusCls);
@@ -18552,9 +18548,10 @@ $(document).on("dblclick", ".batch", function () {
                                 /**
                                  * Get currentbattypeqty
                                  */
+                                let currentbattypedelqty: number = 0;
                                 if (inCurrDel) {
-                                    if (itemOptions!.ChkSN) {
-                                        let currentbattypedelqty: number = 0;
+                                    currentbattypedelqty = 0;
+                                    if (itemOptions!.ChkSN) {                                        
                                         //all
                                         if (itemOptions!.WillExpire) {
                                             DeliveryItems.forEach((x) => {
@@ -18585,8 +18582,8 @@ $(document).on("dblclick", ".batch", function () {
                                             currentbattypeqty =
                                                 v.batchqty - ibatdelqty - currentbattypedelqty;
                                         }
-                                    } else {
-                                        let currentbattypedelqty: number = 0;
+                                    } else {     
+                                        currentbattypedelqty = 0;
                                         if (itemOptions!.WillExpire) {
                                             DeliveryItems.forEach((x) => {
                                                 if (
@@ -18757,9 +18754,6 @@ $(document).on("dblclick", ".batch", function () {
             </div>`;
                                 }
                             });
-
-
-                            //here
                         }
 
                         /**
@@ -18797,6 +18791,14 @@ $(document).on("dblclick", ".batch", function () {
                     `${salesloc}:${selectedItemCode} <span class="exsmall">${sequencetxt}:${seq}</span>`
                 );
             batchModal.find("#tblBatch tbody").html(html);
+
+            //hide tr if currentbattypeqty = 0
+            //$("#tblBatch tbody tr").eq(1).find("td.batInfo").find(".currentbattypeqty").text();
+            $("#tblBatch tbody tr").each(function (i, e) {
+                if (Number($(e).find("td.batInfo").find(".currentbattypeqty").text()) <= 0) {
+                    $(e).hide();
+                }
+            });
 
             batchModal.find(".batdelqty").each(function (i, e) {
                 if ($(e).val() == 0) {

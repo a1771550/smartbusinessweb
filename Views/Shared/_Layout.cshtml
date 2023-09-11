@@ -100,6 +100,21 @@
                                     <li>
                                         @Html.ActionLink(string.Format(Resources.Resource.OrderFormat, Resources.Resource.Deposit), "Deposit", "POSFunc", new { }, new { @class = lnkcls })
                                     </li>
+
+                                    <li>
+                                        @{
+                                            lnkcls = "dropdown-item {0}";
+                                            if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "salesorderlist")
+                                            {
+                                                lnkcls = string.Format(lnkcls, "active");
+                                            }
+                                            else
+                                            {
+                                                lnkcls = string.Format(lnkcls, string.Empty);
+                                            }
+                                        }
+                                        @Html.ActionLink(string.Format(Resources.Resource.ListFormat, Resources.Resource.SalesOrder), "SalesOrderList", "POSFunc", new { }, new { @class = lnkcls })
+                                    </li>
                                 }
                                 @if (HttpContext.Current.Session["Reports"] == null)
                                 {
