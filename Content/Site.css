@@ -751,3 +751,7 @@ th.fa{
 #validthruModal {
     background-color: #ecfabd;
 }
+input[type=checkbox]:focus {
+    background: #ffffcc;
+    outline: 5px solid #ffffcc;
+}

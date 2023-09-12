@@ -4,6 +4,9 @@ let itemoptions: IItemOptions = $infoblk.data("jsonitemoptions");
 let pobatvqlist: IPoBatVQ[] = $infoblk.data("jsonpobatvqlist");
 let batchqtylist: IBatchQty[] = $infoblk.data("jsonbatchqtylist");
 let batsnvtlist: IBatSnVt[] = $infoblk.data("jsonbatsnvtlist");
+let vtqtylist: IVtQty[] = $infoblk.data("jsonvtqtylist");
+itemOptions = $infoblk.data("itemoptions");
+
 snvtlist = $infoblk.data("jsonsnvtlist");
 
 $(document).on("click", "#btnSave", function () {
@@ -12,11 +15,14 @@ $(document).on("click", "#btnSave", function () {
 
 $(function () {
     initModals();
-    console.log("pobatvqlist:", pobatvqlist);
+    //console.log("itemoptions:", itemOptions);
+    //console.log("pobatvqlist:", pobatvqlist);
     //console.log("batchqtylist:", batchqtylist);
     //console.log("batsnvtlist:", batsnvtlist);
-    console.log("itemoptions:", itemoptions);
-    console.log("snvtlist:", snvtlist);
+    //console.log("itemoptions:", itemoptions);
+    //console.log("snvtlist:", snvtlist);
+    //console.log("vtqtylist:", vtqtylist);
+
     $(".tblTransfer tbody tr").each(function () {
         let tr = $(this);
         let trIsEmpty: boolean = false;
@@ -42,4 +48,23 @@ $(function () {
 
         if (trIsEmpty) tr.hide();
     });
+
+    if (itemOptions!.ChkBatch) {
+        if ((itemOptions!.ChkSN && itemOptions!.WillExpire) || (itemOptions!.ChkSN && !itemOptions!.WillExpire))//all || bat & sn (no vt)
+            $(".tblTransfer").eq(1).find("tbody tr").first().find("td").eq(1).find(".chkbatsnvt").first().trigger("focus");
+        if (!itemOptions!.ChkSN && !itemOptions!.WillExpire) //bat only
+            $(".tblTransfer").eq(1).find("tbody tr").first().find("td").first().find("input").first().trigger("focus");
+        if (!itemOptions!.ChkSN && itemOptions!.WillExpire) //bat & vt (no sn)
+            $(".tblTransfer").eq(1).find("tbody tr").first().find("td").last().find("input").first().trigger("focus");
+    } else {
+        if (itemOptions!.ChkSN && itemOptions!.WillExpire || (itemOptions!.ChkSN && !itemOptions!.WillExpire)) {
+            $(".tblTransfer").eq(1).find("tbody tr").first().find("td").eq(1).find(".chksnvt").first().trigger("focus");
+        }
+        //vt only
+        if (!itemOptions!.ChkSN && itemOptions!.WillExpire) {
+            $(".tblTransfer").eq(1).find("tbody tr").first().find("td").last().find("input").first().trigger("focus");
+             
+        }
+    }
+    
 });

@@ -2,7 +2,7 @@
     edit = false;
     constructor(edit) {
         this.edit = edit;
-    } 
+    }
 
     abstract validform(): boolean;
     abstract submitform();
@@ -529,7 +529,7 @@ let waitingModal: any,
     viewFileModal: any,
     advancedSearchModal: any,
     contactModal: any,
-transferModal: any;
+    transferModal: any;
 
 let sysdateformat: string = "yyyy-mm-dd";
 //let jsdateformat: string = "dd/mm/yy";
@@ -1178,7 +1178,7 @@ function OnSuccess(response) {
             {},
             DicItemGroupedVariations,
             model.DicItemGroupedVariations
-        );    
+        );
     }
 
     // console.log("here");
@@ -1186,7 +1186,7 @@ function OnSuccess(response) {
         //if (ItemList) {
         //    ItemList = [...ItemList, ...model.Items];
         //} else {
-            ItemList = model.Items.slice(0);
+        ItemList = model.Items.slice(0);
         //}
 
         if (searchItemMode) {
@@ -1359,9 +1359,9 @@ function _writeItems(itemList: IItem[]) {
             ? handleItemDesc(ItemVari.NameDescTxt)
             : handleItemDesc(item.NameDescTxt);
         html += `<td style="max-width:250px;">${namedesc}</td>`;
-       
+
         //let _qty: number = ItemVari ? ItemVari.DicLocQty[shop] : item.Qty;
-        let _qty: number = ItemVari ? ItemVari.QtySellable : item.Qty; 
+        let _qty: number = ItemVari ? ItemVari.QtySellable : item.Qty;
 
         if (!forpurchase) {
             let tdcls = _qty > 0 ? "" : "outofstock";
@@ -3179,7 +3179,7 @@ function closeBatchModal() {
     batdelqtychange = false;
 }
 
-function openTransferModal(hasFocusCls: boolean=false) {
+function openTransferModal(hasFocusCls: boolean = false) {
     //console.log("hasfocuscls:", hasFocusCls);
     transferModal.dialog("open");
     $target = $(".ui-dialog-buttonpane .ui-dialog-buttonset");
@@ -10702,7 +10702,7 @@ function OnGetStocksOK(response) {
             const itemcode = item.itmCode;
             //console.log('item:', item);
             DicStockTransferList[itemcode] = [];
-           
+
             let itemoption: IItemOptions | null = null;
             if (DicIDItemOptions) {
                 itemoption = DicIDItemOptions[item.itmItemID!];
@@ -10749,7 +10749,7 @@ function OnGetStocksOK(response) {
             html += `<td class="text-right">${onhandstock}<span class="text-info">(${item.AbssQty})</td>`;
 
             //console.log("shops:", shops);
-            $.each(shops, function (i, e) {  
+            $.each(shops, function (i, e) {
                 //console.log("sbitem:", sbitem);
                 let st: IStockTransfer = initStockTransfer();
                 st.itmCode = itemcode;
@@ -10795,7 +10795,7 @@ function OnGetStocksOK(response) {
                     : `<input type="number" class="${inputcls}" data-isprimary="${isprimary}" data-code="${item.itmCode}" style="width:70%;" data-shop="${e}" data-onhandstock="${item.OnHandStock}" data-id="${Id}" data-oldval="${locqty}" data-abssqty="${abssqty}" data-itemid="${item.itmItemID}" value="${locqty}" ${readonly}/>`;
 
                 html += `<td class="text-right" style="width:${qtycolwidth};max-width:${qtycolwidth}">${_html}</td>`;
-               
+
                 DicStockTransferList[item.itmCode].push(st);
             });
             if (fortransfer) {
@@ -10824,7 +10824,7 @@ function OnGetStocksOK(response) {
             RecordCount: model.RecordCount,
         });
     }
-    
+
     $("#txtStock").trigger("focus");
 
     togglePaging(type, model.Items.length > 0);
@@ -11742,8 +11742,8 @@ interface IVtDelQty {
     delqty: number;
     pocode: string;
     seq: number;
-    itemcode: string | number;    
-    vtdelId: number;  
+    itemcode: string | number;
+    vtdelId: number;
 }
 let DicItemVtQtyList: { [Key: string]: Array<IVtQty> } = {};
 let DicItemVtDelQtyList: { [Key: string]: Array<IVtDelQty> } = {};
@@ -14676,7 +14676,7 @@ const fillInItemForm = (setDrpItemAttrVal: boolean) => {
         selectedItem ? Number(selectedItem!.itmLength) : Number(ItemVari!.itmLength)
     );
 
-  
+
 
     $("#txtBuyUnit").val(
         selectedItem ? selectedItem!.itmBuyUnit : ItemVari!.itmBuyUnit
@@ -16347,7 +16347,7 @@ function initRecurOrder(): IRecurOrder {
         Mode: "",
         pstUID: 0,
         pstCode: "",
-        rtsUID:0,
+        rtsUID: 0,
     };
 }
 let recurOrder: IRecurOrder | null = null;
@@ -18326,7 +18326,7 @@ $(document).on("dblclick", ".batch", function () {
                 //console.log("batch && vt(no sn) or batch only");
                 html += `<td class="text-right">${batdelqtylist}</td>`;
             }
-            
+
             html += `</tr>`;
         });
         openBatchModal(hasFocusCls);
@@ -18445,8 +18445,8 @@ $(document).on("dblclick", ".batch", function () {
                         $.each(pbvqlist, function (k, v) {
                             if (v.pocode == pocode && v.batchcode == batcode) {
                                 $.each(delbatqtylist, function (idx, ele) {
-                                    if (e.batcode == ele.batcode && pocode == ele.pocode) {                                        
-                                        ibatdelqty += ele.batdelqty!;                                        
+                                    if (e.batcode == ele.batcode && pocode == ele.pocode) {
+                                        ibatdelqty += ele.batdelqty!;
                                     }
                                 });
 
@@ -18460,7 +18460,7 @@ $(document).on("dblclick", ".batch", function () {
                                 if (inCurrDel) {
                                     batdeledqty += ibatdelqty;
                                     //console.log("#inCurrDel batdeledqty#0:" + batdeledqty);
-                                    if (itemOptions!.ChkSN) {                                       
+                                    if (itemOptions!.ChkSN) {
                                         if (itemOptions!.WillExpire) {
                                             /* console.log("all");*/
                                             //all
@@ -18533,7 +18533,7 @@ $(document).on("dblclick", ".batch", function () {
                                         } else {
                                             //console.log("batch only");
                                         }
-                                        
+
                                     }
 
                                     //console.log("batdeledqty:" + batdeledqty + ";ibatdelqty:" + ibatdelqty);
@@ -18551,7 +18551,7 @@ $(document).on("dblclick", ".batch", function () {
                                 let currentbattypedelqty: number = 0;
                                 if (inCurrDel) {
                                     currentbattypedelqty = 0;
-                                    if (itemOptions!.ChkSN) {                                        
+                                    if (itemOptions!.ChkSN) {
                                         //all
                                         if (itemOptions!.WillExpire) {
                                             DeliveryItems.forEach((x) => {
@@ -18582,7 +18582,7 @@ $(document).on("dblclick", ".batch", function () {
                                             currentbattypeqty =
                                                 v.batchqty - ibatdelqty - currentbattypedelqty;
                                         }
-                                    } else {     
+                                    } else {
                                         currentbattypedelqty = 0;
                                         if (itemOptions!.WillExpire) {
                                             DeliveryItems.forEach((x) => {
@@ -18625,34 +18625,17 @@ $(document).on("dblclick", ".batch", function () {
                                 let vtdisplay = v.vt == "" ? "N/A" : v.vt;
                                 let batseq: number = k + 1;
 
-                                if (
-                                    forwholesales &&
-                                    (Wholesales.wsStatus.toLowerCase() === "deliver" ||
-                                        Wholesales.wsStatus.toLowerCase() === "partialdeliver")
-                                ) {
-                                    $.each(DeliveryItems, function (idx, ele) {
-                                        if (
-                                            ele.seq == seq &&
-                                            ele.dlBatch == e.batcode &&
-                                            ele.itmCode == selectedItemCode
-                                        ) {
-                                            currentbdq = ele.dlQty;
-                                            return false;
-                                        }
-                                    });
-                                } else {
-                                    $.each(DeliveryItems, function (idx, ele) {
-                                        if (
-                                            ele.dlCode == batdelqtyId &&
-                                            ele.seq == seq &&
-                                            ele.dlBatch == e.batcode &&
-                                            ele.itmCode == selectedItemCode
-                                        ) {
-                                            currentbdq = ele.dlQty;
-                                            return false;
-                                        }
-                                    });
-                                }
+                                $.each(DeliveryItems, function (idx, ele) {
+                                    if (
+                                        ele.dlCode == batdelqtyId &&
+                                        ele.seq == seq &&
+                                        ele.dlBatch == e.batcode &&
+                                        ele.itmCode == selectedItemCode
+                                    ) {
+                                        currentbdq = ele.dlQty;
+                                        return false;
+                                    }
+                                });
 
                                 let disabled =
                                     !hasFocusCls ||
@@ -18712,7 +18695,6 @@ $(document).on("dblclick", ".batch", function () {
             </div>`;
                                 }
                             });
-
                         }
 
                         //batch && vt (no sn)
@@ -18871,10 +18853,11 @@ $(document).on("dblclick", ".validthru.pointer", function () {
     }
     else {
         let html: string = "";
+        if ($.isEmptyObject(DicItemVtQtyList)) return false;
         let vtqtylist: IVtQty[] = DicItemVtQtyList[selectedItemCode];
         //console.log("DicItemVtDelQtyList:", DicItemVtDelQtyList);
         let delvtqtylist: IVtDelQty[] = DicItemVtDelQtyList[selectedItemCode];
-        //console.log("vtqtylist:", vtqtylist);
+        console.log("vtqtylist:", vtqtylist);
         //console.log("delvtqtylist:", delvtqtylist);
 
         let pocodelist: string[] = [];

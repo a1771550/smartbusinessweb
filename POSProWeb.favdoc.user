@@ -114,6 +114,17 @@
       <folders />
       <favorites />
     </Folder>
+    <Folder>
+      <name>css</name>
+      <folders />
+      <favorites>
+        <Favorite>
+          <name>Site.css</name>
+          <path>Content\Site.css</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\Site.css</absolutePath>
+        </Favorite>
+      </favorites>
+    </Folder>
   </folders>
   <favorites />
 </Favorites>
