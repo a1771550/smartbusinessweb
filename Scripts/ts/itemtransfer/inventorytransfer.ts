@@ -1,7 +1,7 @@
 ﻿$infoblk = $("#infoblk");
 
 enablebuysellunits = $infoblk.data("enablebuysellunits") == "True";
-let TransferList: Array<IStockTransfer> = [];
+
 let JsStockList: Array<IJsStock> = [];
 
 $(document).on("click", "#btnTransfer", function () {
@@ -119,7 +119,7 @@ $(document).on("change", ".locqty", function () {
     let diff: number = changeqty - originalqty;
     stocktransfer.stReceiver = diff > 0 ? shop : "";
     stocktransfer.stSender = diff > 0 ? "" : shop;
-    console.log("diff:" + diff);
+    //console.log("diff:" + diff);
 
     if (diff > 0) {
         stocktransfer.inQty = diff;
@@ -130,7 +130,7 @@ $(document).on("change", ".locqty", function () {
     }
 
     let onhandstock: number = <number>$(this).data("onhandstock");
-    console.log("onhandstock:" + onhandstock);
+    //console.log("onhandstock:" + onhandstock);
     let {
         $balance,
         balance,
@@ -194,7 +194,7 @@ function getBalance(this: any, onhandstock: number) {
 
 $(document).on("dblclick", ".itemoption.locqty", function () {
     openWaitingModal();
-    window.location.href = "/Transfer/Transfer?itemId=" + $(this).data("itemid")+"&location="+$(this).data("shop")+"&qty="+$(this).val();
+    window.location.href = "/Transfer/Transfer?itemId=" + $(this).data("itemid")+"&location="+$(this).data("shop")+"&qty="+$(this).val()+"&stcode="+$("#stCode").text();
 });
 
 $(function () {

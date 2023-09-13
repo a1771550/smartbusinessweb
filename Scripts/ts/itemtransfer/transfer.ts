@@ -10,7 +10,39 @@ itemOptions = $infoblk.data("itemoptions");
 snvtlist = $infoblk.data("jsonsnvtlist");
 
 $(document).on("click", "#btnSave", function () {
-    //todo: save itemoptions transfer
+    console.log(TransferList);
+    //return;
+    if (TransferList.length > 0) {
+        $.ajax({
+            type: "POST",
+            url: "/Transfer/ProcessTransferIO",
+            data: {
+                __RequestVerificationToken: $(
+                    "input[name=__RequestVerificationToken]"
+                ).val(),               
+                TransferList,
+            },
+            success: function (data) {
+                if (data) {
+                    $.fancyConfirm({
+                        title: "",
+                        message: data.msg,
+                        shownobtn: false,
+                        okButton: oktxt,
+                        noButton: notxt,
+                        callback: function (value) {
+                            if (value) {
+                                window.location.href="/Transfer/Index";
+                                window.open("/Transfer/Print", "_blank");
+                                //window.location.href = '/Transfer/Print';
+                            }
+                        },
+                    });
+                }
+            },
+            dataType: "json",
+        });
+    }
 });
 
 $(function () {
@@ -66,5 +98,6 @@ $(function () {
              
         }
     }
-    
+
+    TransferList = [];
 });

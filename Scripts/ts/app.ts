@@ -7,6 +7,7 @@
     abstract validform(): boolean;
     abstract submitform();
 }
+let TransferList: Array<IStockTransfer> = [];
 let isLocal: boolean = false;
 let $infoblk: any;
 let customerId: number = 0;
@@ -10944,6 +10945,7 @@ $(document).on("change", ".stockmode", function () {
 function initStockTransfer(): IStockTransfer {
     return {
         Id: 0,
+        tmpId: "",
         stCode: stockTransferCode,
         stSender: "",
         stReceiver: "",
@@ -10967,6 +10969,7 @@ function initStockTransfer(): IStockTransfer {
 }
 interface IStockTransfer {
     Id: number;
+    tmpId: string | null;
     stCode: string;
     stSender: string;
     stReceiver: string;
@@ -13932,14 +13935,80 @@ interface ISale extends IRtlSale {
     DeliveryDate: string | null;
     TotalRemainAmt: number | null;
 }
-
+let chkBatSnVtCount: number = 0;
 $(document).on("change", ".validthru.focus", function () {
     if ($(this).val() !== "") $(this).removeClass("focus");
 });
 
-let chkBatSnVtCount: number = 0;
+//for transfer
+$(document).on("change", ".chkbatsnvttf", function () {
+    let ischecked: boolean = $(this).is(":checked");
+    let receiver: string = $(this).data("shop").toString();
+    //console.log("receiver:" + receiver);
+    let itemcode: string = $(this).data("itemcode").toString();
+    let tblIndex: number = Number($(this).data("tblindex"));
+    //console.log("tblIndex:" + tblIndex);
+
+    let sn = $(this).val()?.toString();
+
+    if (ischecked) {
+        $(".tblTransfer").first().find("tbody tr").each(function (i, e) {
+            $(e).find("td").eq(1).find(".chkbatsnvttf").each(function (k, v) {
+                if ($(v).val()?.toString() == sn) {
+                    $(v).prop("checked", false);
+                }
+            });
+        });
+
+        $(".tblTransfer").each(function (idx, tbl) {
+            //console.log("idx:" + idx+";tblIndex:"+tblIndex);
+            if (idx !== tblIndex) {
+                //console.log("idx:" + idx);
+                $(tbl).find("tbody tr").each(function (i, e) {
+                    $(e).find("td").eq(1).find(".chkbatsnvttf").each(function (k, v) {
+                        if ($(v).val()?.toString() == sn) {
+                            $(v).prop("checked", false);
+                        }
+                    });
+                });
+            }
+        });
+
+    } else {
+        $(".tblTransfer").first().find("tbody tr").each(function (i, e) {
+            $(e).find("td").eq(1).find(".chkbatsnvttf").each(function (k, v) {
+                if ($(v).val()?.toString() == sn) {
+                    $(v).prop("checked", true);
+                }
+            });
+        });
+    }
+
+    let idx = TransferList.findIndex(x => x.tmpId == sn);
+    //console.log("idx:" + idx);
+    /* if (ischecked) {*/
+    /* if (idx < 0) {*/
+    TransferList.splice(idx, 1);
+    //console.log("receiver#1:" + receiver);
+    TransferList.push({
+        tmpId: sn,
+        itmCode: itemcode,
+        stReceiver: receiver,
+        stSender: $infoblk.data("primarylocation"),
+        inQty: 1,
+        outQty: 1,
+        stCode: $infoblk.data("stcode")
+    } as IStockTransfer);
+    //}
+    //} else {
+    //    TransferList.splice(idx, 1);
+    //}
+    //console.log(TransferList);
+});
+
 $(document).on("change", ".chkbatsnvt", function () {
     let ischecked: boolean = $(this).is(":checked");
+    //console.log("ischecked:", ischecked);
     $tr = $(this).parent("div").parent("td").parent("tr");
 
     chkbatsnvtchange = true;
@@ -14022,7 +14091,7 @@ $(document).on("change", ".batdelqty", function () {
         .val(totalbatdelqty);
 });
 
-$(document).on("change", ".delqty", function () {
+$(document).on("change", ".vtdelqty", function () {
     $tr = $(this).parent("div").parent("td").parent("tr");
 
     vtdelqtychange = true;
@@ -18834,7 +18903,7 @@ $(document).on("dblclick", ".validthru.pointer", function () {
             <label>
                 ${deliveryItem.VtDisplay} (${deliveryItem.pstCode})
              </label>
-              <input type="text" class="form-control delqty mx-2" style="max-width:80px;" value="${deliveryItem.dlQty}" readonly>
+              <input type="text" class="form-control vtdelqty mx-2" style="max-width:80px;" value="${deliveryItem.dlQty}" readonly>
            </div></td></tr>`;
 
         openValidthruModal(hasFocusCls);
@@ -18977,7 +19046,7 @@ $(document).on("dblclick", ".validthru.pointer", function () {
             <label for="${vtdelqtyId}">
                 ${vtdisplay} (${pocode})
              </label>
-              <input type="text" class="form-control delqty mx-2" id="${vtdelqtyId}" data-vtseq="${vtseq}" data-itemcode="${selectedItemCode}" data-vtid="${vtId}" data-pocode=${pocode} data-vtqty="${e.qty}" data-vt="${e.vt}" min="0" max="${e.qty}" data-currentvdq="${currentvdq}" ${disabled} style="max-width:80px;" value="${currentvdq}">
+              <input type="text" class="form-control vtdelqty mx-2" id="${vtdelqtyId}" data-vtseq="${vtseq}" data-itemcode="${selectedItemCode}" data-vtid="${vtId}" data-pocode=${pocode} data-vtqty="${e.qty}" data-vt="${e.vt}" min="0" max="${e.qty}" data-currentvdq="${currentvdq}" ${disabled} style="max-width:80px;" value="${currentvdq}">
            </div>`; //don't use number type here => errorpone!!!
 
 

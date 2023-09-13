@@ -19,18 +19,7 @@ namespace SmartBusinessWeb.Controllers
     [HandleError]
     [CustomAuthorize("customer", "boss", "admin", "superadmin")]
     public class eBlastController : BaseController
-    {
-        //[HandleError]
-        //[CustomAuthorize("customer", "boss", "admin", "superadmin")]
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public JsonResult HotList(int eblastId, long hotlistId)
-        //{
-        //    var msg = string.Format(Resources.Resource.AddedTo, Resources.Resource.HotList,  Resources.Resource.eBlast);
-        //    eBlastEditModel.AddtoHotList(eblastId, hotlistId);
-        //    return Json(msg);
-        //}
-
+    {       
         [HttpGet]
         public JsonResult GetContactsByBlastId(int blastId)
         {

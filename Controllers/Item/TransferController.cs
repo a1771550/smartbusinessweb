@@ -99,6 +99,18 @@ namespace SmartBusinessWeb.Controllers.Item
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public JsonResult ProcessTransferIO(List<TransferModel> TransferList)
+        {
+            var msg = string.Format(Resources.Resource.SavedOkFormat, Resources.Resource.Transfer);
+            TransferEditModel model = new TransferEditModel();
+            model.ProcessTransfer(TransferList);
+            return Json(new { msg });
+        }
+
+        [HandleError]
+        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult ProcessTransfer(List<JsStock> JsStockList, List<TransferModel> TransferList)
         {
             var msg = string.Format(Resources.Resource.SavedOkFormat, Resources.Resource.Transfer);
@@ -116,7 +128,7 @@ namespace SmartBusinessWeb.Controllers.Item
             int Size_Of_Page = (int)ComInfo.PageLength;
             TransferEditModel model = new();
             model.GetStockList(apId, (int)PageNo, Size_Of_Page, SortCol, SortOrder, Keyword);
-            model.TransferNumber = model.GetTransferNumber();
+            //model.TransferNumber = model.GetTransferNumber();
             return View(model);
         }
 

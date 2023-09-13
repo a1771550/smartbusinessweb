@@ -1,5 +1,7 @@
 ﻿@{
+    var stCode = (string)ViewData["stCode"];
     var shop = (string)ViewData["shop"];
+    var shopname = (string)ViewData["shopname"];
     var batpolist = (List<string>)ViewData["batpolist"];
     var batchqtylist = (List<BatchQty>)ViewData["batchqtylist"];
     var itemcode = (string)ViewData["itemcode"];
@@ -16,9 +18,9 @@
 
     int tblIndex = (int)ViewData["i"];
 }
-<div class="transferModal" data-batpolist="@string.Join(",",batpolist)">
-    <h6 class="shop">@shop</h6>
-    <table class="table table-bordered table-condensed tblTransfer">
+<div class="transferModal" data-batpolist="@string.Join(",",batpolist)">  
+    <h6 class="shop">@shopname</h6>
+    <table class="table table-bordered table-condensed tblTransfer" data-shop="@shop" data-idx="@tblIndex">
         <thead class="gray-header">
             <tr>
                 <th class="text-right">@Resources.Resource.BatchNo (@Resources.Resource.PurchaseOrder)</th>
@@ -51,7 +53,7 @@
                                                 <label for="@batdelqtyId">
                                                     @batcode
                                                 </label>
-                                                <input type="text" class="form-control batdelqty mx-2" data-id="@batdelqtyId" data-seq="@e.seq" data-itemcode="@itemcode" data-batch="@batcode" data-pocode="@pocode" data-batqty="@e.batqty" min="0" max="3" style="max-width:80px;" value="@batqty" @disabled>
+                                                <input type="text" class="form-control batdelqtytf mx-2" data-tblindex="@tblIndex" data-shop="@shop" data-id="@batdelqtyId" data-seq="@e.seq" data-itemcode="@itemcode" data-batch="@batcode" data-pocode="@pocode" data-batqty="@e.batqty" min="0" max="3" style="max-width:80px;" value="@batqty" @disabled>
                                             </div>
                                         </td>
                                     }
@@ -68,8 +70,10 @@
                                                 if (ele.batcode == e.batcode && ele.pocode == pocode)
                                                 {
                                                     var Id = "chkbatsnvt" + ele.sn;
+                                                    var _checked = tblIndex == 0 ? "checked" : "";
+                                                    var disabled = tblIndex == 0 ? "disabled" : "";
                                                     <div class="form-check">
-                                                        <input class="chkbatsnvt" type="checkbox" value="@ele.sn" data-itemcode="@itemcode" data-pocode="@pocode" data-batcode="@ele.batcode" data-snvt="@ele.vt" id="@Id">
+                                                        <input class="chkbatsnvttf" type="checkbox" value="@ele.sn" data-tblindex="@tblIndex" data-shop="@shop" data-sn="@ele.sn" data-itemcode="@itemcode" data-pocode="@pocode" data-batcode="@ele.batcode" data-snvt="@ele.vt" id="@Id" @_checked @disabled>
                                                         <label class="" for="@Id">
                                                             @ele.sn (@pocode)
                                                         </label>
@@ -135,7 +139,7 @@
                                                     <label for="@batdelqtyId">
                                                         @vtdisplay (@v.pocode)
                                                     </label>
-                                                    <input type="text" class="form-control batdelqty mx-2" id="@batdelqtyId" data-batseq="@batseq" data-itemcode="@itemcode" data-batch="@v.batchcode" data-pocode="@v.pocode" data-batqty="@v.batchqty" data-batvt="@v.vt" min="0" max="@v.batchqty" style="max-width:80px;" value="@currentbdq" @disabled>
+                                                    <input type="text" class="form-control batdelqtytf mx-2" id="@batdelqtyId" data-tblindex="@tblIndex" data-shop="@shop" data-batseq="@batseq" data-itemcode="@itemcode" data-batch="@v.batchcode" data-pocode="@v.pocode" data-batqty="@v.batchqty" data-batvt="@v.vt" min="0" max="@v.batchqty" style="max-width:80px;" value="@currentbdq" @disabled>
                                                 </div>
                                             }
 
@@ -165,7 +169,7 @@
                                         var disabled = tblIndex == 0 ? "disabled" : "";
                                         var _checked = tblIndex == 0 ? "checked" : "";
                                         <div class="form-check">
-                                            <input class="chksnvt" type="checkbox" value="@ele.sn" data-itemcode="@itemcode" data-pocode="@pocode" data-snvt="@ele.vt" id="@Id" @disabled @_checked>
+                                            <input class="chksnvttf" type="checkbox" value="@ele.sn" data-tblindex="@tblIndex" data-shop="@shop" data-sn="@ele.sn" data-itemcode="@itemcode" data-pocode="@pocode" data-snvt="@ele.vt" id="@Id" @disabled @_checked>
                                             <label class="" for="@Id">
                                                 @ele.sn (@pocode)
                                             </label>
@@ -220,7 +224,7 @@
                                            <label for="@vtId">
                                                @vtdisplay
                                            </label>
-                                           <input type="text" class="form-control vtdelqty mx-2" data-id="@vtId" data-itemcode="@itemcode" data-pocode="@pocode" min="0" max="@ele.qty" style="max-width:80px;" value="@vtqty" @disabled>
+                                           <input type="text" class="form-control vtdelqtytf mx-2" data-tblindex="@tblIndex" data-shop="@shop" data-id="@vtId" data-itemcode="@itemcode" data-pocode="@pocode" min="0" max="@ele.qty" style="max-width:80px;" value="@vtqty" @disabled>
                                        </div>
                                     }
                                 </td>
