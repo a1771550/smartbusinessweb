@@ -538,7 +538,7 @@ namespace SmartBusinessWeb.Controllers
         {
             var itemcode = "4890008101238";
             var context = new PPWDbContext();
-            var attrs = context.ItemAttributes.Where(x => x.itmCode == itemcode && x.CompanyId == CompanyId && x.AccountProfileId == AccountProfileId).ToList();
+            var attrs = context.ItemAttributes.Where(x => x.itmCode == itemcode && x.AccountProfileId == AccountProfileId).ToList();
            
             if (attrs.Count > 0)
             {
@@ -594,20 +594,7 @@ namespace SmartBusinessWeb.Controllers
         {
             Response.Write(HashHelper.Base64Encode("ck_cd730bb508e577f1ec4f2e311a7741a02ebffa8b:cs_55f0bd7dd1b31718e293a2fbb4f012a48d558cb3"));
         }
-
-        public void Dapper()
-        {
-            string _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            using var connection = new Microsoft.Data.SqlClient.SqlConnection(_connectionString);
-            connection.Open();
-            var attrlist = connection.Query<ItemAttributeModel>(@"EXEC dbo.GetItemAttrListByCode @itemcode=@itemcode", new { itemcode = "TEST023" });
-            foreach (var attr in attrlist)
-            {
-                Response.Write(attr.iaName + ":" + attr.iaValue + "<br/>");
-            }
-
-        }
-
+       
         public void Debug69()
         {
             var context = new PPWDbContext();
@@ -2826,7 +2813,7 @@ btest3
                 int apId = 1;
 
                 var mergeditems = Helpers.ModelHelper.GetMergedItemList(apId, context);
-                var mergedstocks = Helpers.ModelHelper.GetMergedStockList(context, true);
+                var mergedstocks = Helpers.ModelHelper.GetItemStockList(context, true);
 
                 //foreach(var stock in mergedstocks)
                 //{
@@ -3012,17 +2999,7 @@ btest3
         //        Response.Write("active:" + customer.cusPointsActive + ";sofar:" + customer.cusPointsSoFar);
         //    }
         //}
-        public void ShopCodes()
-        {
-            using (var context = new PPWDbContext())
-            {
-                var ShopCodeList = (from st in context.PGLocStocks
-                                    select st.lstStockLoc
-                                ).Distinct().ToList();
-                Response.Write(ShopCodeList.Count);
-            }
-
-        }
+       
         public void DayendsFileList()
         {
             var filelist = PPWCommonLib.CommonHelpers.FileHelper.GetDayendFileList4Shop("UT POS LITE GEN2", "office", @"12/01/2021", @"12/01/2021");

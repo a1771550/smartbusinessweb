@@ -2860,13 +2860,13 @@ namespace SmartBusinessWeb.Controllers
                             customer.cusCheckout = true;
                         }
                         break;
-                    case CheckOutType.PGLocStocks:
-                        List<PGLocStock> stocks = context.PGLocStocks.Where(x => checkoutIds.Any(y => x.lstItemLocationID == y) && x.AccountProfileId == accountProfileId).ToList();
-                        foreach (var item in stocks)
-                        {
-                            item.lstCheckout = true;
-                        }
-                        break;
+                    //case CheckOutType.PGLocStocks:
+                    //    List<PGLocStock> stocks = context.PGLocStocks.Where(x => checkoutIds.Any(y => x.lstItemLocationID == y) && x.AccountProfileId == accountProfileId).ToList();
+                    //    foreach (var item in stocks)
+                    //    {
+                    //        item.lstCheckout = true;
+                    //    }
+                    //    break;
                     case CheckOutType.Items:
                         List<PGItem> pitems = context.PGItems.Where(x => checkoutIds.Any(y => x.itmItemID == y) && x.AccountProfileId == accountProfileId).ToList();
                         List<MyobItem> mitems = context.MyobItems.Where(x => checkoutIds.Any(y => x.itmItemID == y) && x.AccountProfileId == accountProfileId).ToList();

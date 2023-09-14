@@ -71,6 +71,11 @@
           <path>Views\Shared\_Layout.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Shared\_Layout.cshtml</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>purchase_Edit.cshtml</name>
+          <path>Views\Purchase\Edit.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Purchase\Edit.cshtml</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -101,6 +106,16 @@
           <name>TransferController.cs</name>
           <path>Controllers\Item\TransferController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Item\TransferController.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>PurchaseController.cs</name>
+          <path>Controllers\Purchase\PurchaseController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Purchase\PurchaseController.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>ItemController.cs</name>
+          <path>Controllers\Item\ItemController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Item\ItemController.cs</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

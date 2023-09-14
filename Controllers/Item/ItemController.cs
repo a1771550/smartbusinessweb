@@ -82,15 +82,16 @@ namespace SmartBusinessWeb.Controllers.Item
             return Json(msg);
         }
 
-        [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
-        [HttpGet]
-        public ActionResult EditIV(int itemId)
-        {
-            ViewBag.ParentPage = ViewBag.PageName = "item";
-            ItemEditModel model = new ItemEditModel(itemId, false);
-            return View("Edit", model);
-        }
+        //[HandleError]
+        //[CustomAuthorize("item", "boss", "admin", "superadmin")]
+        //[HttpGet]
+        //public ActionResult EditIV(int itemId)
+        //{
+        //    ViewBag.ParentPage = ViewBag.PageName = "item";
+        //    ItemEditModel model = new ItemEditModel(itemId, true);
+        //    return View("Edit", model);
+        //}
+
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
         [HttpPost]

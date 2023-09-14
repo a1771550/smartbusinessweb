@@ -356,7 +356,7 @@ $(document).on("click", "#btnBill", function () {
         .find("td")
         .eq(4)
         .after(
-            `<td title="${batchtxt}" class="text-center" style="width:100px;">${batchtxt}</td><td title="${sntxt}" class="text-center" style="width:100px;">${sntxt}</td><td title="${expirydatetxt}" class="text-center" style="width:100px;">${expirydatetxt}</td>`
+            `<td title="${batchtxt}" class="text-center" style="width:100px;">${batchtxt}</td><td title="${sntxt}" class="text-center" style="width:100px;">${sntxt}</td><td title="${expirydatetxt}" class="text-center" style="width:100px;">${expirydatetxt}</td><td title="${itemvariationtxt}" class="text-center" style="width:100px;">${itemvariationtxt}</td>`
         );
     $target
         .find("thead tr:first")

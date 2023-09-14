@@ -1147,7 +1147,7 @@ namespace SmartBusinessWeb.Controllers
             string comboIvId = string.Empty;
             foreach (var attr in iattrlist)
             {
-                var _iv = context.ItemVariations.FirstOrDefault(x => x.itmCode == itemcode && x.comboIvId == null && x.iaName == attr.iaName && x.iaValue == attr.iaValue && x.CompanyId == CompanyId && x.AccountProfileId == AccountProfileId);
+                var _iv = context.ItemVariations.FirstOrDefault(x => x.itmCode == itemcode && x.comboIvId == null && x.iaName == attr.iaName && x.iaValue == attr.iaValue && x.AccountProfileId == AccountProfileId);
                 if (_iv != null)
                 {
                     comboIvIds.Add(_iv.Id.ToString());
@@ -1156,7 +1156,7 @@ namespace SmartBusinessWeb.Controllers
             comboIvId = string.Join("|", comboIvIds);
             using var connection = new Microsoft.Data.SqlClient.SqlConnection(_connectionString);
             connection.Open();
-            var currentIV = connection.QueryFirstOrDefault<ItemVariationModel>(@"EXEC dbo.GetItemVari @itemcode=@itemcode,@comboIvId=@comboIvId,@apId=@apId,@companyId=@companyId", new { itemcode, comboIvId, apId = AccountProfileId, companyId = CompanyId });
+            var currentIV = connection.QueryFirstOrDefault<ItemVariationModel>(@"EXEC dbo.GetItemVari @itemcode=@itemcode,@comboIvId=@comboIvId,@apId=@apId", new { itemcode, comboIvId, apId = AccountProfileId });
 
             ModelHelper.GetShops(connection, ref Shops, ref ShopNames);
 
@@ -1231,15 +1231,11 @@ namespace SmartBusinessWeb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult UpdateItemBuySellUnit(ItemModel item = null, ItemVariationModel PGIV = null, ItemVariationModel IV = null)
+        public JsonResult UpdateItemBuySellUnit(ItemModel item)
         {
             var msg = string.Format(Resource.Saved, Resource.Item);
             if (item != null)
-                ItemEditModel.UpdateBuySellUnit(item);
-            if (PGIV != null)
-                PGItemEditModel.UpdateBuySellUnit(PGIV);
-            if (IV != null)
-                ItemEditModel.UpdateBuySellUnit(IV);
+                ItemEditModel.UpdateBuySellUnit(item);         
             return Json(msg);
         }
 
@@ -1713,14 +1709,14 @@ namespace SmartBusinessWeb.Controllers
                                   }
                                         ).ToList();
 
-                    StockList = (from st in context.PGLocStocks
+                    StockList = (from st in context.MyobLocStocks
                                  where st.lstStockLoc.ToLower() == shop && st.AccountProfileId == accountProfileId
                                  select new ItemModel
                                  {
                                      lstItemCode = st.lstItemCode,
                                      lstStockLoc = st.lstStockLoc,
-                                     lstQuantityAvailable = st.lstQuantityAvailable,
-                                     lstItemID = st.lstItemID,
+                                     lstQuantityAvailable = st.lstQuantityAvailable??0,
+                                     lstItemID = st.lstItemID??0,
                                      AccountProfileId = st.AccountProfileId,
                                  }
                                 ).ToList();
@@ -1803,17 +1799,17 @@ namespace SmartBusinessWeb.Controllers
                 return Json(items, JsonRequestBehavior.AllowGet);
             }
 
-            if (filename.StartsWith("PGLocStocks_"))
-            {
-                List<ItemModel> items = new List<ItemModel>();
-                using (var context = new PPWDbContext())
-                {
-                    companyId = ModelHelper.GetCompanyId(context);
-                    items = ModelHelper.GetPGLocStockList(context, accountProfileId, companyId);
-                }
+            //if (filename.StartsWith("PGLocStocks_"))
+            //{
+            //    List<ItemModel> items = new List<ItemModel>();
+            //    using (var context = new PPWDbContext())
+            //    {
+            //        companyId = ModelHelper.GetCompanyId(context);
+            //        items = ModelHelper.GetPGLocStockList(context, accountProfileId, companyId);
+            //    }
 
-                return Json(items, JsonRequestBehavior.AllowGet);
-            }
+            //    return Json(items, JsonRequestBehavior.AllowGet);
+            //}
 
             if (filename.StartsWith("Devices_"))
             {
@@ -2900,7 +2896,7 @@ namespace SmartBusinessWeb.Controllers
             var stockinfo = context.GetStockInfo5(apId).ToList();
 
             List<SalesItem> itemlist = ModelHelper.GetItemList(apId, context, stockinfo, startIndex, model.PageSize, out model.RecordCount, keyword, location);
-            if (!string.IsNullOrEmpty(keyword)) model.RecordCount = itemlist.Count;
+            //if (!string.IsNullOrEmpty(keyword)) model.RecordCount = itemlist.Count;
 
             ModelHelper.GetItemPriceLevelList(ref itemlist);
             model.Items = itemlist;
@@ -3296,7 +3292,7 @@ namespace SmartBusinessWeb.Controllers
                          }
                 ).ToList();
 
-                string[] shops = context.PGLocStocks.Select(x => x.lstStockLoc).Distinct().ToArray();
+                string[] shops = context.MyobLocStocks.Select(x => x.lstStockLoc).Distinct().ToArray();
                 DateTime _lastupdatetime = (DateTime)context.DebugLogs.OrderByDescending(x => x.Id).FirstOrDefault().CreateTime;
                 lastupdatetime = CommonHelper.FormatDateTime(_lastupdatetime);
 

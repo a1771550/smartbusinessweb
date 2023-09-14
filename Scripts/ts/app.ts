@@ -5584,6 +5584,7 @@ function initItem(): IItem {
         QtySellable: 0,
         hasSelectedIvs: false,
         singleProId: 0,
+        hasItemVari:false
     };
 }
 interface IItem {
@@ -5715,6 +5716,7 @@ interface IItem {
     QtySellable: number;
     hasSelectedIvs: boolean;
     singleProId: number | null;
+    hasItemVari: boolean;
 }
 interface ILocQty {
     LocCode: string;
@@ -7721,6 +7723,7 @@ interface IPurchase {
     pstAllLoc: boolean;
     UploadFileList: string[];
     DicItemOptions: { [Key: string]: IItemOptions };
+    ItemVariationList: IItemVariation[];
 }
 function initPurchaseItem(): IPurchaseItem {
     return {
@@ -7763,6 +7766,7 @@ function initPurchaseItem(): IPurchaseItem {
         SelectedIvList: [],
         hasSelectedIvs: false,
         singleProId: 0,
+        itemVari:null,
     };
 }
 interface IPurchaseItem {
@@ -7805,6 +7809,7 @@ interface IPurchaseItem {
     SelectedIvList: IItemVariation[];
     hasSelectedIvs: boolean;
     singleProId: number | null;
+    itemVari: IItemVariation|null;
 }
 interface IReturnItem extends IPurchaseItem {
     pstReturnDate: Date;
@@ -10583,7 +10588,16 @@ let gFrmName: string;
 
 let StockTransferList: Array<IStockTransfer> = [];
 let DicStockTransferList: { [Key: string]: Array<IStockTransfer> } = {};
-
+interface IDistinctItem {
+    itemCode: string;
+    itemName: string;
+    itemDesc: string;
+    isNonStock: boolean;
+    itemTaxRate: number;
+    itemSupCode: string;
+    nameDescTxt: string;
+}
+let DicLocItemList: { [Key: string]: IDistinctItem[] } = {};
 function resetPage(partial: boolean = false) {
     if (forrefund) {
         if (!partial) {
@@ -10667,16 +10681,6 @@ function GetStocks(pageIndex: number) {
         error: onAjaxFailure,
     });
 }
-interface IDistinctItem {
-    itemCode: string;
-    itemName: string;
-    itemDesc: string;
-    isNonStock: boolean;
-    itemTaxRate: number;
-    itemSupCode: string;
-    nameDescTxt: string;
-}
-let DicLocItemList: { [Key: string]: IDistinctItem[] } = {};
 function OnGetStocksOK(response) {
     //keyword = "";
     closeWaitingModal();
@@ -10740,6 +10744,9 @@ function OnGetStocksOK(response) {
 
             html += `<td>${itemcode}</td>`;
             html += `<td><span class="text-success"><span class="fa fa-${fabatcls}"></span> <span class="fa fa-${fasncls}"></span> <span class="fa fa-${favtcls}"></span></span></td>`;
+            let facls = item.hasItemVari ? "check" : "xmark";   
+            let displaycls = item.hasItemVari ? "text-success" : "text-danger";
+            html += `<td><span class="fa fa-${facls} ${displaycls}"></span></td>`;
 
             const onhandstock: string =
                 item.OnHandStock <= 0
@@ -10808,7 +10815,7 @@ function OnGetStocksOK(response) {
             }
             if (forstock) {
                 let _html = `<button class="btn btn-info mr-2 edit btnsmall" type="button" data-id="${item.itmItemID}" onclick="editItem(${item.itmItemID});"><span class="">${edittxt}</span></button>`;
-                _html += `<button class="btn btn-danger editiv btnsmall" type="button" data-id="${item.itmItemID}" onclick="editItemVari(${item.itmItemID});"><span class="">${itemvariationtxt}</span></button>`;
+               /* _html += `<button class="btn btn-danger editiv btnsmall" type="button" data-id="${item.itmItemID}" onclick="editItem(${item.itmItemID});"><span class="">${itemvariationtxt}</span></button>`;*/
                 html += `<td>${_html}</td>`;
             }
             html += "</tr>";
@@ -10850,11 +10857,8 @@ let DicItemLocQty: { [Key: string]: Array<ILocQty> } = {};
 let EditItem: boolean = false;
 
 function editItem(itemId: number) {
+    openWaitingModal();
     window.location.href = `/Item/Edit?itemId=${itemId}`;
-}
-function editItemVari(itemId: number) {
-    const controller: string = forPGItem ? "PGItem" : "Item";
-    window.location.href = `/${controller}/EditIV?itemId=${itemId}`;
 }
 function removeItem(itemId: number) {
     $.fancyConfirm({
@@ -13103,6 +13107,7 @@ function fillInPurchase(
         UseForexAPI: $("#UseForexAPI").val() === "True",
         UploadFileList: [],
         DicItemOptions: Object.assign({}, dicItemOptions),
+        ItemVariationList: $infoblk.data("jsonitemvarilist")
     };
 }
 
