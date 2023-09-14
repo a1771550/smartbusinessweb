@@ -12636,7 +12636,7 @@ function confirmVtQty() {
         $(e)
             .find("td")
             .first()
-            .find(".delqty")
+            .find(".vtdelqty")
             .each(function (k, v) {
                 let newvtqty = Number($(v).val());
                 if (newvtqty > 0) {
@@ -12685,7 +12685,7 @@ function confirmVtQty() {
     });
 
     //console.log("DeliveryItems#confirmvtqty:", DeliveryItems);
-    $("#totalvtdelqty").data("totalvtdelqty", lnqty).val(lnqty);
+    //$("#totalvtdelqty").data("totalvtdelqty", lnqty).val(lnqty);
 
     let $qty = $(`#${gTblName} tbody tr`)
         .eq(currentY)
@@ -12712,13 +12712,13 @@ function confirmVtQty() {
                 } else {
                     lnqty = 0;
                     $("#totalvtdelqty").data("totalvtdelqty", lnqty).val(lnqty);
-                    $(".delqty").val(0).addClass("focus");
+                    $(".vtdelqty").val(0).addClass("focus");
 
                     $("#tblVt tbody tr").each(function (i, e) {
                         $(e)
                             .find("td")
                             .eq(2)
-                            .find(".delqty")
+                            .find(".vtdelqty")
                             .each(function (k, v) {
                                 let dlCode = $(v).attr("id") as string;
                                 let idx = -1;
@@ -13940,6 +13940,63 @@ $(document).on("change", ".validthru.focus", function () {
     if ($(this).val() !== "") $(this).removeClass("focus");
 });
 
+function handleBatVtQtyChange(this: any, lastCellCls:string) {
+    let qty: number = Number($(this).val());
+    let maxqty: number = Number($(this).attr("max"));
+    if (qty > 0) {
+        if (qty > maxqty) {
+            qty = maxqty;
+            $(this).val(qty);
+        }
+        let tblIndex: number = Number($(this).data("tblindex"));
+        let tmpId: string = $(this).data("id").toString();
+        let itemcode: string = $(this).data("itemcode").toString();
+        let receiver: string = $(this).data("shop").toString();
+
+        $tr = $(this).parent("div").parent("td").parent("tr");
+        let tridx: number = Number($tr.data("idx"));
+        //console.log("qty:" + qty + ";tridx:" + tridx);
+        $(".tblTransfer").each(function (i, e) {
+            if (i !== tblIndex) {
+                $target = lastCellCls === "" ? $(e).find("tbody tr").eq(tridx).find("td").first().find(".batqtytf") : $(e).find("tbody tr").eq(tridx).find("td").last().find(lastCellCls!);
+                if (i === 0) {
+                    $target.val(maxqty - qty);
+                }
+                else {
+                    if (Number($target.val()) > 0) $target.val(maxqty - qty);
+                }
+            }
+        });
+
+        let idx = TransferList.findIndex(x => x.tmpId == tmpId);
+        if (idx >= 0)
+            TransferList.splice(idx, 1);
+
+        TransferList.push({
+            tmpId: tmpId,
+            itmCode: itemcode,
+            stReceiver: receiver,
+            stSender: $infoblk.data("primarylocation"),
+            inQty: qty,
+            outQty: qty,
+            stCode: $infoblk.data("stcode")
+        } as IStockTransfer);
+        // console.log("TransferList#change:", TransferList);
+    }
+}
+
+//for transfer
+$(document).on("change", ".vtqtytf", function () {
+    handleBatVtQtyChange.call(this, ".vtqtytf");
+});
+//for transfer
+$(document).on("change", ".batqtytf", function () {
+    handleBatVtQtyChange.call(this, "");
+});
+//for transfer
+$(document).on("change", ".batvtqtytf", function () {    
+    handleBatVtQtyChange.call(this, ".batvtqtytf");
+});
 //for transfer
 $(document).on("change", ".chkbatsnvttf", function () {
     let ischecked: boolean = $(this).is(":checked");
@@ -13984,12 +14041,12 @@ $(document).on("change", ".chkbatsnvttf", function () {
         });
     }
 
+    //console.log("TransferList#change#0:", TransferList);
+    //console.log("sn:" + sn);
     let idx = TransferList.findIndex(x => x.tmpId == sn);
-    //console.log("idx:" + idx);
-    /* if (ischecked) {*/
-    /* if (idx < 0) {*/
-    TransferList.splice(idx, 1);
-    //console.log("receiver#1:" + receiver);
+    if (idx >= 0)
+        TransferList.splice(idx, 1);
+
     TransferList.push({
         tmpId: sn,
         itmCode: itemcode,
@@ -13999,11 +14056,7 @@ $(document).on("change", ".chkbatsnvttf", function () {
         outQty: 1,
         stCode: $infoblk.data("stcode")
     } as IStockTransfer);
-    //}
-    //} else {
-    //    TransferList.splice(idx, 1);
-    //}
-    //console.log(TransferList);
+    //console.log("TransferList#change#1:", TransferList);
 });
 
 $(document).on("change", ".chkbatsnvt", function () {
@@ -14131,7 +14184,7 @@ $(document).on("change", ".vtdelqty", function () {
 
     $("#tblVt tbody tr").each(function (i, e) {
         /* console.log("vtdelqty:" + Number($(e).find(".vtdelqty").val()));*/
-        totalvtdelqty += Number($(e).find(".delqty").val());
+        totalvtdelqty += Number($(e).find(".vtdelqty").val());
     });
     $("#totalvtdelqty").data("totalvtdelqty", totalvtdelqty).val(totalvtdelqty);
 });
@@ -14200,6 +14253,8 @@ $(document).on("change", ".nonitemoptions", function () {
         if (idx === -1) DeliveryItems.push(deliveryItem);
     }
 });
+
+
 
 function getTotalAmt4Order(): number {
     let totalamt = 0;
@@ -18165,6 +18220,7 @@ interface IBatSnVt {
     batcode: string;
     sn: string;
     vt: string | null;
+    status: string;
 }
 let DicItemBatSnVt: { [Key: string]: IBatSnVt[] } = {};
 let DicBatTotalQty: { [Key: string]: number } = {};

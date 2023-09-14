@@ -3,8 +3,13 @@ let itemoptions: IItemOptions = $infoblk.data("jsonitemoptions");
 
 let pobatvqlist: IPoBatVQ[] = $infoblk.data("jsonpobatvqlist");
 let batchqtylist: IBatchQty[] = $infoblk.data("jsonbatchqtylist");
+let batdelqtylist: IBatDelQty[] = $infoblk.data("jsonbatdelqtylist");
+
 let batsnvtlist: IBatSnVt[] = $infoblk.data("jsonbatsnvtlist");
+
 let vtqtylist: IVtQty[] = $infoblk.data("jsonvtqtylist");
+let vtdelqtylist: IVtDelQty[] = $infoblk.data("jsonvtdelqtylist");
+
 itemOptions = $infoblk.data("itemoptions");
 
 snvtlist = $infoblk.data("jsonsnvtlist");
@@ -50,10 +55,12 @@ $(function () {
     //console.log("itemoptions:", itemOptions);
     //console.log("pobatvqlist:", pobatvqlist);
     //console.log("batchqtylist:", batchqtylist);
+    //console.log("batdelqtylist:", batdelqtylist);
     //console.log("batsnvtlist:", batsnvtlist);
     //console.log("itemoptions:", itemoptions);
     //console.log("snvtlist:", snvtlist);
-    //console.log("vtqtylist:", vtqtylist);
+    console.log("vtqtylist:", vtqtylist);
+    console.log("vtdelqtylist:", vtdelqtylist);
 
     $(".tblTransfer tbody tr").each(function () {
         let tr = $(this);
