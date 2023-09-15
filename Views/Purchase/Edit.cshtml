@@ -125,7 +125,7 @@
                     <td class="" style="width:50px;max-width:50px;"></td>
                     <td title="@Resources.Resource.ItemCode" style="text-align: center;width:100px;">@Resources.Resource.ItemCode</td>
                     <td title="@Resources.Resource.ItemName" style="text-align: center;width:100px;">@Resources.Resource.ItemName</td>
-                    <td title="@Resources.Resource.BaseUnit" style="text-align: right; width: 50px;">@Resources.Resource.BaseUnit</td>
+                    <td title="@Resources.Resource.BaseUnit" style="text-align: right; width: 70px;min-width:70px;">@Resources.Resource.BaseUnit</td>
                     <td title="@Resources.Resource.Qty" style="text-align: right; width: 80px;">@Resources.Resource.Qty</td>
                     @if (Model.pstStatus == PurchaseStatus.opened.ToString() || Model.pstStatus == PurchaseStatus.partialreceival.ToString())
                     {
@@ -266,13 +266,16 @@
 
 @Html.Partial("_PurchaseBatchModal")
 @Html.Partial("_PurchaseSerialModal")
+
+@Html.Partial("_PoItemVariModal")
+
 @Html.Partial("_TextAreaModal")
 
 @{
     string UploadSizeLimitMB = ConfigurationManager.AppSettings["MaxUploadSize"];
     string exceeduploadfilelimittxt = string.Format(Resources.Resource.ExceedUploadSizeLimitWarning, UploadSizeLimitMB);
 }
-<div id="infoblk" data-jsonpurchasestockitems="@Model.JsonPurchaseItems" data-supplierrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Supplier)" data-locationrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Location)" data-emptyitemwarning="@string.Format(Resources.Resource.EnterAtLeastOneFormat,Resources.Resource.ItemStock)" data-subtotal="@Model.SubTotal" data-disctotal="@Model.DiscTotal" data-total="@Model.Total" data-currencyrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Currency)" data-priceeditable="@Model.PriceEditable" data-disceditable="@Model.DiscEditable" data-enabletax="@Model.EnableTax" data-enablesn="@Model.EnableSerialNo" data-jsondiccurrencyexrate="@Model.JsonDicCurrencyExRate" data-batchtxt="@Resources.Resource.Batch" data-sntxt="@Resources.Resource.SerialNoItemHeader" data-validthrutxt="@Resources.Resource.ValidThru" data-itemsrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Item)" data-approvalmode="@approvalmode" data-whatsapplinkurl="@ConfigurationManager.AppSettings["WhatsappLinkUrl"]" data-isapprover="@isapprover" data-jsondiclocation="@Model.JsonDicLocation" data-shop="@Model.ComInfo.Shop" data-jsonjoblist="@Model.JsonJobList" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-filecode="@Model.pstCode" data-uploadurl="/Purchase/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@Model.UploadFileName" data-jsonpurchasedicitemoptions="@Model.JsonDicItemOptions" data-isadmin="@isadmin" data-jsonitemvarilist="@Model.JsonItemVariList"></div>
+<div id="infoblk" data-jsonpurchasestockitems="@Model.JsonPurchaseItems" data-supplierrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Supplier)" data-locationrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Location)" data-emptyitemwarning="@string.Format(Resources.Resource.EnterAtLeastOneFormat,Resources.Resource.ItemStock)" data-subtotal="@Model.SubTotal" data-disctotal="@Model.DiscTotal" data-total="@Model.Total" data-currencyrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Currency)" data-priceeditable="@Model.PriceEditable" data-disceditable="@Model.DiscEditable" data-enabletax="@Model.EnableTax" data-enablesn="@Model.EnableSerialNo" data-jsondiccurrencyexrate="@Model.JsonDicCurrencyExRate" data-batchtxt="@Resources.Resource.Batch" data-sntxt="@Resources.Resource.SerialNoItemHeader" data-validthrutxt="@Resources.Resource.ValidThru" data-itemsrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Item)" data-approvalmode="@approvalmode" data-whatsapplinkurl="@ConfigurationManager.AppSettings["WhatsappLinkUrl"]" data-isapprover="@isapprover" data-jsondiclocation="@Model.JsonDicLocation" data-shop="@Model.ComInfo.Shop" data-jsonjoblist="@Model.JsonJobList" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-filecode="@Model.pstCode" data-uploadurl="/Purchase/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@Model.UploadFileName" data-jsonpurchasedicitemoptions="@Model.JsonDicItemOptions" data-isadmin="@isadmin" data-dicitemgroupedvariations="@Model.JsonDicItemGroupedVariations" data-dicitemselectedivlist="@Model.JsonDicItemSelectedIVList"></div>
 
 
 

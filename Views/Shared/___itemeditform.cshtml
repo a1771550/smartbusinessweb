@@ -1,6 +1,5 @@
 ﻿@{
     List<ItemVariationModel> ItemVariations = ViewData["ItemVariations"] == null ? null : ViewData["ItemVariations"] as List<ItemVariationModel>;
-    ItemVariationModel ItemVari = ViewData["ItemVari"] == null ? null : ViewData["ItemVari"] as ItemVariationModel;
     ItemView Item = ViewData["Item"] == null ? null : ViewData["Item"] as ItemView;
     List<ItemAttribute> ItemAttrList = ViewData["ItemAttrList"] == null ? null : ViewData["ItemAttrList"] as List<ItemAttribute>;
 
@@ -15,54 +14,45 @@
     int lang = Convert.ToInt32(ViewData["lang"]);
     List<PPWLib.Models.MYOB.AccountModel> ACList = ViewData["ACList"] as List<PPWLib.Models.MYOB.AccountModel>;
     bool EnableBuySellUnits = Convert.ToBoolean(ViewData["EnableBuySellUnits"]);
-    //Response.Write(ItemVari == null);
-    //Response.Write(Item == null);
-    //Response.Write(Item==null);
-    //return;
-    string disabled = editmode && (ItemVari == null ? Item.HasSalesRecords : ItemVari.HasSalesRecords) ? "disabled" : "";
-    string _checked = editmode && (ItemVari == null ? !Item.itmIsNonStock : !ItemVari.itmIsNonStock) ? "checked" : "";
+
+    string disabled = editmode && Item.HasSalesRecords ? "disabled" : "";
+    string _checked = editmode && !Item.itmIsNonStock ? "checked" : "";
     bool itemnull = Item == null;
-    bool ivnull = ItemVari == null;
     List<string> Shops = ViewData["Shops"] != null ? (List<string>)ViewData["Shops"] : new List<string>();
-    bool isItemABSS = ItemVari == null ? Item == null ? false : Item.itmCheckout == null ? true : (bool)Item.itmCheckout : true;
+    bool isItemABSS = Item.itmCheckout == null ? true : (bool)Item.itmCheckout;
     HashSet<ItemCategoryModel> CategoryList = ViewData["CategoryList"] as HashSet<ItemCategoryModel>;
     bool EditItem = Convert.ToBoolean(ViewData["EditItem"]);
-    int itemId = editmode? ItemVari == null ? (int)Item.itmItemID : (int)ItemVari.itmItemID:0;
-    string itemCode = editmode? ItemVari == null ? Item.itmCode : ItemVari.itmCode:"";
+    int itemId = editmode ? (int)Item.itmItemID : 0;
+    string itemCode = editmode ? Item.itmCode : "";
 }
 <input type="hidden" id="itemId" value="@itemId" />
-<input type="hidden" id="itemCode" value="@itemCode"/>    
+<input type="hidden" id="itemCode" value="@itemCode" />
 
 <div class="form-horizontal my-4">
     @{ var itemcode = ""; var itemname = ""; var itemsupcode = ""; decimal weight = 0; decimal height = 0; decimal width = 0; decimal length = 0;
-        string lblwidth = lang == 0 ? "38%" : "46%"; var _disabled = ItemVari == null ? "" : "disabled"; }
+        string lblwidth = lang == 0 ? "38%" : "46%"; var _disabled = ""; }
 
     @if (editmode)
     {
-        itemcode = ItemVari == null ? Item.itmCode : ItemVari.itmCode;
-        itemsupcode = ItemVari == null ? Item.itmSupCode : ItemVari.itmSupCode;
-        itemname = ItemVari == null ? Item.itmName : ItemVari.itmName;
-        weight = ItemVari == null ? (Item.itmWeight == null ? 0 : (decimal)Item.itmWeight) : (ItemVari.itmWeight == null ? 0 : (decimal)ItemVari.itmWeight);
-        width = ItemVari == null ? (Item.itmWidth == null ? 0 : (decimal)Item.itmWidth) : (ItemVari.itmWidth == null ? 0 : (decimal)ItemVari.itmWidth);
-        height = ItemVari == null ? (Item.itmHeight == null ? 0 : (decimal)Item.itmHeight) : (ItemVari.itmHeight == null ? 0 : (decimal)ItemVari.itmHeight);
-        length = ItemVari == null ? (Item.itmLength == null ? 0 : (decimal)Item.itmLength) : (ItemVari.itmLength == null ? 0 : (decimal)ItemVari.itmLength);
+        itemcode = Item.itmCode;
+        itemsupcode = Item.itmSupCode;
+        itemname = Item.itmName;
+        weight = (Item.itmWeight == null ? 0 : (decimal)Item.itmWeight);
+        width = (Item.itmWidth == null ? 0 : (decimal)Item.itmWidth);
+        height = (Item.itmHeight == null ? 0 : (decimal)Item.itmHeight);
+        length = (Item.itmLength == null ? 0 : (decimal)Item.itmLength);
     }
 
-    @if (ItemVari == null)
-    {
-        <div class="form-group">
-            <label for="drpCategory">@Resources.Resource.Category</label>
-            <select id="drpCategory" class="form-control" name="itmCatId" @_disabled>
-                @foreach (var category in CategoryList)
-                {
-                    // set 'selected' by javascript
-                    <option value="@category.Id">@category.NameDisplay</option>
-                }
-            </select>
-        </div>
-    }
-
-
+    <div class="form-group">
+        <label for="drpCategory">@Resources.Resource.Category</label>
+        <select id="drpCategory" class="form-control" name="itmCatId" @_disabled>
+            @foreach (var category in CategoryList)
+            {
+                // set 'selected' by javascript
+                <option value="@category.Id">@category.NameDisplay</option>
+            }
+        </select>
+    </div>
 
     <div class="row">
         <div class="col-12 col-md-3">
@@ -88,20 +78,20 @@
         </div>
         <div class="col-12 col-md-3">
             @{
-                decimal sellingprice = editmode ? (ItemVari == null ? Item.itmBaseSellingPrice : (decimal)ItemVari.itmBaseSellingPrice) : 0;
+                decimal sellingprice = editmode ? Item.itmBaseSellingPrice : 0;
                 decimal pl;
-                decimal buyingcost = editmode ? (ItemVari == null ? Item.itmBuyStdCost == null ? 0 : (decimal)Item.itmBuyStdCost : ItemVari.itmBuyStdCost == null ? 0 : (decimal)ItemVari.itmBuyStdCost) : 0;
+                decimal buyingcost = editmode ? Item.itmBuyStdCost == null ? 0 : (decimal)Item.itmBuyStdCost : 0;
             }
             <div class="row">
                 <div class="col-6 col-md-6">
                     <div class="form-group required">
-                        <label class="control-label" for="BaseSellingPrice">@Resources.Resource.BaseSellingPrice (@Currency)</label>
+                        <label class="control-label small" for="BaseSellingPrice">@Resources.Resource.BaseSellingPrice (@Currency)</label>
                         <input type="number" class="form-control positive" id="BaseSellingPrice" name="itmBaseSellingPrice" min="0" data-val="@sellingprice" placeholder="@Resources.Resource.BaseSellingPrice (@Currency)" value="@sellingprice" />
                     </div>
                 </div>
                 <div class="col-6 col-md-6">
                     <div class="form-group required">
-                        <label class="control-label" for="BuyStdCost">@Resources.Resource.Cost4Purchase (@Currency)</label>
+                        <label class="control-label small" for="BuyStdCost">@Resources.Resource.Cost4Purchase (@Currency)</label>
                         <input type="number" class="form-control positive" id="BuyStdCost" name="itmBuyStdCost" min="0" data-val="@buyingcost" placeholder="@Resources.Resource.Cost4Purchase (@Currency)" value="@buyingcost" />
                     </div>
                 </div>
@@ -124,7 +114,7 @@
                             @{ pl = 0;
                                 if (editmode)
                                 {
-                                    pl = (ItemVari == null ? Item.PLA : ItemVari.PLA) ?? 0;
+                                    pl = Item.PLA ?? 0;
                                 }
                             }
                             <input type="number" class="form-control itemprice positive" name="PLA" id="PLA" value="@pl" />
@@ -136,7 +126,7 @@
                             @{ pl = 0;
                                 if (editmode)
                                 {
-                                    pl = (ItemVari == null ? Item.PLB : ItemVari.PLB) ?? 0;
+                                    pl = Item.PLB ?? 0;
                                 }
                             }
                             <input type="number" class="form-control itemprice positive" name="PLB" id="PLB" value="@pl" />
@@ -148,7 +138,7 @@
                             @{ pl = 0;
                                 if (editmode)
                                 {
-                                    pl = (ItemVari == null ? Item.PLC : ItemVari.PLC) ?? 0;
+                                    pl = Item.PLC ?? 0;
                                 }
                             }
                             <input type="number" class="form-control itemprice positive" name="PLC" id="PLC" value="@pl" />
@@ -162,7 +152,7 @@
                             @{ pl = 0;
                                 if (editmode)
                                 {
-                                    pl = (ItemVari == null ? Item.PLD : ItemVari.PLD) ?? 0;
+                                    pl = Item.PLD ?? 0;
                                 }
                             }
                             <input type="number" class="form-control itemprice positive" name="PLD" id="PLD" value="@pl" />
@@ -174,7 +164,7 @@
                             @{ pl = 0;
                                 if (editmode)
                                 {
-                                    pl = (ItemVari == null ? Item.PLE : ItemVari.PLE) ?? 0;
+                                    pl = Item.PLE ?? 0;
                                 }
                             }
                             <input type="number" class="form-control itemprice positive" name="PLE" id="PLE" value="@pl" />
@@ -186,7 +176,7 @@
                             @{ pl = 0;
                                 if (editmode)
                                 {
-                                    pl = (ItemVari == null ? Item.PLF : ItemVari.PLF) ?? 0;
+                                    pl = Item.PLF ?? 0;
                                 }
                             }
                             <input type="number" class="form-control itemprice positive" name="PLF" id="PLF" value="@pl" />
@@ -199,7 +189,7 @@
         @{ var desc = "";
             if (editmode)
             {
-                desc = ItemVari == null ? Item.itmDesc : ItemVari.itmDesc;
+                desc = Item.itmDesc;
             } }
         <div class="col-12 col-md-3">
             <div class="form-group" style="height:82%;">
@@ -207,7 +197,7 @@
                 <textarea id="itmDesc" name="itmDesc" cols="70" maxlength="255" style="height:91%;" class="form-control" placeholder="@Resources.Resource.Description">@desc</textarea>
                 <span class="small font-weight-bold">@Resources.Resource.CurrentCharCount: <span id="charcount"></span></span>
                 @{
-                    _checked = editmode && (ItemVari == null ? (bool)Item.itmUseDesc : (bool)ItemVari.itmUseDesc) ? "checked" : "";
+                    _checked = editmode && (bool)Item.itmUseDesc ? "checked" : "";
                 }
                 <div class="form-check mx-3">
                     <input class="form-check-input" type="checkbox" value="1" id="replacing" @_checked>
@@ -246,7 +236,7 @@
         </div>
     </div>
 
-   
+
     @if (EnableBuySellUnits)
     {
         <div class="form-group my-4">
@@ -262,9 +252,9 @@
                 bool isbought = true; int? expenseId = 0; _checked = ""; string expenseClsId = "5-1000";
                 if (editmode)
                 {
-                    isbought = ItemVari == null ? Item.itmIsBought : ItemVari.itmIsBought;
+                    isbought = Item.itmIsBought;
                     _checked = isbought ? "checked" : "";
-                    expenseId = ItemVari == null ? Item.ExpenseAccountID : ItemVari.ExpenseAccountID;
+                    expenseId = Item.ExpenseAccountID;
                 }
                 else
                 {
@@ -318,9 +308,9 @@
                 bool issold = true; int? incomeId = 0; _checked = ""; string incomeClsId = "4-1000";
                 if (editmode)
                 {
-                    issold = ItemVari == null ? Item.itmIsSold : ItemVari.itmIsSold;
+                    issold = Item.itmIsSold;
                     _checked = issold ? "checked" : "";
-                    incomeId = ItemVari == null ? Item.IncomeAccountID : ItemVari.IncomeAccountID;
+                    incomeId = Item.IncomeAccountID;
                 }
                 else
                 {
@@ -374,10 +364,10 @@
             @{bool isstock = true; int? inventoryId = 0; bool isnonstock = false; _checked = "checked"; string inventoryClsId = "1-3000";
                 if (editmode)
                 {
-                    isstock = ItemVari == null ? !Item.itmIsNonStock : !ItemVari.itmIsNonStock;
+                    isstock = !Item.itmIsNonStock;
                     _checked = isstock ? "checked" : "checked";
                     isnonstock = !isstock;
-                    inventoryId = ItemVari == null ? Item.InventoryAccountID : ItemVari.InventoryAccountID;
+                    inventoryId = Item.InventoryAccountID;
                 }
                 else
                 {
@@ -444,9 +434,9 @@
     <div id="debugblk"></div>
     @if (editmode)
     {
-        if (ItemVari == null && pgitemnull)
+        if (pgitemnull)
         {
-            disabled = (Item.TransactionCount!=null) && ((long)Item.TransactionCount > 0) ? "disabled" : "";
+            disabled = (Item.TransactionCount != null) && ((long)Item.TransactionCount > 0) ? "disabled" : "";
             @Html.Partial("_ItemOptionsBlk", null, new ViewDataDictionary { { "editmode", editmode }, { "disabled", disabled }, { "Item", Item } })
         }
     }

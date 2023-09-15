@@ -1,6 +1,5 @@
 ﻿@{
     List<ItemVariationModel> ItemVariations = ViewData["ItemVariations"] == null ? null : ViewData["ItemVariations"] as List<ItemVariationModel>;
-    ItemVariationModel ItemVari = ViewData["ItemVari"] == null ? null : ViewData["ItemVari"] as ItemVariationModel;
     ItemView Item = ViewData["Item"] == null ? null : ViewData["Item"] as ItemView;
     List<ItemAttribute> ItemAttrList = ViewData["ItemAttrList"] == null ? null : ViewData["ItemAttrList"] as List<ItemAttribute>;
 
@@ -18,12 +17,10 @@
     //Response.Write(ItemVari == null);
     //Response.Write(Item == null);
     //return;
-    string disabled = editmode && (ItemVari == null ? Item.HasSalesRecords : ItemVari.HasSalesRecords) ? "disabled" : "";
-    string _checked = editmode && (ItemVari == null ? !Item.itmIsNonStock : !ItemVari.itmIsNonStock) ? "checked" : "";
-    bool itemnull = Item == null;
-    bool ivnull = ItemVari == null;
+    string disabled = editmode && Item.HasSalesRecords ? "disabled" : "";
+    string _checked = editmode && !Item.itmIsNonStock ? "checked" : "";
     List<string> Shops = ViewData["Shops"] != null ? (List<string>)ViewData["Shops"] : new List<string>();
-    bool isItemABSS = ItemVari == null ? Item == null ? false :Item.itmCheckout==null?true: (bool)Item.itmCheckout : true;
+    bool isItemABSS = Item.itmCheckout == null ? true : (bool)Item.itmCheckout;
     HashSet<ItemCategoryModel> CategoryList = ViewData["CategoryList"] as HashSet<ItemCategoryModel>;
     bool EditItem = Convert.ToBoolean(ViewData["EditItem"]);
     //Response.Write(isItemABSS);
@@ -32,14 +29,14 @@
 
 @if (editmode)
 {
-    @Html.Hidden("itmItemID", ItemVari == null ? Item.itmItemID : ItemVari.itmItemID)
+    @Html.Hidden("itmItemID", Item.itmItemID)
     //Response.Write(ivnull);return;
 }
 @if (isItemABSS && (ItemAttrList != null && ItemAttrList.Count > 0 && ItemAttrList.Any(x => (bool)x.iaUsed4Variation)))
 {
-    const int pageSize = 3;
-    int attrlistcount = ItemAttrList==null?0: ItemAttrList.Count;
-    int pageCount = ItemAttrList==null?1: (int)Math.Ceiling((decimal)ItemAttrList.Count / pageSize);
+    @*const int pageSize = 3;
+    int attrlistcount = ItemAttrList == null ? 0 : ItemAttrList.Count;
+    int pageCount = ItemAttrList == null ? 1 : (int)Math.Ceiling((decimal)ItemAttrList.Count / pageSize);
 
     <div class="row" style="border-top:1px solid rgba(0,0,0,.1);">
         <div class="col-12 col-md-2" style="border-right:1px solid rgba(0,0,0,.1);">
@@ -100,10 +97,12 @@
 
         </div>
 
-        <div class="col-12 col-md-10">
-            @Html.Partial("___itemeditform", null, new ViewDataDictionary { { "ItemAttrList", ItemAttrList }, { "ItemVariations", ItemVariations }, { "ItemVari", ItemVari },{ "Item", Item }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList }, { "PGItemNull", pgitemnull },{"EditItem",EditItem } })
-        </div>
-    </div>
+        <div class="col-12 col-md-10">*@
+<div class="container">
+    @Html.Partial("___itemeditform", null, new ViewDataDictionary { { "ItemAttrList", ItemAttrList }, { "ItemVariations", ItemVariations }, { "Item", Item }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList }, { "PGItemNull", pgitemnull }, { "EditItem", EditItem } })
+</div>
+        @*</div>
+    </div>*@
 }
 else
 {

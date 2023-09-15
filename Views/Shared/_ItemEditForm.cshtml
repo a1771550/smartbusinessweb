@@ -60,8 +60,8 @@
                 DicLocQty = PGItem.DicLocQty,
                 IncomeAccountID = PGItem.IncomeAccountID,
                 ExpenseAccountID = PGItem.ExpenseAccountID,
-                InventoryAccountID=PGItem.InventoryAccountID,
-                itmCheckout =PGItem.itmCheckout,
+                InventoryAccountID = PGItem.InventoryAccountID,
+                itmCheckout = PGItem.itmCheckout,
                 itmBuyStdCost = PGItem.itmBuyStdCost,
                 catId = PGItem.catId,
             };
@@ -96,7 +96,7 @@
                 IncomeAccountID = MyobItem.IncomeAccountID,
                 ExpenseAccountID = MyobItem.ExpenseAccountID,
                 InventoryAccountID = MyobItem.InventoryAccountID,
-                itmCheckout = MyobItem.itmCheckout==null?true:(bool)MyobItem.itmCheckout,
+                itmCheckout = MyobItem.itmCheckout == null ? true : (bool)MyobItem.itmCheckout,
                 itmBuyStdCost = MyobItem.itmBuyStdCost,
                 catId = MyobItem.catId,
             };
@@ -115,29 +115,16 @@
 {
     @Html.AntiForgeryToken()
 
-    //Response.Write(Item == null); return;
-    //Response.Write(editmode);
-    //Response.Write(ItemAttrList == null);return;
     if (editmode)
     {
         if (ItemAttrList != null)
-        {
-            //Response.Write(Item == null);return;
-            //Response.Write(ItemVari == null);return;
-            if (ItemVari != null)
-            {
-                @Html.Partial("__ItemEditForm", null, new ViewDataDictionary { { "ItemAttrList", ItemAttrList }, { "ItemVariations", ItemVariations }, { "ItemVari", ItemVari }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "PGItemNull", PGItem == null }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList },{"EditItem",EditItem } })
-            }
-            else
-            {
-                //Response.Write(Item == null); return;
-                @Html.Partial("__ItemEditForm", null, new ViewDataDictionary { { "ItemAttrList", ItemAttrList }, { "ItemVariations", ItemVariations }, { "Item", Item }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "PGItemNull", PGItem == null }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList }, { "EditItem", EditItem } })
-            }
+        {           
+            @Html.Partial("__ItemEditForm", null, new ViewDataDictionary { { "ItemAttrList", ItemAttrList }, { "ItemVariations", ItemVariations }, { "Item", Item }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "PGItemNull", PGItem == null }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList }, { "EditItem", EditItem } })
+
 
         }
         else
-        {
-            //Response.Write(Item==null);return;
+        {            
             @Html.Partial("__ItemEditForm", null, new ViewDataDictionary { { "Item", Item }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "PGItemNull", PGItem == null }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList }, { "EditItem", EditItem } })
         }
     }

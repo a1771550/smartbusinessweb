@@ -55,7 +55,7 @@ $(document).on("click", ".colheader", function () {
 });
 
 $(document).on("dblclick", "#tblPromotion tbody tr", function () {
-    window.location.href = `/Promotion/Edit?Id=${$(this).data("id")}`;
+    window.location.href = `/Promotion/Edit?comboId=${$(this).data("id")}`;
 });
 
 $(function () {

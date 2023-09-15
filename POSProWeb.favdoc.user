@@ -122,7 +122,12 @@
     <Folder>
       <name>models</name>
       <folders />
-      <favorites />
+      <favorites>
+        <Favorite>
+          <name>ItemVariationModel.cs</name>
+          <absolutePath>F:\repos\PPWProject\PPWLib\Models\Item\ItemVariationModel.cs</absolutePath>
+        </Favorite>
+      </favorites>
     </Folder>
     <Folder>
       <name>helpers</name>

@@ -4238,6 +4238,8 @@
     <Content Include="Views\Transfer\Transfer.cshtml" />
     <Content Include="Scripts\ts\js\pos\salesorderlist.js.map" />
     <Content Include="Scripts\ts\js\itemtransfer\transfer.js.map" />
+    <Content Include="Views\Shared\_ItemVariModal.cshtml" />
+    <Content Include="Views\Shared\_PoItemVariModal.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">

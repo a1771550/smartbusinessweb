@@ -6,6 +6,9 @@ disceditable = $infoblk.data("disceditable") === "True";
 
 let purchasestockitems: IPurchaseItem[] = [];
 
+$(document).on("click", "#btnReload", function () {
+    window.location.reload();
+});
 $(document).on("change", ".received", function () {
     $tr = $(this).parent("td").parent("tr");
     currentY = $tr.data("idx") as number;
@@ -46,6 +49,24 @@ $(document).on("click", ".btnRequestApproval", function () {
     handleSubmit4Purchase();
 });
 
+$(document).on("dblclick", ".povari.pointer", function () {
+    $target = $(this).parent("td").parent("tr");
+    selectedItemCode = (
+        $target.find("td:eq(1)").find(".itemcode").val() as string
+    ).trim();
+    currentY = $target.data("idx") as number;
+    seq = currentY + 1;
+    $.each(Purchase.PurchaseItems, function (i, e) {
+        if (e.piSeq == seq) {
+            selectedPurchaseItem = structuredClone(e);
+            return false;
+        }
+    });
+    if (!selectedPurchaseItem) selectedPurchaseItem = initPurchaseItem();
+    //console.log("selectedPurchaseItem:", selectedPurchaseItem);  
+    openPoItemVariModal($(this).hasClass("focus"));
+    /*openPoItemVariModal(true);*/
+});
 $(document).on("dblclick", ".pobatch.pointer", function () {
     $target = $(this).parent("td").parent("tr");
     selectedItemCode = (
@@ -378,7 +399,7 @@ $(document).on("click", "#btnBill", function () {
         $(e).find("td").eq(4).find(".qty").prop("readonly", true);
     });
 
-    getDicItemOptionsByCodes(itemcodelist, $rows, currentItemCount);
+    getDicItemOptionsVariByCodes(itemcodelist, $rows, currentItemCount);
 });
 
 $(document).on("change", ".baseunit", function () {
@@ -534,10 +555,16 @@ $(function () {
         }
         //console.log("uploadfilelist length:", Purchase.UploadFileList.length);
         purchasestockitems = $infoblk.data("jsonpurchasestockitems");
-        //console.log("purchasestockitems:", purchasestockitems);
+        console.log("purchasestockitems:", purchasestockitems);
         Purchase.DicItemOptions = $infoblk.data("jsonpurchasedicitemoptions");
         DicItemOptions = Object.assign({}, Purchase.DicItemOptions);
         //console.log("dicitemoptions:", DicItemOptions);
+
+        DicItemGroupedVariations = $infoblk.data("dicitemgroupedvariations");
+        //console.log("DicItemGroupedVariations:", DicItemGroupedVariations);
+        //dicitemselectedivlist
+        DicItemSelectedIVList = $infoblk.data("dicitemselectedivlist");
+
         let html = "";
         let idx = 0;
         $.each(purchasestockitems, function (i, stockitem: IPurchaseItem) {
@@ -555,8 +582,6 @@ $(function () {
                     vt = "...";
                 }
             }
-            
-           /* vt = itemoptions.WillExpire? stockitem.ValidThruDisplay: stockitem.vtList.length > 0 ? (!itemoptions.ChkBatch && !itemoptions.ChkSN) ? stockitem.vtList.filter((x) => x.vtSeq == stockitem.piSeq)[0].ValidThruDisplay : stockitem.ValidThruDisplay : "";*/
             const formattedprice: string = formatnumber(stockitem.piUnitPrice);
             const formatteddiscpc: string = formatnumber(<number>stockitem.piDiscPc);
             const formattedamt: string = formatnumber(<number>stockitem.piAmtPlusTax);
@@ -566,9 +591,14 @@ $(function () {
             html += `<tr data-idx="${idx}" data-qty="${stockitem.piQty}" class=""><td><span>${stockitem.piSeq}</span></td><td><input type="text" name="itemcode" class="itemcode text-left" value="${stockitem.itmCode}"></td><td><input type="text" name="itemdesc" class="itemdesc text-left" data-itemname="${stockitem.itmName}" value="${stockitem.itmNameDesc}"></td><td class="text-right"><input type="text" name="baseunit" class="baseunit text-right" value="${baseunit}"></td><td class="text-right"><input type="number" name="qty" class="qty text-right" value="${stockitem.piQty}"></td>`;
             var sncls = (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") ? "posn pointer" : "serialno";
             var vtcls =
-                (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") ? "vt pointer" : "validthru datepicker";
+                (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") ? "vt pointer" : "validthru datepicker";           
+
             if (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") {
                 html += `<td><input type="text" name="batch" class="pobatch text-center pointer" value="${batch}" readonly /></td><td><input type="text" name="serailno" readonly class="${sncls} text-center" value="${sntxt}" /></td><td><input type="datetime" name="validthru" class="${vtcls} datepicker text-center" value="${vt}" /></td>`;
+
+                //itemvari
+                let vari: string = (stockitem.itmCode in DicItemGroupedVariations)?"...": "";              
+                html += `<td><input type="text" name="vari" class="povari text-center pointer" value="${vari}" /></td>`;
             }
             html += `<td class="text-right"><input type="number" name="price" class="price text-right" data-price="${stockitem.piUnitPrice}" value="${formattedprice}"></td><td class="text-right"><input type="number" name="discpc" class="discpc text-right" data-discpc="${stockitem.piDiscPc}" value="${formatteddiscpc}"></td>`;
             if (enableTax && !inclusivetax) {
@@ -609,19 +639,11 @@ $(function () {
             //console.log("here");
             if (!reviewmode && (Purchase.pstStatus.toLowerCase() == "order" || Purchase.pstStatus.toLowerCase() == "created")) addRow();
         }
-        else {
-            //if (Purchase.pstStatus.toLowerCase() == "created" && readonly) {
-            //    console.log("here");
-            //    $("button").addClass("disabled");
-            //} else {
+        else {           
             if (Purchase.pstStatus.toLowerCase() == "requesting")
                 $("#btnBill").hide();
-
-            addRow();
-            //}            
+            addRow();    
         }
-        //console.log('promiseddate:' + Purchase.pstPromisedDate);
-
         initDatePicker(
             "purchaseDate",
             convertCsharpDateStringToJsDate(Purchase.PurchaseDateDisplay)

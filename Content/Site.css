@@ -581,6 +581,10 @@ tr.danger td {
   filter: hue-rotate(320deg);
 }
 
+.vari.focus, .povari.focus{
+    background-color:#eae3fc !important;
+}
+
 .batch.focus,.pobatch.focus {
   background-color: blanchedalmond !important;
 }

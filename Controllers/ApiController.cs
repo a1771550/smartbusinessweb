@@ -1136,11 +1136,9 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HttpPost]
-        public JsonResult GetItemVariByAttrs(List<ItemAttributeModel> iattrlist, string type = "pgitem")
-        {
-            PGItemModel pgItem = new PGItemModel();
+        public JsonResult GetItemVariByAttrs(List<ItemAttributeModel> iattrlist)
+        { 
             ItemModel myobItem = new ItemModel();
-
             using var context = new PPWDbContext();
             string itemcode = iattrlist[0].itmCode;
             List<string> comboIvIds = new List<string>();

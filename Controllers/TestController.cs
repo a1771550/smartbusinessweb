@@ -189,7 +189,7 @@ namespace SmartBusinessWeb.Controllers
         }
         public void Debug77()
         {
-            string strtest = @"<a onclick=""event.stopPropagation();"" href=""/Enquiry/Edit?Id=AAMkAGZiZjExYzY3LTIwZjQtNGFiMS1iMGZlLTlhMDYxODI3ZDBlMABGAAAAAAARI7Mef9bUQKoj9jaMHY0dBwDZan3I0fXPTaA28oMiJ1WNAAAAAAEMAADZan3I0fXPTaA28oMiJ1WNAAgoVGB-AAA="" data-mailto=""test@test.com"">Test @ Test</a>";
+            string strtest = @"<a onclick=""event.stopPropagation();"" href=""/Enquiry/Edit?comboId=AAMkAGZiZjExYzY3LTIwZjQtNGFiMS1iMGZlLTlhMDYxODI3ZDBlMABGAAAAAAARI7Mef9bUQKoj9jaMHY0dBwDZan3I0fXPTaA28oMiJ1WNAAAAAAEMAADZan3I0fXPTaA28oMiJ1WNAAgoVGB-AAA="" data-mailto=""test@test.com"">Test @ Test</a>";
             Response.Write(CommonHelper.RemoveUnwantedTags(strtest));
         }
 
@@ -534,62 +534,7 @@ namespace SmartBusinessWeb.Controllers
         {
             Response.Write(string.Concat(UriHelper.GetBaseUrl(), Request.ApplicationPath));
         }
-        public void Debug70()
-        {
-            var itemcode = "4890008101238";
-            var context = new PPWDbContext();
-            var attrs = context.ItemAttributes.Where(x => x.itmCode == itemcode && x.AccountProfileId == AccountProfileId).ToList();
-           
-            if (attrs.Count > 0)
-            {
-                var attrIds = string.Join(",", attrs.Select(x => x.Id).ToList());
-                //Response.Write(attrIds + "<br>");
-                string _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-                using var connection = new Microsoft.Data.SqlClient.SqlConnection(_connectionString);
-                connection.Open();
-                Dictionary<string, List<ItemVariationModel>> DicItemVariations = new Dictionary<string, List<ItemVariationModel>>();
-                Dictionary<string, List<IGrouping<string, ItemVariationModel>>> DicItemGroupedItemVariations = new Dictionary<string, List<IGrouping<string, ItemVariationModel>>>();
-
-                DicItemVariations[itemcode] = connection.Query<ItemVariationModel>(@"EXEC dbo.GetItemVariationsByIds1 @iaIds=@iaIds,@apId=@apId,@companyId=@companyId", new { iaIds = attrIds, apId = AccountProfileId, companyId = CompanyId }).ToList();
-
-                Helpers.ModelHelper.GetShops(connection, ref Shops, ref ShopNames);
-
-                foreach (var iv in DicItemVariations[itemcode])
-                {
-                    Helpers.ModelHelper.PopulateIV(Shops, context, itemcode, iv);
-                }
-                foreach (var iv in DicItemVariations[itemcode])
-                {
-                    foreach (var shop in Shops)
-                    {
-                        if (iv.DicLocQty.ContainsKey(shop))
-                            Response.Write(shop + ":" + iv.DicLocQty[shop] + ";");
-                    }
-                }
-                Response.Write("<hr>");
-
-
-                DicItemGroupedItemVariations[itemcode] = DicItemVariations[itemcode].GroupBy(x => x.iaName).ToList();
-                //Response.Write(ItemVariations.Count);
-                foreach (var group in DicItemGroupedItemVariations[itemcode])
-                {
-                    Response.Write(group.Key + "<br>");
-                    foreach (var gv in group)
-                    {
-                        var valarr = gv.iaValue.Split(' ');
-                        foreach (var val in valarr)
-                            Response.Write(val + ";");
-
-                        foreach (var shop in Shops)
-                        {
-                            if (gv.DicLocQty.ContainsKey(shop))
-                                Response.Write(shop + ":" + gv.DicLocQty[shop] + ";");
-                        }
-                    }
-                    Response.Write("<hr>");
-                }
-            }
-        }
+      
         public void Base64()
         {
             Response.Write(HashHelper.Base64Encode("ck_cd730bb508e577f1ec4f2e311a7741a02ebffa8b:cs_55f0bd7dd1b31718e293a2fbb4f012a48d558cb3"));

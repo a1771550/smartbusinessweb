@@ -530,6 +530,8 @@ let waitingModal: any,
     viewFileModal: any,
     advancedSearchModal: any,
     contactModal: any,
+    poItemVariModal: any,
+    itemVariModal: any,
     transferModal: any;
 
 let sysdateformat: string = "yyyy-mm-dd";
@@ -1333,28 +1335,28 @@ function _writeItems(itemList: IItem[]) {
             ItemVari = null;
         }
 
-        if (DicItemGroupedVariations != null) {
-            for (const [key, value] of Object.entries(DicItemGroupedVariations)) {
-                if (itemcode.toString() === key.toString()) {
-                    attrvallist += `<div class="form-group">
-                  <div class="clearfix"><label class="float-right small alert alert-info font-weight-bold">${statustxt}: <span class="lblIVStatus ${statuscls}" ${statusstyle}>${status}</span></label></div>`;
-                    for (const [k, v] of Object.entries(value)) {
-                        let itemvar: IItemVariation = v[0];
-                        attrvallist += `<label>${itemvar.iaName}</label><select class="drpItemAttr form-control" data-name=${itemvar.iaName}>`;
-                        $.each(v, function (i, e: IItemVariation) {
-                            let selected: string =
-                                ItemVari !== null &&
-                                    ItemVari!.DicIvNameValList[itemvar.iaName] == e.iaValue
-                                    ? "selected"
-                                    : "";
-                            attrvallist += `<option data-id="${e.Id}" value="${e.iaValue}" ${selected}>${e.iaValue}</option>`;
-                        });
-                        attrvallist += `</select>`;
-                    }
-                    attrvallist += `</div>`;
-                }
-            }
-        }
+        //if (DicItemGroupedVariations != null) {
+        //    for (const [key, value] of Object.entries(DicItemGroupedVariations)) {
+        //        if (itemcode.toString() === key.toString()) {
+        //            attrvallist += `<div class="form-group">
+        //          <div class="clearfix"><label class="float-right small alert alert-info font-weight-bold">${statustxt}: <span class="lblIVStatus ${statuscls}" ${statusstyle}>${status}</span></label></div>`;
+        //            for (const [k, v] of Object.entries(value)) {
+        //                let itemvar: IItemVariation = v[0];
+        //                attrvallist += `<label>${itemvar.iaName}</label><select class="drpItemAttr form-control" data-name=${itemvar.iaName}>`;
+        //                $.each(v, function (i, e: IItemVariation) {
+        //                    let selected: string =
+        //                        ItemVari !== null &&
+        //                            ItemVari!.DicIvNameValList[itemvar.iaName] == e.iaValue
+        //                            ? "selected"
+        //                            : "";
+        //                    attrvallist += `<option data-id="${e.Id}" value="${e.iaValue}" ${selected}>${e.iaValue}</option>`;
+        //                });
+        //                attrvallist += `</select>`;
+        //            }
+        //            attrvallist += `</div>`;
+        //        }
+        //    }
+        //}
 
         var namedesc = ItemVari
             ? handleItemDesc(ItemVari.NameDescTxt)
@@ -1431,7 +1433,9 @@ function _writeItems(itemList: IItem[]) {
 
         html += `<td style="width:220px;min-width:220px;">${chklist}</td>`;
 
-        html += `<td style="width:250px;min-width:250px;">${attrvallist}</td>`;
+        let facls = item.hasItemVari ? "check" : "xmark";
+        let displaycls = item.hasItemVari ? "text-success" : "text-danger";
+        html += `<td><span class="fa fa-${facls} ${displaycls}"></span></td>`;
 
         seq = currentY + 1;
         if (!forpurchase) {
@@ -3200,7 +3204,124 @@ function closeTransferModal() {
     chkbatsnvtchange = false;
     batdelqtychange = false;
 }
+
+function openItemVariModal(hasFocusCls: boolean = false) {
+    //console.log("hasfocuscls:", hasFocusCls);
+    itemVariModal.dialog("open");
+    $target = $(".ui-dialog-buttonpane .ui-dialog-buttonset");
+    if (hasFocusCls) {
+        $target.find(".savebtn").show();
+        $target
+            .find(".secondarybtn")
+            .text(canceltxt)
+            .on("click", handleItemVariModalCancel);
+    } else {
+        $target.find(".savebtn").hide();
+        $target.find(".secondarybtn").text(closetxt).on("click", closeItemVariModal);
+    }
+}
+function closeItemVariModal() {
+    itemVariModal.dialog("close");
+}
+
+function addPoItemVariRow() {
+    if (DicItemGroupedVariations != null) {
+        var itemcode = selectedItemCode;
+        var purchaseItem = Purchase.PurchaseItems.find(x => x.piSeq == seq);
+
+        let html = "";
+        for (const [key, value] of Object.entries(DicItemGroupedVariations)) {
+            if (itemcode.toString() === key.toString()) {
+                for (const [k, v] of Object.entries(value)) {
+                    html += `<div class="form-group">`;
+                    let itemvar: IItemVariation = v[0];
+                    html += `<label class="my-auto">${itemvar.iaName}</label><select class="drpItemAttr form-control" data-name=${itemvar.iaName}>`;
+                    $.each(v, function (i, e: IItemVariation) {                      
+                        let found: boolean = false;
+                        if (purchaseItem && purchaseItem.poItemVariList) {
+                            found=purchaseItem.poItemVariList.some((x) => {
+                                return x.iaIdList.includes(e.Id);
+                            });
+                        }
+                        let selected: string = found?"selected": "";
+                        html += `<option value="${e.Id}" ${selected}>${e.iaValue}</option>`;
+                    });
+                    html += `</select>`;
+                    html += `</div>`;
+                }
+            }
+        }
+
+        poItemVariModal.find(".container").empty().append(html);
+    }
+}
+function openPoItemVariModal(hasFocusCls: boolean = false) {
+
+    addPoItemVariRow();
+
+    poItemVariModal.dialog("open");
+    $target = $(".ui-dialog-buttonpane .ui-dialog-buttonset");
+    if (hasFocusCls) {
+        $target.find(".savebtn").show();
+        $target
+            .find(".secondarybtn")
+            .text(canceltxt)
+            .on("click", handlePoItemVariModalCancel);
+    } else {
+        $target.find(".savebtn").hide();
+        $target.find(".secondarybtn").text(closetxt).on("click", closePoItemVariModal);
+    }
+}
+function closePoItemVariModal() {
+    poItemVariModal.dialog("close");
+}
 function initModals() {
+    poItemVariModal = $("#poItemVariModal").dialog({
+        width: 400,
+        title: itemvariationtxt,
+        autoOpen: false,
+        modal: true,
+        buttons: [
+            {
+                class: "savebtn",
+                text: oktxt,
+                click: function () {
+                    confirmPoItemVariQty();
+                },
+            },
+            {
+                class: "secondarybtn",
+                text: canceltxt,
+                click: function () {
+                    handlePoItemVariModalCancel();
+                },
+            },
+        ],
+    });
+
+    itemVariModal = $("#itemVariModal").dialog({
+        width: 900,
+        title: itemvariationtxt,
+        autoOpen: false,
+        modal: true,
+        buttons: [
+            {
+                class: "savebtn",
+                text: oktxt,
+                click: function () {
+                    confirmItemVariQty();
+                },
+            },
+            {
+                class: "secondarybtn",
+                text: canceltxt,
+                click: function () {
+                    handleItemVariModalCancel();
+                },
+            },
+        ],
+    });
+
     transferModal = $("#transferModal").dialog({
         width: 900,
         title: transfertxt,
@@ -4409,6 +4530,12 @@ function initModals() {
         });
     }
 }
+function handlePoItemVariModalCancel() {
+    closePoItemVariModal();
+}
+function handleItemVariModalCancel() {
+    closeItemVariModal();
+}
 function handleTransferModalCancel() {
     closeTransferModal();
 }
@@ -5584,7 +5711,7 @@ function initItem(): IItem {
         QtySellable: 0,
         hasSelectedIvs: false,
         singleProId: 0,
-        hasItemVari:false
+        hasItemVari: false
     };
 }
 interface IItem {
@@ -7766,7 +7893,7 @@ function initPurchaseItem(): IPurchaseItem {
         SelectedIvList: [],
         hasSelectedIvs: false,
         singleProId: 0,
-        itemVari:null,
+        poItemVariList: [],
     };
 }
 interface IPurchaseItem {
@@ -7809,7 +7936,7 @@ interface IPurchaseItem {
     SelectedIvList: IItemVariation[];
     hasSelectedIvs: boolean;
     singleProId: number | null;
-    itemVari: IItemVariation|null;
+    poItemVariList: IPoItemVari[];
 }
 interface IReturnItem extends IPurchaseItem {
     pstReturnDate: Date;
@@ -7993,7 +8120,7 @@ $(document).on("change", ".taxpc", function () {
     updateRow(getRowPrice(), getRowDiscPc());
 });
 
-function getDicItemOptionsByCodes(
+function getDicItemOptionsVariByCodes(
     itemcodelist: string[],
     $rows: JQuery,
     currentItemCount: number
@@ -8034,6 +8161,12 @@ function getDicItemOptionsByCodes(
                     }
                 }
                 let html = `<td><input type="text" class="text-center ${batcls}" readonly /></td><td data-serialno=""><input type="text" class="text-center ${sncls}" readonly /></td><td class="text-center" data-validthru="">${vtinput}</td>`;
+
+                //itemvari                
+                let varicls = (selectedItemCode in DicItemGroupedVariations) ? "povari pointer focus" : "";
+                //console.log("itemvarilist:", itemvarilist);
+                html += `<td><input type="text" class="text-center ${varicls}" readonly /></td>`;
+
                 let $cell = $(e).find("td").eq(4);
                 $cell.after(html);
                 let qty: number = Number($cell.find(".qty").val());
@@ -10744,7 +10877,7 @@ function OnGetStocksOK(response) {
 
             html += `<td>${itemcode}</td>`;
             html += `<td><span class="text-success"><span class="fa fa-${fabatcls}"></span> <span class="fa fa-${fasncls}"></span> <span class="fa fa-${favtcls}"></span></span></td>`;
-            let facls = item.hasItemVari ? "check" : "xmark";   
+            let facls = item.hasItemVari ? "check" : "xmark";
             let displaycls = item.hasItemVari ? "text-success" : "text-danger";
             html += `<td><span class="fa fa-${facls} ${displaycls}"></span></td>`;
 
@@ -10815,7 +10948,7 @@ function OnGetStocksOK(response) {
             }
             if (forstock) {
                 let _html = `<button class="btn btn-info mr-2 edit btnsmall" type="button" data-id="${item.itmItemID}" onclick="editItem(${item.itmItemID});"><span class="">${edittxt}</span></button>`;
-               /* _html += `<button class="btn btn-danger editiv btnsmall" type="button" data-id="${item.itmItemID}" onclick="editItem(${item.itmItemID});"><span class="">${itemvariationtxt}</span></button>`;*/
+                /* _html += `<button class="btn btn-danger editiv btnsmall" type="button" data-id="${item.itmItemID}" onclick="editItem(${item.itmItemID});"><span class="">${itemvariationtxt}</span></button>`;*/
                 html += `<td>${_html}</td>`;
             }
             html += "</tr>";
@@ -12413,6 +12546,7 @@ function addBatchRow(isPlus: boolean = true) {
     }
 }
 
+
 function resetPurchaseBatchModal() {
     $("#tblPbatch tbody").empty();
 }
@@ -12481,13 +12615,6 @@ function confirmPoBatch() {
                 $.each(e.batchList, function (k, v) {
                     lnqty += v.batQty;
                 });
-                // $(`#${gTblName} tbody tr`)
-                //   .eq(currentY)
-                //   .find("td")
-                //   .last()
-                //   .find(".received")
-                //   .val(lnqty)
-                //   .trigger("change");
                 return false;
             }
         });
@@ -12521,7 +12648,6 @@ function confirmPoBatch() {
         });
     }
 }
-
 function _confirmPoBatch($tr: JQuery): string {
     let msg = "";
     let idx = 1;
@@ -12590,6 +12716,55 @@ function _confirmPoBatch($tr: JQuery): string {
     return msg;
 }
 
+function confirmPoItemVariQty() {
+    let selectedIvIdList: number[] = [];
+    poItemVariModal.find(".drpItemAttr").each(function (i, e) {
+        selectedIvIdList.push(Number($(e).val()));
+    });
+
+    if (selectedIvIdList.length > 0) {
+        $tr = $(`#${gTblName} tbody tr`).eq(currentY);
+        $tr.find("td").eq(8).find(".povari").removeClass("focus").val("...");
+        const itemcode: string = $tr.find("td").eq(1).find(".itemcode").val()!.toString();
+        const ivqty = Number($tr.find("td").last().find(".received").val());
+        const comboId = selectedIvIdList.join(":");
+        Purchase.PurchaseItems.forEach((x) => {
+            if (x.piSeq == seq) {
+                if (x.poItemVariList && x.poItemVariList.findIndex(x => x.ivComboId == comboId) < 0) {
+                    x.poItemVariList.push({
+                        ivComboId: comboId,
+                        seq: currentY + 1,
+                        ivQty: ivqty,
+                        itmCode: itemcode,
+                        iaIdList: selectedIvIdList.slice(0)
+                    } as IPoItemVari);
+                } else {
+                    x.poItemVariList.push({
+                        ivComboId: comboId,
+                        seq: currentY + 1,
+                        ivQty: ivqty,
+                        itmCode: itemcode,
+                        iaIdList: selectedIvIdList.slice(0)
+                    } as IPoItemVari);
+                }
+            }
+        });
+    }
+    console.log(Purchase.PurchaseItems);
+
+    closePoItemVariModal();
+}
+interface IPoItemVari {
+    Id: string;
+    ivComboId: string;
+    ivStockInCode: string;
+    ivQty: number | null;
+    ivStatus: string;
+    seq: number | null;
+    itmCode: string;
+    itemID: number | null;
+    iaIdList: number[];
+}
 function initBatch(): IBatch {
     return {
         Id: 0,
@@ -12623,8 +12798,12 @@ interface IBatch {
 let deliveryItem: IDeliveryItem | null;
 let deliveryQty: number = 0;
 
+
+function confirmItemVariQty() {
+    //todo: confirmitemvariqty
+}
 function confirmTransferQty() {
-    //todo:
+
 }
 function resetVtQty() {
     $(".delqty").val(0);
@@ -13945,7 +14124,7 @@ $(document).on("change", ".validthru.focus", function () {
     if ($(this).val() !== "") $(this).removeClass("focus");
 });
 
-function handleBatVtQtyChange(this: any, lastCellCls:string) {
+function handleBatVtQtyChange(this: any, lastCellCls: string) {
     let qty: number = Number($(this).val());
     let maxqty: number = Number($(this).attr("max"));
     if (qty > 0) {
@@ -13999,7 +14178,7 @@ $(document).on("change", ".batqtytf", function () {
     handleBatVtQtyChange.call(this, "");
 });
 //for transfer
-$(document).on("change", ".batvtqtytf", function () {    
+$(document).on("change", ".batvtqtytf", function () {
     handleBatVtQtyChange.call(this, ".batvtqtytf");
 });
 //for transfer
@@ -15220,13 +15399,12 @@ let forPGItem: boolean = false;
 let forMyobItem: boolean = false;
 
 $(document).on("change", ".drpItemAttr", function () {
+    if (forpurchase) return false;
     let itemcode = "";
     if (forsales) {
         $tr = $(this).parent(".form-group").parent("td").parent("tr");
         $target = $tr.find("td").find(".form-group").find(".lblIVStatus");
         itemcode = $tr.data("code");
-        forPGItem = false;
-        forMyobItem = false;
     }
 
     let iattrs: IItemAttribute[] = [];
@@ -15239,9 +15417,10 @@ $(document).on("change", ".drpItemAttr", function () {
             iattr = { ...iattr, Id, iaName, iaValue };
             iattrs.push(iattr);
         });
-    } else {
+    }
+    else {
+        itemcode = $("#itmCode").val() as string;
         $(".drpItemAttr").each(function (i, e) {
-            itemcode = $("#itmCode").val() as string;
             let iattr: IItemAttribute = initItemAttr(itemcode);
             let Id: number = Number($(e).attr("id"));
             let iaName: string = $(this).data("name");
@@ -15253,7 +15432,7 @@ $(document).on("change", ".drpItemAttr", function () {
 
     let iattrlist = JSON.stringify({
         iattrlist: iattrs,
-        type: forPGItem ? "pgitem" : "myobitem",
+        type: "myobitem",
     });
     //console.log(iattrlist);
     $.ajax({

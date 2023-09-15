@@ -1,7 +1,7 @@
 ﻿@model PPWLib.Models.Item.ItemEditModel
 
 @{
-    bool editmode = Model.ItemVariations != null && Model.ItemVariations.Count > 0 ? Model.ItemVariations.First().itmItemID > 0 : Model.Item.itmItemID > 0;
+    bool editmode = Model.Item.itmItemID > 0;
     string edittxt = editmode ? Resources.Resource.Edit : Resources.Resource.Add;
     ViewBag.Title = edittxt + " " + Resources.Resource.Item;
     string codelist = string.Join(",", Model.ItemCodeList);
@@ -10,8 +10,6 @@
     int lang = CultureHelper.CurrentCulture;
     PPWLib.Models.Item.ItemModel Item = Model.Item;
     bool nonabss = Model.NonABSS;
-    //Response.Write(Model.CategoryList.Count);return;
-   // Response.Write("Model.Item null:"+ (Model.Item == null)+";Model.ItemVari null:"+(Model.ItemVari==null));return;
 
 }
 <link href="~/Content/Item.css?v=@rand" type="text/css" rel="stylesheet" />
@@ -22,17 +20,10 @@
 
 @if (Model.ItemAttrList != null && Model.ItemAttrList.Count > 0)
 {
-    if (Model.ItemVari != null)
-    {
-        @Html.Partial("_ItemEditForm", null, new ViewDataDictionary { { "ItemAttrList", Model.ItemAttrList }, { "ItemVariations", Model.ItemVariations }, { "ItemVari", Model.ItemVari }, { "Currency", Model.Currency }, { "EnableBuySellUnits", Model.EnableBuySellUnits }, { "lang", lang }, { "ACList", Model.ACList }, { "nonabss", nonabss }, { "AccountProfileId", Model.AccountProfileId }, { "MaxCodeLength", Model.MaxCodeLength }, { "MaxNameLength", Model.MaxNameLength }, { "editmode", editmode }, { "CategoryList", Model.CategoryList },{ "EditItem", Model.EditItem } })
-        @Html.Partial("_ItemBuySellUnitsModal", null, new ViewDataDictionary { { "ItemVari", Model.ItemVari } })
-    }
-    else
-    {
-        @Html.Partial("_ItemEditForm", null, new ViewDataDictionary { { "ItemAttrList", Model.ItemAttrList }, { "ItemVariations", Model.ItemVariations }, { "Item", Model.Item }, { "Currency", Model.Currency }, { "EnableBuySellUnits", Model.EnableBuySellUnits }, { "lang", lang }, { "ACList", Model.ACList }, { "nonabss", nonabss }, { "AccountProfileId", Model.AccountProfileId }, { "MaxCodeLength", Model.MaxCodeLength }, { "MaxNameLength", Model.MaxNameLength }, { "editmode", editmode }, { "CategoryList", Model.CategoryList }, { "EditItem", Model.EditItem } })
+    @Html.Partial("_ItemEditForm", null, new ViewDataDictionary { { "ItemAttrList", Model.ItemAttrList }, { "ItemVariations", Model.ItemVariations }, { "Item", Model.Item }, { "Currency", Model.Currency }, { "EnableBuySellUnits", Model.EnableBuySellUnits }, { "lang", lang }, { "ACList", Model.ACList }, { "nonabss", nonabss }, { "AccountProfileId", Model.AccountProfileId }, { "MaxCodeLength", Model.MaxCodeLength }, { "MaxNameLength", Model.MaxNameLength }, { "editmode", editmode }, { "CategoryList", Model.CategoryList }, { "EditItem", Model.EditItem } })
 
-        @Html.Partial("_ItemBuySellUnitsModal", null, new ViewDataDictionary { { "Item", Model.Item } })
-    }
+    @Html.Partial("_ItemBuySellUnitsModal", null, new ViewDataDictionary { { "Item", Model.Item } })
+
 }
 else
 {
@@ -47,14 +38,7 @@ else
 
 
 
-@if (Model.Item != null)
-{   
-    <div id="infoblk" data-shop="@Model.ComInfo.Shop" data-codelist="@codelist" data-supcodelist="@supcodelist" data-jsondicacaccounts="@Model.JsonDicAcAccounts" data-accountprofileid="@Model.AccountProfileId" data-jsonitem="@Model.JsonItem" data-stockqtyerr="@Resources.Resource.StockQtyLTZeroErr" data-jsonattrlist="@Model.JsonItemAttrList" data-jsondiclocqty="@Model.Item.JsonDicLocQty" data-jsonitemvariations="@Model.JsonItemVariations" data-jsonselectedivlist="@Model.JsonSelectedIVList" data-jsonitemvari="@Model.JsonItemVari" data-edititem="@Model.EditItem"></div>
-}
-@if(Model.ItemVari!=null)
-{   
-    <div id="infoblk" data-shop="@Model.ComInfo.Shop" data-codelist="@codelist" data-supcodelist="@supcodelist" data-jsondicacaccounts="@Model.JsonDicAcAccounts" data-accountprofileid="@Model.AccountProfileId" data-jsonitem="@Model.JsonItem" data-stockqtyerr="@Resources.Resource.StockQtyLTZeroErr" data-jsonattrlist="@Model.JsonItemAttrList" data-jsondiclocqty="@Model.ItemVari.JsonDicLocQty" data-jsonitemvariations="@Model.JsonItemVariations" data-jsonselectedivlist="@Model.JsonSelectedIVList" data-jsonitemvari="@Model.JsonItemVari" data-totalbasestockqty="@Model.TotalBaseStockQty" data-edititem="@Model.EditItem"></div>
-}
+<div id="infoblk" data-shop="@Model.ComInfo.Shop" data-codelist="@codelist" data-supcodelist="@supcodelist" data-jsondicacaccounts="@Model.JsonDicAcAccounts" data-accountprofileid="@Model.AccountProfileId" data-jsonitem="@Model.JsonItem" data-stockqtyerr="@Resources.Resource.StockQtyLTZeroErr" data-jsonattrlist="@Model.JsonItemAttrList" data-jsondiclocqty="@Model.Item.JsonDicLocQty" data-jsonitemvariations="@Model.JsonItemVariations" data-jsonselectedivlist="@Model.JsonSelectedIVList" data-jsonitemvari="@Model.JsonItemVari" data-edititem="@Model.EditItem"></div>
 
 
 <script src="~/Scripts/ts/js/item/itemedit.js?v=@rand"></script>

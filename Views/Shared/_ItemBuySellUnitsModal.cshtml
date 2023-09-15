@@ -1,18 +1,13 @@
 ﻿@{
     var example = $"{{0}}1{{1}} {Resources.Resource.Carton} = {{2}}12{{3}} {Resources.Resource.Box}";
     var examplehtml = string.Format(example, "<span class=\"font-weight-bold\">", "</span>", "<span class=\"font-weight-bold\">", "</span>");   
-    ItemVariationModel ItemVari = ViewData["ItemVari"] == null ? null : ViewData["ItemVari"] as ItemVariationModel;
+   
     ItemModel Item = ViewData["Item"] == null ? null : (ItemModel)ViewData["Item"];
     PGItemModel PGItem = ViewData["PGItem"] == null ? null : (PGItemModel)ViewData["PGItem"];
     string buyunit = "";
     string sellunit = "";
     int sellunitqty = 0;
-    if (ItemVari != null)
-    {        
-        buyunit = ItemVari.itmBuyUnit;
-        sellunit = ItemVari.itmSellUnit;
-        sellunitqty = ItemVari.itmSellUnitQuantity == null ? 0 : (int)ItemVari.itmSellUnitQuantity;
-    }
+   
     if (Item != null)
     {
         buyunit = Item.itmBuyUnit;

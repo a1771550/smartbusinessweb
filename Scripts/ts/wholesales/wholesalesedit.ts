@@ -863,7 +863,7 @@ $(document).on("change", "#wsCustomerPO", function () {
 
 $(document).on("click", "#btnReload", function () {
     const Id = $("#wsUID").val();
-    window.location.href = `/WholeSales/Edit?Id=${Id}&type=order`;
+    window.location.href = `/WholeSales/Edit?comboId=${Id}&type=order`;
 });
 
 function fillInDeliveryItems() {
