@@ -209,7 +209,7 @@ $(document).on('change', '#iPageSize', function () {
 
 $(document).on('dblclick', '.enquiry', function () {
     let Id: number = <number>$(this).data('id');
-    window.location.href = '/Enquiry/Edit?comboId=' + Id;
+    window.location.href = '/Enquiry/Edit?Id=' + Id;
 });
 
 $(document).on("click", ".assign", function (e) {

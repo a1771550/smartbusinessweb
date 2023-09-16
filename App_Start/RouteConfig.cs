@@ -76,7 +76,7 @@ new { controller = "Api", action = "ViewTrack", contactName = UrlParameter.Optio
 
             routes.MapRoute(
                name: null,
-               url: "Culture/{comboId}",
+               url: "Culture/{Id}",
                defaults: new { controller = "Home", action = "ChangeCurrentCulture" },
 new { Id = @"\d+" }
            );

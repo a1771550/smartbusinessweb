@@ -187,11 +187,7 @@ namespace SmartBusinessWeb.Controllers
             //http://192.168.123.78/Track
             Response.Write(host);
         }
-        public void Debug77()
-        {
-            string strtest = @"<a onclick=""event.stopPropagation();"" href=""/Enquiry/Edit?comboId=AAMkAGZiZjExYzY3LTIwZjQtNGFiMS1iMGZlLTlhMDYxODI3ZDBlMABGAAAAAAARI7Mef9bUQKoj9jaMHY0dBwDZan3I0fXPTaA28oMiJ1WNAAAAAAEMAADZan3I0fXPTaA28oMiJ1WNAAgoVGB-AAA="" data-mailto=""test@test.com"">Test @ Test</a>";
-            Response.Write(CommonHelper.RemoveUnwantedTags(strtest));
-        }
+      
 
         public void ParseDateTime()
         {
@@ -1204,7 +1200,7 @@ TEST014:d4:btest1:
 
             var ibvqList = from item in itembtInfo
                            where item.batCode != null
-                           //group item by new { item.itmCode, item.piBatch, item.piValidThru } into itemgroup
+                           //group item by new { item.itmCode, item.ivBatCode, item.piValidThru } into itemgroup
                            select new
                            {
                                PoCode = item.pstCode,

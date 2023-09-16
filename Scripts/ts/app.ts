@@ -3236,14 +3236,14 @@ function addPoItemVariRow() {
                     html += `<div class="form-group">`;
                     let itemvar: IItemVariation = v[0];
                     html += `<label class="my-auto">${itemvar.iaName}</label><select class="drpItemAttr form-control" data-name=${itemvar.iaName}>`;
-                    $.each(v, function (i, e: IItemVariation) {                      
+                    $.each(v, function (i, e: IItemVariation) {
                         let found: boolean = false;
                         if (purchaseItem && purchaseItem.poItemVariList) {
-                            found=purchaseItem.poItemVariList.some((x) => {
-                                return x.iaIdList.includes(e.Id);
+                            found = purchaseItem.poItemVariList.some((x) => {
+                                return x.IaIdList.includes(e.Id);
                             });
                         }
-                        let selected: string = found?"selected": "";
+                        let selected: string = found ? "selected" : "";
                         html += `<option value="${e.Id}" ${selected}>${e.iaValue}</option>`;
                     });
                     html += `</select>`;
@@ -3256,6 +3256,20 @@ function addPoItemVariRow() {
     }
 }
 function openPoItemVariModal(hasFocusCls: boolean = false) {
+    //poItemVariModal.find("#batcode").val(selectedPurchaseItem.ivBatCode);
+
+    if (!itemOptions?.ChkBatch && !itemOptions?.ChkSN && !itemOptions?.WillExpire) {
+        poItemVariModal.find(".form-group").first().hide();
+    } else {
+        $.each(selectedPurchaseItem.batchList, function (i, item) {
+            const selected = selectedPurchaseItem.ivBatCode === item.batCode;
+            poItemVariModal.find('#batcode').append($("<option>", {
+                value: item.batCode,
+                text: item.batCode,
+                selected: selected
+            }));
+        });
+    }
 
     addPoItemVariRow();
 
@@ -7894,6 +7908,7 @@ function initPurchaseItem(): IPurchaseItem {
         hasSelectedIvs: false,
         singleProId: 0,
         poItemVariList: [],
+        ivBatCode: "",
     };
 }
 interface IPurchaseItem {
@@ -7937,6 +7952,7 @@ interface IPurchaseItem {
     hasSelectedIvs: boolean;
     singleProId: number | null;
     poItemVariList: IPoItemVari[];
+    ivBatCode: string | null;
 }
 interface IReturnItem extends IPurchaseItem {
     pstReturnDate: Date;
@@ -8163,7 +8179,7 @@ function getDicItemOptionsVariByCodes(
                 let html = `<td><input type="text" class="text-center ${batcls}" readonly /></td><td data-serialno=""><input type="text" class="text-center ${sncls}" readonly /></td><td class="text-center" data-validthru="">${vtinput}</td>`;
 
                 //itemvari                
-                let varicls = (selectedItemCode in DicItemGroupedVariations) ? "povari pointer focus" : "";
+                let varicls = ((selectedItemCode in DicItemGroupedVariations && itemOptions && itemOptions.ChkBatch) || (!itemOptions?.ChkBatch && !itemOptions?.ChkSN && !itemOptions?.WillExpire)) ? "povari pointer focus" : "";
                 //console.log("itemvarilist:", itemvarilist);
                 html += `<td><input type="text" class="text-center ${varicls}" readonly /></td>`;
 
@@ -12711,7 +12727,6 @@ function _confirmPoBatch($tr: JQuery): string {
         } else {
             selectedPurchaseItem.batchList.push(batch);
         }
-        //console.log("batchlist#1:", selectedPurchaseItem.batchList);
     }
     return msg;
 }
@@ -12722,6 +12737,8 @@ function confirmPoItemVariQty() {
         selectedIvIdList.push(Number($(e).val()));
     });
 
+    let selectedBatCode: string = (!itemOptions?.ChkBatch && !itemOptions?.ChkSN && !itemOptions?.WillExpire) ? "" : poItemVariModal.find("#batcode").val();
+
     if (selectedIvIdList.length > 0) {
         $tr = $(`#${gTblName} tbody tr`).eq(currentY);
         $tr.find("td").eq(8).find(".povari").removeClass("focus").val("...");
@@ -12731,28 +12748,25 @@ function confirmPoItemVariQty() {
         Purchase.PurchaseItems.forEach((x) => {
             if (x.piSeq == seq) {
                 if (x.poItemVariList && x.poItemVariList.findIndex(x => x.ivComboId == comboId) < 0) {
-                    x.poItemVariList.push({
-                        ivComboId: comboId,
-                        seq: currentY + 1,
-                        ivQty: ivqty,
-                        itmCode: itemcode,
-                        iaIdList: selectedIvIdList.slice(0)
-                    } as IPoItemVari);
+                    addPoItemVari(x, comboId, ivqty, itemcode, selectedIvIdList, selectedBatCode);
                 } else {
-                    x.poItemVariList.push({
-                        ivComboId: comboId,
-                        seq: currentY + 1,
-                        ivQty: ivqty,
-                        itmCode: itemcode,
-                        iaIdList: selectedIvIdList.slice(0)
-                    } as IPoItemVari);
+                    addPoItemVari(x, comboId, ivqty, itemcode, selectedIvIdList, selectedBatCode);
                 }
             }
         });
     }
-    console.log(Purchase.PurchaseItems);
-
+    //console.log(Purchase.PurchaseItems);
     closePoItemVariModal();
+}
+function addPoItemVari(x: IPurchaseItem, comboId: string, ivqty: number, itemcode: string, selectedIvIdList: number[], selectedBatCode: string) {
+    x.poItemVariList.push({
+        ivComboId: comboId,
+        seq: currentY + 1,
+        ivQty: ivqty,
+        itmCode: itemcode,
+        IaIdList: selectedIvIdList.slice(0),
+        batCode: selectedBatCode,
+    } as IPoItemVari);
 }
 interface IPoItemVari {
     Id: string;
@@ -12763,7 +12777,9 @@ interface IPoItemVari {
     seq: number | null;
     itmCode: string;
     itemID: number | null;
-    iaIdList: number[];
+    IaIdList: number[];
+    iaIdList: string | null;
+    batCode: string | null;
 }
 function initBatch(): IBatch {
     return {

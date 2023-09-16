@@ -50,22 +50,36 @@ $(document).on("click", ".btnRequestApproval", function () {
 });
 
 $(document).on("dblclick", ".povari.pointer", function () {
-    $target = $(this).parent("td").parent("tr");
+    $tr = $(this).parent("td").parent("tr");
     selectedItemCode = (
-        $target.find("td:eq(1)").find(".itemcode").val() as string
+        $tr.find("td:eq(1)").find(".itemcode").val() as string
     ).trim();
-    currentY = $target.data("idx") as number;
-    seq = currentY + 1;
-    $.each(Purchase.PurchaseItems, function (i, e) {
-        if (e.piSeq == seq) {
-            selectedPurchaseItem = structuredClone(e);
-            return false;
-        }
-    });
-    if (!selectedPurchaseItem) selectedPurchaseItem = initPurchaseItem();
-    //console.log("selectedPurchaseItem:", selectedPurchaseItem);  
-    openPoItemVariModal($(this).hasClass("focus"));
-    /*openPoItemVariModal(true);*/
+    const $bat = $tr.find("td").eq(5).find(".pobatch.pointer");
+    if ($bat.hasClass("focus")) {
+        $.fancyConfirm({
+            title: '',
+            message: batchnorequired,
+            shownobtn: false,
+            okButton: oktxt,
+            noButton: notxt,
+            callback: function (value) {
+                if (value) {
+                    $bat.trigger("focus");
+                }
+            }
+        });	
+    } else {        
+        currentY = $tr.data("idx") as number;
+        seq = currentY + 1;
+        $.each(Purchase.PurchaseItems, function (i, e) {
+            if (e.piSeq == seq) {
+                selectedPurchaseItem = structuredClone(e);
+                return false;
+            }
+        });   
+        openPoItemVariModal($(this).hasClass("focus"));
+    }
+   
 });
 $(document).on("dblclick", ".pobatch.pointer", function () {
     $target = $(this).parent("td").parent("tr");
@@ -597,7 +611,7 @@ $(function () {
                 html += `<td><input type="text" name="batch" class="pobatch text-center pointer" value="${batch}" readonly /></td><td><input type="text" name="serailno" readonly class="${sncls} text-center" value="${sntxt}" /></td><td><input type="datetime" name="validthru" class="${vtcls} datepicker text-center" value="${vt}" /></td>`;
 
                 //itemvari
-                let vari: string = (stockitem.itmCode in DicItemGroupedVariations)?"...": "";              
+                let vari: string = ((stockitem.itmCode in DicItemGroupedVariations) || (!itemoptions.ChkBatch && !itemoptions.ChkSN && !itemoptions.WillExpire)) ? "..." : "";              
                 html += `<td><input type="text" name="vari" class="povari text-center pointer" value="${vari}" /></td>`;
             }
             html += `<td class="text-right"><input type="number" name="price" class="price text-right" data-price="${stockitem.piUnitPrice}" value="${formattedprice}"></td><td class="text-right"><input type="number" name="discpc" class="discpc text-right" data-discpc="${stockitem.piDiscPc}" value="${formatteddiscpc}"></td>`;

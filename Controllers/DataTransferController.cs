@@ -2317,7 +2317,7 @@ namespace SmartBusinessWeb.Controllers
                 var serialInfo = context.GetSerialInfo5(comInfo.AccountProfileId, location, stritemcodes, null).ToList();
                 var ibvqList = (from item in itembtInfo
                                 where item.batCode != null
-                                //group item by new { item.itmCode, item.piBatch, item.piValidThru } into itemgroup
+                                //group item by new { item.itmCode, item.ivBatCode, item.piValidThru } into itemgroup
                                 select new
                                 {
                                     PoCode = item.pstCode,

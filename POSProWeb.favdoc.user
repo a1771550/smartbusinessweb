@@ -117,6 +117,11 @@
           <path>Controllers\Item\ItemController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Item\ItemController.cs</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>WholeSalesController.cs</name>
+          <path>Controllers\WholeSales\WholeSalesController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\WholeSales\WholeSalesController.cs</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
