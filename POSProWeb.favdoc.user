@@ -132,12 +132,25 @@
           <name>ItemVariationModel.cs</name>
           <absolutePath>F:\repos\PPWProject\PPWLib\Models\Item\ItemVariationModel.cs</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>WholeSalesEditModel.cs</name>
+          <absolutePath>F:\repos\PPWProject\PPWLib\Models\WholeSales\WholeSalesEditModel.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>PurchaseEditModel.cs</name>
+          <absolutePath>F:\repos\PPWProject\PPWLib\Models\Purchase\PurchaseEditModel.cs</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
       <name>helpers</name>
       <folders />
-      <favorites />
+      <favorites>
+        <Favorite>
+          <name>ModelHelper.cs</name>
+          <absolutePath>F:\repos\PPWProject\PPWLib\Helpers\ModelHelper.cs</absolutePath>
+        </Favorite>
+      </favorites>
     </Folder>
     <Folder>
       <name>css</name>

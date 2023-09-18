@@ -87,7 +87,7 @@ namespace SmartBusinessWeb.Controllers
         private int lang = 0;
         private const int apId = 1;
         private const int companyId = 1;
-        private List<string> Shops;
+        //private List<string> Shops;
         private string MyobConnectionString { get { return string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ;", ConfigurationManager.AppSettings["MYOBDriver"], ConfigurationManager.AppSettings["MYOBUId"], ConfigurationManager.AppSettings["MYOBPass"], ConfigurationManager.AppSettings["MYOBDb"], ConfigurationManager.AppSettings["MYOBExe"], ConfigurationManager.AppSettings["MYOBKey"]); } }
         protected string UploadsWSDir { get { return ConfigurationManager.AppSettings["UploadsWSDir"]; } }
         protected string UploadsPODir { get { return ConfigurationManager.AppSettings["UploadsPODir"]; } }
@@ -3533,7 +3533,7 @@ btest3
 
 
         string[] _words = { "Sam", "Dot", "Perls" };
-        private List<string> ShopNames;
+        //private List<string> ShopNames;
 
         string GetDivElements()
         {

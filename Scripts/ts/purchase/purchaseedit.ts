@@ -319,7 +319,7 @@ function handleSubmit4Purchase() {
         if (Purchase.pstStatus == "open") {
             if (checkPurchaseItems()) {
                 Purchase.pstStatus = "opened";
-                console.log("purchasestock:", Purchase);
+                //console.log("purchasestock:", Purchase);
                 console.log("purchaseitems:", Purchase.PurchaseItems);
                 //return false;
                 openWaitingModal();
@@ -331,6 +331,7 @@ function handleSubmit4Purchase() {
                             "input[name=__RequestVerificationToken]"
                         ).val(),
                         model: Purchase,
+                        PurchaseItems: Purchase.PurchaseItems,
                     },
                     success: function (data) {
                         if (data) {
@@ -356,6 +357,7 @@ function handleSubmit4Purchase() {
                         "input[name=__RequestVerificationToken]"
                     ).val(),
                     model: Purchase,
+                    PurchaseItems: Purchase.PurchaseItems,
                     recurOrder,
                 },
                 success: function (data: IPurchaseReturnMsg) {
@@ -575,10 +577,7 @@ $(function () {
         //console.log("dicitemoptions:", DicItemOptions);
 
         DicItemGroupedVariations = $infoblk.data("dicitemgroupedvariations");
-        //console.log("DicItemGroupedVariations:", DicItemGroupedVariations);
-        //dicitemselectedivlist
-        DicItemSelectedIVList = $infoblk.data("dicitemselectedivlist");
-
+        //console.log("DicItemGroupedVariations:", DicItemGroupedVariations);   
         let html = "";
         let idx = 0;
         $.each(purchasestockitems, function (i, stockitem: IPurchaseItem) {

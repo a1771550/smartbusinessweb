@@ -240,9 +240,7 @@ $(document).on("click", "#btnInvoice", function () {
     }
 
     $target = $(`#${gTblName}`);
-
-    /*(Model.wsStatus == WholeSalesStatus.invoice.ToString() || Model.wsStatus == WholeSalesStatus.deliver.ToString()|| Model.wsStatus == WholeSalesStatus.partialdeliver.ToString()) */
-    /* if (Wholesales.wsStatus.toLowerCase() === "invoice" || Wholesales.wsStatus.toLowerCase() === "deliver" || Wholesales.wsStatus.toLowerCase() === "partialdeliver")*/
+    
     let isInvoice: boolean = Wholesales.wsStatus.toLowerCase() === "invoice";
     if (isInvoice) {       
         let $theadtr = $target.find("thead tr:first");
@@ -285,9 +283,7 @@ $(document).on("click", "#btnInvoice", function () {
 
         if (itemcode !== "") {
             let _seq = Number($(e).data("idx")) + 1;
-            //console.log("_seq:" + _seq);
-            let itemseq: string = genItemSeq(itemcode, _seq);
-            //console.log("itemseq:" + itemseq);
+            //console.log("_seq:" + _seq);           
             let batmsg: string = "";
             let snmsg: string = "";
             let vtmsg: string = "";
@@ -299,6 +295,8 @@ $(document).on("click", "#btnInvoice", function () {
             let vtinput = "";
             let vtcls = "validthru";
             let pointercls = "";
+
+            let variinput;
 
             itemOptions = DicItemOptions[itemcode];
             let readonly = "";
@@ -318,8 +316,7 @@ $(document).on("click", "#btnInvoice", function () {
 
                 if (itemOptions.ChkSN) {
                     sncls = "serialno pointer focus";
-                    if (itemOptions.ChkBatch) {
-                        //todo: to be verified:
+                    if (itemOptions.ChkBatch) {                        
                         if (!(itemcode in DicItemSnBatVtList)) {
                             missingtxt = itemoptionsinfomissingformat.replace(
                                 "{0}",
@@ -401,16 +398,21 @@ $(document).on("click", "#btnInvoice", function () {
                     !itemOptions.ChkBatch && !itemOptions.ChkSN && !itemOptions.WillExpire
                         ? "nonitemoptions"
                         : "";
+
+                let ivcls = (!$.isEmptyObject(DicIvInfo) && itemcode in DicIvInfo) ? "vari focus" : "disabled";     
+
                 batinput = `<input type="text" data-type="bat" class="text-center ${nonitemoptionscls} ${batcls}" title="${batmsg}" ${readonly} />`;
                 sninput = `<input type="text" data-type="sn" class="text-center ${nonitemoptionscls} ${sncls}" title="${snmsg}" ${readonly} />`;
                 vtinput = `<input type="text" data-type="vt" class="text-center ${nonitemoptionscls} ${vtcls} ${pointercls}" title="${vtmsg}" ${vtdisabled} ${readonly} />`;
+                //itemvar
+                variinput = `<input type="text" data-type="iv" name="vari" class="text-center ${ivcls}"  />`;
             }
 
             $(e)
                 .find("td")
                 .eq(5)
                 .after(
-                    `<td class="text-center">${batinput}</td><td class="text-center">${sninput}</td><td class="text-center">${vtinput}</td>`
+                    `<td class="text-center">${batinput}</td><td class="text-center">${sninput}</td><td class="text-center">${vtinput}</td><td class="text-center">${variinput}</td>`
                 );
 
             $(e)
@@ -972,6 +974,8 @@ $(function () {
         Wholesales = fillInWholeSale();
         wholesaleslns = $infoblk.data("jsonwholesaleslns");
         //console.log("wholesaleslns:", wholesaleslns);
+        DicIvInfo = $infoblk.data("jsondicivinfo");
+        //console.log("DicIvInfo:", DicIvInfo);
 
         Wholesales.WholeSalesLns = structuredClone(wholesaleslns);
         if (Wholesales.wsStatus.toLowerCase() === "deliver" || Wholesales.wsStatus.toLowerCase() === "partialdeliver") {
@@ -991,6 +995,10 @@ $(function () {
             const sntxt = wholesalesln.wslHasSn ? "..." : "";
             const batch = wholesalesln.wslBatchCode ?? "";
             wholesalesln.JsValidThru = wholesalesln.ValidThruDisplay ?? "";
+            
+            const vari = wholesalesln.iaIdList ? "..." : "";
+            console.log("vari:" + vari);
+
             const formattedprice: string = formatnumber(
                 wholesalesln.wslSellingPrice as number
             );
@@ -1037,6 +1045,9 @@ $(function () {
             ) {
                 //console.log("here");
                 html += `<td><input type="text" name="batch" class="batch text-center pointer" readonly value="${batch}" /></td><td><input type="text" name="serailno" readonly class="serialno pointer text-center" value="${sntxt}" /></td><td><input type="datetime" name="validthru" class="small validthru pointer datepicker text-center" value="${wholesalesln.JsValidThru}" /></td>`;
+
+                //itemvar
+                html += `<td><input type="text" name="vari" class="small vari pointer text-center" value="${vari}" /></td>`;
             }
             html += `<td class="text-right"><input type="number" name="price" class="price text-right" data-price="${wholesalesln.wslSellingPrice}" value="${formattedprice}" readonly></td><td class="text-right"><input type="number" name="discpc" class="discpc text-right" data-discpc="${wholesalesln.wslLineDiscPc}" value="${formatteddiscpc}" ${_readonly}></td>`;
             if (enableTax && !inclusivetax) {

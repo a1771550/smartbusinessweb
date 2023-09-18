@@ -158,11 +158,11 @@ namespace SmartBusinessWeb.Controllers.Purchase
         [CustomAuthorize("purchase", "boss", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult Edit(PurchaseModel model, RecurOrder recurOrder)
+        public JsonResult Edit(PurchaseModel model, List<PurchaseItemModel> PurchaseItems, RecurOrder recurOrder=null)
         {
             ViewBag.ParentPage = "purchaseedit";
             ViewBag.PageName = "purchase";
-            PurchaseReturnMsg msg = PurchaseEditModel.Edit(model, recurOrder);
+            PurchaseReturnMsg msg = PurchaseEditModel.Edit(model, PurchaseItems, recurOrder);
             return Json(msg);
         }
 

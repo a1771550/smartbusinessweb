@@ -695,11 +695,12 @@ namespace SmartBusinessWeb.Controllers
 
                         //LocationID, LocationName,LocationIdentification,IsInactive
                         List<MyobLocation> newlocations = new List<MyobLocation>();
+                        int idx = 0;
                         foreach (var location in locationlist)
                         {
-
                             newlocations.Add(new MyobLocation
                             {
+                                IsPrimary = idx==0,
                                 LocationID = location.LocationID,
                                 IsInactive = location.IsInactive,
                                 LocationName = location.LocationName,
@@ -707,6 +708,7 @@ namespace SmartBusinessWeb.Controllers
                                 AccountProfileId = apId,
                                 CreateTime = dateTime,
                             });
+                            idx++;
                         }
                         context.MyobLocations.AddRange(newlocations);
                         context.SaveChanges();

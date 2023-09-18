@@ -3240,7 +3240,7 @@ function addPoItemVariRow() {
                         let found: boolean = false;
                         if (purchaseItem && purchaseItem.poItemVariList) {
                             found = purchaseItem.poItemVariList.some((x) => {
-                                return x.IaIdList.includes(e.Id);
+                                return x.JsIaIdList.includes(e.Id);
                             });
                         }
                         let selected: string = found ? "selected" : "";
@@ -3262,13 +3262,15 @@ function openPoItemVariModal(hasFocusCls: boolean = false) {
         poItemVariModal.find(".form-group").first().hide();
     } else {
         $.each(selectedPurchaseItem.batchList, function (i, item) {
-            const selected = selectedPurchaseItem.ivBatCode === item.batCode;
-            poItemVariModal.find('#batcode').append($("<option>", {
+            // const selected = selectedPurchaseItem.ivBatCode === item.batCode; 
+            const selected = true;
+            poItemVariModal.find('#batcode').empty().append($("<option>", {
                 value: item.batCode,
                 text: item.batCode,
                 selected: selected
             }));
         });
+        poItemVariModal.find("#batcode").prop("disabled", true);
     }
 
     addPoItemVariRow();
@@ -9699,7 +9701,6 @@ function resetSerialModal() {
 let batchidx = 0;
 let snidx = 0;
 let vtidx = 0;
-
 function removeSN(_sn: string, needconfirm: boolean) {
     if (needconfirm) {
         $.fancyConfirm({
@@ -9775,6 +9776,17 @@ function _removeSN(_sn: string) {
     $("#txtSerialNo").trigger("focus");
 }
 
+function setIvMark() {
+    let $tr = $(`#${gTblName} tbody tr`);
+    let ivcls = ".vari";
+    $tr
+        .eq(currentY)
+        .find("td")
+        .eq(9)
+        .find(ivcls)
+        .removeClass("focus")
+        .val("...");
+}
 function setBatchMark() {
     let $tr = $(`#${gTblName} tbody tr`);
     let batcls = forpurchase ? ".pobatch" : ".batch";
@@ -10258,10 +10270,10 @@ function handlePriceChange(event: any) {
         _idx = 10;
     }
     if (forpurchase && Purchase) {
-        _idx = Purchase.pstStatus == "order" ? 6 : 9;
+        _idx = Purchase.pstStatus == "order" ? 6 : 10;
     }
     if (forwholesales && Wholesales) {
-        _idx = Wholesales.wsStatus == "order" ? 6 : 9;
+        _idx = Wholesales.wsStatus == "order" ? 6 : 10;
     }
 
     _discpc = Number(
@@ -10285,10 +10297,10 @@ function handleDiscChange(event: any) {
         _idx = 9;
     }
     if (forwholesales) {
-        _idx = Wholesales.wsStatus == "order" ? 5 : 8;
+        _idx = Wholesales.wsStatus == "order" ? 5 : 9;
     }
     if (forpurchase) {
-        _idx = Purchase.pstStatus == "order" ? 5 : 8;
+        _idx = Purchase.pstStatus == "order" ? 5 : 9;
     }
 
     if (_discpc < 0) {
@@ -11431,6 +11443,7 @@ function initWholeSalesLn(): IWholeSalesLn {
         JobID: 0,
         comboIvId: "",
         SelectedIvList: [],
+        iaIdList:"",
     };
 }
 interface IWholeSalesLn {
@@ -11492,6 +11505,7 @@ interface IWholeSalesLn {
     JobID: number | null;
     comboIvId: string | null;
     SelectedIvList: IItemVariation[];
+    iaIdList: string | null;
 }
 
 interface IWholeSalesReturnItem extends IWholeSalesLn {
@@ -12001,6 +12015,7 @@ function initDeliveryItem(): IDeliveryItem {
         dlVtId: null,
         dlStockLoc: "",
         JobID: 0,
+        iaIdList:null,
     };
 }
 interface IDeliveryItem {
@@ -12046,6 +12061,7 @@ interface IDeliveryItem {
     dlVtId: number | null;
     dlStockLoc: string;
     JobID: number | null;
+    iaIdList: string | null;
 }
 function initItemOptions(): IItemOptions {
     return {
@@ -12764,7 +12780,7 @@ function addPoItemVari(x: IPurchaseItem, comboId: string, ivqty: number, itemcod
         seq: currentY + 1,
         ivQty: ivqty,
         itmCode: itemcode,
-        IaIdList: selectedIvIdList.slice(0),
+        JsIaIdList: selectedIvIdList.slice(0),
         batCode: selectedBatCode,
     } as IPoItemVari);
 }
@@ -12777,9 +12793,11 @@ interface IPoItemVari {
     seq: number | null;
     itmCode: string;
     itemID: number | null;
-    IaIdList: number[];
+    JsIaIdList: number[];
     iaIdList: string | null;
     batCode: string | null;
+    iaName: string | null;
+    iaValue: string | null;
 }
 function initBatch(): IBatch {
     return {
@@ -12955,6 +12973,10 @@ function confirmBatchSnQty() {
     if (!itemOptions) return false;
 
     $("#tblBatch tbody tr").each(function (i, e) {
+        let iaidlist: string[] = [];
+        if (!$.isEmptyObject(DicIvInfo) && selectedItemCode in DicIvInfo) {
+            $(e).data("iaids").toString().split(",").forEach(x=>iaidlist.push(x));
+        }
         if (!itemOptions!.ChkSN) {
             $(e)
                 .find("td")
@@ -12964,6 +12986,7 @@ function confirmBatchSnQty() {
                     let newbdq = Number($(v).val());
                     if (newbdq > 0) {
                         deliveryItem = initDeliveryItem();
+                        deliveryItem.iaIdList = iaidlist.join();;
                         deliveryItem.newbdq = newbdq;
                         deliveryItem.seq = seq;
                         //console.log("#confirm deliveryItem.seq:", deliveryItem.seq);
@@ -13031,6 +13054,7 @@ function confirmBatchSnQty() {
                         });
                         if (idx < 0) {
                             deliveryItem = initDeliveryItem();
+                            deliveryItem.iaIdList = iaidlist.join();
                             deliveryItem.pstCode = pocode;
                             deliveryItem.dlCode = batId;
                             deliveryItem.dlBatch = batcode;
@@ -13178,9 +13202,14 @@ function confirmBatchSnQty() {
             setBatchMark();
             if (itemOptions!.ChkSN) setSNmark(false);
             if (itemOptions!.WillExpire) setExpiryDateMark();
+
+            if (!$.isEmptyObject(DicIvInfo) && selectedItemCode in DicIvInfo) {
+                setIvMark();
+            }
         }
     }
     //console.log("DeliveryItems:", DeliveryItems);
+    //selectedItemCode = "";
 }
 
 function getItemInfo4BatSnVt(sn: string | null = null) {
@@ -13198,7 +13227,7 @@ function getItemInfo4BatSnVt(sn: string | null = null) {
         .find(".sellunit")
         .val() as string;
 
-    idx = 9;
+    idx = 10;
     deliveryItem!.dlUnitPrice = $tr
         .find("td")
         .eq(idx)
@@ -18593,7 +18622,6 @@ function setTotalQty4BatModal() {
         .data("totalbatdelqty", totalbatdelqty)
         .val(totalbatdelqty);
 }
-
 $(document).on("dblclick", ".batch", function () {
     $target = $(this).parent("td").parent("tr");
     selectedItemCode = (
@@ -18672,7 +18700,12 @@ $(document).on("dblclick", ".batch", function () {
         if (selectedItemCode in DicItemBatchQty) {
             let html: string = "";
             let pbvqlist: IPoBatVQ[] = [];
+            let ipoIvList: IPoItemVari[] = [];
+            if (!$.isEmptyObject(DicIvInfo) && selectedItemCode in DicIvInfo) {
+                ipoIvList = DicIvInfo[selectedItemCode].slice(0);
+            }
             //console.log(PoItemBatVQList);
+            //console.log("ipoIvList:", ipoIvList);
             $.each(PoItemBatVQList, function (i, e) {
                 if (e.itemcode == selectedItemCode) {
                     pbvqlist.push({
@@ -18694,7 +18727,6 @@ $(document).on("dblclick", ".batch", function () {
             let delbatqtylist: Array<IBatDelQty> = DicItemBatDelQty[selectedItemCode];
             //console.log("delbatqtylist:", delbatqtylist);
             //console.log("batchqtylist:", batchqtylist);
-
             polist.forEach((pocode) => {
                 //console.log("pocode:" + pocode);
                 let idx = 0;
@@ -18704,16 +18736,24 @@ $(document).on("dblclick", ".batch", function () {
 
                         const batcode: string = e.batcode;
                         //console.log("batcode:" + batcode);
+                        let iaidlist: string[] = [];
+                        if (ipoIvList.length > 0) {
+                            ipoIvList.forEach((x) => {
+                                if (x.ivStockInCode == pocode && x.batCode == batcode && x.iaIdList) {
+                                    x.iaIdList.split(",").forEach(y => iaidlist.push(y));
+                                }
+                            });
+                        }
 
-                        html += `<tr data-idx="${idx}" data-batcode="${batcode}"><td><label>${batcode}</label></td>`;
+                        html += `<tr data-idx="${idx}" data-pocode="${pocode}" data-batcode="${batcode}" data-iaids="${iaidlist.join()}"><td><label>${batcode}</label></td>`;
 
                         let chksnlist: string = "";
                         let batdelqtylist: string = "";
                         let batdeledqtylist: string = "";
                         let batInfoList: string = "";
                         let currentbattypeqty: number = 0;
-                        let totalbatqty: number =
-                            batcode in DicBatTotalQty ? DicBatTotalQty[batcode] : 0;
+                        const key: string = batcode + ":" + selectedItemCode;
+                        let totalbatqty: number = key in DicBatTotalQty ? DicBatTotalQty[key] : 0;
 
                         //console.log('pbvqlist:', pbvqlist);
 
@@ -18989,7 +19029,7 @@ $(document).on("dblclick", ".batch", function () {
                                 snbatvtlist =
                                     DicItemSnBatVtList[selectedItemCode][batcode].slice(0);
                             }
-                            //console.log("snbatvtlist:", snbatvtlist);
+                            console.log("snbatvtlist:", snbatvtlist);
                             $.each(snbatvtlist, function (idx, ele) {
                                 let _checked = "";
                                 let _disabled = hasFocusCls ? "" : "disabled";
@@ -19076,6 +19116,19 @@ $(document).on("dblclick", ".batch", function () {
                             //console.log("batch && vt(no sn) or batch only");
                             html += `<td class="text-right">${batdelqtylist}</td>`;
                         }
+
+                        let ivlist: string = "";
+                        if (ipoIvList.length > 0) {
+                            ivlist = `<ul class="nostylelist">`;
+                            ipoIvList.forEach((x) => {
+                                if (x.ivStockInCode == pocode && x.batCode == batcode) {
+                                    ivlist += `<li data-ivcomboids="${x.iaIdList}"><label>${x.iaName}:${x.iaValue}</label></li>`;
+                                }
+                            });
+                            ivlist += `</ul>`;
+                        }                        
+
+                        html += `<td class="text-right variInfo">${ivlist}</td>`;
 
                         html += `<td class="text-right batdelqtytxt">${batdeledqtylist}</td>`;
 
@@ -19335,6 +19388,7 @@ ${vtInfoList}
         setTotalQty4VtModal();
     }
 });
+
 function blockSpecialChar(e) {
     var k;
     document.querySelectorAll("*") ? k = e.keyCode : k = e.which;
@@ -19348,3 +19402,7 @@ function isEmptyTd(td) {
 
     return false;
 }
+
+let PoIvInfo: IPoItemVari[] = [];
+
+let DicIvInfo: { [Key: string]: IPoItemVari[] } = {};
