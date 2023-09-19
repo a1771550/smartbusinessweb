@@ -399,7 +399,8 @@ $(document).on("click", "#btnInvoice", function () {
                         ? "nonitemoptions"
                         : "";
 
-                let ivcls = (!$.isEmptyObject(DicIvInfo) && itemcode in DicIvInfo) ? "vari focus" : "disabled";     
+                let ivpointer = !itemOptions.ChkBatch && !itemOptions.ChkSN && !itemOptions.WillExpire ? "pointer" : "";
+                let ivcls = (!$.isEmptyObject(DicIvInfo) && itemcode in DicIvInfo) ? `vari focus ${ivpointer}` : "disabled";     
 
                 batinput = `<input type="text" data-type="bat" class="text-center ${nonitemoptionscls} ${batcls}" title="${batmsg}" ${readonly} />`;
                 sninput = `<input type="text" data-type="sn" class="text-center ${nonitemoptionscls} ${sncls}" title="${snmsg}" ${readonly} />`;
@@ -976,8 +977,10 @@ $(function () {
         //console.log("wholesaleslns:", wholesaleslns);
         DicIvInfo = $infoblk.data("jsondicivinfo");
         //console.log("DicIvInfo:", DicIvInfo);
-
-        Wholesales.WholeSalesLns = structuredClone(wholesaleslns);
+        //dicitemgroupedvariations
+        DicItemGroupedVariations = $infoblk.data("dicitemgroupedvariations");
+        //console.log("DicItemGroupedVariations", DicItemGroupedVariations);
+        
         if (Wholesales.wsStatus.toLowerCase() === "deliver" || Wholesales.wsStatus.toLowerCase() === "partialdeliver") {
             $("#btnInvoice").trigger("click");
             $("input").prop("readonly", true);
@@ -992,12 +995,13 @@ $(function () {
         let html = "";
         let idx = 0;
         $.each(wholesaleslns, function (i, wholesalesln: IWholeSalesLn) {
+            wholesalesln.itemVariList = []; //init the list
             const sntxt = wholesalesln.wslHasSn ? "..." : "";
             const batch = wholesalesln.wslBatchCode ?? "";
             wholesalesln.JsValidThru = wholesalesln.ValidThruDisplay ?? "";
             
             const vari = wholesalesln.iaIdList ? "..." : "";
-            console.log("vari:" + vari);
+            //console.log("vari:" + vari);
 
             const formattedprice: string = formatnumber(
                 wholesalesln.wslSellingPrice as number
@@ -1067,6 +1071,8 @@ $(function () {
             html += "</tr>";
             idx++;
         });
+
+        Wholesales.WholeSalesLns = structuredClone(wholesaleslns);
         // console.log("html:" + html);
         $target = $(`#${gTblName} tbody`);
         $target.empty().html(html);

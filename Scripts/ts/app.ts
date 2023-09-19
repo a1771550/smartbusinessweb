@@ -1115,6 +1115,8 @@ function OnSuccess(response) {
     var model = response;
     seq = currentY + 1;
 
+    DicIvInfo = model.DicIvInfo;
+
     //merge two objects
     DicItemOptions = Object.assign({}, DicItemOptions, model.DicItemOptions);
 
@@ -3205,10 +3207,41 @@ function closeTransferModal() {
     batdelqtychange = false;
 }
 
+//for those items without batch
+function addItemVariRow(hasFocusCls: boolean) {
+    if (DicIvInfo != null) {
+        var itemcode = selectedItemCode;
+        deliveryItem = DeliveryItems.length>0?DeliveryItems.find(x=>x.seq==seq)!:null;
+        //let disabled = hasFocusCls ? "" : "disabled";
+        //console.log("salesLn:", salesLn);
+
+        let html = "";
+
+        if (itemcode in DicIvInfo) {
+            DicIvInfo[itemcode].forEach((v:IPoItemVari) => {
+                html += `<div class="my-2 border-bottom py-2">`
+                html += `<h6 class="font-weight-bold text-primary">${v.ivStockInCode}</h6>`
+                html += `<div class="float-right">`;
+                html += `<input class="form-check-input" type="checkbox" value="${v.ivStockInCode}">`; 
+                html += `</div>`;
+                html += `<div class="form-check form-check-inline">`;
+                html += `<label class="my-auto vari" data-pocode="${v.ivStockInCode}">${v.iaName}: ${v.iaValue}</label>`;
+                html += ``;
+                html += `</div>`;
+                html += "</div>";
+            });
+        }
+
+        itemVariModal.find(".container").empty().append(html);
+    }
+}
 function openItemVariModal(hasFocusCls: boolean = false) {
     //console.log("hasfocuscls:", hasFocusCls);
     itemVariModal.dialog("open");
     $target = $(".ui-dialog-buttonpane .ui-dialog-buttonset");
+
+    addItemVariRow(hasFocusCls);
+
     if (hasFocusCls) {
         $target.find(".savebtn").show();
         $target
@@ -3224,10 +3257,17 @@ function closeItemVariModal() {
     itemVariModal.dialog("close");
 }
 
-function addPoItemVariRow() {
+function addPoItemVariRow(hasFocusCls: boolean) {
+    //console.log("hasfocuscls:", hasFocusCls);
+
     if (DicItemGroupedVariations != null) {
         var itemcode = selectedItemCode;
         var purchaseItem = Purchase.PurchaseItems.find(x => x.piSeq == seq);
+        let batcode: string | null = $(`#${gTblName} tbody tr`).eq(currentY).find("td").eq(5).find(".pobatch").data("batcode");
+        //console.log("batcode:" + batcode);
+        //console.log("undefined:", batcode === "undefined");
+        let disabled = hasFocusCls ? "" : "disabled";
+        //console.log("purchaseItem:", purchaseItem);
 
         let html = "";
         for (const [key, value] of Object.entries(DicItemGroupedVariations)) {
@@ -3235,13 +3275,33 @@ function addPoItemVariRow() {
                 for (const [k, v] of Object.entries(value)) {
                     html += `<div class="form-group">`;
                     let itemvar: IItemVariation = v[0];
-                    html += `<label class="my-auto">${itemvar.iaName}</label><select class="drpItemAttr form-control" data-name=${itemvar.iaName}>`;
+                    html += `<label class="my-auto">${itemvar.iaName}</label><select class="drpItemAttr form-control" data-name=${itemvar.iaName} ${disabled}>`;
                     $.each(v, function (i, e: IItemVariation) {
+                        //console.log("here");
                         let found: boolean = false;
-                        if (purchaseItem && purchaseItem.poItemVariList) {
-                            found = purchaseItem.poItemVariList.some((x) => {
-                                return x.JsIaIdList.includes(e.Id);
-                            });
+                        //console.log("purchaseItem && purchaseItem.poItemVariList:", purchaseItem && purchaseItem.poItemVariList);
+                        if (purchaseItem && purchaseItem.poItemVariList.length > 0) {
+                            //console.log("here");
+                            if (hasFocusCls) {
+                                found = purchaseItem.poItemVariList.some((x) => {
+                                    return x.JsIaIdList && x.JsIaIdList.includes(e.Id);
+                                });
+                            } else {
+                                //console.log("here");
+                                if (batcode !== "undefined") {
+                                    //console.log("x");
+                                    found = purchaseItem.poItemVariList.some((x) => {
+                                        return x.batCode == batcode && x.ivStockInCode == Purchase.pstCode;
+                                    });
+                                } else {
+                                    //console.log("y");
+                                    found = purchaseItem.poItemVariList.some((x) => {
+                                        console.log("x.ivstockincode:" + x.ivStockInCode + ";pstcode:" + Purchase.pstCode);
+                                        return x.ivStockInCode == Purchase.pstCode;
+                                    });
+                                    //console.log("found:", found);
+                                }
+                            }
                         }
                         let selected: string = found ? "selected" : "";
                         html += `<option value="${e.Id}" ${selected}>${e.iaValue}</option>`;
@@ -3273,7 +3333,7 @@ function openPoItemVariModal(hasFocusCls: boolean = false) {
         poItemVariModal.find("#batcode").prop("disabled", true);
     }
 
-    addPoItemVariRow();
+    addPoItemVariRow(hasFocusCls);
 
     poItemVariModal.dialog("open");
     $target = $(".ui-dialog-buttonpane .ui-dialog-buttonset");
@@ -3316,7 +3376,7 @@ function initModals() {
     });
 
     itemVariModal = $("#itemVariModal").dialog({
-        width: 900,
+        width: 400,
         title: itemvariationtxt,
         autoOpen: false,
         modal: true,
@@ -7704,6 +7764,7 @@ function initSalesLn(): ISalesLn {
         DicItemSNs: [],
         rtlHasSerialNo: false,
         JobID: 0,
+        itemVariList: []
     };
 }
 // let DicPayType: { [Key: string]: string } = {};
@@ -7758,6 +7819,7 @@ interface ISalesLn {
     SelectedIvList: IItemVariation[];
     DicItemSNs: Array<typeof DicItemSNs>;
     JobID: number | null;
+    itemVariList: IPoItemVari[];
 }
 interface IPayLn {
     Id: number;
@@ -11443,7 +11505,8 @@ function initWholeSalesLn(): IWholeSalesLn {
         JobID: 0,
         comboIvId: "",
         SelectedIvList: [],
-        iaIdList:"",
+        iaIdList: "",
+        itemVariList: []
     };
 }
 interface IWholeSalesLn {
@@ -11506,6 +11569,7 @@ interface IWholeSalesLn {
     comboIvId: string | null;
     SelectedIvList: IItemVariation[];
     iaIdList: string | null;
+    itemVariList: IPoItemVari[];
 }
 
 interface IWholeSalesReturnItem extends IWholeSalesLn {
@@ -11971,52 +12035,107 @@ function containsObject(obj, list) {
 }
 let DeliveryItems: Array<IDeliveryItem> = [];
 
-function initDeliveryItem(): IDeliveryItem {
-    return {
-        Id: 0,
-        CompanyId: 0,
-        AccountProfileId: 0,
-        dlCode: "",
-        seq: 0,
-        batseq: 0,
-        snseq: 0,
-        vtseq: 0,
-        dlStatus: "",
-        itmCode: "",
-        itmNameDesc: "",
-        snlist: [],
-        dlBaseUnit: "",
-        dlQty: 0,
-        dlBatch: "",
-        dlHasSN: false,
-        dlValidThru: null,
-        VtDisplay: null,
-        JsVt: null,
-        dlUnitPrice: 0,
-        dlDiscPc: 0,
-        dlTaxPc: 0,
-        dlTaxAmt: 0,
-        dlAmt: 0,
-        dlAmtPlusTax: 0,
-        pstCode: "",
-        snoCode: "",
-        CreateTimeDisplay: "",
-        ModifyTimeDisplay: "",
-        currentbdq: 0,
-        newbdq: 0,
-        batqty: 0,
-        snvtlist: [],
-        vttotalqty: 0,
-        newvtqty: 0,
-        vtdelqty: 0,
-        currentvdq: 0,
-        SellingPrice: 0,
-        dlBatId: null,
-        dlVtId: null,
-        dlStockLoc: "",
-        JobID: 0,
-        iaIdList:null,
-    };
+function initDeliveryItem($tr: JQuery<HTMLElement> | null = null): IDeliveryItem {
+    if ($tr !== null) {
+        let pidx: number = 10; //price index
+        let didx: number = pidx + 1;
+        let tidx: number = pidx + 2;
+        let $td = $tr.find("td");
+        return {
+            Id: 0,
+            CompanyId: 0,
+            AccountProfileId: 0,
+            dlCode: forwholesales?Wholesales.wsCode:Sales.rtsCode,
+            seq: seq,
+            batseq: 0,
+            snseq: 0,
+            vtseq: 0,
+            dlStatus: forwholesales?Wholesales.wsStatus:Sales.rtsStatus,
+            itmCode: $td.eq(1).find(".itemcode").val() as string,
+            itmNameDesc: $td.eq(2).find(".itemdesc").val() as string,
+            snlist: [],
+            dlBaseUnit: $td.eq(3).find(".sellunit").val() as string,
+            dlQty: Number($td.eq(6).find(".delqty").val()),
+            dlBatch: "",
+            dlHasSN: false,
+            dlValidThru: null,
+            VtDisplay: null,
+            JsVt: null,
+            dlUnitPrice: Number($td.eq(pidx).find(".price").val()),
+            dlDiscPc: Number($td.eq(didx).find(".discpc").val()),
+            dlTaxPc: Number($td.eq(tidx).find(".taxpc").val()),
+            dlTaxAmt: 0,
+            dlAmt: Number($td.last().find(".amount").val()),
+            dlAmtPlusTax: Number($td.last().find(".amount").val()),
+            pstCode: "",
+            snoCode: "",
+            CreateTimeDisplay: "",
+            ModifyTimeDisplay: "",
+            currentbdq: 0,
+            newbdq: 0,
+            batqty: 0,
+            snvtlist: [],
+            vttotalqty: 0,
+            newvtqty: 0,
+            vtdelqty: 0,
+            currentvdq: 0,
+            SellingPrice: 0,
+            dlBatId: null,
+            dlVtId: null,
+            dlStockLoc: "",
+            JobID: 0,
+            iaIdList: null,
+            ivList: [],
+        };
+    } else {
+        return {
+            Id: 0,
+            CompanyId: 0,
+            AccountProfileId: 0,
+            dlCode: "",
+            seq: seq,
+            batseq: 0,
+            snseq: 0,
+            vtseq: 0,
+            dlStatus: "",
+            itmCode: "",
+            itmNameDesc: "",
+            snlist: [],
+            dlBaseUnit: "",
+            dlQty: 0,
+            dlBatch: "",
+            dlHasSN: false,
+            dlValidThru: null,
+            VtDisplay: null,
+            JsVt: null,
+            dlUnitPrice: 0,
+            dlDiscPc: 0,
+            dlTaxPc: 0,
+            dlTaxAmt: 0,
+            dlAmt: 0,
+            dlAmtPlusTax: 0,
+            pstCode: "",
+            snoCode: "",
+            CreateTimeDisplay: "",
+            ModifyTimeDisplay: "",
+            currentbdq: 0,
+            newbdq: 0,
+            batqty: 0,
+            snvtlist: [],
+            vttotalqty: 0,
+            newvtqty: 0,
+            vtdelqty: 0,
+            currentvdq: 0,
+            SellingPrice: 0,
+            dlBatId: null,
+            dlVtId: null,
+            dlStockLoc: "",
+            JobID: 0,
+            iaIdList: null,
+            ivList: [],
+        };
+    }
+    
 }
 interface IDeliveryItem {
     Id: number;
@@ -12062,6 +12181,7 @@ interface IDeliveryItem {
     dlStockLoc: string;
     JobID: number | null;
     iaIdList: string | null;
+    ivList: IPoItemVari[];
 }
 function initItemOptions(): IItemOptions {
     return {
@@ -12747,6 +12867,41 @@ function _confirmPoBatch($tr: JQuery): string {
     return msg;
 }
 
+function confirmItemVariQty() {
+    let selectedIvIdList: number[] = [];
+    itemVariModal.find(".drpItemAttr").each(function (i, e) {
+        selectedIvIdList.push(Number($(e).val()));
+    });
+
+    if (selectedIvIdList.length > 0) {
+        $tr = $(`#${gTblName} tbody tr`).eq(currentY);
+        $tr.find("td").eq(9).find(".vari").removeClass("focus").val("...");
+        const itemcode: string = $tr.find("td").eq(1).find(".itemcode").val()!.toString();
+        const ivqty = Number($tr.find("td").eq(5).find(".delqty").val());
+        const comboId = selectedIvIdList.join(":");
+
+        if (DeliveryItems.length > 0) {
+            deliveryItem = DeliveryItems.find(x => x.seq == seq)!;
+            if (!deliveryItem) deliveryItem = initDeliveryItem($tr);
+        } else {
+            deliveryItem = initDeliveryItem($tr);
+        }
+        if (deliveryItem.ivList && deliveryItem.ivList.findIndex(x => x.ivComboId == comboId) < 0) {
+            addItemVari(deliveryItem, comboId, ivqty, itemcode, selectedIvIdList);
+        } else {
+            addItemVari(deliveryItem, comboId, ivqty, itemcode, selectedIvIdList);
+        }
+
+        if (DeliveryItems.findIndex(x => x.seq == seq) < 0) DeliveryItems.push(deliveryItem);
+        else {
+            DeliveryItems.forEach((x) => {
+                if (x.seq == seq) x = structuredClone(deliveryItem)!;
+            });
+        }
+    }
+    console.log(DeliveryItems);
+    closeItemVariModal();
+}
 function confirmPoItemVariQty() {
     let selectedIvIdList: number[] = [];
     poItemVariModal.find(".drpItemAttr").each(function (i, e) {
@@ -12773,6 +12928,20 @@ function confirmPoItemVariQty() {
     }
     //console.log(Purchase.PurchaseItems);
     closePoItemVariModal();
+}
+
+function addItemVari(x: IDeliveryItem, comboId: string, ivqty: number, itemcode: string, selectedIvIdList: number[]) {
+    if (x !== null) {
+        x.ivList.push({
+            ivComboId: comboId,
+            seq: currentY + 1,
+            ivQty: ivqty,
+            itmCode: itemcode,
+            JsIaIdList: selectedIvIdList.slice(0),
+            batCode: null,
+        } as IPoItemVari);
+        x.iaIdList = selectedIvIdList.join();
+    }
 }
 function addPoItemVari(x: IPurchaseItem, comboId: string, ivqty: number, itemcode: string, selectedIvIdList: number[], selectedBatCode: string) {
     x.poItemVariList.push({
@@ -12833,9 +13002,7 @@ let deliveryItem: IDeliveryItem | null;
 let deliveryQty: number = 0;
 
 
-function confirmItemVariQty() {
-    //todo: confirmitemvariqty
-}
+
 function confirmTransferQty() {
 
 }
@@ -12975,7 +13142,7 @@ function confirmBatchSnQty() {
     $("#tblBatch tbody tr").each(function (i, e) {
         let iaidlist: string[] = [];
         if (!$.isEmptyObject(DicIvInfo) && selectedItemCode in DicIvInfo) {
-            $(e).data("iaids").toString().split(",").forEach(x=>iaidlist.push(x));
+            $(e).data("iaids").toString().split(",").forEach(x => iaidlist.push(x));
         }
         if (!itemOptions!.ChkSN) {
             $(e)
@@ -13984,6 +14151,9 @@ interface IBatDelQty {
     batSn: string | null;
     batVt: string | null;
     VtDisplay: string | null;
+    iaName: string | null;
+    iaValue: string | null;
+    iaIdList: string | null;
 }
 
 let DicItemBatDelQty: { [Key: string]: Array<IBatDelQty> } = {};
@@ -15442,106 +15612,6 @@ $(document).on("click", "#btnEditItemAttr", function () {
 
 let forPGItem: boolean = false;
 let forMyobItem: boolean = false;
-
-$(document).on("change", ".drpItemAttr", function () {
-    if (forpurchase) return false;
-    let itemcode = "";
-    if (forsales) {
-        $tr = $(this).parent(".form-group").parent("td").parent("tr");
-        $target = $tr.find("td").find(".form-group").find(".lblIVStatus");
-        itemcode = $tr.data("code");
-    }
-
-    let iattrs: IItemAttribute[] = [];
-    if (forsales) {
-        $tr.find(".drpItemAttr").each(function (i, e) {
-            let iattr: IItemAttribute = initItemAttr(itemcode);
-            let Id: number = Number($(e).attr("id"));
-            let iaName: string = $(this).data("name");
-            let iaValue: string = $(this).val() as string;
-            iattr = { ...iattr, Id, iaName, iaValue };
-            iattrs.push(iattr);
-        });
-    }
-    else {
-        itemcode = $("#itmCode").val() as string;
-        $(".drpItemAttr").each(function (i, e) {
-            let iattr: IItemAttribute = initItemAttr(itemcode);
-            let Id: number = Number($(e).attr("id"));
-            let iaName: string = $(this).data("name");
-            let iaValue: string = $(this).val() as string;
-            iattr = { ...iattr, Id, iaName, iaValue };
-            iattrs.push(iattr);
-        });
-    }
-
-    let iattrlist = JSON.stringify({
-        iattrlist: iattrs,
-        type: "myobitem",
-    });
-    //console.log(iattrlist);
-    $.ajax({
-        contentType: "application/json; charset=utf-8",
-        type: "POST",
-        url: "/api/GetItemVariByAttrs",
-        data: iattrlist,
-        success: function (data) {
-            if (data.currentIV != null) {
-                selectedItem = null;
-                ItemVari = structuredClone(data.currentIV as IItemVariation);
-                if (forsales) {
-                    $target
-                        .addClass("saved")
-                        .css({ color: "green" })
-                        .text(savedtxt)
-                        .parent("label")
-                        .removeClass("alert-danger")
-                        .addClass("alert-info");
-                    fillInItemModal();
-                } else {
-                    $("#lblIVStatus")
-                        .addClass("saved")
-                        .css({ color: "green" })
-                        .text(savedtxt)
-                        .parent("label")
-                        .removeClass("alert-danger")
-                        .addClass("alert-info");
-                    fillInItemForm(false);
-                }
-            } else {
-                ItemVari = null;
-                if (forsales) {
-                    selectedItem = structuredClone(data.myobItem as IItem);
-                    $target
-                        .removeClass("saved")
-                        .css({ color: "red" })
-                        .text(unsavedtxt)
-                        .parent("label")
-                        .removeClass("alert-info")
-                        .addClass("alert-danger");
-                    fillInItemModal();
-                } else {
-                    $("#lblIVStatus")
-                        .removeClass("saved")
-                        .css({ color: "red" })
-                        .text(unsavedtxt)
-                        .parent("label")
-                        .removeClass("alert-info")
-                        .addClass("alert-danger");
-
-                    if (forPGItem) {
-                        selectedItem = structuredClone(data.pgItem as IItem);
-                    } else {
-                        selectedItem = structuredClone(data.myobItem as IItem);
-                    }
-                    fillInItemForm(false);
-                    ItemAttrList = [];
-                }
-            }
-        },
-        dataType: "json",
-    });
-});
 
 function setExRateDropDown() {
     if (useForexAPI) {
@@ -18641,13 +18711,18 @@ $(document).on("dblclick", ".batch", function () {
             Wholesales.wsStatus.toLowerCase() === "partialdeliver")
     ) {
         DeliveryItems = DicSeqDeliveryItems[seq].slice(0);
+
+        //console.log("DicIvInfo:", DicIvInfo);
+
         let html: string = "";
         DeliveryItems.forEach((x) => {
             let chksnlist: string = "";
             let batdelqtylist: string = "";
-            //let batdeledqtylist: string = "";
-            //let batInfoList: string = "";
-            html += `<tr><td>${x.dlBatch}</td>`;
+            const batcode: string = x.dlBatch;
+            //const iseq: number = x.seq??0;
+            //console.log("iseq:" + iseq);
+
+            html += `<tr data-seq="${seq}"><td><label>${batcode}</label></td>`;
             /**
              * Display
              */
@@ -18679,6 +18754,33 @@ $(document).on("dblclick", ".batch", function () {
                 //console.log("batch && vt(no sn) or batch only");
                 html += `<td class="text-right">${batdelqtylist}</td>`;
             }
+
+            html += "<td><ul class='nostylelist'>";
+            let ivlist = "";
+
+
+            if (!$.isEmptyObject(DicItemBatDelQty) && selectedItemCode in DicItemBatDelQty) {
+                var batdelqty: IBatDelQty = DicItemBatDelQty[selectedItemCode].filter(x => x.seq == seq && x.batcode == batcode)[0];
+                //console.log("batdelqty:", batdelqty);
+                batdelqty.iaIdList?.split(",").forEach((x) => {
+                    //console.log("x:" + x);
+                    if (!$.isEmptyObject(DicItemGroupedVariations) && selectedItemCode in DicItemGroupedVariations) {
+                        for (const [k, v] of Object.entries(DicItemGroupedVariations[selectedItemCode])) {
+                            //let iv: IItemVariation = v[0];
+                            //console.log("v:", v);
+                            let iv = v.filter((y) => { return y.Id == Number(x) })[0];
+                            //console.log("iv:", iv);                          
+                            if (iv)
+                                ivlist += `<li><label>${iv.iaName}:${iv.iaValue}</label></li>`;
+                        }
+
+                    }
+                });
+            } else {
+                //todo:
+            }
+
+            html += ivlist + "</ul></td>";
 
             html += `</tr>`;
         });
@@ -19126,7 +19228,7 @@ $(document).on("dblclick", ".batch", function () {
                                 }
                             });
                             ivlist += `</ul>`;
-                        }                        
+                        }
 
                         html += `<td class="text-right variInfo">${ivlist}</td>`;
 
@@ -19406,3 +19508,11 @@ function isEmptyTd(td) {
 let PoIvInfo: IPoItemVari[] = [];
 
 let DicIvInfo: { [Key: string]: IPoItemVari[] } = {};
+
+$(document).on("dblclick", ".vari.pointer", function () {
+    $tr = $(this).parent("td").parent("tr");
+    selectedItemCode = $tr.find("td").eq(1).find(".itemcode").val() as string;
+    currentY = Number($tr.data("idx"));
+    seq = currentY + 1;
+    openItemVariModal($(this).hasClass("focus"));
+});

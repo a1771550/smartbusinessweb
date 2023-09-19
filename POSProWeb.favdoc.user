@@ -76,6 +76,11 @@
           <path>Views\Purchase\Edit.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Purchase\Edit.cshtml</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>wholesales_Edit.cshtml</name>
+          <path>Views\Wholesales\Edit.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Wholesales\Edit.cshtml</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

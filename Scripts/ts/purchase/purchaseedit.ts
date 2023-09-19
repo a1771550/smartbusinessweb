@@ -571,7 +571,7 @@ $(function () {
         }
         //console.log("uploadfilelist length:", Purchase.UploadFileList.length);
         purchasestockitems = $infoblk.data("jsonpurchasestockitems");
-        console.log("purchasestockitems:", purchasestockitems);
+        //console.log("purchasestockitems:", purchasestockitems);
         Purchase.DicItemOptions = $infoblk.data("jsonpurchasedicitemoptions");
         DicItemOptions = Object.assign({}, Purchase.DicItemOptions);
         //console.log("dicitemoptions:", DicItemOptions);
@@ -581,15 +581,16 @@ $(function () {
         let html = "";
         let idx = 0;
         $.each(purchasestockitems, function (i, stockitem: IPurchaseItem) {
-            const itemoptions = DicItemOptions[stockitem.itmCode];
+            itemOptions = DicItemOptions[stockitem.itmCode];
             const sntxt = stockitem.piHasSN ? "..." : "";
             //console.log("stockitem.batchlist:", stockitem.batchList);
-            const batch = itemoptions.ChkBatch ? "..." : stockitem.batchList.length > 0 ? "..." : "";  
+            const batcode = stockitem.batchList.find((x) => x.batStockInCode == Purchase.pstCode)?.batCode;
+            const batch = stockitem.batchList.length > 0 ? "..." : "";  
             //console.log(stockitem);
             let vt: string | null = "";
 
-            if (itemoptions.WillExpire) {
-                if (!itemoptions.ChkBatch && !itemoptions.ChkSN) {
+            if (itemOptions && itemOptions.WillExpire) {
+                if (!itemOptions.ChkBatch && !itemOptions.ChkSN) {
                     vt = stockitem.ValidThruDisplay;
                 } else {
                     vt = "...";
@@ -607,10 +608,10 @@ $(function () {
                 (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") ? "vt pointer" : "validthru datepicker";           
 
             if (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") {
-                html += `<td><input type="text" name="batch" class="pobatch text-center pointer" value="${batch}" readonly /></td><td><input type="text" name="serailno" readonly class="${sncls} text-center" value="${sntxt}" /></td><td><input type="datetime" name="validthru" class="${vtcls} datepicker text-center" value="${vt}" /></td>`;
+                html += `<td><input type="text" name="batch" class="pobatch text-center pointer" data-batcode="${batcode}" value="${batch}" readonly /></td><td><input type="text" name="serailno" readonly class="${sncls} text-center" value="${sntxt}" /></td><td><input type="datetime" name="validthru" class="${vtcls} datepicker text-center" value="${vt}" /></td>`;
 
                 //itemvari
-                let vari: string = ((stockitem.itmCode in DicItemGroupedVariations) || (!itemoptions.ChkBatch && !itemoptions.ChkSN && !itemoptions.WillExpire)) ? "..." : "";              
+                let vari: string = ((stockitem.itmCode in DicItemGroupedVariations) || (!itemOptions.ChkBatch && !itemOptions.ChkSN && !itemOptions.WillExpire)) ? "..." : "";              
                 html += `<td><input type="text" name="vari" class="povari text-center pointer" value="${vari}" /></td>`;
             }
             html += `<td class="text-right"><input type="number" name="price" class="price text-right" data-price="${stockitem.piUnitPrice}" value="${formattedprice}"></td><td class="text-right"><input type="number" name="discpc" class="discpc text-right" data-discpc="${stockitem.piDiscPc}" value="${formatteddiscpc}"></td>`;

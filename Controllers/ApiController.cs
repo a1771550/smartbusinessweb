@@ -41,6 +41,7 @@ using System.Web;
 using System.Data.Entity.Core.Objects;
 using PPWLib.Models.Purchase.Supplier;
 using PPWCommonLib.BaseModels;
+using PPWLib.Models.Purchase;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -1166,7 +1167,7 @@ namespace SmartBusinessWeb.Controllers
             else
             {
                 myobItem = connection.QueryFirstOrDefault<ItemModel>(@"EXEC dbo.GetMyobItemByCode @itemcode=@itemcode,@apId=@apId", new { itemcode, apId = AccountProfileId });
-                ModelHelper.GetLocStock4MyobItem(context, itemcode, ref myobItem);
+                ModelHelper.GetLocStock4MyobItem(context, itemcode, Shops, ref myobItem);
                 ModelHelper.GetMyobItemPrices(context, itemcode, ref myobItem);
                 return Json(new { myobItem });
             }
@@ -2891,6 +2892,10 @@ namespace SmartBusinessWeb.Controllers
             if (keyword == "") keyword = null;
             if (location == "") location = null;
 
+            string _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            using var connection = new SqlConnection(_connectionString);
+            connection.Open();
+
             var stockinfo = context.GetStockInfo5(apId).ToList();
 
             List<SalesItem> itemlist = ModelHelper.GetItemList(apId, context, stockinfo, startIndex, model.PageSize, out model.RecordCount, keyword, location);
@@ -2938,12 +2943,17 @@ namespace SmartBusinessWeb.Controllers
                         }
                     }
                 }
-                string _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-                using var connection = new SqlConnection(_connectionString);
-                connection.Open();
+               
                 model.PrimaryLocation = ModelHelper.GetShops(connection, ref Shops, ref ShopNames);
                 ModelHelper.GetItemOptionsInfo(context, ref model.DicLocItemList, itemcodelist, Shops, connection);
             }
+
+            var itemcodes = string.Join(",", itemcodelist);
+            foreach(var itemcode in itemcodelist)
+                model.DicIvInfo[itemcode] = new List<PoItemVariModel>();
+            //GetPoItemVariInfo
+            model.PoIvInfo = connection.Query<PoItemVariModel>(@"EXEC dbo.GetPoItemVariInfo @apId=@apId,@itemcodes=@itemcodes", new { apId, itemcodes }).ToList();
+            ModelHelper.GetDicIvInfo(context, model.PoIvInfo, ref model.DicIvInfo);
 
             model.DicItemOptions = ModelHelper.GetDicItemOptions(apId, context);
 
