@@ -344,7 +344,7 @@
 
 @Html.Partial("_TextAreaModal")
 
-@Html.Partial("_ItemVariModal")
+@Html.Partial("_ItemVariModal", null, new ViewDataDictionary { { "status", Model.wsStatus } })
 
 @{
     string UploadSizeLimitMB = ConfigurationManager.AppSettings["MaxUploadSize"];

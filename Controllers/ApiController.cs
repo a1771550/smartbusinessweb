@@ -42,12 +42,13 @@ using System.Data.Entity.Core.Objects;
 using PPWLib.Models.Purchase.Supplier;
 using PPWCommonLib.BaseModels;
 using PPWLib.Models.Purchase;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 
 namespace SmartBusinessWeb.Controllers
 {
     [AllowAnonymous]
     public class ApiController : Controller
-    {
+    {        
         private ComInfo ComInfo { get { return Session["ComInfo"] as ComInfo; } }
         private bool NonABSS { get { return ComInfo.DefaultCheckoutPortal.ToLower() == "nonabss"; } }
         private string ConnectionString { get { return string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ;", ComInfo.MYOBDriver, ComInfo.MYOBUID, ComInfo.MYOBPASS, ComInfo.MYOBDb, ComInfo.MYOBExe, ComInfo.MYOBKey); } }
@@ -68,6 +69,94 @@ namespace SmartBusinessWeb.Controllers
 
         public ApiController()
         {
+        }
+
+        [HttpGet]
+        public void DownloadABSSData()
+        {
+            using var context = new PPWDbContext();
+            var comInfo = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == apId);
+            int managerId = context.SysUsers.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == apId && x.UserName == "Manager").surUID;
+            string ConnectionString = string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ;", comInfo.MYOBDriver, comInfo.MYOBUID, comInfo.MYOBPASS, comInfo.MYOBDb, comInfo.MYOBExe, comInfo.MYOBKey);
+            string iLocked = "1";
+            var file = comInfo.MYOBDb;
+            FileInfo fileInfo = new FileInfo(file);
+            string msg = "";
+            if (fileInfo.Exists)
+            {
+                iLocked = CommonLib.Helpers.FileHelper.IsFileLocked(fileInfo) ? "1" : "0";
+            }
+            if (iLocked == "1")
+            {
+                msg = $"Hi {comInfo.contactName}, the ABSS file is being locked, making the ABSS Data Transfer job unsuccessful.";
+                SendSimpleEmail(comInfo.contactEmail, comInfo.contactName, msg, "ABSS Data Transfer Failed", context, apId);
+                ModelHelper.WriteLog(context, msg, "AutoABSSTransfer");
+                context.SaveChanges();
+                return;
+            }
+            ModelHelper.SaveSuppliersFrmCentral(context, apId, comInfo);
+            ModelHelper.SaveEmployeesFrmCentral(apId, context, ConnectionString, null, managerId);
+            ModelHelper.SaveCustomersFrmCentral(context, ConnectionString, apId);
+            ModelHelper.SaveItemsFrmCentral(apId, context, ConnectionString);
+
+            msg = $"Hi {comInfo.contactName}, the ABSS data is successfully downloaded and saved to the SmartBusiness Database.";
+            SendSimpleEmail(comInfo.contactEmail, comInfo.contactName, msg, "ABSS Data Transfer OK", context, apId);
+            ModelHelper.WriteLog(context, msg, "AutoABSSTransfer");
+            context.SaveChanges();
+        }
+
+        [HttpGet]
+        public void UploadSBData()
+        {
+            using var context = new PPWDbContext();
+            var comInfo = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == apId);
+            string ConnectionString = string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ_WRITE;", comInfo.MYOBDriver, comInfo.MYOBUID, comInfo.MYOBPASS, comInfo.MYOBDb, comInfo.MYOBExe, comInfo.MYOBKey);
+            var sqllist =ModelHelper.Prepare4UploadSalesOrder(comInfo, apId, context, "", "", false, 2, out List<long> checkoutIds);
+
+            #region Write to MYOB
+            using (localhost.Dayends dayends = new localhost.Dayends())
+            {
+                dayends.Url = comInfo.WebServiceUrl;
+                dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
+            }
+            #endregion
+
+            #region Write sqllist into Log & update checkoutIds
+            using (var transaction = context.Database.BeginTransaction())
+            {
+                try
+                {
+                    ModelHelper.WriteLog(context, string.Format("Export Sales data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
+                    List<RtlSale> saleslist = context.RtlSales.Where(x => checkoutIds.Any(y => x.rtsUID == y)).ToList();
+                    foreach (var sales in saleslist)
+                    {
+                        sales.rtsCheckout = true;
+                    }
+                    context.SaveChanges();
+                    transaction.Commit();
+                }
+                catch (DbEntityValidationException e)
+                {
+                    transaction.Rollback();
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                            eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+            ve.PropertyName,
+            eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+            ve.ErrorMessage);
+                        }
+                    }
+                    ModelHelper.WriteLog(context, string.Format("Export Sales data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",",sqllist), ConnectionString), "ExportFrmShop");
+                    context.SaveChanges();
+                }
+
+            }
+            #endregion
         }
 
         [HttpGet]
@@ -959,6 +1048,56 @@ namespace SmartBusinessWeb.Controllers
             return okcount > 0;
         }
 
+        private static bool SendSimpleEmail(string receiverEmail, string receiverName, string msg, string subject, PPWDbContext context, int apId)
+        {
+            int okcount = 0;
+            int ngcount = 0;
+
+            //EmailEditModel model = new EmailEditModel();
+            //var mailsettings = model.Get();
+            EmailSetting mailsettings = context.EmailSettings.FirstOrDefault(x => x.AccountProfileId == apId);
+            MailAddress frm = new MailAddress(mailsettings.emEmail, mailsettings.emDisplayName);
+
+            while (okcount == 0)
+            {
+                if (ngcount >= mailsettings.emMaxEmailsFailed || okcount > 0)
+                {
+                    break;
+                }
+
+                MailAddress to = new MailAddress(receiverEmail, receiverName);
+                bool addbc = int.Parse(ConfigurationManager.AppSettings["AddBccToDeveloper"]) == 1;
+                MailAddress addressBCC = new MailAddress(ConfigurationManager.AppSettings["DeveloperEmailAddress"], ConfigurationManager.AppSettings["DeveloperEmailName"]);
+                MailMessage message = new MailMessage(frm, to);
+                if (addbc)
+                {
+                    message.Bcc.Add(addressBCC);
+                }
+
+                message.Subject = subject;
+                message.BodyEncoding = Encoding.UTF8;
+                message.IsBodyHtml = true;
+
+                message.Body = msg;
+
+                using (SmtpClient smtp = new SmtpClient(mailsettings.emSMTP_Server, mailsettings.emSMTP_Port))
+                {
+                    smtp.UseDefaultCredentials = false;
+                    smtp.EnableSsl = mailsettings.emSMTP_EnableSSL;
+                    smtp.Credentials = new NetworkCredential(mailsettings.emSMTP_UserName, mailsettings.emSMTP_Pass);
+                    try
+                    {
+                        smtp.Send(message);
+                        okcount++;
+                    }
+                    catch (Exception)
+                    {
+                        ngcount++;
+                    }
+                }
+            }
+            return okcount > 0;
+        }
 
         [HttpGet]
         public JsonResult GetRecurOrder(long orderId)
@@ -1138,7 +1277,7 @@ namespace SmartBusinessWeb.Controllers
 
         [HttpPost]
         public JsonResult GetItemVariByAttrs(List<ItemAttributeModel> iattrlist)
-        { 
+        {
             ItemModel myobItem = new ItemModel();
             using var context = new PPWDbContext();
             string itemcode = iattrlist[0].itmCode;
@@ -1234,7 +1373,7 @@ namespace SmartBusinessWeb.Controllers
         {
             var msg = string.Format(Resource.Saved, Resource.Item);
             if (item != null)
-                ItemEditModel.UpdateBuySellUnit(item);         
+                ItemEditModel.UpdateBuySellUnit(item);
             return Json(msg);
         }
 
@@ -1714,8 +1853,8 @@ namespace SmartBusinessWeb.Controllers
                                  {
                                      lstItemCode = st.lstItemCode,
                                      lstStockLoc = st.lstStockLoc,
-                                     lstQuantityAvailable = st.lstQuantityAvailable??0,
-                                     lstItemID = st.lstItemID??0,
+                                     lstQuantityAvailable = st.lstQuantityAvailable ?? 0,
+                                     lstItemID = st.lstItemID ?? 0,
                                      AccountProfileId = st.AccountProfileId,
                                  }
                                 ).ToList();
@@ -1889,7 +2028,7 @@ namespace SmartBusinessWeb.Controllers
             }
             if (filename.StartsWith("ItemLoc_"))
             {
-                List<MyobItemLocModel> itemloclist = MYOBHelper.GetItemLocList(ConnectionString);
+                List<MyobItemLocModel> itemloclist = MYOBHelper.GetItemLocList(ConnectionString, apId);
                 return Json(itemloclist, JsonRequestBehavior.AllowGet);
             }
             if (filename.StartsWith("ItemPrice_"))
@@ -2943,13 +3082,13 @@ namespace SmartBusinessWeb.Controllers
                         }
                     }
                 }
-               
+
                 model.PrimaryLocation = ModelHelper.GetShops(connection, ref Shops, ref ShopNames);
                 ModelHelper.GetItemOptionsInfo(context, ref model.DicLocItemList, itemcodelist, Shops, connection);
             }
 
             var itemcodes = string.Join(",", itemcodelist);
-            foreach(var itemcode in itemcodelist)
+            foreach (var itemcode in itemcodelist)
                 model.DicIvInfo[itemcode] = new List<PoItemVariModel>();
             //GetPoItemVariInfo
             model.PoIvInfo = connection.Query<PoItemVariModel>(@"EXEC dbo.GetPoItemVariInfo @apId=@apId,@itemcodes=@itemcodes", new { apId, itemcodes }).ToList();
@@ -3040,7 +3179,7 @@ namespace SmartBusinessWeb.Controllers
                 if (string.IsNullOrEmpty(mode) || mode == "search")
                 {
                     var customerlist = ModelHelper.GetCustomers4Sales(context, pageIndex, pagesize, keyword, true, true);
-                    model.RecordCount =  (int)context.GetCustomerCount4Sales2(apId, keyword).FirstOrDefault();
+                    model.RecordCount = (int)context.GetCustomerCount4Sales2(apId, keyword).FirstOrDefault();
                     model.MyobCustomers = customerlist;
                 }
                 else

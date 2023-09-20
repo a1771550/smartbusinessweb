@@ -924,7 +924,7 @@ namespace SmartBusinessWeb.Controllers
             //}
             //Response.Write(suplist.Count + ";Done!");
 
-            Helpers.ModelHelper.SaveSuppliersFrmCentral(context, AccountProfileId, CompanyId);
+            Helpers.ModelHelper.SaveSuppliersFrmCentral(context, AccountProfileId);
             Response.Write("Done!");
         }
 
@@ -1177,7 +1177,7 @@ TEST014:d4:btest1:
             var itembtInfo = context.GetBatchVtInfoByItemCodes12(AccountProfileId, "office", stritemcodes).ToList();
             string strbatcodes = string.Join(",", itembtInfo.Select(x => x.batCode).ToList());
 
-            var batdelInfo = context.GetBatchDeliveryInfo11(strbatcodes, stritemcodes, AccountProfileId).ToList();
+            var batdelInfo = context.GetBatchDeliveryInfo12(strbatcodes, stritemcodes, AccountProfileId).ToList();
 
             var ibqList = from item in itembtInfo
                               //join delitem in batdelInfo

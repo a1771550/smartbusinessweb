@@ -9,11 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
-using MyobItemModel = PPWLib.Models.MYOB.MyobItemModel;
-using MYOBCustomerModel = CommonLib.Models.MYOB.MYOBCustomerModel;
-using MyobItemPriceModel = PPWLib.Models.MYOB.MyobItemPriceModel;
-using MyobItemLocModel = PPWLib.Models.MYOB.MyobItemLocModel;
-using MyobLocationModel = PPWLib.Models.MYOB.MyobLocationModel;
 using System.Data.Entity.Validation;
 using PPWDAL;
 using ModelHelper = PPWLib.Helpers.ModelHelper;
@@ -25,15 +20,10 @@ using CommonLib.Helpers;
 using CommonLib.Models;
 using PPWLib.Models.MYOB;
 using FileHelper = PPWCommonLib.CommonHelpers.FileHelper;
-using KingdeeLib.Models;
-using KingdeeLib.Models.Sales;
-using KItemPriceModel = KingdeeLib.Models.ItemPrice.ItemPriceModel;
-using CommonLib.Models.MYOB;
 using PPWLib.Helpers;
 using PPWLib.Models.Purchase;
 using PPWLib.Models.WholeSales;
 using PPWLib.Models.POS.Customer;
-using PPWLib.Models.Item;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -174,7 +164,7 @@ namespace SmartBusinessWeb.Controllers
             SessUser curruser = Session["User"] as SessUser;
 
             using var context = new PPWDbContext();
-            string ConnectionString = GetConnectionString(context, "READ", apId, CompanyId);
+            string ConnectionString = GetConnectionString(context, "READ", apId);
 
             if (filename.StartsWith("Job_"))
             {
@@ -308,702 +298,22 @@ namespace SmartBusinessWeb.Controllers
 
             if (filename.StartsWith("Suppliers_"))
             {
-                ModelHelper.SaveSuppliersFrmCentral(context, apId, ComInfo.Id);
+                ModelHelper.SaveSuppliersFrmCentral(context, apId);
             }
 
             if (filename.StartsWith("Employees_"))
             {
-                List<MyobEmployeeModel> emplist = MYOBHelper.GetEmployeeList(ConnectionString);
-                using (var transaction = context.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        /* remove current records first: */
-                        List<MyobEmployee> employees = context.MyobEmployees.Where(x => x.AccountProfileId == apId && x.CompanyId == ComInfo.Id).ToList();
-                        context.MyobEmployees.RemoveRange(employees);
-                        context.SaveChanges();
-                        /*********************************/
-
-                        List<SysUser> users = context.SysUsers.Where(x => x.AccountProfileId == apId && x.surIsAbss && x.CompanyId == ComInfo.Id).ToList();
-                        context.SysUsers.RemoveRange(users);
-                        context.SaveChanges();
-                        /*
-                         *  public static string ExportEmployeeColList { get { StringBuilder sb = new StringBuilder(); sb.AppendFormat("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13}","EmployeeID","CardRecordID","CardIdentification","Name","LastName","FirstName","IsIndividual","IsInactive","Gender","Notes","IdentifierID","CustomField1", "CustomField2", "CustomField3"); return sb.ToString(); } }
-                         */
-                        List<MyobEmployee> newemployees = new List<MyobEmployee>();
-                        List<SysUser> newusers = new List<SysUser>();
-                        int posAdminId = ModelHelper.GetPosAdminID(curruser.Device);
-                        string usercode = "";
-
-                        foreach (var employee in emplist)
-                        {
-                            MyobEmployee memployee = new MyobEmployee();
-                            memployee.empFirstName = employee.empFirstName;
-                            memployee.empId = employee.empId;
-                            memployee.empIsIndividual = employee.empIsIndividual;
-                            memployee.empIsActive = employee.empIsActive;
-                            memployee.empCode = employee.empCode.StartsWith("*") ? employee.empCardRecordID.ToString() : employee.empCode;
-                            memployee.empName = employee.empName;
-                            memployee.empFirstName = employee.empFirstName;
-                            memployee.empLastName = employee.empLastName;
-                            memployee.empGender = employee.empGender;
-                            memployee.empIdentifierID = employee.empIdentifierID;
-                            memployee.empCustomField1 = employee.empCustomField1;
-                            memployee.empCustomField2 = employee.empCustomField2;
-                            memployee.empCustomField3 = employee.empCustomField3;
-                            memployee.empCreateTime = dateTime;
-                            memployee.empModifyTime = dateTime;
-                            memployee.AccountProfileId = apId;
-                            memployee.CompanyId = ComInfo.Id;
-
-                            if (memployee.empCode.ToLower() != "admin")
-                            {
-                                newemployees.Add(memployee);
-                            }
-
-                            if (memployee.empCode.ToLower() != "admin")
-                            {
-                                usercode = ModelHelper.GetUserCode(context);
-                                AddressModel address = new AddressModel();
-                                string email = "";
-                                if (employee.AddressList.Count > 0)
-                                {
-                                    address = employee.AddressList.FirstOrDefault();
-                                    email = address.Email;
-                                }
-                                SysUser user = new SysUser
-                                {
-                                    surIsActive = employee.empIsActive,
-                                    Password = "dNvpjLZKQiDwVnVF5d9voszanZ7xJOLU",
-                                    UserCode = usercode,
-                                    AbssCardID = employee.empCode.StartsWith("*") ? employee.empCardRecordID.ToString() : employee.empCode,
-                                    UserName = employee.empName,
-                                    FirstName = employee.empFirstName,
-                                    LastName = employee.empLastName,
-                                    dvcCode = curruser.Device.dvcCode,
-                                    shopCode = curruser.Device.dvcShop,
-                                    ManagerId = posAdminId,
-                                    surScope = "pos",
-                                    AccountProfileId = apId,
-                                    UserRole = "SalesPerson",
-                                    Email = email,
-                                    surIsAbss = true,
-                                    surLicensed = false,
-                                    surCreateTime = dateTime,
-                                    surModifyTime = dateTime,
-                                    CompanyId = ComInfo.Id
-                                };
-                                context.SysUsers.Add(user);
-                                context.SaveChanges();
-                                newusers.Add(user);
-                            }
-                        }
-                        context.MyobEmployees.AddRange(newemployees);
-                        //context.SysUsers.AddRange(newusers);
-                        context.SaveChanges();
-                        ModelHelper.WriteLog(context, "Import Employee data from Central done", "ImportFrmCentral");
-
-                        var salesroldId = context.SysRoles.FirstOrDefault(x => x.rlCode.ToLower() == "salesperson").Id;
-                        int[] adminrolIds = new int[] { 2, 3, 5, 6, 7 };
-                        List<UserRole> newuserroles = new List<UserRole>();
-                        foreach (var newuser in newusers)
-                        {
-                            if (newuser.AbssCardID.ToLower() != "admin")
-                            {
-                                ModelHelper.GrantPosUserDefaultAccessRights(newuser, context);
-                                UserRole userRole = new UserRole
-                                {
-                                    UserId = newuser.surUID,
-                                    RoleId = salesroldId,
-                                    CreateTime = dateTime,
-                                    ModifyTime = dateTime,
-                                };
-                                newuserroles.Add(userRole);
-
-                            }
-                        }
-                        context.UserRoles.AddRange(newuserroles);
-                        context.SaveChanges();
-                        transaction.Commit();
-                    }
-                    catch (DbEntityValidationException e)
-                    {
-                        transaction.Rollback();
-                        StringBuilder sb = new StringBuilder();
-                        foreach (var eve in e.EntityValidationErrors)
-                        {
-                            sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                            foreach (var ve in eve.ValidationErrors)
-                            {
-                                sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                ve.PropertyName,
-                eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                ve.ErrorMessage);
-                            }
-                        }
-                        ModelHelper.WriteLog(context, string.Format("Import Employee data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
-                        context.SaveChanges();
-                    }
-                }
+                ModelHelper.SaveEmployeesFrmCentral(apId, context, ConnectionString, curruser);
             }
 
             if (filename.StartsWith("Customers_"))
             {
-                List<MyobCustomListModel> customlist = MYOBHelper.GetCustomList4Customer();
-                List<MYOBCustomerModel> cuslist = MYOBHelper.GetCustomerList(ConnectionString);
-                using (var transaction = context.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        #region Remove Current Data First
-                        List<MyobCustomer> customers = context.MyobCustomers.Where(x => x.AccountProfileId == AccountProfileId).ToList();
-
-                        #region Backup Customer Point Information 
-                        Dictionary<string, CustomerPointInfo> DicCusPointInfo = new Dictionary<string, CustomerPointInfo>();
-                        foreach(var customer in customers)
-                        {
-                            DicCusPointInfo[customer.cusCode] = new CustomerPointInfo
-                            {
-                                PointsSoFar = customer.cusPointsSoFar??0,
-                                PointsActive = customer.cusPointsActive??0,
-                                PointsUsed = customer.cusPointsUsed??0,
-                                PriceLevelID = customer.cusPriceLevelID
-                            };
-                        }
-                        #endregion
-
-                        context.MyobCustomers.RemoveRange(customers);
-
-                        List<CustomerInfo4Abss> customerInfos = context.CustomerInfo4Abss.Where(x => x.AccountProfileId == AccountProfileId).ToList();
-                        context.CustomerInfo4Abss.RemoveRange(customerInfos);
-
-                        context.MyobCustomLists.RemoveRange(context.MyobCustomLists.Where(x => x.AccountProfileId == AccountProfileId));
-
-                        context.SaveChanges();
-                        #endregion
-
-                        Dictionary<int, string> DicCustomList = new Dictionary<int, string>();
-                        foreach (var custom in customlist)
-                        {
-                            if (!DicCustomList.ContainsKey(custom.CustomListID))
-                                DicCustomList[custom.CustomListID] = custom.CustomListText;
-                        }
-
-                        Dictionary<string, int> DicTermsOfPayments = new Dictionary<string, int>();
-                        var termsofpayments = context.MyobTermsOfPayments.ToList();
-                        foreach (var term in termsofpayments)
-                        {
-                            DicTermsOfPayments[term.TermsOfPaymentID.Trim()] = term.MyobID;
-                        }
-
-                        List<MyobCustomer> newcustomers = new List<MyobCustomer>();
-                        List<CustomerInfo4Abss> customerInfo4Absses = new List<CustomerInfo4Abss>();
-
-                        foreach (var customer in cuslist)
-                        {
-                            string cuscode;
-                            if (ApprovalMode)
-                            {
-                                cuscode = customer.CardIdentification;
-                            }
-                            else
-                            {
-                                if (customer.CardIdentification.StartsWith("*"))
-                                {
-                                    cuscode = customer.AddressList.Count > 0 ? customer.AddressList[0].Phone1 : customer.CardRecordID.ToString();
-                                }
-                                else
-                                {
-                                    cuscode = customer.CardIdentification;
-                                }
-                            }
-                            var salecomment = customer.SaleComment;
-                            MyobCustomer mcustomer = new MyobCustomer();
-                            mcustomer.cusIsOrganization = customer.IsIndividual == 'N';
-                            mcustomer.cusFirstName = customer.FirstName;
-                            mcustomer.cusCustomerID = customer.CustomerID;
-                            mcustomer.cusIsActive = customer.IsInactive == 'N';
-                            mcustomer.cusChgCtrl = customer.ChangeControl;
-                            mcustomer.cusCode = cuscode;
-                            mcustomer.cusPhone = (ApprovalMode) ? (customer.AddressList != null && customer.AddressList.Count > 0) ? customer.AddressList[0].Phone1 : cuscode : cuscode;
-                            mcustomer.cusName = customer.Name ?? customer.LastName;
-                          
-                            mcustomer.CreateTime = dateTime;
-                            mcustomer.ModifyTime = dateTime;
-                            mcustomer.cusTermsID = customer.TermsID;
-                            mcustomer.cusSaleComment = salecomment;
-                            //t.LatePaymentChargePercent","t.EarlyPaymentDiscountPercent","t.TermsOfPaymentID","t.DiscountDays","t.BalanceDueDays","t.ImportPaymentIsDue","t.DiscountDate","t.BalanceDueDate","p.Description                                   
-                            mcustomer.LatePaymentChargePercent = customer.Terms.LatePaymentChargePercent == null ? 0 : Convert.ToDecimal(customer.Terms.LatePaymentChargePercent);
-                            mcustomer.EarlyPaymentDiscountPercent = customer.Terms.EarlyPaymentDiscountPercent == null ? 0 : Convert.ToDecimal(customer.Terms.EarlyPaymentDiscountPercent);
-                            mcustomer.TermsOfPaymentID = customer.Terms.TermsOfPaymentID == null ? null : customer.Terms.TermsOfPaymentID.Trim();
-
-                            if (DicTermsOfPayments.ContainsKey(mcustomer.TermsOfPaymentID))
-                                mcustomer.PaymentIsDue = DicTermsOfPayments[mcustomer.TermsOfPaymentID];
-
-                            mcustomer.DiscountDays = customer.Terms.DiscountDays == null ? 0 : customer.Terms.DiscountDays;
-                            mcustomer.BalanceDueDays = customer.Terms.BalanceDueDays == null ? 0 : customer.Terms.BalanceDueDays;
-                            mcustomer.ImportPaymentIsDue = customer.Terms.ImportPaymentIsDue == null ? 0 : customer.Terms.ImportPaymentIsDue;
-                            mcustomer.DiscountDate = customer.Terms.DiscountDate == null ? null : customer.Terms.DiscountDate;
-                            mcustomer.BalanceDueDate = customer.Terms.BalanceDueDate == null ? null : customer.Terms.BalanceDueDate;
-                            mcustomer.PaymentTermsDesc = customer.PaymentTermsDesc == null ? null : customer.PaymentTermsDesc;
-
-                            mcustomer.AbssSalesID = customer.SalespersonID;
-                            mcustomer.cusStatus = "COMPLETE";
-                            mcustomer.cusAddrCountry = DicCustomList.ContainsKey(customer.CustomList1ID) ? DicCustomList[customer.CustomList1ID] : null;
-                            mcustomer.cusAddrCity = DicCustomList.ContainsKey(customer.CustomList2ID) ? DicCustomList[customer.CustomList2ID] : null;
-
-                            mcustomer.AccountProfileId = AccountProfileId;
-                            mcustomer.CurrencyID = customer.CurrencyID;
-                            mcustomer.TaxIDNumber = customer.TaxIDNumber;
-                            mcustomer.TaxCodeID = customer.TaxCodeID;
-                            
-                            var customerPointInfo = DicCusPointInfo.ContainsKey(mcustomer.cusCode) ? DicCusPointInfo[mcustomer.cusCode] : null;
-                            if (customerPointInfo != null)
-                            {
-                                mcustomer.cusPointsSoFar = customerPointInfo.PointsSoFar;
-                                mcustomer.cusPointsActive = customerPointInfo.PointsActive;
-                                mcustomer.cusPointsUsed = customerPointInfo.PointsUsed;
-                                mcustomer.cusPriceLevelID = customerPointInfo.PriceLevelID;
-                            }
-                            else
-                            {
-                                mcustomer.cusPointsSoFar = 0;
-                                mcustomer.cusPointsActive = 0;
-                                mcustomer.cusPointsUsed = 0;
-                                mcustomer.cusPriceLevelID = string.Empty;
-                            }
-                           
-
-                            if (customer.AddressList.Count > 0)
-                            {
-                                mcustomer.cusAddrLocation = customer.AddressList[0].Location;
-                                mcustomer.cusContact = customer.AddressList[0].ContactName;
-                                mcustomer.cusAddrPhone1 = customer.AddressList[0].Phone1;
-                                mcustomer.cusAddrPhone2 = customer.AddressList[0].Phone2;
-                                mcustomer.cusAddrPhone3 = customer.AddressList[0].Phone3;
-                                mcustomer.cusEmail = customer.AddressList[0].Email;
-                                mcustomer.cusAddrWeb = customer.AddressList[0].WWW;
-                                //mcustomer.cusAddrCity = customer.AddressList[0].City;
-                                //mcustomer.cusAddrCountry = customer.AddressList[0].Country;
-                                mcustomer.cusAddrStreetLine1 = customer.AddressList[0].Street;
-                                mcustomer.cusAddrStreetLine2 = customer.AddressList[0].StreetLine1;
-                                mcustomer.cusAddrStreetLine3 = customer.AddressList[0].StreetLine2;
-                                mcustomer.cusAddrStreetLine4 = customer.AddressList[0].StreetLine3;
-                            }
-
-                            newcustomers.Add(mcustomer);
-
-                            if (customer.AddressList.Count > 0)
-                            {
-                                foreach (var addr in customer.AddressList)
-                                {
-                                    CustomerInfo4Abss customerInfo = new CustomerInfo4Abss
-                                    {
-                                        CusCode = customer.CardIdentification,
-                                        AccountProfileId = AccountProfileId,
-                                        CusAddrLocation = addr.Location,
-                                        StreetLine1 = addr.StreetLine1,
-                                        StreetLine2 = addr.StreetLine2,
-                                        StreetLine3 = addr.StreetLine3,
-                                        StreetLine4 = addr.StreetLine4,
-                                        City = addr.City,
-                                        State = addr.State,
-                                        Postcode = addr.Postcode,
-                                        Country = addr.Country,
-                                        Phone1 = addr.Phone1,
-                                        Phone2 = addr.Phone2,
-                                        Phone3 = addr.Phone3,
-                                        Fax = addr.Fax,
-                                        Email = addr.Email,
-                                        Salutation = addr.Salutation,
-                                        ContactName = addr.ContactName,
-                                        WWW = addr.WWW
-                                    };
-                                    customerInfo4Absses.Add(customerInfo);
-                                }
-                            }
-                        }
-                        context.MyobCustomers.AddRange(newcustomers);
-                        context.CustomerInfo4Abss.AddRange(customerInfo4Absses);
-                        context.SaveChanges();
-
-                        var _customlist = new List<MyobCustomList>();
-                        foreach (var item in customlist)
-                        {
-                            _customlist.Add(new MyobCustomList
-                            {
-                                AccountProfileId = AccountProfileId,
-                                CustomListID = item.CustomListID,
-                                CustomListName = item.CustomListName,
-                                CustomListNumber = item.CustomListNumber,
-                                ChangeControl = item.ChangeControl,
-                                CustomListText = item.CustomListText,
-                                CustomListType = item.CustomListType,
-                                CreateTime = dateTime,
-                                ModifyTime = dateTime
-                            });
-                        }
-                        context.MyobCustomLists.AddRange(_customlist);
-                        context.SaveChanges();
-
-                        ModelHelper.WriteLog(context, "Import Customer data from Central done", "ImportFrmCentral");
-                        transaction.Commit();
-
-                    }
-                    catch (DbEntityValidationException e)
-                    {
-                        transaction.Rollback();
-                        StringBuilder sb = new StringBuilder();
-                        foreach (var eve in e.EntityValidationErrors)
-                        {
-                            sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                            foreach (var ve in eve.ValidationErrors)
-                            {
-                                sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                ve.PropertyName,
-                eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                ve.ErrorMessage);
-                            }
-                        }
-                        ModelHelper.WriteLog(context, string.Format("Import PGCustomer data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
-                        context.SaveChanges();
-                    }
-                }
+                ModelHelper.SaveCustomersFrmCentral(context, ConnectionString, apId);
             }
 
             if (filename.StartsWith("Items_"))
             {
-                List<MyobLocationModel> locationlist = MYOBHelper.GetLocationList(ConnectionString);
-
-                List<MyobItemLocModel> itemloclist = MYOBHelper.GetItemLocList(ConnectionString);
-
-                List<MyobItemModel> itemlist = MYOBHelper.GetItemList(ConnectionString);
-
-                #region Handle Location                    
-                using (var transaction = context.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        #region remove current data first:
-                        //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Item]");
-                        List<MyobLocation> locations = context.MyobLocations.Where(x => x.AccountProfileId == apId).ToList();
-                        context.MyobLocations.RemoveRange(locations);
-                        context.SaveChanges();
-                        #endregion
-
-                        //LocationID, LocationName,LocationIdentification,IsInactive
-                        List<MyobLocation> newlocations = new List<MyobLocation>();
-                        int idx = 0;
-                        foreach (var location in locationlist)
-                        {
-                            newlocations.Add(new MyobLocation
-                            {
-                                IsPrimary = idx==0,
-                                LocationID = location.LocationID,
-                                IsInactive = location.IsInactive,
-                                LocationName = location.LocationName,
-                                LocationIdentification = location.LocationIdentification,
-                                AccountProfileId = apId,
-                                CreateTime = dateTime,
-                            });
-                            idx++;
-                        }
-                        context.MyobLocations.AddRange(newlocations);
-                        context.SaveChanges();
-                        ModelHelper.WriteLog(context, "Import Location data from Central done", "ImportFrmCentral");
-                        transaction.Commit();
-                    }
-                    catch (DbEntityValidationException e)
-                    {
-                        transaction.Rollback();
-                        StringBuilder sb = new StringBuilder();
-                        foreach (var eve in e.EntityValidationErrors)
-                        {
-                            sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                            foreach (var ve in eve.ValidationErrors)
-                            {
-                                sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                    ve.PropertyName,
-                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                    ve.ErrorMessage);
-                            }
-                        }
-                        //throw new Exception(sb.ToString());
-                        ModelHelper.WriteLog(context, string.Format("Import item data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
-                        context.SaveChanges();
-                    }
-                }
-                #endregion
-
-                #region Handle Item
-
-                using (var transaction = context.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        #region remove current data first:
-                        //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Item]");
-                        List<MyobItem> items = context.MyobItems.Where(x => x.AccountProfileId == apId).ToList();
-                        context.MyobItems.RemoveRange(items);
-                        context.SaveChanges();
-                        #endregion
-
-                        List<MyobItem> newitems = new List<MyobItem>();
-                        foreach (var item in itemlist)
-                        {
-                            var pgItem = context.PGItems.Where(x => x.AccountProfileId == apId && x.itmCode == item.ItemNumber).FirstOrDefault();
-
-                            MyobItem _item = new MyobItem
-                            {
-                                itmIsActive = item.IsInactive == 'N',
-                                itmName = item.ItemName,
-                                itmCode = item.ItemNumber,
-                                itmDesc = item.ItemDescription,
-                                itmUseDesc = item.UseDescription == 'Y',
-                                itmIsTaxedWhenBought = item.ItemIsTaxedWhenBought == 'Y',
-                                itmIsTaxedWhenSold = item.ItemIsTaxedWhenSold == 'Y',
-                                itmBaseSellingPrice = Convert.ToDecimal(item.BaseSellingPrice),
-                                itmSellUnit = item.SellUnitMeasure,
-                                itmSellUnitQuantity = item.SellUnitQuantity,
-                                itmBuyUnit = item.BuyUnitMeasure,
-                                itmLastUnitPrice = Convert.ToDecimal(item.LastUnitPrice),
-                                itmBuyStdCost = item.TaxExclusiveStandardCost == 0 ? item.TaxInclusiveStandardCost : item.TaxExclusiveStandardCost,
-                                itmTaxExclusiveLastPurchasePrice = item.TaxExclusiveLastPurchasePrice,
-                                itmTaxInclusiveLastPurchasePrice = item.TaxInclusiveLastPurchasePrice,
-                                itmTaxExclusiveStandardCost = item.TaxExclusiveStandardCost,
-                                itmTaxInclusiveStandardCost = item.TaxInclusiveStandardCost,
-                                itmChgCtrl = item.ChangeControl,
-                                itmCreateTime = dateTime,
-                                itmModifyTime = dateTime,
-                                itmItemID = item.ItemID,
-                                AccountProfileId = apId,
-                                itmIsNonStock = item.ItemIsInventoried == 'N',
-                                itmIsSold = item.ItemIsSold == 'Y',
-                                itmIsBought = item.ItemIsBought == 'Y',
-                                itmSupCode = item.SupplierItemNumber,
-                                IncomeAccountID = item.IncomeAccountID,
-                                ExpenseAccountID = item.ExpenseAccountID,
-                                InventoryAccountID = item.InventoryAccountID,
-                            };
-
-                            newitems.Add(_item);
-                        }
-                        context.MyobItems.AddRange(newitems);
-                        context.SaveChanges();
-                        ModelHelper.WriteLog(context, "Import Item data from Central done", "ImportFrmCentral");
-                        transaction.Commit();
-                    }
-                    catch (DbEntityValidationException e)
-                    {
-                        transaction.Rollback();
-                        StringBuilder sb = new StringBuilder();
-                        foreach (var eve in e.EntityValidationErrors)
-                        {
-                            sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                            foreach (var ve in eve.ValidationErrors)
-                            {
-                                sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                    ve.PropertyName,
-                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                    ve.ErrorMessage);
-                            }
-                        }
-                        //throw new Exception(sb.ToString());
-                        ModelHelper.WriteLog(context, string.Format("Import item data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
-                        context.SaveChanges();
-                    }
-                }
-                #endregion
-
-                #region Handle Stock
-
-                #region backup & remove current data first
-                //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [LocStock]");
-                List<MyobLocStock> stocks = context.MyobLocStocks.Where(x => x.AccountProfileId == apId).ToList();
-                Dictionary<string, int> DicLocItemQty = new Dictionary<string, int>();
-
-                foreach (var stock in stocks)
-                {
-                    var Key = string.Concat(stock.lstStockLoc, ":", stock.lstItemCode);
-                    DicLocItemQty[Key] = stock.lstQuantityAvailable ?? 0;
-                }
-
-                context.MyobLocStocks.RemoveRange(stocks);
-                context.SaveChanges();
-                #endregion
-
-                stocks = new List<MyobLocStock>();
-                List<MyobLocStock> newstocks = new List<MyobLocStock>();
-
-                var activeLocationList = locationlist.Where(x => x.IsInactive != null && !(bool)x.IsInactive).ToList();
-                var addedstockcode = new List<string>();
-
-                foreach (var item in itemloclist)
-                {
-                    var inCurrLoc = itemloclist.Where(x => x.ItemCode == item.ItemCode);
-                    if (inCurrLoc.Count() == activeLocationList.Count)
-                    {
-                        string Id = CommonHelper.GenerateNonce(50, false);
-                        stocks.Add(new MyobLocStock
-                        {
-                            lstItemLocationID = Id,
-                            lstItemID = item.ItemID,
-                            lstItemCode = item.ItemCode,
-                            lstStockLoc = item.LocationCode,
-                            lstAbssQty = item.QuantityOnHand,
-                            lstQuantityAvailable = item.QuantityOnHand,
-                            lstCreateTime = dateTime,
-                            lstModifyTime = dateTime,
-                            AccountProfileId = apId,
-                            CompanyId = ComInfo.Id,
-                        });
-                        addedstockcode.Add(item.ItemCode);
-                    }
-                }
-
-                if (stocks.Count > 0)
-                {
-                    context.MyobLocStocks.AddRange(stocks);
-                    context.SaveChanges();
-                }
-
-                var _itemlist = addedstockcode.Count > 0 ? itemlist.Where(x => !addedstockcode.Contains(x.ItemNumber)) : itemlist;
-               
-                foreach (var loc in activeLocationList)
-                {
-                    foreach (var item in _itemlist)
-                    {
-                        var stock = itemloclist.FirstOrDefault(x => x.LocationCode == loc.LocationIdentification && x.ItemCode == item.ItemNumber);
-
-                        var Key = string.Concat(loc.LocationIdentification,":",item.ItemNumber);
-                        
-                        int qty = DicLocItemQty.Keys.Contains(Key) ? DicLocItemQty[Key] : 0;
-                        string Id = CommonHelper.GenerateNonce(50, false);
-                        newstocks.Add(new MyobLocStock
-                        {
-                            lstItemLocationID = Id,
-                            lstItemID = item.ItemID,
-                            lstItemCode = item.ItemNumber,
-                            lstStockLoc = loc.LocationIdentification,
-                            lstAbssQty = stock == null ? 0 : stock.QuantityOnHand,
-                            lstQuantityAvailable = qty,
-                            lstCreateTime = dateTime,
-                            lstModifyTime = dateTime,
-                            AccountProfileId = apId,
-                            CompanyId = ComInfo.Id,
-                        });
-                    }
-                }
-                context.MyobLocStocks.AddRange(newstocks);
-                context.SaveChanges();
-
-                ModelHelper.WriteLog(context, "Import Item Location data from Central done;added office stock:" + newstocks.Where(x => x.lstStockLoc == "office").Count(), "ExportFrmCentral");
-                context.SaveChanges();
-
-                #endregion
-
-                #region Handle Price
-                using (var transaction = context.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        List<MyobItemPriceModel> itemplist = MYOBHelper.GetItemPriceList(ConnectionString);
-                        List<MyobItemPriceModel> filterediplist = new List<MyobItemPriceModel>();
-                        foreach (var ip in itemplist)
-                        {
-                            if (ip.QuantityBreak == 1)
-                            {
-                                filterediplist.Add(ip);
-                            }
-                        }
-
-                        #region remove current data first
-                        //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [ItemPrice]");
-                        List<MyobItemPrice> itemprices = context.MyobItemPrices.Where(x => x.AccountProfileId == apId && x.CompanyId == ComInfo.Id).ToList();
-                        context.MyobItemPrices.RemoveRange(itemprices);
-                        context.SaveChanges();
-                        #endregion
-                        List<MyobItemPrice> newitemprices = new List<MyobItemPrice>();
-
-                        foreach (var item in filterediplist)
-                        {
-                            MyobItemPrice itemPrice = new MyobItemPrice();
-                            itemPrice.ItemPriceID = item.ItemPriceID;
-                            itemPrice.ItemID = item.ItemID;
-                            itemPrice.QuantityBreak = item.QuantityBreak;
-                            itemPrice.QuantityBreakAmount = item.QuantityBreakAmount;
-                            itemPrice.PriceLevel = item.PriceLevel.ToString();
-                            itemPrice.PriceLevelNameID = item.PriceLevelNameID;
-                            itemPrice.SellingPrice = item.SellingPrice;
-                            itemPrice.UnitPrice = item.LastUnitPrice;
-                            itemPrice.ItemCode = item.ItemCode;
-                            itemPrice.ChangeControl = item.ChangeControl;
-                            itemPrice.CreateTime = dateTime;
-                            itemPrice.ModifyTime = dateTime;
-                            itemPrice.AccountProfileId = apId;
-                            itemPrice.CompanyId = ComInfo.Id;
-                            newitemprices.Add(itemPrice);
-                        }
-
-                        context.MyobItemPrices.AddRange(newitemprices);
-                        ModelHelper.WriteLog(context, "Import Item Price data from Central done", "ImportFrmCentral");
-                        context.SaveChanges();
-                        transaction.Commit();
-
-                    }
-                    catch (DbEntityValidationException e)
-                    {
-                        transaction.Rollback();
-                        StringBuilder sb = new StringBuilder();
-                        foreach (var eve in e.EntityValidationErrors)
-                        {
-                            sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                            foreach (var ve in eve.ValidationErrors)
-                            {
-                                sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                    ve.PropertyName,
-                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                    ve.ErrorMessage);
-                            }
-                        }
-                        //throw new Exception(sb.ToString());
-                        ModelHelper.WriteLog(context, string.Format("Import itemprice data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
-                        context.SaveChanges();
-                    }
-                }
-
-                #endregion
-
-                #region Init ItemOption if there isn't any in DB                  
-                var currentItemOptions = context.ItemOptions.Where(x => x.AccountProfileId == apId);
-                List<ItemOption> itemOptions = new List<ItemOption>();
-                foreach (var item in itemlist)
-                {
-                    if (!currentItemOptions.Any(x => x.itemId == item.ItemID))
-                    {
-                        itemOptions.Add(new ItemOption
-                        {
-                            itemId = item.ItemID,
-                            AccountProfileId = apId,
-                            chkBat = false,
-                            chkSN = false,
-                            chkVT = false,
-                            itmCode = item.ItemNumber,
-                            CreateTime = DateTime.Now,
-                        });
-                    }
-                }
-                if (itemOptions.Count > 0)
-                {
-                    context.ItemOptions.AddRange(itemOptions);
-                    context.SaveChanges();
-                }
-                #endregion
+                ModelHelper.SaveItemsFrmCentral(apId, context, ConnectionString);
             }
 
             if (filename.StartsWith("Tax_"))
@@ -1144,6 +454,8 @@ namespace SmartBusinessWeb.Controllers
 
             return Json(new { msg });
         }
+
+
 
 
 
@@ -1355,7 +667,7 @@ namespace SmartBusinessWeb.Controllers
             int apId = comInfo.AccountProfileId;
 
             using var context = new PPWDbContext();
-            string ConnectionString = GetConnectionString(context, "READ_WRITE", apId, CompanyId);
+            string ConnectionString = GetConnectionString(context, "READ_WRITE", apId);
 
             if (filename.StartsWith("ItemSales_"))
             {
@@ -1400,7 +712,8 @@ namespace SmartBusinessWeb.Controllers
                 DateTime todate;
                 if (string.IsNullOrEmpty(strfrmdate))
                 {
-                    frmdate = new DateTime(year, 1, 1);
+                    //frmdate = new DateTime(year, 1, 1);
+                    frmdate = DateTime.Today;
                 }
                 else
                 {
@@ -1411,7 +724,8 @@ namespace SmartBusinessWeb.Controllers
                 }
                 if (string.IsNullOrEmpty(strtodate))
                 {
-                    todate = new DateTime(year, 12, 31);
+                    //todate = new DateTime(year, 12, 31);
+                    todate = DateTime.Today;
                 }
                 else
                 {
@@ -1595,11 +909,8 @@ namespace SmartBusinessWeb.Controllers
                 #endregion
 
                 if (SalesLnViews.Count > 0)
-                {
-                    ModelHelper.GetCustomerItemJob4SalesLn(ref SalesLnViews, ref VipList, context);
-                }
-
-                if (RefundLnViews.Count > 0) ModelHelper.GetCustomerItemJob4SalesLn(ref RefundLnViews, ref VipList, context);
+                    ModelHelper.GetCustomerItemJob4SalesLn(ref SalesLnViews, ref VipList, context, apId);
+                if (RefundLnViews.Count > 0) ModelHelper.GetCustomerItemJob4SalesLn(ref RefundLnViews, ref VipList, context, apId);
 
 
                 Dictionary<string, string> DicPayTypes = new Dictionary<string, string>();
@@ -1619,7 +930,7 @@ namespace SmartBusinessWeb.Controllers
                 if (ApprovalMode)
                 {
                     PayLnViews = (from pl in context.RtlPayLns
-                                  where salescodes.Any(x => x == pl.rtplCode) && pl.CompanyId == ComInfo.Id
+                                  where salescodes.Any(x => x == pl.rtplCode) && pl.AccountProfileId == apId
                                   select new PayLnView
                                   {
                                       payId = pl.payId,
@@ -1627,19 +938,19 @@ namespace SmartBusinessWeb.Controllers
                                       pmtCode = pl.pmtCode,
                                       rtplCode = pl.rtplCode,
                                       rtplParentId = pl.rtplParentId,
-                                      CompanyId = pl.CompanyId
+                                      //CompanyId = pl.CompanyId
                                   }
                                     ).ToList();
 
 
                     var paylist = (from p in context.RtlPays
-                                   where salescodes.Any(x => x == p.rtpCode) && p.CompanyId == ComInfo.Id
+                                   where salescodes.Any(x => x == p.rtpCode) && p.AccountProfileId == apId
                                    select p
                                    ).ToList();
 
                     foreach (var payln in PayLnViews)
                     {
-                        var pay = paylist.FirstOrDefault(x => x.rtpUID == payln.payId && x.CompanyId == payln.CompanyId);
+                        var pay = paylist.FirstOrDefault(x => x.rtpUID == payln.payId && x.AccountProfileId == payln.AccountProfileId);
                         payln.rtpCode = pay.rtpCode;
                         payln.rtpPayType = pay.rtpPayType;
                     }
@@ -1649,7 +960,7 @@ namespace SmartBusinessWeb.Controllers
                     PayLnViews = (from pl in context.RtlPayLns
                                   join p in context.RtlPays
                                   on pl.payId equals p.rtpUID
-                                  where p.rtpDate >= frmdate && p.rtpDate <= todate && p.rtpSalesLoc.ToLower() == location && p.rtpDvc.ToLower() == device && p.CompanyId == ComInfo.Id && pl.CompanyId == p.CompanyId
+                                  where p.rtpDate >= frmdate && p.rtpDate <= todate && p.rtpSalesLoc.ToLower() == location && p.rtpDvc.ToLower() == device && p.AccountProfileId == apId && pl.AccountProfileId == apId
                                   select new PayLnView
                                   {
                                       payId = pl.payId,
@@ -1658,7 +969,7 @@ namespace SmartBusinessWeb.Controllers
                                       rtpCode = p.rtpCode,
                                       rtpPayType = p.rtpPayType,
                                       rtplParentId = pl.rtplParentId,
-                                      CompanyId = pl.CompanyId
+                                      //CompanyId = pl.CompanyId
                                   }
                                     ).ToList();
                 }
@@ -1708,13 +1019,13 @@ namespace SmartBusinessWeb.Controllers
                         if (group.Count() <= 1)
                         {
                             var item = group.FirstOrDefault();
-                            GenSql4SalesItem(salesprefix, out checkoutportal, approvalmode, dateformatcode, invoicestatus, out columns, out strcolumn, out salespaidamt, out value, ref values, item, sqlfields4Sales, false, ref sql, GroupedPayLnList);
+                            ModelHelper.GenSql4SalesItem(out checkoutportal, approvalmode, dateformatcode, invoicestatus, out columns, out strcolumn, out salespaidamt, out value, ref values, item, sqlfields4Sales, false, ref sql, GroupedPayLnList);
                         }
                         else
                         {
                             foreach (var item in group)
                             {
-                                GenSql4SalesItem(salesprefix, out checkoutportal, approvalmode, dateformatcode, invoicestatus, out columns, out strcolumn, out salespaidamt, out value, ref values, item, sqlfields4Sales, true, ref sql, GroupedPayLnList);
+                                ModelHelper.GenSql4SalesItem(out checkoutportal, approvalmode, dateformatcode, invoicestatus, out columns, out strcolumn, out salespaidamt, out value, ref values, item, sqlfields4Sales, true, ref sql, GroupedPayLnList);
                             }
                             groupcount += group.Count();
                         }
@@ -1808,14 +1119,14 @@ namespace SmartBusinessWeb.Controllers
                         {
                             var item = group.FirstOrDefault();
                             //values = genRefundSQL(salesprefix, refundprefix, approvalmode, currencycode, exchangerate, out paytypeamts, out paytypes, out salesrefundcode, out collength, dateformatcode, invoicestatus, GroupedPayLnList, out columns, out strcolumn, out value, out refsalescode, refundpaidamt, item, false);
-                            GenSql4SalesItem(salesprefix, out checkoutportal, approvalmode, dateformatcode, invoicestatus, out columns, out strcolumn, out refundpaidamt, out value, ref values, item, sqlfields4Sales, false, ref sql, GroupedPayLnList);
+                            ModelHelper.GenSql4SalesItem(out checkoutportal, approvalmode, dateformatcode, invoicestatus, out columns, out strcolumn, out refundpaidamt, out value, ref values, item, sqlfields4Sales, false, ref sql, GroupedPayLnList);
                         }
                         else
                         {
                             foreach (var item in group)
                             {
                                 //values = genRefundSQL(salesprefix, refundprefix, approvalmode, currencycode, exchangerate, out paytypeamts, out paytypes, out salesrefundcode, out collength, dateformatcode, invoicestatus, GroupedPayLnList, out columns, out strcolumn, out value, out refsalescode, refundpaidamt, item, true);
-                                GenSql4SalesItem(salesprefix, out checkoutportal, approvalmode, dateformatcode, invoicestatus, out columns, out strcolumn, out refundpaidamt, out value, ref values, item, sqlfields4Sales, false, ref sql, GroupedPayLnList);
+                                ModelHelper.GenSql4SalesItem(out checkoutportal, approvalmode, dateformatcode, invoicestatus, out columns, out strcolumn, out refundpaidamt, out value, ref values, item, sqlfields4Sales, false, ref sql, GroupedPayLnList);
                             }
                         }
 
@@ -2182,7 +1493,7 @@ namespace SmartBusinessWeb.Controllers
                         if (group.Count() <= 1)
                         {
                             var item = group.FirstOrDefault();
-                            GenSql4SalesItem(salesprefix, out checkoutportal, approvalmode, dateformatcode, invoicestatus, out columns, out strcolumn, out salespaidamt, out value, ref values, null, sqlfields4Sales, false, ref sql, null, item);
+                            ModelHelper.GenSql4SalesItem(out checkoutportal, approvalmode, dateformatcode, invoicestatus, out columns, out strcolumn, out salespaidamt, out value, ref values, null, sqlfields4Sales, false, ref sql, null, item);
                             //values = GenWholeSalesSQL(onlineModeItem, out checkoutportal, context, ismultiuser, currencycode, exchangerate, out collength, dateformatcode, out salescode, wholesalesprefix, invoicestatus, out columns, out strcolumn, salespaidamt, paytypeamts, paytypes, out value, values, item, false);
 
                         }
@@ -2190,7 +1501,7 @@ namespace SmartBusinessWeb.Controllers
                         {
                             foreach (var item in group)
                             {
-                                GenSql4SalesItem(salesprefix, out checkoutportal, approvalmode, dateformatcode, invoicestatus, out columns, out strcolumn, out salespaidamt, out value, ref values, null, sqlfields4Sales, true, ref sql, null, item);
+                                ModelHelper.GenSql4SalesItem(out checkoutportal, approvalmode, dateformatcode, invoicestatus, out columns, out strcolumn, out salespaidamt, out value, ref values, null, sqlfields4Sales, true, ref sql, null, item);
                                 //values = GenWholeSalesSQL(onlineModeItem, out checkoutportal, context, ismultiuser, currencycode, exchangerate, out collength, dateformatcode, out salescode, wholesalesprefix, invoicestatus, out columns, out strcolumn, salespaidamt, paytypeamts, paytypes, out value, values, item, true);
                             }
                         }
@@ -2282,7 +1593,7 @@ namespace SmartBusinessWeb.Controllers
                 var dateformatcode = context.AppParams.FirstOrDefault(x => x.appParam == "DateFormat").appVal;
                 List<string> sqllist = new List<string>();
 
-                ModelHelper.GetDataTransferData(context, accountprofileId, ComInfo.Id, CheckOutType.Purchase, ref dmodel);
+                ModelHelper.GetDataTransferData(context, accountprofileId, CheckOutType.Purchase, ref dmodel);
 
                 #region Handle ItemOptions
                 var itemcodes = dmodel.ItemCodes;
@@ -2540,7 +1851,7 @@ namespace SmartBusinessWeb.Controllers
 
             if (filename.StartsWith("Items_"))
             {
-                ModelHelper.GetDataTransferData(context, accountprofileId, ComInfo.Id, CheckOutType.Items, ref dmodel);
+                ModelHelper.GetDataTransferData(context, accountprofileId, CheckOutType.Items, ref dmodel);
 
                 List<string> columns = new List<string>();
 
@@ -2585,13 +1896,13 @@ namespace SmartBusinessWeb.Controllers
                     dayends.WriteMYOB(ConnectionString, sql);
                 }
 
-                updateDB(dmodel.CheckOutIds_Item.ToArray(), accountprofileId, ComInfo.Id, CheckOutType.Items);
+                updateDB(dmodel.CheckOutIds_Item.ToArray(), accountprofileId, CheckOutType.Items);
             }
 
             if (filename.StartsWith("PGLocStocks_"))
             {
                 string sql = "";
-                ModelHelper.GetDataTransferData(context, accountprofileId, ComInfo.Id, CheckOutType.PGLocStocks, ref dmodel);
+                ModelHelper.GetDataTransferData(context, accountprofileId, CheckOutType.PGLocStocks, ref dmodel);
                 sql = MyobHelper.InsertImportLocStockSql;
                 sql = sql.Replace("0", "{0}");
                 List<string> values = new List<string>();
@@ -2618,28 +1929,28 @@ namespace SmartBusinessWeb.Controllers
                 ModelHelper.WriteLog(context, string.Join(",", sql), "ExportFrmShop#Stock");
                 context.SaveChanges();
 
-                updateDB(dmodel.CheckOutIds_Stock.ToArray(), accountprofileId, ComInfo.Id, CheckOutType.PGLocStocks);
+                updateDB(dmodel.CheckOutIds_Stock.ToArray(), accountprofileId, CheckOutType.PGLocStocks);
             }
 
             if (filename.StartsWith("Customers_"))
             {
                 WritePGCustomerToABSS(AccountProfileId, ref onlineModeItem, dmodel);
-                updateDB(onlineModeItem.checkoutIds.ToArray(), AccountProfileId, CompanyId, CheckOutType.PGCustomers);
+                updateDB(onlineModeItem.checkoutIds.ToArray(), AccountProfileId, CheckOutType.PGCustomers);
                 WriteMyobCustomerToABSS(AccountProfileId, ref onlineModeItem, dmodel);
-                updateDB(onlineModeItem.checkoutIds.ToArray(), AccountProfileId, CompanyId, CheckOutType.MyobCustomers);
+                updateDB(onlineModeItem.checkoutIds.ToArray(), AccountProfileId, CheckOutType.MyobCustomers);
                 WriteVipToABSS();
             }
 
             if (filename == "Suppliers_")
             {
-                WriteSupplierToABSS(accountprofileId, ComInfo.Id, ref onlineModeItem, dmodel);
-                updateDB(onlineModeItem.checkoutIds.ToArray(), accountprofileId, ComInfo.Id, CheckOutType.Suppliers);
+                WriteSupplierToABSS(accountprofileId, ref onlineModeItem, dmodel);
+                updateDB(onlineModeItem.checkoutIds.ToArray(), accountprofileId, CheckOutType.Suppliers);
             }
 
             if (filename.StartsWith("Devices_"))
             {
 
-                ModelHelper.GetDataTransferData(context, accountprofileId, ComInfo.Id, CheckOutType.Device, ref dmodel);
+                ModelHelper.GetDataTransferData(context, accountprofileId, CheckOutType.Device, ref dmodel);
                 var jsondevicelist = JsonConvert.SerializeObject(dmodel.DeviceList);
                 var central4device = ConfigurationManager.AppSettings["CentralApiUrl4Device"];
 
@@ -2660,89 +1971,6 @@ namespace SmartBusinessWeb.Controllers
 
 
 
-        private void GenSql4SalesItem(string salesprefix, out string checkoutportal, bool approvalmode, string dateformatcode, string invoicestatus, out List<string> columns, out string strcolumn, out double salespaidamt, out string value, ref List<string> values, SalesLnView item, string sqlfields, bool groupCountMoreThanOne, ref string sql, Dictionary<string, List<PayLnView>> GroupedPayLnList = null, WholeSalesLnModel wssalesLn = null)
-        {
-            bool isDeposit = item != null ? item.rtlCode.StartsWith("DE") : false;
-            int collength = sqlfields.Split(',').Length;
-            if (isDeposit)
-            {
-                sql = $"Insert Into Import_Service_Sales({sqlfields4Deposit}) Values(";
-                collength = sqlfields4Deposit.Split(',').Length;
-            }
-            checkoutportal = item != null ? item.CheckoutPortal : wssalesLn.CheckoutPortal;
-            if (item != null)
-                item.dateformat = dateformatcode == "E" ? @"dd/MM/yyyy" : @"MM/dd/yyyy";
-            else
-                wssalesLn.dateformat = dateformatcode == "E" ? @"dd/MM/yyyy" : @"MM/dd/yyyy";
-            //double mthchrpc = 0;
-            string deliverystatus = "A";
-
-            //List<string> paytypeamtlist = new List<string>();
-            string paytypes = "";
-            if (GroupedPayLnList != null)
-            {
-                List<string> paytypelist = new List<string>();
-                foreach (var payln in GroupedPayLnList[item.rtlCode])
-                {
-                    //paytypeamtlist.Add(string.Format("{0}:{1}", payln.pmtCode, payln.Amount));
-                    paytypelist.Add(payln.pmtCode);
-                }
-                paytypes = string.Join("; ", paytypelist);
-            }
-            var salesrefundcode = item != null ? item.rtlCode : wssalesLn.wslCode;
-
-
-            columns = new List<string>();
-            for (int j = 0; j < collength; j++)
-            {
-                columns.Add("'{" + j + "}'");
-            }
-            strcolumn = string.Join(",", columns);
-            string customerpo;
-            string memo = "";
-            if (item != null)
-            {
-                salespaidamt = item.rtlRefSales != null && item.rtlRefSales.StartsWith("DE") ? Convert.ToDouble(item.rtlSalesAmt) : 0;
-                customerpo = approvalmode ? item.rtsCustomerPO : item.rtlRefSales;
-                memo = genMemo(item.rtsCurrency, Convert.ToDouble(item.rtsExRate), salespaidamt, "");
-            }
-            else
-            {
-                salespaidamt = 0;
-                customerpo = approvalmode ? wssalesLn.CustomerPo : wssalesLn.wslRefSales;
-                memo = genMemo(wssalesLn.CurrencyCode, Convert.ToDouble(wssalesLn.ExRate), salespaidamt, "");
-            }
-
-            string salesfirstname = "";
-            string saleslastname = item != null ? item.SalesPersonName : wssalesLn.SalesPersonName;
-            string location = item != null ? item.StockLocationDisplay : wssalesLn.StockLocationDisplay;
-
-            if (isDeposit)
-            {
-                /*CoLastName,CardID,CustomersNumber,InvoiceNumber,SaleDate,AccountNumber,Amount,SaleStatus,DeliveryStatus,Memo,SalesPersonLastName,Description,PaymentIsDue,DiscountDays,BalanceDueDays,PercentDiscount,PercentMonthlyCharge*/
-                value = string.Format(strcolumn, item.CustomerName, StringHandlingForSQL(item.CustomerCode), StringHandlingForSQL(customerpo), salesrefundcode, item.SalesDateDisplay, ComInfo.comAccountNo, item.DepositAmt * -1, "I", "B", StringHandlingForSQL(paytypes), StringHandlingForSQL(salesfirstname), "", item.Myob_PaymentIsDue, item.Myob_DiscountDays, item.Myob_BalanceDueDays, "0", "0");
-            }
-            else
-            {
-                /*CoLastName,InvoiceNumber,SaleDate,ItemNumber,Quantity,Price,Discount,SaleStatus,Location,CardID,AmountPaid,PaymentMethod,PaymentIsDue,DiscountDays,BalanceDueDays,PercentDiscount,PercentMonthlyCharge,DeliveryStatus,CustomersNumber,Job,SalespersonFirstName,SalespersonLastName,Memo,TaxCode,CurrencyCode,ExchangeRate,AddressLine1,AddressLine2,AddressLine3,AddressLine4*/
-                if (item != null)
-                {
-                    value = string.Format(strcolumn, item.CustomerName, "", item.SalesDateDisplay, StringHandlingForSQL(item.Item.itmCode), item.dQty, item.dPrice, item.dLineDiscPc, invoicestatus, location, StringHandlingForSQL(item.CustomerCode), salespaidamt, StringHandlingForSQL(paytypes), item.Myob_PaymentIsDue, item.Myob_DiscountDays, item.Myob_BalanceDueDays, "0", "0", deliverystatus, StringHandlingForSQL(customerpo), item.JobNumber, StringHandlingForSQL(salesfirstname), StringHandlingForSQL(saleslastname), StringHandlingForSQL(memo), item.rtlTaxCode, item.rtsCurrency, item.rtsExRate, item.rtsDeliveryAddress1, item.rtsDeliveryAddress2, item.rtsDeliveryAddress3, item.rtsDeliveryAddress4);
-                }
-                else
-                {
-                    value = string.Format(strcolumn, wssalesLn.CustomerName, "", wssalesLn.SalesDateDisplay, StringHandlingForSQL(wssalesLn.Item.itmCode), wssalesLn.dQty, wssalesLn.dPrice, wssalesLn.dLineDiscPc, invoicestatus, location, StringHandlingForSQL(wssalesLn.CustomerCode), salespaidamt, StringHandlingForSQL(paytypes), wssalesLn.Myob_PaymentIsDue, wssalesLn.Myob_DiscountDays, wssalesLn.Myob_BalanceDueDays, "0", "0", deliverystatus, StringHandlingForSQL(customerpo), wssalesLn.JobNumber, StringHandlingForSQL(salesfirstname), StringHandlingForSQL(saleslastname), StringHandlingForSQL(memo), wssalesLn.wslTaxCode, wssalesLn.CurrencyCode, wssalesLn.ExRate, wssalesLn.DeliveryAddress1, wssalesLn.DeliveryAddress2, wssalesLn.DeliveryAddress3, wssalesLn.DeliveryAddress4);
-                }
-            }
-
-            if (groupCountMoreThanOne)
-            {
-                value = string.Concat("(", value, ")");
-            }
-
-            values.Add(value);
-            //return values;
-        }
 
         private static string StringHandlingForSQL(string str)
         {
@@ -2751,7 +1979,8 @@ namespace SmartBusinessWeb.Controllers
 
         private static string genMemo(string currencycode, double exchangerate, double paytypeamts, string pstRemark)
         {
-            return StringHandlingForSQL(string.Concat(currencycode, " ", paytypeamts, $"({exchangerate})", " ", pstRemark));
+            //return StringHandlingForSQL(string.Concat(currencycode, " ", paytypeamts, $"({exchangerate})", " ", pstRemark));
+            return ModelHelper.genMemo(currencycode, exchangerate, paytypeamts, pstRemark);
         }
 
         private async Task<bool> ExportData4Kingdee(DayEndsModel model, DataTransferModel dmodel, string filename, string strfrmdate = "", string strtodate = "", bool includePending = false, bool includeUploaded = false, int lang = 0, string salesprefix = "", string refundprefix = "")
@@ -2829,7 +2058,7 @@ namespace SmartBusinessWeb.Controllers
 
 
 
-        private void updateDB(long[] _checkoutIds, int accountProfileId, int companyId, CheckOutType checkOutType)
+        private void updateDB(long[] _checkoutIds, int accountProfileId, CheckOutType checkOutType)
         {
             using (var context = new PPWDbContext())
             {
@@ -2883,7 +2112,7 @@ namespace SmartBusinessWeb.Controllers
                         break;
                     default:
                     case CheckOutType.ItemSales:
-                        List<RtlSale> saleslist = context.RtlSales.Where(x => checkoutIds.Any(y => x.rtsUID == y) && x.CompanyId == companyId).ToList();
+                        List<RtlSale> saleslist = context.RtlSales.Where(x => checkoutIds.Any(y => x.rtsUID == y) && x.AccountProfileId == accountProfileId).ToList();
                         foreach (var sales in saleslist)
                         {
                             sales.rtsCheckout = true;
@@ -2897,12 +2126,12 @@ namespace SmartBusinessWeb.Controllers
 
 
 
-        private void WriteSupplierToABSS(int accountprofileId, int companyId, ref OnlineModeItem onlineModeItem, DataTransferModel dmodel)
+        private void WriteSupplierToABSS(int accountprofileId, ref OnlineModeItem onlineModeItem, DataTransferModel dmodel)
         {
             using var context = new PPWDbContext();
 
-            string ConnectionString = GetConnectionString(context, "READ_WRITE", apId, CompanyId);
-            ModelHelper.GetDataTransferData(context, accountprofileId, companyId, CheckOutType.Suppliers, ref dmodel);
+            string ConnectionString = GetConnectionString(context, "READ_WRITE", apId);
+            ModelHelper.GetDataTransferData(context, accountprofileId, CheckOutType.Suppliers, ref dmodel);
 
             List<string> columns = new List<string>();
 
@@ -2956,8 +2185,8 @@ namespace SmartBusinessWeb.Controllers
 
             using (var context = new PPWDbContext())
             {
-                string ConnectionString = GetConnectionString(context, "READ_WRITE", AccountProfileId, CompanyId);
-                ModelHelper.GetDataTransferData(context, AccountProfileId, CompanyId, CheckOutType.PGCustomers, ref dmodel);
+                string ConnectionString = GetConnectionString(context, "READ_WRITE", AccountProfileId);
+                ModelHelper.GetDataTransferData(context, AccountProfileId, CheckOutType.PGCustomers, ref dmodel);
 
                 if (dmodel.CustomerList.Count > 0)
                 {
@@ -3073,8 +2302,8 @@ namespace SmartBusinessWeb.Controllers
 
             using (var context = new PPWDbContext())
             {
-                string ConnectionString = GetConnectionString(context, "READ_WRITE", AccountProfileId, CompanyId);
-                ModelHelper.GetDataTransferData(context, AccountProfileId, CompanyId, CheckOutType.MyobCustomers, ref dmodel);
+                string ConnectionString = GetConnectionString(context, "READ_WRITE", AccountProfileId);
+                ModelHelper.GetDataTransferData(context, AccountProfileId, CheckOutType.MyobCustomers, ref dmodel);
 
                 if (dmodel.CustomerList.Count > 0)
                 {
@@ -3102,7 +2331,7 @@ namespace SmartBusinessWeb.Controllers
 
             using (var context = new PPWDbContext())
             {
-                string ConnectionString = GetConnectionString(context, "READ_WRITE", AccountProfileId, CompanyId);
+                string ConnectionString = GetConnectionString(context, "READ_WRITE", AccountProfileId);
                 List<string> columns = new List<string>();
 
                 int colcount = ApprovalMode ? MyobHelper.ImportCustomerBasicColCount4Approval : MyobHelper.ImportCustomerBasicColCount;
@@ -3157,9 +2386,9 @@ namespace SmartBusinessWeb.Controllers
                 }
             }
         }
-        private string GetConnectionString(PPWDbContext context, string accesstype, int apId, int companyId)
+        private string GetConnectionString(PPWDbContext context, string accesstype, int apId)
         {
-            return MYOBHelper.GetConnectionString(context, accesstype, apId, companyId);
+            return MYOBHelper.GetConnectionString(context, accesstype, apId);
         }
     }
 }

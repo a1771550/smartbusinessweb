@@ -149,7 +149,7 @@ namespace SmartBusinessWeb.Controllers
                 int lang = (int)Session["CurrentCulture"];
                 string defaultsalesnotetxt = string.Empty;
                 otherSettings = (from os in context.AppParams
-                                 where os.appIsActive == true && os.CompanyId == ComInfo.Id
+                                 where os.appIsActive == true && os.AccountProfileId == apId
                                  select new OtherSettingsView
                                  {
                                      appUID = os.appUID,

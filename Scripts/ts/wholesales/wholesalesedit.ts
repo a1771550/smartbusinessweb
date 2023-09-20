@@ -400,7 +400,7 @@ $(document).on("click", "#btnInvoice", function () {
                         : "";
 
                 let ivpointer = !itemOptions.ChkBatch && !itemOptions.ChkSN && !itemOptions.WillExpire ? "pointer" : "";
-                let ivcls = (!$.isEmptyObject(DicIvInfo) && itemcode in DicIvInfo) ? `vari focus ${ivpointer}` : "disabled";     
+                let ivcls = (!$.isEmptyObject(DicIvInfo) && itemcode in DicIvInfo && DicIvInfo[itemcode].length>0) ? `vari focus ${ivpointer}` : "disabled";     
 
                 batinput = `<input type="text" data-type="bat" class="text-center ${nonitemoptionscls} ${batcls}" title="${batmsg}" ${readonly} />`;
                 sninput = `<input type="text" data-type="sn" class="text-center ${nonitemoptionscls} ${sncls}" title="${snmsg}" ${readonly} />`;
