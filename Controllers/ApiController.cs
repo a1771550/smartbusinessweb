@@ -42,13 +42,12 @@ using System.Data.Entity.Core.Objects;
 using PPWLib.Models.Purchase.Supplier;
 using PPWCommonLib.BaseModels;
 using PPWLib.Models.Purchase;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
 
 namespace SmartBusinessWeb.Controllers
 {
     [AllowAnonymous]
     public class ApiController : Controller
-    {        
+    {
         private ComInfo ComInfo { get { return Session["ComInfo"] as ComInfo; } }
         private bool NonABSS { get { return ComInfo.DefaultCheckoutPortal.ToLower() == "nonabss"; } }
         private string ConnectionString { get { return string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ;", ComInfo.MYOBDriver, ComInfo.MYOBUID, ComInfo.MYOBPASS, ComInfo.MYOBDb, ComInfo.MYOBExe, ComInfo.MYOBKey); } }
@@ -72,7 +71,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HttpGet]
-        public void DownloadABSSData()
+        public void DownloadABSSData(int apId=1)
         {
             using var context = new PPWDbContext();
             var comInfo = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == apId);
@@ -103,36 +102,147 @@ namespace SmartBusinessWeb.Controllers
             SendSimpleEmail(comInfo.contactEmail, comInfo.contactName, msg, "ABSS Data Transfer OK", context, apId);
             ModelHelper.WriteLog(context, msg, "AutoABSSTransfer");
             context.SaveChanges();
+
+            #region Dispose Connections           
+            context.Dispose();
+            #endregion
         }
 
         [HttpGet]
-        public void UploadSBData()
+        public void UploadSBData(int apId=1)
         {
+            string msg = "";
             using var context = new PPWDbContext();
             var comInfo = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == apId);
             string ConnectionString = string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ_WRITE;", comInfo.MYOBDriver, comInfo.MYOBUID, comInfo.MYOBPASS, comInfo.MYOBDb, comInfo.MYOBExe, comInfo.MYOBKey);
-            var sqllist =ModelHelper.Prepare4UploadSalesOrder(comInfo, apId, context, "", "", false, 2, out List<long> checkoutIds);
+            string _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            using var connection = new SqlConnection(_connectionString);
+            connection.Open();
+            var JobList = connection.Query<MyobJobModel>(@"EXEC dbo.GetJobList @apId=@apId", new { apId }).ToList();
+            var autoStockReport = connection.QueryFirstOrDefault<OtherSettingsView>(@"CheckEnableAutoStockReport @apId=@apId", new {apId});
+
+            List<string> sqllist = new List<string>();
+           
+
+            #region Retail
+            var checkoutIds4rt = new HashSet<long>();
+            List<string> sqllist4rt = new List<string>();
+            sqllist4rt = ModelHelper.Prepare4UploadSalesOrder(connection, comInfo, apId, context, "", "", false, 2, JobList, ref checkoutIds4rt, true);
+            #endregion
+
+            #region WholeSales
+            var checkoutIds4ws = new HashSet<long>();
+            List<string> sqllist4ws = new List<string>();
+            sqllist4ws = ModelHelper.Prepare4UploadSalesOrder(connection, comInfo, apId, context, "", "", false, 2, JobList, ref checkoutIds4ws, false);
+            #endregion
+
+            #region Purchase
+            var checkoutIds4po = new HashSet<long>();
+            List<string> sqllist4po = new List<string>();
+            sqllist4po = ModelHelper.Prepare4UploadPurchaseOrder(comInfo, apId, context, connection, "", "", false, ref checkoutIds4po);
+            #endregion
 
             #region Write to MYOB
-            using (localhost.Dayends dayends = new localhost.Dayends())
+            sqllist.AddRange(sqllist4rt);
+            sqllist.AddRange(sqllist4ws);
+            sqllist.AddRange(sqllist4po);
+            if (sqllist.Count > 0)
             {
-                dayends.Url = comInfo.WebServiceUrl;
-                dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
+                using (localhost.Dayends dayends = new localhost.Dayends())
+                {
+                    dayends.Url = comInfo.WebServiceUrl;
+                    dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
+                }
             }
             #endregion
 
             #region Write sqllist into Log & update checkoutIds
+            if (sqllist4rt.Count > 0)
+                WriteLogUpdateCheckoutIds(apId, context, ConnectionString, sqllist4rt, checkoutIds4rt, PosUploadType.Retail);
+            if (sqllist4ws.Count > 0)
+                WriteLogUpdateCheckoutIds(apId, context, ConnectionString, sqllist4ws, checkoutIds4ws, PosUploadType.WholeSales);
+            if (sqllist4po.Count > 0)
+                WriteLogUpdateCheckoutIds(apId, context, ConnectionString, sqllist4po, checkoutIds4po, PosUploadType.Purchase);
+            #endregion
+
+            #region Send DataTransfer Notification
+            if (sqllist.Count > 0)
+            {
+                msg = $"Hi {comInfo.contactName}, the Sales and Purchase data is successfully uploaded to ABSS.";
+                SendSimpleEmail(comInfo.contactEmail, comInfo.contactName, msg, "ABSS Data Transfer OK", context, apId);
+            }
+            #endregion
+
+
+            #region Send Low-Stock Report
+            if (autoStockReport.appVal == "1")
+            {
+                var stocks = context.GetLowStocks(apId).ToList();
+                if (stocks.Count > 0)
+                {
+                    ModelHelper.GetShops(connection, ref Shops, ref ShopNames, apId);
+                    var stocklist = "";
+                    foreach (var shop in Shops)
+                    {
+                        var _stocks = stocks.Where(x => x.lstStockLoc.ToLower() == shop.ToLower()).ToList();
+                        stocklist += $"<h3>{shop}</h3><hr>";
+                        stocklist += "<ul>";
+                        foreach (var stock in _stocks)
+                        {
+                            stocklist += $"<li>Item: {stock.lstItemCode} Qty: {stock.Qty}</li>";
+                        }
+                        stocklist += "</ul>";
+                    }
+                    msg = $"Hi {comInfo.contactName}, <p>here is the report for those items with stock quantity lower than 5:</p> <div>{stocklist}</div>.";
+                    SendSimpleEmail(comInfo.contactEmail, comInfo.contactName, msg, "Low-Qty Stock Report", context, apId);
+                }
+            }            
+            #endregion
+
+            #region Dispose Connections
+            connection.Close();
+            connection.Dispose();
+            context.Dispose();
+            #endregion
+        }
+
+        private static void WriteLogUpdateCheckoutIds(int apId, PPWDbContext context, string ConnectionString, List<string> sqllist, HashSet<long> checkoutIds, PosUploadType type)
+        {
             using (var transaction = context.Database.BeginTransaction())
             {
                 try
                 {
-                    ModelHelper.WriteLog(context, string.Format("Export Sales data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
-                    List<RtlSale> saleslist = context.RtlSales.Where(x => checkoutIds.Any(y => x.rtsUID == y)).ToList();
-                    foreach (var sales in saleslist)
+                    ModelHelper.WriteLog(context, string.Format("Export {2} data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString, type.ToString()), "ExportFrmShop");
+
+                    switch (type)
                     {
-                        sales.rtsCheckout = true;
+                        case PosUploadType.WholeSales:
+                            List<WholeSale> wslist = context.WholeSales.Where(x => x.AccountProfileId==apId && checkoutIds.Any(y => x.wsUID == y)).ToList();
+                            foreach (var sales in wslist)
+                            {
+                                sales.wsCheckout = true;
+                            }
+                            context.SaveChanges();
+                            break;
+                        case PosUploadType.Purchase:
+                            List<PPWDAL.Purchase> purchaselist = context.Purchases.Where(x => x.AccountProfileId == apId && checkoutIds.Any(y => x.Id == y)).ToList();
+                            foreach (var purchase in purchaselist)
+                            {
+                                purchase.pstCheckout = true;
+                            }
+                            context.SaveChanges();
+                            break;
+                        default:
+                        case PosUploadType.Retail:
+                            List<RtlSale> saleslist = context.RtlSales.Where(x => x.AccountProfileId == apId && checkoutIds.Any(y => x.rtsUID == y)).ToList();
+                            foreach (var sales in saleslist)
+                            {
+                                sales.rtsCheckout = true;
+                            }
+                            context.SaveChanges();
+                            break;
                     }
-                    context.SaveChanges();
+
                     transaction.Commit();
                 }
                 catch (DbEntityValidationException e)
@@ -151,12 +261,10 @@ namespace SmartBusinessWeb.Controllers
             ve.ErrorMessage);
                         }
                     }
-                    ModelHelper.WriteLog(context, string.Format("Export Sales data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",",sqllist), ConnectionString), "ExportFrmShop");
+                    ModelHelper.WriteLog(context, string.Format("Export Sales data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
                     context.SaveChanges();
                 }
-
             }
-            #endregion
         }
 
         [HttpGet]
@@ -1296,7 +1404,7 @@ namespace SmartBusinessWeb.Controllers
             connection.Open();
             var currentIV = connection.QueryFirstOrDefault<ItemVariationModel>(@"EXEC dbo.GetItemVari @itemcode=@itemcode,@comboIvId=@comboIvId,@apId=@apId", new { itemcode, comboIvId, apId = AccountProfileId });
 
-            ModelHelper.GetShops(connection, ref Shops, ref ShopNames);
+            ModelHelper.GetShops(connection, ref Shops, ref ShopNames, apId);
 
             if (currentIV != null)
             {
@@ -2949,6 +3057,7 @@ namespace SmartBusinessWeb.Controllers
             using (var context = new PPWDbContext())
             {
                 Session currsess = ModelHelper.GetCurrentSession(context);
+                int apId = currsess.AccountProfileId;
                 var shop = currsess.sesShop;
                 var device = currsess.sesDvc;
                 var lang = currsess.sesLang;
@@ -3000,7 +3109,7 @@ namespace SmartBusinessWeb.Controllers
                                 model.DicItemOptions = ModelHelper.GetDicItemOptions(model.items);
 
                                 var itemcodelist = model.items.Select(x => x.itmCode).Distinct().ToHashSet();
-                                ModelHelper.GetItemOptionsInfo(shop, context, itemcodelist, null, model);
+                                ModelHelper.GetItemOptionsInfo(apId, shop, context, itemcodelist, null, model);
 
                                 return Json(model, JsonRequestBehavior.AllowGet);
                             }
@@ -3046,7 +3155,7 @@ namespace SmartBusinessWeb.Controllers
             var itemcodelist = model.Items.Select(x => x.itmCode).Distinct().ToHashSet();
             if (forsales || forwholesales || forpurchase)
             {
-                ModelHelper.GetItemOptionsInfo(location, context, itemcodelist, model);
+                ModelHelper.GetItemOptionsInfo(apId, location, context, itemcodelist, model);
             }
             if (forstock || fortransfer)
             {
@@ -3083,7 +3192,7 @@ namespace SmartBusinessWeb.Controllers
                     }
                 }
 
-                model.PrimaryLocation = ModelHelper.GetShops(connection, ref Shops, ref ShopNames);
+                model.PrimaryLocation = ModelHelper.GetShops(connection, ref Shops, ref ShopNames, apId);
                 ModelHelper.GetItemOptionsInfo(context, ref model.DicLocItemList, itemcodelist, Shops, connection);
             }
 
@@ -3527,5 +3636,12 @@ namespace SmartBusinessWeb.Controllers
     {
         public int Id { get; set; }
         public string Name { get; set; }
+    }
+
+    public enum PosUploadType
+    {
+        Retail = 0,
+        WholeSales = 1,
+        Purchase = 2
     }
 }

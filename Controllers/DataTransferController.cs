@@ -24,6 +24,7 @@ using PPWLib.Helpers;
 using PPWLib.Models.Purchase;
 using PPWLib.Models.WholeSales;
 using PPWLib.Models.POS.Customer;
+using Dapper;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -668,12 +669,16 @@ namespace SmartBusinessWeb.Controllers
 
             using var context = new PPWDbContext();
             string ConnectionString = GetConnectionString(context, "READ_WRITE", apId);
+            string _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            using var connection = new Microsoft.Data.SqlClient.SqlConnection(_connectionString);
+            connection.Open();
 
             if (filename.StartsWith("ItemSales_"))
             {
                 bool ismultiuser = (bool)comInfo.MyobMultiUser;
                 string currencycode = comInfo.DefaultCurrencyCode;
-                double exchangerate = (double)comInfo.DefaultExchangeRate;
+                double exchangerate = (double)comInfo.DefaultExchangeRate;             
+                var JobList = connection.Query<MyobJobModel>(@"EXEC dbo.GetJobList @apId=@apId", new { apId }).ToList();
 
                 #region Local Variables
                 string sql = "";
@@ -684,17 +689,7 @@ namespace SmartBusinessWeb.Controllers
                 List<PayLnView> PayLnViews = new List<PayLnView>();
                 List<string> sqllist = new List<string>();
                 string accountno = "";
-                int groupcount = 0; //for debug use
-                //int paytypeamtlistcount = 0; //for debug use
-                //int paytypelistcount = 0; // for debug use
-                //string paytypeamts = "";
-                //string paytypes = "";
-                //string salesrefundcode = "";
-                //string deposititempo = "Deposit#SA";
-                //const string depositdeliverystatus = "P";
-                //const string depositdesc = "PGCustomer Deposit";
-                //int collength = 24;
-                List<MyobJobModel> JobList = new List<MyobJobModel>();
+                int groupcount = 0; //for debug use             
                 #endregion
 
                 apId = ModelHelper.GetAccountProfileId(context);
@@ -909,8 +904,8 @@ namespace SmartBusinessWeb.Controllers
                 #endregion
 
                 if (SalesLnViews.Count > 0)
-                    ModelHelper.GetCustomerItemJob4SalesLn(ref SalesLnViews, ref VipList, context, apId);
-                if (RefundLnViews.Count > 0) ModelHelper.GetCustomerItemJob4SalesLn(ref RefundLnViews, ref VipList, context, apId);
+                    ModelHelper.GetCustomerItemJob4SalesLn(ref SalesLnViews, ref VipList, context, apId, JobList);
+                if (RefundLnViews.Count > 0) ModelHelper.GetCustomerItemJob4SalesLn(ref RefundLnViews, ref VipList, context, apId, JobList);
 
 
                 Dictionary<string, string> DicPayTypes = new Dictionary<string, string>();
@@ -1083,7 +1078,6 @@ namespace SmartBusinessWeb.Controllers
 
                 }
 
-
                 if (RefundLnViews.Count > 0)
                 {
                     foreach (var sales in RefundModels)
@@ -1190,6 +1184,7 @@ namespace SmartBusinessWeb.Controllers
                 bool ismultiuser = (bool)comInfo.MyobMultiUser;
                 string currencycode = comInfo.DefaultCurrencyCode;
                 double exchangerate = (double)comInfo.DefaultExchangeRate;
+                var JobList = connection.Query<MyobJobModel>(@"EXEC dbo.GetJobList @apId=@apId", new { apId }).ToList();
 
                 #region Local Variables
                 string sql = "";
@@ -1206,7 +1201,8 @@ namespace SmartBusinessWeb.Controllers
                 var dateformatcode = context.AppParams.FirstOrDefault(x => x.appParam == "DateFormat").appVal;
                 accountno = context.ComInfoes.FirstOrDefault().comAccountNo;
                 string salescode = string.Empty;
-                string wholesalesprefix = context.Devices.FirstOrDefault(x => x.CompanyId == CompanyId && x.AccountProfileId == AccountProfileId).dvcWholesalesPrefix;
+                //string wholesalesprefix = context.Devices.FirstOrDefault(x => x.AccountProfileId == AccountProfileId).dvcWholesalesPrefix;
+                //string wholesalesprefix = "";
                 #endregion
 
                 #region Date Ranges
@@ -1259,12 +1255,7 @@ namespace SmartBusinessWeb.Controllers
                     {
                         saleslist = saleslist.Where(x => !x.wsCheckout).ToList();
                     }
-
-                    /*
-                 *  street1ln1 = customer.AddressList[1].StreetLine1;
-                        street1ln2 = customer.AddressList[1].StreetLine2;
-                        street1ln1 = CommonHelper.StringToNarrow4SQL(string.Concat(street1ln1, street1ln2));
-                 */
+                
                     if (saleslist.Count > 0)
                     {
                         foreach (var s in saleslist)
@@ -1354,7 +1345,7 @@ namespace SmartBusinessWeb.Controllers
                     }
                     #endregion
 
-                    ModelHelper.GetCustomerItemJob4WholeSalesLn(ref SalesLnViews, ref VipList, context);
+                    ModelHelper.GetCustomerItemJob4WholeSalesLn(ref SalesLnViews, ref VipList, context, apId, comInfo.NonAbss, JobList);
 
                     Dictionary<string, string> DicPayTypes = new Dictionary<string, string>();
                     DicPayTypes = PPWCommonLib.CommonHelpers.ModelHelper.GetDicPayTypes(ProjectEnum.G3, lang);
@@ -1407,7 +1398,7 @@ namespace SmartBusinessWeb.Controllers
                     {
                         foreach (var s in SalesModels)
                         {
-                            var saleslns = context.WholeSalesLns.Where(x => x.wslCode == s.wsCode && x.wslStatus != "order" && x.AccountProfileId == apId && x.CompanyId == CompanyId).ToList();
+                            var saleslns = context.WholeSalesLns.Where(x => x.wslCode == s.wsCode && x.wslStatus != "order" && x.AccountProfileId == apId).ToList();
                             foreach (var sl in saleslns)
                             {
                                 //var qty = sl.wslStatus == "partialdeliver" ? sl.wslDelQty : sl.wslQty;
@@ -1453,7 +1444,7 @@ namespace SmartBusinessWeb.Controllers
                     }
                     #endregion
 
-                    ModelHelper.GetCustomerItemJob4WholeSalesLn(ref SalesLnViews, ref VipList, context);
+                    ModelHelper.GetCustomerItemJob4WholeSalesLn(ref SalesLnViews, ref VipList, context, apId, comInfo.NonAbss, JobList);
 
                     Dictionary<string, string> DicPayTypes = new Dictionary<string, string>();
                     DicPayTypes = PPWCommonLib.CommonHelpers.ModelHelper.GetDicPayTypes(ProjectEnum.G3, lang);
@@ -1464,8 +1455,7 @@ namespace SmartBusinessWeb.Controllers
                     }
                 }
                 #endregion
-
-
+                
                 if (SalesLnViews.Count > 0)
                 {
                     foreach (var sales in SalesModels)
@@ -1848,7 +1838,6 @@ namespace SmartBusinessWeb.Controllers
 
             }
 
-
             if (filename.StartsWith("Items_"))
             {
                 ModelHelper.GetDataTransferData(context, accountprofileId, CheckOutType.Items, ref dmodel);
@@ -1967,6 +1956,10 @@ namespace SmartBusinessWeb.Controllers
                     context.SaveChanges();
                 }
             }
+
+            connection.Close();
+            connection.Dispose();
+            context.Dispose();
         }
 
 

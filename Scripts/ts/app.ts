@@ -8234,9 +8234,11 @@ function getDicItemOptionsVariByCodes(
                 }
                 let html = `<td><input type="text" class="text-center ${batcls}" readonly /></td><td data-serialno=""><input type="text" class="text-center ${sncls}" readonly /></td><td class="text-center" data-validthru="">${vtinput}</td>`;
 
-                //itemvari                
-                let varicls = ((selectedItemCode in DicItemGroupedVariations && itemOptions && itemOptions.ChkBatch) || (!itemOptions?.ChkBatch && !itemOptions?.ChkSN && !itemOptions?.WillExpire)) ? "povari pointer focus" : "";
-                //console.log("itemvarilist:", itemvarilist);
+                //itemvari         
+                let varicls = "";
+                if (!$.isEmptyObject(DicItemGroupedVariations) && (selectedItemCode in DicItemGroupedVariations)) varicls = "povari pointer focus";                
+                if (itemOptions?.ChkBatch) varicls = "povari pointer focus";               
+                //console.log("DicItemGroupedVariations:", DicItemGroupedVariations);
                 html += `<td><input type="text" class="text-center ${varicls}" readonly /></td>`;
 
                 let $cell = $(e).find("td").eq(4);

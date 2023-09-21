@@ -512,7 +512,7 @@ function updateWholesales() {
             selectedWholesalesLn.wslHasSn =
                 selectedWholesalesLn.snvtList.length > 0;
 
-            let idx = isInvoice ? 8 : 5;
+            let idx = isInvoice ? 10 : 5;
             let _price: number = Number($tr.find("td").eq(idx).find(".price").val());
             selectedWholesalesLn.wslSellingPrice = _price;
             idx++;
@@ -622,7 +622,7 @@ function handleSubmit4Wholesales(forRecurOrder: boolean = false) {
                             deliveryItem.dlQty = Number(
                                 $(e).find("td").eq(idx).find(".delqty").val()
                             );
-                            idx = 9;
+                            idx = 10;
                             deliveryItem.SellingPrice = Number(
                                 $(e).find("td").eq(idx).find(".price").val()
                             );
