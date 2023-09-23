@@ -94,7 +94,7 @@ namespace SmartBusinessWeb.Controllers
                 return;
             }
             ModelHelper.SaveSuppliersFrmCentral(context, apId, comInfo);
-            ModelHelper.SaveEmployeesFrmCentral(apId, context, ConnectionString, null, managerId);
+            //ModelHelper.SaveEmployeesFrmCentral(apId, context, ConnectionString, null, managerId);
             ModelHelper.SaveCustomersFrmCentral(context, ConnectionString, apId);
             ModelHelper.SaveItemsFrmCentral(apId, context, ConnectionString);
 
@@ -193,7 +193,7 @@ namespace SmartBusinessWeb.Controllers
                         }
                         stocklist += "</ul>";
                     }
-                    msg = $"Hi {comInfo.contactName}, <p>here is the report for those items with stock quantity lower than 5:</p> <div>{stocklist}</div>.";
+                    msg = $"Hi {comInfo.contactName}, <p>Here is the report for those items with stock quantity lower than 5:</p> <div>{stocklist}</div>.";
                     SendSimpleEmail(comInfo.contactEmail, comInfo.contactName, msg, "Low-Qty Stock Report", context, apId);
                 }
             }            

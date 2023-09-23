@@ -1,8 +1,8 @@
 ﻿@{
-    var footertxt = string.Concat(DateTime.Now.Year, " | ", Resources.Resource.ProSiteName, " | ", string.Format(Resources.Resource.DevelopedByFormat, Resources.Resource.CompanyName));
+    var footertxt = string.Concat(DateTime.Now.Year, " | ", Resources.Resource.ProSiteName, " | ", string.Format(Resources.Resource.DevelopedByFormat, Resources.Resource.CompanyName), " | ", "<a href='/OtherSettings/PrivacyPolicy'>", Resources.Resource.PrivacyPolicy, "<a href='/OtherSettings/PrivacyPolicy'>");
 }
 <footer class="small my-2" style="border-top:solid 1px rgba(0,0,0,.1);">
 	<p class="font-weight-bold pt-2">
-		&copy; @footertxt
+		&copy; @Html.Raw(footertxt)
 	</p>
 </footer>

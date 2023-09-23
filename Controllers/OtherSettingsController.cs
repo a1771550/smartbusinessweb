@@ -23,6 +23,14 @@ namespace SmartBusinessWeb.Controllers
     {
         [HandleError]
         [CustomAuthorize("othersettings", "boss", "admin", "superadmin")]
+        public ActionResult PrivacyPolicy()
+        {
+            ViewBag.ParentPage = "setup";
+            return View();
+        }
+
+        [HandleError]
+        [CustomAuthorize("othersettings", "boss", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult ExchangeRate(Dictionary<string,decimal> model, int useapi=0)
