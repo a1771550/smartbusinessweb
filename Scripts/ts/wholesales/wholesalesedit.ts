@@ -980,6 +980,8 @@ $(function () {
         //dicitemgroupedvariations
         DicItemGroupedVariations = $infoblk.data("dicitemgroupedvariations");
         //console.log("DicItemGroupedVariations", DicItemGroupedVariations);
+        DicIvQtyList = $infoblk.data("dicivqtylist");
+        DicIvDelQtyList = $infoblk.data("dicivdelqtylist");
         
         if (Wholesales.wsStatus.toLowerCase() === "deliver" || Wholesales.wsStatus.toLowerCase() === "partialdeliver") {
             $("#btnInvoice").trigger("click");
