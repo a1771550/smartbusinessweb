@@ -87,7 +87,7 @@
         }
 
         @Html.Partial("_ExRateModal", null, new ViewDataDictionary { { "fieldname", "rtsCurrency" }, { "currency", rtsCurrency }, { "lblcls", "col-form-label mx-sm-2" }, { "exratecls", "d-block ml-2 hide" }, { "txtboxattr", "readonly" }, { "txtboxstyle", "width:60px;" }, { "txtboxcls", "disabled" } })
-     
+
         <div class="form-group">
             <label for="drpLocation" class="col-form-label mx-sm-2">@Resources.Resource.Shop</label>
             <select id="drpLocation" name="pstLocStock" class="form-control" disabled>
@@ -236,6 +236,8 @@
 @Html.Partial("_ValidThruModal")
 
 @Html.Partial("_PayModal", null, new ViewDataDictionary { { "forsales", true }, { "enableEpay", enableEpay }, { "PaymentTypes", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes } })
+
+@Html.Partial("_ItemVariModal")
 
 <div id="changeModal">
     <div class="row justify-content-center">

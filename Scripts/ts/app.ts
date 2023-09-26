@@ -1184,6 +1184,17 @@ function OnSuccess(response) {
             DicItemGroupedVariations,
             model.DicItemGroupedVariations
         );
+
+        DicBatTotalQty = model.DicBatTotalQty;
+        console.log("DicBatTotalQty#OnSuccess:", DicBatTotalQty);
+
+        DicIvInfo = model.DicIvInfo;
+        //console.log("DicIvInfo:", DicIvInfo);
+        //console.log("DicItemGroupedVariations", DicItemGroupedVariations);
+        DicIvQtyList = model.DicIvQtyList;
+        DicIvDelQtyList = model.DicIvDelQtyList;
+        //console.log("DicIvQtyList:", DicIvQtyList);
+        //console.log("DicIvDelQtyList:", DicIvDelQtyList);
     }
 
     // console.log("here");
@@ -1554,7 +1565,7 @@ function handleItmCodeDblClick(
                         selectedSalesLn = initSalesLn();
                         //selectedSalesLn.rtlSeq = seq;
                     }
-                    selectedSalesLn.comboIvId = comboIvId;
+                    selectedSalesLn.ivIdList = comboIvId;
                     selectedSalesLn.SelectedIvList = selectedIvList
                         ? selectedIvList.slice(0)
                         : [];
@@ -3343,7 +3354,7 @@ function closePoItemVariModal() {
     poItemVariModal.dialog("close");
 }
 
-function openItemVariModal(hasFocusCls: boolean = false, maxqty: number) {
+function openItemVariModal(hasFocusCls: boolean = false) {
     //console.log("hasfocuscls:", hasFocusCls);
     itemVariModal.dialog("open");
     $target = $(".ui-dialog-buttonpane .ui-dialog-buttonset");
@@ -7773,7 +7784,7 @@ function initSalesLn(): ISalesLn {
         DepositAmt: 0,
         JsValidThru: "",
         dlCode: "",
-        comboIvId: null,
+        ivIdList: null,
         SelectedIvList: [],
         DicItemSNs: [],
         rtlHasSerialNo: false,
@@ -7829,7 +7840,7 @@ interface ISalesLn {
     DepositAmt: number | null;
     JsValidThru: string | null;
     dlCode: string | null;
-    comboIvId: string | null;
+    ivIdList: string | null;
     SelectedIvList: IItemVariation[];
     DicItemSNs: Array<typeof DicItemSNs>;
     JobID: number | null;
@@ -8588,22 +8599,13 @@ function selectItem(itemCode: string = "", proId: number = 0) {
 
         idx++;
         if (forsales) {
-            //console.log(seqitem);
-            if (
-                selectedSalesLn &&
-                selectedSalesLn.SelectedIvList &&
-                selectedSalesLn.SelectedIvList.length > 0
-            ) {
-                let html = `<input type="hidden" class="comboIvId" value="${selectedSalesLn.comboIvId}">`;
-                let ivlist: string[] = [];
-                $.each(selectedSalesLn.SelectedIvList, function (i, e) {
-                    ivlist.push(
-                        `<span class="px-2"><b>${e.iaName}:</b>${e.iaValue}<span>`
-                    );
-                });
-                html += ivlist.join(";");
-                $target.find("td").eq(idx).html(html);
-            }
+            const $iv = $target.find("td").eq(idx).find(".vari");
+            let itemcode = selectedItemCode;
+            let ivpointer = !itemOptions.ChkBatch && !itemOptions.ChkSN && !itemOptions.WillExpire ? "pointer" : "";
+            //console.log("ivpointer:" + ivpointer);
+            let ivcls = (!$.isEmptyObject(DicIvInfo) && itemcode in DicIvInfo && DicIvInfo[itemcode].length > 0) ? `focus ${ivpointer}` : "disabled";  
+            //itemvari
+            $iv.addClass(ivcls);
         }
 
         if (forsales || forpurchase || forwholesales) {
@@ -8817,19 +8819,26 @@ function addRow() {
         html +=
             '<td><input type="datetime" name="validthru" class="validthru datepicker text-center pointer flex" /></td>';
     }
-    if (
-        forsales ||
-        (forwholesales &&
-            Wholesales.wsStatus != "order" &&
-            Wholesales.wsStatus.toLowerCase() !== "requesting" &&
-            Wholesales.wsStatus.toLowerCase() !== "created" &&
-            Wholesales.wsStatus.toLowerCase() !== "rejected")
-    )
-        html += `<td><input type="text" class="validthru pointer text-center flex" /></td>`;
+
+    let vtcls = "validthru";
+    if ((forwholesales &&
+        Wholesales.wsStatus != "order" &&
+        Wholesales.wsStatus.toLowerCase() !== "requesting" &&
+        Wholesales.wsStatus.toLowerCase() !== "created" &&
+        Wholesales.wsStatus.toLowerCase() !== "rejected")
+    ) {
+        vtcls = "validthru pointer";       
+    }
+    if (forsales || (forwholesales &&
+        Wholesales.wsStatus != "order" &&
+        Wholesales.wsStatus.toLowerCase() !== "requesting" &&
+        Wholesales.wsStatus.toLowerCase() !== "created" &&
+        Wholesales.wsStatus.toLowerCase() !== "rejected"))
+        html += `<td><input type="text" class="${vtcls} text-center flex" /></td>`;
 
     //item variations:
     if (forsales) {
-        html += `<td class="text-center"></td>`;
+        html += `<td class="text-center"><input type="text" name="vari" class="vari text-center" value="" /></td>`;
     }
 
     let p_readonly: string = "",
@@ -9861,7 +9870,8 @@ function _removeSN(_sn: string) {
 function setIvMark() {
     let $tr = $(`#${gTblName} tbody tr`);
     let ivcls = ".vari";
-    $tr.eq(currentY).find("td").eq(9).find(ivcls).removeClass("focus").val("...");
+    let idx = forwholesales ? 9 : 8;
+    $tr.eq(currentY).find("td").eq(idx).find(ivcls).removeClass("focus").val("...");
 }
 function setBatchMark() {
     let $tr = $(`#${gTblName} tbody tr`);
@@ -11525,7 +11535,7 @@ function initWholeSalesLn(): IWholeSalesLn {
         JobID: 0,
         comboIvId: "",
         SelectedIvList: [],
-        iaIdList: "",
+        ivIdList: "",
         itemVariList: [],
     };
 }
@@ -11588,7 +11598,7 @@ interface IWholeSalesLn {
     JobID: number | null;
     comboIvId: string | null;
     SelectedIvList: IItemVariation[];
-    iaIdList: string | null;
+    ivIdList: string | null;
     itemVariList: IPoItemVari[];
 }
 
@@ -13268,13 +13278,13 @@ function confirmBatchSnQty() {
     if (!itemOptions) return false;
 
     $("#tblBatch tbody tr").each(function (i, e) {
-        let iaidlist: string[] = [];
+        let ividlist: string[] = [];
         if (!$.isEmptyObject(DicIvInfo) && selectedItemCode in DicIvInfo) {
             $(e)
-                .data("iaids")
+                .data("ivids")
                 .toString()
                 .split(",")
-                .forEach((x) => iaidlist.push(x));
+                .forEach((x) => ividlist.push(x));
         }
         if (!itemOptions!.ChkSN) {
             $(e)
@@ -13285,7 +13295,7 @@ function confirmBatchSnQty() {
                     let newbdq = Number($(v).val());
                     if (newbdq > 0) {
                         deliveryItem = initDeliveryItem();
-                        deliveryItem.ivIdList = iaidlist.join();
+                        deliveryItem.ivIdList = ividlist.join();
                         deliveryItem.newbdq = newbdq;
                         deliveryItem.seq = seq;
                         //console.log("#confirm deliveryItem.seq:", deliveryItem.seq);
@@ -13353,7 +13363,7 @@ function confirmBatchSnQty() {
                         });
                         if (idx < 0) {
                             deliveryItem = initDeliveryItem();
-                            deliveryItem.ivIdList = iaidlist.join();
+                            deliveryItem.ivIdList = ividlist.join();
                             deliveryItem.pstCode = pocode;
                             deliveryItem.dlCode = batId;
                             deliveryItem.dlBatch = batcode;
@@ -13502,13 +13512,11 @@ function confirmBatchSnQty() {
             if (itemOptions!.ChkSN) setSNmark(false);
             if (itemOptions!.WillExpire) setExpiryDateMark();
 
-            if (!$.isEmptyObject(DicIvInfo) && selectedItemCode in DicIvInfo) {
+            if (!$.isEmptyObject(DicIvInfo) && selectedItemCode in DicIvInfo) {                
                 setIvMark();
             }
         }
     }
-    //console.log("DeliveryItems:", DeliveryItems);
-    //selectedItemCode = "";
 }
 
 function getItemInfo4BatSnVtIv(sn: string | null = null) {
@@ -14623,6 +14631,10 @@ $(document).on("change", ".chkbatsnvttf", function () {
 });
 
 $(document).on("change", ".chkbatsnvt", function () {
+    let idx = forwholesales ? 5 : 4;
+    let qtycls = forwholesales ? ".delqty" : ".qty";
+    let todelqty: number = Number($(`#${gTblName} tbody tr`).eq(currentY).find("td").eq(idx).find(qtycls).val());
+
     let ischecked: boolean = $(this).is(":checked");
     //console.log("ischecked:", ischecked);
     $tr = $(this).parent("div").parent("td").parent("tr");
@@ -14657,8 +14669,12 @@ $(document).on("change", ".chkbatsnvt", function () {
     $("#totalbatdelqty")
         .data("totalbatdelqty", chkBatSnVtCount)
         .val(chkBatSnVtCount);
-
     // chkBatSnVtCount = 0;
+    //console.log("chkBatSnVtCount:" + chkBatSnVtCount);
+    if (chkBatSnVtCount == todelqty) {
+        $("#tblBatch tbody .chkbatsnvt").prop("disabled", true);
+    }
+
 });
 $(document).on("change", ".batdelqty", function () {
     $tr = $(this).parent("div").parent("td").parent("tr");
@@ -14764,19 +14780,19 @@ $(document).on("change", ".ivdelqty", function () {
     //console.log("newvdq#0:" + newvdq);
     const ivqty = Number($ivdelqty.data("ivqty"));
     console.log("ivqty:" + ivqty);
-    console.log("newivdq#0:" + newivdq);
+    //console.log("newivdq#0:" + newivdq);
     if (newivdq > ivqty) {
-        console.log("here");
+        //console.log("here");
         newivdq = ivqty;
-        console.log("newivdq#1:" + newivdq);
+        //console.log("newivdq#1:" + newivdq);
         $ivdelqty.val(newivdq);
-        console.log("this val:" + $ivdelqty.val());
+        //console.log("this val:" + $ivdelqty.val());
         $("#tblIv tbody tr").each(function (i, e) {
             if (Number($(e).data("idx")) !== tridx){
                 $(e).find("td").find(".form-control").prop("readonly", true);
             }
         });
-    }
+    }  
     //console.log("newivdq#1:" + newivdq);
     $ivdelqty.data("currentivdq", newivdq);
 
@@ -14791,22 +14807,18 @@ $(document).on("change", ".ivdelqty", function () {
     //console.log("currentdelqty:" + currentdelqty);
     newivdq += currentdelqty;
 
-    //console.log("newdelqty#0:" + newdelqty);
-    //if (newivdq > ivqty) {
-    //    let _newdelqty = newivdq - ivqty;
-    //    //console.log("_newdelqty:" + _newdelqty);
-    //    $(this).val(_newdelqty);
-    //    newivdq = ivqty;
-    //}
-    ////console.log("newdelqty#1:" + newdelqty);
     $target.text(newivdq);
-
-    let totalivdelqty: number = 0;
-
+    
+    let totalivdelqty = 0;
     $("#tblIv tbody tr").each(function (i, e) {
         /* console.log("ivdelqty:" + Number($(e).find(".ivdelqty").val()));*/
         totalivdelqty += Number($(e).find(".ivdelqty").val());
     });
+
+    if (totalivdelqty >= ivqty) {
+        $(".ivdelqty").prop("readonly", true);
+    }
+
     $("#totalivdelqty").data("totalivdelqty", totalivdelqty).val(totalivdelqty);
 });
 
@@ -16901,9 +16913,9 @@ function updateSales() {
             );
             salesln.rtlQty = Number($(e).find("td:eq(4)").find(".qty").val());
 
-            idx = 8;
-            $target = $(e).find("td").eq(idx).find(".comboIvId");
-            salesln.comboIvId = $target.length ? ($target.val() as string) : "";
+            //idx = 8;
+            //$target = $(e).find("td").eq(idx).find(".vari");
+            //salesln.ivIdList = $target.length ? $target.data("vari").toString() : "";
 
             idx = 9;
             salesln.rtlSellingPrice = Number(
@@ -19321,7 +19333,7 @@ $(document).on("dblclick", ".batch", function () {
 
                         const batcode: string = e.batcode;
                         //console.log("batcode:" + batcode);
-                        let iaidlist: string[] = [];
+                        let ividlist: string[] = [];
                         if (ipoIvList.length > 0) {
                             ipoIvList.forEach((x) => {
                                 if (
@@ -19329,12 +19341,12 @@ $(document).on("dblclick", ".batch", function () {
                                     x.batCode == batcode &&
                                     x.ivIdList
                                 ) {
-                                    x.ivIdList.split(",").forEach((y) => iaidlist.push(y));
+                                    x.ivIdList.split(",").forEach((y) => ividlist.push(y));
                                 }
                             });
                         }
 
-                        html += `<tr data-idx="${idx}" data-pocode="${pocode}" data-batcode="${batcode}" data-iaids="${iaidlist.join()}"><td><label>${batcode}</label></td>`;
+                        html += `<tr data-idx="${idx}" data-pocode="${pocode}" data-batcode="${batcode}" data-ivids="${ividlist.join()}"><td><label>${batcode}</label></td>`;
 
                         let chksnlist: string = "";
                         let batdelqtylist: string = "";
@@ -19925,12 +19937,14 @@ ${ivInfoList}
             }
         });
 }
-$(document).on("dblclick", ".vari.pointer", function () {
+$(document).on("dblclick", ".vari.pointer", function () {    
     const hasFocusCls: boolean = $(this).hasClass("focus");
     $tr = $(this).parent("td").parent("tr");
     let $td = $tr.find("td");
     selectedItemCode = $td.eq(1).find(".itemcode").val() as string;
-    const maxqty = Number($td.eq(5).find(".delqty").val());
+    let idx = forwholesales ? 5 : 4;
+    let qtycls = forwholesales ? ".delqty" : ".qty";
+    const maxqty =  Number($td.eq(idx).find(qtycls).val());
     currentY = Number($tr.data("idx"));
     seq = currentY + 1;
     itemOptions = DicItemOptions[selectedItemCode];
@@ -19940,6 +19954,31 @@ $(document).on("dblclick", ".vari.pointer", function () {
         (Wholesales.wsStatus.toLowerCase() === "deliver" ||
             Wholesales.wsStatus.toLowerCase() === "partialdeliver")
     ) {
+        DeliveryItems = DicSeqDeliveryItems[seq].slice(0);
+        deliveryItem = DeliveryItems[0];
+        //console.log("deliveryItem:", deliveryItem);
+
+        let ivList: string = "<ul class='nostylelist'>";
+        if (selectedItemCode in DicIvInfo) {
+            let ivInfo = DicIvInfo[selectedItemCode];
+            //console.log(ivInfo);
+            ivInfo.forEach((x) => {
+                if (x.ivIdList == deliveryItem!.ivIdList!) {
+                    ivList += `<li><label>${x.iaName}</label>:<label>${x.iaValue}</label></li>`;
+                }
+            });
+        }
+        ivList += "</ul>";
+
+        let html = `<tr><td class="text-right"><div class="row form-inline justify-content-end mx-1 mb-3">
+            <label>
+                ${deliveryItem.pstCode}
+             </label>
+              <input type="text" class="form-control ivdelqty mx-2" style="max-width:80px;" value="${deliveryItem.dlQty}" readonly>
+           </div></td><td>${ivList}</td></tr>`;
+        
+        itemVariModal.find("#tblIv tbody").html(html);
+
     } else {
         addItemVariRow(hasFocusCls, maxqty);
     }
@@ -19952,7 +19991,7 @@ $(document).on("dblclick", ".vari.pointer", function () {
         .html(
             `${salesloc}:${selectedItemCode} <span class="exsmall">${sequencetxt}:${seq}</span>`
     );
-    openItemVariModal(hasFocusCls, maxqty);
+    openItemVariModal(hasFocusCls);
 
     setTotalQty4IvModal();
 });

@@ -339,6 +339,7 @@ $(function () {
     }
 
     initDatePicker("txtDeliveryDate", tomorrow, false, "", true, true);
+
     if (localStore.getItem("sessionstartdata") === null) {
         openWaitingModal();
         getRemoteData(
@@ -347,7 +348,8 @@ $(function () {
             getSessionStartDataOk,
             getRemoteDataFail
         );
-    } else {
+    }
+    else {
         //if (localStorage.length > 0) {
         sessionstartdata = JSON.parse(
             <string>localStore.getItem("sessionstartdata")

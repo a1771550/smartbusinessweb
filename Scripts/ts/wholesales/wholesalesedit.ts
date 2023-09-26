@@ -405,7 +405,7 @@ $(document).on("click", "#btnInvoice", function () {
                 batinput = `<input type="text" data-type="bat" class="text-center ${nonitemoptionscls} ${batcls}" title="${batmsg}" ${readonly} />`;
                 sninput = `<input type="text" data-type="sn" class="text-center ${nonitemoptionscls} ${sncls}" title="${snmsg}" ${readonly} />`;
                 vtinput = `<input type="text" data-type="vt" class="text-center ${nonitemoptionscls} ${vtcls} ${pointercls}" title="${vtmsg}" ${vtdisabled} ${readonly} />`;
-                //itemvar
+                //itemvari
                 variinput = `<input type="text" data-type="iv" name="vari" class="text-center ${ivcls}"  />`;
             }
 
@@ -576,6 +576,14 @@ function updateWholesales() {
     Wholesales.wsFinalTotal = itotalamt = salesamt;
     // console.log("itotalamt after sum up:" + itotalamt);
     $("#txtTotal").val(formatnumber(itotalamt));
+    //if (Wholesales.WholeSalesLns.length > 0 && DeliveryItems.length>0) {
+    //    Wholesales.WholeSalesLns.forEach((x) => {
+    //        let deliveryItem: IDeliveryItem | undefined = DeliveryItems.find((d) => d.seq == x.wslSeq);
+    //        if (deliveryItem !== undefined) {
+    //            x.ivIdList = deliveryItem.ivIdList
+    //        }
+    //    });
+    //}
     focusItemCode();
 }
 
@@ -596,63 +604,66 @@ function handleSubmit4Wholesales(forRecurOrder: boolean = false) {
                 updateWholesales();
                 if ($(`#${gTblName} tbody tr`).length > 0) {
                     $(`#${gTblName} tbody tr`).each(function (i, e) {
-                        let nonitemoptions = 0;
-                        for (let i = 6; i <= 8; i++) {
-                            if ($(e).find("td").eq(i).find(".nonitemoptions").length)
-                                nonitemoptions++;
-                        }
-                        if (nonitemoptions > 0) {
-                            let deliveryItem: IDeliveryItem = initDeliveryItem();
-                            deliveryItem.dlCode = `noio${i}`;
-                            let idx = 0;
-                            deliveryItem.seq = Number($(e).find("td").eq(idx).text());
-                            idx++;
-                            deliveryItem.itmCode = $(e)
-                                .find("td")
-                                .eq(idx)
-                                .find(".itemcode")
-                                .val() as string;
-                            idx = 3;
-                            deliveryItem.dlBaseUnit = $(e)
-                                .find("td")
-                                .eq(idx)
-                                .find(".sellunit")
-                                .val() as string;
-                            idx = 5;
-                            deliveryItem.dlQty = Number(
-                                $(e).find("td").eq(idx).find(".delqty").val()
-                            );
-                            idx = 10;
-                            deliveryItem.SellingPrice = Number(
-                                $(e).find("td").eq(idx).find(".price").val()
-                            );
-                            idx++;
-                            deliveryItem.dlDiscPc = Number(
-                                $(e).find("td").eq(idx).find(".discpc").val()
-                            );
-                            idx++;
-                            if (enableTax && !inclusivetax) {
-                                deliveryItem.dlTaxPc = Number(
-                                    $(e).find("td").eq(idx).find(".taxpc").val()
+                        const itemcode: string = $(e).find("td").eq(1).find(".itemcode").val()!.toString();
+                        if (!(itemcode in DicIvInfo)) {
+                            let nonitemoptions = 0;
+                            for (let i = 6; i <= 8; i++) {
+                                if ($(e).find("td").eq(i).find(".nonitemoptions").length)
+                                    nonitemoptions++;
+                            }
+                            if (nonitemoptions > 0) {
+                                let deliveryItem: IDeliveryItem = initDeliveryItem();
+                                deliveryItem.dlCode = `noio${i}`;
+                                let idx = 0;
+                                deliveryItem.seq = Number($(e).find("td").eq(idx).text());
+                                idx++;
+                                deliveryItem.itmCode = $(e)
+                                    .find("td")
+                                    .eq(idx)
+                                    .find(".itemcode")
+                                    .val() as string;
+                                idx = 3;
+                                deliveryItem.dlBaseUnit = $(e)
+                                    .find("td")
+                                    .eq(idx)
+                                    .find(".sellunit")
+                                    .val() as string;
+                                idx = 5;
+                                deliveryItem.dlQty = Number(
+                                    $(e).find("td").eq(idx).find(".delqty").val()
+                                );
+                                idx = 10;
+                                deliveryItem.SellingPrice = Number(
+                                    $(e).find("td").eq(idx).find(".price").val()
                                 );
                                 idx++;
+                                deliveryItem.dlDiscPc = Number(
+                                    $(e).find("td").eq(idx).find(".discpc").val()
+                                );
+                                idx++;
+                                if (enableTax && !inclusivetax) {
+                                    deliveryItem.dlTaxPc = Number(
+                                        $(e).find("td").eq(idx).find(".taxpc").val()
+                                    );
+                                    idx++;
+                                }
+
+                                deliveryItem.dlStockLoc = $(e).find("td").eq(idx).find(".location").val() as string;
+                                idx++;
+
+                                deliveryItem.JobID = Number($(e).find("td").eq(idx).find(".job").val());
+                                idx++;
+
+                                deliveryItem.dlAmt = deliveryItem.dlAmtPlusTax = Number(
+                                    $(e).find("td").eq(idx).find(".amount").val()
+                                );
+                                DeliveryItems.push(deliveryItem);
                             }
-
-                            deliveryItem.dlStockLoc = $(e).find("td").eq(idx).find(".location").val() as string;
-                            idx++;
-
-                            deliveryItem.JobID = Number($(e).find("td").eq(idx).find(".job").val());
-                            idx++;
-
-                            deliveryItem.dlAmt = deliveryItem.dlAmtPlusTax = Number(
-                                $(e).find("td").eq(idx).find(".amount").val()
-                            );
-                            DeliveryItems.push(deliveryItem);
-                        }
+                        }                        
                     });
                     console.log("DeliveryItems:", DeliveryItems);
                     console.log("WholeSalesLns:", Wholesales.WholeSalesLns);
-                   // return false;
+                    //return false;
                     if (DeliveryItems.length === 0) {
                         $.fancyConfirm({
                             title: "",
@@ -1002,7 +1013,7 @@ $(function () {
             const batch = wholesalesln.wslBatchCode ?? "";
             wholesalesln.JsValidThru = wholesalesln.ValidThruDisplay ?? "";
             
-            const vari = wholesalesln.iaIdList ? "..." : "";
+            const vari = wholesalesln.ivIdList ? "..." : "";
             //console.log("vari:" + vari);
 
             const formattedprice: string = formatnumber(
@@ -1050,10 +1061,10 @@ $(function () {
                 Wholesales.wsStatus.toLowerCase() != "passed"
             ) {
                 //console.log("here");
-                html += `<td><input type="text" name="batch" class="batch text-center pointer" readonly value="${batch}" /></td><td><input type="text" name="serailno" readonly class="serialno pointer text-center" value="${sntxt}" /></td><td><input type="datetime" name="validthru" class="small validthru pointer datepicker text-center" value="${wholesalesln.JsValidThru}" /></td>`;
+                html += `<td class="text-center"><input type="text" name="batch" class="batch pointer" readonly value="${batch}" /></td><td class="text-center"><input type="text" name="serailno" readonly class="serialno pointer" value="${sntxt}" /></td><td class="text-center"><input type="datetime" name="validthru" class="small validthru pointer datepicker" value="${wholesalesln.JsValidThru}" /></td>`;
 
-                //itemvar
-                html += `<td><input type="text" name="vari" class="small vari pointer text-center" value="${vari}" /></td>`;
+                //itemvari
+                html += `<td class="text-center"><input type="text" name="vari" class="small vari pointer" value="${vari}" /></td>`;
             }
             html += `<td class="text-right"><input type="number" name="price" class="price text-right" data-price="${wholesalesln.wslSellingPrice}" value="${formattedprice}" readonly></td><td class="text-right"><input type="number" name="discpc" class="discpc text-right" data-discpc="${wholesalesln.wslLineDiscPc}" value="${formatteddiscpc}" ${_readonly}></td>`;
             if (enableTax && !inclusivetax) {

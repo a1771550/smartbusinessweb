@@ -394,7 +394,7 @@ namespace SmartBusinessWeb.Controllers
 
                     #region Handle Stock
                     SalesEditModel model = new SalesEditModel();
-                    model.HandleStockQty(context, dicItemLocQty, apId, user.UserName, NonABSS, true);
+                    model.HandleStockQty(context, dicItemLocQty, true);
                     #endregion
 
                     #region Payment
@@ -813,12 +813,12 @@ namespace SmartBusinessWeb.Controllers
                 if (!minusqtyonrefund)
                 {
                     SalesEditModel model = new SalesEditModel();
-                    model.HandleStockQty(context, dicItemLocQty, apId, user.UserName, NonABSS, false);                  
+                    model.HandleStockQty(context, dicItemLocQty, false);                  
                     SalesModel sale = new SalesModel();
                     sale.salescode = refundcode;
                     sale.rtsDvc = devicecode;
                     sale.rtsSalesLoc = device.dvcShop;
-                    model.HandleSalesItemOptions(context, sale, null, null, RefundList);
+                    model.HandleSalesItemVariOptions(context, sale, null, null, RefundList);
                 }
             }
 

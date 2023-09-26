@@ -3109,7 +3109,7 @@ namespace SmartBusinessWeb.Controllers
                                 model.DicItemOptions = ModelHelper.GetDicItemOptions(model.items);
 
                                 var itemcodelist = model.items.Select(x => x.itmCode).Distinct().ToHashSet();
-                                ModelHelper.GetItemOptionsInfo(apId, shop, context, itemcodelist, null, model);
+                                ModelHelper.GetItemOptionsVariInfo(apId, shop, context, itemcodelist, null, model);
 
                                 return Json(model, JsonRequestBehavior.AllowGet);
                             }
@@ -3155,7 +3155,7 @@ namespace SmartBusinessWeb.Controllers
             var itemcodelist = model.Items.Select(x => x.itmCode).Distinct().ToHashSet();
             if (forsales || forwholesales || forpurchase)
             {
-                ModelHelper.GetItemOptionsInfo(apId, location, context, itemcodelist, model);
+                ModelHelper.GetItemOptionsVariInfo(apId, location, context, itemcodelist, model);
             }
             if (forstock || fortransfer)
             {
@@ -3198,7 +3198,10 @@ namespace SmartBusinessWeb.Controllers
 
             var itemcodes = string.Join(",", itemcodelist);
             foreach (var itemcode in itemcodelist)
+            {
                 model.DicIvInfo[itemcode] = new List<PoItemVariModel>();
+            }
+                
             //GetPoItemVariInfo
             model.PoIvInfo = connection.Query<PoItemVariModel>(@"EXEC dbo.GetPoItemVariInfo @apId=@apId,@itemcodes=@itemcodes", new { apId, itemcodes }).ToList();
             ModelHelper.GetDicIvInfo(context, model.PoIvInfo, ref model.DicIvInfo);
