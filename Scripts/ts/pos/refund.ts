@@ -331,10 +331,10 @@ function getReceiptOk(data) {
         DicItemSnos = Object.assign({}, DicItemSnos, model.DicItemSnos);
         // console.log(DicItemSnos);
 
-        DicItemSnBatVtList = Object.assign(
+        DicItemBatSnVtList = Object.assign(
             {},
-            DicItemSnBatVtList,
-            model.DicItemSnBatVtList
+            DicItemBatSnVtList,
+            model.DicItemBatSnVtList
         );
         DicItemSnVtList = Object.assign({}, DicItemSnVtList, model.DicItemSnVtList);
         DicItemVtQtyList = Object.assign(

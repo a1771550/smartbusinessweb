@@ -1634,20 +1634,20 @@ namespace SmartBusinessWeb.Controllers
                 var batchcodelist = ibvqList.Select(x => x.BatchCode).Distinct().ToList();
 
                 var DicItemBatVtList = new Dictionary<string, Dictionary<string, List<string>>>();
-                var DicItemSnBatVtList = new Dictionary<string, Dictionary<string, List<SnBatVt>>>();
+                var DicItemBatSnVtList = new Dictionary<string, Dictionary<string, List<PPWLib.Models.Purchase.BatSnVt>>>();
                 var DicItemSnVtList = new Dictionary<string, List<SnVt>>();
                 var DicItemVtList = new Dictionary<string, List<string>>();
                 foreach (var itemcode in itemcodes)
                 {
                     DicItemBatVtList[itemcode] = new Dictionary<string, List<string>>();
-                    DicItemSnBatVtList[itemcode] = new Dictionary<string, List<SnBatVt>>();
+                    DicItemBatSnVtList[itemcode] = new Dictionary<string, List<PPWLib.Models.Purchase.BatSnVt>>();
                     DicItemSnVtList[itemcode] = new List<SnVt>();
                     DicItemVtList[itemcode] = new List<string>();
 
                     foreach (var batchcode in batchcodelist)
                     {
                         DicItemBatVtList[itemcode][batchcode] = new List<string>();
-                        DicItemSnBatVtList[itemcode][batchcode] = new List<SnBatVt>();
+                        DicItemBatSnVtList[itemcode][batchcode] = new List<PPWLib.Models.Purchase.BatSnVt>();
                     }
                 }
                 #endregion

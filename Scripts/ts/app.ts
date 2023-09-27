@@ -1135,10 +1135,10 @@ function OnSuccess(response) {
         DicItemSnos = Object.assign({}, DicItemSnos, model.DicItemSnos);
         // console.log(DicItemSnos);
 
-        DicItemSnBatVtList = Object.assign(
+        DicItemBatSnVtList = Object.assign(
             {},
-            DicItemSnBatVtList,
-            model.DicItemSnBatVtList
+            DicItemBatSnVtList,
+            model.DicItemBatSnVtList
         );
         DicItemSnVtList = Object.assign({}, DicItemSnVtList, model.DicItemSnVtList);
         DicItemVtQtyList = Object.assign(
@@ -1174,11 +1174,7 @@ function OnSuccess(response) {
             DicItemVariations,
             model.DicItemVariations
         );
-        DicItemSelectedIVList = Object.assign(
-            {},
-            DicItemSelectedIVList,
-            model.DicItemSelectedIVList
-        );
+
         DicItemGroupedVariations = Object.assign(
             {},
             DicItemGroupedVariations,
@@ -1296,28 +1292,15 @@ function _writeItems(itemList: IItem[]) {
             proId = 0;
 
         if (!forpurchase) {
-            if (ItemVari) {
-                if (ItemVari.ItemPromotions.length > 0) {
-                    if (ItemVari.ItemPromotions.find((e) => e.pro4Period)) {
-                        trcls = "period";
-                        proId = ItemVari.ItemPromotions.find((e) => e.pro4Period)!.proId;
-                    } else {
-                        trcls = "nonperiod";
-                        proId = ItemVari.ItemPromotions[0].proId;
-                    }
-                } else trcls = "";
-            }
-            if (item) {
-                if (item.ItemPromotions.length > 0) {
-                    if (item.ItemPromotions.find((e) => e.pro4Period)) {
-                        trcls = "period";
-                        proId = item.ItemPromotions.find((e) => e.pro4Period)!.proId;
-                    } else {
-                        trcls = "nonperiod";
-                        proId = item.ItemPromotions[0].proId;
-                    }
-                } else trcls = "";
-            }
+            if (item.ItemPromotions.length > 0) {
+                if (item.ItemPromotions.find((e) => e.pro4Period)) {
+                    trcls = "period";
+                    proId = item.ItemPromotions.find((e) => e.pro4Period)!.proId;
+                } else {
+                    trcls = "nonperiod";
+                    proId = item.ItemPromotions[0].proId;
+                }
+            } else trcls = "";
         }
 
         html += `<tr class="itmcode ${trcls}" data-code="${itemcode}" data-proid="${proId}">`;
@@ -1325,59 +1308,11 @@ function _writeItems(itemList: IItem[]) {
         html += `<td>${itemcode}</td>`;
         // $("td", row).eq(0).html(itemcode);
 
-        let attrvallist = ``;
-        let status: string = "";
-        let statuscls: string = "";
-        let statusstyle: string = "";
-
-        if (DicItemVariations.hasOwnProperty(itemcode)) {
-            status = DicItemVariations[itemcode].length === 0 ? unsavedtxt : savedtxt;
-            statuscls = DicItemVariations[itemcode].length === 0 ? "" : "saved";
-            statusstyle =
-                DicItemVariations[itemcode].length === 0
-                    ? "style=color:red;"
-                    : "style=color:green;";
-        }
-
-        if (
-            DicItemSelectedIVList.hasOwnProperty(itemcode) &&
-            DicItemSelectedIVList[itemcode].length
-        ) {
-            ItemVari = DicItemSelectedIVList[itemcode][0];
-        } else {
-            ItemVari = null;
-        }
-
-        //if (DicItemGroupedVariations != null) {
-        //    for (const [key, value] of Object.entries(DicItemGroupedVariations)) {
-        //        if (itemcode.toString() === key.toString()) {
-        //            attrvallist += `<div class="form-group">
-        //          <div class="clearfix"><label class="float-right small alert alert-info font-weight-bold">${statustxt}: <span class="lblIVStatus ${statuscls}" ${statusstyle}>${status}</span></label></div>`;
-        //            for (const [k, v] of Object.entries(value)) {
-        //                let itemvar: IItemVariation = v[0];
-        //                attrvallist += `<label>${itemvar.iaName}</label><select class="drpItemAttr form-control" data-name=${itemvar.iaName}>`;
-        //                $.each(v, function (i, e: IItemVariation) {
-        //                    let selected: string =
-        //                        ItemVari !== null &&
-        //                            ItemVari!.DicIvNameValList[itemvar.iaName] == e.iaValue
-        //                            ? "selected"
-        //                            : "";
-        //                    attrvallist += `<option data-id="${e.Id}" value="${e.iaValue}" ${selected}>${e.iaValue}</option>`;
-        //                });
-        //                attrvallist += `</select>`;
-        //            }
-        //            attrvallist += `</div>`;
-        //        }
-        //    }
-        //}
-
-        var namedesc = ItemVari
-            ? handleItemDesc(ItemVari.NameDescTxt)
-            : handleItemDesc(item.NameDescTxt);
+        var namedesc = handleItemDesc(item.NameDescTxt);
         html += `<td style="max-width:250px;">${namedesc}</td>`;
 
         //let _qty: number = ItemVari ? ItemVari.DicLocQty[shop] : item.Qty;
-        let _qty: number = ItemVari ? ItemVari.QtySellable : item.Qty;
+        let _qty: number = item.Qty;
 
         if (!forpurchase) {
             let tdcls = _qty > 0 ? "" : "outofstock";
@@ -1385,20 +1320,11 @@ function _writeItems(itemList: IItem[]) {
             html += `<td style="text-align:right;width:90px;max-width:90px;" class="${tdcls}">${_qty}</td>`;
         }
 
-        if (ItemVari) {
-            if (forsales || forwholesales || forstock) {
-                price =
-                    (ItemVari.itmBaseSellingPrice as number) ??
-                    (ItemVari.itmLastSellingPrice as number);
-            }
-        } else {
-            if (forsales || forwholesales || forstock) {
-                price = item.itmBaseSellingPrice ?? item.itmLastSellingPrice;
-            }
-            if (forpurchase) {
-                price = Number(item.itmBuyStdCost);
-                //console.log(price);
-            }
+        if (forsales || forwholesales || forstock) {
+            price = item.itmBaseSellingPrice ?? item.itmLastSellingPrice;
+        }
+        if (forpurchase) {
+            price = Number(item.itmBuyStdCost);
         }
 
         html += `<td style="text-align:rigth;width:100px;max-width:100px;">${formatnumber(
@@ -4717,12 +4643,12 @@ function getSnVt(
     _itemsnvtlist: Array<IItemSnBatVt>,
     _itemcode: string | number,
     _seq: number
-): ISnBatVt[] {
+): IBatSnVt[] {
     let filteredsnvtlist = $.grep(_itemsnvtlist, function (e, i) {
         return e.itemcode.toString() === _itemcode.toString() && e.seq === _seq;
     });
     //console.log('filteredsnvlist:', filteredsnvtlist);
-    let snvtlist: Array<ISnBatVt> = [];
+    let snvtlist: Array<IBatSnVt> = [];
     if (filteredsnvtlist.length > 0) {
         snvtlist = filteredsnvtlist[0].snvtlist;
     }
@@ -5966,9 +5892,9 @@ interface ISnVt {
     vt: string | null;
     selected: boolean;
 }
-interface ISnBatVt extends ISnVt {
-    batcode: string | null;
-}
+//interface IBatSnVt extends ISnVt {
+//    batcode: string | null;
+//}
 function initSerial(): ISerial {
     return {
         pocode: "",
@@ -5993,13 +5919,14 @@ function initItemSnValidThru(): IItemSnBatVt {
         validthru: "",
     };
 }
-function initSnBatchValidThru(): ISnBatVt {
+function initBatSnVt(): IBatSnVt {
     return {
         pocode: "",
         sn: "",
         batcode: "",
         vt: "",
         selected: false,
+        status:"",
     };
 }
 
@@ -6007,7 +5934,7 @@ interface IItemSnBatVt {
     itemcode: string | number;
     batch: string | null;
     seq: number;
-    snvtlist: Array<ISnBatVt>;
+    snvtlist: Array<IBatSnVt>;
     validthru: string | null;
 }
 
@@ -8603,7 +8530,7 @@ function selectItem(itemCode: string = "", proId: number = 0) {
             let itemcode = selectedItemCode;
             let ivpointer = !itemOptions.ChkBatch && !itemOptions.ChkSN && !itemOptions.WillExpire ? "pointer" : "";
             //console.log("ivpointer:" + ivpointer);
-            let ivcls = (!$.isEmptyObject(DicIvInfo) && itemcode in DicIvInfo && DicIvInfo[itemcode].length > 0) ? `focus ${ivpointer}` : "disabled";  
+            let ivcls = (!$.isEmptyObject(DicIvInfo) && itemcode in DicIvInfo && DicIvInfo[itemcode].length > 0) ? `focus ${ivpointer}` : "disabled";
             //itemvari
             $iv.addClass(ivcls);
         }
@@ -8827,7 +8754,7 @@ function addRow() {
         Wholesales.wsStatus.toLowerCase() !== "created" &&
         Wholesales.wsStatus.toLowerCase() !== "rejected")
     ) {
-        vtcls = "validthru pointer";       
+        vtcls = "validthru pointer";
     }
     if (forsales || (forwholesales &&
         Wholesales.wsStatus != "order" &&
@@ -10936,11 +10863,14 @@ function OnGetStocksOK(response) {
     //console.log('modelitems:', model.Items);
     let type = forstock ? "stock" : "transfer";
     const primaryLocation: string = model.PrimaryLocation;
+    //console.log("primarylocation:" + primaryLocation);
 
     $("#lastupdatetime").text(model.LatestUpdateTime);
 
     DicLocItemList = Object.assign({}, model.DicLocItemList);
     DicItemOptions = Object.assign({}, model.DicItemOptions);
+
+    DicIvInfo = Object.assign({}, model.DicIvInfo);
 
     if (model.Items.length > 0) {
         ItemList = model.Items.slice(0);
@@ -11035,6 +10965,9 @@ function OnGetStocksOK(response) {
                 //    //console.log("locqty:" + locqty);
                 //    console.log(itemoption);
                 //}
+                //if (itemcode == "ABSSP23.9-1U") {
+                //    console.log("(itemcode in DicIvInfo):", (itemcode in DicIvInfo));
+                //}
 
                 if (locqty <= 0) {
                     locqtydisplay = `<span class="danger">${locqty}<span class="text-info">(${abssqty})</span></span>`;
@@ -11042,14 +10975,29 @@ function OnGetStocksOK(response) {
                     locqtydisplay = `<span>${locqty}<span class="text-info">(${abssqty})</span></span>`;
                 }
 
-                let readonly =
-                    !itemoption?.ChkBatch && !itemoption?.ChkSN && !itemoption?.WillExpire
-                        ? ""
-                        : "readonly";
+                //if (itemcode == "ABSSPP23-1U") {
+                //    console.log("(itemoption?.ChkBatch || itemoption?.ChkSN || itemoption?.WillExpire):", (itemoption?.ChkBatch || itemoption?.ChkSN || itemoption?.WillExpire));
+                //    console.log("(itemcode in DicIvInfo):", (itemcode in DicIvInfo));
+                //}
+
+                let readonly = ((itemoption?.ChkBatch || itemoption?.ChkSN || itemoption?.WillExpire)) || ((itemcode in DicIvInfo && DicIvInfo[itemcode].length > 0))?"readonly": "";
+
+                //if ((itemoption?.ChkBatch || itemoption?.ChkSN || itemoption?.WillExpire)) readonly = "readonly";
+                //else if ((itemcode in DicIvInfo && DicIvInfo[itemcode].length>0)) readonly = "readonly";
+                //else readonly = "";
+                //else readonly = "readonly";
+                //if (itemcode == "ABSSP23.9-1U") console.log("readonly:", readonly);
+                
+                //readonly =
+                    
+                //        ? ""
+                //        : (!(itemcode in DicIvInfo))?"": "readonly";
                 let inputcls =
                     !itemoption?.ChkBatch && !itemoption?.ChkSN && !itemoption?.WillExpire
                         ? "locqty"
                         : "locqty itemoption";
+                if ((itemcode in DicIvInfo && DicIvInfo[itemcode].length > 0)) inputcls = "locqty vari";
+
 
                 let _html = forstock
                     ? `${locqtydisplay}`
@@ -11586,7 +11534,7 @@ interface IWholeSalesLn {
     itmNameDesc: string;
     //itmCode: string;
     //itmDesc: string;
-    snbvlist: ISnBatVt[];
+    snbvlist: IBatSnVt[];
     SerialNoList: Array<ISerialNo>;
     wslValidThru: Date | null;
     ValidThruDisplay: string | null;
@@ -12254,7 +12202,7 @@ interface ISnVtPo extends ISnVt {
     pocode: string;
 }
 let DicItemSnos: { [Key: string]: string[] } = {};
-let DicItemSnBatVtList: { [Key: string]: { [Key: string]: Array<ISnBatVt> } } =
+let DicItemBatSnVtList: { [Key: string]: { [Key: string]: Array<IBatSnVt> } } =
     {};
 
 $(document).on("click", ".snminus", function () {
@@ -12914,7 +12862,7 @@ function confirmIvQty() {
                 if (newivqty > 0) {
                     deliveryItem = initDeliveryItem();
                     deliveryItem.dlQty = newivqty;
-                    deliveryItem.seq = seq;                   
+                    deliveryItem.seq = seq;
                     deliveryItem.pstCode = $(v).data("pocode") as string;
                     deliveryItem.dlCode = $(v).data("id") as string;
                     deliveryItem.ivIdList = $(v).data("ividlist").toString().trim();
@@ -13512,7 +13460,7 @@ function confirmBatchSnQty() {
             if (itemOptions!.ChkSN) setSNmark(false);
             if (itemOptions!.WillExpire) setExpiryDateMark();
 
-            if (!$.isEmptyObject(DicIvInfo) && selectedItemCode in DicIvInfo) {                
+            if (!$.isEmptyObject(DicIvInfo) && selectedItemCode in DicIvInfo) {
                 setIvMark();
             }
         }
@@ -13534,7 +13482,7 @@ function getItemInfo4BatSnVtIv(sn: string | null = null) {
         .find(".sellunit")
         .val() as string;
 
-    idx = forwholesales? 10:9;
+    idx = forwholesales ? 10 : 9;
     deliveryItem!.dlUnitPrice = Number($tr
         .find("td")
         .eq(idx)
@@ -14788,11 +14736,11 @@ $(document).on("change", ".ivdelqty", function () {
         $ivdelqty.val(newivdq);
         //console.log("this val:" + $ivdelqty.val());
         $("#tblIv tbody tr").each(function (i, e) {
-            if (Number($(e).data("idx")) !== tridx){
+            if (Number($(e).data("idx")) !== tridx) {
                 $(e).find("td").find(".form-control").prop("readonly", true);
             }
         });
-    }  
+    }
     //console.log("newivdq#1:" + newivdq);
     $ivdelqty.data("currentivdq", newivdq);
 
@@ -14808,7 +14756,7 @@ $(document).on("change", ".ivdelqty", function () {
     newivdq += currentdelqty;
 
     $target.text(newivdq);
-    
+
     let totalivdelqty = 0;
     $("#tblIv tbody tr").each(function (i, e) {
         /* console.log("ivdelqty:" + Number($(e).find(".ivdelqty").val()));*/
@@ -15947,7 +15895,7 @@ const fillInCurrencyModal = (currcode: string = "") => {
     }
 };
 let DicItemAttrList: { [Key: string]: IItemAttribute[] } = {};
-let DicItemSelectedIVList: { [Key: string]: IItemVariation[] } = {};
+
 let DicItemVariations: { [Key: string]: IItemVariation[] } = {};
 let DicItemGroupedVariations: { [Key: string]: typeof DicItemVariations } = {};
 
@@ -18748,9 +18696,10 @@ const snMatched = (sn1, sn2) => sn1 == sn2;
 interface IBatSnVt {
     pocode: string;
     batcode: string;
-    sn: string;
+    sn: string|null;
     vt: string | null;
-    status: string;
+    status: string | null;
+    selected: boolean;
 }
 let DicItemBatSnVt: { [Key: string]: IBatSnVt[] } = {};
 let DicBatTotalQty: { [Key: string]: number } = {};
@@ -19618,10 +19567,10 @@ $(document).on("dblclick", ".batch", function () {
                         //batch && sn(vt)
                         if (itemOptions!.ChkSN) {
                             //console.log("batch&&sn(vt)");
-                            let snbatvtlist: Array<ISnBatVt> = [];
-                            if (batcode in DicItemSnBatVtList[selectedItemCode]) {
+                            let snbatvtlist: Array<IBatSnVt> = [];
+                            if (batcode in DicItemBatSnVtList[selectedItemCode]) {
                                 snbatvtlist =
-                                    DicItemSnBatVtList[selectedItemCode][batcode].slice(0);
+                                    DicItemBatSnVtList[selectedItemCode][batcode].slice(0);
                             }
                             //console.log("snbatvtlist:", snbatvtlist);
                             $.each(snbatvtlist, function (idx, ele) {
@@ -19659,10 +19608,10 @@ $(document).on("dblclick", ".batch", function () {
                         //batch && vt (no sn)
                         if (!itemOptions!.ChkSN && itemOptions!.WillExpire) {
                             //console.log("batch&&vt(no sn)");
-                            let snbatvtlist: Array<ISnBatVt> = [];
-                            if (batcode in DicItemSnBatVtList[selectedItemCode]) {
+                            let snbatvtlist: Array<IBatSnVt> = [];
+                            if (batcode in DicItemBatSnVtList[selectedItemCode]) {
                                 snbatvtlist =
-                                    DicItemSnBatVtList[selectedItemCode][batcode].slice(0);
+                                    DicItemBatSnVtList[selectedItemCode][batcode].slice(0);
                             }
                             //console.log("snbatvtlist:", snbatvtlist);
                             $.each(snbatvtlist, function (idx, ele) {
@@ -19819,10 +19768,10 @@ function addItemVariRow(hasFocusCls: boolean, maxqty: number) {
                             });
                         }
                     }
+                    //console.log("delivqtylist:", delivqtylist);
                     $.each(delivqtylist, function (k, ele) {
-                        if (Id == ele.Id) {
-                            ivdelqty = ele.delqty!;
-                            return false;
+                        if (ele.pocode == pocode) {
+                            ivdelqty += ele.delqty!;
                         }
                     });
 
@@ -19849,7 +19798,7 @@ function addItemVariRow(hasFocusCls: boolean, maxqty: number) {
                         if (!itemOptions!.ChkBatch) {
                             let currentivtypedelqty: number = 0;
                             DeliveryItems.forEach((x) => {
-                                if (                                   
+                                if (
                                     !x.dlBatch &&
                                     x.dlCode == Id &&
                                     x.pstCode == pocode
@@ -19860,6 +19809,7 @@ function addItemVariRow(hasFocusCls: boolean, maxqty: number) {
                             currentivtypeqty = e.qty - ivdelqty - currentivtypedelqty;
                         }
                     } else {
+                        //console.log("e.qty:" + e.qty + ";ivdelqty:" + ivdelqty);
                         currentivtypeqty = e.qty - ivdelqty;
                     }
 
@@ -19867,15 +19817,16 @@ function addItemVariRow(hasFocusCls: boolean, maxqty: number) {
 
                     let ivdelqtyId = `ivdelqty_${selectedItemCode}_${i}`;
                     let currentivdq = 0;
-                    let ivdisplay = ``;
+                    let ivdisplay = `<ul class="nostylelist">`;
                     let ivseq: number = i + 1;
 
                     if (ivInfo != null && ivInfo.length > 0) {
                         ivInfo.forEach((x) => {
                             if (x.Id == Id) {
-                                ivdisplay = `<label>${x.iaName}</label>:<label>${x.iaValue}</label>`;
+                                ivdisplay += `<li><label>${x.iaName}</label>:<label>${x.iaValue}</label></li>`;
                             }
                         });
+                        ivdisplay += "</ul>";
                     }
 
                     if (DeliveryItems.length > 0) {
@@ -19891,7 +19842,6 @@ function addItemVariRow(hasFocusCls: boolean, maxqty: number) {
                             }
                         });
                     }
-                    
 
                     let disabled =
                         !hasFocusCls ||
@@ -19937,14 +19887,14 @@ ${ivInfoList}
             }
         });
 }
-$(document).on("dblclick", ".vari.pointer", function () {    
+$(document).on("dblclick", ".vari.pointer", function () {
     const hasFocusCls: boolean = $(this).hasClass("focus");
     $tr = $(this).parent("td").parent("tr");
     let $td = $tr.find("td");
     selectedItemCode = $td.eq(1).find(".itemcode").val() as string;
     let idx = forwholesales ? 5 : 4;
     let qtycls = forwholesales ? ".delqty" : ".qty";
-    const maxqty =  Number($td.eq(idx).find(qtycls).val());
+    const maxqty = Number($td.eq(idx).find(qtycls).val());
     currentY = Number($tr.data("idx"));
     seq = currentY + 1;
     itemOptions = DicItemOptions[selectedItemCode];
@@ -19976,7 +19926,7 @@ $(document).on("dblclick", ".vari.pointer", function () {
              </label>
               <input type="text" class="form-control ivdelqty mx-2" style="max-width:80px;" value="${deliveryItem.dlQty}" readonly>
            </div></td><td>${ivList}</td></tr>`;
-        
+
         itemVariModal.find("#tblIv tbody").html(html);
 
     } else {
@@ -19990,7 +19940,7 @@ $(document).on("dblclick", ".vari.pointer", function () {
         .find("#ivLocSeqItem")
         .html(
             `${salesloc}:${selectedItemCode} <span class="exsmall">${sequencetxt}:${seq}</span>`
-    );
+        );
     openItemVariModal(hasFocusCls);
 
     setTotalQty4IvModal();

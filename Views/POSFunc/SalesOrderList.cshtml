@@ -5,6 +5,9 @@
     var rand = CommonHelper.GetVersionRandomNo();
     SessUser user = HttpContext.Current.Session["User"] as SessUser;
     bool isapprover = user.Roles.Any(x => x == RoleType.Admin || x == RoleType.SalesManager);
+    bool isadmin = user.Roles.Any(x => x == RoleType.Admin && x != RoleType.SalesManager);
+    bool ismanager = user.Roles.Any(x => x == RoleType.SalesManager);
+    bool issalesperson = user.Roles.Any(x => x != RoleType.Admin && x != RoleType.SalesManager);
 }
 <link href="~/Scripts/paginationjs/pagination.css" rel="stylesheet" type="text/css" />
 
@@ -109,7 +112,7 @@ else
                         @Resources.Resource.Status
                     </th>
                     <th class="text-center colheader" data-col="4" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="rtsTime">@Resources.Resource.InvoiceTime</th>
-                    <th class="text-center colheader" data-col="5" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="rtsDeliveryDate">@Resources.Resource.DeliveryDate</th>
+                    @*<th class="text-center colheader" data-col="5" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="rtsDeliveryDate">@Resources.Resource.DeliveryDate</th>*@
                     <th></th>
                 </tr>
             </thead>
@@ -125,7 +128,7 @@ else
                     string statustxt = "";
                     string _readonly = "1";
 
-                    if (item.rtsStatus == "REQUESTING" && item?.rtsSpecialApproval != null && (bool)item?.rtsSpecialApproval)
+                    if (item.rtsStatus.ToUpper() == "REQUESTING" && item?.rtsSpecialApproval != null && (bool)item?.rtsSpecialApproval)
                     {
                         bgclr = "requesting_sp_statusbg";
                         statustxt = "特批申請中";
@@ -133,7 +136,7 @@ else
                     }
                     else
                     {
-                        switch (item.rtsStatus)
+                        switch (item.rtsStatus.ToUpper())
                         {
                             case "VOIDED":
                                 bgclr = "voidedstatusbg";
@@ -213,20 +216,22 @@ else
                         <td class="@bgclr">
                             @statustxt
                         </td>
-                        <td>@item.SalesTimeDisplay</td>
-                        <td data-date="@item.rtsDeliveryDate">@item.DeliveryDateDisplay</td>
+                        <td class="text-center">@item.SalesTimeDisplay</td>
+                        @*<td data-date="@item.rtsDeliveryDate">@item.DeliveryDateDisplay</td>*@
                         <td class="button">
 
                             @if (isapprover)
                             {
                                 <button class="btn btn-info detail mr-2 @btncls" data-id="@item.rtsUID" data-code="@item.rtsCode" data-readonly="@_readonly" data-mode="review" data-status="@item.rtsStatus">@Resources.Resource.Detail</button>
                                 <button class="btn btn-secondary copy mr-2 @btncls" data-id="@item.rtsUID">@Resources.Resource.Copy</button>
-                                <button class="btn btn-primary respond mr-2 @approvedisabled" data-type="approve" data-id="@item.rtsUID" data-code="@item.rtsCode">@Resources.Resource.Approve</button>
-                                <button class="btn btn-danger respond mr-2 @rejectdisabled" data-type="reject" data-id="@item.rtsUID" data-code="@item.rtsCode">@Resources.Resource.Reject</button>
-                                if (!user.Roles.Any(x => x == RoleType.SalesManager))
+
+                                if (!ismanager)
                                 {
+                                    <button class="btn btn-primary respond mr-2 @approvedisabled" data-type="approve" data-id="@item.rtsUID" data-code="@item.rtsCode">@Resources.Resource.Approve</button>
+                                    <button class="btn btn-danger respond mr-2 @rejectdisabled" data-type="reject" data-id="@item.rtsUID" data-code="@item.rtsCode">@Resources.Resource.Reject</button>
                                     <button class="btn btn-warning respond mr-2 @passdisabled" data-type="pass" data-id="@item.rtsUID" data-code="@item.rtsCode">@Resources.Resource.PassToManager</button>
                                 }
+                               
                                 <button class="btn btn-outline-danger respond void @voiddisabled" data-type="void" data-id="@item.rtsUID" data-code="@item.rtsCode">@Resources.Resource.Void4Order</button>
                             }
                             else

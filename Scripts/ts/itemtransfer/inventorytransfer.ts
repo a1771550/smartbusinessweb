@@ -194,9 +194,12 @@ function getBalance(this: any, onhandstock: number) {
 
 $(document).on("dblclick", ".itemoption.locqty", function () {
     openWaitingModal();
-    window.location.href = "/Transfer/Transfer?itemId=" + $(this).data("itemid")+"&location="+$(this).data("shop")+"&qty="+$(this).val()+"&stcode="+$("#stCode").text();
+    window.location.href = "/Transfer/Transfer?hasItemOption=1&hasIvOnly=0&itemId=" + $(this).data("itemid")+"&location="+$(this).data("shop")+"&qty="+$(this).val()+"&stcode="+$("#stCode").text();
 });
-
+$(document).on("dblclick", ".vari.locqty", function () {
+    openWaitingModal();
+    window.location.href = "/Transfer/Transfer?hasItemOption=0&hasIvOnly=1&itemId=" + $(this).data("itemid") + "&location=" + $(this).data("shop") + "&qty=" + $(this).val() + "&stcode=" + $("#stCode").text();
+});
 $(function () {
     setFullPage();
     /*forstock = fortransfer = true;*/

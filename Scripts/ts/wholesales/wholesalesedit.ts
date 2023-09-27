@@ -17,7 +17,7 @@ DicItemBatDelQty = $infoblk.data("jsondicitembatdelqty");
 
 DicItemBatSnVt = $infoblk.data("jsondicitembatsnvt");
 
-DicItemSnBatVtList = $infoblk.data("jsondicitemsnbatvtlist");
+DicItemBatSnVtList = $infoblk.data("jsondicitemsnbatvtlist");
 DicItemSnVtList = $infoblk.data("jsondicitemsnvtlist");
 
 DicItemVtQtyList = $infoblk.data("jsondicitemvtqtylist");
@@ -317,7 +317,7 @@ $(document).on("click", "#btnInvoice", function () {
                 if (itemOptions.ChkSN) {
                     sncls = "serialno pointer focus";
                     if (itemOptions.ChkBatch) {                        
-                        if (!(itemcode in DicItemSnBatVtList)) {
+                        if (!(itemcode in DicItemBatSnVtList)) {
                             missingtxt = itemoptionsinfomissingformat.replace(
                                 "{0}",
                                 serialnotxt
@@ -877,7 +877,9 @@ $(document).on("change", "#wsCustomerPO", function () {
 
 $(document).on("click", "#btnReload", function () {
     const Id = $("#wsUID").val();
-    window.location.href = `/WholeSales/Edit?Id=${Id}&type=order`;
+    let invoicepara = "";
+    if (Wholesales.wsStatus == "invoice") invoicepara = "&status=invoice";
+    window.location.href = `/WholeSales/Edit?Id=${Id}&type=order${invoicepara}`;
 });
 
 function fillInDeliveryItems() {

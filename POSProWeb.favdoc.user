@@ -86,6 +86,11 @@
           <path>Views\POSFunc\Sales.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\POSFunc\Sales.cshtml</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>SalesOrderList.cshtml</name>
+          <path>Views\POSFunc\SalesOrderList.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\POSFunc\SalesOrderList.cshtml</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

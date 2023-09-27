@@ -19,6 +19,10 @@ checkedcashdrawer = $infoblk.data("checkedcashdrawer")
     : false;
 
 DicBatTotalQty = $infoblk.data("jsondicbattotalqty");
+
+$(document).on("click", ".btnNewSales", function () {
+    window.location.reload();
+});
 $(document).on("click", ".btnRequestApproval", function () {
     if (validSalesForm()) {
         // $("#txtConvertDate").val("");
