@@ -7,7 +7,10 @@ disceditable = $infoblk.data("disceditable") === "True";
 let purchasestockitems: IPurchaseItem[] = [];
 
 $(document).on("click", "#btnReload", function () {
-    window.location.reload();
+    const Id = $("#Id").val();
+    let billpara = "";
+    if (Purchase.pstStatus.toLowerCase() == "open") billpara = "&status=bill";
+    window.location.href = `/Purchase/Edit?Id=${Id}${billpara}`;
 });
 $(document).on("change", ".received", function () {
     $tr = $(this).parent("td").parent("tr");

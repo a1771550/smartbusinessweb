@@ -2,36 +2,38 @@
 @{
     ViewBag.Title = string.Concat(string.Format(Resources.Resource.InventoryFormat, Resources.Resource.Transfer), Model.Item.itmCode);
     var title = string.Concat(string.Format(Resources.Resource.InventoryFormat, Resources.Resource.Transfer), ":<span class='text-primary'>", Model.Item.itmCode, "</span>");
-    List<string> batpolist = Model.PoBatVQList.Select(x => x.pocode).Distinct().ToList();
-    List<string> snpolist = Model.SnVtList.Select(x => x.pocode).Distinct().ToList();
-    bool hasItemOption = Request.QueryString["hasItemOption"] == "1";
-    bool hasIvOnly = Request.QueryString["hasIvOnly"] == "1";
+    List<string> batpolist = Model.PoBatVQList != null && Model.PoBatVQList.Count > 0 ? Model.PoBatVQList.Select(x => x.pocode).Distinct().ToList() : new List<string>();
+    List<string> snpolist = Model.SnVtList != null && Model.SnVtList.Count > 0 ? Model.SnVtList.Select(x => x.pocode).Distinct().ToList() : new List<string>();
+    bool hasItemOption = Request.QueryString["hasItemOption"] != null && Request.QueryString["hasItemOption"] == "1";
+    bool hasIvOnly = Request.QueryString["hasIvOnly"] != null && Request.QueryString["hasIvOnly"] == "1";
+    //Response.Write(Model.PoBatVQList==null);
+    //Response.Write(Model.SnVtList == null);
+    //return;
 }
-
 <h4 class="mb-4" data-shopnames="@string.Join(",",Model.ShopNames)">@Html.Raw(title)</h4>
 
 <div class="container">
     @Html.AntiForgeryToken()
 
-    @for (int i=0;i<Model.ShopNames.Count;i++)
+    @for (int i = 0; i < Model.ShopNames.Count; i++)
     {
         var shopname = Model.ShopNames[i];
         var shop = Model.Shops[i];
-        @Html.Partial("_TransferModal", null, new ViewDataDictionary { { "itemcode", Model.Item.itmCode }, { "shopname", shopname }, { "shop", shop }, { "batpolist", batpolist }, { "batchqtylist", Model.BatchQtyList }, { "batdelqtylist", Model.BatDelQtyList }, { "pbvqlist", Model.PoBatVQList }, { "batsnvtlist", Model.BatSnVtList }, { "qty", Model.Item.QuantityAvailable }, { "itemOptions", Model.Item.ItemOptions }, { "snvtlist", Model.SnVtList }, { "vtqtylist", Model.VtQtyList }, { "vtdelqtylist", Model.VtDelQtyList }, { "i", i }, { "stCode", Request.QueryString["stCode"] }, {"hasItemOption",hasItemOption }, {"hasIvOnly",hasIvOnly }, {"ivqtylist", Model.IvQtyList },{"ivdelqtylist", Model.IvDelQtyList }, { "IvInfo", Model.DicIvInfo[Model.Item.itmCode] } })
+        @Html.Partial("_TransferModal", null, new ViewDataDictionary { { "itemcode", Model.Item.itmCode }, { "shopname", shopname }, { "shop", shop }, { "batpolist", batpolist }, { "batchqtylist", Model.BatchQtyList }, { "batdelqtylist", Model.BatDelQtyList }, { "pbvqlist", Model.PoBatVQList }, { "batsnvtlist", Model.BatSnVtList }, { "qty", Model.Item.QuantityAvailable }, { "itemOptions", Model.Item.ItemOptions }, { "snvtlist", Model.SnVtList }, { "vtqtylist", Model.VtQtyList }, { "vtdelqtylist", Model.VtDelQtyList }, { "i", i }, { "stCode", Request.QueryString["stCode"] }, { "hasItemOption", hasItemOption }, { "hasIvOnly", hasIvOnly }, { "ivqtylist", Model.IvQtyList }, { "ivdelqtylist", Model.IvDelQtyList }, { "IvInfo", Model.DicIvInfo[Model.Item.itmCode] } })
     }
 
     <button type="button" id="btnSave" class="btn btn-success">@Resources.Resource.Save</button>
     <div class="mt-4">
-        @Html.ActionLink(Resources.Resource.BackToList, "Transfer")
+        @Html.ActionLink(Resources.Resource.BackToList, "Index")
     </div>
-    
+
 </div>
 
 
 
 @Html.Partial("_WaitingModal")
 
-<div id="infoblk" data-primarylocation="@Model.PrimaryLocation" data-jsonpobatvqlist="@JsonSerializer.Serialize(Model.PoBatVQList)" data-jsonbatchqtylist="@JsonSerializer.Serialize(Model.BatchQtyList)" data-jsonbatsnvtlist="@JsonSerializer.Serialize(Model.BatSnVtList)" data-jsonitemoptions="@JsonSerializer.Serialize(Model.Item.ItemOptions)" data-jsonsnvtlist="@JsonSerializer.Serialize(Model.SnVtList)" data-jsonvtqtylist="@JsonSerializer.Serialize(Model.VtQtyList)" data-jsonvtdelqtylist="@JsonSerializer.Serialize(Model.VtDelQtyList)" data-itemoptions="@JsonSerializer.Serialize(Model.Item.ItemOptions)" data-stcode="@Request.QueryString["stCode"]" data-jsonbatdelqtylist="@JsonSerializer.Serialize(Model.BatDelQtyList)"></div>
+<div id="infoblk" data-primarylocation="@Model.PrimaryLocation" data-jsonpobatvqlist="@JsonSerializer.Serialize(Model.PoBatVQList)" data-jsonbatchqtylist="@JsonSerializer.Serialize(Model.BatchQtyList)" data-jsonbatsnvtlist="@JsonSerializer.Serialize(Model.BatSnVtList)" data-jsonitemoptions="@JsonSerializer.Serialize(Model.Item.ItemOptions)" data-jsonsnvtlist="@JsonSerializer.Serialize(Model.SnVtList)" data-jsonvtqtylist="@JsonSerializer.Serialize(Model.VtQtyList)" data-jsonvtdelqtylist="@JsonSerializer.Serialize(Model.VtDelQtyList)" data-itemoptions="@JsonSerializer.Serialize(Model.Item.ItemOptions)" data-stcode="@Request.QueryString["stCode"]" data-jsonbatdelqtylist="@JsonSerializer.Serialize(Model.BatDelQtyList)" data-ivqtylist="@JsonSerializer.Serialize(Model.IvQtyList)" data-ivdelqtylist="@JsonSerializer.Serialize(Model.IvDelQtyList)" data-hasitemoption="@hasItemOption" data-hasivonly="@hasIvOnly"></div>
 
 <script src="~/Scripts/ts/js/itemtransfer/transfer.js?v=@CommonHelper.GetVersionRandomNo()"></script>
 

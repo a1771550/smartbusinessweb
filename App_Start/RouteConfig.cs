@@ -42,6 +42,12 @@ new { controller = "Api", action = "ViewTrack", contactName = UrlParameter.Optio
                 );
 
             routes.MapRoute(
+          null,
+          "PrivacyPolicy",
+          new { controller = "OtherSettings", action = "PrivacyPolicy" }
+      );
+
+            routes.MapRoute(
            null,
            "GetItems/{keyword}",
            new { controller = "Api", action = "GetItems" },

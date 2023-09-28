@@ -31,18 +31,7 @@ namespace SmartBusinessWeb.Controllers.Item
             TransferEditModel.Edit(stocktransfer);
             return Json(msg);
         }
-
-        [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
-        [ValidateAntiForgeryToken]
-        [HttpPost]
-        public JsonResult EditList(List<TransferModel> transferList, StockTransferInfo info)
-        {
-            var msg = string.Format(Resources.Resource.SavedOkFormat, Resources.Resource.Transfer);
-            TransferEditModel.Edit(transferList, info);
-            return Json(msg);
-        }
-
+       
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
         public ActionResult PrintByCode(string code)
@@ -97,7 +86,7 @@ namespace SmartBusinessWeb.Controllers.Item
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
         [HttpGet]
-        public ActionResult Transfer(int hasItemOption, int hasIvOnly, int itemId, string location, int qty)
+        public ActionResult Transfer(int itemId, string location, int qty, int hasItemOption = 0, int hasIvOnly = 0)
         {
             ViewBag.ParentPage = "item";
             ItemEditModel model = new ItemEditModel(itemId, true, hasItemOption==1,hasIvOnly==1, location, qty);
@@ -108,7 +97,7 @@ namespace SmartBusinessWeb.Controllers.Item
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult ProcessTransferIO(List<TransferModel> TransferList)
+        public JsonResult ProcessTransferIOVari(List<TransferLnModel> TransferList)
         {
             var msg = string.Format(Resources.Resource.SavedOkFormat, Resources.Resource.Transfer);
             TransferEditModel model = new TransferEditModel();

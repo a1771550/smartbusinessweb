@@ -77,7 +77,7 @@
                                                     <label>
                                                         @batcode (@pocode)
                                                     </label>
-                                                    <input type="text" class="form-control batqtytf mx-2" data-id="@batqtyId" data-tblindex="@tblIndex" data-shop="@shop" data-seq="@e.seq" data-itemcode="@itemcode" data-batch="@batcode" data-pocode="@pocode" data-batqty="@e.batqty" min="0" max="@e.sellableqty" style="max-width:80px;" value="@currentbdq" @disabled>
+                                                    <input type="text" class="form-control batqtytf mx-2 numonly" data-id="@batqtyId" data-tblindex="@tblIndex" data-shop="@shop" data-seq="@e.seq" data-itemcode="@itemcode" data-batch="@batcode" data-pocode="@pocode" data-batqty="@e.batqty" min="0" max="@e.sellableqty" style="max-width:80px;" value="@currentbdq" @disabled>
                                                 </div>
                                             </td>
                                         }
@@ -170,7 +170,7 @@
                                                         <label for="@batvtqtyId">
                                                             @vtdisplay (@v.pocode)
                                                         </label>
-                                                        <input type="text" class="form-control batvtqtytf mx-2" data-id="@batvtqtyId" data-tblindex="@tblIndex" data-shop="@shop" data-batseq="@batseq" data-itemcode="@itemcode" data-batch="@v.batchcode" data-pocode="@v.pocode" data-batqty="@v.batchqty" data-batvt="@v.vt" min="0" max="@v.sellableqty" style="max-width:80px;" value="@currentbdq" @disabled>
+                                                        <input type="text" class="form-control batvtqtytf mx-2 numonly" data-id="@batvtqtyId" data-tblindex="@tblIndex" data-shop="@shop" data-batseq="@batseq" data-itemcode="@itemcode" data-batch="@v.batchcode" data-pocode="@v.pocode" data-batqty="@v.batchqty" data-batvt="@v.vt" min="0" max="@v.sellableqty" style="max-width:80px;" value="@currentbdq" @disabled>
                                                     </div>
                                                 }
 
@@ -257,7 +257,7 @@
                                                 <label for="@vtId">
                                                     @vtdisplay
                                                 </label>
-                                                <input type="text" class="form-control vtqtytf mx-2" data-tblindex="@tblIndex" data-shop="@shop" data-id="@vtId" data-itemcode="@itemcode" data-pocode="@pocode" min="0" max="@ele.sellableqty" style="max-width:80px;" value="@vtqty" @disabled>
+                                                <input type="text" class="form-control vtqtytf mx-2 numonly" data-tblindex="@tblIndex" data-shop="@shop" data-id="@vtId" data-itemcode="@itemcode" data-pocode="@pocode" min="0" max="@ele.sellableqty" style="max-width:80px;" value="@vtqty" @disabled>
                                             </div>
                                         }
                                     </td>
@@ -275,6 +275,17 @@
                     int idx = 0;
                     foreach (var e in ivqtylist)
                     {
+                        int ivsellableqty = 0;
+                        int ivdeledqty = 0;
+                        foreach(var id in ivdelqtylist)
+                        {
+                            if(id.pocode==pocode && id.itemcode==e.itemcode && id.ivIdList == e.ivIdList)
+                            {
+                                ivdeledqty += (int)id.delqty;
+                            }
+                        }
+                        ivsellableqty = e.qty - ivdeledqty;
+
                         <tr data-idx="@idx">
                             <td class="text-right">
                                 @if (e.pocode == pocode)
@@ -291,12 +302,13 @@
                                     }
                                     ivdisplay += "</ul>";
                                     var disabled = tblIndex == 0 ? "disabled" : "";
-                                    var ivId = "iv_" + Id;
+                                    var poivId = Id;
+                                    int ivqty = tblIndex == 0 ? ivsellableqty : 0;
                                     <div class="row justify-content-center mx-1 mb-3">
-                                        <label for="@ivId">
+                                        <label for="@poivId">
                                             @Html.Raw(ivdisplay)
                                         </label>
-                                        <input type="text" class="form-control ivqtytf mx-2" data-tblindex="@tblIndex" data-shop="@shop" data-id="@ivId" data-itemcode="@itemcode" data-pocode="@pocode" min="0" max="@e.qty" style="max-width:80px;" value="@e.qty" @disabled>
+                                        <input type="text" class="form-control ivqtytf mx-2 numonly" data-tblindex="@tblIndex" data-shop="@shop" data-poivid="@poivId" data-itemcode="@itemcode" data-pocode="@pocode" data-ividlist="@e.ivIdList" min="0" max="@ivsellableqty" style="max-width:80px;" value="@ivqty" @disabled>
                                     </div>
                                 }
                             </td>

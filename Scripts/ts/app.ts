@@ -5892,9 +5892,6 @@ interface ISnVt {
     vt: string | null;
     selected: boolean;
 }
-//interface IBatSnVt extends ISnVt {
-//    batcode: string | null;
-//}
 function initSerial(): ISerial {
     return {
         pocode: "",
@@ -8201,7 +8198,8 @@ function getDicItemOptionsVariByCodes(
                     selectedItemCode in DicItemGroupedVariations
                 )
                     varicls = "povari pointer focus";
-                if (itemOptions?.ChkBatch) varicls = "povari pointer focus";
+                if (itemOptions?.ChkBatch && (!$.isEmptyObject(DicItemGroupedVariations) &&
+                    selectedItemCode in DicItemGroupedVariations)) varicls = "povari pointer focus";
                 //console.log("DicItemGroupedVariations:", DicItemGroupedVariations);
                 html += `<td><input type="text" class="text-center ${varicls}" readonly /></td>`;
 
@@ -10996,7 +10994,7 @@ function OnGetStocksOK(response) {
                     !itemoption?.ChkBatch && !itemoption?.ChkSN && !itemoption?.WillExpire
                         ? "locqty"
                         : "locqty itemoption";
-                if ((itemcode in DicIvInfo && DicIvInfo[itemcode].length > 0)) inputcls = "locqty vari";
+                if ((itemcode in DicIvInfo && DicIvInfo[itemcode].length > 0) && (!itemoption?.ChkBatch && !itemoption?.ChkSN && !itemoption?.WillExpire)) inputcls = "locqty vari";
 
 
                 let _html = forstock
@@ -11166,6 +11164,8 @@ function initStockTransfer(): IStockTransfer {
         itmNameDesc: "",
         stChecked: false,
         stRemark: "",
+        poIvId:"",
+        ivIdList:"",
         CreateTime: new Date(),
         ModifyTime: new Date(),
         CreateTimeDisplay: "",
@@ -11190,6 +11190,8 @@ interface IStockTransfer {
     stDate: Date;
     stRemark: string | null;
     stChecked: boolean;
+    poIvId: string | null;
+    ivIdList: string | null;
     CreateTime: Date;
     ModifyTime: Date;
     CreateTimeDisplay: string;
@@ -14433,19 +14435,19 @@ $(document).on("change", ".validthru.focus", function () {
 function handleBatVtQtyChange(this: any, lastCellCls: string) {
     let qty: number = Number($(this).val());
     let maxqty: number = Number($(this).attr("max"));
+    let tblIndex: number = Number($(this).data("tblindex"));
+    let tmpId: string = $(this).data("id").toString();
+    let itemcode: string = $(this).data("itemcode").toString();
+    let receiver: string = $(this).data("shop").toString();
+    $tr = $(this).parent("div").parent("td").parent("tr");
+    let tridx: number = Number($tr.data("idx"));
+    let transferredqty: number = 0;
     if (qty > 0) {
         if (qty > maxqty) {
             qty = maxqty;
             $(this).val(qty);
         }
-        let tblIndex: number = Number($(this).data("tblindex"));
-        let tmpId: string = $(this).data("id").toString();
-        let itemcode: string = $(this).data("itemcode").toString();
-        let receiver: string = $(this).data("shop").toString();
-
-        $tr = $(this).parent("div").parent("td").parent("tr");
-        let tridx: number = Number($tr.data("idx"));
-        //console.log("qty:" + qty + ";tridx:" + tridx);
+        transferredqty = qty;
         $(".tblTransfer").each(function (i, e) {
             if (i !== tblIndex) {
                 $target =
@@ -14463,12 +14465,21 @@ function handleBatVtQtyChange(this: any, lastCellCls: string) {
                             .last()
                             .find(lastCellCls!);
                 if (i === 0) {
-                    $target.val(maxqty - qty);
-                } else {
-                    if (Number($target.val()) > 0) $target.val(maxqty - qty);
+                    //$target.val(maxqty - qty);
+                } else {                    
+                    if (Number($target.val()) > 0) {
+                        $target.val(maxqty - qty);
+                        transferredqty += (maxqty - qty);
+                    } 
                 }
             }
-        });
+        });    
+        
+        if (lastCellCls === "") {
+            $(".tblTransfer").first().find("tbody tr").eq(tridx).find("td").first().find(".batqtytf").val(maxqty - transferredqty);
+        } else {            
+            $(".tblTransfer").first().find("tbody tr").eq(tridx).find("td").last().find(lastCellCls).val(maxqty - transferredqty);
+        }
 
         let idx = TransferList.findIndex((x) => x.tmpId == tmpId);
         if (idx >= 0) TransferList.splice(idx, 1);
@@ -14484,8 +14495,96 @@ function handleBatVtQtyChange(this: any, lastCellCls: string) {
         } as IStockTransfer);
         // console.log("TransferList#change:", TransferList);
     }
+
+    if (qty === 0) {
+        if (lastCellCls === "") {
+            $(".tblTransfer").each(function (i, e) {
+                if (i > 0) {
+                    transferredqty += Number($(e).find("tbody tr").eq(tridx).find("td").first().find(".batqtytf").val());
+                }
+            });
+            $(".tblTransfer").first().find("tbody tr").eq(tridx).find("td").first().find(".batqtytf").val(maxqty - transferredqty);
+        } else {
+            $(".tblTransfer").each(function (i, e) {
+                if (i > 0) {
+                    transferredqty += Number($(e).find("tbody tr").eq(tridx).find("td").last().find(lastCellCls).val());
+                }
+            });
+            $(".tblTransfer").first().find("tbody tr").eq(tridx).find("td").last().find(lastCellCls).val(maxqty - transferredqty);
+        }       
+    }
 }
 
+function handleIvQtyChange(this: any, lastCellCls: string) {
+    let qty: number = Number($(this).val());
+    let maxqty: number = Number($(this).attr("max"));
+    let tblIndex: number = Number($(this).data("tblindex"));
+    let poIvId: string = $(this).data("poivid").toString();
+    let itemcode: string = $(this).data("itemcode").toString();
+    let receiver: string = $(this).data("shop").toString();
+    let ivIdList: string = $(this).data("ividlist").toString();
+    $tr = $(this).parent("div").parent("td").parent("tr");
+    let tridx: number = Number($tr.data("idx"));
+    let transferredqty: number = 0;
+
+    if (qty > 0) {
+        if (qty > maxqty) {
+            qty = maxqty;
+            $(this).val(qty);
+        }       
+        transferredqty = qty;
+        //console.log("qty:" + qty + ";tridx:" + tridx);
+        $(".tblTransfer").each(function (i, e) {
+            if (i !== tblIndex) {
+                $target = $(e)
+                            .find("tbody tr")
+                            .eq(tridx)
+                            .find("td")
+                            .last()
+                            .find(lastCellCls!);
+                if (i === 0) {
+                   // $target.val(maxqty - qty);
+                } else {
+                    if (Number($target.val()) > 0) {
+                        $target.val(maxqty - qty);
+                        transferredqty += (maxqty - qty);
+                    } 
+                }
+            }
+        });
+
+        $(".tblTransfer").first().find("tbody tr").eq(tridx).find("td").last().find(lastCellCls).val(maxqty - transferredqty);
+
+        let idx = TransferList.findIndex((x) => x.poIvId == poIvId);
+        if (idx >= 0) TransferList.splice(idx, 1);
+
+        TransferList.push({
+            poIvId: poIvId,
+            itmCode: itemcode,
+            stReceiver: receiver,
+            stSender: $infoblk.data("primarylocation"),
+            inQty: qty,
+            outQty: qty,
+            stCode: $infoblk.data("stcode"),
+            ivIdList: ivIdList
+        } as IStockTransfer);
+        // console.log("TransferList#change:", TransferList);
+    }
+
+    if (qty === 0) {
+        $(".tblTransfer").each(function (i, e) {
+            if (i > 0) {
+                transferredqty += Number($(e).find("tbody tr").eq(tridx).find("td").last().find(lastCellCls).val());
+            }
+        });
+        $(".tblTransfer").first().find("tbody tr").eq(tridx).find("td").last().find(lastCellCls).val(maxqty-transferredqty);
+    }
+}
+
+//for transfer
+$(document).on("change", ".ivqtytf", function () {
+    handleIvQtyChange.call(this, ".ivqtytf");
+});
 //for transfer
 $(document).on("change", ".vtqtytf", function () {
     handleBatVtQtyChange.call(this, ".vtqtytf");
@@ -14576,6 +14675,10 @@ $(document).on("change", ".chkbatsnvttf", function () {
         stCode: $infoblk.data("stcode"),
     } as IStockTransfer);
     //console.log("TransferList#change#1:", TransferList);
+});
+
+$(document).on("keypress", ".numonly", function (e) {
+    return (isNumber(e));
 });
 
 $(document).on("change", ".chkbatsnvt", function () {
@@ -19945,3 +20048,11 @@ $(document).on("dblclick", ".vari.pointer", function () {
 
     setTotalQty4IvModal();
 });
+
+function isNumber(evt) {    
+    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+        return false;
+    }
+    return true;
+}
