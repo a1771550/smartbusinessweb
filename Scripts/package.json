@@ -8,8 +8,8 @@
     "moment": "^2.29.4"
   },
   "devDependencies": {
-    "@types/jquery": "^3.5.17",
-    "@types/node": "^20.5.7",
+    "@types/jquery": "^3.5.20",
+    "@types/node": "^20.7.1",
     "jquery": "^3.7.1"
   },
   "scripts": {

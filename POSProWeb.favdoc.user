@@ -155,6 +155,10 @@
           <name>PurchaseEditModel.cs</name>
           <absolutePath>F:\repos\PPWProject\PPWLib\Models\Purchase\PurchaseEditModel.cs</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>SalesEditModel.cs</name>
+          <absolutePath>F:\repos\PPWProject\PPWLib\Models\POS\Sales\SalesEditModel.cs</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

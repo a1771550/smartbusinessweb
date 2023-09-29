@@ -1,7 +1,7 @@
 ﻿@model PPWLib.Models.Item.PGItemEditModel
 
 @{
-    bool editmode = Model.ItemVariations != null && Model.ItemVariations.Count > 0 ? Model.ItemVariations.First().itmItemID > 0 : Model.Item.itmItemID > 0;
+    bool editmode = Model.ItemVariations != null && Model.ItemVariations.Count > 0 ? Model.ItemVariations.First().itemID > 0 : Model.Item.itmItemID > 0;
     string edittxt = editmode ? Resources.Resource.Edit : Resources.Resource.Add;
     ViewBag.Title = edittxt + " " + Resources.Resource.Item;
     string codelist = string.Join(",", Model.ItemCodeList);

@@ -838,7 +838,7 @@ namespace SmartBusinessWeb.Controllers
                         }
                         //salesln.ksalesmancode = context.SysUsers.FirstOrDefault(x => x.UserName.ToLower() == salesln.rtsKawadaUpldBy.ToLower()).UserCode;
                     }
-                    model.KSalesmanCode = context.SysUsers.FirstOrDefault(x => x.UserName.ToLower() == model.SalesOrder.rtsKawadaUpldBy.ToLower()).UserCode;
+                    //model.KSalesmanCode = context.SysUsers.FirstOrDefault(x => x.UserName.ToLower() == model.SalesOrder.rtsKawadaUpldBy.ToLower()).UserCode;
                 }
             }
 

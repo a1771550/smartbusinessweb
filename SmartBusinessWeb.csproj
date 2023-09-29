@@ -3837,6 +3837,9 @@
     <Content Include="Scripts\node_modules\moment\src\moment.js" />
     <Content Include="Scripts\moment-with-locales.min.js.map" />
     <Content Include="Scripts\moment.min.js.map" />
+    <Content Include="Scripts\node_modules\%40types\jquery\LICENSE" />
+    <Content Include="Scripts\node_modules\%40types\jquery\package.json" />
+    <Content Include="Scripts\node_modules\%40types\jquery\README.md" />
     <None Include="Scripts\oldjquery\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\oldjquery\jquery-1.10.2.js" />
     <Content Include="Scripts\oldjquery\jquery-1.10.2.min.js" />
@@ -4031,7 +4034,6 @@
     <Content Include="Scripts\ts\js\item\category.js" />
     <Content Include="Scripts\ts\js\item\categoryedit.js" />
     <Content Include="Scripts\ts\js\item\itemedit.js" />
-    <Content Include="Scripts\ts\js\item\itempromotion.js" />
     <Content Include="Scripts\ts\js\item\pgitem.js" />
     <Content Include="Scripts\ts\js\item\pgitemedit.js" />
     <Content Include="Scripts\ts\js\item\stock.js" />
@@ -4204,7 +4206,6 @@
     <Content Include="Scripts\ts\js\promotion\promotionedit.js" />
     <Content Include="Scripts\ts\js\purchase\purchase.js" />
     <Content Include="Scripts\ts\js\purchase\purchaseedit.js" />
-    <Content Include="Scripts\ts\js\purchase\return.js" />
     <Content Include="Scripts\ts\js\purchase\supplier.js" />
     <Content Include="Scripts\ts\js\purchase\supplieredit.js" />
     <Content Include="Scripts\ts\js\test.js" />
@@ -4301,7 +4302,6 @@
     <Content Include="Scripts\ts\js\item\category.js.map" />
     <Content Include="Scripts\ts\js\item\categoryedit.js.map" />
     <Content Include="Scripts\ts\js\item\itemedit.js.map" />
-    <Content Include="Scripts\ts\js\item\itempromotion.js.map" />
     <Content Include="Scripts\ts\js\item\pgitem.js.map" />
     <Content Include="Scripts\ts\js\item\pgitemedit.js.map" />
     <Content Include="Scripts\ts\js\item\stock.js.map" />
@@ -4342,7 +4342,6 @@
     <Content Include="Scripts\ts\js\promotion\promotionedit.js.map" />
     <Content Include="Scripts\ts\js\purchase\purchase.js.map" />
     <Content Include="Scripts\ts\js\purchase\purchaseedit.js.map" />
-    <Content Include="Scripts\ts\js\purchase\return.js.map" />
     <Content Include="Scripts\ts\js\purchase\supplier.js.map" />
     <Content Include="Scripts\ts\js\purchase\supplieredit.js.map" />
     <Content Include="Scripts\ts\js\test.js.map" />
@@ -4619,6 +4618,12 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\index.d.ts" />
+    <TypeScriptCompile Include="Scripts\node_modules\%40types\jquery\dist\jquery.slim.d.ts" />
+    <TypeScriptCompile Include="Scripts\node_modules\%40types\jquery\index.d.ts" />
+    <TypeScriptCompile Include="Scripts\node_modules\%40types\jquery\JQuery.d.ts" />
+    <TypeScriptCompile Include="Scripts\node_modules\%40types\jquery\JQueryStatic.d.ts" />
+    <TypeScriptCompile Include="Scripts\node_modules\%40types\jquery\legacy.d.ts" />
+    <TypeScriptCompile Include="Scripts\node_modules\%40types\jquery\misc.d.ts" />
     <TypeScriptCompile Include="Scripts\node_modules\%40types\node\assert.d.ts" />
     <TypeScriptCompile Include="Scripts\node_modules\%40types\node\assert\strict.d.ts" />
     <TypeScriptCompile Include="Scripts\node_modules\%40types\node\async_hooks.d.ts" />
@@ -4632,6 +4637,7 @@
     <TypeScriptCompile Include="Scripts\node_modules\%40types\node\diagnostics_channel.d.ts" />
     <TypeScriptCompile Include="Scripts\node_modules\%40types\node\dns.d.ts" />
     <TypeScriptCompile Include="Scripts\node_modules\%40types\node\dns\promises.d.ts" />
+    <TypeScriptCompile Include="Scripts\node_modules\%40types\node\dom-events.d.ts" />
     <TypeScriptCompile Include="Scripts\node_modules\%40types\node\domain.d.ts" />
     <TypeScriptCompile Include="Scripts\node_modules\%40types\node\events.d.ts" />
     <TypeScriptCompile Include="Scripts\node_modules\%40types\node\fs.d.ts" />
@@ -4652,6 +4658,7 @@
     <TypeScriptCompile Include="Scripts\node_modules\%40types\node\punycode.d.ts" />
     <TypeScriptCompile Include="Scripts\node_modules\%40types\node\querystring.d.ts" />
     <TypeScriptCompile Include="Scripts\node_modules\%40types\node\readline.d.ts" />
+    <TypeScriptCompile Include="Scripts\node_modules\%40types\node\readline\promises.d.ts" />
     <TypeScriptCompile Include="Scripts\node_modules\%40types\node\repl.d.ts" />
     <TypeScriptCompile Include="Scripts\node_modules\%40types\node\stream.d.ts" />
     <TypeScriptCompile Include="Scripts\node_modules\%40types\node\stream\consumers.d.ts" />

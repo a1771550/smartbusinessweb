@@ -4,12 +4,79 @@ using System.Web.Mvc;
 using PagedList;
 using Resources = CommonLib.App_GlobalResources;
 using System.Linq;
+using PPWDAL;
+using PPWLib.Models;
+using System.Collections.Generic;
+using System.IO;
+using System.Web;
+using System;
 
 namespace SmartBusinessWeb.Controllers.Purchase
 {
     [CustomAuthenticationFilter]
     public class SupplierController : BaseController
     {
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UploadFile(int supId)
+        {
+            if (Request.Files.Count > 0)
+            {
+                try
+                {
+                    List<string> filenamelist = new List<string>();
+                    string filedir = string.Format(UploadsCusDir, apId, supId);//Suppliers/{0}/{1}
+                    string dir = "";
+                    string filename = string.Empty;
+                    HttpFileCollectionBase files = Request.Files;
+                    for (int i = 0; i < files.Count; i++)
+                    {
+                        filename = Path.GetFileName(Request.Files[i].FileName);
+                        HttpPostedFileBase _file = files[i];
+                        FileInfo fi = new FileInfo(filename);
+                        //ext = fi.Extension;
+                        dir = string.Concat(@"~/", filedir);
+                        var absdir = Server.MapPath(dir);
+                        if (!Directory.Exists(absdir))
+                        {
+                            Directory.CreateDirectory(absdir);
+                        }
+                        string fname = Path.Combine(absdir, filename);
+                        _file.SaveAs(fname);
+                        filenamelist.Add(filename);
+                    }
+                    using (var context = new PPWDbContext())
+                    {
+                        SessUser user = Session["User"] as SessUser;
+                        SupplierInfo supInfo = new SupplierInfo
+                        {
+                            supId = supId,
+                            fileName = filenamelist.FirstOrDefault(),
+                            type = "file",
+                            CreateBy = user.UserCode,
+                            CreateTime = DateTime.Now,
+                            AccountProfileId = apId
+                        };
+                        context.SupplierInfoes.Add(supInfo);
+                        context.SaveChanges();
+                    }
+                    dir = string.Concat(@"/", filedir);
+                    //string filepath = Path.Combine(dir, string.Format(file, ext));
+                    string filepath = Path.Combine(dir, filename);
+                    return Json(new { msg = Resources.Resource.UploadOkMsg, filepath });
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { msg = "Error occurred. Error details: " + ex.Message });
+                }
+            }
+            else
+            {
+                return Json(new { msg = Resources.Resource.NoFileSelected });
+            }
+        }
+
+
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
         public ActionResult Index(int SortCol = 4, string SortOrder = "desc", string Keyword = "", int? PageNo = 1)

@@ -7,6 +7,8 @@
     abstract validform(): boolean;
     abstract submitform();
 }
+
+let ismanager: boolean = false;
 let TransferList: Array<IStockTransfer> = [];
 let isLocal: boolean = false;
 let $infoblk: any;
@@ -2864,15 +2866,7 @@ function openDescModal() {
         $("#descModal")
             .empty()
             .append("<p style='font-size:larger;'>" + refundsalesln.rtlDesc + "</p>");
-    }
-    if (forreturn && returnpurchaseln) {
-        $("#descModal")
-            .empty()
-            .append(
-                "<p style='font-size:larger;'>" + returnpurchaseln.itmNameDesc + "</p>"
-            );
-    }
-
+    } 
     if (forpurchase && selectedPurchaseItem) {
         $("#descModal")
             .empty()
@@ -4982,7 +4976,7 @@ function initSalesBase(): ISalesBase {
         isZeroStockItem: false,
         rtlItemCode: selectedItemCode,
         rtlSellingPrice: 0,
-        rtlTaxRate: 0,
+        rtlTaxPc: 0,
         rtlBatchCode: "",
         rtlQty: 0,
         rtlCode: "",
@@ -5012,7 +5006,7 @@ interface ISalesBase {
     isZeroStockItem: boolean;
     rtlItemCode: string | number;
     rtlSellingPrice: number;
-    rtlTaxRate: number;
+    rtlTaxPc: number;
     rtlBatchCode: string;
     rtlQty: number;
     rtlCode: string;
@@ -8788,9 +8782,8 @@ function addRow() {
 
     // console.log("inclusivetax:", inclusivetax);
     if (
-        (forsales || forpurchase || forwholesales) &&
-        enableTax &&
-        !inclusivetax
+        (forsales || forpurchase || forwholesales)
+       // && enableTax && !inclusivetax
     ) {
         html +=
             '<td class="text-right"><input type="number" name="tax" min="0" class="taxpc text-right flex" readonly/></td>';
@@ -13462,7 +13455,7 @@ function confirmBatchSnQty() {
             if (itemOptions!.ChkSN) setSNmark(false);
             if (itemOptions!.WillExpire) setExpiryDateMark();
 
-            if (!$.isEmptyObject(DicIvInfo) && selectedItemCode in DicIvInfo) {
+            if (!$.isEmptyObject(DicIvInfo) && selectedItemCode in DicIvInfo && DicIvInfo[selectedItemCode].length>0) {
                 setIvMark();
             }
         }
@@ -17653,7 +17646,7 @@ class SalesModel implements ISales {
     batchcode!: string;
     rtlItemCode!: string | number;
     rtlSellingPrice!: number;
-    rtlTaxRate!: number;
+    rtlTaxPc!: number;
     rtlBatchCode!: string;
     rtlQty!: number;
     rtlCode!: string;

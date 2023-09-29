@@ -20,7 +20,7 @@
     string disabled = editmode && Item.HasSalesRecords ? "disabled" : "";
     string _checked = editmode && !Item.itmIsNonStock ? "checked" : "";
     List<string> Shops = ViewData["Shops"] != null ? (List<string>)ViewData["Shops"] : new List<string>();
-    bool isItemABSS = Item.itmCheckout == null ? true : (bool)Item.itmCheckout;
+    bool isItemABSS = Item==null?false: Item.itmCheckout == null ? true : (bool)Item.itmCheckout;
     HashSet<ItemCategoryModel> CategoryList = ViewData["CategoryList"] as HashSet<ItemCategoryModel>;
     bool EditItem = Convert.ToBoolean(ViewData["EditItem"]);
     //Response.Write(isItemABSS);

@@ -132,10 +132,9 @@
 
                 <col width="100">
                 <col width="60">
-                @if (Model.TaxModel.EnableTax && Model.TaxModel.TaxType != CommonLib.Models.TaxType.Inclusive)
-                {
+              
                     <col width="60">
-                }
+               
                 <col width="100">
                 <col width="100" />
                 <col width="120">
@@ -155,10 +154,9 @@
 
                     <td title="@Resources.Resource.Price" style="text-align: right;">@Resources.Resource.Price (@Model.Currency)</td>
                     <td title="@Resources.Resource.DiscPc" style="text-align: right;">@Resources.Resource.DiscPc</td>
-                    @if (Model.TaxModel.EnableTax && Model.TaxModel.TaxType != CommonLib.Models.TaxType.Inclusive)
-                    {
+                   
                         <td title="@Resources.Resource.Tax" style="text-align: right;">@Resources.Resource.TaxItemHeader</td>
-                    }
+                   
                     <td class="text-center">@Resources.Resource.Location</td>
                     <td class="text-center">@Resources.Resource.Job4Myob</td>
                     <td class="text-right">@Resources.Resource.Amount (@Model.Currency)</td>
