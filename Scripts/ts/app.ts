@@ -45,7 +45,7 @@ let forpassedtomanager: boolean = false;
 let recreateOnVoid: number = 0;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
-//const searchcustxt:string = $txtblk.data("searchcustxt");
+const transferdblclickhints: string = $txtblk.data("transferdblclickhints");
 const currentbatchtypesellableqtytxt: string = $txtblk.data(
     "currentbatchtypesellableqtytxt"
 );
@@ -10999,7 +10999,7 @@ function OnGetStocksOK(response) {
 
                 let _html = forstock
                     ? `${locqtydisplay}`
-                    : `<input type="number" class="${inputcls}" data-isprimary="${isprimary}" data-code="${item.itmCode}" style="width:70%;" data-shop="${e}" data-onhandstock="${item.OnHandStock}" data-id="${Id}" data-oldval="${locqty}" data-abssqty="${abssqty}" data-itemid="${item.itmItemID}" value="${locqty}" ${readonly}/>`;
+                    : `<input type="number" class="${inputcls}" data-isprimary="${isprimary}" data-code="${item.itmCode}" style="width:70%;" data-shop="${e}" data-onhandstock="${item.OnHandStock}" data-id="${Id}" data-oldval="${locqty}" data-abssqty="${abssqty}" data-itemid="${item.itmItemID}" value="${locqty}" ${readonly} title="${transferdblclickhints}"/>`;
 
                 html += `<td class="text-right" style="width:${qtycolwidth};max-width:${qtycolwidth}">${_html}</td>`;
 

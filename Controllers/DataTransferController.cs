@@ -31,8 +31,8 @@ namespace SmartBusinessWeb.Controllers
     [CustomAuthenticationFilter]
     public class DataTransferController : BaseController
     {
-        const string sqlfields4Sales = "CoLastName,InvoiceNumber,SaleDate,ItemNumber,Quantity,Price,Discount,SaleStatus,Location,CardID,AmountPaid,PaymentMethod,PaymentIsDue,DiscountDays,BalanceDueDays,PercentDiscount,PercentMonthlyCharge,DeliveryStatus,CustomersNumber,Job,SalespersonFirstName,SalespersonLastName,Memo,TaxCode,CurrencyCode,ExchangeRate,AddressLine1,AddressLine2,AddressLine3,AddressLine4";
-        const string sqlfields4Deposit = "CoLastName,CardID,CustomersNumber,InvoiceNumber,SaleDate,AccountNumber,Amount,SaleStatus,DeliveryStatus,Memo,SalesPersonLastName,Description,PaymentIsDue,DiscountDays,BalanceDueDays,PercentDiscount,PercentMonthlyCharge";
+        const string sqlfields4Sales = "InvoiceNumber,SaleDate,ItemNumber,Quantity,Price,Discount,SaleStatus,Location,CardID,AmountPaid,PaymentMethod,PaymentIsDue,DiscountDays,BalanceDueDays,PercentDiscount,PercentMonthlyCharge,DeliveryStatus,CustomersNumber,Job,SalespersonFirstName,SalespersonLastName,Memo,TaxCode,CurrencyCode,ExchangeRate,AddressLine1,AddressLine2,AddressLine3,AddressLine4";
+        const string sqlfields4Deposit = "CardID,CustomersNumber,InvoiceNumber,SaleDate,AccountNumber,Amount,SaleStatus,DeliveryStatus,Memo,SalesPersonLastName,Description,PaymentIsDue,DiscountDays,BalanceDueDays,PercentDiscount,PercentMonthlyCharge";
         private string kingdeeApiBaseUrl = ConfigurationManager.AppSettings["KingdeeApiBaseUrl"];
         private bool SetOrderStatus4Myob { get { return ConfigurationManager.AppSettings["SetOrderStatus4Myob"] == "1"; } }
         private List<MyobCustomerModel> VipList;
@@ -1961,9 +1961,6 @@ namespace SmartBusinessWeb.Controllers
             connection.Dispose();
             context.Dispose();
         }
-
-
-
 
         private static string StringHandlingForSQL(string str)
         {
