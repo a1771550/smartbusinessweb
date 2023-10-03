@@ -10612,6 +10612,7 @@ function initSupplier(): ISupplier {
         TaxPercentageRate: 0,
         ExchangeRate: 1,
         JobList: [],
+        UploadFileList:[],
     };
 }
 interface ISupplier {
@@ -10659,6 +10660,7 @@ interface ISupplier {
     TaxPercentageRate: number | null;
     ExchangeRate: number | null;
     JobList: IMyobJob[];
+    UploadFileList: string[];
 }
 interface IStockIn {
     Id: number;
@@ -16469,9 +16471,10 @@ function fillInCustomer() {
 
     if (editmode) {
         $("#drpCity").val($("#cusCity").val() as string);
-    } else {
-        $("#cusCountry").val("香港");
     }
+    //else {
+    //    $("#cusCountry").val("香港");
+    //}
 
     customer.FollowUpDateInfo.type = "date";
     customer.FollowUpDateInfo.status = $(".followup:checked").val() as string;
@@ -17206,6 +17209,8 @@ $(document).on("click", ".respond", function () {
         // if (forsales) window.location.href = "/WholeSales/SalesOrderList";
     }
 });
+
+let forsupplier: boolean = false;
 let forenquiry: boolean = false;
 let forcustomer: boolean = false;
 let forrejectedcustomer: boolean = false;

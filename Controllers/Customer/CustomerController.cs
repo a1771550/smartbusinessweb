@@ -72,7 +72,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                 try
                 {
                     List<string> filenamelist = new List<string>();
-                    string filedir = string.Format(UploadsCusDir, apId, cusId);//Customers/{0}/{1}
+                    string filedir = string.Format(UploadsCusDir, apId, cusId);//Cus/{0}/{1}
                     string dir = "";
                     string filename = string.Empty;
                     HttpFileCollectionBase files = Request.Files;
@@ -165,18 +165,6 @@ namespace SmartBusinessWeb.Controllers.Customer
             model.UpdateFollowUpDate(customerId, followupdate);
             var msg = string.Format(Resources.Resource.FollowUpDate, Resources.Resource.SavedOkFormat);
             return Json(msg);
-        }
-
-        [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
-        public JsonResult Detail(int customerId)
-        {
-            using (var context = new PPWDbContext())
-            {
-                CustomerEditModel model = new CustomerEditModel();
-                var customer = model.Get(customerId, context);
-                return Json(customer, JsonRequestBehavior.AllowGet);
-            }
         }
 
         [HttpPost]

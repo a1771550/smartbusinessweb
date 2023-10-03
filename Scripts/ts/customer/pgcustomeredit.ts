@@ -28,9 +28,10 @@ $(document).on("change", "#cusSaleComment", function () {
 });
 
 $(document).on("click", "#btnEdit", function () {
-  if (validCusForm()) {
+    fillInCustomer();
     let _formdata: ICustomerFormData = initCustomerFormData(customer);
     _formdata.model = structuredClone(customer);
+  if (validCusForm()) {    
     let _url = "/PGCustomer/Edit";
     // console.log("formdata:", _formdata);
     // return false;

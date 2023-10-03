@@ -4242,6 +4242,7 @@
     <Content Include="Views\Shared\_ItemVariModal.cshtml" />
     <Content Include="Views\Shared\_PoItemVariModal.cshtml" />
     <Content Include="Views\OtherSettings\PrivacyPolicy.cshtml" />
+    <Content Include="Views\Shared\_DefaultCountries.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">

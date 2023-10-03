@@ -2,11 +2,11 @@
 
 @{
     var lang = CultureHelper.CurrentCulture;
-    var action = Model!=null&&Model.supId == 0 ? Resources.Resource.Add : Resources.Resource.Edit;
+    var action = Model != null && Model.supId == 0 ? Resources.Resource.Add : Resources.Resource.Edit;
     ViewBag.Title = (lang == 2) ? String.Concat(action, " ", Resources.Resource.Supplier) : String.Concat(action, "", Resources.Resource.Supplier);
     var rand = CommonHelper.GetVersionRandomNo();
     bool edit = Model != null && Model.supId > 0;
-    string _readonly = !edit?"": (edit)&&Model.IsABSS!=null&&(bool)Model.IsABSS ? "readonly" : "";
+    string _readonly = !edit ? "" : (edit) && Model.IsABSS != null && (bool)Model.IsABSS ? "readonly" : "";
     //Response.Write(_readonly);return;
 }
 
@@ -16,149 +16,134 @@
 {
     @Html.AntiForgeryToken()
 
-<div class="form-horizontal my-4" data-readonly="@_readonly">
+    <div class="form-horizontal my-4" data-readonly="@_readonly">
 
-    <div class="row">
-        <div class="col-12 col-md-3">
-            <div class="form-group required">
-                <label class="control-label" for="supName">@Resources.Resource.Name</label>
-                <input type="text" id="supName" name="supName" class="form-control" @_readonly value="@Model.supName" />
-                <span class="small alert" style="margin-left:-1em;">@string.Format(Resources.Resource.ABSSNameNotModifiableAfterUploaded, Resources.Resource.Supplier)</span>
+        <div class="row">
+            <div class="col-12 col-md-3">
+                <div class="form-group required">
+                    <label class="control-label" for="supName">@Resources.Resource.Name</label>
+                    <input type="text" id="supName" name="supName" class="form-control" @_readonly value="@Model.supName" />
+                    <span class="small alert" style="margin-left:-1em;">@string.Format(Resources.Resource.ABSSNameNotModifiableAfterUploaded, Resources.Resource.Supplier)</span>
+                </div>
+            </div>
+            <div class="col-12 col-md-3">
+                <div class="form-group">
+                    <label class="control-label" for="supEmail">@Resources.Resource.Email</label>
+                    @Html.EditorFor(model => model.supEmail, new { htmlAttributes = new { @class = "form-control", @type = "email" } })
+                </div>
+            </div>
+            <div class="col-12 col-md-3">
+                <div class="form-group">
+                    <label class="control-label" for="supPhone">@Resources.Resource.Phone</label>
+                    @Html.EditorFor(model => model.supPhone, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+            <div class="col-12 col-md-3">
+                <div class="form-group">
+                    <label class="control-label" for="supContact">@Resources.Resource.Contact</label>
+                    @Html.EditorFor(model => model.supContact, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
             </div>
         </div>
-        <div class="col-12 col-md-3">
-            <div class="form-group">
-                <label class="control-label" for="supEmail">@Resources.Resource.Email</label>
-                @Html.EditorFor(model => model.supEmail, new { htmlAttributes = new { @class = "form-control", @type = "email" } })
-            </div>
-        </div>
-        <div class="col-12 col-md-3">
-            <div class="form-group">
-                <label class="control-label" for="supPhone">@Resources.Resource.Phone</label>
-                @Html.EditorFor(model => model.supPhone, new { htmlAttributes = new { @class = "form-control" } })
-            </div>
-        </div>
-        <div class="col-12 col-md-3">
-            <div class="form-group">
-                <label class="control-label" for="supContact">@Resources.Resource.Contact</label>
-                @Html.EditorFor(model => model.supContact, new { htmlAttributes = new { @class = "form-control" } })
-            </div>
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="col-12 col-md-4">
-            <div class="form-group">
-                <label class="control-label" for="supAddrCity">@Resources.Resource.City</label>
-                <input type="text" id="supAddrCity" name="supAddrCity" class="form-control" value="@Model.supAddrCity" />
+        <div class="row">
+            <div class="col-12 col-md-4">
+                <div class="form-group">
+                    <label class="control-label" for="supAddrCity">@Resources.Resource.City</label>
+                    <input type="text" id="supAddrCity" name="supAddrCity" class="form-control" value="@Model.supAddrCity" />
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="form-group">
+                    @Html.Partial("_DefaultCountries", null, new ViewDataDictionary { { "edit", edit }, { "Countries", Model.MyobCountries }, { "SelectedCountry", Model.supAddrCountry } })
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="form-group">
+                    <label class="control-label" for="supAddrWeb">@Resources.Resource.Website</label>
+                    <input type="text" id="supAddrWeb" name="supAddrWeb" class="form-control" value="@Model.supAddrWeb" />
+                </div>
             </div>
         </div>
-        <div class="col-12 col-md-4">
-            @{
-                bool nullcountry = string.IsNullOrEmpty(Model.supAddrCountry);
-            }
-            <div class="form-group">
-                <label class="control-label" for="supCountry">@Resources.Resource.Country</label>
-                <select id="supAddrCountry" name="supAddrCountry" class="form-control">
-                    <option value="">-- @Resources.Resource.Select --</option>
-                    @foreach (var country in Model.Countries)
-                    {
-                        var _selected = "";
-                        if (edit)
-                        {
-                            if (country == null)
-                            {
-                                _selected = Model.IpCountry.Contains(country) ? "selected" : "";
-                            }
-                            else
-                            {
-                                _selected = Model.supAddrCountry == country ? "selected" : "";
-                            }
-                        }
-                        else
-                        {
-                            _selected = Model.IpCountry.Contains(country) ? "selected" : "";
-                        }
-
-                        <option value="@country" @_selected>@country</option>
-                    }
-                </select>
-            </div>
-        </div>
-        <div class="col-12 col-md-4">
-            <div class="form-group">
-                <label class="control-label" for="supAddrWeb">@Resources.Resource.Website</label>
-                <input type="text" id="supAddrWeb" name="supAddrWeb" class="form-control" value="@Model.supAddrWeb" />
-            </div>
-        </div>
-    </div>
 
 
 
-    @for (int i = 1; i <= 4; i++)
-    {
-        string lbl = $"{Resources.Resource.Address}{i}";
-        string _id = $"supAddrStreetLine{i}";
+        @for (int i = 1; i <= 4; i++)
+        {
+            string lbl = $"{Resources.Resource.Address}{i}";
+            string _id = $"supAddrStreetLine{i}";
+
+            <div class="form-group">
+                <label class="control-label" for="">@lbl</label>
+                <input type="text" id="@_id" class="form-control address" style="max-width:94%;" maxlength="255" value="@Model.StreetLines[i - 1]" />
+            </div>
+
+        }
+
+        <div class="d-flex">
+            <div class="col-12 col-md-4">
+                <div class="form-group">
+                    <label class="control-label " for="supAddrPhone1">@Resources.Resource.Mobile 1</label>
+                    @Html.EditorFor(model => model.supAddrPhone1, new { htmlAttributes = new { @class = "form-control mobile" } })
+                    <span class="small whatsappphone font-weight-bold" data-phone="1" style="color:#9f8ccf">WhatsApp</span>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="form-group">
+                    <label class="control-label " for="supAddrPhone2">@Resources.Resource.Mobile 2</label>
+                    @Html.EditorFor(model => model.supAddrPhone2, new { htmlAttributes = new { @class = "form-control mobile" } })
+                    <span class="small whatsappphone font-weight-bold" data-phone="2" style="color:#9f8ccf">WhatsApp</span>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="form-group">
+                    <label class="control-label " for="supAddrPhone3">@Resources.Resource.Mobile 3</label>
+                    @Html.EditorFor(model => model.supAddrPhone3, new { htmlAttributes = new { @class = "form-control mobile" } })
+                    <span class="small whatsappphone font-weight-bold" data-phone="3" style="color:#9f8ccf">WhatsApp</span>
+                </div>
+            </div>
+        </div>
+
+        @{var _checked = "checked";}
+        @if (edit)
+        {
+            _checked = Model.IsLastPurchasePrice ? "checked" : "";
+        }
 
         <div class="form-group">
-            <label class="control-label" for="">@lbl</label>
-            <input type="text" id="@_id" class="form-control address" style="max-width:94%;" maxlength="255" value="@Model.StreetLines[i - 1]" />
-        </div>
-
-    }
-
-    <div class="d-flex">
-        <div class="col-12 col-md-4">
-            <div class="form-group">
-                <label class="control-label " for="supAddrPhone1">@Resources.Resource.Mobile 1</label>
-                @Html.EditorFor(model => model.supAddrPhone1, new { htmlAttributes = new { @class = "form-control mobile" } })
-                <span class="small whatsappphone font-weight-bold" data-phone="1" style="color:#9f8ccf">WhatsApp</span>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="IsLastPurchasePrice" value="1" @_checked>
+                <label class="form-check-label font-weight-bold" for="IsLastPurchasePrice">@Resources.Resource.LastPurchasePrice</label>
             </div>
         </div>
-        <div class="col-12 col-md-4">
-            <div class="form-group">
-                <label class="control-label " for="supAddrPhone2">@Resources.Resource.Mobile 2</label>
-                @Html.EditorFor(model => model.supAddrPhone2, new { htmlAttributes = new { @class = "form-control mobile" } })
-                <span class="small whatsappphone font-weight-bold" data-phone="2" style="color:#9f8ccf">WhatsApp</span>
-            </div>
+
+        @if (edit)
+        {
+            <button type="button" class="btn btn-warning" id="btnFile">@Resources.Resource.UploadFile</button>
+            <button type="button" class="btn btn-primary ml-2 hide" id="btnViewFile">@Resources.Resource.ViewFile</button>
+        }
+
+
+        <div class="form-group my-4">
+            <button id="btnSave" type="button" class="btn btn-success">@Resources.Resource.Save</button>
+            @Html.HiddenFor(model => model.supId)
         </div>
-        <div class="col-12 col-md-4">
-            <div class="form-group">
-                <label class="control-label " for="supAddrPhone3">@Resources.Resource.Mobile 3</label>
-                @Html.EditorFor(model => model.supAddrPhone3, new { htmlAttributes = new { @class = "form-control mobile" } })
-                <span class="small whatsappphone font-weight-bold" data-phone="3" style="color:#9f8ccf">WhatsApp</span>
-            </div>
-        </div>
+
     </div>
-
-    @{var _checked = "checked";}
-    @if (edit)
-    {
-        _checked = Model.IsLastPurchasePrice ? "checked" : "";
-    }
-
-    <div class="form-group">
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="IsLastPurchasePrice" value="1" @_checked>
-            <label class="form-check-label font-weight-bold" for="IsLastPurchasePrice">@Resources.Resource.LastPurchasePrice</label>
-        </div>
-    </div>
-
-
-    <button type="button" class="btn btn-warning" id="btnFile">@Resources.Resource.UploadFile</button>
-    <button type="button" class="btn btn-primary ml-2 hide" id="btnViewFile">@Resources.Resource.ViewFile</button>
-
-    <div class="form-group my-4">
-        <button id="btnSave" type="button" class="btn btn-success">@Resources.Resource.Save</button>
-        @Html.HiddenFor(model => model.supId)
-    </div>
-
-</div>
 }
+
+@Html.Partial("_WaitingModal")
 
 <div>
     @Html.ActionLink(Resources.Resource.BackToList, "Index", "Supplier")
 </div>
-<div id="infoblk" class="hide" data-apid="@Model.AccountProfileId"></div>
+
+@{
+    string UploadSizeLimitMB = ConfigurationManager.AppSettings["MaxUploadSize"];
+    string exceeduploadfilelimittxt = string.Format(Resources.Resource.ExceedUploadSizeLimitWarning, UploadSizeLimitMB);
+}
+<div id="infoblk" class="hide" data-apid="@Model.AccountProfileId" data-uploadurl="/Supplier/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@string.Join(",",Model.UploadFileList)" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]"></div>
 <script src="~/Scripts/ts/js/purchase/supplieredit.js?v=@rand"></script>
 
+@Html.Partial("_UploadFileModal", null, new ViewDataDictionary { { "uploadUrl", "/Supplier/UploadFile" } })
+@Html.Partial("_ViewFileModal", null, new ViewDataDictionary { { "imglist", Model.ImgList }, { "filelist", Model.FileList } })

@@ -155,33 +155,7 @@
         </div>
         <div class="col-12 col-md-3">
             <div class="form-group">
-                <label class="control-label" for="cusCountry">@Resources.Resource.Country</label>
-
-                <select id="cusCountry" class="form-control">
-                    <option value="">-- @Resources.Resource.Select --</option>
-                    @foreach (var country in Model.Countries)
-                    {
-                        var _selected = "";
-                        if (edit)
-                        {
-                            if (country == null)
-                            {
-                                _selected = Model.IpCountry.Contains(country) ? "selected" : "";
-                            }
-                            else
-                            {
-                                _selected = Model.cusAddrCountry == country ? "selected" : "";
-                            }
-                        }
-                        else
-                        {
-                            _selected = Model.IpCountry.Contains(country) ? "selected" : "";
-                        }
-
-                        <option value="@country" @_selected>@country</option>
-                    }
-                </select>
-
+                @Html.Partial("_DefaultCountries", null, new ViewDataDictionary { { "edit", edit }, { "Countries", Model.MyobCountries }, { "SelectedCountry", Model.cusAddrCountry } })
             </div>
         </div>
         <div class="col-12 col-md-3">

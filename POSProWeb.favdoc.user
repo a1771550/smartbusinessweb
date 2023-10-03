@@ -50,6 +50,16 @@
           <path>Scripts\ts\itemtransfer\transfer.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\itemtransfer\transfer.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>supplieredit.ts</name>
+          <path>Scripts\ts\purchase\supplieredit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\purchase\supplieredit.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>uploadfile.js</name>
+          <path>Scripts\uploadfile.js</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\uploadfile.js</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

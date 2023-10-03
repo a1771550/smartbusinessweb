@@ -31,7 +31,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                 CurrentSortOrder = SortOrder,
                 Keyword = Keyword,
             };
-       
+
             List<PGCustomerModel> customerlist = new List<PGCustomerModel>();
 
             List<SalesCustomerModel> kcustomerlist = new List<SalesCustomerModel>();
@@ -101,7 +101,7 @@ namespace SmartBusinessWeb.Controllers.Customer
             {
                 model.SortOrder = "desc";
             }
-           
+
             if (NonABSS)
             {
                 model.PGCustomerList = customerlist.ToPagedList(No_Of_Page, Size_Of_Page);
@@ -117,7 +117,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                     model.PGCustomerList = customerlist.ToPagedList(No_Of_Page, Size_Of_Page);
                 }
             }
-          
+
             return View(model);
         }
 
@@ -131,27 +131,15 @@ namespace SmartBusinessWeb.Controllers.Customer
             //var region = CommonLib.Helpers.CultureHelper.GetCountryByIP();
             //model.IpCountry = "香港";
             var comInfo = Session["ComInfo"] as ComInfo;
-            //if (CheckoutPortal == "abss" || CheckoutPortal.ToLower() == "nonabss")
-            //{
-                CustomerEditModel cmodel = new CustomerEditModel(customerId, true);
-                var model = cmodel.PGCustomer;
-                //don't move the code below to the construction of CustomerModel!!!                
-                //model.IpCountry = region.EnglishName;
-                model.IpCountry = "香港";
-                model.enableCRM = (bool)comInfo.enableCRM;
-                return View("Edit", model);
-            //}
-            //else
-            //{
-            //    SalesCustomerEditModel smodel = new SalesCustomerEditModel(customerId);
-            //    var model = smodel.Customer;
-            //    if (region.EnglishName.ToLower() == "hong kong")
-            //    {
-            //        model.IpCountry = "China";
-            //    }
-            //    model.enableCRM = (bool)comInfo.enableCRM;
-            //    return View("KEdit", model);
-            //}
+
+            CustomerEditModel cmodel = new CustomerEditModel(customerId, true);
+            var model = cmodel.PGCustomer;
+            //don't move the code below to the construction of CustomerModel!!!                
+            //model.IpCountry = region.EnglishName;
+            model.IpCountry = "香港";
+            model.enableCRM = (bool)comInfo.enableCRM;
+            return View("Edit", model);
+
         }
 
         [HandleError]

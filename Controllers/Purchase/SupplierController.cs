@@ -25,7 +25,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
                 try
                 {
                     List<string> filenamelist = new List<string>();
-                    string filedir = string.Format(UploadsCusDir, apId, supId);//Suppliers/{0}/{1}
+                    string filedir = string.Format(UploadsSupDir, apId, supId);//Sup/{0}/{1}
                     string dir = "";
                     string filename = string.Empty;
                     HttpFileCollectionBase files = Request.Files;
