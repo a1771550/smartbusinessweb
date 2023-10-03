@@ -109,7 +109,6 @@ namespace SmartBusinessWeb.Controllers
                         dvcCode = device,
                         ManagerId = -1,
                         AccountProfileId = apId,
-                        CompanyId = ComInfo.Id,
                         surScope = "pos",
                         Email = formCollection["Email"],
                         UserRole = "SalesPerson",

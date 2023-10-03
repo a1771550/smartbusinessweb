@@ -14,7 +14,8 @@ using Resources = CommonLib.App_GlobalResources;
 namespace SmartBusinessWeb.Controllers
 {
     public abstract class BaseController : Controller
-    {       
+    {
+        public string DefaultConnection { get { return Session["DBName"] == null ? ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", "POSPro") : ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", Session["DBName"].ToString()); } }
         protected ComInfo ComInfo { get { return Session["ComInfo"] as ComInfo; } }
         protected int CompanyId { get { return ComInfo.Id; } }
         protected int AccountProfileId { get { return ComInfo.AccountProfileId; } }

@@ -588,6 +588,7 @@ function updateWholesales() {
 }
 
 function handleSubmit4Wholesales(forRecurOrder: boolean = false) {
+    updateWholesales();
     if (validateWSIForm()) {
         //add those itemoptionless items:
         if (Wholesales.wsStatus == "invoice") {
@@ -600,12 +601,11 @@ function handleSubmit4Wholesales(forRecurOrder: boolean = false) {
                     okButton: oktxt,
                     noButton: notxt,
                 });
-            } else {
-                updateWholesales();
+            } else {                
                 if ($(`#${gTblName} tbody tr`).length > 0) {
                     $(`#${gTblName} tbody tr`).each(function (i, e) {
                         const itemcode: string = $(e).find("td").eq(1).find(".itemcode").val()!.toString();
-                        if (!(itemcode in DicIvInfo)) {
+                        if (!(itemcode in DicIvInfo) || DicIvInfo[itemcode].length===0) {
                             let nonitemoptions = 0;
                             for (let i = 6; i <= 8; i++) {
                                 if ($(e).find("td").eq(i).find(".nonitemoptions").length)

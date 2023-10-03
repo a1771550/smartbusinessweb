@@ -669,8 +669,8 @@ namespace SmartBusinessWeb.Controllers
 
             using var context = new PPWDbContext();
             string ConnectionString = GetConnectionString(context, "READ_WRITE", apId);
-            string _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            using var connection = new Microsoft.Data.SqlClient.SqlConnection(_connectionString);
+        
+            using var connection = new Microsoft.Data.SqlClient.SqlConnection(DefaultConnection);
             connection.Open();
 
             if (filename.StartsWith("ItemSales_"))

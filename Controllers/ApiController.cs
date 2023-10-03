@@ -60,7 +60,7 @@ namespace SmartBusinessWeb.Controllers
         private int apId { get { return AccountProfileId; } }
         private int CompanyId { get { return ComInfo == null ? int.Parse(ConfigurationManager.AppSettings["CompanyId"]) : ComInfo.Id; } }
         private string CheckoutPortal { get { return ComInfo.DefaultCheckoutPortal; } }
-        private string _connectionString { get { return ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString; } }
+        private string DefaultConnection { get { return Session["DBName"] == null ? ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", "POSPro") : ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", Session["DBName"].ToString()); } }
         private List<string> Shops;
         private string ShopCode { get; set; }
 
@@ -115,8 +115,8 @@ namespace SmartBusinessWeb.Controllers
             using var context = new PPWDbContext();
             var comInfo = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == apId);
             string ConnectionString = string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ_WRITE;", comInfo.MYOBDriver, comInfo.MYOBUID, comInfo.MYOBPASS, comInfo.MYOBDb, comInfo.MYOBExe, comInfo.MYOBKey);
-            string _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            using var connection = new SqlConnection(_connectionString);
+           
+            using var connection = new SqlConnection(DefaultConnection);
             connection.Open();
             var JobList = connection.Query<MyobJobModel>(@"EXEC dbo.GetJobList @apId=@apId", new { apId }).ToList();
             var autoStockReport = connection.QueryFirstOrDefault<OtherSettingsView>(@"CheckEnableAutoStockReport @apId=@apId", new {apId});
@@ -322,9 +322,8 @@ namespace SmartBusinessWeb.Controllers
 
         [HttpGet]
         public JsonResult GetSalesInfo()
-        {
-            string _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            using var connection = new Microsoft.Data.SqlClient.SqlConnection(_connectionString);
+        {            
+            using var connection = new SqlConnection(DefaultConnection);
             connection.Open();
             List<SalesmanModel> salesmanlist = connection.Query<SalesmanModel>(@"EXEC dbo.GetSalesmanList @apId=@apId", new { apId }).ToList();
             return Json(salesmanlist, JsonRequestBehavior.AllowGet);
@@ -333,9 +332,8 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public JsonResult GetJobs4Customer(string cusCode)
         {
-            //GetJobs4Customer
-            string _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            using var connection = new Microsoft.Data.SqlClient.SqlConnection(_connectionString);
+            //GetJobs4Customer            
+            using var connection = new SqlConnection(DefaultConnection);
             connection.Open();
             MyobJobModel model = connection.QueryFirstOrDefault<MyobJobModel>(@"EXEC dbo.GetJobs4Customer @apId=@apId,@cusCode=@cusCode", new { apId, cusCode });
             return Json(model, JsonRequestBehavior.AllowGet);
@@ -484,7 +482,7 @@ namespace SmartBusinessWeb.Controllers
                                 Dictionary<string, string> DicInvoice = new Dictionary<string, string>();
                                 var newpurchasecode = ModelHelper.GetNewPurchaseCode(user, context);
                                 ObjectParameter newId = new("newId", 0);
-                                context.RecreateOrder4Void1(purchase.Id, newpurchasecode, user.UserName, newId, "purchase");
+                                context.RecreateOrder4Void2(purchase.Id, newpurchasecode, user.UserName, newId, "purchase");
                                 context.SaveChanges();
 
                                 var admins = context.GetPosAdmin4Notification3(AccountProfileId, CompanyId, ShopCode).ToList();
@@ -891,7 +889,7 @@ namespace SmartBusinessWeb.Controllers
                                 Dictionary<string, string> DicInvoice = new Dictionary<string, string>();
                                 var newsalescode = ModelHelper.GetNewWholeSalesCode(user, context);
                                 ObjectParameter newId = new("newId", 0);
-                                context.RecreateOrder4Void1(sales.wsUID, newsalescode, user.UserName, newId, "wholesales");
+                                context.RecreateOrder4Void2(sales.wsUID, newsalescode, user.UserName, newId, "wholesales");
                                 context.SaveChanges();
 
                                 var admins = context.GetPosAdmin4Notification3(AccountProfileId, CompanyId, ShopCode).ToList();
@@ -1355,7 +1353,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public JsonResult GetItemsByCategories(string catIds)
         {
-            using var connection = new Microsoft.Data.SqlClient.SqlConnection(_connectionString);
+            using var connection = new SqlConnection(DefaultConnection);
             connection.Open();
             List<ItemModel> itemlist = connection.Query<ItemModel>(@"EXEC dbo.GetItemsByCategories @catIds=@catIds", new { catIds }).ToList();
             return Json(itemlist, JsonRequestBehavior.AllowGet);
@@ -1400,7 +1398,7 @@ namespace SmartBusinessWeb.Controllers
                 }
             }
             comboIvId = string.Join("|", comboIvIds);
-            using var connection = new Microsoft.Data.SqlClient.SqlConnection(_connectionString);
+            using var connection = new SqlConnection(DefaultConnection);
             connection.Open();
             var currentIV = connection.QueryFirstOrDefault<ItemVariationModel>(@"EXEC dbo.GetItemVari @itemcode=@itemcode,@comboIvId=@comboIvId,@apId=@apId", new { itemcode, comboIvId, apId = AccountProfileId });
 
@@ -3139,9 +3137,8 @@ namespace SmartBusinessWeb.Controllers
             int startIndex = CommonHelper.GetStartIndex(pageIndex, PageSize);
             if (keyword == "") keyword = null;
             if (location == "") location = null;
-
-            string _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            using var connection = new SqlConnection(_connectionString);
+          
+            using var connection = new SqlConnection(DefaultConnection);
             connection.Open();
 
             var stockinfo = context.GetStockInfo5(apId).ToList();
@@ -3350,9 +3347,8 @@ namespace SmartBusinessWeb.Controllers
 
         [HttpGet]
         public JsonResult GetCustomerByCode(string cusCode)
-        {
-            string _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            using var connection = new Microsoft.Data.SqlClient.SqlConnection(_connectionString);
+        {            
+            using var connection = new SqlConnection(DefaultConnection);
             connection.Open();
             MyobCustomerModel customer = connection.QueryFirstOrDefault<MyobCustomerModel>(@"EXEC dbo.GetCustomerByCode5 @apId=@apId,@cusCode=@cusCode", new { apId, cusCode });
 

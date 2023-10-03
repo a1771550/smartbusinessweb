@@ -49,8 +49,7 @@ namespace SmartBusinessWeb.Controllers
             }
             else
             {
-                model.UserCode = _user.UserCode;
-                model.CompanyId = _user.CompanyId;
+                model.UserCode = _user.UserCode;              
                 model.CompanyCode = _user.CompanyCode;
                 model.SelectedShop = _user.shopCode;
                 model.SelectedDevice = _user.dvcCode;
@@ -100,7 +99,6 @@ namespace SmartBusinessWeb.Controllers
                         AccountProfileId = __user.AccountProfileId,
                         surCreateTime = __user.surCreateTime,
                         surModifyTime = __user.surModifyTime,
-                        CompanyId = __user.CompanyId
                     };
                     Session["ComInfo"] = comInfo;
                     //Response.Write(comInfo.DefaultTaxCode);return null;
@@ -164,9 +162,9 @@ namespace SmartBusinessWeb.Controllers
             string refundprefix = device == null ? "" : device.dvcRefundPrefix;
             int accountno = device == null ? 0 : (int)device.AccountNo;
 
-            var lastsess = context.GetLastPCSession(user.CompanyId, user.UserName, model.SelectedDevice, model.SelectedShop).FirstOrDefault();
+            var lastsess = context.GetLastPCSession1(user.AccountProfileId, user.UserName, model.SelectedDevice, model.SelectedShop).FirstOrDefault();
 
-            var appparams = context.GetLoginDataFrmAppParam(user.CompanyId).ToList();
+            var appparams = context.GetLoginDataFrmAppParam(user.AccountProfileId).ToList();
 
             //var enablecashdrawer = context.AppParams.FirstOrDefault(x => x.appParam == "EnableCashDrawerAmt");
             //Session["EnableCashDrawer"] = enablecashdrawer.appVal == "1";
@@ -224,7 +222,6 @@ namespace SmartBusinessWeb.Controllers
                 sesIP = CommonHelper.GetIPAddress(),
                 sesCheckout = false,
                 Email = user.Email,
-                CompanyId = user.CompanyId
             };
             context.Sessions.Add(session);
             context.SaveChanges();
@@ -244,8 +241,7 @@ namespace SmartBusinessWeb.Controllers
                 AccountProfileId = accountProfileId,
                 ManagerId = user.ManagerId,
                 Device = device,
-                SalesGroupId = context.GetSalesGroupId(user.surUID).FirstOrDefault(),
-                CompanyId = user.CompanyId,
+                SalesGroupId = context.GetSalesGroupId(user.surUID).FirstOrDefault(),              
                 Email = user.Email,
                 shopCode = user.shopCode,
                 dvcCode = user.dvcCode,
@@ -258,6 +254,7 @@ namespace SmartBusinessWeb.Controllers
             Session["IsCentral"] = model.IsCentral;
             Session["eBlastId"] = 0;
             Session["AccountProfileId"] = model.AccountProfileId;
+            Session["DBName"] = user.dbName;
             //Session["ComInfo"] = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.Id == user.CompanyId);
 
             MenuHelper.UpdateMenus(context);
@@ -330,7 +327,6 @@ namespace SmartBusinessWeb.Controllers
             {
                 SessUser user = Session["User"] as SessUser;
                 usercode = user==null?"": user.UserCode;
-                companyId = user==null?1: user.CompanyId;
                 Session["Session"] = null;
                 Session["User"] = null;
                 Session["Device"] = null;
@@ -353,6 +349,7 @@ namespace SmartBusinessWeb.Controllers
                 Session["ScriptBSFile"] = null;
                 Session["ComInfo"] = null;
                 Session["GroupedTransferList"] = null;
+                Session["DBName"] = null;
             }
             else
             {

@@ -15,9 +15,8 @@ namespace SmartBusinessWeb.Controllers
 		{
 			TempData["issales"] = issales == 1;
 			ViewBag.Title = issales == 1 ? Resources.Resource.Sales : Resources.Resource.Refunds;
-            //GetSalesInfo4Print
-            string _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            using var connection = new Microsoft.Data.SqlClient.SqlConnection(_connectionString);
+            //GetSalesInfo4Print          
+            using var connection = new Microsoft.Data.SqlClient.SqlConnection(DefaultConnection);
             connection.Open();
             SalesModel model = connection.QueryFirstOrDefault<SalesModel>(@"EXEC dbo.GetSalesInfo4Print @apId=@apId,@salesrefundcode=@salesrefundcode", new { apId,salesrefundcode });
 			return View(model);

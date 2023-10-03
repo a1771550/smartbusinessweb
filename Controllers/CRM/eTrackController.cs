@@ -99,9 +99,8 @@ namespace SmartBusinessWeb.Controllers
                  */
                 //_eTracks = econtext.GetEtracks(frmdate, todate).ToList();
                 //_eTracks = econtext.GetEtrackLogs(frmdate, todate).ToList();
-                //}
-                string _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-                using var connection = new Microsoft.Data.SqlClient.SqlConnection(_connectionString);
+                //}               
+                using var connection = new Microsoft.Data.SqlClient.SqlConnection(DefaultConnection);
                 connection.Open();
                 var _eTracks = connection.Query<eTrackModel>(@"EXEC dbo.GetEtracks @apId=@apId,@frmdate=@frmdate,@todate=@todate", new { apId, frmdate, todate }).ToList();
                 if (_eTracks != null && _eTracks.Count>0)

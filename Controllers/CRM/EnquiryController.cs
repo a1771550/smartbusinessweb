@@ -72,9 +72,8 @@ namespace SmartBusinessWeb.Controllers
 
         [HttpGet]
         public JsonResult GetEnquiries(string frmdate, string todate, int pageIndex=1, int sortCol=8, string sortDirection="desc", string keyword = "")
-        {
-            string _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            using var connection = new Microsoft.Data.SqlClient.SqlConnection(_connectionString);
+        {            
+            using var connection = new Microsoft.Data.SqlClient.SqlConnection(DefaultConnection);
             connection.Open();
             if (string.IsNullOrEmpty(keyword)) keyword = null;
             //todate = CommonHelper.FormatDate(CommonHelper.GetDateFrmString4SQL(todate).AddDays(-1), DateFormat.YYYYMMDD);
