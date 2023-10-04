@@ -485,7 +485,7 @@ namespace SmartBusinessWeb.Controllers
                                 context.RecreateOrder4Void2(purchase.Id, newpurchasecode, user.UserName, newId, "purchase");
                                 context.SaveChanges();
 
-                                var admins = context.GetPosAdmin4Notification3(AccountProfileId, CompanyId, ShopCode).ToList();
+                                var admins = context.GetPosAdmin4Notification4(AccountProfileId, ShopCode).ToList();
                                 foreach (var admin in admins)
                                 {
                                     url = UriHelper.GetReviewPurchaseOrderUrl(ConfigurationManager.AppSettings["ReviewPurchaseOrderBaseUrl"], newpurchasecode, 0, admin.surUID);
@@ -892,7 +892,7 @@ namespace SmartBusinessWeb.Controllers
                                 context.RecreateOrder4Void2(sales.wsUID, newsalescode, user.UserName, newId, "wholesales");
                                 context.SaveChanges();
 
-                                var admins = context.GetPosAdmin4Notification3(AccountProfileId, CompanyId, ShopCode).ToList();
+                                var admins = context.GetPosAdmin4Notification4(AccountProfileId, ShopCode).ToList();
                                 foreach (var admin in admins)
                                 {
                                     url = UriHelper.GetReviewSalesOrderUrl(ConfigurationManager.AppSettings["ReviewSalesOrderBaseUrl"], newsalescode, 0, admin.surUID);
@@ -1483,14 +1483,7 @@ namespace SmartBusinessWeb.Controllers
             return Json(msg);
         }
 
-        [HttpGet]
-        public JsonResult GetLoginInfo(int companyId, string shopcode)
-        {
-            using var context = new PPWDbContext(Session["DBName"].ToString());
-            var nameIdList = LoginUserModel.GetUserNameIdList4Login(context, companyId, shopcode);
-            var enableCRM = LoginUserModel.GetEnableCRM(companyId, context);
-            return Json(new { nameIdList, enableCRM }, JsonRequestBehavior.AllowGet);
-        }
+        
 
         [HttpGet]
         public JsonResult GetContactNamesByIds(string contactIds)

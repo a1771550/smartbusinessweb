@@ -38,10 +38,8 @@ namespace SmartBusinessWeb.Controllers
             string msg = string.Empty;
             int apId = 0;
             string hash = string.Empty;
-           
-            PPWDbContext context = null;
 
-            using (context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {                
                 hash = HashHelper.ComputeHash(model.Password);
                 int lang = CultureHelper.CurrentCulture;
@@ -62,7 +60,7 @@ namespace SmartBusinessWeb.Controllers
                 model.IsCentral = _user.IsCentral;
             }
 
-            using (context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 ComInfo comInfo = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == apId);
 

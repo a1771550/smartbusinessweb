@@ -478,7 +478,7 @@ namespace SmartBusinessWeb.Controllers
         public void Debug74()
         {
             using var context = new PPWDbContext(Session["DBName"].ToString());
-            var admins = context.GetPosAdmin4Notification3(1, 1, Shop).ToList();
+            var admins = context.GetPosAdmin4Notification4(1, Shop).ToList();
             var admin = admins.FirstOrDefault();
             var reviewurl = UriHelper.GetReviewSalesOrderUrl(ConfigurationManager.AppSettings["ReviewSalesOrderBaseUrl"], "WS100015", 0, admin.surUID);
             Response.Write(reviewurl);
