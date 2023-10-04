@@ -20,7 +20,7 @@ namespace SmartBusinessWeb.Controllers
 		{
 			ViewBag.ParentPage = "customer";
 			ViewBag.PageName = "pricelevels";
-			using (var context = new PPWDbContext())
+			using (var context = new PPWDbContext(Session["DBName"].ToString()))
 			{
 				List<CustomerPointPriceLevelModel> model = new List<CustomerPointPriceLevelModel>();
 
@@ -45,7 +45,7 @@ namespace SmartBusinessWeb.Controllers
 		[HttpPost]
 		public ActionResult Create(CustomerPointPriceLevelModel model)
 		{
-			using (var context = new PPWDbContext())
+			using (var context = new PPWDbContext(Session["DBName"].ToString()))
 			{				
 				CustomerPointPriceLevel cppl = new CustomerPointPriceLevel
 				{
@@ -71,7 +71,7 @@ namespace SmartBusinessWeb.Controllers
 		[HttpPost]
 		public ActionResult Edit(CustomerPointPriceLevelModel model)
 		{
-			using (var context = new PPWDbContext())
+			using (var context = new PPWDbContext(Session["DBName"].ToString()))
 			{
 				CustomerPointPriceLevel cppl = context.CustomerPointPriceLevels.Find(model.Id);
 				string pld = cppl.PriceLevelID;
@@ -98,7 +98,7 @@ namespace SmartBusinessWeb.Controllers
 		[HttpPost]
 		public ActionResult Delete(int Id)
 		{
-			using (var context = new PPWDbContext())
+			using (var context = new PPWDbContext(Session["DBName"].ToString()))
 			{
 				CustomerPointPriceLevel cppl = context.CustomerPointPriceLevels.Find(Id);
 				PriceLevel priceLevel = context.PriceLevels.FirstOrDefault(x => x.PriceLevelID == cppl.PriceLevelID);

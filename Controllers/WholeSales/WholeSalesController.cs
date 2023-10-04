@@ -53,7 +53,7 @@ namespace SmartBusinessWeb.Controllers.WholeSales
                         _file.SaveAs(fname);
                         filenamelist.Add(filename);
                     }
-                    using (var context = new PPWDbContext())
+                    using (var context = new PPWDbContext(Session["DBName"].ToString()))
                     {
                         WholeSale wholeSale = context.WholeSales.FirstOrDefault(x => x.wsCode == filecode && x.AccountProfileId == apId);
                         if (wholeSale != null)

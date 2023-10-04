@@ -73,7 +73,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public void DownloadABSSData(int apId=1)
         {
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             var comInfo = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == apId);
             int managerId = context.SysUsers.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == apId && x.UserName == "Manager").surUID;
             string ConnectionString = string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ;", comInfo.MYOBDriver, comInfo.MYOBUID, comInfo.MYOBPASS, comInfo.MYOBDb, comInfo.MYOBExe, comInfo.MYOBKey);
@@ -112,7 +112,7 @@ namespace SmartBusinessWeb.Controllers
         public void UploadSBData(int apId=1)
         {
             string msg = "";
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             var comInfo = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == apId);
             string ConnectionString = string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ_WRITE;", comInfo.MYOBDriver, comInfo.MYOBUID, comInfo.MYOBPASS, comInfo.MYOBDb, comInfo.MYOBExe, comInfo.MYOBKey);
            
@@ -270,7 +270,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public ActionResult UnsubscribeEblast(int cusid)
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 context.UnsubscribeEblast(apId, cusid);
                 context.SaveChanges();
@@ -294,7 +294,7 @@ namespace SmartBusinessWeb.Controllers
         public void ViewTrack(string blastId, string contactId, string contactName, string organization, string phone, string email, string companyId, int imported)
         {
             var blast = eBlastEditModel.Get(int.Parse(blastId));
-            using (var econtext = new PPWDbContext())
+            using (var econtext = new PPWDbContext(Session["DBName"].ToString()))
             {
                 string Id = CommonHelper.GenId();
                 //Data Entity for email tracking, including each column of the table "eTracks"
@@ -351,7 +351,7 @@ namespace SmartBusinessWeb.Controllers
         public JsonResult RemoveRecurOrder(int orderId)
         {
             string msg = Resource.Removed;
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             var order = context.WholeSales.FirstOrDefault(x => x.wsUID == orderId && x.wsType == "TP" && x.wsStatus != "DELETED");
             if (order != null)
             {
@@ -364,7 +364,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpPost]
         public JsonResult GetRecurOrdersAjax(string cusCode, int pageIndex = 1, string sortName = "", string sortDirection = "", string keyword = "")
         {
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             var startIndex = CommonHelper.GetStartIndex(pageIndex, PageSize);
             keyword = keyword == "" ? keyword = null : keyword;
             var recordCount = context.WholeSales.Where(x => x.wsCusCode == cusCode && x.wsType == "TP" && x.wsStatus != "DELETED").Count();
@@ -406,7 +406,7 @@ namespace SmartBusinessWeb.Controllers
         {
             //訂單 AL100098 (顧客 Chan Sek Hung ) 正在等待您的批准 (跟司機;商品行:1)。
             var msg = "";
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             var salesorder = context.WholeSales.Find(orderId);
             bool specialapproval = false;
             if (salesorder != null)
@@ -452,7 +452,7 @@ namespace SmartBusinessWeb.Controllers
             {
                 usercode = user.UserCode;
             }
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var purchaseorder = context.PurchaseOrderReviews.FirstOrDefault(x => x.PurchaseOrder.ToLower() == receiptno.ToLower());
                 var purchase = context.Purchases.FirstOrDefault(x => x.pstCode.ToLower() == receiptno.ToLower());
@@ -684,7 +684,7 @@ namespace SmartBusinessWeb.Controllers
         public JsonResult GetSalesOrderInfo(string salescode)
         {
             SalesOrderEditModel model = new SalesOrderEditModel();
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 Session currsess = ModelHelper.GetCurrentSession(context);
                 int apId = currsess.AccountProfileId;
@@ -859,7 +859,7 @@ namespace SmartBusinessWeb.Controllers
             {
                 usercode = user.UserCode;
             }
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var salesorder = context.SalesOrderReviews.FirstOrDefault(x => x.SalesOrder.ToLower() == receiptno.ToLower());
                 var sales = context.WholeSales.FirstOrDefault(x => x.wsCode.ToLower() == receiptno.ToLower());
@@ -1209,7 +1209,7 @@ namespace SmartBusinessWeb.Controllers
         public JsonResult GetRecurOrder(long orderId)
         {
             WholeSalesModel sales = null;
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             var s = context.WholeSales.Find(orderId);
             if (s != null)
             {
@@ -1385,7 +1385,7 @@ namespace SmartBusinessWeb.Controllers
         public JsonResult GetItemVariByAttrs(List<ItemAttributeModel> iattrlist)
         {
             ItemModel myobItem = new ItemModel();
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             string itemcode = iattrlist[0].itmCode;
             List<string> comboIvIds = new List<string>();
             string comboIvId = string.Empty;
@@ -1437,7 +1437,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public JsonResult GetItemOptionsByCodes(string itemcodes)
         {
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             var itemoptions = context.GetItemOptionsByItemCodes6(AccountProfileId, itemcodes).ToList();
             var dicItemOptions = new Dictionary<string, ItemOptions>();
             if (itemoptions.Count > 0)
@@ -1486,7 +1486,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public JsonResult GetLoginInfo(int companyId, string shopcode)
         {
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             var nameIdList = LoginUserModel.GetUserNameIdList4Login(context, companyId, shopcode);
             var enableCRM = LoginUserModel.GetEnableCRM(companyId, context);
             return Json(new { nameIdList, enableCRM }, JsonRequestBehavior.AllowGet);
@@ -1495,7 +1495,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public JsonResult GetContactNamesByIds(string contactIds)
         {
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             //var contactIdList = string.Join(",", contactIds);
             var contactnames = string.Join(",", context.GetContactNamesByIds(contactIds).ToList());
             return Json(contactnames, JsonRequestBehavior.AllowGet);
@@ -1513,14 +1513,14 @@ namespace SmartBusinessWeb.Controllers
             int accountprofileId = 0;
             string filename = "Customers_";
             var dateTime = DateTime.Now;
-            using (var context = new PPWDbContext())//must be done here! don't merge with the one below!!!
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))//must be done here! don't merge with the one below!!!
             {
                 Session currsess = ModelHelper.GetCurrentSession(context);
                 accountprofileId = currsess.AccountProfileId;
                 var accountProfileView = ModelHelper.GetAccountProfile(accountprofileId, context);
                 dsn = accountProfileView.DsnName;
             }
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 url = string.Format(CentralApiUrl, filename, CentralBaseUrl);
                 HttpClient _client = new HttpClient();
@@ -1644,7 +1644,7 @@ namespace SmartBusinessWeb.Controllers
             if (type == "emailphone")
             {
                 var sql = $"Select {columns} From MyobCustomer Where cusEmail=@email and cusPhone=@phone";
-                using (var context = new PPWDbContext())
+                using (var context = new PPWDbContext(Session["DBName"].ToString()))
                 {
                     var customer = context.Database.SqlQuery<PGCustomerModel>(sql, new SqlParameter("email", parameters[0]), new SqlParameter("phone", parameters[1])).FirstOrDefault();
                     return Json(customer, JsonRequestBehavior.AllowGet);
@@ -1654,7 +1654,7 @@ namespace SmartBusinessWeb.Controllers
             {
                 var searchcol = type == "email" ? "cusEmail" : "cusPhone";
                 var sql = $"Select {columns} From MyobCustomer Where {searchcol}=@{type}";
-                using (var context = new PPWDbContext())
+                using (var context = new PPWDbContext(Session["DBName"].ToString()))
                 {
                     var customer = context.Database.SqlQuery<PGCustomerModel>(sql, new SqlParameter(type, parameters[0])).FirstOrDefault();
                     return Json(customer, JsonRequestBehavior.AllowGet);
@@ -1672,7 +1672,7 @@ namespace SmartBusinessWeb.Controllers
             if (type == "emailphone")
             {
                 //var sql = $"Select {columns} From MyobCustomer Where cusEmail=@email and cusPhone=@phone";
-                using (var context = new PPWDbContext())
+                using (var context = new PPWDbContext(Session["DBName"].ToString()))
                 {
                     //var customer = context.Database.SqlQuery<CustomerModel>(sql, new SqlParameter("email", parameters[0]), new SqlParameter("phone", parameters[1])).FirstOrDefault();
                     var _customer = context.SearchContactByEmailPhone(parameters[0], parameters[1]).FirstOrDefault();
@@ -1690,7 +1690,7 @@ namespace SmartBusinessWeb.Controllers
             {
                 //var searchcol = type == "email" ? "cusEmail" : "cusPhone";
                 //var sql = $"Select {columns} From MyobCustomer Where {searchcol}=@{type}";
-                using (var context = new PPWDbContext())
+                using (var context = new PPWDbContext(Session["DBName"].ToString()))
                 {
                     //var customer = context.Database.SqlQuery<CustomerModel>(sql, new SqlParameter(type, parameters[0])).FirstOrDefault();
                     if (type == "email")
@@ -1735,7 +1735,7 @@ namespace SmartBusinessWeb.Controllers
         public void UpdateCentralPosDevice(string jsondevicelist, string accountprofileId)
         {
             //using (var context = new G3CentralDbContext())
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var apId = Convert.ToInt32(accountprofileId);
                 var devices = context.Devices.Where(x => x.dvcIsActive == true && x.AccountProfileId == apId).ToList();
@@ -1765,7 +1765,7 @@ namespace SmartBusinessWeb.Controllers
         public JsonResult GetCentralPosData(string shop, string device, string receiptno, string phoneno, int lang, int refund)
         {
             //using (var context = new G3CentralDbContext())
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 CentralDataModel model = getReceiptData(context, receiptno, phoneno, lang, refund);
                 if (model.hassales)
@@ -1815,7 +1815,7 @@ namespace SmartBusinessWeb.Controllers
                 List<PayLnView> PayLnViews = new List<PayLnView>();
                 List<ItemModel> StockList = new List<ItemModel>();
 
-                using (var context = new PPWDbContext())
+                using (var context = new PPWDbContext(Session["DBName"].ToString()))
                 {
                     string accountno = context.ComInfoes.FirstOrDefault().comAccountNo;
                     companyId = ModelHelper.GetCompanyId(context);
@@ -1998,7 +1998,7 @@ namespace SmartBusinessWeb.Controllers
             {
                 List<PGCustomerModel> customers = new List<PGCustomerModel>();
 
-                using (var context = new PPWDbContext())
+                using (var context = new PPWDbContext(Session["DBName"].ToString()))
                 {
                     companyId = ModelHelper.GetCompanyId(context);
 
@@ -2034,7 +2034,7 @@ namespace SmartBusinessWeb.Controllers
             if (filename.StartsWith("PGItems_"))
             {
                 List<ItemModel> items = new List<ItemModel>();
-                using (var context = new PPWDbContext())
+                using (var context = new PPWDbContext(Session["DBName"].ToString()))
                 {
                     companyId = ModelHelper.GetCompanyId(context);
                     items = ModelHelper.GetPGItemList(context, accountProfileId, companyId, true);
@@ -2046,7 +2046,7 @@ namespace SmartBusinessWeb.Controllers
             //if (filename.StartsWith("PGLocStocks_"))
             //{
             //    List<ItemModel> items = new List<ItemModel>();
-            //    using (var context = new PPWDbContext())
+            //    using (var context = new PPWDbContext(Session["DBName"].ToString()))
             //    {
             //        companyId = ModelHelper.GetCompanyId(context);
             //        items = ModelHelper.GetPGLocStockList(context, accountProfileId, companyId);
@@ -2059,7 +2059,7 @@ namespace SmartBusinessWeb.Controllers
             {
                 List<DeviceModel> devices = new List<DeviceModel>();
 
-                using (var context = new PPWDbContext())
+                using (var context = new PPWDbContext(Session["DBName"].ToString()))
                 {
                     companyId = ModelHelper.GetCompanyId(context);
                     devices = (from d in context.Devices
@@ -2164,7 +2164,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public JsonResult GetDevicesByShop(string shop)
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 List<DeviceModel> deviceModels = new List<DeviceModel>();
                 deviceModels = (from d in context.Devices
@@ -2220,7 +2220,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public ActionResult CheckIfDayendsDone()
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 //var token = (string)Session["SessionToken"];				
                 Session currsess = ModelHelper.GetCurrentSession(context);
@@ -2240,7 +2240,7 @@ namespace SmartBusinessWeb.Controllers
         }
         public ActionResult GetDayendPayments()
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 Session currsess = ModelHelper.GetCurrentSession(context);
                 string location = currsess.sesShop.ToLower();
@@ -2327,7 +2327,7 @@ namespace SmartBusinessWeb.Controllers
 
             obj.retmsg = string.Empty;
 
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 Session currsess = ModelHelper.GetCurrentSession(context);
                 int apId = currsess.AccountProfileId;
@@ -2503,7 +2503,7 @@ namespace SmartBusinessWeb.Controllers
             List<SerialNoView> snlist = new List<SerialNoView>();
             Dictionary<string, List<SerialNoView>> DicItemSNs = new Dictionary<string, List<SerialNoView>>();
 
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 Session currsess = ModelHelper.GetCurrentSession(context);
                 int apId = currsess.AccountProfileId;
@@ -2679,7 +2679,7 @@ namespace SmartBusinessWeb.Controllers
 
             batchno = batchno.ToLower();
 
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 Session currsess = ModelHelper.GetCurrentSession(context);
                 int apId = currsess.AccountProfileId;
@@ -2842,7 +2842,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public ActionResult GetReceiptNo(string keyword)
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 List<string> receiptnolist = new List<string>();
                 receiptnolist = context.RtlSales.Where(x => x.rtsCode.ToLower().Contains(keyword.ToLower())).Select(x => x.rtsCode).ToList();
@@ -3052,7 +3052,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public async Task<ActionResult> GetReceipt(string devicecode, string receiptno = "", string phoneno = "", int refund = 1)
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 Session currsess = ModelHelper.GetCurrentSession(context);
                 int apId = currsess.AccountProfileId;
@@ -3130,7 +3130,7 @@ namespace SmartBusinessWeb.Controllers
         {
             ItemViewModel model = new ItemViewModel();
 
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             int apId = AccountProfileId;
             model.PageIndex = pageIndex;
             model.PageSize = PageSize;
@@ -3219,7 +3219,7 @@ namespace SmartBusinessWeb.Controllers
 
             int startIndex = CommonHelper.GetStartIndex(pageIndex, pageSize);
 
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var info = KingdeeHelper.GetKingdeeAccountInfo(context);
                 if (keyword == "")
@@ -3274,7 +3274,7 @@ namespace SmartBusinessWeb.Controllers
         public ActionResult GetCustomersAjax4Sales(int pageIndex = 1, string keyword = "", string mode = "")
         {
             CustomerViewModel model = new CustomerViewModel();
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var apId = ModelHelper.GetAccountProfileId(context);
                 var pagesize = model.PageSize = PageSize;
@@ -3308,7 +3308,7 @@ namespace SmartBusinessWeb.Controllers
         public ActionResult SearchCustomersAjax(int pageIndex = 1, string keyword = "", int imyob = 1)
         {
             CustomerViewModel model = new CustomerViewModel();
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var apId = AccountProfileId;
                 int pagesize = model.PageSize = PageSize;
@@ -3352,7 +3352,7 @@ namespace SmartBusinessWeb.Controllers
             connection.Open();
             MyobCustomerModel customer = connection.QueryFirstOrDefault<MyobCustomerModel>(@"EXEC dbo.GetCustomerByCode5 @apId=@apId,@cusCode=@cusCode", new { apId, cusCode });
 
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 GetCustomerAddressList(context, ref customer);
                 //ModelHelper.GetCustomerPriceLevelDesc(context, ref customer);                
@@ -3364,7 +3364,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public JsonResult GetCustomerById(int customerId)
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var _customer = context.GetCustomerById16(customerId, false, AccountProfileId).FirstOrDefault();
                 MyobCustomerModel customer = new MyobCustomerModel();
@@ -3500,7 +3500,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public ActionResult CheckIfDuplicatedSN(string sn)
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var serialno = (from s in context.SerialNoes
                                 where s.snoCode == sn && s.AccountProfileId == AccountProfileId && s.CompanyId == ComInfo.Id
@@ -3525,7 +3525,7 @@ namespace SmartBusinessWeb.Controllers
             Dictionary<string, List<ItemModel>> dicItemQty = new Dictionary<string, List<ItemModel>>();
             List<ItemModel> items = new List<ItemModel>();
 
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 string lastupdatetime = string.Empty;
                 var allownegativestock = context.AppParams.Single(x => x.appParam == "EnableAllowNegativeStockOnSales").appVal;
@@ -3616,7 +3616,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public JsonResult GetCitiesFrmMyobCustomList()
         {
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             var customlist = context.MyobCustomLists.Where(x => x.AccountProfileId == apId).ToList();
             var MyobCities = new List<City>();
             foreach (var city in customlist.Where(x => x.CustomListNumber == 2).ToList())

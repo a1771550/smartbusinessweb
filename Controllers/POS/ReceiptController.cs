@@ -18,7 +18,7 @@ namespace SmartBusinessWeb.Controllers
         {
             ViewBag.ParentPage = "setup";
             ViewBag.PageName = "receipt";
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 ReceiptViewModel model = (from r in context.Receipts
                                           where r.deviceCode.ToLower() == ComInfo.Device.ToLower() && r.shopCode.ToLower() == ComInfo.Shop.ToLower() && r.AccountProfileId == ComInfo.AccountProfileId && r.CompanyId == ComInfo.Id
@@ -82,7 +82,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpPost]
         public ActionResult Edit(ReceiptViewModel model, FormCollection formCollection)
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {                
                 Receipt receipt = context.Receipts.Find(model.Id);
                 int lang = CultureHelper.CurrentCulture;

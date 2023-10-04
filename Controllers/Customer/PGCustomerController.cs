@@ -40,7 +40,7 @@ namespace SmartBusinessWeb.Controllers.Customer
             List<int> cusIdList = new List<int>();
             var apId = ComInfo.AccountProfileId;
 
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 if (CheckoutPortal.ToLower() == "kingdee")
                 {

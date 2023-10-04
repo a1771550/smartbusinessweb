@@ -22,7 +22,7 @@ namespace SmartBusinessWeb.Controllers
 		{
 			ViewBag.ParentPage = "setup";
 			ViewBag.PageName = "paymenttypes";
-			using (var context = new PPWDbContext())
+			using (var context = new PPWDbContext(Session["DBName"].ToString()))
 			{
 				List<PaymentTypeView> model = new List<PaymentTypeView>();
 				int lang = (int)Session["CurrentCulture"];
@@ -87,7 +87,7 @@ namespace SmartBusinessWeb.Controllers
 		[HttpPost]
 		public ActionResult Create(PaymentTypeView model)
 		{
-			using (var context = new PPWDbContext())
+			using (var context = new PPWDbContext(Session["DBName"].ToString()))
 			{
 				int lang = (int)Session["CurrentCulture"];
 				byte displayorder = (byte)context.PaymentTypes.OrderByDescending(x => x.pmtDisplayOrder).Select(x => x.pmtDisplayOrder).FirstOrDefault();
@@ -129,7 +129,7 @@ namespace SmartBusinessWeb.Controllers
 		[HttpGet]
 		public ActionResult Edit(int Id)
 		{
-			using (var context = new PPWDbContext())
+			using (var context = new PPWDbContext(Session["DBName"].ToString()))
 			{
 				PaymentType paymentType = context.PaymentTypes.Find(Id);
 				int lang = (int)Session["CurrentCulture"];
@@ -167,7 +167,7 @@ namespace SmartBusinessWeb.Controllers
 		[HttpPost]
 		public ActionResult Edit(PaymentTypeView model)
 		{
-			using (var context = new PPWDbContext())
+			using (var context = new PPWDbContext(Session["DBName"].ToString()))
 			{
 				PaymentType paymentType = context.PaymentTypes.Find(model.Id);			
 
@@ -205,7 +205,7 @@ namespace SmartBusinessWeb.Controllers
 		[HttpPost]
 		public ActionResult Delete(int Id)
 		{
-			using(var context=new PPWDbContext())
+			using(var context=new PPWDbContext(Session["DBName"].ToString()))
 			{
 				PaymentType paymentType = context.PaymentTypes.Find(Id);
 				string msg = string.Empty;

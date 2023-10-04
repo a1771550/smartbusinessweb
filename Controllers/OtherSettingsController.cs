@@ -113,7 +113,7 @@ namespace SmartBusinessWeb.Controllers
                         string fname = Path.Combine(absdir, string.Format(logo, ext));
                         file.SaveAs(fname);
                     }
-                    using (var context = new PPWDbContext())
+                    using (var context = new PPWDbContext(Session["DBName"].ToString()))
                     {
                         AppParam logofile = context.AppParams.FirstOrDefault(x => x.appParam == "ReceiptLogoFileName");
                         string filename = string.Format(logo, ext);
@@ -143,7 +143,7 @@ namespace SmartBusinessWeb.Controllers
         {
             ViewBag.ParentPage = "setup";
             ViewBag.PageName = "othersettings";
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 OtherSettingsModel model = new OtherSettingsModel();
                 model.Device = Session["Device"] as DeviceModel;
@@ -222,7 +222,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpPost]
         public ActionResult Edit(FormCollection formCollection)
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 foreach (var key in formCollection.AllKeys)
                 {

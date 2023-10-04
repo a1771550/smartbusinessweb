@@ -20,6 +20,7 @@ namespace SmartBusinessWeb.Controllers
         {
             Session["CssBSFile"] = @"Content/bs4"; //Content/bootstrap.min.css
             Session["ScriptBSFile"] = @"Scripts/bs4"; //Content/bootstrap.min.css
+            Session["DBName"] = "POSPro";
             ViewBag.Title = Resources.Resource.Login;
             LoginUserModel loginUserModel = new LoginUserModel();
             if (!string.IsNullOrEmpty(redirectUrl))
@@ -33,30 +34,37 @@ namespace SmartBusinessWeb.Controllers
         //[ValidateAntiForgeryToken]
         public ActionResult Login(LoginUserModel model)
         {
-            using var context = new PPWDbContext();
-
-            string msg = string.Empty;
-            string hash = HashHelper.ComputeHash(model.Password);
-            int lang = CultureHelper.CurrentCulture;
-
             SysUser user = null;
+            string msg = string.Empty;
+            int apId = 0;
+            string hash = string.Empty;
+           
+            PPWDbContext context = null;
 
-            var _user = context.GetUserByEmail2(model.Email).FirstOrDefault();
-            if (_user == null)
-            {
-                msg = Resources.Resource.InvalidLogin;
-                return Json(new { msg });
-            }
-            else
-            {
-                model.UserCode = _user.UserCode;              
+            using (context = new PPWDbContext(Session["DBName"].ToString()))
+            {                
+                hash = HashHelper.ComputeHash(model.Password);
+                int lang = CultureHelper.CurrentCulture;
+                var _user = context.GetUserByEmail3(model.Email).FirstOrDefault();
+                if (_user == null)
+                {
+                    msg = Resources.Resource.InvalidLogin;
+                    return Json(new { msg });
+                }
+                apId = _user.AccountProfileId;
+                Session["DBName"] = _user.dbName;
+
+                model.UserCode = _user.UserCode;
                 model.CompanyCode = _user.CompanyCode;
                 model.SelectedShop = _user.shopCode;
                 model.SelectedDevice = _user.dvcCode;
                 model.AccountProfileId = _user.AccountProfileId;
                 model.IsCentral = _user.IsCentral;
+            }
 
-                ComInfo comInfo = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.Id == _user.CompanyId);
+            using (context = new PPWDbContext(Session["DBName"].ToString()))
+            {
+                ComInfo comInfo = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == apId);
 
                 bool isdeploy = (bool)comInfo.IsDeploy;
                 if (isdeploy)
@@ -76,7 +84,7 @@ namespace SmartBusinessWeb.Controllers
                     }
                 }
 
-                var _roleuser = context.LoginPCUser7(model.Email, hash, model.SelectedDevice, model.SelectedShop).ToList();//because of multi-roles!
+                var _roleuser = context.LoginPCUser8(model.Email, hash, model.SelectedDevice, model.SelectedShop).ToList();//because of multi-roles!
                 if (_roleuser != null && _roleuser.Count >= 1)
                 {
                     var __user = _roleuser.FirstOrDefault();
@@ -165,9 +173,7 @@ namespace SmartBusinessWeb.Controllers
             var lastsess = context.GetLastPCSession1(user.AccountProfileId, user.UserName, model.SelectedDevice, model.SelectedShop).FirstOrDefault();
 
             var appparams = context.GetLoginDataFrmAppParam(user.AccountProfileId).ToList();
-
-            //var enablecashdrawer = context.AppParams.FirstOrDefault(x => x.appParam == "EnableCashDrawerAmt");
-            //Session["EnableCashDrawer"] = enablecashdrawer.appVal == "1";
+            
             var enablecashdrawer = appparams[0].ToString() == "1";
             Session["EnableCashDrawer"] = enablecashdrawer;
             //bool enablecheckdayends = context.AppParams.FirstOrDefault(x => x.appParam == "EnableDayendsCheckOnLogout").appVal == "1";
@@ -241,7 +247,7 @@ namespace SmartBusinessWeb.Controllers
                 AccountProfileId = accountProfileId,
                 ManagerId = user.ManagerId,
                 Device = device,
-                SalesGroupId = context.GetSalesGroupId(user.surUID).FirstOrDefault(),              
+                SalesGroupId = context.GetSalesGroupId(user.surUID).FirstOrDefault(),
                 Email = user.Email,
                 shopCode = user.shopCode,
                 dvcCode = user.dvcCode,
@@ -254,7 +260,7 @@ namespace SmartBusinessWeb.Controllers
             Session["IsCentral"] = model.IsCentral;
             Session["eBlastId"] = 0;
             Session["AccountProfileId"] = model.AccountProfileId;
-            Session["DBName"] = user.dbName;
+            //Session["DBName"] = user.dbName;
             //Session["ComInfo"] = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.Id == user.CompanyId);
 
             MenuHelper.UpdateMenus(context);
@@ -321,12 +327,17 @@ namespace SmartBusinessWeb.Controllers
         //[ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
-            string usercode;
-            int companyId = 1;
-            if (Session != null)
+            SessUser user = Session["User"] as SessUser;
+            var usercode = user == null ? FileHelper.Read(ConfigurationManager.AppSettings["UserCodeFile"]) : user.UserCode;
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
-                SessUser user = Session["User"] as SessUser;
-                usercode = user==null?"": user.UserCode;
+                context.CheckoutCurrentPCSession1(usercode, DateTime.Now.Date, apId, ConfigurationManager.AppSettings["Device"], ConfigurationManager.AppSettings["Shop"]);
+                context.SaveChanges();
+            }
+            FormsAuthentication.SignOut();
+
+            if (Session != null)
+            {                
                 Session["Session"] = null;
                 Session["User"] = null;
                 Session["Device"] = null;
@@ -351,18 +362,7 @@ namespace SmartBusinessWeb.Controllers
                 Session["GroupedTransferList"] = null;
                 Session["DBName"] = null;
             }
-            else
-            {
-                usercode = FileHelper.Read(ConfigurationManager.AppSettings["UserCodeFile"]);
-            }
-
-            using (var context = new PPWDbContext())
-            {                
-                context.CheckoutCurrentPCSession1(usercode, DateTime.Now.Date, companyId, ConfigurationManager.AppSettings["Device"], ConfigurationManager.AppSettings["Shop"]);
-                context.SaveChanges();
-            }
-
-            FormsAuthentication.SignOut();
+            
             return RedirectToAction("Login", "Account");
         }
     }

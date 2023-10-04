@@ -21,7 +21,7 @@ namespace SmartBusinessWeb.Controllers
             SessUser user = Session["User"] as SessUser;
             ViewBag.ParentPage = "dayends";
             ViewBag.PageName = "CPS";
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 CountPaymentSummary model = new CountPaymentSummary();
                 Session session = ModelHelper.GetCurrentSession(context);
@@ -84,7 +84,7 @@ namespace SmartBusinessWeb.Controllers
             SessUser user = Session["User"] as SessUser;
             ViewBag.ParentPage = "dayends";
             ViewBag.PageName = "CPD";
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 CountPaymentDetail model = new CountPaymentDetail();
                 //string token = Session["SessionToken"].ToString();
@@ -215,7 +215,7 @@ namespace SmartBusinessWeb.Controllers
             SessUser user = Session["User"] as SessUser;
             ViewBag.ParentPage = "dayends";
             ViewBag.PageName = "SIS";
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 SessionItemSales model = new SessionItemSales();
                 Session session = ModelHelper.GetCurrentSession(context);

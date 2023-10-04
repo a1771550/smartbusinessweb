@@ -21,7 +21,7 @@ namespace SmartBusinessWeb.Controllers
         {
             ViewBag.ParentPage = "staff";
             ViewBag.PageName = "accessrights";
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 int apId = ComInfo.AccountProfileId;
 
@@ -47,7 +47,7 @@ namespace SmartBusinessWeb.Controllers
         public ActionResult Edit(int userId = 0)
         {
             ViewBag.PageName = "accessrights";
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 List<SysFunc> funcs = new List<SysFunc>();
 
@@ -86,7 +86,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpPost]
         public ActionResult Create(FormCollection formCollection)
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var usercode = formCollection["UserCode"];
                 if (!context.SysUsers.Any(x => x.UserCode == usercode))
@@ -180,7 +180,7 @@ namespace SmartBusinessWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(FormCollection formCollection)
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 int userId = int.Parse(formCollection["UserID"]);
                 SysUser user = context.SysUsers.Find(userId);

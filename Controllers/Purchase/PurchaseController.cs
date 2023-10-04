@@ -54,7 +54,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
                         _file.SaveAs(fname);
                         filenamelist.Add(filename);
                     }
-                    using (var context = new PPWDbContext())
+                    using (var context = new PPWDbContext(Session["DBName"].ToString()))
                     {
                         PPWDAL.Purchase purchase = context.Purchases.FirstOrDefault(x => x.pstCode == filecode && x.AccountProfileId == apId);
                         if (purchase != null)

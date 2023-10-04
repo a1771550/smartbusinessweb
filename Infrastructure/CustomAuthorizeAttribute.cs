@@ -24,14 +24,14 @@ namespace SmartBusinessWeb.Infrastructure
 			var userCode = user.UserCode;
 			if (!string.IsNullOrEmpty(userCode))
 			{
-				using (var context = new PPWDbContext())
+				using (var context = new PPWDbContext(HttpContext.Current.Session["DBName"].ToString()))
 				{
 					List<string> userFuncList = new List<string>();
 					
 					userFuncList = (from ar in context.AccessRights
 									join u in context.SysUsers on ar.UserCode equals u.UserCode
 									join r in context.SysFuncs on ar.FuncCode.ToLower() equals r.sfnCode.ToLower()
-									where u.UserCode.ToLower() == userCode.ToLower()
+									where u.UserCode.ToLower() == userCode.ToLower() && ar.AccountProfileId==user.AccountProfileId
 									select ar.FuncCode.ToLower()
 									  ).Distinct().ToList();
 					foreach (var item in userFuncList)

@@ -57,7 +57,7 @@ namespace SmartBusinessWeb.Controllers
         //[CustomAuthorize("datatransfer", "boss", "admin", "superadmin")]
         public JsonResult CreateDayendsFolder(DayEndsModel model)
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 Session currsess = ModelHelper.GetCurrentSession(context);
                 int lang = currsess.sesLang;
@@ -164,7 +164,7 @@ namespace SmartBusinessWeb.Controllers
             DateTime dateTime = DateTime.Now;
             SessUser curruser = Session["User"] as SessUser;
 
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             string ConnectionString = GetConnectionString(context, "READ", apId);
 
             if (filename.StartsWith("Job_"))
@@ -584,7 +584,7 @@ namespace SmartBusinessWeb.Controllers
             Session currsess = null;
             int apId = 0;
             int lang = -1;
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 currsess = ModelHelper.GetCurrentSession(context);
                 apId = currsess.AccountProfileId;
@@ -667,7 +667,7 @@ namespace SmartBusinessWeb.Controllers
             bool approvalmode = (bool)comInfo.ApprovalMode;
             int apId = comInfo.AccountProfileId;
 
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             string ConnectionString = GetConnectionString(context, "READ_WRITE", apId);
         
             using var connection = new Microsoft.Data.SqlClient.SqlConnection(DefaultConnection);
@@ -1984,7 +1984,7 @@ namespace SmartBusinessWeb.Controllers
 
             if (filename.StartsWith("ItemSales_"))
             {
-                using (var context = new PPWDbContext())
+                using (var context = new PPWDbContext(Session["DBName"].ToString()))
                 {
                     var icount = context.GetSalesInvoicesCount(frmdate, todate, includeUploaded).FirstOrDefault().GetValueOrDefault();
                     var device = Session["Device"] as DeviceModel;
@@ -2028,7 +2028,7 @@ namespace SmartBusinessWeb.Controllers
 
             if (filename.StartsWith("Customers_"))
             {
-                using (var context = new PPWDbContext())
+                using (var context = new PPWDbContext(Session["DBName"].ToString()))
                 {
                     var icount = context.GetUnCheckoutKCustomerCount(frmdate, todate).FirstOrDefault().GetValueOrDefault();
                     if (icount > 0)
@@ -2050,7 +2050,7 @@ namespace SmartBusinessWeb.Controllers
 
         private void updateDB(long[] _checkoutIds, int accountProfileId, CheckOutType checkOutType)
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 List<long> checkoutIds = new List<long>();
                 checkoutIds = _checkoutIds.ToList();
@@ -2118,7 +2118,7 @@ namespace SmartBusinessWeb.Controllers
 
         private void WriteSupplierToABSS(int accountprofileId, ref OnlineModeItem onlineModeItem, DataTransferModel dmodel)
         {
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
 
             string ConnectionString = GetConnectionString(context, "READ_WRITE", apId);
             ModelHelper.GetDataTransferData(context, accountprofileId, CheckOutType.Suppliers, ref dmodel);
@@ -2173,7 +2173,7 @@ namespace SmartBusinessWeb.Controllers
             string sql = MyobHelper.InsertImportCustomer4ApprovalSql.Replace("0", "{0}");
             List<string> sqllist = new List<string>();
 
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 string ConnectionString = GetConnectionString(context, "READ_WRITE", AccountProfileId);
                 ModelHelper.GetDataTransferData(context, AccountProfileId, CheckOutType.PGCustomers, ref dmodel);
@@ -2290,7 +2290,7 @@ namespace SmartBusinessWeb.Controllers
             string sql = MyobHelper.InsertImportCustomer4ApprovalSql.Replace("0", "{0}");
             List<string> sqllist = new List<string>();
 
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 string ConnectionString = GetConnectionString(context, "READ_WRITE", AccountProfileId);
                 ModelHelper.GetDataTransferData(context, AccountProfileId, CheckOutType.MyobCustomers, ref dmodel);
@@ -2319,7 +2319,7 @@ namespace SmartBusinessWeb.Controllers
             string sql = ApprovalMode ? MyobHelper.InsertImportCustomerBasicSql4Approval : MyobHelper.InsertImportCustomerBasicSql;
             List<string> sqllist = new List<string>();
 
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 string ConnectionString = GetConnectionString(context, "READ_WRITE", AccountProfileId);
                 List<string> columns = new List<string>();

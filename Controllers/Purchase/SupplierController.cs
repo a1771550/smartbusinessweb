@@ -45,7 +45,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
                         _file.SaveAs(fname);
                         filenamelist.Add(filename);
                     }
-                    using (var context = new PPWDbContext())
+                    using (var context = new PPWDbContext(Session["DBName"].ToString()))
                     {
                         SessUser user = Session["User"] as SessUser;
                         SupplierInfo supInfo = new SupplierInfo

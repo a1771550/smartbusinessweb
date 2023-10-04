@@ -92,7 +92,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                         _file.SaveAs(fname);
                         filenamelist.Add(filename);
                     }
-                    using (var context = new PPWDbContext())
+                    using (var context = new PPWDbContext(Session["DBName"].ToString()))
                     {
                         SessUser user = Session["User"] as SessUser;
                         CustomerInfo cusInfo = new CustomerInfo
@@ -210,7 +210,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                 customerlist = customerlist.Where(x => _cusIdList.Contains(x.cusCustomerID.ToString())).ToList();
             }
 
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             actionloglist = (from a in context.ActionLogs
                              where a.actName.ToLower() == "customerpoints" && a.actType.ToLower() == "edit"
                              select new ActionLogModel

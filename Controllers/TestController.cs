@@ -107,7 +107,7 @@ namespace SmartBusinessWeb.Controllers
         public void Debug79()
         {
             var stritemcodes = "T0009";
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             
             var itemvtInfo = context.GetValidThruInfo12(apId, location, stritemcodes).ToList();
             // Response.Write(itemvtInfo.Count);
@@ -214,7 +214,7 @@ namespace SmartBusinessWeb.Controllers
             //Response.Write(datetimeValue);
             //Response.Write(CommonHelper.GetDateFrmString4SQL(dateString));
 
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             var enquiry = new Enquiry
             {
                 Id = CommonHelper.GenerateNonce(),
@@ -316,7 +316,7 @@ namespace SmartBusinessWeb.Controllers
                         _file.SaveAs(fname);
                         filenamelist.Add(filename);
                     }
-                    using (var context = new PPWDbContext())
+                    using (var context = new PPWDbContext(Session["DBName"].ToString()))
                     {
                         WholeSale wholeSale = context.WholeSales.FirstOrDefault(x => x.wsCode == wscode && x.AccountProfileId == apId);
                         if (wholeSale != null)
@@ -459,7 +459,7 @@ namespace SmartBusinessWeb.Controllers
 
         public void Debug75()
         {
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             var purchaseitems = context.PurchaseItems.Where(x => x.pstCode == "IP100014").ToList();
             string status = purchaseitems.Any(x => x.IsPartial != null && (bool)x.IsPartial) ? "B" : "O";
             Response.Write(status + "<br>");
@@ -477,7 +477,7 @@ namespace SmartBusinessWeb.Controllers
         }
         public void Debug74()
         {
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             var admins = context.GetPosAdmin4Notification3(1, 1, Shop).ToList();
             var admin = admins.FirstOrDefault();
             var reviewurl = UriHelper.GetReviewSalesOrderUrl(ConfigurationManager.AppSettings["ReviewSalesOrderBaseUrl"], "WS100015", 0, admin.surUID);
@@ -487,7 +487,7 @@ namespace SmartBusinessWeb.Controllers
         public void Debug72()
         {
             var stritemcodes = string.Join(",", new string[] { "COCA-COLA" });
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             var itemvtInfo = context.GetValidThruInfo12(AccountProfileId, location, stritemcodes).ToList();
             var ivqList = from item in itemvtInfo
                           where item.piValidThru != null
@@ -543,7 +543,7 @@ namespace SmartBusinessWeb.Controllers
        
         public void Debug69()
         {
-            var context = new PPWDbContext();
+            var context = new PPWDbContext(Session["DBName"].ToString());
             var itemattrlist = context.ItemAttributes.AsNoTracking().Where(x => x.itmCode == "TEST023").ToList();
             var groupedlist = itemattrlist.GroupBy(x => x.itmCode + x.iaName).ToList();
             Response.Write(groupedlist.Count + "<hr>");
@@ -575,7 +575,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public JsonResult Debug65()
         {
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             DeviceModel device = Session["Device"] as DeviceModel;
             //DeviceModel device = GetDevice(model, context);
             //Response.Write($"next deposit no:{device.dvcNextDepositNo}");
@@ -587,7 +587,7 @@ namespace SmartBusinessWeb.Controllers
 
         public JsonResult GetReceipt(string receiptno = "")
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 //Session currsess = ModelHelper.GetCurrentSession(context);
                 var shop = location;
@@ -804,7 +804,7 @@ namespace SmartBusinessWeb.Controllers
         public void Debug64()
         {
             List<SalesItem> items = new List<SalesItem>();
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             var _items = context.GetItemList4Sales15(AccountProfileId, location, startIndex, pageSize, null).ToList();
             foreach (var i in _items)
             {
@@ -864,7 +864,7 @@ namespace SmartBusinessWeb.Controllers
             //var content = await _client.GetStringAsync(url);
             //List<AccountModel> accountlist = MYOBHelper.GetAccountList(ConnectionString);
             //DateTime dateTime = DateTime.Now;
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             //ComInfo ComInfo = context.ComInfoes.FirstOrDefault(x => x.Id == 1);
             //string ConnectionString = string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ;", ComInfo.MYOBDriver, ComInfo.MYOBUID, ComInfo.MYOBPASS, ComInfo.MYOBDb, ComInfo.MYOBExe, ComInfo.MYOBKey);
             //List<MyobSupplierModel> suplist = MYOBHelper.GetSupplierList(ConnectionString);
@@ -935,7 +935,7 @@ namespace SmartBusinessWeb.Controllers
 
         public void Debug57()
         {
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             var list = new Dictionary<string, string>();
             var _ComInfo = context.ComInfoes.FirstOrDefault(x => x.Id == CompanyId);
 
@@ -962,7 +962,7 @@ namespace SmartBusinessWeb.Controllers
         }
         public void Debug56()
         {
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             var wscode = "WS000014";
             var deliveryitems = context.DeliveryItems.Where(x => x.dlCode == wscode).OrderBy(x => x.itmCode).ToList();
             var itemcodes = deliveryitems.Select(x => x.itmCode).Distinct().ToList();
@@ -1027,7 +1027,7 @@ namespace SmartBusinessWeb.Controllers
 
         //        public void Debug55()
         //        {
-        //            using var context = new PPWDbContext();
+        //            using var context = new PPWDbContext(Session["DBName"].ToString());
         //            //var wsdate = context.WholeSales.FirstOrDefault().wsDate;
         //            //var wstime = wsdate.AddPG(DateTime.Now.TimeOfDay);
         //            //Response.Write(wstime);
@@ -1059,7 +1059,7 @@ namespace SmartBusinessWeb.Controllers
 
         public void Debug61()
         {
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             //string[] itemcodelist = new string[] { "TEST008", "TEST009", "TEST010", "TEST011", "TEST012", "TEST013", "TEST014" };
             string[] itemcodelist = new string[] { "TEST009" };
             string stritemcodes = string.Join(",", itemcodelist);
@@ -1096,7 +1096,7 @@ TEST014:d4:btest1:
 
         public void Debug62()
         {
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
 
             string[] itemcodelist = new string[] { "TEST005" };
             string stritemcodes = string.Join(",", itemcodelist);
@@ -1165,7 +1165,7 @@ TEST014:d4:btest1:
 
         public void Debug54()
         {
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
 
             var DicIBVQList = new Dictionary<string, Dictionary<string, List<string>>>();
             var DicItemBVList = new Dictionary<string, Dictionary<string, List<string>>>();
@@ -1358,7 +1358,7 @@ btest3
 
         public void Debug51()
         {
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             //var listinfo = context.GetStockTransferListByCode1(1, 1, "ST000005").ToList();
             //var variancesum = listinfo.Sum(x => x.stVariance);
 
@@ -1370,7 +1370,7 @@ btest3
         }
         public void Debug50()
         {
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             var stlist = context.StockTransfers.ToList();
             var newstlist = new List<StockTransfer>();
 
@@ -1492,7 +1492,7 @@ btest3
         }
         public async Task Debug46()
         {
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             var cominfo = context.ComInfoes.AsNoTracking().FirstOrDefault();
             var url = string.Format(CentralApiUrl, "Suppliers_", string.Format(cominfo.WebServiceUrl, UriHelper.GetBaseUrl()));
             //Response.Write(url);
@@ -1508,7 +1508,7 @@ btest3
         }
         public void Debug45()
         {
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             var otherSettings = (from os in context.AppParams
                                  where os.appIsActive == true && os.CompanyId == 1
                                  select new OtherSettingsView
@@ -1524,7 +1524,7 @@ btest3
 
         public void Debug44()
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 //var icount = context.GetPOSUserSessionCount3("admin", "P10", "office").FirstOrDefault();
                 //if (icount != null)
@@ -1637,7 +1637,7 @@ btest3
         public void Debug42()
         {
             var deliveryAddressId = 3417;
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var customerinfo = context.CustomerInfo4Abss.Where(x => x.Id == deliveryAddressId).FirstOrDefault();
                 var deliveryAddress = string.Concat(customerinfo.StreetLine1, " ", customerinfo.StreetLine2, " ", customerinfo.StreetLine3, " ", customerinfo.StreetLine4, " ", customerinfo.City, " ", customerinfo.State, " ", customerinfo.Country);
@@ -1684,7 +1684,7 @@ btest3
             var groupId = 1;
             var contactnamelist = new List<string>();
 
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 salesmanager = context.GetSalesManagerInfoByGroupId(groupId).FirstOrDefault();
 
@@ -1754,7 +1754,7 @@ btest3
             var idList = new List<long>();
             idList.Add(58);
             idList.Add(59);
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var contactnamelist = new List<string>();
                 var _contactlist = context.GetContactListByIDs2(string.Join(",", idList)).ToList();
@@ -1774,7 +1774,7 @@ btest3
 
         public void Debug40()
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 string[] attrnames = new[] { "Locality", "Industry", "PGCustomer", "Account Software", "Antivirus Software", "Server OS", "Mobile" };
                 foreach (var attrname in attrnames)
@@ -1818,7 +1818,7 @@ btest3
                 todate = new DateTime(year, mth, day);
             }
             #endregion
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var icount = context.GetSalesRefundCount(frmdate, todate).FirstOrDefault().GetValueOrDefault();
                 if (icount > 0)
@@ -1865,7 +1865,7 @@ btest3
                 todate = new DateTime(year, mth, day);
             }
             #endregion
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var icount = context.GetSalesInvoicesCount(frmdate, todate, false).FirstOrDefault().GetValueOrDefault();
                 if (icount > 0)
@@ -1952,7 +1952,7 @@ btest3
                     var _result = JsonConvert.DeserializeObject<List<List<object>>>(content);
                     if (_result != null)
                     {
-                        using (var context = new PPWDbContext())
+                        using (var context = new PPWDbContext(Session["DBName"].ToString()))
                         {
                             #region Remove Current Records First
                             context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Kingdee.TaxRate]");
@@ -1991,7 +1991,7 @@ btest3
                     var _result = JsonConvert.DeserializeObject<List<List<object>>>(content);
                     if (_result != null)
                     {
-                        using (var context = new PPWDbContext())
+                        using (var context = new PPWDbContext(Session["DBName"].ToString()))
                         {
                             #region Remove Current Records First
                             context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Kingdee.ItemStock]");
@@ -2031,7 +2031,7 @@ btest3
                     var _result = JsonConvert.DeserializeObject<List<List<object>>>(content);
                     if (_result != null)
                     {
-                        using (var context = new PPWDbContext())
+                        using (var context = new PPWDbContext(Session["DBName"].ToString()))
                         {
                             #region Remove Current Records First
                             context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Kingdee.Stock]");
@@ -2068,7 +2068,7 @@ btest3
                 {
                     var _result = JsonConvert.DeserializeObject<List<List<object>>>(content);
                     List<Kingdee_Organization> orgs = new List<Kingdee_Organization>();
-                    using (var context = new PPWDbContext())
+                    using (var context = new PPWDbContext(Session["DBName"].ToString()))
                     {
                         //[[1,"100","蓝海实业集团"],[100035,"101","蓝海通讯公司"]...]
                         foreach (var item in _result)
@@ -2089,7 +2089,7 @@ btest3
                 }
                 if (kqtype == KingdeeQueryType.Item)
                 {
-                    using (var context = new PPWDbContext())
+                    using (var context = new PPWDbContext(Session["DBName"].ToString()))
                     {
                         #region Remove Current Records First
                         context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Kingdee.Item]");
@@ -2131,7 +2131,7 @@ btest3
                     var _result = JsonConvert.DeserializeObject<List<List<object>>>(content);
                     if (_result != null)
                     {
-                        using (var context = new PPWDbContext())
+                        using (var context = new PPWDbContext(Session["DBName"].ToString()))
                         {
                             #region Remove Current Records First
                             context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Kingdee.PriceList]");
@@ -2164,7 +2164,7 @@ btest3
                 {
                     if (!string.IsNullOrEmpty(content))
                     {
-                        using (var context = new PPWDbContext())
+                        using (var context = new PPWDbContext(Session["DBName"].ToString()))
                         {
                             KingdeeAccountInfo info = KingdeeHelper.GetKingdeeAccountInfo(context);
                             #region Remove current data first
@@ -2202,7 +2202,7 @@ btest3
                 if (kqtype == KingdeeQueryType.Customer)
                 {
                     var _result = Newtonsoft.Json.JsonConvert.DeserializeObject<List<List<object>>>(content);
-                    using (var context = new PPWDbContext())
+                    using (var context = new PPWDbContext(Session["DBName"].ToString()))
                     {
                         List<Kingdee_Customer> kcustomers = new List<Kingdee_Customer>();
                         foreach (var customer in _result)
@@ -2272,7 +2272,7 @@ btest3
 
         public ActionResult SubmitTest(string attrname = "", string attrval = "")
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 TestModel model = new TestModel();
                 var list = context.EmailSettings.ToList();
@@ -2296,7 +2296,7 @@ btest3
 
         public void Debug25()
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var model = new EmailModel();
                 EmailSetting EmailSetting = context.EmailSettings.FirstOrDefault(x => x.Id == 1 && x.AccountProfileId == 1);
@@ -2336,7 +2336,7 @@ btest3
 
         public void Debug22()
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var sql = $"Select count(itemID) From MyobItemPrice Where AccountProfileId=1 and (SellingPrice>0 || UnitPrice>0);";
                 var mvaliditemscount = context.Database.SqlQuery<int>(sql);
@@ -2346,7 +2346,7 @@ btest3
 
         public void Debug21()
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 //var apId = 1;
                 //var sql = "Select cusPhone, cusEmail From MyobCustomer Where cusPhone is not null and AccountProfileId=1 and cusIsActive=1 " +
@@ -2378,7 +2378,7 @@ btest3
 
         public void Debug20()
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var customerlist = (from s in context.RtlSales
                                     join customer in context.MyobCustomers
@@ -2419,7 +2419,7 @@ btest3
             var month = new DateTime(today.Year, today.Month, 1);
             var first = month.AddMonths(-1);
             Response.Write(first.Date.ToString());
-            //using (var context = new PPWDbContext())
+            //using (var context = new PPWDbContext(Session["DBName"].ToString()))
             //{
 
             //}
@@ -2501,7 +2501,7 @@ btest3
         public void Debug11()
         {
             int accountProfileId = 1;
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var customerlist = (from c in context.MyobCustomers
                                         //join pl in context.PriceLevels
@@ -2539,7 +2539,7 @@ btest3
 
         public void Debug10()
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 string[] managercodes = { "hmx", "imc", "ldm", "drj" };
 
@@ -2593,7 +2593,7 @@ btest3
             string authcode = "285230095494351364";
             string salescode = "ST000001";
             List<string> salesitemcodes = new List<string>();
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 salesitemcodes = (from i in context.MyobItems.Where(x => x.AccountProfileId == 2).Take(2)
                                   select i.itmCode
@@ -2649,7 +2649,7 @@ btest3
 
         public void Debug7()
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
 
                 var salesitemcodes = (from i in context.MyobItems.Where(x => x.AccountProfileId == 2).Take(2)
@@ -2667,7 +2667,7 @@ btest3
         public void Debug6()
         {
             //int apId = 2;
-            //using (var context = new PPWDbContext())
+            //using (var context = new PPWDbContext(Session["DBName"].ToString()))
             //{
             //    int latestItemId = Helpers.ModelHelper.GetLatestItemID(context, apId);
             //    Response.Write(latestItemId);
@@ -2675,7 +2675,7 @@ btest3
         }
         public void Debug5()
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 //string device = "p10";
                 string location = "office";
@@ -2754,7 +2754,7 @@ btest3
         }
         public void Debug4()
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 int apId = 1;
 
@@ -2826,7 +2826,7 @@ btest3
             var devicecode = device;
             decimal refundamt = 0;
 
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var refunds = context.RtlSales.Where(x => (x.rtsRefCode != null && x.rtsRefCode == receiptno) && x.rtsType == "RF" && x.rtsDvc == devicecode && x.rtsSalesLoc == shop).ToList();
                 if (refunds.Count > 0)
@@ -2881,7 +2881,7 @@ btest3
         public void SearchItem()
         {
             string keyword = "ac";
-            //using(var context=new PPWDbContext())
+            //using(var context=new PPWDbContext(Session["DBName"].ToString()))
             //{
             //	var itemlist = ModelHelper.GetItemList(context, keyword);
             //	Response.Write(itemlist.Count);
@@ -2932,7 +2932,7 @@ btest3
         }
         //public void CustomerPoint()
         //{
-        //    using (var context = new PPWDbContext())
+        //    using (var context = new PPWDbContext(Session["DBName"].ToString()))
         //    {
         //        CustomerModel customer = (from c in context.PGCustomers
         //                                  where c.cusCode == "GUEST"
@@ -3721,7 +3721,7 @@ btest3
 
         public void TruncateTable()
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 context.Database.ExecuteSqlCommand("TRUNCATE TABLE [CustomerHistory]");
             }
@@ -3825,7 +3825,7 @@ btest3
 
         public string EncodingTest()
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 string test = context.MyobLocStocks.FirstOrDefault().lstSellUnit;
                 return test;

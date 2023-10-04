@@ -27,7 +27,7 @@ namespace SmartBusinessWeb.Controllers
             // Cache the new current culture into the user HTTP session.   
             //  
             Session["CurrentCulture"] = Id;
-            using(var context = new PPWDbContext())
+            using(var context = new PPWDbContext(Session["DBName"].ToString()))
 			{
                 Session currsess = null;
                 if (Session["SessionToken"] == null)

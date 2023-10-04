@@ -41,7 +41,7 @@ namespace SmartBusinessWeb.Controllers
             ViewBag.ParentPage = "item";
             ViewBag.PageName = "pendinginvoices";
             PendingInvoices model = new PendingInvoices();
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 model.PendingInvoiceList = (from st in context.MyobLocStocks
                                             join sl in context.RtlSalesLns
@@ -81,7 +81,7 @@ namespace SmartBusinessWeb.Controllers
         public ActionResult Dayends()
         {
             ViewBag.PageName = "dayends";
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 DayEndsModel model = new DayEndsModel();
                 model.DayEndsItems = (from f in context.SysFuncs
@@ -110,7 +110,7 @@ namespace SmartBusinessWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CountPayments(FormCollection formCollection)
         {
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 DateTime currDate = DateTime.Now.Date;
                 DateTime currTime = DateTime.Now;
@@ -261,7 +261,7 @@ namespace SmartBusinessWeb.Controllers
 
             #endregion
 
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 Session session = ModelHelper.GetCurrentSession(context);
                 //int apId = session.AccountProfileId;
@@ -501,7 +501,7 @@ namespace SmartBusinessWeb.Controllers
             decimal totalamount = (decimal)Refund.rtsFinalTotal;
             #endregion
 
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 using (var transaction = context.Database.BeginTransaction())
                 {
@@ -915,7 +915,7 @@ namespace SmartBusinessWeb.Controllers
             //string salescode = Sale.salescode;
             decimal totalpayamt = 0;
 
-            using var context = new PPWDbContext();
+            using var context = new PPWDbContext(Session["DBName"].ToString());
             string salescode = model.ProcessSales(context, Sale, SalesLnList, Payments, ref totalpayamt, DeliveryItems);
             string msg = model.OutOfStockWholeSalesLns != null && model.OutOfStockWholeSalesLns.Count > 0 ? Resources.Resource.ZeroStockItemsWarning : string.Format(Resources.Resource.Delivered, Resources.Resource.WholeSales);
             string[] zerostockItemcodes = model.OutOfStockWholeSalesLns.Select(x => x.itmCode).ToArray();
@@ -1009,7 +1009,7 @@ namespace SmartBusinessWeb.Controllers
     */
             PayService payService = new PayService();
 
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var _ps = context.ePayments.FirstOrDefault(x => x.out_trade_no.ToUpper() == salescode.ToUpper());
                 if (_ps != null)
@@ -1084,7 +1084,7 @@ namespace SmartBusinessWeb.Controllers
         {
             PayService payService = new PayService();
 
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var _ps = context.ePayments.FirstOrDefault(x => x.out_trade_no.ToUpper() == salescode.ToUpper());
                 if (_ps != null)

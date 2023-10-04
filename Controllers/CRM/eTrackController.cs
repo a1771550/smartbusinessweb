@@ -106,7 +106,7 @@ namespace SmartBusinessWeb.Controllers
                 if (_eTracks != null && _eTracks.Count>0)
                 {
                     int apId = 0;
-                    using (var context = new PPWDbContext())
+                    using (var context = new PPWDbContext(Session["DBName"].ToString()))
                     {
                         apId = ComInfo.AccountProfileId;
                         model.GlobalAttributeList = CustomerEditModel.GetGlobalAttrList(apId);
@@ -247,7 +247,7 @@ namespace SmartBusinessWeb.Controllers
         /// </summary>
         //public string MockData()
         //{
-        //    econtext = new PPWDbContext();
+        //    econtext = new PPWDbContext(Session["DBName"].ToString());
         //    for (int i = 0; i < 100; i++)
         //    {
         //        eTrack log = new eTrack

@@ -20,7 +20,7 @@ namespace SmartBusinessWeb.Controllers
         public ActionResult Setup()
         {
             ViewBag.PageName = "setup";
-            using (var context = new PPWDbContext())
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 SetupModel model = new SetupModel();
                 Session session = ModelHelper.GetCurrentSession(context);
