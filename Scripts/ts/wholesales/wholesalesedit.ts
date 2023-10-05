@@ -942,6 +942,7 @@ $(function () {
     setFullPage();
     forwholesales = true;
     DicLocation = $infoblk.data("jsondiclocation");
+    //console.log("diclocation:", DicLocation);
     JobList = $infoblk.data("jsonjoblist");
     uploadsizelimit = Number($infoblk.data("uploadsizelimit"));
     //console.log("uploadsizelimit:" + uploadsizelimit);
@@ -1081,7 +1082,7 @@ $(function () {
             }
             html += `<td><select class="location flex">${locations}</select></td>`;
             //console.log("wholesalesln.JobID:" + wholesalesln.JobID);
-            html += `<td><select class="job flex">${getJobListOptions(wholesalesln.JobID ?? 0)}</select></td>`;
+            html += `<td><select class="job flex">${setJobListOptions(wholesalesln.JobID ?? 0)}</select></td>`;
             html += `<td class="text-right"><input type="number" name="amount" class="amount text-right" data-amt="${wholesalesln.wslSalesAmt}" value="${formattedamt}" readonly></td>`;
             html += "</tr>";
             idx++;

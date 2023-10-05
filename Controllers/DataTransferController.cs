@@ -457,9 +457,6 @@ namespace SmartBusinessWeb.Controllers
         }
 
 
-
-
-
         [HandleError]
         [CustomAuthorize("datatransfer_up", "boss", "admin", "superadmin")]
         public ActionResult DayendsImportFrmShop()

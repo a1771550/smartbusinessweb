@@ -630,7 +630,7 @@ $(function () {
                 locations += `<option value='${key}' ${selected}>${value}</option>`;
             }
             html += `<td><select class="location flex">${locations}</td>`;
-            html += `<td><select class="job flex">${getJobListOptions(stockitem.JobID ?? 0)}</select></td>`;
+            html += `<td><select class="job flex">${setJobListOptions(stockitem.JobID ?? 0)}</select></td>`;
             html += `<td class="text-right"><input type="number" name="amount" class="amount text-right" data-amt="${stockitem.piAmtPlusTax}" value="${formattedamt}"></td>`;
             if (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") {
                 html += `<td class="text-right"><input type="number" name="received" class="received text-right" min="0" style="width:90px!important;" data-received="${stockitem.piReceivedQty}" value="${stockitem.piReceivedQty}"></td>`;

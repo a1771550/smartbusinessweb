@@ -1492,10 +1492,11 @@ btest3
         }
         public async Task Debug46()
         {
-            using var context = new PPWDbContext(Session["DBName"].ToString());
+            using var context = new PPWDbContext();
             var cominfo = context.ComInfoes.AsNoTracking().FirstOrDefault();
-            var url = string.Format(CentralApiUrl, "Suppliers_", string.Format(cominfo.WebServiceUrl, UriHelper.GetBaseUrl()));
+            var url = string.Format(CentralApiUrl, "Suppliers_", UriHelper.GetBaseUrl());
             //Response.Write(url);
+            //return;
             HttpClient _client = new HttpClient();
             _client.MaxResponseContentBufferSize = int.MaxValue;
             var content = await _client.GetStringAsync(url);
@@ -1508,7 +1509,7 @@ btest3
         }
         public void Debug45()
         {
-            using var context = new PPWDbContext(Session["DBName"].ToString());
+            using var context = new PPWDbContext();
             var otherSettings = (from os in context.AppParams
                                  where os.appIsActive == true && os.CompanyId == 1
                                  select new OtherSettingsView
@@ -1524,7 +1525,7 @@ btest3
 
         public void Debug44()
         {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new PPWDbContext())
             {
                 //var icount = context.GetPOSUserSessionCount3("admin", "P10", "office").FirstOrDefault();
                 //if (icount != null)

@@ -325,6 +325,7 @@
     <Compile Include="Controllers\Item\ItemController.cs" />
     <Compile Include="Controllers\Item\PGItemController.cs" />
     <Compile Include="Controllers\Item\TransferController.cs" />
+    <Compile Include="Controllers\JsonController.cs" />
     <Compile Include="Controllers\OtherSettingsController.cs" />
     <Compile Include="Controllers\POS\PaymentTypesController.cs" />
     <Compile Include="Controllers\POS\PayServiceController.cs" />
@@ -4589,6 +4590,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Content\bs5\" />
     <Folder Include="Models\" />
+    <Folder Include="Views\Json\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

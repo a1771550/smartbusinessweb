@@ -8799,7 +8799,7 @@ function addRow() {
 
     //let jobs: string = "";
     //JobList.forEach((x) => jobs += `<option value='${x.JobID}'>${x.JobName}</option>`);
-    html += `<td><select class="job flex">${getJobListOptions(0)}</select></td>`;
+    html += `<td><select class="job flex">${setJobListOptions(0)}</select></td>`;
 
     if (forsales || forwholesales)
         html +=
@@ -8845,7 +8845,7 @@ function addRow() {
         focusItemCode(idx);
     }
 }
-function getJobListOptions(selectedJobId: number = 0) {
+function setJobListOptions(selectedJobId: number = 0) {
     let jobs: string = `<option value="0">---</option>`;
     JobList.forEach((x) => {
         const selected: string = selectedJobId == x.JobID ? "selected" : "";

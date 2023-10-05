@@ -42,6 +42,13 @@ new { controller = "Api", action = "ViewTrack", contactName = UrlParameter.Optio
                 );
 
             routes.MapRoute(
+                null,
+                "abss-json/{type}/{apId}",
+new { controller = "Json", action = "GetAbssData" },
+new { type=@"\w+", apId = @"\d+" }
+                );
+
+            routes.MapRoute(
           null,
           "PrivacyPolicy",
           new { controller = "OtherSettings", action = "PrivacyPolicy" }

@@ -54,11 +54,9 @@ namespace SmartBusinessWeb.Controllers
         private string CentralBaseUrl { get { return UriHelper.GetAppUrl(); } }
         private string CentralApiUrl { get { return ConfigurationManager.AppSettings["CentralApiUrl"]; } }
         private string CentralApiUrl4Receipt { get { return ConfigurationManager.AppSettings["CentralApiUrl4Receipt"]; } }
-        private int PageSize { get { return ComInfo == null ? int.Parse(ConfigurationManager.AppSettings["PageLength"]) : (int)ComInfo.PageLength; } }
-        private bool ApprovalMode { get { return ComInfo == null ? ConfigurationManager.AppSettings["ApprovalMode"] == "1" : (bool)ComInfo.ApprovalMode; } }
+        private int PageSize { get { return ComInfo == null ? int.Parse(ConfigurationManager.AppSettings["PageLength"]) : (int)ComInfo.PageLength; } }     
         private int AccountProfileId { get { return ComInfo == null ? int.Parse(ConfigurationManager.AppSettings["AccountProfileId"]) : (int)Session["AccountProfileId"]; } }
-        private int apId { get { return AccountProfileId; } }
-        private int CompanyId { get { return ComInfo == null ? int.Parse(ConfigurationManager.AppSettings["CompanyId"]) : ComInfo.Id; } }
+        private int apId { get { return AccountProfileId; } }       
         private string CheckoutPortal { get { return ComInfo.DefaultCheckoutPortal; } }
         private string DefaultConnection { get { return Session["DBName"] == null ? ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", "POSPro") : ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", Session["DBName"].ToString()); } }
         private List<string> Shops;
@@ -68,6 +66,12 @@ namespace SmartBusinessWeb.Controllers
 
         public ApiController()
         {
+        }
+
+        [HttpGet]
+        public void GetAbssProducts(int apId)
+        {
+            Response.Write(apId);
         }
 
         [HttpGet]
