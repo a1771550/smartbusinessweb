@@ -2233,14 +2233,14 @@ namespace SmartBusinessWeb.Controllers
 
                 string streetln1 = "";
                 string streetln2 = "";
-                string street1ln1 = "";
-                string street1ln2 = "";
-                string street2ln1 = "";
-                string street2ln2 = "";
-                string street3ln1 = "";
-                string street3ln2 = "";
-                string street4ln1 = "";
-                string street4ln2 = "";
+                //string street1ln1 = "";
+                //string street1ln2 = "";
+                //string street2ln1 = "";
+                //string street2ln2 = "";
+                //string street3ln1 = "";
+                //string street3ln2 = "";
+                //string street4ln1 = "";
+                //string street4ln2 = "";
                 if (customer.AddressList != null && customer.AddressList.Count > 0)
                 {
                     if (customer.AddressList[0] != null)
@@ -2249,30 +2249,30 @@ namespace SmartBusinessWeb.Controllers
                         streetln2 = customer.AddressList[0].StreetLine2;
                         streetln1 = CommonHelper.StringToNarrow4SQL(string.Concat(streetln1, streetln2));
                     }
-                    if (customer.AddressList[1] != null)
-                    {
-                        street1ln1 = customer.AddressList[1].StreetLine1;
-                        street1ln2 = customer.AddressList[1].StreetLine2;
-                        street1ln1 = CommonHelper.StringToNarrow4SQL(string.Concat(street1ln1, street1ln2));
-                    }
-                    if (customer.AddressList[2] != null)
-                    {
-                        street2ln1 = customer.AddressList[2].StreetLine1;
-                        street2ln2 = customer.AddressList[2].StreetLine2;
-                        street2ln1 = CommonHelper.StringToNarrow4SQL(string.Concat(street2ln1, street2ln2));
-                    }
-                    if (customer.AddressList[3] != null)
-                    {
-                        street3ln1 = customer.AddressList[3].StreetLine1;
-                        street3ln2 = customer.AddressList[3].StreetLine2;
-                        street3ln1 = CommonHelper.StringToNarrow4SQL(string.Concat(street3ln1, street3ln2));
-                    }
-                    if (customer.AddressList[4] != null)
-                    {
-                        street4ln1 = customer.AddressList[4].StreetLine1;
-                        street4ln2 = customer.AddressList[4].StreetLine2;
-                        street4ln1 = CommonHelper.StringToNarrow4SQL(string.Concat(street4ln1, street4ln2));
-                    }
+                    //if (customer.AddressList.Count >= 2 && customer.AddressList[1] != null)
+                    //{
+                    //    street1ln1 = customer.AddressList[1].StreetLine1;
+                    //    street1ln2 = customer.AddressList[1].StreetLine2;
+                    //    street1ln1 = CommonHelper.StringToNarrow4SQL(string.Concat(street1ln1, street1ln2));
+                    //}
+                    //if (customer.AddressList.Count >= 3 && customer.AddressList[2] != null)
+                    //{
+                    //    street2ln1 = customer.AddressList[2].StreetLine1;
+                    //    street2ln2 = customer.AddressList[2].StreetLine2;
+                    //    street2ln1 = CommonHelper.StringToNarrow4SQL(string.Concat(street2ln1, street2ln2));
+                    //}
+                    //if (customer.AddressList.Count >= 4 && customer.AddressList[3] != null)
+                    //{
+                    //    street3ln1 = customer.AddressList[3].StreetLine1;
+                    //    street3ln2 = customer.AddressList[3].StreetLine2;
+                    //    street3ln1 = CommonHelper.StringToNarrow4SQL(string.Concat(street3ln1, street3ln2));
+                    //}
+                    //if (customer.AddressList.Count >= 5 && customer.AddressList[4] != null)
+                    //{
+                    //    street4ln1 = customer.AddressList[4].StreetLine1;
+                    //    street4ln2 = customer.AddressList[4].StreetLine2;
+                    //    street4ln1 = CommonHelper.StringToNarrow4SQL(string.Concat(street4ln1, street4ln2));
+                    //}
                 }
 
                 /*"CoLastName", "CardID", "CardStatus", "ItemPriceLevel", "InvoiceDelivery", "Address1Email", "Address1ContactName", "Address1AddressLine1", "Address1Phone1", "Address1Phone2", "Address1Phone3", "Address1City", "Address1Country", "Address1Website", "PaymentIsDue", "BalanceDueDays", "Address2Website"

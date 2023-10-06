@@ -39,14 +39,15 @@ new { controller = "Api", action = "ViewTrack" }
                 null,
                 "Track/{blastId}/{contactId}/",
 new { controller = "Api", action = "ViewTrack", contactName = UrlParameter.Optional, organization = UrlParameter.Optional, phone = UrlParameter.Optional, email = UrlParameter.Optional, companyId = UrlParameter.Optional, imported = UrlParameter.Optional }
-                );
+                );   
+
 
             routes.MapRoute(
-                null,
-                "abss-json/{type}/{apId}",
+    null,
+    "abss-json/{apId}/{type}",
 new { controller = "Json", action = "GetAbssData" },
-new { type=@"\w+", apId = @"\d+" }
-                );
+new { apId = @"\d+", type = @"\w+" }
+    );
 
             routes.MapRoute(
           null,
