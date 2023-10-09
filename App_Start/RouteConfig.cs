@@ -39,15 +39,39 @@ new { controller = "Api", action = "ViewTrack" }
                 null,
                 "Track/{blastId}/{contactId}/",
 new { controller = "Api", action = "ViewTrack", contactName = UrlParameter.Optional, organization = UrlParameter.Optional, phone = UrlParameter.Optional, email = UrlParameter.Optional, companyId = UrlParameter.Optional, imported = UrlParameter.Optional }
-                );   
-
+                );
 
             routes.MapRoute(
+   null,
+   "abss-json/{apId}/locations",
+new { controller = "Json", action = "GetAbssLocationData" },
+new { apId = @"\d+" }
+   );
+            routes.MapRoute(
     null,
-    "abss-json/{apId}/{type}",
-new { controller = "Json", action = "GetAbssData" },
-new { apId = @"\d+", type = @"\w+" }
+    "abss-json/{apId}/items",
+new { controller = "Json", action = "GetAbssItemData" },
+new { apId = @"\d+" }
     );
+            routes.MapRoute(
+   null,
+   "abss-json/{apId}/stocks",
+new { controller = "Json", action = "GetAbssStockData" },
+new { apId = @"\d+" }
+   );
+            routes.MapRoute(
+null,
+"abss-json/{apId}/customers",
+new { controller = "Json", action = "GetAbssCustomerData" },
+new { apId = @"\d+" }
+);
+            //customerinfo4abss
+            routes.MapRoute(
+null,
+"abss-json/{apId}/customerinfo4abss",
+new { controller = "Json", action = "GetCustomerInfo4AbssData" },
+new { apId = @"\d+" }
+);
 
             routes.MapRoute(
           null,

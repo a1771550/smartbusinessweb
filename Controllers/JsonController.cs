@@ -1,20 +1,319 @@
-﻿using Newtonsoft.Json;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Newtonsoft.Json;
 using PPWDAL;
+using PPWLib.Helpers;
+using PPWLib.Models;
 using PPWLib.Models.Item;
 using PPWLib.Models.MYOB;
+using System;
 using System.Collections.Generic;
+using System.Data.Entity.Validation;
+using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Mvc;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Header;
 
 namespace SmartBusinessWeb.Controllers
 {
     public class JsonController : Controller
     {
         [System.Web.Http.HttpPost]
-        public async Task GetAbssData(int apId, string type, [FromBody] List<MyobItem> items)
-        {            
+        public async Task<HttpResponseMessage> GetAbssCustomerData(int apId, [FromBody] List<MyobCustomer> customers)
+        {
+            HttpRequestMessage request = new HttpRequestMessage();
+            string dbname = GetDbName(apId);
+            using var context = new PPWDbContext(dbname);
+
+            using (var transaction = context.Database.BeginTransaction())
+            {
+                try
+                {
+                    List<int> customerIds = customers.Select(x => x.cusCustomerID).Distinct().ToList();
+                    List<MyobCustomer> _customers = context.MyobCustomers.Where(x => x.AccountProfileId == apId && customerIds.Contains(x.cusCustomerID)).ToList();
+
+                    #region Backup Customer Point Information 
+                    Dictionary<string, CustomerPointInfo> DicCusPointInfo = new Dictionary<string, CustomerPointInfo>();
+                    foreach (var customer in _customers)
+                    {
+                        DicCusPointInfo[customer.cusCode] = new CustomerPointInfo
+                        {
+                            PointsSoFar = customer.cusPointsSoFar ?? 0,
+                            PointsActive = customer.cusPointsActive ?? 0,
+                            PointsUsed = customer.cusPointsUsed ?? 0,
+                            PriceLevelID = customer.cusPriceLevelID
+                        };
+                    }
+                    #endregion
+
+                    #region remove current data first:
+                    //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Customer]");                   
+                    context.MyobCustomers.RemoveRange(_customers);
+                    await context.SaveChangesAsync();
+                    #endregion
+
+                    foreach(var mcustomer in customers)
+                    {
+                        var customerPointInfo = DicCusPointInfo.ContainsKey(mcustomer.cusCode) ? DicCusPointInfo[mcustomer.cusCode] : null;
+                        if (customerPointInfo != null)
+                        {
+                            mcustomer.cusPointsSoFar = customerPointInfo.PointsSoFar;
+                            mcustomer.cusPointsActive = customerPointInfo.PointsActive;
+                            mcustomer.cusPointsUsed = customerPointInfo.PointsUsed;
+                            mcustomer.cusPriceLevelID = customerPointInfo.PriceLevelID;
+                        }
+                    }
+
+                    context.MyobCustomers.AddRange(customers);
+                    await context.SaveChangesAsync();
+
+
+                    ModelHelper.WriteLog(context, "Import Customer data from Central done", "ImportFrmCentral");
+                    await context.SaveChangesAsync();
+                    transaction.Commit();
+
+                    return request.CreateResponse(System.Net.HttpStatusCode.OK);
+                }
+                catch (DbEntityValidationException e)
+                {
+                    transaction.Rollback();
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                            eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                ve.PropertyName,
+                eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                ve.ErrorMessage);
+                        }
+                    }
+                    //throw new Exception(sb.ToString());
+                    ModelHelper.WriteLog(context, string.Format("Import customer data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+                    context.SaveChanges();
+                }
+            }
+         
+            return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
+        }
+
+        [System.Web.Http.HttpPost]
+        public async Task<HttpResponseMessage> GetCustomerInfo4AbssData(int apId, [FromBody] List<CustomerInfo4Abss> customerInfos)
+        {
+            HttpRequestMessage request = new HttpRequestMessage();
+            string dbname = GetDbName(apId);
+            using var context = new PPWDbContext(dbname);
+
+            using (var transaction = context.Database.BeginTransaction())
+            {
+                try
+                {
+                    List<long> customerInfoIds = customerInfos.Select(x => x.Id).Distinct().ToList();
+                    List<CustomerInfo4Abss> _customerInfos = context.CustomerInfo4Abss.Where(x => x.AccountProfileId == apId && customerInfoIds.Contains(x.Id)).ToList();
+
+                    #region remove current data first:
+                    //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [CustomerInfo4Abss]");                   
+                    context.CustomerInfo4Abss.RemoveRange(_customerInfos);
+                    await context.SaveChangesAsync();
+                    #endregion
+
+                    context.CustomerInfo4Abss.AddRange(customerInfos);
+                    await context.SaveChangesAsync();
+
+
+                    ModelHelper.WriteLog(context, "Import CustomerInfo4Abss data from Central done", "ImportFrmCentral");
+                    context.SaveChanges();
+                    transaction.Commit();
+
+                    return request.CreateResponse(System.Net.HttpStatusCode.OK);
+                }
+                catch (DbEntityValidationException e)
+                {
+                    transaction.Rollback();
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                            eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                ve.PropertyName,
+                eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                ve.ErrorMessage);
+                        }
+                    }
+                    //throw new Exception(sb.ToString());
+                    ModelHelper.WriteLog(context, string.Format("Import customerInfo data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+                    context.SaveChanges();
+                }
+            }
+
+            return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
+        }
+
+
+        [System.Web.Http.HttpPost]
+        public async Task<HttpResponseMessage> GetAbssLocationData(int apId, [FromBody] List<MyobLocation> locations)
+        {
+            HttpRequestMessage request = new HttpRequestMessage();
+            string dbname = GetDbName(apId);
+            using var context = new PPWDbContext(dbname);
+
+            using (var transaction = context.Database.BeginTransaction())
+            {
+                try
+                {
+                    #region remove current data first:
+                    //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Location]");
+                    List<int> locationIds = locations.Select(x => x.LocationID).Distinct().ToList();
+                    List<MyobLocation> _locations = context.MyobLocations.Where(x => x.AccountProfileId == apId && locationIds.Contains(x.LocationID)).ToList();
+                    context.MyobLocations.RemoveRange(_locations);
+                    await context.SaveChangesAsync();
+                    #endregion
+                    context.MyobLocations.AddRange(locations);
+                    await context.SaveChangesAsync();
+                    ModelHelper.WriteLog(context, "Import Location data from Central done", "ImportFrmCentral");
+                    await context.SaveChangesAsync();
+                    transaction.Commit();
+
+                    return request.CreateResponse(System.Net.HttpStatusCode.OK);
+                }
+                catch (DbEntityValidationException e)
+                {
+                    transaction.Rollback();
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                            eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                ve.PropertyName,
+                eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                ve.ErrorMessage);
+                        }
+                    }
+                    //throw new Exception(sb.ToString());
+                    ModelHelper.WriteLog(context, string.Format("Import location data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+                    context.SaveChanges();
+                }
+            }
+
+            return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
+        }
+
+        [System.Web.Http.HttpPost]
+        public async Task<HttpResponseMessage> GetAbssItemData(int apId, [FromBody] List<MyobItem> items)
+        {
+            HttpRequestMessage request = new HttpRequestMessage();
+            string dbname = GetDbName(apId);
+            using var context = new PPWDbContext(dbname);
+
+            using (var transaction = context.Database.BeginTransaction())
+            {
+                try
+                {
+                    #region remove current data first:
+                    //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Item]");
+                    List<int> itemIds = items.Select(x => x.itmItemID).Distinct().ToList();
+                    List<MyobItem> _items = context.MyobItems.Where(x => x.AccountProfileId == apId && itemIds.Contains(x.itmItemID)).ToList();
+                    context.MyobItems.RemoveRange(_items);
+                    context.SaveChanges();
+                    #endregion
+
+                    context.MyobItems.AddRange(items);
+                    await context.SaveChangesAsync();
+                    ModelHelper.WriteLog(context, "Import Item data from Central done", "ImportFrmCentral");
+                    await context.SaveChangesAsync();
+                    transaction.Commit();
+
+                    return request.CreateResponse(System.Net.HttpStatusCode.OK);
+                }
+                catch (DbEntityValidationException e)
+                {
+                    transaction.Rollback();
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                            eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                ve.PropertyName,
+                eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                ve.ErrorMessage);
+                        }
+                    }
+                    //throw new Exception(sb.ToString());
+                    ModelHelper.WriteLog(context, string.Format("Import item data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+                    context.SaveChanges();
+                }
+            }        
+
+
+            return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
+        }
+
+        [System.Web.Http.HttpPost]
+        public async Task<HttpResponseMessage> GetAbssStockData(int apId, [FromBody] List<MyobLocStock> stocks)
+        {
+            HttpRequestMessage request = new HttpRequestMessage();
+            string dbname = GetDbName(apId);
+            using var context = new PPWDbContext(dbname);
+
+            using (var transaction = context.Database.BeginTransaction())
+            {
+                try
+                {
+                    #region remove current data first:
+                    //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Item]");
+                    List<int> stockIds = stocks.Select(x => (int)x.lstItemID!).Distinct().ToList();
+                    List<MyobLocStock> _stocks = context.MyobLocStocks.Where(x => x.AccountProfileId == apId && stockIds.Contains((int)x.lstItemID!)).ToList();
+                    context.MyobLocStocks.RemoveRange(_stocks);
+                    await context.SaveChangesAsync();
+                    #endregion
+                    context.MyobLocStocks.AddRange(stocks);
+                    await context.SaveChangesAsync();
+                    ModelHelper.WriteLog(context, "Import LocStock data from Central done", "ImportFrmCentral");
+                    await context.SaveChangesAsync();
+                    transaction.Commit();
+
+                    return request.CreateResponse(System.Net.HttpStatusCode.OK);
+                }
+                catch (DbEntityValidationException e)
+                {
+                    transaction.Rollback();
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                            eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                ve.PropertyName,
+                eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                ve.ErrorMessage);
+                        }
+                    }
+                    //throw new Exception(sb.ToString());
+                    ModelHelper.WriteLog(context, string.Format("Import stock data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+                    context.SaveChanges();
+                }
+            }
+
+            return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
+        }
+
+        private static string GetDbName(int apId)
+        {
             string dbname;
             switch (apId)
             {
@@ -29,12 +328,8 @@ namespace SmartBusinessWeb.Controllers
                     dbname = "POSPro";
                     break;
             }
-            using var context = new PPWDbContext(dbname);
-            if (type == "items")
-            {
-                context.MyobItems.AddRange(items);
-                await context.SaveChangesAsync();
-            }            
+
+            return dbname;
         }
     }
 }
