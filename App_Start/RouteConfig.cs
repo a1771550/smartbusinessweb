@@ -43,6 +43,27 @@ new { controller = "Api", action = "ViewTrack", contactName = UrlParameter.Optio
 
             routes.MapRoute(
    null,
+   "abss-json/{apId}/{strfrmdate}/{strtodate}/{location}/{includeUploaded}/po",
+new { controller = "Json", action = "GetUploadPoData" },
+new { apId = @"\d+", strfrmdate = @"\d+\-\d+\-\d+", strtodate = @"\d+\-\d+\-\d+", location = @"\w+", includeUploaded=@"\d+" }
+   );
+
+            routes.MapRoute(
+   null,
+   "abss-json/{apId}/{strfrmdate}/{strtodate}/{location}/po",
+new { controller = "Json", action = "GetPoCount" },
+new { apId = @"\d+", strfrmdate = @"\d+\-\d+\-\d+", strtodate = @"\d+\-\d+\-\d+", location = @"\w+" }
+   );
+
+            routes.MapRoute(
+   null,
+   "abss-json/{apId}/checkoutpo",
+new { controller = "Json", action = "CheckOutPo" },
+new { apId = @"\d+" }
+   );
+
+            routes.MapRoute(
+   null,
    "abss-json/{apId}/locations",
 new { controller = "Json", action = "GetAbssLocationData" },
 new { apId = @"\d+" }

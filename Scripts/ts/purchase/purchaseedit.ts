@@ -574,7 +574,7 @@ $(function () {
         }
         //console.log("uploadfilelist length:", Purchase.UploadFileList.length);
         purchasestockitems = $infoblk.data("jsonpurchasestockitems");
-        //console.log("purchasestockitems:", purchasestockitems);
+        console.log("purchasestockitems:", purchasestockitems);
         Purchase.DicItemOptions = $infoblk.data("jsonpurchasedicitemoptions");
         DicItemOptions = Object.assign({}, Purchase.DicItemOptions);
         //console.log("dicitemoptions:", DicItemOptions);
@@ -689,9 +689,13 @@ $(function () {
         addRow();
     }
 
-    $("#drpSupplier > option").each(function (i, e) {
-        SupplierOptionList.push(`<option value="${$(e).val()}">${$(e).text()}</option>`);
-    });
+    //console.log("SupplierOptionList:", SupplierOptionList);
+    if (SupplierOptionList.length > 0) {
+        $("#drpSupplier > option").each(function (i, e) {
+            SupplierOptionList.push(`<option value="${$(e).val()}">${$(e).text()}</option>`);
+        });
+    }
+
     $("#drpSupplier").select2();
     backUpCardDrpOptions();
 

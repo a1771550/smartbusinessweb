@@ -1,12 +1,15 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
+﻿using Azure.Core;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Newtonsoft.Json;
 using PPWDAL;
 using PPWLib.Helpers;
 using PPWLib.Models;
 using PPWLib.Models.Item;
 using PPWLib.Models.MYOB;
+using PPWLib.Models.Purchase;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Entity.Validation;
 using System.Linq;
 using System.Net.Http;
@@ -20,6 +23,109 @@ namespace SmartBusinessWeb.Controllers
 {
     public class JsonController : Controller
     {
+        [System.Web.Http.HttpPost]
+        public async Task<HttpResponseMessage> CheckOutPo(int apId, [FromBody] HashSet<long> checkoutIds)
+        {
+            HttpRequestMessage request = new HttpRequestMessage();
+            string dbname = GetDbName(apId);
+            using var context = new PPWDbContext(dbname);
+            List<PPWDAL.Purchase> pslist = context.Purchases.Where(x => x.AccountProfileId == apId && checkoutIds.Any(y => x.Id == y)).ToList();
+            foreach (var ps in pslist)
+            {
+                ps.pstCheckout = true;
+            }
+            await context.SaveChangesAsync();
+            return request.CreateResponse(System.Net.HttpStatusCode.OK);
+        }
+
+        [System.Web.Http.HttpGet]
+        public string GetUploadPoData(int apId, string strfrmdate, string strtodate, string location, int includeUploaded)
+        {
+            UploadAbssData data=new UploadAbssData();
+            string dbname = GetDbName(apId);
+            using var context = new PPWDbContext(dbname);
+            ComInfo comInfo = context.ComInfoes.FirstOrDefault(x=>x.AccountProfileId== apId);
+            if(comInfo!=null)
+            {
+                DataTransferModel dmodel = new DataTransferModel
+                {
+                    SelectedLocation = location,
+                    includeUploaded = includeUploaded==1
+                };
+
+                const char delimeter = '-';
+
+                #region Date Ranges
+                int year = DateTime.Now.Year;
+                DateTime frmdate;
+                DateTime todate;
+                if (string.IsNullOrEmpty(strfrmdate))
+                {
+                    frmdate = DateTime.Today;
+                }
+                else
+                {
+                    int mth = int.Parse(strfrmdate.Split(delimeter)[1]);
+                    int day = int.Parse(strfrmdate.Split(delimeter)[0]);
+                    year = int.Parse(strfrmdate.Split(delimeter)[2]);
+                    frmdate = new DateTime(year, mth, day);
+                }
+                if (string.IsNullOrEmpty(strtodate))
+                {
+                    todate = DateTime.Today;
+                }
+                else
+                {
+                    int mth = int.Parse(strtodate.Split(delimeter)[1]);
+                    int day = int.Parse(strtodate.Split(delimeter)[0]);
+                    year = int.Parse(strtodate.Split(delimeter)[2]);
+                    todate = new DateTime(year, mth, day);
+                }
+                #endregion
+
+                var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", dbname);
+
+                data.sqllist = PurchaseEditModel.GetUploadPurchaseSqlList(apId, ref dmodel, strfrmdate, strtodate, comInfo, context, frmdate, todate, connectionString);
+                data.checkoutIds = dmodel.PoCheckOutIds;
+            }
+            return System.Text.Json.JsonSerializer.Serialize(data);
+        }
+        [System.Web.Http.HttpGet]
+        public int GetPoCount(int apId, string strfrmdate, string strtodate, string location)
+        { 
+            string dbname = GetDbName(apId);
+            using var context = new PPWDbContext(dbname);
+            #region Date Ranges
+            int year = DateTime.Now.Year;
+            DateTime frmdate;
+            DateTime todate;
+            const char delimeter = '-';
+            if (string.IsNullOrEmpty(strfrmdate))
+            {
+                frmdate = DateTime.Today;
+            }
+            else
+            {
+                int mth = int.Parse(strfrmdate.Split(delimeter)[1]);
+                int day = int.Parse(strfrmdate.Split(delimeter)[0]);
+                year = int.Parse(strfrmdate.Split(delimeter)[2]);
+                frmdate = new DateTime(year, mth, day);
+            }
+            if (string.IsNullOrEmpty(strtodate))
+            {
+                todate = DateTime.Today;
+            }
+            else
+            {
+                int mth = int.Parse(strtodate.Split(delimeter)[1]);
+                int day = int.Parse(strtodate.Split(delimeter)[0]);
+                year = int.Parse(strtodate.Split(delimeter)[2]);
+                todate = new DateTime(year, mth, day);
+            }
+            #endregion
+            return (int)context.GetPoCount(apId, location, frmdate, todate).FirstOrDefault();
+        }
+
         [System.Web.Http.HttpPost]
         public async Task<HttpResponseMessage> GetAbssCustomerData(int apId, [FromBody] List<MyobCustomer> customers)
         {
@@ -54,7 +160,7 @@ namespace SmartBusinessWeb.Controllers
                     await context.SaveChangesAsync();
                     #endregion
 
-                    foreach(var mcustomer in customers)
+                    foreach (var mcustomer in customers)
                     {
                         var customerPointInfo = DicCusPointInfo.ContainsKey(mcustomer.cusCode) ? DicCusPointInfo[mcustomer.cusCode] : null;
                         if (customerPointInfo != null)
@@ -97,7 +203,7 @@ namespace SmartBusinessWeb.Controllers
                     context.SaveChanges();
                 }
             }
-         
+
             return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
         }
 
@@ -255,7 +361,7 @@ namespace SmartBusinessWeb.Controllers
                     ModelHelper.WriteLog(context, string.Format("Import item data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
                     context.SaveChanges();
                 }
-            }        
+            }
 
 
             return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
@@ -331,5 +437,11 @@ namespace SmartBusinessWeb.Controllers
 
             return dbname;
         }
+    }
+
+    public class UploadAbssData
+    {
+        public List<string> sqllist { get; set; }
+        public HashSet<long> checkoutIds { get; set; }
     }
 }

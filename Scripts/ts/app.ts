@@ -16138,7 +16138,8 @@ function handleExRateChange(cardcode: string, triggerCardChange: boolean) {
         currentY = 0;
 
         if (triggerCardChange) {
-            $("#drpSupplier").empty().append(SupplierOptionList.join(""));
+            if(SupplierOptionList.length>0)
+                $("#drpSupplier").empty().append(SupplierOptionList.join(""));
             $("#drpSupplier > option").each(function (i, e) {
                 const _cardcode = $(e).val() as string;
                 var currkey = GetForeignCurrencyFrmCode(_cardcode);

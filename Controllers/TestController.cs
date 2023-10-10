@@ -189,7 +189,7 @@ namespace SmartBusinessWeb.Controllers
         public void GetHost()
         {
             EmailEditModel model = new EmailEditModel();
-            var mailsettings = model.Get(1);
+            var mailsettings = model.Get();
             string host = Request.IsLocal ? string.Concat("http://", UriHelper.GetLocalIPAddress(), @"/Track") : mailsettings.emEmailTrackingURL;
             //http://192.168.123.78/Track
             Response.Write(host);
