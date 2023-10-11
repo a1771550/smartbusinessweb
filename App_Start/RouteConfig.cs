@@ -43,6 +43,34 @@ new { controller = "Api", action = "ViewTrack", contactName = UrlParameter.Optio
 
             routes.MapRoute(
    null,
+   "abss-json/{apId}/{strfrmdate}/{strtodate}/{location}/{includeUploaded}/retail",
+new { controller = "Json", action = "GetUploadRetailData" },
+new { apId = @"\d+", strfrmdate = @"\d+\-\d+\-\d+", strtodate = @"\d+\-\d+\-\d+", location = @"\w+", includeUploaded = @"\d+" }
+   );
+
+            routes.MapRoute(
+   null,
+   "abss-json/{apId}/{strfrmdate}/{strtodate}/{location}/retail",
+new { controller = "Json", action = "GetRetailCount" },
+new { apId = @"\d+", strfrmdate = @"\d+\-\d+\-\d+", strtodate = @"\d+\-\d+\-\d+", location = @"\w+" }
+   );
+            //for wholesales
+            routes.MapRoute(
+  null,
+  "abss-json/{apId}/{strfrmdate}/{strtodate}/{location}/{includeUploaded}/ws",
+new { controller = "Json", action = "GetUploadWSData" },
+new { apId = @"\d+", strfrmdate = @"\d+\-\d+\-\d+", strtodate = @"\d+\-\d+\-\d+", location = @"\w+", includeUploaded = @"\d+" }
+  );
+            //for wholesales
+            routes.MapRoute(
+   null,
+   "abss-json/{apId}/{strfrmdate}/{strtodate}/{location}/ws",
+new { controller = "Json", action = "GetWSCount" },
+new { apId = @"\d+", strfrmdate = @"\d+\-\d+\-\d+", strtodate = @"\d+\-\d+\-\d+", location = @"\w+" }
+   );
+
+            routes.MapRoute(
+   null,
    "abss-json/{apId}/{strfrmdate}/{strtodate}/{location}/{includeUploaded}/po",
 new { controller = "Json", action = "GetUploadPoData" },
 new { apId = @"\d+", strfrmdate = @"\d+\-\d+\-\d+", strtodate = @"\d+\-\d+\-\d+", location = @"\w+", includeUploaded=@"\d+" }
@@ -53,6 +81,19 @@ new { apId = @"\d+", strfrmdate = @"\d+\-\d+\-\d+", strtodate = @"\d+\-\d+\-\d+"
    "abss-json/{apId}/{strfrmdate}/{strtodate}/{location}/po",
 new { controller = "Json", action = "GetPoCount" },
 new { apId = @"\d+", strfrmdate = @"\d+\-\d+\-\d+", strtodate = @"\d+\-\d+\-\d+", location = @"\w+" }
+   );
+            routes.MapRoute(
+   null,
+   "abss-json/{apId}/checkoutretail",
+new { controller = "Json", action = "CheckOutRetail" },
+new { apId = @"\d+" }
+   );
+            //wholesales
+            routes.MapRoute(
+   null,
+   "abss-json/{apId}/checkoutws",
+new { controller = "Json", action = "CheckOutWS" },
+new { apId = @"\d+" }
    );
 
             routes.MapRoute(
@@ -91,6 +132,19 @@ new { apId = @"\d+" }
 null,
 "abss-json/{apId}/customerinfo4abss",
 new { controller = "Json", action = "GetCustomerInfo4AbssData" },
+new { apId = @"\d+" }
+);
+            routes.MapRoute(
+null,
+"abss-json/{apId}/suppliers",
+new { controller = "Json", action = "GetAbssSupplierData" },
+new { apId = @"\d+" }
+);
+            //supplierinfo4abss
+            routes.MapRoute(
+null,
+"abss-json/{apId}/supplierinfo4abss",
+new { controller = "Json", action = "GetSupplierInfo4AbssData" },
 new { apId = @"\d+" }
 );
 
