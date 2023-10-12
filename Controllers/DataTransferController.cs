@@ -26,6 +26,7 @@ using PPWLib.Models.WholeSales;
 using PPWLib.Models.POS.Customer;
 using Dapper;
 using Microsoft.Data.SqlClient;
+using PPWLib.Models.POS.Sales;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -614,16 +615,16 @@ namespace SmartBusinessWeb.Controllers
 				switch (type)
 				{
 					case "supplier":
-						await ExportData4G3(apId, model, dmodel, "Suppliers_", model.SalesDateFrmTxt, model.SalesDateToTxt, includePending, includeUploaded, lang, currsess.sesSalesPrefix, currsess.sesRefundPrefix);
+						await ExportData4G3(apId, dmodel, "Suppliers_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
 						break;
 					case "purchase":
-						await ExportData4G3(apId, model, dmodel, "Purchase_", model.SalesDateFrmTxt, model.SalesDateToTxt, includePending, includeUploaded, lang, currsess.sesSalesPrefix, currsess.sesRefundPrefix);
+						await ExportData4G3(apId, dmodel, "Purchase_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
 						break;
 					case "item":
 						filenames = new string[2] { "Items_", "PGLocStocks_" };
 						foreach (var filename in filenames)
 						{
-							await ExportData4G3(apId, model, dmodel, filename, model.SalesDateFrmTxt, model.SalesDateToTxt, includePending, includeUploaded, lang, currsess.sesSalesPrefix, currsess.sesRefundPrefix);
+							await ExportData4G3(apId, dmodel, filename, model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
 						}
 						break;
 					case "customer":
@@ -631,15 +632,15 @@ namespace SmartBusinessWeb.Controllers
 						filenames = new string[1] { "Customers_" };
 						foreach (var filename in filenames)
 						{
-							await ExportData4G3(apId, model, dmodel, filename, model.SalesDateFrmTxt, model.SalesDateToTxt, includePending, includeUploaded, lang, currsess.sesSalesPrefix, currsess.sesRefundPrefix);
+							await ExportData4G3(apId, dmodel, filename, model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
 						}
 						break;
 					case "wholesales":
-						await ExportData4G3(apId, model, dmodel, "Wholesales_", model.SalesDateFrmTxt, model.SalesDateToTxt, includePending, includeUploaded, lang, currsess.sesSalesPrefix, currsess.sesRefundPrefix);
+						await ExportData4G3(apId, dmodel, "Wholesales_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
 						break;
 					default:
 					case "sales":
-						await ExportData4G3(apId, model, dmodel, "ItemSales_", model.SalesDateFrmTxt, model.SalesDateToTxt, includePending, includeUploaded, lang, currsess.sesSalesPrefix, currsess.sesRefundPrefix);
+						await ExportData4G3(apId, dmodel, "ItemSales_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
 						break;
 				}
 
@@ -655,8 +656,8 @@ namespace SmartBusinessWeb.Controllers
 			return CheckoutPortal == "abss" ? Json(new { msg, PendingInvoices = ret, offlinemode = 0 }) : Json(new { msg, PendingInvoices = ret, offlinemode = 0, result = System.Text.Json.JsonSerializer.Serialize(dicResult) });
 		}
 
-		private async Task ExportData4G3(int accountprofileId, DayEndsModel model, DataTransferModel dmodel, string filename, string strfrmdate = "", string strtodate = "", bool includePending = false, bool includeUploaded = false, int lang = 0, string salesprefix = "", string refundprefix = "")
-		{
+		private async Task ExportData4G3(int accountprofileId, DataTransferModel dmodel, string filename, string strfrmdate = "", string strtodate = "", bool includeUploaded = false, int lang = 0)
+        {
 			var comInfo = Session["ComInfo"] as ComInfo;
 			SessUser curruser = Session["User"] as SessUser;
 			OnlineModeItem onlineModeItem = new OnlineModeItem();
@@ -673,7 +674,7 @@ namespace SmartBusinessWeb.Controllers
 			connection.Open();
 
 			if (filename.StartsWith("ItemSales_"))
-			{
+            {
                 #region Date Ranges
                 int year = DateTime.Now.Year;
                 DateTime frmdate;
@@ -704,481 +705,67 @@ namespace SmartBusinessWeb.Controllers
                 }
                 #endregion
 
-                bool ismultiuser = (bool)comInfo.MyobMultiUser;
-				string currencycode = comInfo.DefaultCurrencyCode;
-				double exchangerate = (double)comInfo.DefaultExchangeRate;             
-				var JobList = connection.Query<MyobJobModel>(@"EXEC dbo.GetJobList @apId=@apId", new { apId }).ToList();
+                var session = ModelHelper.GetCurrentSession(context);
+                var location = session.sesShop.ToLower();
+                var device = session.sesDvc.ToLower();
 
-				#region Local Variables
-				string sql = "";
-				List<SalesModel> SalesModels = new List<SalesModel>();
-				List<SalesModel> RefundModels = new List<SalesModel>();
-				List<SalesLnView> SalesLnViews = new List<SalesLnView>();
-				List<SalesLnView> RefundLnViews = new List<SalesLnView>();
-				List<PayLnView> PayLnViews = new List<PayLnView>();
-				List<string> sqllist = new List<string>();
-				string accountno = "";
-				int groupcount = 0; //for debug use             
-				#endregion
+                dmodel.RetailCheckOutIds = new HashSet<long>();
+                dmodel.SelectedLocation = location;
+                dmodel.Device = device;
 
-				apId = ModelHelper.GetAccountProfileId(context);
-				var session = ModelHelper.GetCurrentSession(context);
-				var location = session.sesShop.ToLower();
-				var device = session.sesDvc.ToLower();
+                List<string> sqllist = RetailEditModel.GetUploadSqlList(includeUploaded, lang, comInfo, apId, context, connection, frmdate, todate, ref dmodel);
+               
 
-				var dateformatcode = context.AppParams.FirstOrDefault(x => x.appParam == "DateFormat").appVal;
+                if (sqllist.Count > 0)
+                {
+                    #region Write to MYOB
+                    using (localhost.Dayends dayends = new localhost.Dayends())
+                    {
+                        dayends.Url = comInfo.WebServiceUrl;
+                        dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
+                    }
+                    #endregion
 
-				accountno = context.ComInfoes.FirstOrDefault().comAccountNo;
+                    #region Write sqllist into Log & update checkoutIds
+                    using (var transaction = context.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            ModelHelper.WriteLog(context, string.Format("Export Sales data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
+                            List<RtlSale> saleslist = context.RtlSales.Where(x => checkoutIds.Any(y => x.rtsUID == y)).ToList();
+                            foreach (var sales in saleslist)
+                            {
+                                sales.rtsCheckout = true;
+                            }
+                            context.SaveChanges();
+                            transaction.Commit();
+                        }
+                        catch (DbEntityValidationException e)
+                        {
+                            transaction.Rollback();
+                            StringBuilder sb = new StringBuilder();
+                            foreach (var eve in e.EntityValidationErrors)
+                            {
+                                sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                                foreach (var ve in eve.ValidationErrors)
+                                {
+                                    sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                    ve.PropertyName,
+                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                    ve.ErrorMessage);
+                                }
+                            }
+                            ModelHelper.WriteLog(context, string.Format("Export Sales data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",",sqllist), ConnectionString), "ExportFrmShop");
+                            context.SaveChanges();
+                        }
 
-				#region SalesLns
+                    }
+                    #endregion
+                }
+            }
 
-				List<string> salescodes = new List<string>();
-
-				#region SalesModels
-
-				SalesModels = (from s in context.RtlSales
-							   where s.rtsDate >= frmdate && s.rtsDate <= todate && s.rtsType == "RS"
-							   && s.rtsSalesLoc.ToLower() == location && s.rtsDvc.ToLower() == device && s.AccountProfileId == apId
-							   select s
-						   ).ToList().
-						   Select(s => new SalesModel(lang)
-						   {
-							   rtsUID = s.rtsUID,
-							   rtsCode = s.rtsCode,
-							   rtsFinalTotal = s.rtsFinalTotal,
-							   rtsMonthBase = s.rtsMonthBase,
-							   Lang = lang,
-							   rtsRefCode = s.rtsRefCode, //for deposit reference
-							   rtsCheckoutPortal = s.rtsCheckoutPortal,
-							   rtsDeliveryAddress1 = s.rtsDeliveryAddress1,
-							   rtsDeliveryAddress2 = s.rtsDeliveryAddress2,
-							   rtsDeliveryAddress3 = s.rtsDeliveryAddress3,
-							   rtsDeliveryAddress4 = s.rtsDeliveryAddress4,
-							   rtsCheckout = s.rtsCheckout,
-							   rtsCurrency = s.rtsCurrency,
-							   rtsExRate = s.rtsExRate
-						   }
-						).ToList();
-				if (!includeUploaded && SalesModels.Count > 0)
-				{
-					SalesModels = SalesModels.Where(x => !x.rtsCheckout).ToList();
-				}
-				#endregion
-
-				#region RefundModels
-				RefundModels = (from s in context.RtlSales
-								where s.rtsDate >= frmdate && s.rtsDate <= todate && s.rtsType == "RF"
-								&& s.rtsSalesLoc.ToLower() == location && s.rtsDvc.ToLower() == device && s.AccountProfileId == apId
-								select s
-						   ).ToList().
-						   Select(s => new SalesModel(lang)
-						   {
-							   rtsUID = s.rtsUID,
-							   rtsCode = s.rtsCode,
-							   rtsFinalTotal = s.rtsFinalTotal,
-							   rtsRefCode = s.rtsRefCode, //for deposit reference
-							   rtsCheckoutPortal = s.rtsCheckoutPortal,
-							   rtsDeliveryAddress1 = s.rtsDeliveryAddress1,
-							   rtsDeliveryAddress2 = s.rtsDeliveryAddress2,
-							   rtsDeliveryAddress3 = s.rtsDeliveryAddress3,
-							   rtsDeliveryAddress4 = s.rtsDeliveryAddress4,
-							   rtsCheckout = s.rtsCheckout,
-							   rtsCurrency = s.rtsCurrency,
-							   rtsExRate = s.rtsExRate
-						   }
-							).ToList();
-				if (!includeUploaded && RefundModels.Count > 0)
-				{
-					RefundModels = RefundModels.Where(x => !x.rtsCheckout).ToList();
-				}
-				#endregion
-
-				#region SalesLnViews
-				if (SalesModels.Count > 0)
-				{
-					foreach (var sales in SalesModels)
-					{
-						sales.rtsDeliveryAddress1 = CommonHelper.StringHandleAddress(sales.rtsDeliveryAddress1);
-						sales.rtsDeliveryAddress2 = CommonHelper.StringHandleAddress(sales.rtsDeliveryAddress2);
-						sales.rtsDeliveryAddress3 = CommonHelper.StringHandleAddress(sales.rtsDeliveryAddress3);
-						sales.rtsDeliveryAddress4 = CommonHelper.StringHandleAddress(sales.rtsDeliveryAddress4);
-					}
-
-					//JobList = ModelHelper.GetJobList(apId);
-					SalesLnViews = (from sl in context.RtlSalesLns
-									join s in context.RtlSales
-									on sl.rtlCode equals s.rtsCode
-									//join j in context.MyobJobs
-									//on sl.JobID equals j.JobID
-									where s.rtsDate >= frmdate && s.rtsDate <= todate && s.rtsType == "RS" && s.AccountProfileId == apId
-									&& s.rtsSalesLoc.ToLower() == location && s.rtsDvc.ToLower() == device && sl.AccountProfileId == apId
-									//&& j.AccountProfileId==apId
-									select new SalesLnView
-									{
-										rtlItemCode = sl.rtlItemCode,
-										rtlUID = sl.rtlUID,
-										rtlCode = sl.rtlCode,
-										dQty = (double)sl.rtlQty,
-										dLineSalesAmt = (double)sl.rtlSalesAmt,
-										dLineDiscPc = sl.rtlLineDiscPc == null ? 0 : (double)sl.rtlLineDiscPc,
-										dPrice = (double)sl.rtlSellingPrice,
-										rtlDate = sl.rtlDate,
-										rtlSalesLoc = sl.rtlSalesLoc,
-										CustomerID = s.rtsCusID,
-										rtlRefSales = sl.rtlRefSales,
-										SalesPersonName = s.rtsUpldBy.ToUpper(),
-										rtlSalesAmt = sl.rtlSalesAmt,
-										InvoiceStatus = s.rtsStatus,
-										IsCheckout = s.rtsCheckout,
-										CheckoutPortal = s.rtsCheckoutPortal,
-										rtsDeliveryAddress1 = s.rtsDeliveryAddress1,
-										rtsDeliveryAddress2 = s.rtsDeliveryAddress2,
-										rtsDeliveryAddress3 = s.rtsDeliveryAddress3,
-										rtsDeliveryAddress4 = s.rtsDeliveryAddress4,
-										CompanyId = s.CompanyId,
-										rtlStockLoc = sl.rtlStockLoc,
-										JobID = sl.JobID,
-										rtsCurrency = s.rtsCurrency,
-										rtsExRate = s.rtsExRate
-									}
-									).ToList();
-					if (!includeUploaded && SalesLnViews.Count > 0)
-					{
-						SalesLnViews = SalesLnViews.Where(x => !x.IsCheckout).ToList();
-					}
-				}
-				#endregion
-
-				#region RefundLnViews
-				if (RefundModels.Count > 0)
-				{
-					foreach (var sales in RefundModels)
-					{
-						sales.rtsDeliveryAddress1 = CommonHelper.StringHandleAddress(sales.rtsDeliveryAddress1);
-						sales.rtsDeliveryAddress2 = CommonHelper.StringHandleAddress(sales.rtsDeliveryAddress2);
-						sales.rtsDeliveryAddress3 = CommonHelper.StringHandleAddress(sales.rtsDeliveryAddress3);
-						sales.rtsDeliveryAddress4 = CommonHelper.StringHandleAddress(sales.rtsDeliveryAddress4);
-					}
-					RefundLnViews = (from sl in context.RtlSalesLns
-									 join s in context.RtlSales
-									 on sl.rtlCode equals s.rtsCode
-									 // join j in context.MyobJobs
-									 //on sl.JobID equals j.JobID
-									 where s.rtsDate >= frmdate && s.rtsDate <= todate && s.rtsType == "RF" && s.AccountProfileId == apId
-									 && s.rtsSalesLoc.ToLower() == location && s.rtsDvc.ToLower() == device && sl.AccountProfileId == apId
-									 //&& j.AccountProfileId==apId
-									 select new SalesLnView
-									 {
-										 rtlItemCode = sl.rtlItemCode,
-										 rtlUID = sl.rtlUID,
-										 rtlCode = sl.rtlCode,
-										 dQty = (double)sl.rtlQty,
-										 dLineSalesAmt = (double)sl.rtlSalesAmt,
-										 dPrice = (double)sl.rtlSellingPrice,
-										 rtlDate = sl.rtlDate,
-										 rtlSalesLoc = sl.rtlSalesLoc,
-										 CustomerID = s.rtsCusID,
-										 rtlRefSales = sl.rtlRefSales,
-										 SalesPersonName = s.rtsUpldBy.ToUpper(),
-										 rtlSalesAmt = sl.rtlSalesAmt,
-										 InvoiceStatus = s.rtsStatus,
-										 IsCheckout = s.rtsCheckout,
-										 CheckoutPortal = s.rtsCheckoutPortal,
-										 rtsDeliveryAddress1 = s.rtsDeliveryAddress1,
-										 rtsDeliveryAddress2 = s.rtsDeliveryAddress2,
-										 rtsDeliveryAddress3 = s.rtsDeliveryAddress3,
-										 rtsDeliveryAddress4 = s.rtsDeliveryAddress4,
-										 CompanyId = s.CompanyId,
-										 rtlStockLoc = sl.rtlStockLoc,
-										 JobID = sl.JobID,
-										 rtsCurrency = s.rtsCurrency,
-										 rtsExRate = s.rtsExRate
-									 }
-									).ToList();
-					if (!includeUploaded && RefundLnViews.Count > 0)
-					{
-						RefundLnViews = RefundLnViews.Where(x => !x.IsCheckout).ToList();
-					}
-				}
-				#endregion
-
-				if (SalesLnViews.Count > 0)
-					ModelHelper.GetCustomerItemJob4SalesLn(ref SalesLnViews, ref VipList, context, apId, JobList);
-				if (RefundLnViews.Count > 0) ModelHelper.GetCustomerItemJob4SalesLn(ref RefundLnViews, ref VipList, context, apId, JobList);
-
-
-				Dictionary<string, string> DicPayTypes = new Dictionary<string, string>();
-				DicPayTypes = PPWCommonLib.CommonHelpers.ModelHelper.GetDicPayTypes(ProjectEnum.G3, lang);
-
-				foreach (var sales in SalesModels)
-				{
-					sales.DicPayTypes = DicPayTypes;
-				}
-				foreach (var sales in RefundModels)
-				{
-					sales.DicPayTypes = DicPayTypes;
-				}
-				#endregion
-
-				#region paylns
-				if (ApprovalMode)
-				{
-					PayLnViews = (from pl in context.RtlPayLns
-								  where salescodes.Any(x => x == pl.rtplCode) && pl.AccountProfileId == apId
-								  select new PayLnView
-								  {
-									  payId = pl.payId,
-									  Amount = pl.Amount,
-									  pmtCode = pl.pmtCode,
-									  rtplCode = pl.rtplCode,
-									  rtplParentId = pl.rtplParentId,
-									  //CompanyId = pl.CompanyId
-								  }
-									).ToList();
-
-
-					var paylist = (from p in context.RtlPays
-								   where salescodes.Any(x => x == p.rtpCode) && p.AccountProfileId == apId
-								   select p
-								   ).ToList();
-
-					foreach (var payln in PayLnViews)
-					{
-						var pay = paylist.FirstOrDefault(x => x.rtpUID == payln.payId && x.AccountProfileId == payln.AccountProfileId);
-						payln.rtpCode = pay.rtpCode;
-						payln.rtpPayType = pay.rtpPayType;
-					}
-				}
-				else
-				{
-					PayLnViews = (from pl in context.RtlPayLns
-								  join p in context.RtlPays
-								  on pl.payId equals p.rtpUID
-								  where p.rtpDate >= frmdate && p.rtpDate <= todate && p.rtpSalesLoc.ToLower() == location && p.rtpDvc.ToLower() == device && p.AccountProfileId == apId && pl.AccountProfileId == apId
-								  select new PayLnView
-								  {
-									  payId = pl.payId,
-									  Amount = pl.Amount,
-									  pmtCode = pl.pmtCode,
-									  rtpCode = p.rtpCode,
-									  rtpPayType = p.rtpPayType,
-									  rtplParentId = pl.rtplParentId,
-									  //CompanyId = pl.CompanyId
-								  }
-									).ToList();
-				}
-
-				#endregion
-
-				//for debug use
-				int salesmodelcount = SalesModels.Count();
-				int saleslnviewscount = SalesLnViews.Count();
-				int paylnviewscount = PayLnViews.Count();
-
-				string invoicestatus = comInfo.DefaultAbssInvoiceStatus;//O:suggested by Kim
-
-
-				if (SalesLnViews.Count > 0)
-				{
-					foreach (var sales in SalesModels)
-					{
-						checkoutIds.Add(sales.rtsUID);
-					}
-					onlineModeItem.checkoutIds = checkoutIds;
-
-					var GroupedSalesLnList = SalesLnViews.GroupBy(x => x.rtlCode);
-
-					Dictionary<string, List<PayLnView>> GroupedPayLnList = new Dictionary<string, List<PayLnView>>();
-					//Dictionary<string, double> DicSalesLnAmtList = new Dictionary<string, double>();
-					foreach (var group in GroupedSalesLnList)
-					{
-						var paylnlist = PayLnViews.Where(x => x.rtpCode == group.Key).ToList();
-						GroupedPayLnList.Add(group.Key, paylnlist);
-						//DicSalesLnAmtList[group.Key] = (double)group.Sum(x => x.rtlSalesAmt);
-					}
-
-					List<string> columns = null;
-					string strcolumn = "";
-					double salespaidamt = 0;
-					string value = "";
-
-					sqllist = new List<string>();
-
-					foreach (var group in GroupedSalesLnList)
-					{
-						sql = $"INSERT INTO Import_Item_Sales({sqlfields4Sales})  VALUES(";
-						List<string> values = new List<string>();
-						bool isdeposit = group.FirstOrDefault().rtlCode.StartsWith("DE");
-
-						if (group.Count() <= 1)
-						{
-							var item = group.FirstOrDefault();
-							ModelHelper.GenSql4SalesItem(approvalmode, dateformatcode, invoicestatus, out columns, out strcolumn, out salespaidamt, out value, ref values, item, sqlfields4Sales, false, ref sql, GroupedPayLnList);
-						}
-						else
-						{
-							foreach (var item in group)
-							{
-								ModelHelper.GenSql4SalesItem(approvalmode, dateformatcode, invoicestatus, out columns, out strcolumn, out salespaidamt, out value, ref values, item, sqlfields4Sales, true, ref sql, GroupedPayLnList);
-							}
-							groupcount += group.Count();
-						}
-
-						sql += string.Join(",", values) + ")";
-						ModelHelper.WriteLog(context, sql, "ExportFrmShop");
-						sqllist.Add(sql);
-						onlineModeItem.DicSQL["sales"] = sql;
-					}
-
-					#region Write to MYOB
-					using (localhost.Dayends dayends = new localhost.Dayends())
-					{
-						dayends.Url = comInfo.WebServiceUrl;
-						dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
-					}
-					#endregion
-
-					#region Write sqllist into Log & update checkoutIds
-					using (var transaction = context.Database.BeginTransaction())
-					{
-						try
-						{
-							ModelHelper.WriteLog(context, string.Format("Export Sales data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
-							List<RtlSale> saleslist = context.RtlSales.Where(x => checkoutIds.Any(y => x.rtsUID == y)).ToList();
-							foreach (var sales in saleslist)
-							{
-								sales.rtsCheckout = true;
-							}
-							context.SaveChanges();
-							transaction.Commit();
-						}
-						catch (DbEntityValidationException e)
-						{
-							transaction.Rollback();
-							StringBuilder sb = new StringBuilder();
-							foreach (var eve in e.EntityValidationErrors)
-							{
-								sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-									eve.Entry.Entity.GetType().Name, eve.Entry.State);
-								foreach (var ve in eve.ValidationErrors)
-								{
-									sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-					ve.PropertyName,
-					eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-					ve.ErrorMessage);
-								}
-							}
-							ModelHelper.WriteLog(context, string.Format("Export Sales data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, sql, ConnectionString), "ExportFrmShop");
-							context.SaveChanges();
-						}
-
-					}
-					#endregion
-
-				}
-
-				if (RefundLnViews.Count > 0)
-				{
-					foreach (var sales in RefundModels)
-					{
-						checkoutIds.Add(sales.rtsUID);
-					}
-
-					var GroupedRefundLnList = RefundLnViews.GroupBy(x => x.rtlCode);
-					Dictionary<string, List<PayLnView>> GroupedPayLnList = new Dictionary<string, List<PayLnView>>();
-					Dictionary<string, double> DicSalesLnAmtList = new Dictionary<string, double>();
-					foreach (var group in GroupedRefundLnList)
-					{
-						var paylnlist = PayLnViews.Where(x => x.rtpCode == group.Key).ToList();
-						GroupedPayLnList.Add(group.Key, paylnlist);
-						DicSalesLnAmtList[group.Key] = (double)group.Sum(x => x.rtlSalesAmt);
-					}
-
-					List<string> columns = null;
-					string strcolumn = "";
-					string value = "";
-					//string refsalescode = "";
-
-					double refundpaidamt = 0;
-
-					sqllist = new List<string>();
-					foreach (var group in GroupedRefundLnList)
-					{
-						sql = $"INSERT INTO Import_Item_Sales({sqlfields4Sales})  VALUES(";
-						List<string> values = new List<string>();
-						//rsql = "INSERT INTO Import_Item_Sales(CoLastName,InvoiceNumber,SaleDate,ItemNumber,Quantity,Price,Discount,Total,SaleStatus,Location,CardID,AmountPaid,PaymentMethod,PaymentIsDue,DiscountDays,BalanceDueDays,PercentDiscount,PercentMonthlyCharge,DeliveryStatus,CustomersNumber,Job,Comment,SalespersonLastName,Memo,CurrencyCode,ExchangeRate,AddressLine1,AddressLine2,AddressLine3,AddressLine4,DeliveryDate)  VALUES(";
-
-						if (group.Count() <= 1)
-						{
-							var item = group.FirstOrDefault();
-							//values = genRefundSQL(salesprefix, refundprefix, approvalmode, currencycode, exchangerate, out paytypeamts, out paytypes, out salesrefundcode, out collength, dateformatcode, invoicestatus, GroupedPayLnList, out columns, out strcolumn, out value, out refsalescode, refundpaidamt, item, false);
-							ModelHelper.GenSql4SalesItem(approvalmode, dateformatcode, invoicestatus, out columns, out strcolumn, out refundpaidamt, out value, ref values, item, sqlfields4Sales, false, ref sql, GroupedPayLnList);
-						}
-						else
-						{
-							foreach (var item in group)
-							{
-								//values = genRefundSQL(salesprefix, refundprefix, approvalmode, currencycode, exchangerate, out paytypeamts, out paytypes, out salesrefundcode, out collength, dateformatcode, invoicestatus, GroupedPayLnList, out columns, out strcolumn, out value, out refsalescode, refundpaidamt, item, true);
-								ModelHelper.GenSql4SalesItem(approvalmode, dateformatcode, invoicestatus, out columns, out strcolumn, out refundpaidamt, out value, ref values, item, sqlfields4Sales, false, ref sql, GroupedPayLnList);
-							}
-						}
-
-						sql += string.Join(",", values) + ")";
-						ModelHelper.WriteLog(context, sql, "ExportFrmShop");
-						sqllist.Add(sql);
-						onlineModeItem.DicSQL["sales"] = sql;
-
-						#region Write to MYOB
-						using (localhost.Dayends dayends = new localhost.Dayends())
-						{
-							dayends.Url = comInfo.WebServiceUrl;
-							dayends.WriteMYOB(ConnectionString, sql);
-						}
-						#endregion
-
-					}
-
-					#region Write sqllist into Log & update checkoutIds
-					using (var transaction = context.Database.BeginTransaction())
-					{
-						try
-						{
-							ModelHelper.WriteLog(context, string.Format("Export Sales data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
-
-							List<RtlSale> saleslist = context.RtlSales.Where(x => checkoutIds.Any(y => x.rtsUID == y)).ToList();
-							foreach (var sales in saleslist)
-							{
-								sales.rtsCheckout = true;
-							}
-							context.SaveChanges();
-							transaction.Commit();
-						}
-						catch (DbEntityValidationException e)
-						{
-							transaction.Rollback();
-							StringBuilder sb = new StringBuilder();
-							foreach (var eve in e.EntityValidationErrors)
-							{
-								sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-									eve.Entry.Entity.GetType().Name, eve.Entry.State);
-								foreach (var ve in eve.ValidationErrors)
-								{
-									sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-					ve.PropertyName,
-					eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-					ve.ErrorMessage);
-								}
-							}
-							PPWLib.Helpers.ModelHelper.WriteLog(context, string.Format("Export Sales data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, sql, ConnectionString), "ExportFrmShop");
-							context.SaveChanges();
-						}
-
-					}
-					#endregion
-				}
-			}
-
-			if (filename == "Wholesales_")
+            if (filename == "Wholesales_")
             {
                 #region Date Ranges
                 int year = DateTime.Now.Year;
@@ -1212,7 +799,11 @@ namespace SmartBusinessWeb.Controllers
                 var location = session.sesShop.ToLower();
                 var device = session.sesDvc.ToLower();
 
-                List<string> sqllist = WholeSalesEditModel.GetUploadWholeSalesSqlList(includeUploaded, lang, comInfo, onlineModeItem, checkoutIds, approvalmode, apId, context, connection, frmdate, todate, location, device);
+				dmodel.WsCheckOutIds = new HashSet<long>();
+				dmodel.SelectedLocation = location;
+				dmodel.Device = device;
+
+                List<string> sqllist = WholeSalesEditModel.GetUploadSqlList(includeUploaded, lang, comInfo, apId, context, connection, frmdate, todate, ref dmodel);
 
                 if (sqllist.Count > 0)
                 {
@@ -1317,7 +908,7 @@ namespace SmartBusinessWeb.Controllers
 					/*
 					 * ItemNumber,ItemName,Buy,Sell,Inventory,AssetAccount,IncomeAccount,ExpenseAccount,ItemPicture,Description,UseDescriptionOnSale,CustomList1,CustomList2,CustomList3,CustomField1,CustomField2,CustomField3,PrimarySupplier,SupplierItemNumber,TaxWhenBought,BuyUnitMeasure,NumberItemsBuyUnit,ReorderQuantity,MinimumLevel,SellingPrice,SellUnitMeasure,NumberItemsSellUnit,TaxWhenSold,QuantityBreak1,PriceLevelAQtyBreak1,PriceLevelBQtyBreak1,PriceLevelCQtyBreak1,PriceLevelDQtyBreak1,PriceLevelEQtyBreak1,PriceLevelFQtyBreak1,InactiveItem,StandardCost,DefaultShipSellLocation,DefaultReceiveAutoBuildLocation
 					 */
-					value = string.Format("(" + strcolumn + ")", item.itmCode, item.itmName, buy, sell, inventory, inventoryacc, incomeacc, expenseacc, "", itemdesc, usedesc, "", "", "", "", "", "", "", item.itmSupCode, "", item.itmBuyUnit, 1, 0, 0, item.itmBaseSellingPrice, item.itmSellUnit, item.itmSellUnitQuantity, taxcode, 0, item.PLA, item.PLB, item.PLC, item.PLD, item.PLE, item.PLF, inactivetxt, item.itmBuyStdCost, item.SelectedLocation, "");
+					value = string.Format("(" + strcolumn + ")", item.itmCode, item.itmName, buy, sell, inventory, inventoryacc, incomeacc, expenseacc, "", itemdesc, usedesc, "", "", "", "", "", "", "", item.itmSupCode, "", item.itmBuyUnit, 1, 0, 0, item.itmBaseSellingPrice, item.itmSellUnit, item.itmSellUnitQuantity, taxcode, 0, item.PLA, item.PLB, item.PLC, item.PLD, item.PLE, item.PLF, inactivetxt, item.itmBuyStdCost, comInfo.PrimaryLocation, "");
 					values.Add(value);
 				}
 
@@ -1408,7 +999,7 @@ namespace SmartBusinessWeb.Controllers
 			context.Dispose();
 		}
 
-    
+       
 
         private static string StringHandlingForSQL(string str)
 		{

@@ -131,13 +131,13 @@ namespace SmartBusinessWeb.Controllers
             #region Retail
             var checkoutIds4rt = new HashSet<long>();
             List<string> sqllist4rt = new List<string>();
-            sqllist4rt = ModelHelper.Prepare4UploadSalesOrder(connection, comInfo, apId, context, "", "", false, 2, JobList, ref checkoutIds4rt, true);
+            sqllist4rt = ModelHelper.Prepare4UploadSalesOrder(comInfo, apId, context, "", "", false, 2, JobList, ref checkoutIds4rt, true);
             #endregion
 
             #region WholeSales
             var checkoutIds4ws = new HashSet<long>();
             List<string> sqllist4ws = new List<string>();
-            sqllist4ws = ModelHelper.Prepare4UploadSalesOrder(connection, comInfo, apId, context, "", "", false, 2, JobList, ref checkoutIds4ws, false);
+            sqllist4ws = ModelHelper.Prepare4UploadSalesOrder(comInfo, apId, context, "", "", false, 2, JobList, ref checkoutIds4ws, false);
             #endregion
 
             #region Purchase
@@ -1845,7 +1845,7 @@ namespace SmartBusinessWeb.Controllers
                     }
 
                     Dictionary<string, string> DicPayTypes = new Dictionary<string, string>();
-                    DicPayTypes = PPWCommonLib.CommonHelpers.ModelHelper.GetDicPayTypes(CommonLib.Models.ProjectEnum.G3, lang);
+                    DicPayTypes = PPWCommonLib.CommonHelpers.ModelHelper.GetDicPayTypes(lang, false, context);
                     SalesList = (from s in context.RtlSales
                                  where s.rtsDate >= frmdate && s.rtsDate <= todate && s.rtsSalesLoc.ToLower() == shop && s.rtsDvc.ToLower() == device
                                  && s.AccountProfileId == accountProfileId

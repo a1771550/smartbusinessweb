@@ -1,12 +1,7 @@
-﻿using Azure.Core;
-using CommonLib.Models;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Newtonsoft.Json;
+﻿using Microsoft.Data.SqlClient;
 using PPWDAL;
-using PPWLib.Helpers;
 using PPWLib.Models;
-using PPWLib.Models.Item;
-using PPWLib.Models.MYOB;
+using PPWLib.Models.POS.Sales;
 using PPWLib.Models.Purchase;
 using PPWLib.Models.WholeSales;
 using System;
@@ -19,13 +14,73 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Mvc;
-using System.Web.Services.Description;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Header;
+using ModelHelper = PPWLib.Helpers.ModelHelper;
 
 namespace SmartBusinessWeb.Controllers
 {
-	public class JsonController : Controller
+    public class JsonController : Controller
 	{
+        [System.Web.Http.HttpPost]
+        public async Task<HttpResponseMessage> CheckOutRetail(int apId, [FromBody] HashSet<long> checkoutIds)
+        {
+            HttpRequestMessage request = new HttpRequestMessage();
+            string dbname = GetDbName(apId);
+            using var context = new PPWDbContext(dbname);
+            List<RtlSale> retaillist = context.RtlSales.Where(x => x.AccountProfileId == apId && checkoutIds.Any(y => x.rtsUID == y)).ToList();
+            foreach (var retail in retaillist)
+            {
+                retail.rtsCheckout = true;
+            }
+            await context.SaveChangesAsync();
+            return request.CreateResponse(System.Net.HttpStatusCode.OK);
+        }
+
+        [System.Web.Http.HttpGet]
+        public string GetUploadRetailData(int apId, string strfrmdate, string strtodate, string location, int includeUploaded)
+        {
+            UploadAbssData data = new UploadAbssData();
+            string dbname = GetDbName(apId);
+            using var context = new PPWDbContext(dbname);
+            ComInfo comInfo = context.ComInfoes.FirstOrDefault(x => x.AccountProfileId == apId);
+            if (comInfo != null)
+            {
+                string DefaultConnection = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", dbname);
+                using var connection = new SqlConnection(DefaultConnection);
+                connection.Open();
+                DataTransferModel dmodel = new DataTransferModel
+                {
+                    SelectedLocation = location,
+                    includeUploaded = includeUploaded == 1
+                };
+                dmodel.RetailCheckOutIds = new HashSet<long>();
+
+                #region Date Ranges
+                DateTime frmdate, todate;
+                HandleDateRanges(strfrmdate, strtodate, out frmdate, out todate);
+                #endregion               
+
+                data.sqllist = RetailEditModel.GetUploadSqlList(dmodel.includeUploaded, 2, comInfo, apId, context, connection, frmdate, todate, ref dmodel);
+                data.checkoutIds = dmodel.RetailCheckOutIds;
+            }
+            return System.Text.Json.JsonSerializer.Serialize(data);
+        }
+
+
+        [System.Web.Http.HttpPost]
+        public async Task<HttpResponseMessage> CheckOutWS(int apId, [FromBody] HashSet<long> checkoutIds)
+        {
+            HttpRequestMessage request = new HttpRequestMessage();
+            string dbname = GetDbName(apId);
+            using var context = new PPWDbContext(dbname);
+            List<WholeSale> wslist = context.WholeSales.Where(x => x.AccountProfileId == apId && checkoutIds.Any(y => x.wsUID == y)).ToList();
+            foreach (var ws in wslist)
+            {
+                ws.wsCheckout = true;
+            }
+            await context.SaveChangesAsync();
+            return request.CreateResponse(System.Net.HttpStatusCode.OK);
+        }
+
         [System.Web.Http.HttpGet]
         public string GetUploadWSData(int apId, string strfrmdate, string strtodate, string location, int includeUploaded)
         {
@@ -35,21 +90,23 @@ namespace SmartBusinessWeb.Controllers
             ComInfo comInfo = context.ComInfoes.FirstOrDefault(x => x.AccountProfileId == apId);
             if (comInfo != null)
             {
+				string DefaultConnection = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", dbname);
+                using var connection = new SqlConnection(DefaultConnection);
+                connection.Open();
                 DataTransferModel dmodel = new DataTransferModel
                 {
                     SelectedLocation = location,
                     includeUploaded = includeUploaded == 1
                 };
+                dmodel.WsCheckOutIds = new HashSet<long>();
 
                 #region Date Ranges
                 DateTime frmdate, todate;
                 HandleDateRanges(strfrmdate, strtodate, out frmdate, out todate);
-                #endregion
+                #endregion               
 
-                var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", dbname);
-
-                data.sqllist = WholeSalesEditModel.GetUploadWholeSalesSqlList(includeUploaded, 2, comInfo, onlineModeItem, checkoutIds, approvalmode, apId, context, connection, frmdate, todate, location, null);
-                data.checkoutIds = dmodel.PoCheckOutIds;
+                data.sqllist = WholeSalesEditModel.GetUploadSqlList(dmodel.includeUploaded, 2, comInfo, apId, context, connection, frmdate, todate, ref dmodel);
+                data.checkoutIds = dmodel.WsCheckOutIds;
             }
             return System.Text.Json.JsonSerializer.Serialize(data);
         }
@@ -536,22 +593,7 @@ namespace SmartBusinessWeb.Controllers
 
 		private static string GetDbName(int apId)
 		{
-			string dbname;
-			switch (apId)
-			{
-				case 2:
-					dbname = "SB0";
-					break;
-				case 3:
-					dbname = "SB1";
-					break;
-				default:
-				case 1:
-					dbname = "POSPro";
-					break;
-			}
-
-			return dbname;
+			return ModelHelper.GetDbName(apId);
 		}
 
         private static void HandleDateRanges(string strfrmdate, string strtodate, out DateTime frmdate, out DateTime todate)
