@@ -102,6 +102,12 @@ new { apId = @"\d+" }
 new { controller = "Json", action = "CheckOutPo" },
 new { apId = @"\d+" }
    );
+                        routes.MapRoute(
+   null,
+   "abss-json/{apId}/httppost",
+new { controller = "Json", action = "HttpPost" },
+new { apId = @"\d+" }
+   );
 
             routes.MapRoute(
    null,
@@ -148,6 +154,13 @@ new { controller = "Json", action = "GetSupplierInfo4AbssData" },
 new { apId = @"\d+" }
 );
 
+                         routes.MapRoute(
+   null,
+   "abss-json/{apId}/posttest",
+new { controller = "Json", action = "PostTest" },
+new {apId=@"\d+"}
+   );
+
             routes.MapRoute(
           null,
           "PrivacyPolicy",
@@ -174,11 +187,16 @@ new { apId = @"\d+" }
            new { controller = "Api", action = "GetContacts" }
        );
 
+
+
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Account", action = "Login", id = UrlParameter.Optional }
             );
+
+            
+           
 
             routes.MapRoute(
                 name: null,

@@ -92,6 +92,7 @@ namespace SmartBusinessWeb.Controllers
         protected string UploadsWSDir { get { return ConfigurationManager.AppSettings["UploadsWSDir"]; } }
         protected string UploadsPODir { get { return ConfigurationManager.AppSettings["UploadsPODir"]; } }
 
+        
         public void SwitchDB(string dbname="POSPro")
         {
             try
@@ -3872,6 +3873,15 @@ btest3
             //    Response.Write(demodate.ToShortDateString());
             var startdate = DateTime.ParseExact(strstartdate, "yyyy-MM-dd", null);
             Response.Write(startdate.ToShortDateString());
+        }
+
+        public void GetHostName()
+        {
+            Response.Write(CommonHelper.GetHostName());
+        }
+        public void GetUrlHost(string url="")
+        { 
+            Response.Write(CommonHelper.GetUrlHost(url));                   
         }
     }
 

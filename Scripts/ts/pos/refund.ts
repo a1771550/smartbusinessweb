@@ -49,7 +49,7 @@ function updateRefRow() {
     }
 }
 
-function updateRefund() {    
+function updateRefund() {
     const $rows = $("#tblRefund tbody tr");
     // console.log("refundsalesln#updaterefund:", refundsalesln);
     $rows.each(function (i, e) {
@@ -102,11 +102,11 @@ function updateRefund() {
     console.log("refundlist:", RefundList);
     let _totalamt = 0;
     $.each(RefundList, function (i, e) {
-         console.log("e.amt:", e.amt);
+        console.log("e.amt:", e.amt);
         _totalamt += e.amt;
     });
     console.log("_totalamt:" + _totalamt);
-    $("#txtTotal").val(formatnumber(_totalamt));   
+    $("#txtTotal").val(formatnumber(_totalamt));
     focusRefItemCode();
 }
 
@@ -162,8 +162,8 @@ function popuRefundLn(
 
         if (enableTax && !inclusivetax) {
             idx++;
-            refundsalesln.rtlTaxPc =Number($(e).find("td").eq(idx).find(".taxpc").val());
-        }        
+            refundsalesln.rtlTaxPc = Number($(e).find("td").eq(idx).find(".taxpc").val());
+        }
         idx++;
         refundsalesln.rtlStockLoc = $(e).find("td").eq(idx).text() as string;
         refundsalesln.refundedQty = Number($(e).data("refundedqty"));
@@ -219,7 +219,7 @@ function genRefund() {
             }
         });
     }
-    
+
     // console.log("Refundlist after push:", RefundList);
 }
 
@@ -317,6 +317,8 @@ function getReceiptOk(data) {
         }
         var model = data;
         DicItemOptions = Object.assign({}, DicItemOptions, model.DicItemOptions);
+        //console.log("dicitemoptions:", DicItemOptions);
+
         DicItemBatchQty = Object.assign({}, DicItemBatchQty, model.DicItemBatchQty);
 
         // console.log("dicitembatchqty:", DicItemBatchQty);
@@ -595,7 +597,7 @@ function fillinRefundForm() {
                 // } else {
                 //   updateRefund();
                 // }
-            }           
+            }
         }
     } else {
         $.fancyConfirm({
@@ -617,8 +619,8 @@ function genRefundRows() {
     $target = $("#tblRefund tbody");
     let html = "";
     $.each(RefundableSalesList, function (i, e) {
-        // console.log("e.batdelids:", e.batdelIds);
-        // console.log("e.vtdelIds:", e.vtdelIds);
+         console.log("e.batdelids:", e.batdelIds);
+         console.log("e.vtdelIds:", e.vtdelIds);
         if (e.batdelIds || e.vtdelIds) {
             if (e.batdelIds) {
                 const batdelIdlist: string[] = e.batdelIds.split(",");
@@ -670,7 +672,7 @@ function addRefRow(
     vtdelId: string | null
 ): string {
     const itemcode: string = refundsalesln?.rtlItemCode as string;
-    itemOptions = DicItemOptions[itemcode];
+
 
     let html = `<tr data-idx="${i}" data-rtlSeq="${i}" data-taxpc="${refundsalesln?.rtlTaxPc
         }" data-discpc="${refundsalesln?.rtlLineDiscPc}" data-refundedqty="${refundsalesln?.refundedQty
@@ -684,7 +686,9 @@ function addRefRow(
 
     let vt: string = "";
 
-    if (itemOptions.WillExpire) {
+    itemOptions = DicItemOptions[itemcode];
+
+    if (itemOptions && itemOptions.WillExpire) {
         if (batdelId) {
             vt = DicItemBatDelQty[itemcode].find(
                 (x) => x.batdelId == Number(batdelId)
@@ -1328,7 +1332,7 @@ function openRefPayModal() {
     // console.log("itotalamt#paymodal:" + itotalamt);
     let totalamt = 0;
     RefundList.forEach(x => totalamt += x.amt);
-   
+
     $("#refundamount").text(formatmoney(totalamt));
     let _amt: number = round(totalamt, 2);
     if (isEpay) {
@@ -1394,12 +1398,11 @@ $(function () {
 
     $("#txtDeviceCode").trigger("focus");
 
-    $("#tblRefund tr td input").hover(
+    $("#tblRefund tr td").on("mouseenter", "input",
         function () {
-            $(this).css("background-color", "#FFFFB0");
-        },
-        function () {
-            $("#tblRefund tr td input").css("background-color", "#fff"); //apply to other inputs as well!
-        }
-    );
+            $("input").css("background-color", "#FFFFB0");
+        }).on("mouseleave", "input",
+            function () {
+                $("input").css("background-color", "#fff"); //apply to other inputs as well!
+            });
 });

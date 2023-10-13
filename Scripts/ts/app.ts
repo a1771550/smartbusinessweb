@@ -1184,7 +1184,7 @@ function OnSuccess(response) {
         );
 
         DicBatTotalQty = model.DicBatTotalQty;
-        console.log("DicBatTotalQty#OnSuccess:", DicBatTotalQty);
+        //console.log("DicBatTotalQty#OnSuccess:", DicBatTotalQty);
 
         DicIvInfo = model.DicIvInfo;
         //console.log("DicIvInfo:", DicIvInfo);
@@ -10534,9 +10534,9 @@ $(document).on("dblclick", ".itemdesc", function () {
                 .find("td")
                 .last()
                 .find(".rtlSeq")
-                .data("rtlSeq")
+                .data("rtlseq")
         );
-
+        //console.log("seq:", seq);
         refundsalesln = $.grep(RefundableSalesList, function (e, i) {
             return e.rtlSeq == seq;
         })[0];
@@ -19345,11 +19345,11 @@ $(document).on("dblclick", ".batch", function () {
 
         setTotalQty4BatModal();
     } else {
-        if (selectedItemCode in DicItemBatchQty) {
+        if (DicItemBatchQty[selectedItemCode].length>0) {
             let html: string = "";
             let pbvqlist: IPoBatVQ[] = [];
             let ipoIvList: IPoItemVari[] = [];
-            if (!$.isEmptyObject(DicIvInfo) && selectedItemCode in DicIvInfo) {
+            if (!$.isEmptyObject(DicIvInfo) && DicIvInfo[selectedItemCode].length>0) {
                 ipoIvList = DicIvInfo[selectedItemCode].slice(0);
             }
             //console.log(PoItemBatVQList);
@@ -19364,6 +19364,7 @@ $(document).on("dblclick", ".batch", function () {
                     });
                 }
             });
+
             //console.log("pbvqlist:", pbvqlist);
             let polist: string[] = [];
             pbvqlist.forEach((x) => {
@@ -19407,58 +19408,9 @@ $(document).on("dblclick", ".batch", function () {
                         const key: string = batcode + ":" + selectedItemCode;
                         let totalbatqty: number =
                             key in DicBatTotalQty ? DicBatTotalQty[key] : 0;
-
                         //console.log('pbvqlist:', pbvqlist);
-
                         let inCurrDel: boolean = false;
-                        if (DeliveryItems.length > 0) {
-                            if (itemOptions!.ChkSN) {
-                                //all
-                                if (itemOptions!.WillExpire) {
-                                    inCurrDel = DeliveryItems.some((x) => {
-                                        return (
-                                            x.JsVt &&
-                                            x.dlHasSN &&
-                                            x.dlBatch == batcode &&
-                                            x.pstCode == pocode
-                                        );
-                                    });
-                                }
-                                //batch && sn (no vt)
-                                else {
-                                    inCurrDel = DeliveryItems.some((x) => {
-                                        return (
-                                            !x.JsVt &&
-                                            x.dlHasSN &&
-                                            x.dlBatch == batcode &&
-                                            x.pstCode == pocode
-                                        );
-                                    });
-                                }
-                            } else {
-                                //batch && vt (no sn)
-                                if (itemOptions!.WillExpire) {
-                                    inCurrDel = DeliveryItems.some((x) => {
-                                        return (
-                                            !x.dlHasSN &&
-                                            x.JsVt &&
-                                            x.dlBatch == batcode &&
-                                            x.pstCode == pocode
-                                        );
-                                    });
-                                } else {
-                                    //batch only
-                                    inCurrDel = DeliveryItems.some((x) => {
-                                        return (
-                                            !x.dlHasSN &&
-                                            !x.JsVt &&
-                                            x.dlBatch == batcode &&
-                                            x.pstCode == pocode
-                                        );
-                                    });
-                                }
-                            }
-                        }
+                        inCurrDel = getInCurrDel(inCurrDel, batcode, pocode);
                         //console.log("inCurrDel:", inCurrDel);
                         $.each(pbvqlist, function (k, v) {
                             if (v.pocode == pocode && v.batchcode == batcode) {
@@ -19467,7 +19419,6 @@ $(document).on("dblclick", ".batch", function () {
                                         ibatdelqty += ele.batdelqty!;
                                     }
                                 });
-
                                 //console.log("ibatdelqty:" + ibatdelqty);
                                 /**
                                  * Get batdeledqty:已出貨數量
@@ -19484,6 +19435,7 @@ $(document).on("dblclick", ".batch", function () {
                                             //all
                                             DeliveryItems.forEach((x) => {
                                                 if (
+                                                    x.seq == seq &&
                                                     x.JsVt &&
                                                     x.dlHasSN &&
                                                     x.dlBatch == batcode &&
@@ -19497,6 +19449,7 @@ $(document).on("dblclick", ".batch", function () {
                                         else {
                                             DeliveryItems.forEach((x) => {
                                                 if (
+                                                    x.seq == seq &&
                                                     !x.JsVt &&
                                                     x.dlHasSN &&
                                                     x.dlBatch == batcode &&
@@ -19510,6 +19463,7 @@ $(document).on("dblclick", ".batch", function () {
                                         if (itemOptions!.WillExpire) {
                                             DeliveryItems.forEach((x) => {
                                                 if (
+                                                    x.seq == seq &&
                                                     !x.dlHasSN &&
                                                     x.JsVt &&
                                                     x.JsVt &&
@@ -19523,6 +19477,7 @@ $(document).on("dblclick", ".batch", function () {
                                             //batch only
                                             DeliveryItems.forEach((x) => {
                                                 if (
+                                                    x.seq == seq &&
                                                     !x.dlHasSN &&
                                                     !x.JsVt &&
                                                     x.dlBatch == batcode &&
@@ -19533,7 +19488,8 @@ $(document).on("dblclick", ".batch", function () {
                                             });
                                         }
                                     }
-                                } else {
+                                }
+                                else {
                                     if (itemOptions!.ChkSN) {
                                         if (itemOptions!.WillExpire) {
                                             //console.log("all");
@@ -19545,13 +19501,13 @@ $(document).on("dblclick", ".batch", function () {
                                             //console.log("batch only");
                                         }
                                     }
-
                                     //console.log("batdeledqty:" + batdeledqty + ";ibatdelqty:" + ibatdelqty);
                                     if (v.pocode == pocode && v.batchcode == batcode) {
                                         batdeledqty += ibatdelqty;
                                     }
                                 }
 
+                                //console.log("batdeledqty:" + batdeledqty);
                                 batdeledqtylist += `<div class="row form-inline justify-content-end mx-1 mb-3">
                     <span class="batdeledqty">${batdeledqty}</span></div>`;
 
@@ -19566,6 +19522,7 @@ $(document).on("dblclick", ".batch", function () {
                                         if (itemOptions!.WillExpire) {
                                             DeliveryItems.forEach((x) => {
                                                 if (
+                                                    x.seq==seq&&
                                                     x.JsVt &&
                                                     x.dlHasSN &&
                                                     x.dlBatch == batcode &&
@@ -19581,6 +19538,7 @@ $(document).on("dblclick", ".batch", function () {
                                         else {
                                             DeliveryItems.forEach((x) => {
                                                 if (
+                                                    x.seq == seq &&
                                                     !x.JsVt &&
                                                     x.dlHasSN &&
                                                     x.dlBatch == batcode &&
@@ -19597,6 +19555,7 @@ $(document).on("dblclick", ".batch", function () {
                                         if (itemOptions!.WillExpire) {
                                             DeliveryItems.forEach((x) => {
                                                 if (
+                                                    x.seq == seq &&
                                                     !x.dlHasSN &&
                                                     x.JsVt &&
                                                     x.JsVt &&
@@ -19610,6 +19569,7 @@ $(document).on("dblclick", ".batch", function () {
                                             //batch only
                                             DeliveryItems.forEach((x) => {
                                                 if (
+                                                    x.seq == seq &&
                                                     !x.dlHasSN &&
                                                     !x.JsVt &&
                                                     x.dlBatch == batcode &&
@@ -19624,7 +19584,10 @@ $(document).on("dblclick", ".batch", function () {
                                             v.batchqty - ibatdelqty - currentbattypedelqty;
                                         //console.log("currentbattypeqty:" + currentbattypeqty);
                                     }
-                                } else {
+                                }
+                                else {
+                                    //console.log("v.batchqty:", v.batchqty);
+                                    //console.log("ibatdelqty:", ibatdelqty);
                                     currentbattypeqty = v.batchqty - ibatdelqty;
                                 }
 
@@ -19833,6 +19796,63 @@ $(document).on("dblclick", ".batch", function () {
     }
 });
 
+function getInCurrDel(inCurrDel: boolean, batcode: string, pocode: string) {
+    if (DeliveryItems.length > 0) {
+        if (itemOptions!.ChkSN) {
+            //all
+            if (itemOptions!.WillExpire) {
+                inCurrDel = DeliveryItems.some((x) => {
+                    return (
+                        x.seq == seq &&
+                        x.JsVt &&
+                        x.dlHasSN &&
+                        x.dlBatch == batcode &&
+                        x.pstCode == pocode
+                    );
+                });
+            }
+
+            //batch && sn (no vt)
+            else {
+                inCurrDel = DeliveryItems.some((x) => {
+                    return (
+                        x.seq == seq &&
+                        !x.JsVt &&
+                        x.dlHasSN &&
+                        x.dlBatch == batcode &&
+                        x.pstCode == pocode
+                    );
+                });
+            }
+        } else {
+            //batch && vt (no sn)
+            if (itemOptions!.WillExpire) {
+                inCurrDel = DeliveryItems.some((x) => {
+                    return (
+                        x.seq == seq &&
+                        !x.dlHasSN &&
+                        x.JsVt &&
+                        x.dlBatch == batcode &&
+                        x.pstCode == pocode
+                    );
+                });
+            } else {
+                //batch only
+                inCurrDel = DeliveryItems.some((x) => {
+                    return (
+                        x.seq == seq &&
+                        !x.dlHasSN &&
+                        !x.JsVt &&
+                        x.dlBatch == batcode &&
+                        x.pstCode == pocode
+                    );
+                });
+            }
+        }
+    }
+    return inCurrDel;
+}
+
 //for those items with vari but without batch
 function addItemVariRow(hasFocusCls: boolean, maxqty: number) {
     if ($.isEmptyObject(DicIvQtyList) && !itemOptions) return false;
@@ -19866,7 +19886,7 @@ function addItemVariRow(hasFocusCls: boolean, maxqty: number) {
                     if (DeliveryItems.length > 0) {
                         if (!itemOptions?.ChkBatch) {
                             inCurrDel = DeliveryItems.some((x) => {
-                                return (!x.dlBatch && x.dlCode == Id && x.pstCode == pocode);
+                                return (x.seq == seq && !x.dlBatch && x.dlCode == Id && x.pstCode == pocode);
                             });
                         }
                     }
@@ -19881,7 +19901,7 @@ function addItemVariRow(hasFocusCls: boolean, maxqty: number) {
                     if (inCurrDel) {
                         if (!itemOptions?.ChkBatch) {
                             DeliveryItems.forEach((x) => {
-                                if (!x.dlBatch && x.dlCode == Id && x.pstCode == pocode) {
+                                if (x.seq == seq &&!x.dlBatch && x.dlCode == Id && x.pstCode == pocode) {
                                     ivdeledqty += x.dlQty;
                                 }
                             });
@@ -19901,6 +19921,7 @@ function addItemVariRow(hasFocusCls: boolean, maxqty: number) {
                             let currentivtypedelqty: number = 0;
                             DeliveryItems.forEach((x) => {
                                 if (
+                                    x.seq == seq &&
                                     !x.dlBatch &&
                                     x.dlCode == Id &&
                                     x.pstCode == pocode

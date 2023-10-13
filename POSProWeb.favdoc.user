@@ -60,6 +60,11 @@
           <path>Scripts\uploadfile.js</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\uploadfile.js</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>refund.ts</name>
+          <path>Scripts\ts\pos\refund.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\refund.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -100,6 +105,11 @@
           <name>SalesOrderList.cshtml</name>
           <path>Views\POSFunc\SalesOrderList.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\POSFunc\SalesOrderList.cshtml</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>Refund.cshtml</name>
+          <path>Views\POSFunc\Refund.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\POSFunc\Refund.cshtml</absolutePath>
         </Favorite>
       </favorites>
     </Folder>
@@ -151,6 +161,11 @@
           <name>AccountController.cs</name>
           <path>Controllers\AccountController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\AccountController.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>JsonController.cs</name>
+          <path>Controllers\JsonController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\JsonController.cs</absolutePath>
         </Favorite>
       </favorites>
     </Folder>
