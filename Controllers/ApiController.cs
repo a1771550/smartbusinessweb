@@ -555,7 +555,7 @@ namespace SmartBusinessWeb.Controllers
 
                             msg = string.Format(Resource.FormatPassedToFormat, string.Concat(Resource.Invoice, " ", receiptno), Resource.SalesManager);
 
-                            var salesmanager = context.GetPosSalesManager1(ComInfo.AccountProfileId, ComInfo.Id).FirstOrDefault();
+                            var salesmanager = context.GetPosSalesManager1(ComInfo.AccountProfileId).FirstOrDefault();
                             if (salesmanager != null)
                             {
                                 var reviewurl = UriHelper.GetReviewPurchaseOrderUrl(ConfigurationManager.AppSettings["ReviewPurchaseOrderBaseUrl"], receiptno, salesmanager.surUID);
@@ -962,7 +962,7 @@ namespace SmartBusinessWeb.Controllers
 
                             msg = string.Format(Resource.FormatPassedToFormat, string.Concat(Resource.Invoice, " ", receiptno), Resource.SalesManager);
 
-                            var salesmanager = context.GetPosSalesManager1(ComInfo.AccountProfileId, ComInfo.Id).FirstOrDefault();
+                            var salesmanager = context.GetPosSalesManager1(ComInfo.AccountProfileId).FirstOrDefault();
                             if (salesmanager != null)
                             {
                                 var reviewurl = UriHelper.GetReviewSalesOrderUrl(ConfigurationManager.AppSettings["ReviewSalesOrderBaseUrl"], receiptno, salesmanager.surUID);

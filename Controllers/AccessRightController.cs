@@ -126,7 +126,8 @@ namespace SmartBusinessWeb.Controllers
                         UserId = user.surUID,
                         RoleId = roleId,
                         CreateTime = DateTime,
-                        ModifyTime = DateTime
+                        ModifyTime = DateTime,
+                        AccountProfileId = apId
                     };
                     context.UserRoles.Add(userRole);
                     context.SaveChanges();
