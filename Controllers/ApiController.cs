@@ -2928,9 +2928,6 @@ namespace SmartBusinessWeb.Controllers
                                          itmTaxPc = i.itmTaxPc,
                                          itmBaseSellingPrice = i.itmBaseSellingPrice,
                                          itmIsNonStock = i.itmIsNonStock,
-                                         //chkBat = (bool)i.chkBat,
-                                         //chkSN = (bool)i.chkSN,
-                                         //chkVT = (bool)i.chkVT
                                      }
                                                   ).ToList();
                         foreach (var item in items)
@@ -3101,11 +3098,10 @@ namespace SmartBusinessWeb.Controllers
                         {
                             if (model.hascustomer)
                             {
-                                model.DicItemOptions = ModelHelper.GetDicItemOptions(model.items);
-
                                 var itemcodelist = model.items.Select(x => x.itmCode).Distinct().ToHashSet();
                                 ModelHelper.GetItemOptionsVariInfo(apId, shop, context, itemcodelist, null, model);
 
+                                model.DicItemOptions = ModelHelper.GetDicItemOptions(apId, context);
                                 return Json(model, JsonRequestBehavior.AllowGet);
                             }
                             else

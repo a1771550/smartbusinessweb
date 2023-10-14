@@ -294,7 +294,7 @@ function getReceiptOk(data) {
         receipt = data.receipt;
         ItemList = data.items.slice(0);
         snlist = data.snlist.slice(0);
-        // console.log("snlist:", snlist);
+        //console.log("snlist:", snlist);
         cpplList = data.customerpointpricelevels.slice(0);
         RefundSalesList = data.salesLns.slice(0);
 
@@ -416,20 +416,16 @@ function fillinRefundForm() {
 
     let html = "",
         salesrefund: ISalesRefundBase;
-
-    // console.log("itemlist:", ItemList);
     $.each(RefundSalesList, function (i, e) {
-        //e.rtlItemCode = e.rtlItemCode.toString();
         let item = $.grep(ItemList, function (ele, idx) {
             return ele.itmCode == e.rtlItemCode;
         })[0];
-        // console.log("item:", item);
+
         let price = e.rtlSellingPrice;
         let taxrate = e.rtlTaxPc ?? 0;
         let batch = e.rtlBatch == null ? "N/A" : e.rtlBatch;
         totalsalesQty += e.rtlQty;
 
-        // console.log("refundLns:", refundLns);
         let refundedamt: number = 0,
             refundedqty: number = 0,
             refunddates: string[] = [];
@@ -440,24 +436,16 @@ function fillinRefundForm() {
                     val.rtlItemCode === e.rtlItemCode &&
                     val.rtlSeq == e.rtlSeq
                 ) {
-                    // console.log("refundamt:" + val.rtlSalesAmt);
+
                     refundedamt += val.rtlSalesAmt;
-                    // console.log(
-                    //   `refundedqty#itemcode->${e.rtlItemCode}#seq->${e.rtlSeq}: ${val.rtlQty}`
-                    // );
                     refundedqty += val.rtlQty;
-                    // console.log("refunddate:" + val.SalesDateDisplay);
                     refunddates.push(val.SalesDateDisplay);
                 }
-                // console.log("refunddates:", refunddates);
             });
-            //console.log('refundedqty:#' + e.rtlItemCode + ';qty:' + refundedqty);
         }
 
         let refundableqty: number = e.rtlQty - refundedqty;
-        // console.log(
-        //   `refundableqty#itemcode->${e.rtlItemCode}#seq->${e.rtlSeq}: ${refundableqty}`
-        // );
+
         if (refundableqty > 0) {
             if (isEpay) {
                 //for erefund only:
@@ -490,11 +478,10 @@ function fillinRefundForm() {
             }
             e.refundedQty = refundedqty;
             e.qtyToRefund = e.refundableQty = refundableqty;
-            // console.log("e.vtdelids:" + e.vtdelIds);
-            // console.log("e.batdelids:" + e.batdelIds);
+
             RefundableSalesList.push(e);
         }
-        //console.log("e.vtdelid:" + e.vtdelIds);
+
         salesrefund = {
             salescode: e.rtlCode,
             itemcode: e.rtlItemCode,
@@ -518,8 +505,8 @@ function fillinRefundForm() {
             refundedamtTxt:
                 refundedamt === 0 ? "N/A" : formatnumber(-1 * refundedamt),
             refundedDates: refunddates.length === 0 ? "N/A" : refunddates.join(),
-            vtdelIds: e.vtdelIds,
-            batdelIds: e.batdelIds,
+            vtdelId: e.vtdelId?.toString(),
+            batdelId: e.batdelId?.toString(),
             rtlSn: e.rtlSn,
             rtlStockLoc: e.rtlStockLoc,
         };
@@ -531,8 +518,8 @@ function fillinRefundForm() {
     // return false;
     $.each(salesrefundlist, function (i, e) {
         //項目代碼	數量	 價格	折扣%	金額	 銷售日期 退貨數量 	退款金額 	退款日期 	詳細
-        const vtdelIds: string = e.vtdelIds ?? "";
-        const batdelIds: string = e.batdelIds ?? "";
+        const vtdelIds: string = e.vtdelId ?? "";
+        const batdelIds: string = e.batdelId ?? "";
         // console.log("e.batdelid:" + e.batdelIds);
         html +=
             `<tr data-batdelid="${batdelIds}" data-vtdelid="${vtdelIds}">` +
@@ -619,46 +606,40 @@ function genRefundRows() {
     $target = $("#tblRefund tbody");
     let html = "";
     $.each(RefundableSalesList, function (i, e) {
-         console.log("e.batdelids:", e.batdelIds);
-         console.log("e.vtdelIds:", e.vtdelIds);
-        if (e.batdelIds || e.vtdelIds) {
-            if (e.batdelIds) {
-                const batdelIdlist: string[] = e.batdelIds.split(",");
-                $.each(batdelIdlist, function (k, v) {
-                    // console.log("itemcode:" + e.rtlItemCode);
-                    const batdelqty = DicItemBatDelQty[e.rtlItemCode].find(
-                        (x) => x.batdelId == Number(v)
+        const itemcode = e.rtlItemCode;
+        if (itemcode in DicItemOptions)
+            itemOptions = DicItemOptions[itemcode];
+        console.log("itemOptions:", itemOptions);
+        if (itemOptions) {
+            if (itemOptions.ChkBatch) {
+                const batdelqty = DicItemBatDelQty[e.rtlItemCode].find(
+                    (x) => x.batcode == e.rtlBatch
+                );
+                if (batdelqty)
+                    html += addRefRow(
+                        e,
+                        i,
+                        null,
+                        batdelqty.batcode,
+                        batdelqty.batSn ?? "",
+                        e.rtlValidThru
                     );
-                    // console.log("v:" + v);
-                    //console.log("batdelqty:", batdelqty);
-                    if (batdelqty)
-                        html += addRefRow(
-                            e,
-                            k,
-                            v,
-                            batdelqty.batcode,
-                            batdelqty.batSn ?? "",
-                            null
-                        );
-                });
             }
-            if (e.vtdelIds) {
-                const vtdelIdlist: string[] = e.vtdelIds.split(",");
-                $.each(vtdelIdlist, function (k, v) {
-                    html += addRefRow(e, k, null, "", "", v);
-                });
-            }
+            else {
+                // sn & vt or sn only
+                if (itemOptions.ChkSN) {
+                    $.each(snlist, function (k, v) {
+                        html += addRefRow(e, k, null, "", v.snoCode, null);
+                    });
+                } else {
+                    //vt only
+                    html += addRefRow(e, i, null, "", "", e.rtlValidThru);
+                }
+            }           
         } else {
-            if (snlist.length > 0) {
-                $.each(snlist, function (k, v) {
-                    html += addRefRow(e, k, null, "", v.snoCode, null);
-                });
-            } else {
-                html += addRefRow(e, i, null, "", "", null);
-            }
+            html += addRefRow(e, i, null, "", "", null);
         }
     });
-    // }
 
     $target.empty().append(html);
 }
@@ -669,7 +650,7 @@ function addRefRow(
     batdelId: string | null,
     batcode: string | null,
     sn: string | null,
-    vtdelId: string | null
+    vt: string | null
 ): string {
     const itemcode: string = refundsalesln?.rtlItemCode as string;
 
@@ -681,32 +662,30 @@ function addRefRow(
 
     html += `<td class="text-center"><input type="text" name="itemcode" class="itemcode flex" value="${itemcode}" /></td>`;
     const itemdesc: string = handleItemDesc(refundsalesln?.rtlDesc as string);
-    html += `<td><input type="text" class="itemdesc flex text-left" data-itemname="${itemdesc}" value="${itemdesc}" /></td>`;
+    html += `<td><input type="text" class="itemdesc flex text-left" data-itemname="${itemdesc}" title="${refundsalesln?.rtlDesc}" value="${itemdesc}" /></td>`;
     html += `<td class="text-right"><input type="number" name="refundedqty" class="refundedqty text-right" value="${refundsalesln?.refundedQty}" readonly /></td>`;
 
-    let vt: string = "";
 
     itemOptions = DicItemOptions[itemcode];
 
+    let batdisplay = batcode ?? "";
+    let sndisplay = sn ?? "";
+    let vtdisplay = vt ?? "";
     if (itemOptions && itemOptions.WillExpire) {
         if (batdelId) {
-            vt = DicItemBatDelQty[itemcode].find(
+            vtdisplay = DicItemBatDelQty[itemcode].find(
                 (x) => x.batdelId == Number(batdelId)
             )?.VtDisplay as string;
         }
-        if (vtdelId) {
-            vt = DicItemVtDelQtyList[itemcode].find(
-                (x) => x.vtdelId == Number(vtdelId)
-            )?.vt as string;
-        }
+
         if (snlist.length > 0) {
-            vt = snlist.find((x) => x.snoCode == sn)?.ValidThruDisplay as string;
+            vtdisplay = snlist.find((x) => x.snoCode == sn)?.ValidThruDisplay as string;
         }
     }
 
-    html += `<td><input type="text" class="batch text-center flex" readonly value="${batcode}" /></td>`;
-    html += `<td><input type="text" class="serialno text-center flex" readonly value="${sn}" /></td>`;
-    html += `<td><input type="text" class="validthru text-center flex" readonly value="${vt}" /></td>`;
+    html += `<td><input type="text" class="batch text-center flex" readonly value="${batdisplay}" /></td>`;
+    html += `<td><input type="text" class="serialno text-center flex" readonly value="${sndisplay}" /></td>`;
+    html += `<td><input type="text" class="validthru text-center flex" readonly value="${vtdisplay}" /></td>`;
 
     html += `<td class="text-right"><input type="number" name="price" min="0" class="price text-right" value="${refundsalesln?.SellingPriceDisplay}" readonly/></td>`;
 
@@ -748,8 +727,8 @@ function addRefRow(
     const rtlseq = refundsalesln?.rtlSeq;
 
     let clsDel: string = "";
-    console.log("batdelid:" + batdelId + ";vtdelId:" + vtdelId + ";sn:" + sn);
-    if (batdelId !== null || vtdelId != null || sn !== "") {
+
+    if (batdelId !== null || vt != null || sn !== "") {
         clsDel = "bsv ";
         if (itemOptions.ChkBatch) {
             clsDel += "bat";
@@ -777,7 +756,7 @@ function addRefRow(
     // else {
     //   // html += `<td class="text-center"><input type="number" name="seq" class="seq" min="1" readonly data-seq="${rtlseq}" value="${rtlseq}" /></td>`;
     // }
-    const chkDel: string = `${refundsalesln?.rtlSeq} <input class="rtlSeq ${clsDel}" name="rtlSeq" class="rtlSeq" min="1" data-rtlSeq="${rtlseq}" type="checkbox" data-batdelid="${batdelId}" data-vtdelid="${vtdelId}" data-sn="${sn}" data-vt="${vt}" value="${rtlseq}">`;
+    const chkDel: string = `${refundsalesln?.rtlSeq} <input class="rtlSeq ${clsDel}" name="rtlSeq" class="rtlSeq" min="1" data-rtlSeq="${rtlseq}" type="checkbox" data-batdelid="${batdelId}" data-vtdelid="${vt}" data-sn="${sn}" data-vt="${vt}" value="${rtlseq}">`;
     html += `<td class="text-center">${chkDel}</td>`;
     html += "</tr>";
     return html;
@@ -1397,12 +1376,4 @@ $(function () {
     Refund = initSale();
 
     $("#txtDeviceCode").trigger("focus");
-
-    $("#tblRefund tr td").on("mouseenter", "input",
-        function () {
-            $("input").css("background-color", "#FFFFB0");
-        }).on("mouseleave", "input",
-            function () {
-                $("input").css("background-color", "#fff"); //apply to other inputs as well!
-            });
 });

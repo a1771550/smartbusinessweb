@@ -5156,15 +5156,17 @@ function initRefundSales(): IRefundSales {
         rtlSn: null,
         rfSeq: 0,
         rtlStockLoc: "",
+        rtlValidThru:null
     };
 }
 interface IRefundSales {
+    rtlValidThru: string|null;
     rtsCode: string;
     rtsRmks: string;
     rtlItemCode: string | number;
     rtlSellingPrice: number;
     rtlTaxPc: number;
-    rtlBatch: string;
+    rtlBatch: string|null;
     rtlQty: number;
     rtlRefSales: string;
     rtlSeq: number;
@@ -5733,6 +5735,7 @@ function initItem(): IItem {
         hasSelectedIvs: false,
         singleProId: 0,
         hasItemVari: false,
+        NameDesc: ""
     };
 }
 interface IItem {
@@ -5865,6 +5868,7 @@ interface IItem {
     hasSelectedIvs: boolean;
     singleProId: number | null;
     hasItemVari: boolean;
+    NameDesc: string;
 }
 interface ILocQty {
     LocCode: string;
@@ -6075,8 +6079,8 @@ interface ISalesRefundBase {
     refundedDates: string;
     refundedqtyTxt: string;
     refundedamtTxt: string;
-    vtdelIds: string | null;
-    batdelIds: string | null;
+    vtdelId: string | undefined;
+    batdelId: string | undefined;
     rtlSn: string | null;
     rtlStockLoc: string | null;
 }
@@ -8279,6 +8283,10 @@ function selectItem(itemCode: string = "", proId: number = 0) {
                     : 0;
         let amount: number = 0;
         let namedesctxt: string;
+        let namedesc: string = "";
+        if (selectedSalesLn && selectedSalesLn.Item) namedesc = selectedSalesLn.Item.itmUseDesc ? selectedSalesLn.Item.itmDesc : selectedSalesLn.Item.itmName;
+        else namedesc = seqitem.itmUseDesc ? seqitem.itmDesc : seqitem.itmName;
+
         if (forpurchase && selectedSupplier) {
             taxrate = selectedSupplier.TaxPercentageRate ?? 0;
         }
@@ -8299,6 +8307,7 @@ function selectItem(itemCode: string = "", proId: number = 0) {
             .find("td:eq(2)")
             .find(".itemdesc")
             .data("itemname", namedesctxt)
+            .attr("title",namedesc)
             .val(namedesctxt);
         if (forpurchase) {
             $target
