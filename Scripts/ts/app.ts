@@ -555,7 +555,7 @@ let maillist: string[] = [];
 let supcodelist: string[] = [];
 let savemode: string = "text";
 let AttributeList: Array<IAttribute> = [];
-let keyword: string;
+let keyword: string="";
 let pagelength: number = 0;
 let itotalamt: number = 0,
     itotalpay: number = 0;
@@ -1026,78 +1026,15 @@ function GetEnquiries(pageIndex) {
         error: onAjaxFailure,
     });
 }
-function GetItems(pageIndex) {
-    // shop = forpurchase
-    //   ? ""
-    //   : $("#drpLocation").length
-    //   ? ($("#drpLocation").val() as string)
-    //   : $infoblk.data("location")
-    //   ? ($infoblk.data("location") as string)
-    //   : ($infoblk.data("shop") as string);
+function GetItems(pageIndex) {  
     shop = $("#drpLocation").length
         ? ($("#drpLocation").val() as string)
         : $infoblk.data("location")
             ? ($infoblk.data("location") as string)
-            : ($infoblk.data("shop") as string);
+            : ($infoblk.data("shop") as string);    
     //console.log('shop:' + shop);
-
-    let data =
-        "{pageIndex: " +
-        pageIndex +
-        ', sortName: "' +
-        sortName +
-        '", sortDirection: "' +
-        sortDirection +
-        '", location:"' +
-        shop +
-        '",forsales:' +
-        forsales +
-        ",forwholesales:" +
-        forwholesales +
-        ",forpurchase:" +
-        forpurchase +
-        "}";
-    if (typeof keyword !== "undefined" && keyword !== "") {
-        data =
-            "{pageIndex: " +
-            pageIndex +
-            ', sortName: "' +
-            sortName +
-            '", sortDirection: "' +
-            sortDirection +
-            '", location:"' +
-            shop +
-            '", keyword: "' +
-            keyword +
-            '",forsales:' +
-            forsales +
-            ",forwholesales:" +
-            forwholesales +
-            ",forpurchase:" +
-            forpurchase +
-            "}";
-    } else {
-        data =
-            "{pageIndex: " +
-            pageIndex +
-            ', sortName: "' +
-            sortName +
-            '", sortDirection: "' +
-            sortDirection +
-            '", location:"' +
-            shop +
-            '", keyword: "' +
-            "" +
-            '",forsales:' +
-            forsales +
-            ",forwholesales:" +
-            forwholesales +
-            ",forpurchase:" +
-            forpurchase +
-            "}";
-    }
-    //console.log('data:', data);
-    // return false;
+    let data = `'{pageIndex:${pageIndex},keyword:${keyword},location:${shop},forsales:${forsales},forwholesales:${forwholesales},forpurchase:${forpurchase},forstock:${forstock},fortransfer:${fortransfer}}'`;
+    
     openWaitingModal();
     $.ajax({
         url:
@@ -1111,8 +1048,7 @@ function GetItems(pageIndex) {
     });
 }
 
-function OnSuccess(response) {
-    //   keyword = "";
+function OnSuccess(response) {   
     closeWaitingModal();
     var model = response;
     seq = currentY + 1;
@@ -1277,6 +1213,7 @@ function OnSuccess(response) {
 }
 
 function _writeItems(itemList: IItem[]) {
+    let type = getParameterByName("type");
     let html = "";
     $.each(itemList, function () {
         var item = this;
@@ -1316,7 +1253,7 @@ function _writeItems(itemList: IItem[]) {
         //let _qty: number = ItemVari ? ItemVari.DicLocQty[shop] : item.Qty;
         let _qty: number = item.Qty;
 
-        if (!forpurchase) {
+        if (!forpurchase && !(type)) {
             let tdcls = _qty > 0 ? "" : "outofstock";
             if (itemcode.startsWith("SZ", 0)) console.log("_qty:" + _qty);
             html += `<td style="text-align:right;width:90px;max-width:90px;" class="${tdcls}">${_qty}</td>`;
@@ -8225,7 +8162,7 @@ function getDicItemOptionsVariByCodes(
 }
 
 let copiedItem: IItem;
-$(document).on("dblclick", ".itmcode", function () {
+$(document).on("dblclick", ".itmcode", function () {    
     handleItmCodeDblClick(this, null, null);
 });
 
@@ -16965,7 +16902,7 @@ function updateSales() {
             if (idx >= 0) {
                 salesln.Item = ItemList[idx];
             }
-            salesln.rtlSalesLoc = <string>(
+            salesln.rtlStockLoc = salesln.rtlSalesLoc = <string>(
                 $(e).find("td:eq(3)").find(".location").val()
             );
             salesln.rtlQty = Number($(e).find("td:eq(4)").find(".qty").val());
@@ -17484,7 +17421,8 @@ function submitSales() {
 }
 
 function _submitSales() {
-    const url = "/POSFunc/ProcessSales";
+    let type = getParameterByName("type");
+    let url = type?"/PreOrder/Edit": "/POSFunc/ProcessSales";
     Sale.CusID = selectedCus.cusCustomerID;
     Sale.rtsRmks = $("#txtNotes").val() as string;
     Sale.InternalNotes = $("#txtInternalNotes").val() as string;
@@ -17509,7 +17447,7 @@ function _submitSales() {
     $.ajax({
         type: "POST",
         url: url,
-        data: { Sale, SalesLnList, Payments, DeliveryItems },
+        data: type ? { Sale, SalesLnList, Payments }: { Sale, SalesLnList, Payments, DeliveryItems },
         success: function (data) {
             closeWaitingModal();
             printurl += "?issales=1&salesrefundcode=" + data.salescode;

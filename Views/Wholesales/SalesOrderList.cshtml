@@ -13,7 +13,7 @@
 
 @if (Model.PagingWholeSalesOrderList == null || Model.PagingWholeSalesOrderList.Count == 0)
 {
-    <div class="alert alert-info d-inline-block" id="norecordfound">@Resources.Resource.NoDataFound</div>
+    Html.Partial("_NoRecordFound");
 }
 else
 {

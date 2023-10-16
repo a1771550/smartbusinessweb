@@ -6,6 +6,7 @@
     string rtsCurrency = ViewData["rtsCurrency"] == null ? "HKD" : (string)ViewData["rtsCurrency"];
     List<PaymentType> PaymentTypes = ViewData["PaymentTypes"] == null ? null : (List<PaymentType>)ViewData["PaymentTypes"];
     Dictionary<string, string> DicPayTypes = (Dictionary<string, string>)ViewData["DicPayTypes"];
+    bool forpreorder = Request.QueryString["type"] != null && Request.QueryString["type"] == "preorder";
 }
 
 <div id="payModal" data-epay="@enableEpay">
@@ -43,7 +44,7 @@
     </div>
 
     <input type="hidden" id="epaytype" />
-    @if (forsales || fordeposit)
+    @if (forsales || fordeposit || forpreorder)
     {
         <div class="row justify-content-end mx-1 smaller">
             <div id="remainblk" class="alert alert-success"><span id="remaintxt" class="font-weight-bold mx-2">@Resources.Resource.Remain: </span><span id="remainamt"></span></div>
@@ -79,7 +80,7 @@
     }
 
     <div id="normalPayblk" class="form-inline px-sm-1 my-4">
-        @if (forsales || fordeposit)
+        @if (forsales || fordeposit || forpreorder)
         {
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="1" id="monthlypay">

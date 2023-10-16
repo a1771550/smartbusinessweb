@@ -65,6 +65,11 @@
           <path>Scripts\ts\pos\refund.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\refund.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>login.ts</name>
+          <path>Scripts\ts\login.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\login.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

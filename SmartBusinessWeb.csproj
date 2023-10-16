@@ -330,6 +330,7 @@
     <Compile Include="Controllers\POS\PaymentTypesController.cs" />
     <Compile Include="Controllers\POS\PayServiceController.cs" />
     <Compile Include="Controllers\POS\POSFuncController.cs" />
+    <Compile Include="Controllers\POS\PreorderController.cs" />
     <Compile Include="Controllers\POS\PriceLevelsController.cs" />
     <Compile Include="Controllers\POS\PrintController.cs" />
     <Compile Include="Controllers\POS\ReceiptController.cs" />
@@ -4244,6 +4245,9 @@
     <Content Include="Views\Shared\_PoItemVariModal.cshtml" />
     <Content Include="Views\OtherSettings\PrivacyPolicy.cshtml" />
     <Content Include="Views\Shared\_DefaultCountries.cshtml" />
+    <Content Include="Views\Preorder\Index.cshtml" />
+    <Content Include="Views\Shared\_NoRecordFound.cshtml" />
+    <Content Include="Views\Preorder\Edit.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">

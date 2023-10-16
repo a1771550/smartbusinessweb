@@ -3119,7 +3119,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HttpPost]
-        public JsonResult GetItemsAjax(int pageIndex, string keyword = "", string location = "", bool forsales = false, bool forwholesales = false, bool forpurchase = false, bool forstock = false, bool fortransfer = false)
+        public JsonResult GetItemsAjax(int pageIndex=1, string keyword = "", string location = "", bool forsales = false, bool forwholesales = false, bool forpurchase = false, bool forstock = false, bool fortransfer = false)
         {
             ItemViewModel model = new ItemViewModel();
 

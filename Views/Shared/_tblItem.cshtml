@@ -4,6 +4,7 @@
     bool forpurchase = ViewData["forpurchase"] != null ? (bool)ViewData["forpurchase"] : false;
     bool forwholesales = ViewData["forwholesales"] != null ? (bool)ViewData["forwholesales"] : false;
     bool forsales = ViewData["forsales"] != null ? (bool)ViewData["forsales"] : false;
+    bool forpreorder = Request.QueryString["type"] != null && Request.QueryString["type"] == "preorder";
 }
 <div id="norecord" class="alert alert-warning hide">@Resources.Resource.NoDataFound</div>
 <table id="tblItem" class="table table-bordered  table-hover table-condensed" data-forpurchase="@forpurchase">
@@ -12,7 +13,7 @@
         <tr class="gray-header">
             <th class="text-left colheader" data-col="0">@Resources.Resource.ItemCode</th>
             <th class="text-left colheader" data-col="1">@Resources.Resource.ItemName</th>
-            @if (!forpurchase)
+            @if (!forpurchase && !forpreorder)
             {
                 <th class="text-right">@Resources.Resource.QtySellable</th>
             }

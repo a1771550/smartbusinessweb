@@ -169,8 +169,9 @@ namespace SmartBusinessWeb.Controllers.WholeSales
             ViewBag.PageName = "list";
             WholeSalesEditModel model = new WholeSalesEditModel();
             model.Keyword = Keyword == "" ? null : Keyword;
-            model.WSList = model.GetList(user, strfrmdate, strtodate, model.Keyword);
-            DoList(SortCol, SortOrder, PageNo, model);
+            model.GetList(user, strfrmdate, strtodate, model.Keyword);
+            if(model.WSList!=null && model.WSList.Count>0)
+                DoList(SortCol, SortOrder, PageNo, model);
             ViewBag.Title = Resources.Resource.WholeSales;
             return View(model);
         }
@@ -252,7 +253,7 @@ namespace SmartBusinessWeb.Controllers.WholeSales
             {
                 model.SortOrder = "desc";
             }
-            model.PagingPSList = model.WSList.ToPagedList(No_Of_Page, Size_Of_Page);
+            model.PagingWSList = model.WSList.ToPagedList(No_Of_Page, Size_Of_Page);
         }
     }
 }

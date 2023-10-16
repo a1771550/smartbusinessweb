@@ -47,7 +47,6 @@ using DocumentFormat.OpenXml;
 using CommonLib.Models.MYOB;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
-//using System.Data.SqlClient;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -61,7 +60,8 @@ namespace SmartBusinessWeb.Controllers
         //private ComInfo ComInfo { get { return Session["ComInfo"] as ComInfo; } }
         //protected string CheckoutPortal { get { return ComInfo.DefaultCheckoutPortal; } }
         //private string ConnectionString { get { return string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ;", ComInfo.MYOBDriver, ComInfo.MYOBUID, ComInfo.MYOBPASS, ComInfo.MYOBDb, ComInfo.MYOBExe, ComInfo.MYOBKey); } }
-        private string ConnectionString{ get { return Session["DBName"] == null ? ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", "POSPro") : ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", Session["DBName"].ToString()); } }
+        private string DefaultConnection{ get { return Session["DBName"] == null ? ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", "POSPro") : ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", Session["DBName"].ToString()); } }
+        private SqlConnection connection { get { return new SqlConnection(DefaultConnection); } }
         private string centralbaseUrl = UriHelper.GetAppUrl();
         protected string DateFormat { get { return ConfigurationManager.AppSettings["DateFormat"]; } }
 
@@ -92,7 +92,21 @@ namespace SmartBusinessWeb.Controllers
         protected string UploadsWSDir { get { return ConfigurationManager.AppSettings["UploadsWSDir"]; } }
         protected string UploadsPODir { get { return ConfigurationManager.AppSettings["UploadsPODir"]; } }
 
-        
+        public void Debug80()
+        {
+            using (connection)
+            {
+                connection.Open();
+                var salesId = 4;
+                var salesorderlist = connection.Query<SalesLnView>(@"EXEC dbo.GetPreorderById @apId=@apId,@salesId=@salesId", new { apId,salesId }).ToList();
+                SalesLnView salesOrder = null;              
+                if (salesorderlist != null && salesorderlist.Count > 0)
+                {
+                    salesOrder = salesorderlist.GroupBy(x=>x.rtsCode).FirstOrDefault().First();                                     
+                }
+                Response.Write(salesOrder.rtsCode+"<br>"+salesorderlist.Count);
+            }
+        }
         public void SwitchDB(string dbname="POSPro")
         {
             try
@@ -168,7 +182,7 @@ namespace SmartBusinessWeb.Controllers
         }
         public void Debug78()
         {           
-            using var connection = new SqlConnection(ConnectionString);
+            using var connection = new SqlConnection(DefaultConnection);
             connection.Open();
             //GetBatTotalQtyByBatCodes
             var batTotalQtyList = connection.Query<BatTotalQty>(@"EXEC dbo.GetBatTotalQtyByBatCodes @apId=@apId", new { apId }).ToList();
@@ -234,7 +248,7 @@ namespace SmartBusinessWeb.Controllers
 
         public void DapperQuery()
         {           
-            using var connection = new Microsoft.Data.SqlClient.SqlConnection(ConnectionString);
+            using var connection = new Microsoft.Data.SqlClient.SqlConnection(DefaultConnection);
             connection.Open();
             var CurrentOldestDate = connection.QueryFirstOrDefault<string>(@"EXEC dbo.GetEnqOldestDate @apId=@apId", new { apId });
             Response.Write($"CurrentOldestDate: {CurrentOldestDate}");
@@ -523,7 +537,7 @@ namespace SmartBusinessWeb.Controllers
         }
         public void Debug71()
         {            
-            using var connection = new Microsoft.Data.SqlClient.SqlConnection(ConnectionString);
+            using var connection = new Microsoft.Data.SqlClient.SqlConnection(DefaultConnection);
             connection.Open();
             var CustomerList = connection.Query<PGCustomerModel>(@"EXEC dbo.GetCustomerList4Checkout1 @apId=@apId,@companyId=@companyId", new { apId, companyId }).ToList();
             foreach (var customer in CustomerList)
