@@ -1051,6 +1051,7 @@ function GetItems(pageIndex) {
     });
 }
 
+let forpreorder: boolean = false;
 function OnSuccess(response) {   
     closeWaitingModal();
     var model = response;
@@ -1155,8 +1156,7 @@ function OnSuccess(response) {
                     // console.log("ready to call selectItem#onsuccess#0...");
                     $(".itemcode").off("change");
                     // console.log("calling selectItem#OnSuccess#searchmode");
-
-                    selectItem();
+                        selectItem();
                     $(".itemcode").on("change", handleItemCodeChange);
                 } else {
                     copiedItem = structuredClone(ItemList[0]);
@@ -1170,7 +1170,8 @@ function OnSuccess(response) {
                 _writeItems(model.Items);
             }
             searchItemMode = false;
-        } else {
+        }
+        else {
             if (ItemList.length === 1) {
                 selectedItemCode = ItemList[0].itmCode;
                 if (forsales || forpurchase || forwholesales) {
@@ -1182,21 +1183,16 @@ function OnSuccess(response) {
                     // console.log("here");
                     $(".itemcode").off("change");
                     // console.log("calling selectItem#OnSuccess#nonsearchmode");
-
-                    selectItem();
+                    //if (forpreorder)
+                       
+                    //else
+                        selectItem();
                     $(".itemcode").on("change", handleItemCodeChange);
                 } else {
                     copiedItem = structuredClone(ItemList[0]);
                 }
             } else {
-                openItemModal();
-                //if (forpurchase && $("#tblItem thead tr.gray-header th").length === 7) {
-                //    $("#tblItem thead tr.gray-header th").eq(2).remove();
-                //}
-                //if (forpurchase) {
-                //    $("#tblItem thead tr.gray-header th").eq(2).remove();
-                //}
-                // console.log("model.Items:", model.Items);
+                openItemModal();                
                 _writeItems(model.Items);
             }
         }
@@ -8182,6 +8178,9 @@ function selectItem(itemCode: string = "", proId: number = 0) {
     if (!searchmode && !selectedItemCode) {
         falert(selectitemrequired, oktxt);
     } else {
+        let type = getParameterByName("type");
+        forpreorder = type!=null && type == "preorder";
+
         let $rows = $(`#${gTblName} tbody tr`);
         let $target = $rows.eq(currentY);
         seq = currentY + 1;
@@ -8301,170 +8300,205 @@ function selectItem(itemCode: string = "", proId: number = 0) {
 
         itemOptions = DicItemOptions[selectedItemCode];
         //console.log(itemOptions);
-        const readonly =
-            !itemOptions.ChkBatch && !itemOptions.ChkSN && !itemOptions.WillExpire
-                ? ""
-                : "readonly";
-        const nonitemoptionscls =
-            !itemOptions.ChkBatch && !itemOptions.ChkSN && !itemOptions.WillExpire
-                ? "nonitemoptions"
-                : "";
-
         let idx = 5;
-        const $bat = $target.find("td").eq(idx).find(".batch");
+        if (forpreorder) {
 
-        if (forsales) {
-            $bat.data("type", "bat");
-
-            if (itemOptions.ChkBatch) {
-                batcls = `batch pointer focus`;
-                if (DicItemBatchQty[selectedItemCode].length === 0) {
-                    missingtxt = itemoptionsinfomissingformat.replace("{0}", batchtxt);
-                    batcls = "itemoptionmissing";
-                    batmsg = `${missingtxt} ${purchaserequiredmsg}`;
-                }
-                $bat.addClass(batcls);
-            } else {
-                $bat.removeClass("pointer focus");
-                if (
-                    !itemOptions.ChkBatch &&
-                    !itemOptions.ChkSN &&
-                    !itemOptions.WillExpire
-                )
-                    $bat.addClass(nonitemoptionscls);
-            }
-            if (readonly !== "") $bat.prop("readonly", true);
-            $bat.prop("title", batmsg);
-        } else {
-            if (itemOptions.ChkBatch) $bat.addClass("focus");
-            else $bat.removeClass("batch pointer");
-        }
-
-        idx++;
-        const $sn = $target.find("td").eq(idx).find(".serialno");
-        if (forsales) {
-            $sn.data("type", "sn");
-
-            if (itemOptions.ChkSN) {
-                sncls = `serialno pointer focus`;
-                if (itemOptions.ChkBatch) {
-                    if (DicItemSnVtList[selectedItemCode].length === 0) {
-                        missingtxt = itemoptionsinfomissingformat.replace(
-                            "{0}",
-                            serialnotxt
-                        );
-                        sncls = "itemoptionmissing";
-                        snmsg = `${missingtxt} ${purchaserequiredmsg}`;
-                    } else {
-                        sncls = "focus";
-                    }
-                } else {
-                    if (DicItemSnVtList[selectedItemCode].length === 0) {
-                        missingtxt = itemoptionsinfomissingformat.replace(
-                            "{0}",
-                            serialnotxt
-                        );
-                        sncls = "itemoptionmissing";
-                        snmsg = `${missingtxt} ${purchaserequiredmsg}`;
-                    }
-                }
-                $sn.addClass(sncls);
-            } else {
-                $sn.removeClass("pointer focus");
-                if (
-                    !itemOptions.ChkBatch &&
-                    !itemOptions.ChkSN &&
-                    !itemOptions.WillExpire
-                )
-                    $sn.addClass(nonitemoptionscls);
-            }
-
-            if (readonly !== "") {
-                $sn.prop("readonly", true);
-            }
-            $sn.prop("title", snmsg);
-        } else {
-            if (itemOptions.ChkSN) {
-                $sn.addClass("focus");
-                if (itemOptions.ChkBatch) $sn.removeClass("pointer");
-            } else {
-                $sn.removeClass("serialno pointer");
-            }
-        }
-
-        idx++;
-        const $vt = $target.find("td").eq(idx).find(".validthru");
-        if (forsales) {
-            $vt.data("type", "vt");
-
+            let batcls = "";
+            let sncls = "";  
+            let pointercls = "";
+            let vtcls = "";
             let vtdisabled = "";
-            if (itemOptions.WillExpire) {
+
+            if (itemOptions) {
+                batcls = itemOptions.ChkBatch ? "pobatch pointer focus" : "";
+                if (itemOptions.ChkSN) {
+                    sncls = "posn pointer focus";
+                }
                 vtdisabled =
-                    !itemOptions.ChkBatch && !itemOptions.ChkSN
-                        ? "disabled"
-                        : itemOptions.ChkBatch || itemOptions.ChkSN
-                            ? "disabled"
-                            : "";
-                vtcls = "validthru datepicker focus";
-                pointercls = itemOptions.ChkBatch || itemOptions.ChkSN ? "" : "pointer";
-                if (!(selectedItemCode in DicItemVtQtyList)) {
-                    missingtxt = itemoptionsinfomissingformat.replace(
-                        "{0}",
-                        expirydatetxt
-                    );
-                    vtmsg = `${missingtxt} ${purchaserequiredmsg}`;
-                    vtcls = "itemoptionmissing";
+                    itemOptions.ChkBatch || itemOptions.ChkSN ? "disabled" : "";
+                pointercls =
+                    itemOptions.ChkBatch || itemOptions.ChkSN ? "" : "pointer";
+                //vtinput = itemOptions.WillExpire
+                //    ? `<input type="datetime" class="text-center datepicker validthru ${pointercls} focus " ${vtdisabled} />`
+                   // : "";
+                const $bat = $target.find("td").eq(idx).find(".batch");
+                $bat.addClass(batcls).prop("readonly", true);
+                idx++;
+                const $sn = $target.find("td").eq(idx).find(".serialno");
+                $sn.addClass(sncls).prop("readonly", true);
+                idx++;
+                const $vt = $target.find("td").eq(idx).find(".validthru");
+                if (itemOptions.WillExpire)
+                    $vt.addClass(pointercls).addClass("focus").attr(vtdisabled);
+            }
+        } else {
+            const readonly =
+                !itemOptions.ChkBatch && !itemOptions.ChkSN && !itemOptions.WillExpire
+                    ? ""
+                    : "readonly";
+            const nonitemoptionscls =
+                !itemOptions.ChkBatch && !itemOptions.ChkSN && !itemOptions.WillExpire
+                    ? "nonitemoptions"
+                    : "";
+
+            
+            const $bat = $target.find("td").eq(idx).find(".batch");
+
+            if (forsales) {
+                $bat.data("type", "bat");
+
+                if (itemOptions.ChkBatch) {
+                    batcls = `batch pointer focus`;
+                    if (DicItemBatchQty[selectedItemCode].length === 0) {
+                        missingtxt = itemoptionsinfomissingformat.replace("{0}", batchtxt);
+                        batcls = "itemoptionmissing";
+                        batmsg = `${missingtxt} ${purchaserequiredmsg}`;
+                    }
+                    $bat.addClass(batcls);
                 } else {
+                    $bat.removeClass("pointer focus");
                     if (
-                        DicItemVtQtyList[selectedItemCode].length === 0 &&
                         !itemOptions.ChkBatch &&
-                        !itemOptions.ChkSN
-                    ) {
+                        !itemOptions.ChkSN &&
+                        !itemOptions.WillExpire
+                    )
+                        $bat.addClass(nonitemoptionscls);
+                }
+                if (readonly !== "") $bat.prop("readonly", true);
+                $bat.prop("title", batmsg);
+            } else {
+                if (itemOptions.ChkBatch) $bat.addClass("focus");
+                else $bat.removeClass("batch pointer");
+            }
+
+            idx++;
+            const $sn = $target.find("td").eq(idx).find(".serialno");
+            if (forsales) {
+                $sn.data("type", "sn");
+
+                if (itemOptions.ChkSN) {
+                    sncls = `serialno pointer focus`;
+                    if (itemOptions.ChkBatch) {
+                        if (DicItemSnVtList[selectedItemCode].length === 0) {
+                            missingtxt = itemoptionsinfomissingformat.replace(
+                                "{0}",
+                                serialnotxt
+                            );
+                            sncls = "itemoptionmissing";
+                            snmsg = `${missingtxt} ${purchaserequiredmsg}`;
+                        } else {
+                            sncls = "focus";
+                        }
+                    } else {
+                        if (DicItemSnVtList[selectedItemCode].length === 0) {
+                            missingtxt = itemoptionsinfomissingformat.replace(
+                                "{0}",
+                                serialnotxt
+                            );
+                            sncls = "itemoptionmissing";
+                            snmsg = `${missingtxt} ${purchaserequiredmsg}`;
+                        }
+                    }
+                    $sn.addClass(sncls);
+                } else {
+                    $sn.removeClass("pointer focus");
+                    if (
+                        !itemOptions.ChkBatch &&
+                        !itemOptions.ChkSN &&
+                        !itemOptions.WillExpire
+                    )
+                        $sn.addClass(nonitemoptionscls);
+                }
+
+                if (readonly !== "") {
+                    $sn.prop("readonly", true);
+                }
+                $sn.prop("title", snmsg);
+            } else {
+                if (itemOptions.ChkSN) {
+                    $sn.addClass("focus");
+                    if (itemOptions.ChkBatch) $sn.removeClass("pointer");
+                } else {
+                    $sn.removeClass("serialno pointer");
+                }
+            }
+
+            idx++;
+            const $vt = $target.find("td").eq(idx).find(".validthru");
+            if (forsales) {
+                $vt.data("type", "vt");
+
+                let vtdisabled = "";
+                if (itemOptions.WillExpire) {
+                    vtdisabled =
+                        !itemOptions.ChkBatch && !itemOptions.ChkSN
+                            ? "disabled"
+                            : itemOptions.ChkBatch || itemOptions.ChkSN
+                                ? "disabled"
+                                : "";
+                    vtcls = "validthru datepicker focus";
+                    pointercls = itemOptions.ChkBatch || itemOptions.ChkSN ? "" : "pointer";
+                    if (!(selectedItemCode in DicItemVtQtyList)) {
                         missingtxt = itemoptionsinfomissingformat.replace(
                             "{0}",
                             expirydatetxt
                         );
                         vtmsg = `${missingtxt} ${purchaserequiredmsg}`;
                         vtcls = "itemoptionmissing";
+                    } else {
+                        if (
+                            DicItemVtQtyList[selectedItemCode].length === 0 &&
+                            !itemOptions.ChkBatch &&
+                            !itemOptions.ChkSN
+                        ) {
+                            missingtxt = itemoptionsinfomissingformat.replace(
+                                "{0}",
+                                expirydatetxt
+                            );
+                            vtmsg = `${missingtxt} ${purchaserequiredmsg}`;
+                            vtcls = "itemoptionmissing";
+                        }
                     }
+
+                    vtcls += ` ${pointercls}`;
+                } else {
+                    $vt.removeClass("pointer focus").datepicker("disable");
+                    if (
+                        !itemOptions.ChkBatch &&
+                        !itemOptions.ChkSN &&
+                        !itemOptions.WillExpire
+                    )
+                        $vt.addClass(nonitemoptionscls);
                 }
 
-                vtcls += ` ${pointercls}`;
+                if (vtdisabled !== "") $vt.datepicker("disable");
+
+                if (readonly !== "") $vt.prop("readonly", true);
+
+                $vt.addClass(vtcls).prop("title", vtmsg);
             } else {
-                $vt.removeClass("pointer focus").datepicker("disable");
-                if (
-                    !itemOptions.ChkBatch &&
-                    !itemOptions.ChkSN &&
-                    !itemOptions.WillExpire
-                )
-                    $vt.addClass(nonitemoptionscls);
-            }
-
-            if (vtdisabled !== "") $vt.datepicker("disable");
-
-            if (readonly !== "") $vt.prop("readonly", true);
-
-            $vt.addClass(vtcls).prop("title", vtmsg);
-        } else {
-            if (itemOptions.WillExpire) {
-                if (itemOptions.ChkBatch || itemOptions.ChkSN) {
-                    $vt.removeClass("pointer").datepicker("disable");
+                if (itemOptions.WillExpire) {
+                    if (itemOptions.ChkBatch || itemOptions.ChkSN) {
+                        $vt.removeClass("pointer").datepicker("disable");
+                    }
+                } else {
+                    $vt.removeClass("validthru pointer").datepicker("disable");
                 }
-            } else {
-                $vt.removeClass("validthru pointer").datepicker("disable");
+            }
+
+            idx++;
+            if (forsales) {
+                const $iv = $target.find("td").eq(idx).find(".vari");
+                let itemcode = selectedItemCode;
+                let ivpointer = !itemOptions.ChkBatch && !itemOptions.ChkSN && !itemOptions.WillExpire ? "pointer" : "";
+                //console.log("ivpointer:" + ivpointer);
+                let ivcls = (!$.isEmptyObject(DicIvInfo) && itemcode in DicIvInfo && DicIvInfo[itemcode].length > 0) ? `focus ${ivpointer}` : "disabled";
+                //itemvari
+                $iv.addClass(ivcls);
             }
         }
-
-        idx++;
-        if (forsales) {
-            const $iv = $target.find("td").eq(idx).find(".vari");
-            let itemcode = selectedItemCode;
-            let ivpointer = !itemOptions.ChkBatch && !itemOptions.ChkSN && !itemOptions.WillExpire ? "pointer" : "";
-            //console.log("ivpointer:" + ivpointer);
-            let ivcls = (!$.isEmptyObject(DicIvInfo) && itemcode in DicIvInfo && DicIvInfo[itemcode].length > 0) ? `focus ${ivpointer}` : "disabled";
-            //itemvari
-            $iv.addClass(ivcls);
-        }
+        
+        
 
         if (forsales || forpurchase || forwholesales) {
             if (forpurchase) {
@@ -18756,6 +18790,151 @@ interface IIvDelQty extends IIvQty {
     Id: string;
     seq: number;
 }
+
+$(document).on("dblclick", ".povari.pointer", function () {
+    $tr = $(this).parent("td").parent("tr");
+    selectedItemCode = (
+        $tr.find("td:eq(1)").find(".itemcode").val() as string
+    ).trim();
+    const $bat = $tr.find("td").eq(5).find(".pobatch.pointer");
+    if ($bat.hasClass("focus")) {
+        $.fancyConfirm({
+            title: '',
+            message: batchnorequired,
+            shownobtn: false,
+            okButton: oktxt,
+            noButton: notxt,
+            callback: function (value) {
+                if (value) {
+                    $bat.trigger("focus");
+                }
+            }
+        });
+    } else {
+        currentY = $tr.data("idx") as number;
+        seq = currentY + 1;
+        $.each(Purchase.PurchaseItems, function (i, e) {
+            if (e.piSeq == seq) {
+                selectedPurchaseItem = structuredClone(e);
+                return false;
+            }
+        });
+        openPoItemVariModal($(this).hasClass("focus"));
+    }
+
+});
+$(document).on("dblclick", ".pobatch.pointer", function () {
+    $target = $(this).parent("td").parent("tr");
+    selectedItemCode = (
+        $target.find("td:eq(1)").find(".itemcode").val() as string
+    ).trim();
+    currentY = $target.data("idx") as number;
+    seq = currentY + 1;
+
+    if (forpurchase) {
+        $.each(Purchase.PurchaseItems, function (i, e) {
+            if (e.piSeq == seq) {
+                selectedPurchaseItem = structuredClone(e);
+                return false;
+            }
+        });
+        if (!selectedPurchaseItem) selectedPurchaseItem = initPurchaseItem();
+    }
+    if (forpreorder) {
+        $.each(SalesLnList, function (i, e) {
+            if (e.rtlSeq == seq) {
+                selectedSalesLn = structuredClone(e);
+                return false;
+            }
+        });
+    }
+
+    resetPurchaseBatchModal();
+    //console.log("batch model reset");
+
+    if (forpurchase) {
+        if (!$.isEmptyObject(DicItemOptions)) {
+            itemOptions = DicItemOptions[selectedItemCode];
+            if (itemOptions) {
+                if (itemOptions.ChkBatch && itemOptions.ChkSN) {
+                    $("#tblPbatch thead tr th").last().hide();
+                } else {
+                    $("#tblPbatch thead tr th").last().show();
+                }
+
+                if (
+                    (itemOptions.ChkSN && itemOptions.WillExpire) ||
+                    (itemOptions.ChkBatch && !itemOptions.WillExpire)
+                ) {
+                    $("#tblPbatch thead tr th:eq(2)").hide();
+                } else {
+                    $("#tblPbatch thead tr th:eq(2)").show();
+                }
+            }
+        }
+
+    }
+    
+    toggleBatQty();
+
+    if(forpurchase)
+        openPurchaseBatchModal(true, Purchase.pstStatus === "opened" || Purchase.pstStatus === "partialreceival");
+    if (forpreorder) openPurchaseBatchModal(true, false);
+});
+
+$(document).on("dblclick", ".posn.pointer", function () {
+    $tr = $(this).parent("td").parent("tr");
+    currentY = $tr.data("idx") as number;
+    seq = currentY + 1;
+    selectedItemCode = $tr.find("td:eq(1)").find(".itemcode").val() as string;
+
+    if (forpurchase) {
+        $.each(Purchase.PurchaseItems, function (i, e) {
+            if (e.piSeq == seq) {
+                selectedPurchaseItem = structuredClone(e);
+                return false;
+            }
+        });
+    }
+
+
+
+    resetPurchaseSerialModal();
+
+    itemOptions = DicItemOptions[selectedItemCode];
+    if (
+        itemOptions.ChkBatch &&
+        itemOptions.ChkSN &&
+        selectedPurchaseItem.batchList.length === 0
+    ) {
+        $.fancyConfirm({
+            title: "",
+            message: batchrequiredtxt,
+            shownobtn: false,
+            okButton: oktxt,
+            noButton: notxt,
+            callback: function (value) {
+                if (value) {
+                    $(`#${gTblName} tbody tr`)
+                        .eq(currentY)
+                        .find("td:eq(5)")
+                        .find(".pobatch")
+                        .addClass("focus")
+                        .trigger("focus");
+                }
+            },
+        });
+    } else {
+        if (!itemOptions.WillExpire) {
+            $("#tblPserial thead tr th:eq(2)").hide();
+        } else {
+            $("#tblPserial thead tr th:eq(2)").show();
+        }
+        openPurchaseSerialModal(true, Purchase.pstStatus === "opened" || Purchase.pstStatus === "partialreceival");
+        setValidThruDatePicker();
+    }
+});
+
 $(document).on("change", ".validthru", function () {
     let $validthru = $(this);
     $tr = $validthru.parent("td").parent("tr");
