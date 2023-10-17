@@ -25,9 +25,14 @@
     //bool isadmin = user.Roles.Any(x => x == RoleType.Admin);
     bool NonABSS = Model.ComInfo.DefaultCheckoutPortal != "abss";
     bool editmode = !string.IsNullOrEmpty(Model.Mode) && Model.Mode == "edit";
+    string subtitle = Resources.Resource.MakeSales;
+    if (Request.QueryString["type"] != null)
+    {
+        subtitle = string.Concat(subtitle, " (",Resources.Resource.Preorder, ")");
+    }
 }
 <link rel="stylesheet" type="text/css" href="~/Content/Sales.css?v=@rand" />
-<h2>@Resources.Resource.MakeSales</h2>
+<h3>@subtitle</h3>
 
 @if (!nonabss)
 {

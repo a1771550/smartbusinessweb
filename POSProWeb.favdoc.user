@@ -70,6 +70,11 @@
           <path>Scripts\ts\login.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\login.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>preorderlist.ts</name>
+          <path>Scripts\ts\pos\preorderlist.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\preorderlist.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -172,6 +177,11 @@
           <path>Controllers\JsonController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\JsonController.cs</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>PrintController.cs</name>
+          <path>Controllers\POS\PrintController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\POS\PrintController.cs</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -198,6 +208,10 @@
           <name>PPWDbContext1.cs</name>
           <absolutePath>F:\repos\PPWProject\PPWDAL\PPWDbContext1.cs</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>PrintModel.cs</name>
+          <absolutePath>F:\repos\PPWProject\PPWLib\Models\POS\Receipt\PrintModel.cs</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -207,6 +221,10 @@
         <Favorite>
           <name>ModelHelper.cs</name>
           <absolutePath>F:\repos\PPWProject\PPWLib\Helpers\ModelHelper.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>PrintHelper.cs</name>
+          <absolutePath>F:\repos\PPWProject\PPWLib\Helpers\PrintHelper.cs</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

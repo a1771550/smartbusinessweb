@@ -30,11 +30,7 @@ $(document).on("dblclick", ".remark", function () {
 $(document).on("change", "#txtKeyword", function () {
   var keyword = $(this).val() as string;
   if (keyword !== "") {
-    //if (isapprover) {
-    //  $(".searchmode").first().prop("checked", true);
-    //  if (!searchmodelist.includes("0")) searchmodelist.push("0");
       $("#searchmode").val(searchmodelist.join(","));
-    //}
   }
 });
 

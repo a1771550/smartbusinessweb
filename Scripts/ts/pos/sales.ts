@@ -630,8 +630,4 @@ $(function () {
             selectCus();
         }
     }
-
-
 });
-
-

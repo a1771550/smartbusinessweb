@@ -697,10 +697,10 @@ namespace SmartBusinessWeb.Controllers
                 string device = currsess.sesDvc.ToLower();
                 model.Items = new List<ItemModel>();
                 model.DicItemSNs = new Dictionary<string, List<SerialNoView>>();
-                //var saleslist = context.WholeSales.Where(x => x.wsCode == salescode).ToList();
+                //string salestype = 
 
                 model.SalesOrder = (from s in context.RtlSales
-                                    where s.rtsCode.ToLower() == salescode.ToLower() && s.rtsType == "RS" && s.rtsDvc.ToLower() == device && s.rtsSalesLoc.ToLower() == location
+                                    where s.rtsCode.ToLower() == salescode.ToLower() && (s.rtsType == "RS"||s.rtsType.ToLower()=="pre") && s.rtsDvc.ToLower() == device && s.rtsSalesLoc.ToLower() == location
                                     select new SalesModel
                                     {
                                         rtsCusID = s.rtsCusID,
@@ -764,7 +764,7 @@ namespace SmartBusinessWeb.Controllers
                     model.SalesLnViews = (from sl in context.RtlSalesLns
                                           join s in context.RtlSales
                                           on sl.rtlCode equals s.rtsCode
-                                          where s.rtsCode.ToLower() == salescode.ToLower() && s.rtsType == "RS" && s.rtsDvc.ToLower() == device && s.rtsSalesLoc.ToLower() == location
+                                          where s.rtsCode.ToLower() == salescode.ToLower() && (s.rtsType == "RS" || s.rtsType.ToLower() == "pre") && s.rtsDvc.ToLower() == device && s.rtsSalesLoc.ToLower() == location
                                           select new SalesLnView
                                           {
                                               CustomerID = s.rtsCusID,
@@ -838,9 +838,7 @@ namespace SmartBusinessWeb.Controllers
                         {
                             ModelHelper.SetDicItemSNs(salesln, model.SerialNoList, ref model.DicItemSNs);
                         }
-                        //salesln.ksalesmancode = context.SysUsers.FirstOrDefault(x => x.UserName.ToLower() == salesln.rtsKawadaUpldBy.ToLower()).UserCode;
                     }
-                    //model.KSalesmanCode = context.SysUsers.FirstOrDefault(x => x.UserName.ToLower() == model.SalesOrder.rtsKawadaUpldBy.ToLower()).UserCode;
                 }
             }
 
@@ -3118,8 +3116,9 @@ namespace SmartBusinessWeb.Controllers
             }
         }
 
-        [HttpPost]
-        public JsonResult GetItemsAjax(int pageIndex=1, string keyword = "", string location = "", bool forsales = false, bool forwholesales = false, bool forpurchase = false, bool forstock = false, bool fortransfer = false)
+        //[HttpPost]
+        [HttpGet]
+        public JsonResult GetItemsAjax(int pageIndex=1, string keyword = "", string location = "", bool forsales = false, bool forwholesales = false, bool forpurchase = false, bool forstock = false, bool fortransfer = false, string type="")
         {
             ItemViewModel model = new ItemViewModel();
 
@@ -3136,8 +3135,7 @@ namespace SmartBusinessWeb.Controllers
 
             var stockinfo = context.GetStockInfo5(apId).ToList();
 
-            List<SalesItem> itemlist = ModelHelper.GetItemList(apId, context, stockinfo, startIndex, model.PageSize, out model.RecordCount, keyword, location);
-            //if (!string.IsNullOrEmpty(keyword)) model.RecordCount = itemlist.Count;
+            List<SalesItem> itemlist = ModelHelper.GetItemList(apId, context, stockinfo, startIndex, model.PageSize, out model.RecordCount, keyword, location, type);
 
             ModelHelper.GetItemPriceLevelList(ref itemlist);
             model.Items = itemlist;
@@ -3198,7 +3196,7 @@ namespace SmartBusinessWeb.Controllers
 
             model.DicItemOptions = ModelHelper.GetDicItemOptions(apId, context);
 
-            return Json(model);
+            return Json(model, JsonRequestBehavior.AllowGet);
         }
 
 

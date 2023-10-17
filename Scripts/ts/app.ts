@@ -8,6 +8,7 @@
     abstract submitform();
 }
 
+let frmId: string = "";
 let ismanager: boolean = false;
 let TransferList: Array<IStockTransfer> = [];
 let isLocal: boolean = false;
@@ -1027,19 +1028,21 @@ function GetEnquiries(pageIndex) {
     });
 }
 function GetItems(pageIndex) {  
+    let type = getParameterByName("type")??"";
+
     shop = $("#drpLocation").length
         ? ($("#drpLocation").val() as string)
         : $infoblk.data("location")
             ? ($infoblk.data("location") as string)
             : ($infoblk.data("shop") as string);    
-    //console.log('shop:' + shop);
-    let data = `'{pageIndex:${pageIndex},keyword:${keyword},location:${shop},forsales:${forsales},forwholesales:${forwholesales},forpurchase:${forpurchase},forstock:${forstock},fortransfer:${fortransfer}}'`;
+
+    let data = `pageIndex=${pageIndex}&keyword=${keyword}&location=${shop}&forsales=${forsales}&forwholesales=${forwholesales}&forpurchase=${forpurchase}&forstock=${forstock}&fortransfer=${fortransfer}&type=${type}`;
     
     openWaitingModal();
     $.ajax({
         url:
             checkoutportal == "kingdee" ? "/Api/GetKItemsAjax" : "/Api/GetItemsAjax",
-        type: "POST",
+        type: "GET",
         data: data,
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -1241,8 +1244,9 @@ function _writeItems(itemList: IItem[]) {
                 }
             } else trcls = "";
         }
+        let _qty: number = item.Qty;
 
-        html += `<tr class="itmcode ${trcls}" data-code="${itemcode}" data-proid="${proId}">`;
+        html += `<tr class="itmcode ${trcls}" data-code="${itemcode}" data-proid="${proId}" data-qty="${_qty}">`;
         // row.addClass("itmcode").attr("data-code", itemcode);
         html += `<td>${itemcode}</td>`;
         // $("td", row).eq(0).html(itemcode);
@@ -1250,12 +1254,8 @@ function _writeItems(itemList: IItem[]) {
         var namedesc = handleItemDesc(item.NameDescTxt);
         html += `<td style="max-width:250px;">${namedesc}</td>`;
 
-        //let _qty: number = ItemVari ? ItemVari.DicLocQty[shop] : item.Qty;
-        let _qty: number = item.Qty;
-
         if (!forpurchase && !(type)) {
             let tdcls = _qty > 0 ? "" : "outofstock";
-            if (itemcode.startsWith("SZ", 0)) console.log("_qty:" + _qty);
             html += `<td style="text-align:right;width:90px;max-width:90px;" class="${tdcls}">${_qty}</td>`;
         }
 
@@ -8198,16 +8198,9 @@ function selectItem(itemCode: string = "", proId: number = 0) {
                 : structuredClone(seqItem[seq]);
         // console.log("selecteditemcode@selectitem:" + selectedItemCode);
         //console.log(seqitem);
-
-        //console.log("proId:" + proId);
         const rowcls: string = isPromotion ? "promotion" : "";
         $target.find("td").first().addClass(rowcls);
-
-        // console.log("seqitem.itmIsTaxedWhenSold:", seqitem.itmIsTaxedWhenSold);
-        // console.log(
-        //   "selectedCus.TaxPercentageRate:",
-        //   selectedCus.TaxPercentageRate
-        // );
+       
         let qty: number = 1,
             price: number = 0,
             discount: number = 0,
@@ -17450,14 +17443,15 @@ function _submitSales() {
         data: type ? { Sale, SalesLnList, Payments }: { Sale, SalesLnList, Payments, DeliveryItems },
         success: function (data) {
             closeWaitingModal();
-            printurl += "?issales=1&salesrefundcode=" + data.salescode;
+            const salescode = data.finalsalescode!;
+            printurl += "?issales=1&salesrefundcode=" + salescode;
 
             if (typeof data.epaystatus === "undefined") {
                 if (data.msg === "") {
                     window.open(printurl);
 
                     if (data.zerostockItemcodes !== "") {
-                        handleOutOfStocks(data.zerostockItemcodes, data.salescode);
+                        handleOutOfStocks(data.zerostockItemcodes, salescode);
                     } else {
                         window.location.reload();
                     }
@@ -17487,13 +17481,13 @@ function _submitSales() {
                         //needquery_userpaying
                         openPayModal();
                         $("#transactionEpay").removeClass("isDisabled"); //activate the link
-                        selectedSalesCode = data.salescode;
+                        selectedSalesCode = salescode;
                         //setTimeout(function () {
                         //    handleTransactionResult(data.salescode);
                         //}, 15000); //reverse payment after payment api called for 15s.
                     } else {
                         setTimeout(function () {
-                            handleReversePayment(data.salescode);
+                            handleReversePayment(salescode);
                         }, 15000); //reverse payment after payment api called for 15s.
                     }
                 }
@@ -17503,15 +17497,7 @@ function _submitSales() {
     });
 }
 function validSalesForm(): boolean {
-    var msg = "";
-    // if (approvalmode) {
-    //   let $customerpo = $("#txtCustomerPO");
-    //   if ($customerpo.val() === "") {
-    //     msg += `${customerporequiredtxt}<br>`;
-    //     $customerpo.addClass("focus");
-    //   }
-    // }
-
+    var msg = "";    
     // console.log("SalesList#validform:", SalesList);
     if (typeof SalesList === "undefined" || SalesList.length === 0) {
         msg += `${salesinfonotenough}<br>`;

@@ -4745,6 +4745,7 @@
     <TypeScriptCompile Include="Scripts\ts\pos\deposit.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\kingdeeaccountinfo.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\kstock.ts" />
+    <TypeScriptCompile Include="Scripts\ts\pos\preorderlist.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\print.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\receipt.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\refund.ts" />

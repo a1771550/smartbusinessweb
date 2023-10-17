@@ -105,12 +105,12 @@ else
                     <th class="text-left">
                         @Resources.Resource.Remark
                     </th>
-                    <th class="text-center">
+                    @*<th class="text-center">
                         @Resources.Resource.PurchaseOrder
                     </th>
                     <th class="text-left colheader" data-col="3" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="rtsStatus">
                         @Resources.Resource.Status
-                    </th>
+                    </th>*@
                     <th class="text-center colheader" data-col="4" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="rtsTime">@Resources.Resource.InvoiceTime</th>
                     @*<th class="text-center colheader" data-col="5" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="rtsDeliveryDate">@Resources.Resource.DeliveryDate</th>*@
                     <th></th>
@@ -200,52 +200,52 @@ else
                         itemoptionsdisplay = item.rtlValidThru;
                     }
 
-                    <tr data-code="@item.rtsCode" data-sp="@item.rtsSpecialApproval" data-status="@item.rtsStatus">
-                        <td>
-                            @item.rtsCode
-                        </td>
-                        <td>@item.SalesPersonName</td>
-                        <td class="customer" data-code="@item.Customer.cusCode" data-name="@item.Customer.cusName">@item.Customer.cusName</td>
-                        <td data-bat="@item.rtlBatch" data-hassn="@item.rtlHasSn" data-sn="@item.rtlSn" data-vt="@item.rtlValidThru">@itemoptionsdisplay</td>
-                        @{
-                            var remark = item.rtsRmks != null && item.rtsRmks.Length > 20 ? string.Concat(item.rtsRmks.Substring(0, 20), "...") : item.rtsRmks ?? "";
-                        }
+					<tr data-code="@item.rtsCode" data-sp="@item.rtsSpecialApproval" data-status="@item.rtsStatus">
+						<td>
+							@item.rtsCode
+						</td>
+						<td>@item.SalesPersonName</td>
+						<td class="customer" data-code="@item.Customer.cusCode" data-name="@item.Customer.cusName">@item.Customer.cusName</td>
+						<td data-bat="@item.rtlBatch" data-hassn="@item.rtlHasSn" data-sn="@item.rtlSn" data-vt="@item.rtlValidThru">@itemoptionsdisplay</td>
+						@{
+							var remark = item.rtsRmks != null && item.rtsRmks.Length > 20 ? string.Concat(item.rtsRmks.Substring(0, 20), "...") : item.rtsRmks ?? "";
+						}
 
-                        <td style="width:150px;max-width:150px;" data-remark="@item.rtsRmks" class="remark">@remark</td>
-                        <td>@item.rtsCustomerPO</td>
-                        <td class="@bgclr">
-                            @statustxt
-                        </td>
-                        <td class="text-center">@item.SalesTimeDisplay</td>
-                        @*<td data-date="@item.rtsDeliveryDate">@item.DeliveryDateDisplay</td>*@
-                        <td class="button">
+						<td style="width:150px;max-width:150px;" data-remark="@item.rtsRmks" class="remark">@remark</td>
+						@*<td>@item.rtsCustomerPO</td>
+		<td class="@bgclr">
+			@statustxt
+		</td>*@
+						<td class="text-center">@item.SalesTimeDisplay</td>
+						@*<td data-date="@item.rtsDeliveryDate">@item.DeliveryDateDisplay</td>*@
+						<td class="button">
 
-                            @if (isapprover)
-                            {
-                                <button class="btn btn-info detail mr-2 @btncls" data-id="@item.rtsUID" data-code="@item.rtsCode" data-readonly="@_readonly" data-mode="review" data-status="@item.rtsStatus">@Resources.Resource.Detail</button>
-                                <button class="btn btn-secondary copy mr-2 @btncls" data-id="@item.rtsUID">@Resources.Resource.Copy</button>
+							@if (isapprover)
+							{
+								<button class="btn btn-info detail mr-2 @btncls" data-id="@item.rtsUID" data-code="@item.rtsCode" data-readonly="@_readonly" data-mode="review" data-status="@item.rtsStatus">@Resources.Resource.Detail</button>
+								<button class="btn btn-secondary copy mr-2 @btncls" data-id="@item.rtsUID">@Resources.Resource.Copy</button>
 
-                                if (!ismanager)
-                                {
-                                    <button class="btn btn-primary respond mr-2 @approvedisabled" data-type="approve" data-id="@item.rtsUID" data-code="@item.rtsCode">@Resources.Resource.Approve</button>
-                                    <button class="btn btn-danger respond mr-2 @rejectdisabled" data-type="reject" data-id="@item.rtsUID" data-code="@item.rtsCode">@Resources.Resource.Reject</button>
-                                    <button class="btn btn-warning respond mr-2 @passdisabled" data-type="pass" data-id="@item.rtsUID" data-code="@item.rtsCode">@Resources.Resource.PassToManager</button>
-                                }
-                               
-                                <button class="btn btn-outline-danger respond void @voiddisabled" data-type="void" data-id="@item.rtsUID" data-code="@item.rtsCode">@Resources.Resource.Void4Order</button>
-                            }
-                            else
-                            {
-                                string edittxt = _readonly == "" ? Resources.Resource.Edit : Resources.Resource.Detail;
-                                string mode = (item.rtsStatus == "CREATED" || item.rtsStatus == "APPROVED") ? "created" : item.rtsStatus == "VOIDED" ? "readonly" : "edit";
-                                <button class="btn btn-info edit mr-2" data-id="@item.rtsUID" data-code="@item.rtsCode" data-readonly="@_readonly" data-mode="@mode" data-status="@item.rtsStatus">@edittxt</button>
-                                <button class="btn btn-primary whatsapp mr-2" data-id="@item.rtsUID" data-code="@item.rtsCode"><span class="small">@Resources.Resource.ResendWhatsAppMsg</span></button>
-                            }
+								if (!ismanager)
+								{
+									<button class="btn btn-primary respond mr-2 @approvedisabled" data-type="approve" data-id="@item.rtsUID" data-code="@item.rtsCode">@Resources.Resource.Approve</button>
+									<button class="btn btn-danger respond mr-2 @rejectdisabled" data-type="reject" data-id="@item.rtsUID" data-code="@item.rtsCode">@Resources.Resource.Reject</button>
+									<button class="btn btn-warning respond mr-2 @passdisabled" data-type="pass" data-id="@item.rtsUID" data-code="@item.rtsCode">@Resources.Resource.PassToManager</button>
+								}
+
+								<button class="btn btn-outline-danger respond void @voiddisabled" data-type="void" data-id="@item.rtsUID" data-code="@item.rtsCode">@Resources.Resource.Void4Order</button>
+							}
+							else
+							{
+								string edittxt = _readonly == "" ? Resources.Resource.Edit : Resources.Resource.Detail;
+								string mode = (item.rtsStatus == "CREATED" || item.rtsStatus == "APPROVED") ? "created" : item.rtsStatus == "VOIDED" ? "readonly" : "edit";
+								<button class="btn btn-info edit mr-2" data-id="@item.rtsUID" data-code="@item.rtsCode" data-readonly="@_readonly" data-mode="@mode" data-status="@item.rtsStatus">@edittxt</button>
+								@*<button class="btn btn-primary whatsapp mr-2" data-id="@item.rtsUID" data-code="@item.rtsCode"><span class="small">@Resources.Resource.ResendWhatsAppMsg</span></button>*@
+							}
 
 
 
-                        </td>
-                    </tr>
+						</td>
+					</tr>
                 }
             </tbody>
         </table>

@@ -14,12 +14,12 @@ namespace SmartBusinessWeb.Controllers.POS
 	{
 		[HandleError]
 		[CustomAuthorize("retail", "boss", "admin", "superadmin")]
-		public ActionResult Index(int? PageNo = 1, string SortName = "rtsCode", string SortOrder = "desc", string Shop = "", string Device = "", string Keyword = "", string searchmode = "")
+		public ActionResult Index(string strfrmdate = "", string strtodate = "", int? PageNo = 1, string SortName = "rtsTime", string SortOrder = "desc", string Shop = "", string Device = "", string Keyword = "", int filter = 0, string searchmode = "")
 		{
 			ViewBag.ParentPage = "sales";
 			ViewBag.PageName = "preorderlist";
 			PreorderEditModel model = new PreorderEditModel();
-			model.GetList((int)PageNo, SortName, SortOrder, Shop, Device, Keyword, searchmode);
+			model.GetList(strfrmdate, strtodate, (int)PageNo, SortName, SortOrder, Shop, Device, Keyword, filter, searchmode);
 			return View(model);
 		}
 
@@ -43,18 +43,18 @@ namespace SmartBusinessWeb.Controllers.POS
 			ViewBag.ParentPage = "sales";
 			ViewBag.PageName = "preorderlist";
 			PreorderEditModel model = new PreorderEditModel();
-			model.Edit(Sale, SalesLnList, Payments);
+			string finalsalescode = model.Edit(Sale, SalesLnList, Payments);
 			if (string.IsNullOrEmpty(Sale.authcode))
 			{
-				return Json(new { msg = "" });
+				return Json(new { msg = "",finalsalescode });
 			}
 			else
 			{
 				#region ePayment
 				decimal totalpayamt = 0;
 				using var context = new PPWDAL.PPWDbContext(ModelHelper.GetDbName(apId));
-				var salescode = Sale.salescode;
-				var epayReturn = SalesEditModel.HandleEPayMent(Sale, SalesLnList, ref totalpayamt, context, salescode, apId);
+				//var salescode = Sale.salescode;
+				var epayReturn = SalesEditModel.HandleEPayMent(Sale, SalesLnList, ref totalpayamt, context, finalsalescode, apId);
 				var _ps = epayReturn.ps;
 				if (epayReturn.nodelist != null)
 				{
@@ -67,32 +67,32 @@ namespace SmartBusinessWeb.Controllers.POS
 
 								if (_ps.NeedQuery && _ps.ErrCode == "USERPAYING")
 								{
-									return Json(new { msg = "needquery_userpaying", salescode, _ps, epaystatus = -1 });
+									return Json(new { msg = "needquery_userpaying", finalsalescode, _ps, epaystatus = -1 });
 								}
 								else
 								{
-									return Json(new { msg = Resources.Resource.ePaymentFailed, salescode, _ps, epaystatus = 0 });
+									return Json(new { msg = Resources.Resource.ePaymentFailed, finalsalescode, _ps, epaystatus = 0 });
 								}
 							}
 							else
 							{
-								return Json(new { msg = Resources.Resource.ePaymentSuccessful, salescode, epaystatus = 1 });
+								return Json(new { msg = Resources.Resource.ePaymentSuccessful, finalsalescode, epaystatus = 1 });
 							}
 						}
 						else
 						{
-							return Json(new { msg = Resources.Resource.ePaymentFailed, salescode, _ps, epaystatus = 0 });
+							return Json(new { msg = Resources.Resource.ePaymentFailed, finalsalescode, _ps, epaystatus = 0 });
 
 						}
 					}
 					else
 					{
-						return Json(new { msg = epayReturn.message, salescode, _ps, epaystatus = 0 });
+						return Json(new { msg = epayReturn.message, finalsalescode, _ps, epaystatus = 0 });
 					}
 				}
 				else
 				{
-					return Json(new { msg = Resources.Resource.ePaymentFailed, salescode, _ps, epaystatus = 0 });
+					return Json(new { msg = Resources.Resource.ePaymentFailed, finalsalescode, _ps, epaystatus = 0 });
 				}
 				#endregion
 			}
