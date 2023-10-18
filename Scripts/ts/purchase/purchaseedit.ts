@@ -51,42 +51,7 @@ $(document).on("click", ".btnRequestApproval", function () {
     updatePurchase();
     handleSubmit4Purchase();
 });
-$(document).on("change", ".validthru", function () {
-    let $validthru = $(this);
-    $target = $validthru
-        .parent("td")
-        .parent("tr")
-        .find("td:last")
-        .find(".received");
-    //console.log('received:' + $target.val());
-    if (Number($target.val()) == 0) {
-        $.fancyConfirm({
-            title: "",
-            message: receivedqtyrequiredtxt,
-            shownobtn: false,
-            okButton: oktxt,
-            noButton: notxt,
-            callback: function (value) {
-                if (value) {
-                    $validthru.val("");
-                    $target.trigger("focus");
-                }
-            },
-        });
-    } else {
-        let seq: number = Number($(this).parent("td").parent("tr").data("idx")) + 1;
-        let validthru: string = <string>$(this).val();
-        //console.log(seq);
-        if (Purchase.PurchaseItems.length > 0) {
-            $.each(Purchase.PurchaseItems, function (i, e) {
-                if (e.piSeq == seq) {
-                    e.JsValidThru = validthru;
-                    return false;
-                }
-            });
-        }
-    }
-});
+
 
 function updatePurchase() {
     // console.log("updatepurchase in progress...");

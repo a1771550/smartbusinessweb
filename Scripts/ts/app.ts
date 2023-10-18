@@ -967,7 +967,7 @@ function togglePaging(type: string = "item", show: boolean = true) {
         $pager.show();
         $("#tblcontact").hide();
     } else {
-        console.log("here");
+        //console.log("here");
         $target.hide();
         $norecord.removeClass("hide");
         $pager.hide();
@@ -1136,6 +1136,7 @@ function OnSuccess(response) {
     }
 
     // console.log("here");
+    //console.log("model.items.length:" + model.Items.length);
     if (model.Items.length > 0) {
         //if (ItemList) {
         //    ItemList = [...ItemList, ...model.Items];
@@ -2860,6 +2861,7 @@ function openPurchaseBatchModal(
     purchaseBatchModal.find("#batchLocSeqItem").text(selectedItemCode);
     purchaseBatchModal.dialog("open");
     if (addrow) addBatchRow(false);
+    //console.log("here#openpb");
     purchaseBatchModal
         .find("#tblPbatch tbody tr")
         .find("td")
@@ -7645,6 +7647,8 @@ function initSalesLn(): ISalesLn {
         rtlHasSerialNo: false,
         JobID: 0,
         itemVariList: [],
+        batchList: [],
+        snbatseqvtlist:[],
     };
 }
 // let DicPayType: { [Key: string]: string } = {};
@@ -7700,6 +7704,8 @@ interface ISalesLn {
     DicItemSNs: Array<typeof DicItemSNs>;
     JobID: number | null;
     itemVariList: IPoItemVari[];
+    batchList: IBatch[];
+    snbatseqvtlist: ISnBatSeqVt[];
 }
 interface IPayLn {
     Id: number;
@@ -8322,10 +8328,10 @@ function selectItem(itemCode: string = "", proId: number = 0) {
                 //    ? `<input type="datetime" class="text-center datepicker validthru ${pointercls} focus " ${vtdisabled} />`
                    // : "";
                 const $bat = $target.find("td").eq(idx).find(".batch");
-                $bat.addClass(batcls).prop("readonly", true);
+                $bat.removeClass("batch").addClass(batcls).prop("readonly", true);
                 idx++;
                 const $sn = $target.find("td").eq(idx).find(".serialno");
-                $sn.addClass(sncls).prop("readonly", true);
+                $sn.removeClass("serialno").addClass(sncls).prop("readonly", true);
                 idx++;
                 const $vt = $target.find("td").eq(idx).find(".validthru");
                 if (itemOptions.WillExpire)
@@ -9269,7 +9275,7 @@ function checkIfDuplicatedSNOk(data) {
     let sn: string = data.sn.toString();
     duplicatedSerailNo = data.serialno !== null;
     if (!duplicatedSerailNo) {
-        if (forpurchase) {
+        if (forpurchase||forpreorder) {
             //resume datepicker
             $("#tblPserial tbody tr").each(function (i, e) {
                 $target = $(e).find("td:eq(1)").find(".posn");
@@ -9335,7 +9341,7 @@ function checkIfDuplicatedSNOk(data) {
         msg = msg
             .replace("{1}", snUsedDate)
             .replace("{0}", data.serialno.snoStockInCode);
-        if (forpurchase) {
+        if (forpurchase||forpreorder) {
             //console.log("here");
             $.fancyConfirm({
                 title: duplicatedserialno,
@@ -11697,7 +11703,7 @@ function convertCsharpDateStringToJsDate(strdate: string): Date {
     return new Date(Date.parse(strdate));
 }
 function setValidThruDatePicker() {
-    if (forpurchase) {
+    if (forpurchase||forpreorder) {
         $(".validthru").datepicker({
             dateFormat: jsdateformat,
             beforeShow: function () {
@@ -12223,35 +12229,67 @@ function addSerialRow(plus: boolean = false) {
     if (plus) {
         html = fillSnRow($(`#tblPserial tbody tr`).length, null);
     } else {
-        // console.log("here");
-        if (selectedPurchaseItem.snbatseqvtlist.length > 0) {
-            let $rows = $target.find("tr");
-            let tblSns: string[] = [];
-            if ($rows.length > 0) {
-                $rows.each(function (i, e) {
-                    let sn = $(e).find("td:eq(1)").find(".posn").val() as string;
-                    if (typeof sn !== "undefined") tblSns.push(sn);
-                });
-                $.each(selectedPurchaseItem.snbatseqvtlist, function (i, e) {
-                    //tblSns.includes(e.sn) may happen when sn length !== po quantity
-                    if (tblSns.length > 0 && tblSns.includes(e.sn)) {
-                        html = fillSnRow(0, null);
-                        return false;
-                    } else {
+        if (forpurchase) {
+            if (selectedPurchaseItem.snbatseqvtlist.length > 0) {
+                let $rows = $target.find("tr");
+                let tblSns: string[] = [];
+                if ($rows.length > 0) {
+                    $rows.each(function (i, e) {
+                        let sn = $(e).find("td:eq(1)").find(".posn").val() as string;
+                        if (typeof sn !== "undefined") tblSns.push(sn);
+                    });
+                    $.each(selectedPurchaseItem.snbatseqvtlist, function (i, e) {
+                        //tblSns.includes(e.sn) may happen when sn length !== po quantity
+                        if (tblSns.length > 0 && tblSns.includes(e.sn)) {
+                            html = fillSnRow(0, null);
+                            return false;
+                        } else {
+                            html += fillSnRow(i, e);
+                        }
+                    });
+                } else {
+                    $.each(selectedPurchaseItem.snbatseqvtlist, function (i, e) {
                         html += fillSnRow(i, e);
-                    }
-                });
+                    });
+                }
             } else {
-                $.each(selectedPurchaseItem.snbatseqvtlist, function (i, e) {
-                    html += fillSnRow(i, e);
-                });
-            }
-        } else {
-            //console.log('selectedPurchaseItem.piReceivedQty:' + selectedPurchaseItem.piReceivedQty);
-            for (let i = 0; i < selectedPurchaseItem.piReceivedQty; i++) {
-                html += fillSnRow(i, null);
+                //console.log('selectedPurchaseItem.piReceivedQty:' + selectedPurchaseItem.piReceivedQty);
+                for (let i = 0; i < selectedPurchaseItem.piReceivedQty; i++) {
+                    html += fillSnRow(i, null);
+                }
             }
         }
+
+        if (forpreorder) {
+            if (selectedSalesLn.snbatseqvtlist.length > 0) {
+                let $rows = $target.find("tr");
+                let tblSns: string[] = [];
+                if ($rows.length > 0) {
+                    $rows.each(function (i, e) {
+                        let sn = $(e).find("td:eq(1)").find(".posn").val() as string;
+                        if (typeof sn !== "undefined") tblSns.push(sn);
+                    });
+                    $.each(selectedSalesLn.snbatseqvtlist, function (i, e) {
+                        //tblSns.includes(e.sn) may happen when sn length !== po quantity
+                        if (tblSns.length > 0 && tblSns.includes(e.sn)) {
+                            html = fillSnRow(0, null);
+                            return false;
+                        } else {
+                            html += fillSnRow(i, e);
+                        }
+                    });
+                } else {
+                    $.each(selectedSalesLn.snbatseqvtlist, function (i, e) {
+                        html += fillSnRow(i, e);
+                    });
+                }
+            } else {                
+                for (let i = 0; i < selectedSalesLn.rtlQty!; i++) {
+                    html += fillSnRow(i, null);
+                }
+            }
+        }
+        
     }
 
     $target.append(html);
@@ -12290,17 +12328,32 @@ $(document).on("change", ".posn", function () {
             handleDuplicatedPoSn(duplicatedsnwarning);
             duplicatedSerailNo = false;
         } else {
-            $.each(Purchase.PurchaseItems, function (i, e) {
-                if (e.snbatseqvtlist.length > 0) {
-                    $.each(e.snbatseqvtlist, function (idx, ele) {
-                        //console.log('ele.sn:' + ele.sn + ';sn:' + sn + ';equal?' + ele.sn == sn);
-                        if (ele.sn == sn) {
-                            duplicatedSerailNo = true;
-                            return false;
-                        }
-                    });
-                }
-            });
+            if (forpurchase) {
+                $.each(Purchase.PurchaseItems, function (i, e) {
+                    if (e.snbatseqvtlist.length > 0) {
+                        $.each(e.snbatseqvtlist, function (idx, ele) {
+                            //console.log('ele.sn:' + ele.sn + ';sn:' + sn + ';equal?' + ele.sn == sn);
+                            if (ele.sn == sn) {
+                                duplicatedSerailNo = true;
+                                return false;
+                            }
+                        });
+                    }
+                });
+            }
+            if (forpreorder) {
+                $.each(SalesLnList, function (i, e) {
+                    if (e.snbatseqvtlist.length > 0) {
+                        $.each(e.snbatseqvtlist, function (idx, ele) {
+                            //console.log('ele.sn:' + ele.sn + ';sn:' + sn + ';equal?' + ele.sn == sn);
+                            if (ele.sn == sn) {
+                                duplicatedSerailNo = true;
+                                return false;
+                            }
+                        });
+                    }
+                });
+            }
 
             if (duplicatedSerailNo) {
                 $(this).val("");
@@ -12373,10 +12426,11 @@ function _confirmSnVt() {
 }
 function confirmPoSn() {
     let bOk = false;
-    itemOptions = DicItemOptions[selectedItemCode];
+    let itemcode = forpurchase ? selectedPurchaseItem.itmCode : selectedSalesLn.rtlItemCode;
+    itemOptions = DicItemOptions[itemcode];
     let msg = "";
 
-    let itemcode = selectedPurchaseItem.itmCode;
+    
     if (itemcode != "") {
         if (typeof itemSeqSnBatSeqVtList[itemcode] === "undefined") {
             itemSeqSnBatSeqVtList[itemcode] = { [seq.toString()]: [] };
@@ -12399,48 +12453,96 @@ function confirmPoSn() {
 
         if (bOk) {
             /*Error -234:  Received quantity cannot exceed the Ordered quantity.*/
-            let snqty = selectedPurchaseItem.snbatseqvtlist.length;
-            if (
-                selectedPurchaseItem.snbatseqvtlist.length >
-                selectedPurchaseItem.piReceivedQty ||
-                selectedPurchaseItem.snbatseqvtlist.length <
-                selectedPurchaseItem.piReceivedQty
-            ) {
-                /*if (selectedPurchaseItem.snbatseqvtlist.length < selectedPurchaseItem.piReceivedQty) {*/
-                $.fancyConfirm({
-                    title: "",
-                    message: serialnoqtymustmatchreceivedqtyprompt,
-                    shownobtn: false,
-                    okButton: oktxt,
-                    noButton: notxt,
-                    callback: function (value) {
-                        $target = $(`#${gTblName} tbody tr`)
-                            .eq(currentY)
-                            .find("td:last")
-                            .find(".received");
-                        if (value) {
-                            $target.attr("max", snqty).val(snqty).trigger("focus");
-                            $target.trigger("change");
-                            _confirmSnVt();
-                        } else {
-                            $("#tblPserial tbody tr:last")
-                                .find("td:eq(1)")
-                                .find(".posn")
-                                .trigger("focus");
-                        }
-                    },
+            if (forpurchase) {
+                let snqty = selectedPurchaseItem.snbatseqvtlist.length;
+                if (
+                    selectedPurchaseItem.snbatseqvtlist.length >
+                    selectedPurchaseItem.piReceivedQty ||
+                    selectedPurchaseItem.snbatseqvtlist.length <
+                    selectedPurchaseItem.piReceivedQty
+                ) {
+                    /*if (selectedPurchaseItem.snbatseqvtlist.length < selectedPurchaseItem.piReceivedQty) {*/
+                    $.fancyConfirm({
+                        title: "",
+                        message: serialnoqtymustmatchreceivedqtyprompt,
+                        shownobtn: false,
+                        okButton: oktxt,
+                        noButton: notxt,
+                        callback: function (value) {
+                            $target = $(`#${gTblName} tbody tr`)
+                                .eq(currentY)
+                                .find("td:last")
+                                .find(".received");
+                            if (value) {
+                                $target.attr("max", snqty).val(snqty).trigger("focus");
+                                $target.trigger("change");
+                                _confirmSnVt();
+                            } else {
+                                $("#tblPserial tbody tr:last")
+                                    .find("td:eq(1)")
+                                    .find(".posn")
+                                    .trigger("focus");
+                            }
+                        },
+                    });
+                } else {
+                    _confirmSnVt();
+                }
+
+                $.each(Purchase.PurchaseItems, function (i, e) {
+                    if (e.piSeq == seq) {
+                        e.snbatseqvtlist = selectedPurchaseItem.snbatseqvtlist.slice(0);
+                        e.piHasSN = e.snbatseqvtlist.length > 0;
+                        return false;
+                    }
                 });
-            } else {
-                _confirmSnVt();
             }
 
-            $.each(Purchase.PurchaseItems, function (i, e) {
-                if (e.piSeq == seq) {
-                    e.snbatseqvtlist = selectedPurchaseItem.snbatseqvtlist.slice(0);
-                    e.piHasSN = e.snbatseqvtlist.length > 0;
-                    return false;
+            if (forpreorder) {
+                let snqty = selectedSalesLn.snbatseqvtlist.length;
+                if (
+                    selectedSalesLn.snbatseqvtlist.length >
+                    selectedSalesLn.rtlQty! ||
+                    selectedSalesLn.snbatseqvtlist.length <
+                    selectedSalesLn.rtlQty!
+                ) {
+                    /*if (selectedSalesLn.snbatseqvtlist.length < selectedSalesLn.piReceivedQty) {*/
+                    $.fancyConfirm({
+                        title: "",
+                        message: serialnoqtymustmatchreceivedqtyprompt,
+                        shownobtn: false,
+                        okButton: oktxt,
+                        noButton: notxt,
+                        callback: function (value) {
+                            $target = $(`#${gTblName} tbody tr`)
+                                .eq(currentY)
+                                .find("td:last")
+                                .find(".received");
+                            if (value) {
+                                $target.attr("max", snqty).val(snqty).trigger("focus");
+                                $target.trigger("change");
+                                _confirmSnVt();
+                            } else {
+                                $("#tblPserial tbody tr:last")
+                                    .find("td:eq(1)")
+                                    .find(".posn")
+                                    .trigger("focus");
+                            }
+                        },
+                    });
+                } else {
+                    _confirmSnVt();
                 }
-            });
+
+                $.each(SalesLnList, function (i, e) {
+                    if (e.rtlSeq == seq) {
+                        e.snbatseqvtlist = selectedSalesLn.snbatseqvtlist.slice(0);
+                        e.rtlHasSn = e.snbatseqvtlist.length > 0;
+                        return false;
+                    }
+                });
+            }
+
             setPoSnMark();
 
             if (itemOptions.WillExpire) {
@@ -12486,7 +12588,7 @@ function handlePoSn4Confirm($tr: JQuery, itemcode: string): string {
         serial.snseq = $tr.data("snseq") as number;
 
         if (itemOptions && itemOptions.ChkBatch && itemOptions.ChkSN) {
-            serial.batcode = selectedPurchaseItem.batchList[0].batCode;
+            serial.batcode = forpurchase ? selectedPurchaseItem.batchList[0].batCode : selectedSalesLn.batchList[0].batCode;
         }
 
         $target = $tr.find("td:eq(2)").find(".posnvt");
@@ -12508,25 +12610,35 @@ function handlePoSn4Confirm($tr: JQuery, itemcode: string): string {
 function updateUniqueSerial(serial: ISnBatSeqVt, itemcode: string) {
     if (serial.sn !== "") {
         //console.log("snbatseqvtlist#0:", selectedPurchaseItem.snbatseqvtlist);
-
-        if (selectedPurchaseItem.snbatseqvtlist.length > 0) {
-            let idx = selectedPurchaseItem.snbatseqvtlist.findIndex(
-                (s) => s.snseq === serial.snseq
-            );
-            if (idx >= 0) {
-                selectedPurchaseItem.snbatseqvtlist[idx] = structuredClone(serial); //update
+        if (forpurchase) {
+            if (selectedPurchaseItem.snbatseqvtlist.length > 0) {
+                let idx = selectedPurchaseItem.snbatseqvtlist.findIndex(
+                    (s) => s.snseq === serial.snseq
+                );
+                if (idx >= 0) {
+                    selectedPurchaseItem.snbatseqvtlist[idx] = structuredClone(serial); //update
+                } else {
+                    selectedPurchaseItem.snbatseqvtlist.push(serial);
+                }
             } else {
                 selectedPurchaseItem.snbatseqvtlist.push(serial);
             }
-        } else {
-            selectedPurchaseItem.snbatseqvtlist.push(serial);
         }
-        //console.log("snbatseqvtlist#1:", selectedPurchaseItem.snbatseqvtlist);
-
-        //console.log(
-        //    "itemSeqSnBatSeqVtList[itemcode][rtlSeq.toString()]#0:",
-        //    itemSeqSnBatSeqVtList[itemcode][seq.toString()]
-        //);
+        if (forpreorder) {
+            if (selectedSalesLn.snbatseqvtlist.length > 0) {
+                let idx = selectedSalesLn.snbatseqvtlist.findIndex(
+                    (s) => s.snseq === serial.snseq
+                );
+                if (idx >= 0) {
+                    selectedSalesLn.snbatseqvtlist[idx] = structuredClone(serial); //update
+                } else {
+                    selectedSalesLn.snbatseqvtlist.push(serial);
+                }
+            } else {
+                selectedSalesLn.snbatseqvtlist.push(serial);
+            }
+        }
+        
         if (itemSeqSnBatSeqVtList[itemcode][seq.toString()].length > 0) {
             let idx = itemSeqSnBatSeqVtList[itemcode][seq.toString()].findIndex(
                 (s) => s.snseq === serial.snseq
@@ -12610,7 +12722,7 @@ function fillBatchRow(index: number | null, batch: IBatch | null): string {
 }
 function addBatchRow(isPlus: boolean = true) {
     let html = "";
-    if (isPlus) {
+    if (isPlus) {      
         html = fillBatchRow($(`#tblPbatch tbody tr`).length, null);
     } else {
         $target = purchaseBatchModal.find("#tblPbatch tbody");
@@ -12637,12 +12749,19 @@ function addBatchRow(isPlus: boolean = true) {
                     html = fillBatchRow(0, null);
                 }
             }
-        } else {
+        } else {            
             html = fillBatchRow(0, null);
         }
     }
     $target.append(html);
-    if (Purchase.pstStatus != "opened") {
+    if (forpurchase) {
+        if (Purchase.pstStatus != "opened") {
+            setBatchFocus();
+            setValidThruDatePicker();
+        }
+    }
+    if (forpreorder) {
+
         setBatchFocus();
         setValidThruDatePicker();
     }
@@ -12708,17 +12827,34 @@ function confirmPoBatch() {
 
     if (bOk) {
         closePurchaseBatchModal();
-        $.each(Purchase.PurchaseItems, function (i, e) {
-            //console.log('e.piseq:' + e.piSeq + ';seq:' + seq);
-            if (e.piSeq == seq) {
-                e.batchList = selectedPurchaseItem.batchList.slice(0);
-                let lnqty = 0;
-                $.each(e.batchList, function (k, v) {
-                    lnqty += v.batQty;
-                });
-                return false;
-            }
-        });
+        if (forpurchase) {
+            $.each(Purchase.PurchaseItems, function (i, e) {
+                //console.log('e.piseq:' + e.piSeq + ';seq:' + seq);
+                if (e.piSeq == seq) {
+                    e.batchList = selectedPurchaseItem.batchList.slice(0);
+                    let lnqty = 0;
+                    $.each(e.batchList, function (k, v) {
+                        lnqty += v.batQty;
+                    });
+                    return false;
+                }
+            });
+        }
+
+        if (forpreorder) {
+            $.each(SalesLnList, function (i, e) {
+                //console.log('e.piseq:' + e.piSeq + ';seq:' + seq);
+                if (e.rtlSeq == seq) {
+                    e.batchList = selectedSalesLn.batchList.slice(0);
+                    let lnqty = 0;
+                    $.each(e.batchList, function (k, v) {
+                        lnqty += v.batQty;
+                    });
+                    return false;
+                }
+            });
+        }
+
         setBatchMark();
         $(`#${gTblName} tbody tr`)
             .eq(currentY)
@@ -12804,13 +12940,25 @@ function _confirmPoBatch($tr: JQuery): string {
 
     if (msg === "") {
         //console.log("batchlist#0:", selectedPurchaseItem.batchList);
-        let idx = selectedPurchaseItem.batchList.findIndex(
-            (b) => b.batSeq == batch.batSeq
-        );
-        if (idx >= 0) {
-            selectedPurchaseItem.batchList[idx] = structuredClone(batch); //update
-        } else {
-            selectedPurchaseItem.batchList.push(batch);
+        if (forpurchase) {
+            let idx = selectedPurchaseItem.batchList.findIndex(
+                (b) => b.batSeq == batch.batSeq
+            );
+            if (idx >= 0) {
+                selectedPurchaseItem.batchList[idx] = structuredClone(batch); //update
+            } else {
+                selectedPurchaseItem.batchList.push(batch);
+            }
+        }
+        if (forpreorder) {
+            let idx = selectedSalesLn.batchList.findIndex(
+                (b) => b.batSeq == batch.batSeq
+            );
+            if (idx >= 0) {
+                selectedSalesLn.batchList[idx] = structuredClone(batch); //update
+            } else {
+                selectedSalesLn.batchList.push(batch);
+            }
         }
     }
     return msg;
@@ -18852,7 +19000,7 @@ $(document).on("dblclick", ".pobatch.pointer", function () {
     resetPurchaseBatchModal();
     //console.log("batch model reset");
 
-    if (forpurchase) {
+    if (forpurchase || forpreorder) {
         if (!$.isEmptyObject(DicItemOptions)) {
             itemOptions = DicItemOptions[selectedItemCode];
             if (itemOptions) {
@@ -18896,16 +19044,25 @@ $(document).on("dblclick", ".posn.pointer", function () {
             }
         });
     }
-
-
+    if (forpreorder) {
+        $.each(SalesLnList, function (i, e) {
+            if (e.rtlSeq == seq) {
+                selectedSalesLn = structuredClone(e);
+                return false;
+            }
+        });
+    }
 
     resetPurchaseSerialModal();
 
     itemOptions = DicItemOptions[selectedItemCode];
+
+    let batchList: IBatch[] = forpurchase ? selectedPurchaseItem.batchList : selectedSalesLn.batchList
+
     if (
         itemOptions.ChkBatch &&
         itemOptions.ChkSN &&
-        selectedPurchaseItem.batchList.length === 0
+        batchList.length === 0
     ) {
         $.fancyConfirm({
             title: "",
@@ -18930,7 +19087,11 @@ $(document).on("dblclick", ".posn.pointer", function () {
         } else {
             $("#tblPserial thead tr th:eq(2)").show();
         }
-        openPurchaseSerialModal(true, Purchase.pstStatus === "opened" || Purchase.pstStatus === "partialreceival");
+        if(forpurchase)
+            openPurchaseSerialModal(true, Purchase.pstStatus === "opened" || Purchase.pstStatus === "partialreceival");
+        if (forpreorder)
+            openPurchaseSerialModal(true, false);
+
         setValidThruDatePicker();
     }
 });
@@ -18941,7 +19102,43 @@ $(document).on("change", ".validthru", function () {
     let seq: number = Number($(this).parent("td").parent("tr").data("idx")) + 1;
     //console.log(seq);
     let validthru: string = <string>$(this).val();
-    //console.log(validthru);
+
+    if (forpurchase) {
+        let $validthru = $(this);
+        $target = $validthru
+            .parent("td")
+            .parent("tr")
+            .find("td:last")
+            .find(".received");
+        //console.log('received:' + $target.val());
+        if (Number($target.val()) == 0) {
+            $.fancyConfirm({
+                title: "",
+                message: receivedqtyrequiredtxt,
+                shownobtn: false,
+                okButton: oktxt,
+                noButton: notxt,
+                callback: function (value) {
+                    if (value) {
+                        $validthru.val("");
+                        $target.trigger("focus");
+                    }
+                },
+            });
+        } else {
+            let seq: number = Number($(this).parent("td").parent("tr").data("idx")) + 1;
+            let validthru: string = <string>$(this).val();
+            //console.log(seq);
+            if (Purchase.PurchaseItems.length > 0) {
+                $.each(Purchase.PurchaseItems, function (i, e) {
+                    if (e.piSeq == seq) {
+                        e.JsValidThru = validthru;
+                        return false;
+                    }
+                });
+            }
+        }
+    }
 
     if (forwholesales) {
         $target = $tr.find("td").eq(5).find(".delqty");
@@ -19036,7 +19233,7 @@ $(document).on("change", ".validthru", function () {
         }
     }
 
-    if (forsales) {
+    if (forsales||forpreorder) {
         $target = $validthru
             .parent("td")
             .parent("tr")
@@ -19151,7 +19348,8 @@ $(document).on("dblclick", ".validthru.pointer", function () {
         validthruModal.find("#tblVt tbody").html(html);
 
         //setTotalQty4VtModal();
-    } else {
+    }
+    else if(!forpreorder) {
         let html: string = "";
         if ($.isEmptyObject(DicItemVtQtyList)) return false;
         let vtqtylist: IVtQty[] = DicItemVtQtyList[selectedItemCode];
