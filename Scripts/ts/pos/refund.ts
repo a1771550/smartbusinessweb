@@ -1365,7 +1365,7 @@ $(document).on("click", "#btnRefund", function () {
 
 });
 
-let Refund: ISale;
+let Refund: ISales;
 
 $(document).off("dblclick", ".itemcode");
 
@@ -1373,7 +1373,7 @@ $(function () {
     forrefund = true;
     setFullPage();
     initModals();
-    Refund = initSale();
+    Refund = initSales();
 
     $("#txtDeviceCode").trigger("focus");
 });

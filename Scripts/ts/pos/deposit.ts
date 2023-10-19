@@ -3,15 +3,15 @@ priceeditable = false; //item price in deposit should not be editable
 retailType = RtlType.deposit;
 
 function submitRemaining() {
-    if (Sale.Change > 0) {
+    if (Sales.Change > 0) {
         $("#changeModal").dialog("close");
     }
 
-    Sale.Notes = <string>$("#txtNotes").val();
-    Sale.CusID = selectedCus.cusCustomerID;
-    Sale.salescode = rno;
-    Sale.TotalRemainAmt = itotalremainamt;
-    Sale.rtsDvc = $("#txtDeviceCode").val() as string;
+    Sales.Notes = <string>$("#txtNotes").val();
+    Sales.CusID = selectedCus.cusCustomerID;
+    Sales.salescode = rno;
+    Sales.TotalRemainAmt = itotalremainamt;
+    Sales.rtsDvc = $("#txtDeviceCode").val() as string;
 
     console.log("salesitemlist:", salesitemlist);
     console.log("Payments:", Payments);
@@ -22,7 +22,7 @@ function submitRemaining() {
         $.ajax({
             type: "POST",
             url: url,
-            data: { Sale, SalesItemList: salesitemlist, Payments },
+            data: { Sales, SalesItemList: salesitemlist, Payments },
             success: function (data) {
                 closeWaitingModal();
                 console.log("returned data:", data);
@@ -444,8 +444,8 @@ $(function () {
     .removeClass("container")
     .addClass("container-fluid");
   initModals();
-  Sale = initSale();
-  Sale.Deposit = 1;
+  Sales = initSales();
+  Sales.Deposit = 1;
   device = $infoblk.data("devicecode");
 
   $("#txtDeviceCode").trigger("focus");

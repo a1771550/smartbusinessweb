@@ -3166,7 +3166,7 @@ namespace SmartBusinessWeb.Controllers
                         ItemTaxRate = item.itmTaxPc == null ? 0 : (double)item.itmTaxPc,
                         IsNonStock = item.itmIsNonStock,
                         ItemSupCode = item.itmSupCode,
-                        NameDescTxt = item.itmUseDesc ? item.itmDesc : item.itmName,
+                        NameDesc = item.itmUseDesc ? item.itmDesc : item.itmName,
                         chkBat = item.chkBat,
                         chkSN = item.chkSN,
                         chkVT = item.chkVT

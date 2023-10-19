@@ -24,7 +24,7 @@
     string fordelivery = Resources.Resource.ForDelivery;
     SessUser user = HttpContext.Current.Session["User"] == null ? null : HttpContext.Current.Session["User"] as SessUser;
     bool isadmin = user.Roles.Any(x => x == RoleType.Admin && x != RoleType.SalesManager);
-    bool showDataTransfer = CommonHelper.GetUrlHost() != "https://crm.united.com.hk";
+    bool showDataTransfer = CommonHelper.GetUrlHost() != "crm.united.com.hk";
 }
 
 <!DOCTYPE html>
@@ -593,7 +593,7 @@
                         </li>
 
                         
-                        @if (showDataTransfer && defaultcheckoutportal.ToLower() != "nonabss")
+                        @if (showDataTransfer)
                         {
                             <li class="dropdown">
                                 @{lnkcls = "nav-link {0}";

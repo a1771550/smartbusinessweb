@@ -77,7 +77,7 @@ namespace SmartBusinessWeb.Controllers.Item
             }
             else if (sortColumnIndex == 1)
             {
-                pgitemlist = sortDirection == "asc" ? pgitemlist.OrderBy(c => c.NameDescTxt).ToList() : pgitemlist.OrderByDescending(c => c.NameDescTxt).ToList();
+                pgitemlist = sortDirection == "asc" ? pgitemlist.OrderBy(c => c.NameDesc).ToList() : pgitemlist.OrderByDescending(c => c.NameDesc).ToList();
             }
             else if (sortColumnIndex == 2)
             {

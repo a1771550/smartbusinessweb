@@ -97,4 +97,8 @@ $(function () {
     if (keyword !== null) {
         $("#txtKeyword").val(keyword);
     }
+
+    batchidx = 5;
+    snidx = batchidx + 1;
+    vtidx = snidx + 1;
 });

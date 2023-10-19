@@ -851,7 +851,7 @@ namespace SmartBusinessWeb.Controllers
                     chkVT = i.chkVT,
                 };
 
-                Response.Write(salesitem.itmCode + ":" + salesitem.NameDescTxt + ":" + i.itmUseDesc + ":" + i.itmDesc + ":" + i.itmName + "<br>");
+                Response.Write(salesitem.itmCode + ":" + salesitem.NameDesc + ":" + i.itmUseDesc + ":" + i.itmDesc + ":" + i.itmName + "<br>");
                 items.Add(salesitem);
             }
 

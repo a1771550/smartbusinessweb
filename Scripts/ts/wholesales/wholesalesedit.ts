@@ -558,8 +558,8 @@ function updateWholesales() {
                 let idx = -1;
                 $.each(Wholesales.WholeSalesLns, function (i, e) {
                     // console.log("seq:" + seq + ";wlseq:" + e.wslSeq);
-                    if (e.wslSeq == selectedWholesalesLn.wslSeq) {
-                        e = structuredClone(selectedWholesalesLn);
+                    if (e.wslSeq == selectedWholesalesLn!.wslSeq) {
+                        e = structuredClone(selectedWholesalesLn)!;
                         i = idx;
                         return false;
                     }

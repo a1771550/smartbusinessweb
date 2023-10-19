@@ -26,8 +26,10 @@
 	bool NonABSS = Model.ComInfo.DefaultCheckoutPortal != "abss";
 	bool editmode = !string.IsNullOrEmpty(Model.Mode) && Model.Mode == "edit";
 	string subtitle = Resources.Resource.MakeSales;
+	bool forpreorder = false;
 	if (Request.QueryString["type"] != null)
 	{
+		forpreorder = true;
 		subtitle = string.Concat(subtitle, " (", Resources.Resource.Preorder, ")");
 	}
 }

@@ -11,7 +11,6 @@ enablecashdrawer = $infoblk.data("enablecashdrawer") == "1";
 let zerostockItemList: Array<IItem> = [];
 printurl = $infoblk.data("printurl");
 
-retailType = RtlType.sales;
 checkoutportal = $infoblk.data("checkoutportal");
 
 checkedcashdrawer = $infoblk.data("checkedcashdrawer")
@@ -31,21 +30,21 @@ $(document).on("click", ".btnRequestApproval", function () {
 });
 
 $(document).on("change", "#drpShop", function () {
-    Sale.SelectedShop = $(this).val() as string;
+    Sales.SelectedShop = $(this).val() as string;
 });
 $(document).on("change", "#drpDevice", function () {
-    Sale.SelectedDevice = $(this).val() as string;
+    Sales.SelectedDevice = $(this).val() as string;
 });
 
 $(document).on("change", "#drpDeliveryAddr", function () {
-    Sale.deliveryAddressId = <number>$(this).val();
+    Sales.deliveryAddressId = <number>$(this).val();
 });
 
 $(document).on("change", "#deposit", function () {
     if ($(this).is(":checked")) {
-        Sale.Deposit = 1;
+        Sales.Deposit = 1;
     } else {
-        Sale.Deposit = 0;
+        Sales.Deposit = 0;
     }
 });
 
@@ -59,19 +58,19 @@ $(document).on("change", "#monthlypay", function () {
             noButton: canceltxt,
             callback: function (value) {
                 if (value) {
-                    Sale.MonthlyPay = 1;
+                    Sales.MonthlyPay = 1;
                     payModal.find(".paymenttype").prop("disabled", true);
                     closePayModal();
                     submitSales();
                 } else {
-                    Sale.MonthlyPay = 0;
+                    Sales.MonthlyPay = 0;
                     $("#monthlypay").prop("checked", false);
                     payModal.find(".paymenttype").prop("disabled", false);
                 }
             },
         });
     } else {
-        Sale.MonthlyPay = 0;
+        Sales.MonthlyPay = 0;
         payModal.find(".paymenttype").prop("disabled", false);
     }
 });
@@ -85,12 +84,12 @@ $(document).on("change", "#txtRoundings", function () {
     let _roundings = $(this).val();
     if (_roundings !== "") {
         //minus current roundings first:
-        itotalamt -= Sale.Roundings;
+        itotalamt -= Sales.Roundings;
         //add new roundings:
-        Sale.Roundings = parseFloat(<any>$(this).val());
-        itotalamt += Sale.Roundings;
+        Sales.Roundings = parseFloat(<any>$(this).val());
+        itotalamt += Sales.Roundings;
     } else {
-        itotalamt -= Sale.Roundings;
+        itotalamt -= Sales.Roundings;
         $(this).val(formatnumber(0));
     }
     $("#txtTotal").val(formatnumber(itotalamt));
@@ -297,17 +296,17 @@ function getSessionStartDataOk(data) {
         $("#txtCustomerName").trigger("focus");
     }
 }
-
-
-
-
-
 $(document).on("dblclick", ".nopo", function () {
     $("#txtCustomerPO").val("N/A");
 });
 
 $(function () {
-    forsales = true;
+    let type = getParameterByName("type");
+    if (type) forpreorder = true;
+    else forsales = true;
+
+    retailType = forsales? RtlType.sales: RtlType.preorder;
+
     setFullPage();
     DicLocation = $infoblk.data("jsondiclocation");
     shops = ($infoblk.data("shops") as string).split(",");
@@ -319,11 +318,11 @@ $(function () {
     snidx = batchidx + 1;
     vtidx = snidx + 1;
 
-    Sale = initSale();
-    shop = Sale.SelectedShop = $infoblk.data("shop") as string;
+    Sales = initSales();
+    shop = Sales.SelectedShop = $infoblk.data("shop") as string;
     $("#drpLocation").val(shop);
 
-    device = Sale.SelectedDevice = $("#drpDevice").val() as string;
+    device = Sales.SelectedDevice = $("#drpDevice").val() as string;
     //console.log('DicLocation:', DicLocation);
     exRate = 1;
     //DicCurrencyExRate = $infoblk.data('jsondiccurrencyexrate');
@@ -366,14 +365,21 @@ $(function () {
                 salesInfo = data;
                 //console.log("salesinfo:", salesInfo);
                 selectedCus = salesInfo.Customer ?? initCustomer();//if salesInfo.Customer==null=>GUEST
-                Sales = new SalesModel(
-                    selectedSalesCode,
-                    selectedCus.cusCustomerID,
-                    $infoblk.data("device"),
-                    $infoblk.data("shop"),
-                    0,
-                    ""
-                );
+                Sales = initSales();
+                Sales.rtsCode = selectedSalesCode;
+                Sales.rtsCusID = selectedCus.cusCustomerID;
+                Sales.rtsDvc = $infoblk.data("device");
+                Sales.rtsSalesLoc = $infoblk.data("shop");
+                Sales.rtsGiftOption = 0;
+                Sales.rtsRefCode = "";
+                /*
+                 public rtsCode: string,
+        public rtsCusID: number,
+        public rtsDvc: string,
+        public rtsSalesLoc: string,
+        public rtsGiftOption: number,
+        public rtsRefCode?: string
+                */             
                 $(".NextSalesInvoice").val(Sales.rtsCode);
                 $(".respond").data("code", Sales.rtsCode);
                 $("#txtNotes").val(salesInfo.SalesOrder.rtsRmks);
@@ -427,7 +433,7 @@ $(function () {
                     selectedItem = e.Item;
                     selectedItemCode = selectedItem.itmCode;
                     //   console.log("selecteditemcode#loop:" + selectedItemCode);
-                    let salesln: ISalesBase = initSalesBase();
+                    let salesln: ISalesBase = {} as ISalesBase;
                     salesln.amount = <number>e.rtlSalesAmt;
                     salesln.batchcode = e.rtlBatchCode;
                     salesln.discount = <number>e.rtlLineDiscAmt;
@@ -452,7 +458,7 @@ $(function () {
 
                     let idx = 0;
                     $tr.find("td:eq(1)").find(".itemcode").val(selectedItemCode);
-                    $tr.find("td:eq(2)").find(".itemdesc").val(e.Item.NameDescTxt);
+                    $tr.find("td:eq(2)").find(".itemdesc").val(e.Item.NameDesc);
                     // .trigger("change");
                     idx = 4;
                     $tr
@@ -617,14 +623,13 @@ $(function () {
             JobList = sessionstartdata[12];
             //console.log('defaultcustomer:', defaultcustomer);
             selectedCus = defaultcustomer;
-            Sales = new SalesModel(
-                $infoblk.data("nextsalescode"),
-                defaultcustomer.cusCustomerID,
-                $infoblk.data("device"),
-                $infoblk.data("shop"),
-                0,
-                ""
-            );
+            Sales = initSales();
+            Sales.rtsCode = selectedSalesCode;
+            Sales.rtsCusID = selectedCus.cusCustomerID;
+            Sales.rtsDvc = $infoblk.data("device");
+            Sales.rtsSalesLoc = $infoblk.data("shop");
+            Sales.rtsGiftOption = 0;
+            Sales.rtsRefCode = "";
 
             selectedCusCodeName = defaultcustomer.cusCode;
             selectCus();

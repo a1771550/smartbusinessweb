@@ -45,11 +45,11 @@
 
         @foreach (var item in Model.PagingPGItemList)
         {
-            var namedesctxt = item.NameDescTxt.Length > 40 ? item.NameDescTxt.Substring(0, 40) + "..." : item.NameDescTxt;
+            var namedesctxt = item.NameDesc.Length > 40 ? item.NameDesc.Substring(0, 40) + "..." : item.NameDesc;
             <tr>
 
                 <td style="width:110px;max-width:110px;" class="text-center">@item.itmCode</td>
-                <td style="width:100px;max-width:100px;" class="text-center itemdesc" data-desc="@item.NameDescTxt">@namedesctxt</td>
+                <td style="width:100px;max-width:100px;" class="text-center itemdesc" data-desc="@item.NameDesc">@namedesctxt</td>
                 @*@if (!Model.NonABSS)
                 {
                     <td style="width:110px;max-width:110px;" class="text-center">@item.AccountProfileName</td>
