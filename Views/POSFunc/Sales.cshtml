@@ -26,10 +26,9 @@
 	bool NonABSS = Model.ComInfo.DefaultCheckoutPortal != "abss";
 	bool editmode = !string.IsNullOrEmpty(Model.Mode) && Model.Mode == "edit";
 	string subtitle = Resources.Resource.MakeSales;
-	bool forpreorder = false;
+
 	if (Request.QueryString["type"] != null)
 	{
-		forpreorder = true;
 		subtitle = string.Concat(subtitle, " (", Resources.Resource.Preorder, ")");
 	}
 }
@@ -63,167 +62,7 @@
 	</div>
 }
 
-<div id="salesColblk" class="my-4">
-	<form class="form-inline">
-		<div class="form-group">
-			<label for="txtCustomerName" class="col-form-label mx-sm-2">@Resources.Resource.Customer</label>
-			<input type="text" class="form-control" id="txtCustomerName" placeholder="@Resources.Resource.Customer" />
-			<span class="ml-2 my-auto small cuscode font-weight-bold text-primary"></span>
-		</div>
-
-		<div class="form-group">
-			<label for="txtPoints" class="col-form-label mx-sm-2">@Resources.Resource.Points</label>
-			<input type="number" readonly class="form-control" id="txtPoints">
-		</div>
-		<div class="form-group">
-			<label for="txtPriceLevel" class="col-form-label mx-sm-2">@Resources.Resource.PriceLevel</label>
-			<input type="text" readonly class="form-control" id="txtPriceLevel">
-		</div>
-		<div class="form-group">
-			<label for="txtPhone" class="col-form-label mx-sm-2">@Resources.Resource.PhoneNo</label>
-			<input type="text" readonly class="form-control" id="txtPhone" />
-		</div>
-
-		<div class="form-group">
-			<label for="" class="col-form-label mx-sm-2">@Resources.Resource.InvoiceNo</label>
-			<input type="text" readonly class="form-control NextSalesInvoice" id="" value="@Model.NextSalesCode">
-		</div>
-
-		@{
-			var rtsCurrency = Model.rtsCurrency ?? "HKD";
-		}
-
-		@Html.Partial("_ExRateModal", null, new ViewDataDictionary { { "fieldname", "rtsCurrency" }, { "currency", rtsCurrency }, { "lblcls", "col-form-label mx-sm-2" }, { "exratecls", "d-block ml-2 hide" }, { "txtboxattr", "readonly" }, { "txtboxstyle", "width:60px;" }, { "txtboxcls", "disabled" } })
-
-		<div class="form-group">
-			<label for="drpLocation" class="col-form-label mx-sm-2">@Resources.Resource.Shop</label>
-			<select id="drpLocation" name="pstLocStock" class="form-control" disabled>
-				@*<option value="">-- @Resources.Resource.Select --</option>*@
-				@foreach (var item in Model.LocationList)
-				{
-					<option value="@item.Value">@item.Text</option>
-				}
-			</select>
-			@Html.Partial("_ApplyToAllSalesLocation")
-
-			<div class="form-group">
-				<label for="drpDevice" class="col-form-label mx-sm-2">@Resources.Resource.Device</label>
-				<select class="form-control" id="drpDevice">
-					@foreach (var device in Model.ComInfo.Devices.Split(','))
-					{
-						string _selected = device == Model.ComInfo.Device ? "selected" : "";
-						<option value="@device" @_selected>@device</option>
-					}
-				</select>
-			</div>
-		</div>
-	</form>
-</div>
-
-
-<div class="d-flex justify-content-center">
-	<div class="overflow-auto">
-		<span class="alert alert-danger small d-inline-block">@Resources.Resource.NegativeAmtByNegativeQty</span>
-		<table id="tblSales" class="jexcel jexcel_overflow" cellpadding="0" cellspacing="0" unselectable="yes" data-enabletax="@Model.TaxModel.EnableTax" data-taxtype="@Model.TaxModel.TaxType">
-			<colgroup>
-				<col width="50">
-				<col width="150">
-				<col width="200">
-				<col width="90">
-				<col width="90">
-				<col width="90">
-				<col width="90">
-				<col width="90">
-
-				<col width="240" />
-
-				<col width="100">
-				<col width="60">
-
-				<col width="60">
-
-				<col width="100">
-				<col width="100" />
-				<col width="120">
-			</colgroup>
-			<thead class="resizable">
-				<tr>
-					<td class="jexcel_selectall"></td>
-					<td title="@Resources.Resource.ItemCode" style="text-align: center;">@Resources.Resource.ItemCode</td>
-					<td title="@Resources.Resource.Description" style="text-align: center;">@Resources.Resource.Description</td>
-					<td title="@Resources.Resource.BaseUnit" style="text-align: right;">@Resources.Resource.BaseUnit</td>
-					<td title="@Resources.Resource.Qty" style="text-align: right;">@Resources.Resource.Qty</td>
-					<td title="@Resources.Resource.Batch" style="text-align: center;">@Resources.Resource.Batch</td>
-					<td title="@Resources.Resource.SerialNo" style="text-align: center;">@Resources.Resource.SerialNoItemHeader</td>
-					<td title="@Resources.Resource.ExpiryDate" style="text-align: center;">@Resources.Resource.ExpiryDate</td>
-
-					<td title="@Resources.Resource.ItemVariations" style="text-align: center;">@Resources.Resource.ItemVariations</td>
-
-					<td title="@Resources.Resource.Price" style="text-align: right;">@Resources.Resource.Price (@Model.Currency)</td>
-					<td title="@Resources.Resource.DiscPc" style="text-align: right;">@Resources.Resource.DiscPc</td>
-
-					<td title="@Resources.Resource.Tax" style="text-align: right;">@Resources.Resource.TaxItemHeader</td>
-
-					<td class="text-center">@Resources.Resource.Location</td>
-					<td class="text-center">@Resources.Resource.Job4Myob</td>
-					<td class="text-right">@Resources.Resource.Amount (@Model.Currency)</td>
-				</tr>
-			</thead>
-			<tbody></tbody>
-		</table>
-	</div>
-</div>
-
-<div class="row mr-1 my-3">
-	<div class="col-8">
-		<div class="form-inline">
-			<div class="formfield mr-2">
-				<label for="txtNotes" class="mx-sm-2">@Resources.Resource.Notes</label>
-				<textarea class="form-control d-inline-block" id="txtNotes" name="Notes" cols="200" rows="5">@Model.DefaultSalesNotesTxt</textarea>
-			</div>
-			<div class="formfield">
-				<label for="txtInternalNotes" class="mx-sm-2">@Resources.Resource.InternalNotes</label>
-				<textarea class="form-control d-inline-block" id="txtInternalNotes" name="InternalNotes" cols="200" rows="5"></textarea>
-			</div>
-		</div>
-	</div>
-
-	<div class="col-4">
-		<div class="row justify-content-end">
-			<div class="form-inline mb-2">
-				<div class="form-group">
-					<label for="txtRoundings" class="col-form-label mx-sm-3">@Resources.Resource.Roundings (@Model.Currency)</label>
-					<input type="text" class="form-control" id="txtRoundings" name="Roundings" style="width:80px;" value="0.00" />
-				</div>
-			</div>
-		</div>
-		<div class="row justify-content-end">
-			<div class="form-inline mb-2">
-				<div class="form-group">
-					<label for="txtTotal" class="col-form-label mx-sm-3">@Resources.Resource.TotalAmount (@Model.Currency)</label>
-					<input type="number" class="form-control" id="txtTotal" readonly name="TotalAmount" value="0.00" />
-				</div>
-			</div>
-		</div>
-
-		<div class="row justify-content-end">
-			<div class="clearfix my-4">
-				<div class="float-right">
-					@Html.Partial("_NormalRetailPaymentBtnBlock", null, new ViewDataDictionary { { "showrecur", showrecur } })
-				</div>
-			</div>
-		</div>
-
-		@*<div class="row justify-content-end">
-				<form class="form-inline mb-2">
-					<div class="form-group">
-						<button id="btnPayment" type="button" class="btn btn-success mr-3">@Resources.Resource.ProcessPayments</button>
-						<button id="btnNewSales" type="button" class="btn btn-info">@Resources.Resource.NewSales</button>
-					</div>
-				</form>
-			</div>*@
-	</div>
-</div>
+@Html.Partial("_SalesBlk", null, new ViewDataDictionary { { "Currency", Model.Currency }, { "rtsCurrency", Model.rtsCurrency }, { "LocationList", Model.LocationList }, { "showrecur", showrecur }, { "Device", Model.ComInfo.Device }, { "Devices", Model.ComInfo.Devices },{"NextSalesCode",Model.NextSalesCode },{ "DefaultSalesNotesTxt",Model.DefaultSalesNotesTxt } })
 
 @Html.HiddenFor(model => model.rtsExRate)
 @Html.Partial("_CurrencyModal")
@@ -250,14 +89,9 @@
 
 @Html.Partial("_PoItemVariModal")
 
-<div id="changeModal">
-	<div class="row justify-content-center">
-		<h4>@Resources.Resource.TotalSalesAmount <span id="totalsalesamt"></span></h4>
-	</div>
-	<h3 class="my-4 text-center">@Resources.Resource.SalesChange</h3>
-	<h2 class="text-center"><span id="changeamt"></span></h2>
-	<p class="warning"></p>
-</div>
+@Html.Partial("_ChangeModal")
+
+@Html.Partial("_WaitingModal")
 
 <div id="cashdrawerModal">
 	@Html.AntiForgeryToken()
@@ -271,7 +105,7 @@
 	<p class="warning"></p>
 </div>
 
-@Html.Partial("_WaitingModal")
+
 
 <div id="infoblk" data-enablecashdrawer="@enablecashdrawer" data-checkedcashdrawer="@checkedcashdrawer" data-currency="@Model.Currency" data-priceeditable="@Model.PriceEditable" data-disceditable="@Model.DiscEditable" data-enabletax="@Model.TaxModel.EnableTax" data-enablelogo="@Model.EnableLogo" data-printurl="@Url.Action("Index", "Print")" data-inclusivetaxrate="@Model.TaxModel.TaxRate" data-accountprofileid="@Model.AccountProfileId" data-checkoutportal="@ViewBag.DefaultCheckoutPortal.ToLower()" data-salesmanrequiredtxt="@string.Format(Resources.Resource.PleaseFormat,string.Format(Resources.Resource.SelectFormat,Resources.Resource.SalesPerson))" data-jsondiclocation="@Model.JsonDicLocation" data-shops="@Model.ComInfo.Shops" data-devices="@Model.ComInfo.Devices" data-shop="@Model.ComInfo.Shop" data-device="@Model.ComInfo.Device" data-jsondicbattotalqty="@Model.JsonDicBatTotalQty"></div>
 

@@ -1,0 +1,157 @@
+﻿@{
+	string Currency = ViewData["Currency"].ToString();
+	var rtsCurrency = ViewData["rtsCurrency"] ==null ? "HKD" : (string)ViewData["rtsCurrency"];
+	List<SelectListItem> LocationList = (List<SelectListItem>)ViewData["LocationList"];
+	bool showrecur = ViewData["showrecur"] == null ? false : (bool)ViewData["showrecur"];
+	string Device = ViewData["Device"].ToString();
+	string Devices = ViewData["Devices"].ToString();
+	string nextsalescode = ViewData["NextSalesCode"].ToString();
+	string DefaultSalesNotesTxt = ViewData["DefaultSalesNotesTxt"]==null?"": ViewData["DefaultSalesNotesTxt"].ToString();
+}
+<div id="salesColblk" class="my-4">
+	<form class="form-inline">
+		<div class="form-group">
+			<label for="txtCustomerName" class="col-form-label mx-sm-2">@Resources.Resource.Customer</label>
+			<input type="text" class="form-control" id="txtCustomerName" placeholder="@Resources.Resource.Customer" />
+			<span class="ml-2 my-auto small cuscode font-weight-bold text-primary"></span>
+		</div>
+
+		<div class="form-group">
+			<label for="txtPoints" class="col-form-label mx-sm-2">@Resources.Resource.Points</label>
+			<input type="number" readonly class="form-control" id="txtPoints">
+		</div>
+		<div class="form-group">
+			<label for="txtPriceLevel" class="col-form-label mx-sm-2">@Resources.Resource.PriceLevel</label>
+			<input type="text" readonly class="form-control" id="txtPriceLevel">
+		</div>
+		<div class="form-group">
+			<label for="txtPhone" class="col-form-label mx-sm-2">@Resources.Resource.PhoneNo</label>
+			<input type="text" readonly class="form-control" id="txtPhone" />
+		</div>
+
+		<div class="form-group">
+			<label for="" class="col-form-label mx-sm-2">@Resources.Resource.InvoiceNo</label>
+			<input type="text" readonly class="form-control NextSalesInvoice" id="" value="@nextsalescode">
+		</div>
+		
+
+		@Html.Partial("_ExRateModal", null, new ViewDataDictionary { { "fieldname", "rtsCurrency" }, { "currency", rtsCurrency }, { "lblcls", "col-form-label mx-sm-2" }, { "exratecls", "d-block ml-2 hide" }, { "txtboxattr", "readonly" }, { "txtboxstyle", "width:60px;" }, { "txtboxcls", "disabled" } })
+
+		<div class="form-group">
+			<label for="drpLocation" class="col-form-label mx-sm-2">@Resources.Resource.Shop</label>
+			<select id="drpLocation" name="pstLocStock" class="form-control" disabled>
+				@foreach (var item in LocationList)
+				{
+					<option value="@item.Value">@item.Text</option>
+				}
+			</select>
+			@Html.Partial("_ApplyToAllSalesLocation")
+
+			<div class="form-group">
+				<label for="drpDevice" class="col-form-label mx-sm-2">@Resources.Resource.Device</label>
+				<select class="form-control" id="drpDevice">
+					@foreach (var device in Devices.Split(','))
+					{
+						string _selected = device == Device ? "selected" : "";
+						<option value="@device" @_selected>@device</option>
+					}
+				</select>
+			</div>
+		</div>
+	</form>
+</div>
+
+<div class="d-flex justify-content-center">
+	<div class="overflow-auto">
+		<span class="alert alert-danger small d-inline-block">@Resources.Resource.NegativeAmtByNegativeQty</span>
+		<table id="tblSales" class="jexcel jexcel_overflow" cellpadding="0" cellspacing="0" unselectable="yes">
+			<colgroup>
+				<col width="50">
+				<col width="150">
+				<col width="200">
+				<col width="90">
+				<col width="90">
+				<col width="90">
+				<col width="90">
+				<col width="90">
+
+				<col width="240" />
+
+				<col width="100">
+				<col width="60">
+
+				<col width="60">
+
+				<col width="100">
+				<col width="100" />
+				<col width="120">
+			</colgroup>
+			<thead class="resizable">
+				<tr>
+					<td class="jexcel_selectall"></td>
+					<td title="@Resources.Resource.ItemCode" style="text-align: center;">@Resources.Resource.ItemCode</td>
+					<td title="@Resources.Resource.Description" style="text-align: center;">@Resources.Resource.Description</td>
+					<td title="@Resources.Resource.BaseUnit" style="text-align: right;">@Resources.Resource.BaseUnit</td>
+					<td title="@Resources.Resource.Qty" style="text-align: right;">@Resources.Resource.Qty</td>
+					<td title="@Resources.Resource.Batch" style="text-align: center;">@Resources.Resource.Batch</td>
+					<td title="@Resources.Resource.SerialNo" style="text-align: center;">@Resources.Resource.SerialNoItemHeader</td>
+					<td title="@Resources.Resource.ExpiryDate" style="text-align: center;">@Resources.Resource.ExpiryDate</td>
+
+					<td title="@Resources.Resource.ItemVariations" style="text-align: center;">@Resources.Resource.ItemVariations</td>
+
+					<td title="@Resources.Resource.Price" style="text-align: right;">@Resources.Resource.Price (@Currency)</td>
+					<td title="@Resources.Resource.DiscPc" style="text-align: right;">@Resources.Resource.DiscPc</td>
+
+					<td title="@Resources.Resource.Tax" style="text-align: right;">@Resources.Resource.TaxItemHeader</td>
+
+					<td class="text-center">@Resources.Resource.Location</td>
+					<td class="text-center">@Resources.Resource.Job4Myob</td>
+					<td class="text-right">@Resources.Resource.Amount (@Currency)</td>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</div>
+</div>
+
+<div class="row mr-1 my-3">
+	<div class="col-8">
+		<div class="form-inline">
+			<div class="formfield mr-2">
+				<label for="txtNotes" class="mx-sm-2">@Resources.Resource.Notes</label>
+				<textarea class="form-control d-inline-block" id="txtNotes" name="Notes" cols="200" rows="5">@DefaultSalesNotesTxt</textarea>
+			</div>
+			<div class="formfield">
+				<label for="txtInternalNotes" class="mx-sm-2">@Resources.Resource.InternalNotes</label>
+				<textarea class="form-control d-inline-block" id="txtInternalNotes" name="InternalNotes" cols="200" rows="5"></textarea>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-4">
+		<div class="row justify-content-end">
+			<div class="form-inline mb-2">
+				<div class="form-group">
+					<label for="txtRoundings" class="col-form-label mx-sm-3">@Resources.Resource.Roundings (@Currency)</label>
+					<input type="text" class="form-control" id="txtRoundings" name="Roundings" style="width:80px;" value="0.00" />
+				</div>
+			</div>
+		</div>
+		<div class="row justify-content-end">
+			<div class="form-inline mb-2">
+				<div class="form-group">
+					<label for="txtTotal" class="col-form-label mx-sm-3">@Resources.Resource.TotalAmount (@Currency)</label>
+					<input type="number" class="form-control" id="txtTotal" readonly name="TotalAmount" value="0.00" />
+				</div>
+			</div>
+		</div>
+
+		<div class="row justify-content-end">
+			<div class="clearfix my-4">
+				<div class="float-right">
+					@Html.Partial("_NormalRetailPaymentBtnBlock", null, new ViewDataDictionary { { "showrecur", showrecur } })
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

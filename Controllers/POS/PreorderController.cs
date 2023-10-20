@@ -38,13 +38,13 @@ namespace SmartBusinessWeb.Controllers.POS
 		[HandleError]
 		[CustomAuthorize("retail", "boss", "admin", "superadmin")]
 		[HttpPost]
-		public JsonResult Edit(SalesModel Sale, List<SalesLnView> SalesLnList, List<PayLnView> Payments)
+		public JsonResult Edit(SalesModel Sales, List<SalesLnView> SalesLnList, List<PayLnView> Payments)
 		{
 			ViewBag.ParentPage = "sales";
 			ViewBag.PageName = "preorderlist";
 			PreorderEditModel model = new PreorderEditModel();
-			string finalsalescode = model.Edit(Sale, SalesLnList, Payments);
-			if (string.IsNullOrEmpty(Sale.authcode))
+			string finalsalescode = model.Edit(Sales, SalesLnList, Payments);
+			if (string.IsNullOrEmpty(Sales.authcode))
 			{
 				return Json(new { msg = "",finalsalescode });
 			}
@@ -54,7 +54,7 @@ namespace SmartBusinessWeb.Controllers.POS
 				decimal totalpayamt = 0;
 				using var context = new PPWDAL.PPWDbContext(ModelHelper.GetDbName(apId));
 				//var salescode = Sale.salescode;
-				var epayReturn = SalesEditModel.HandleEPayMent(Sale, SalesLnList, ref totalpayamt, context, finalsalescode, apId);
+				var epayReturn = SalesEditModel.HandleEPayMent(Sales, SalesLnList, ref totalpayamt, context, finalsalescode, apId);
 				var _ps = epayReturn.ps;
 				if (epayReturn.nodelist != null)
 				{

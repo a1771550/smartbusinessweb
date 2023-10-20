@@ -1146,18 +1146,15 @@ function OnSuccess(response) {
 
 			selectedItemCode = ItemList[0].itmCode;
 			if (forsales || forpreorder) {
-				if (!selectedSalesLn)
-					selectedSalesLn = initSalesLn();
+				selectedSalesLn = GetSetSelectedSalesLn();
 				selectedSalesLn!.Item = structuredClone(ItemList[0]);
 			}
 			if (forwholesales) {
-				if (!selectedWholesalesLn)
-					selectedWholesalesLn = initWholeSalesLn();
-				selectedWholesalesLn.Item = structuredClone(ItemList[0]);
+				selectedWholesalesLn = GetSetSelectedWholeSalesLn();
+				selectedWholesalesLn!.Item = structuredClone(ItemList[0]);
 			}
 			if (forpurchase) {
-				if (!selectedPurchaseItem)
-					selectedPurchaseItem = initPurchaseItem();
+				selectedPurchaseItem = GetSetSelectedPurchaseItem();
 				selectedPurchaseItem!.Item = structuredClone(ItemList[0]);
 			}
 
@@ -1186,6 +1183,49 @@ function OnSuccess(response) {
 	}
 
 	keyword = "";
+}
+
+function GetSetSelectedSalesLn(): ISalesLn {
+	if (SalesLnList.length > 0) {
+		let idx = SalesLnList.findIndex((x) => x.rtlSeq == seq);
+		if (idx >= 0) selectedSalesLn = SalesLnList[idx];
+		else {
+			selectedSalesLn = initSalesLn();
+			SalesLnList.push(selectedSalesLn);
+		}
+	} else {
+		selectedSalesLn = initSalesLn();
+		SalesLnList.push(selectedSalesLn);
+	}
+	return selectedSalesLn;
+}
+function GetSetSelectedWholeSalesLn(): IWholeSalesLn {
+	if (Wholesales.WholeSalesLns.length > 0) {
+		let idx = Wholesales.WholeSalesLns.findIndex((x) => x.wslSeq == seq);
+		if (idx >= 0) selectedWholesalesLn = Wholesales.WholeSalesLns[idx];
+		else {
+			selectedWholesalesLn = initWholeSalesLn();
+			Wholesales.WholeSalesLns.push(selectedWholesalesLn);
+		}
+	} else {
+		selectedWholesalesLn = initWholeSalesLn();
+		Wholesales.WholeSalesLns.push(selectedWholesalesLn);
+	}
+	return selectedWholesalesLn;
+}
+function GetSetSelectedPurchaseItem(): IPurchaseItem {
+	if (Purchase.PurchaseItems.length > 0) {
+		let idx = Purchase.PurchaseItems.findIndex((x) => x.piSeq == seq);
+		if (idx >= 0) selectedPurchaseItem = Purchase.PurchaseItems[idx];
+		else {
+			selectedPurchaseItem = initPurchaseItem();
+			Purchase.PurchaseItems.push(selectedPurchaseItem);
+		}
+	} else {
+		selectedPurchaseItem = initPurchaseItem();
+		Purchase.PurchaseItems.push(selectedPurchaseItem);
+	}
+	return selectedPurchaseItem;
 }
 
 function _writeItems(itemList: IItem[]) {
@@ -1353,7 +1393,8 @@ function handleItmCodeDblClick(
 			$(".itemcode").off("change");
 			populateItemRow(itemcode!, proId!);
 			$(".itemcode").on("change", handleItemCodeChange);
-		} else {
+		}
+		else {
 			// console.log("selectedItemCode:" + selectedItemCode);
 			let $lasttd = $tr.find("td").last();
 			let hasSelectedIvs: boolean = $lasttd.find("span").hasClass("saved");
@@ -1383,18 +1424,7 @@ function handleItmCodeDblClick(
 			seq = currentY + 1;
 			if (forsales || forpreorder || forwholesales || forpurchase) {
 				if (forsales || forpreorder) {
-					if (SalesLnList) {
-						let idx = SalesLnList.findIndex((x) => x.rtlSeq == seq);
-						if (idx >= 0) {
-							selectedSalesLn = structuredClone(SalesLnList[idx]);
-						} else {
-							selectedSalesLn = initSalesLn();
-							//selectedSalesLn!.rtlSeq = seq;
-						}
-					} else {
-						selectedSalesLn = initSalesLn();
-						//selectedSalesLn!.rtlSeq = seq;
-					}
+					selectedSalesLn = GetSetSelectedSalesLn();
 					selectedSalesLn!.Item = ItemList.find((x) => x.itmCode == itemcode)!;
 					selectedSalesLn!.ivIdList = comboIvId;
 					selectedSalesLn!.SelectedIvList = selectedIvList
@@ -1402,20 +1432,7 @@ function handleItmCodeDblClick(
 						: [];
 				}
 				if (forwholesales) {
-					if (Wholesales && Wholesales.WholeSalesLns) {
-						let idx = Wholesales.WholeSalesLns.findIndex(
-							(x) => x.wslSeq == seq
-						);
-						if (idx >= 0) {
-							selectedWholesalesLn = structuredClone(
-								Wholesales.WholeSalesLns[idx]
-							);
-						} else {
-							selectedWholesalesLn = initWholeSalesLn();
-						}
-					} else {
-						selectedWholesalesLn = initWholeSalesLn();
-					}
+					selectedWholesalesLn = GetSetSelectedWholeSalesLn();
 					selectedWholesalesLn!.Item = ItemList.find((x) => x.itmCode == itemcode)!;
 					selectedWholesalesLn.comboIvId = comboIvId;
 					selectedWholesalesLn.SelectedIvList = selectedIvList
@@ -1423,18 +1440,7 @@ function handleItmCodeDblClick(
 						: [];
 				}
 				if (forpurchase) {
-					if (Purchase && Purchase.PurchaseItems) {
-						let idx = Purchase.PurchaseItems.findIndex((x) => x.piSeq == seq);
-						if (idx >= 0) {
-							selectedPurchaseItem = structuredClone(
-								Purchase.PurchaseItems[idx]
-							);
-						} else {
-							selectedPurchaseItem = initPurchaseItem();
-						}
-					} else {
-						selectedPurchaseItem = initPurchaseItem();
-					}
+					selectedPurchaseItem = GetSetSelectedPurchaseItem();
 					selectedPurchaseItem!.Item = ItemList.find((x) => x.itmCode == itemcode)!;
 					selectedPurchaseItem!.comboIvId = comboIvId;
 					selectedPurchaseItem!.SelectedIvList = selectedIvList
@@ -2318,13 +2324,17 @@ function confirmPay() {
 		falert(paymentrequiredtxt, oktxt);
 	} else if (_totalpay < _totalamt) {
 		resetPay(true);
+		//console.log("retailType:",retailType);
 		switch (retailType) {
 			case RtlType.deposit:
 				break;
 			case RtlType.refund:
 				break;
-			default:
 			case RtlType.preorder:
+				//console.log("here");
+				submitSales();
+				break;
+			default:			
 			case RtlType.sales:
 				if (Sales.Deposit == 1) {
 					submitSales();
@@ -2405,6 +2415,8 @@ function openPayModal() {
 	payModal.dialog("option", { width: 600, title: processpayments });
 	payModal.dialog("open");
 
+	if (forpreorder) { let $deposit: JQuery = $("#deposit"); $deposit.prop("checked", true); }
+
 	setExRateDropDown();
 
 	let totalamt = getTotalAmt4Order();
@@ -2430,7 +2442,7 @@ function initCashTxt(totalamt: number | null) {
 function setForexPayment(totalamt: number | null) {
 	if (!totalamt) totalamt = getTotalAmt4Order();
 	$("#forexPayment").html(formatnumber(totalamt));
-	initCashTxt(totalamt);
+	//initCashTxt(totalamt);
 }
 
 function closePayModal() {
@@ -4347,7 +4359,7 @@ function initModals() {
 				{
 					text: oktxt,
 					click: function () {
-						if ((forsales && !Sales.MonthlyPay) || forrefund || fordeposit) {
+						if ((forsales && !Sales.MonthlyPay) || forpreorder || forrefund || fordeposit) {
 							confirmPay();
 						} else {
 							closePayModal();
@@ -7525,17 +7537,19 @@ interface ISaleOrder {
 let DicPayType: { [Key: string]: string } = {};
 let DicItemSNs: { [Key: string]: Array<ISerialNo> } = {};
 
-function initSalesLn(): ISalesLn {
+function initSalesLn(_seq: number | undefined = 0): ISalesLn {
+	//console.log("Sales@initsalseln:", Sales);
+	//console.log("salescode#initsalesln:" + Sales.rtsCode);\
 	return {
 		rtlUID: 0,
 		rtlSalesLoc: "",
 		rtlDvc: "",
-		rtlCode: "",
+		rtlCode: Sales ? Sales.rtsCode : "",
 		rtlDate: "",
-		rtlSeq: currentY + 1,
+		rtlSeq: (_seq === undefined || _seq == 0) ? currentY + 1 : _seq,
 		rtlRefSales: "",
 		rtlReasonCode: "",
-		rtlItemCode: selectedItemCode.toString(),
+		rtlItemCode: (selectedItemCode) ? selectedItemCode.toString() : getItemCodeBySeq(),
 		rtlDesc: "",
 		rtlStockLoc: "",
 		rtlChkBch: false,
@@ -7750,7 +7764,7 @@ function initPurchaseItem(): IPurchaseItem {
 	return {
 		pstId: 0,
 		pstCode: "",
-		itmCode: selectedItemCode.toString(),
+		itmCode: (selectedItemCode) ? selectedItemCode.toString() : getItemCodeBySeq(),
 		piSeq: currentY + 1,
 		piBaseUnit: "",
 		piQty: 0,
@@ -8566,7 +8580,7 @@ function addRow() {
 		idx +
 		'" data-amt="0" data-amtplustax="0"><td><span>' +
 		i +
-		'</span></td><td><input type="text" name="itemcode" class="itemcode text-left flex" /></td><td><input type="text" class="itemdesc flex text-left" data-itemname="" /></td>';
+		'</span></td><td><input type="text" name="itemcode" class="itemcode text-left flex" /></td><td><input type="text" class="itemdesc small flex text-left" data-itemname="" /></td>';
 	if (forpurchase) {
 		html += `<td><input type="text" class="baseunit text-right flex" data-baseunit="" /></td>`;
 	}
@@ -8618,24 +8632,24 @@ function addRow() {
 		Purchase.pstStatus.toLowerCase() !== "rejected"
 	) {
 		html +=
-			'<td><input type="datetime" name="validthru" class="validthru datepicker text-center pointer flex" /></td>';
+			'<td><input type="datetime" name="validthru" class="validthru small datepicker text-center pointer flex" /></td>';
 	}
 
-	let vtcls = "validthru";
+	let vtcls = "validthru small ";
 	if ((forwholesales &&
 		Wholesales.wsStatus != "order" &&
 		Wholesales.wsStatus.toLowerCase() !== "requesting" &&
 		Wholesales.wsStatus.toLowerCase() !== "created" &&
 		Wholesales.wsStatus.toLowerCase() !== "rejected")
 	) {
-		vtcls = "validthru pointer";
+		vtcls += "pointer";
 	}
 	if (forsales || forpreorder || (forwholesales &&
 		Wholesales.wsStatus != "order" &&
 		Wholesales.wsStatus.toLowerCase() !== "requesting" &&
 		Wholesales.wsStatus.toLowerCase() !== "created" &&
 		Wholesales.wsStatus.toLowerCase() !== "rejected"))
-		html += `<td><input type="text" class="${vtcls} text-center flex" /></td>`;
+		html += `<td><input type="text" class="${vtcls.trim()} text-center flex" /></td>`;
 
 	//item variations:
 	if (forsales || forpreorder) {
@@ -10710,7 +10724,7 @@ function GetStocks(pageIndex: number) {
 	openWaitingModal();
 	$.ajax({
 		url: "/Api/GetItemsAjax",
-		type: "POST",
+		type: "GET",
 		data: data,
 		contentType: "application/json; charset=utf-8",
 		dataType: "json",
@@ -11300,7 +11314,7 @@ function initWholeSalesLn(): IWholeSalesLn {
 		wslSeq: currentY + 1,
 		wslRefSales: "",
 		wslReasonCode: "",
-		wslItemCode: selectedItemCode.toString(),
+		wslItemCode: (selectedItemCode) ? selectedItemCode.toString() : getItemCodeBySeq(),
 		wslDesc: "",
 		wslStockLoc: "",
 		wslChkBch: false,
@@ -14289,13 +14303,16 @@ $(document).on("change", "#tblSales .location", function () {
 	console.log("location:" + $(this).val());
 });
 function initSales(): ISales {
+	//NextSalesInvoice
+	let salescode = $(".NextSalesInvoice").first().val() as string;
+	//console.log("salescode#initsales:" + salescode);
 	return {
 		authcode: "",
 		epaytype: "",
 		rtsUID: 0,
-		rtsSalesLoc: "",
-		rtsDvc: "",
-		rtsCode: "",
+		rtsSalesLoc: $("#drpLocation").val()?.toString(),
+		rtsDvc: $("#drpDevice").val()?.toString(),
+		rtsCode: salescode,
 		rtsRefCode: "",
 		rtsType: "",
 		rtsStatus: "",
@@ -14350,11 +14367,11 @@ function initSales(): ISales {
 		InternalNotes: "",
 		MonthlyPay: 0,
 		Deposit: 0,
-		SelectedShop: "",
-		SelectedDevice: "",
+		SelectedShop: $("#drpLocation").val()?.toString(),
+		SelectedDevice: $("#drpDevice").val()?.toString(),
 		deliveryAddressId: 0,
 		ireviewmode: 0,
-		salescode: $(".NextSalesInvoice").first().val() as string,
+		salescode: salescode,
 		selectedPosSalesmanCode: null,
 		CustomerPO: null,
 		DeliveryDate: null,
@@ -14418,26 +14435,6 @@ interface IRtlSale {
 	rtsAllLoc: boolean;
 }
 
-//interface ISale extends IRtlSale {
-//	authcode: string | null;
-//	epaytype: string | null;
-//	CusID: number;
-//	Notes: string;
-//	Roundings: number;
-//	Change: number;
-//	InternalNotes: string;
-//	MonthlyPay: number;
-//	Deposit: number;
-//	SelectedShop: string;
-//	SelectedDevice: string;
-//	deliveryAddressId: number | null;
-//	ireviewmode: number | null;
-//	salescode: string | null;
-//	selectedPosSalesmanCode: string | null;
-//	CustomerPO: string | null;
-//	DeliveryDate: string | null;
-//	TotalRemainAmt: number | null;
-//}
 let chkBatSnVtCount: number = 0;
 $(document).on("change", ".validthru.focus", function () {
 	if ($(this).val() !== "") $(this).removeClass("focus");
@@ -16889,12 +16886,19 @@ function handleItemCodeChange(event: any) {
 	const $itemcode = $(event.target);
 	currentY =
 		parseInt($itemcode.parent("td").parent("tr").find("td:eq(0)").text()) - 1;
-
-	if (forsales) selectedSalesLn = initSalesLn();
-	if (forpurchase) selectedPurchaseItem = initPurchaseItem();
-	if (forwholesales) selectedWholesalesLn = initWholeSalesLn();
+	seq = currentY + 1;
 
 	selectedItemCode = <string>$itemcode.val()?.toString();
+
+	if (forsales || forpreorder) {
+		selectedSalesLn = GetSetSelectedSalesLn();
+	}
+	if (forwholesales) {
+		selectedWholesalesLn = GetSetSelectedWholeSalesLn();
+	}
+	if (forpurchase) {
+		selectedPurchaseItem = GetSetSelectedPurchaseItem();
+	}
 
 	if (selectedItemCode !== "") {
 		searchItemMode = true;
@@ -16957,12 +16961,19 @@ function updateSales() {
 			.val() as string;
 
 		if (itemcode) {
-			let salesln = SalesLnList.length > 0 ? SalesLnList.find((x) => x.rtlSeq == _seq)! : initSalesLn();
+			let salesln: ISalesLn | null;
+			if (SalesLnList.length === 0) salesln = initSalesLn(_seq);
+			else {
+				let idx = SalesLnList.findIndex((x) => x.rtlSeq == _seq);
+				if (idx >= 0) salesln = SalesLnList[idx];
+				else salesln = initSalesLn(_seq);
+			}
+
 			if (salesln) {
 				salesln.rtlSeq = Number($(e).data("idx")) + 1;
 				salesln.rtlItemCode = itemcode;
 				let idx = ItemList.findIndex(
-					(x) => x.itmCode.toString() == salesln.rtlItemCode.toString()
+					(x) => x.itmCode.toString() == salesln!.rtlItemCode.toString()
 				);
 
 				if (idx >= 0) {
@@ -16998,11 +17009,12 @@ function updateSales() {
 				totalamt += amt;
 			}
 			if (SalesLnList.length > 0) {
-				SalesLnList.forEach((x) => {
-					if (x.rtlSeq == _seq) {
-						x = structuredClone(salesln);
-					}
-				});
+				let idx = SalesLnList.findIndex((x) => x.rtlSeq == _seq);
+				if (idx >= 0) {
+					SalesLnList[idx] = structuredClone(salesln);
+				} else {
+					SalesLnList.push(salesln);
+				}
 			} else {
 				SalesLnList.push(salesln);
 			}
@@ -17514,7 +17526,8 @@ function _submitSales() {
 	console.log("Sales:", Sales);
 	console.log("SalesLnList:", SalesLnList);
 	console.log("deliveryitems:", DeliveryItems);
-	return false;
+	console.log("Payments:", Payments);
+	//return false;
 	openWaitingModal();
 	$.ajax({
 		type: "POST",
@@ -18805,6 +18818,7 @@ $(document).on("dblclick", ".pobatch.pointer", function () {
 				return false;
 			}
 		});
+		if (!selectedSalesLn) selectedSalesLn = initSalesLn();
 	}
 
 	resetPurchaseBatchModal();
@@ -18853,6 +18867,7 @@ $(document).on("dblclick", ".posn.pointer", function () {
 				return false;
 			}
 		});
+		if (!selectedPurchaseItem) selectedPurchaseItem = initPurchaseItem();
 	}
 	if (forpreorder) {
 		$.each(SalesLnList, function (i, e) {
@@ -18861,6 +18876,7 @@ $(document).on("dblclick", ".posn.pointer", function () {
 				return false;
 			}
 		});
+		if (!selectedSalesLn) selectedSalesLn = initSalesLn();
 	}
 
 	resetPurchaseSerialModal();
@@ -18943,6 +18959,7 @@ $(document).on("change", ".validthru", function () {
 				$.each(Purchase.PurchaseItems, function (i, e) {
 					if (e.piSeq == seq) {
 						e.JsValidThru = validthru;
+						selectedPurchaseItem = structuredClone(e);
 						return false;
 					}
 				});
@@ -18973,6 +18990,7 @@ $(document).on("change", ".validthru", function () {
 			$.each(Wholesales.WholeSalesLns, function (i, e) {
 				if (e.wslSeq == seq) {
 					e.JsValidThru = validthru;
+					selectedWholesalesLn = structuredClone(e);
 					return false;
 				}
 			});
@@ -19074,6 +19092,7 @@ $(document).on("change", ".validthru", function () {
 				$.each(SalesLnList, function (i, e) {
 					if (e.rtlSeq == seq) {
 						e.JsValidThru = validthru;
+						selectedSalesLn = structuredClone(e);
 						return false;
 					}
 				});
@@ -20195,4 +20214,8 @@ function isNumber(evt) {
 		return false;
 	}
 	return true;
+}
+
+function getItemCodeBySeq(): string {
+	return $(`#${gTblName} tbody tr`).eq(seq - 1).find("td:eq(1)").find(".itemcode").val()!.toString();
 }

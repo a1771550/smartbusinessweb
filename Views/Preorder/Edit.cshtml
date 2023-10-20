@@ -1,8 +1,47 @@
 ﻿@model PPWLib.Models.POS.Sales.PreorderEditModel
 
 @{
-    ViewBag.Title = "Edit";
+	ViewBag.Title = Resources.Resource.Preorder;
+	int rand = CommonHelper.GetVersionRandomNo();
 }
+<link rel="stylesheet" type="text/css" href="~/Content/Sales.css?v=@rand" />
 
-<h2>Edit</h2>
+<h3>@ViewBag.Title</h3>
 
+
+@Html.Partial("_SalesBlk", null, new ViewDataDictionary { { "Currency", Model.Currency }, { "rtsCurrency", Model.SalesOrder.rtsCurrency }, { "LocationList", Model.LocationList }, { "showrecur", false }, { "Device", Model.ComInfo.Device }, { "Devices", Model.ComInfo.Devices }, { "NextSalesCode", Model.SalesOrder.rtsCode }, { "DefaultSalesNotesTxt", Model.SalesOrder.rtsRmks } })
+
+@Html.HiddenFor(model => model.SalesOrder.rtsExRate)
+@Html.Partial("_CurrencyModal")
+
+@Html.Partial("_ItemModal", null, new ViewDataDictionary { { "currency", Model.Currency }, { "priceheader", Resources.Resource.SellingPrice }, { "forsales", true } })
+
+@Html.Partial("_DescModal")
+
+@Html.Partial("_CusModal")
+
+@Html.Partial("_BatchModal")
+
+@Html.Partial("_SerialNoModal", null, new ViewDataDictionary { { "forsales", true } })
+
+@Html.Partial("_ValidThruModal")
+
+@Html.Partial("_ItemVariModal")
+
+
+@Html.Partial("_PurchaseBatchModal")
+@Html.Partial("_PurchaseSerialModal")
+
+@Html.Partial("_PoItemVariModal")
+
+@Html.Partial("_ChangeModal")
+
+@Html.Partial("_WaitingModal")
+
+<link rel="stylesheet" type="text/css" href="~/Scripts/jspreadsheet/dist/jexcel.css" />
+<link rel="stylesheet" type="text/css" href="~/Scripts/jsuites/dist/jsuites.css" />
+<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+
+<div id="infoblk" data-salesorder="@Model.JsonSalesOrder" data-saleslnlist="@Model.JsonSalesLnList"></div>
+
+<script src="~/Scripts/ts/js/pos/preorderedit.js?v=@rand"></script>

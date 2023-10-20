@@ -295,6 +295,10 @@ function getSessionStartDataOk(data) {
     } else {
         $("#txtCustomerName").trigger("focus");
     }
+
+    Sales = initSales();
+    //console.log("Sales@getsessiondataok:", Sales);
+
 }
 $(document).on("dblclick", ".nopo", function () {
     $("#txtCustomerPO").val("N/A");
@@ -317,13 +321,10 @@ $(function () {
     batchidx = 5;
     snidx = batchidx + 1;
     vtidx = snidx + 1;
-
-    Sales = initSales();
-    shop = Sales.SelectedShop = $infoblk.data("shop") as string;
+    
+    shop = $infoblk.data("shop") as string;
     $("#drpLocation").val(shop);
-
-    device = Sales.SelectedDevice = $("#drpDevice").val() as string;
-    //console.log('DicLocation:', DicLocation);
+    device = $("#drpDevice").val() as string;
     exRate = 1;
     //DicCurrencyExRate = $infoblk.data('jsondiccurrencyexrate');
     gTblName = "tblSales";
@@ -364,12 +365,13 @@ $(function () {
             success: function (data: ISalesOrderEditModel) {
                 salesInfo = data;
                 //console.log("salesinfo:", salesInfo);
-                selectedCus = salesInfo.Customer ?? initCustomer();//if salesInfo.Customer==null=>GUEST
+                selectedCus = salesInfo.Customer ?? initCustomer();//if salesInfo.Customer==null=>GUEST               
                 Sales = initSales();
+                console.log("Sales@getsalesorderinfo:", Sales);
                 Sales.rtsCode = selectedSalesCode;
                 Sales.rtsCusID = selectedCus.cusCustomerID;
-                Sales.rtsDvc = $infoblk.data("device");
-                Sales.rtsSalesLoc = $infoblk.data("shop");
+                //Sales.rtsDvc = $infoblk.data("device");
+                //Sales.rtsSalesLoc = $infoblk.data("shop");
                 Sales.rtsGiftOption = 0;
                 Sales.rtsRefCode = "";
                 /*
@@ -592,7 +594,8 @@ $(function () {
             },
             dataType: "json",
         });
-    } else {
+    }
+    else {
         if (localStore.getItem("sessionstartdata") === null) {
             openWaitingModal();
             getRemoteData(
@@ -622,12 +625,12 @@ $(function () {
             useForexAPI = sessionstartdata[11];
             JobList = sessionstartdata[12];
             //console.log('defaultcustomer:', defaultcustomer);
-            selectedCus = defaultcustomer;
+            selectedCus = defaultcustomer;            
             Sales = initSales();
-            Sales.rtsCode = selectedSalesCode;
+            /*console.log("Sales@loadpostback:", Sales);*/            
             Sales.rtsCusID = selectedCus.cusCustomerID;
-            Sales.rtsDvc = $infoblk.data("device");
-            Sales.rtsSalesLoc = $infoblk.data("shop");
+            //Sales.rtsDvc = $infoblk.data("device");
+            //Sales.rtsSalesLoc = $infoblk.data("shop");
             Sales.rtsGiftOption = 0;
             Sales.rtsRefCode = "";
 

@@ -89,7 +89,8 @@ function updatePurchase() {
             }
         });
         // console.log("purchaseitems@update:", Purchase.PurchaseItems);
-    } else {
+    }
+    else {
         Purchase.PurchaseItems = [];
         $("#tblPSI tbody tr").each(function (i, e) {
             stockitem = initPurchaseItem();

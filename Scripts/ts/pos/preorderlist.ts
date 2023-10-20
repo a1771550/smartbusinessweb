@@ -35,10 +35,8 @@ $(document).on("change", ".searchmode", function () {
     //return;
     $("#searchmode").val(searchmodelist.join(","));
 });
-$(document).on("click", ".edit", function () {
-    //console.log("mode:" + $(this).data("mode")); return false;
-    const mode = $(this).data("mode");
-    let url = `/POSFunc/Sales?receiptno=${$(this).data("code")}&readonly=${$(this).data("readonly")}&mode=${mode}`;
+$(document).on("click", ".detail", function () {
+    let url = `/Preorder/Edit?Id=${$(this).data("id")}`;
     window.open(url,
         "_self"
     );

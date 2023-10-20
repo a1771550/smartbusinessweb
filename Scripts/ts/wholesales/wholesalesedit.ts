@@ -574,16 +574,9 @@ function updateWholesales() {
     });
 
     Wholesales.wsFinalTotal = itotalamt = salesamt;
-    // console.log("itotalamt after sum up:" + itotalamt);
+
     $("#txtTotal").val(formatnumber(itotalamt));
-    //if (Wholesales.WholeSalesLns.length > 0 && DeliveryItems.length>0) {
-    //    Wholesales.WholeSalesLns.forEach((x) => {
-    //        let deliveryItem: IDeliveryItem | undefined = DeliveryItems.find((d) => d.seq == x.wslSeq);
-    //        if (deliveryItem !== undefined) {
-    //            x.ivIdList = deliveryItem.ivIdList
-    //        }
-    //    });
-    //}
+    
     focusItemCode();
 }
 

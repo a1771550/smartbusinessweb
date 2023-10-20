@@ -2874,6 +2874,8 @@
     <Content Include="libman.json" />
     <Content Include="Images\unsubscribe.webp" />
     <Content Include="Scripts\ts\js\itemtransfer\transfer.js" />
+    <Content Include="Scripts\ts\js\pos\preorderedit.js" />
+    <Content Include="Scripts\ts\js\pos\preorderlist.js" />
     <Content Include="Scripts\ts\js\pos\salesorderlist.js" />
     <Content Include="Static\barcode.html" />
     <Content Include="_app_offline.htm" />
@@ -4248,6 +4250,10 @@
     <Content Include="Views\Preorder\Index.cshtml" />
     <Content Include="Views\Shared\_NoRecordFound.cshtml" />
     <Content Include="Views\Preorder\Edit.cshtml" />
+    <Content Include="Views\Shared\_SalesBlk.cshtml" />
+    <Content Include="Views\Shared\_ChangeModal.cshtml" />
+    <Content Include="Scripts\ts\js\pos\preorderedit.js.map" />
+    <Content Include="Scripts\ts\js\pos\preorderlist.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4745,6 +4751,7 @@
     <TypeScriptCompile Include="Scripts\ts\pos\deposit.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\kingdeeaccountinfo.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\kstock.ts" />
+    <TypeScriptCompile Include="Scripts\ts\pos\preorderedit.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\preorderlist.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\print.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\receipt.ts" />

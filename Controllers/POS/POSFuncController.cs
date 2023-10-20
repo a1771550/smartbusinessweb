@@ -967,11 +967,7 @@ namespace SmartBusinessWeb.Controllers
 				}
 				#endregion
 			}
-
-
 		}
-
-
 
 		[HttpPost]
 		public JsonResult ReversePayment(string salescode)
