@@ -218,7 +218,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [System.Web.Http.HttpPost]
-        public async Task<HttpResponseMessage> GetAbssCustomerData(int apId, [FromBody] List<MyobCustomer> customers)
+        public async Task<HttpResponseMessage> PostAbssCustomerData(int apId, [FromBody] List<MyobCustomer> customers)
         {
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
@@ -299,7 +299,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [System.Web.Http.HttpPost]
-        public async Task<HttpResponseMessage> GetCustomerInfo4AbssData(int apId, [FromBody] List<CustomerInfo4Abss> customerInfos)
+        public async Task<HttpResponseMessage> PostCustomerInfo4AbssData(int apId, [FromBody] List<CustomerInfo4Abss> customerInfos)
         {
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
@@ -309,8 +309,8 @@ namespace SmartBusinessWeb.Controllers
             {
                 try
                 {
-                    List<long> customerInfoIds = customerInfos.Select(x => x.Id).Distinct().ToList();
-                    List<CustomerInfo4Abss> _customerInfos = context.CustomerInfo4Abss.Where(x => x.AccountProfileId == apId && customerInfoIds.Contains(x.Id)).ToList();
+                    List<string> cusCodes = customerInfos.Select(x => x.CusCode).Distinct().ToList();
+                    List<CustomerInfo4Abss> _customerInfos = context.CustomerInfo4Abss.Where(x => x.AccountProfileId == apId && cusCodes.Contains(x.CusCode)).ToList();
 
                     #region remove current data first:
                     //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [CustomerInfo4Abss]");                   
@@ -354,7 +354,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [System.Web.Http.HttpPost]
-        public async Task<HttpResponseMessage> GetAbssSupplierData(int apId, [FromBody] List<Supplier> suppliers)
+        public async Task<HttpResponseMessage> PostAbssSupplierData(int apId, [FromBody] List<Supplier> suppliers)
         {
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
@@ -409,7 +409,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [System.Web.Http.HttpPost]
-        public async Task<HttpResponseMessage> GetSupplierInfo4AbssData(int apId, [FromBody] List<SupplierInfo4Abss> supplierInfos)
+        public async Task<HttpResponseMessage> PostSupplierInfo4AbssData(int apId, [FromBody] List<SupplierInfo4Abss> supplierInfos)
         {
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
@@ -419,8 +419,8 @@ namespace SmartBusinessWeb.Controllers
             {
                 try
                 {
-                    List<long> supplierInfoIds = supplierInfos.Select(x => x.Id).Distinct().ToList();
-                    List<SupplierInfo4Abss> _supplierInfos = context.SupplierInfo4Abss.Where(x => x.AccountProfileId == apId && supplierInfoIds.Contains(x.Id)).ToList();
+                    List<string> supCode = supplierInfos.Select(x => x.SupCode).Distinct().ToList();
+                    List<SupplierInfo4Abss> _supplierInfos = context.SupplierInfo4Abss.Where(x => x.AccountProfileId == apId && supCode.Contains(x.SupCode)).ToList();
 
                     #region remove current data first:
                     //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [SupplierInfo4Abss]");                   
@@ -465,7 +465,7 @@ namespace SmartBusinessWeb.Controllers
 
 
         [System.Web.Http.HttpPost]
-        public async Task<HttpResponseMessage> GetAbssLocationData(int apId, [FromBody] List<MyobLocation> locations)
+        public async Task<HttpResponseMessage> PostAbssLocationData(int apId, [FromBody] List<MyobLocation> locations)
         {
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
@@ -516,7 +516,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [System.Web.Http.HttpPost]
-        public async Task<HttpResponseMessage> GetAbssItemData(int apId, [FromBody] List<MyobItem> items)
+        public async Task<HttpResponseMessage> PostAbssItemData(int apId, [FromBody] List<MyobItem> items)
         {
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
@@ -569,7 +569,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [System.Web.Http.HttpPost]
-        public async Task<HttpResponseMessage> GetAbssStockData(int apId, [FromBody] List<MyobLocStock> stocks)
+        public async Task<HttpResponseMessage> PostAbssStockData(int apId, [FromBody] List<MyobLocStock> stocks)
         {
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
@@ -619,7 +619,158 @@ namespace SmartBusinessWeb.Controllers
             return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
         }
 
-        private static string GetDbName(int apId)
+		[System.Web.Http.HttpPost]
+		public async Task<HttpResponseMessage> PostAbssPriceData(int apId, [FromBody] List<MyobItemPrice> itemPrices)
+		{
+			HttpRequestMessage request = new HttpRequestMessage();
+			string dbname = GetDbName(apId);
+			using var context = new PPWDbContext(dbname);
+
+			using (var transaction = context.Database.BeginTransaction())
+			{
+				try
+				{
+					#region remove current data first:
+					//context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Item]");
+					List<int> itemPriceIds = itemPrices.Select(x => x.ItemPriceID!).Distinct().ToList();
+					List<MyobItemPrice> _itemPrices = context.MyobItemPrices.Where(x => x.AccountProfileId == apId && itemPriceIds.Contains(x.ItemPriceID!)).ToList();
+					context.MyobItemPrices.RemoveRange(_itemPrices);
+					await context.SaveChangesAsync();
+					#endregion
+					context.MyobItemPrices.AddRange(itemPrices);
+					await context.SaveChangesAsync();
+					ModelHelper.WriteLog(context, "Import ItemPrice data from Central done", "ImportFrmCentral");
+					await context.SaveChangesAsync();
+					transaction.Commit();
+
+					return request.CreateResponse(System.Net.HttpStatusCode.OK);
+				}
+				catch (DbEntityValidationException e)
+				{
+					transaction.Rollback();
+					StringBuilder sb = new StringBuilder();
+					foreach (var eve in e.EntityValidationErrors)
+					{
+						sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+							eve.Entry.Entity.GetType().Name, eve.Entry.State);
+						foreach (var ve in eve.ValidationErrors)
+						{
+							sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+				ve.PropertyName,
+				eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+				ve.ErrorMessage);
+						}
+					}
+					//throw new Exception(sb.ToString());
+					ModelHelper.WriteLog(context, string.Format("Import itemPrice data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+					context.SaveChanges();
+				}
+			}
+
+			return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
+		}
+		[System.Web.Http.HttpPost]
+		public async Task<HttpResponseMessage> PostAbssAccountData(int apId, [FromBody] List<Account> accounts)
+		{
+			HttpRequestMessage request = new HttpRequestMessage();
+			string dbname = GetDbName(apId);
+			using var context = new PPWDbContext(dbname);
+
+			using (var transaction = context.Database.BeginTransaction())
+			{
+				try
+				{
+					#region remove current data first:
+					//context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Item]");
+					List<int> accountIds = accounts.Select(x => x.AccountID!).Distinct().ToList();
+					List<Account> _accounts = context.Accounts.Where(x => x.AccountProfileId == apId && accountIds.Contains(x.AccountID!)).ToList();
+					context.Accounts.RemoveRange(_accounts);
+					await context.SaveChangesAsync();
+					#endregion
+					context.Accounts.AddRange(accounts);
+					await context.SaveChangesAsync();
+					ModelHelper.WriteLog(context, "Import Account data from Central done", "ImportFrmCentral");
+					await context.SaveChangesAsync();
+					transaction.Commit();
+
+					return request.CreateResponse(System.Net.HttpStatusCode.OK);
+				}
+				catch (DbEntityValidationException e)
+				{
+					transaction.Rollback();
+					StringBuilder sb = new StringBuilder();
+					foreach (var eve in e.EntityValidationErrors)
+					{
+						sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+							eve.Entry.Entity.GetType().Name, eve.Entry.State);
+						foreach (var ve in eve.ValidationErrors)
+						{
+							sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+				ve.PropertyName,
+				eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+				ve.ErrorMessage);
+						}
+					}
+					//throw new Exception(sb.ToString());
+					ModelHelper.WriteLog(context, string.Format("Import account data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+					context.SaveChanges();
+				}
+			}
+
+			return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
+		}
+
+		[System.Web.Http.HttpPost]
+		public async Task<HttpResponseMessage> PostAbssJobData(int apId, [FromBody] List<MyobJob> jobs)
+		{
+			HttpRequestMessage request = new HttpRequestMessage();
+			string dbname = GetDbName(apId);
+			using var context = new PPWDbContext(dbname);
+
+			using (var transaction = context.Database.BeginTransaction())
+			{
+				try
+				{
+					#region remove current data first:
+					//context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Item]");
+					List<int> jobIds = jobs.Select(x => x.JobID!).Distinct().ToList();
+					List<MyobJob> _jobs = context.MyobJobs.Where(x => x.AccountProfileId == apId && jobIds.Contains(x.JobID!)).ToList();
+					context.MyobJobs.RemoveRange(_jobs);
+					await context.SaveChangesAsync();
+					#endregion
+					context.MyobJobs.AddRange(jobs);
+					await context.SaveChangesAsync();
+					ModelHelper.WriteLog(context, "Import MyobJob data from Central done", "ImportFrmCentral");
+					await context.SaveChangesAsync();
+					transaction.Commit();
+
+					return request.CreateResponse(System.Net.HttpStatusCode.OK);
+				}
+				catch (DbEntityValidationException e)
+				{
+					transaction.Rollback();
+					StringBuilder sb = new StringBuilder();
+					foreach (var eve in e.EntityValidationErrors)
+					{
+						sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+							eve.Entry.Entity.GetType().Name, eve.Entry.State);
+						foreach (var ve in eve.ValidationErrors)
+						{
+							sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+				ve.PropertyName,
+				eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+				ve.ErrorMessage);
+						}
+					}
+					//throw new Exception(sb.ToString());
+					ModelHelper.WriteLog(context, string.Format("Import job data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+					context.SaveChanges();
+				}
+			}
+
+			return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
+		}
+		private static string GetDbName(int apId)
         {
             return ModelHelper.GetDbName(apId);
         }

@@ -112,45 +112,66 @@ new { apId = @"\d+" }
             routes.MapRoute(
    null,
    "abss-json/{apId}/locations",
-new { controller = "Json", action = "GetAbssLocationData" },
+new { controller = "Json", action = "PostAbssLocationData" },
 new { apId = @"\d+" }
    );
             routes.MapRoute(
     null,
     "abss-json/{apId}/items",
-new { controller = "Json", action = "GetAbssItemData" },
+new { controller = "Json", action = "PostAbssItemData" },
 new { apId = @"\d+" }
     );
             routes.MapRoute(
    null,
    "abss-json/{apId}/stocks",
-new { controller = "Json", action = "GetAbssStockData" },
+new { controller = "Json", action = "PostAbssStockData" },
 new { apId = @"\d+" }
    );
-            routes.MapRoute(
+
+			routes.MapRoute(
+null,
+"abss-json/{apId}/prices",
+new { controller = "Json", action = "PostAbssPriceData" },
+new { apId = @"\d+" }
+);
+
+			routes.MapRoute(
+null,
+"abss-json/{apId}/accounts",
+new { controller = "Json", action = "PostAbssAccountData" },
+new { apId = @"\d+" }
+);
+			routes.MapRoute(
+null,
+"abss-json/{apId}/jobs",
+new { controller = "Json", action = "PostAbssJobData" },
+new { apId = @"\d+" }
+);
+
+			routes.MapRoute(
 null,
 "abss-json/{apId}/customers",
-new { controller = "Json", action = "GetAbssCustomerData" },
+new { controller = "Json", action = "PostAbssCustomerData" },
 new { apId = @"\d+" }
 );
             //customerinfo4abss
             routes.MapRoute(
 null,
 "abss-json/{apId}/customerinfo4abss",
-new { controller = "Json", action = "GetCustomerInfo4AbssData" },
+new { controller = "Json", action = "PostCustomerInfo4AbssData" },
 new { apId = @"\d+" }
 );
             routes.MapRoute(
 null,
 "abss-json/{apId}/suppliers",
-new { controller = "Json", action = "GetAbssSupplierData" },
+new { controller = "Json", action = "PostAbssSupplierData" },
 new { apId = @"\d+" }
 );
             //supplierinfo4abss
             routes.MapRoute(
 null,
 "abss-json/{apId}/supplierinfo4abss",
-new { controller = "Json", action = "GetSupplierInfo4AbssData" },
+new { controller = "Json", action = "PostSupplierInfo4AbssData" },
 new { apId = @"\d+" }
 );
 
