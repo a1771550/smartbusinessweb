@@ -75,6 +75,11 @@
           <path>Scripts\ts\pos\preorderlist.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\preorderlist.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>preorderedit.ts</name>
+          <path>Scripts\ts\pos\preorderedit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\preorderedit.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -182,6 +187,11 @@
           <path>Controllers\POS\PrintController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\POS\PrintController.cs</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>PreorderController.cs</name>
+          <path>Controllers\POS\PreorderController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\POS\PreorderController.cs</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -211,6 +221,11 @@
         <Favorite>
           <name>PrintModel.cs</name>
           <absolutePath>F:\repos\PPWProject\PPWLib\Models\POS\Receipt\PrintModel.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>PPWDbContext.se</name>
+          <path>PPWDAL\PPWDbContext.edmx\PPWDbContext.Context.tt\PPWDbContext.Context.cs\PPWDbContext</path>
+          <viewKind>Solution Explorer</viewKind>
         </Favorite>
       </favorites>
     </Folder>

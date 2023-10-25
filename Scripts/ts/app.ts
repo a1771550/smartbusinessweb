@@ -5883,6 +5883,7 @@ interface IReceipt {
 }
 
 interface ISales extends ISalesBase {
+    Customer: ICustomer;
 	authcode: string;
 	InternalNotes: string;
 	epaytype: string;
@@ -7863,11 +7864,8 @@ function getCurrentY(ele) {
 }
 let ReturnableItemList: Array<IPurchaseItem> = [];
 
-$(document).on("change", ".qty", function () {
-	// let _qty =
-	//   forsales || forwholesales
-	//     ? Number($(this).data("qtysellable"))
-	//     : Number($(this).val());
+$(document).on("change", ".qty", function () {	
+	currentY = getCurrentY(this);
 	let _qty: number = Number($(this).val());
 	// console.log("_qty:" + _qty);
 	if (forsales) {
@@ -7877,11 +7875,10 @@ $(document).on("change", ".qty", function () {
 			_qty = qtysellable;
 			$(this).val(_qty);
 		}
-	}
-	currentY = getCurrentY(this);
+	}	
 	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
 	let idx = 0;
-	if (forsales) {
+	if (forsales||forpreorder) {
 		idx = 9;
 	}
 	if (forpurchase && Purchase) {
@@ -7947,7 +7944,7 @@ $(document).on("change", ".qty", function () {
 		}
 	}
 
-	if (forsales) {
+	if (forsales||forpreorder) {
 		let $rows = $(`#${gTblName} tbody tr`);
 		$tr = $rows.eq(currentY);
 		const $price = $tr.find("td").eq(9).find(".price");
@@ -10106,7 +10103,7 @@ function handleLocationChange(event: any) {
 
 function getRowDiscPc(): number {
 	let _idx = 0;
-	if (forsales) {
+	if (forsales || forpreorder) {
 		_idx = 10;
 	}
 	if (forwholesales) {
@@ -10136,7 +10133,7 @@ function getRowDiscPc(): number {
 function getRowPrice(): number {
 	let _price: number;
 	let _idx: number = 0;
-	if (forsales) {
+	if (forsales || forpreorder) {
 		_idx = 9;
 	}
 	if (forwholesales) {
@@ -10171,7 +10168,7 @@ function handlePriceChange(event: any) {
 	currentY = getCurrentY(event.target);
 	let _discpc: number;
 	let _idx: number = 0;
-	if (forsales) {
+	if (forsales||forpreorder) {
 		_idx = 10;
 	}
 	if (forpurchase && Purchase) {
@@ -10198,7 +10195,7 @@ function handleDiscChange(event: any) {
 	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
 	let _price: number;
 	let _idx: number = 0;
-	if (forsales) {
+	if (forsales || forpreorder) {
 		_idx = 9;
 	}
 	if (forwholesales) {

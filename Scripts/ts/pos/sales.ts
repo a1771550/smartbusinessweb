@@ -367,39 +367,15 @@ $(function () {
                 //console.log("salesinfo:", salesInfo);
                 selectedCus = salesInfo.Customer ?? initCustomer();//if salesInfo.Customer==null=>GUEST               
                 Sales = initSales();
-                console.log("Sales@getsalesorderinfo:", Sales);
+                //console.log("Sales@getsalesorderinfo:", Sales);
                 Sales.rtsCode = selectedSalesCode;
                 Sales.rtsCusID = selectedCus.cusCustomerID;
                 //Sales.rtsDvc = $infoblk.data("device");
                 //Sales.rtsSalesLoc = $infoblk.data("shop");
                 Sales.rtsGiftOption = 0;
-                Sales.rtsRefCode = "";
-                /*
-                 public rtsCode: string,
-        public rtsCusID: number,
-        public rtsDvc: string,
-        public rtsSalesLoc: string,
-        public rtsGiftOption: number,
-        public rtsRefCode?: string
-                */             
-                $(".NextSalesInvoice").val(Sales.rtsCode);
-                $(".respond").data("code", Sales.rtsCode);
+                Sales.rtsRefCode = "";                          
+                $(".NextSalesInvoice").val(Sales.rtsCode);              
                 $("#txtNotes").val(salesInfo.SalesOrder.rtsRmks);
-                $("#chkspecialapproval")
-                    .prop("checked", salesInfo.SalesOrder.rtsSpecialApproval)
-                    .trigger("change");
-                let giftoption = salesInfo.SalesOrder.rtsGiftOption;
-
-                $("#giftDriver").prop("checked", giftoption == 1);
-                $("#giftSales").prop("checked", giftoption == 2);
-                $("#giftNoGift").prop("checked", giftoption == 3);
-
-                selectedPosSalesmanCode = salesInfo.SalesOrder.KSalesmanCode as string;
-                //console.log(selectedPosSalesmanCode);
-                $(".drpSalesman").val(selectedPosSalesmanCode);
-                //console.log("selectedsalesman:" + $(".drpSalesman").val());
-                //$(".salespersonname").val(salesInfo.SalesOrder.SalesPersonName ?? "");
-
                 $target = $("#txtDeliveryDate").datepicker();
                 $target.each(function () {
                     $.datepicker._clearDate(this);
@@ -419,17 +395,9 @@ $(function () {
                 ItemList = salesInfo.Items.slice(0);
                 currentY = 0;
                 $target = $("#tblSales tbody tr");
-                //console.log($target.length); //1
-                // return;
-                // let pricetdidx: number = kawadamode ? 4 : 5;
 
                 DicItemSNs = salesInfo.DicItemSNs;
-                // console.log("dicitemsns#ready:", DicItemSNs);
-                // console.log("saleslnviews:", salesInfo.SalesLnViews);
                 itemsnlist = [];
-                let saleslnlength = salesInfo.SalesLnViews.length;
-                // console.log("saleslnlength:" + saleslnlength);
-
                 $.each(salesInfo.SalesLnViews, function (i, e) {
                     //   console.log(e);
                     selectedItem = e.Item;
@@ -518,10 +486,7 @@ $(function () {
 
                     addRow();
                 });
-                // console.log("itemsnlist:", itemsnlist);
-                // console.log("saleslist:", SalesList);
-                // console.log("_readonly:", _readonly);
-                // console.log("editmode:", editmode);
+               
                 const status = getParameterByName("status");
                 if (!editmode) {
                     isapprover = $infoblk.data("isapprover") === "True";

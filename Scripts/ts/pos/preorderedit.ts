@@ -1,5 +1,4 @@
-﻿$infoblk = $("infoblk");
-let SalesOrder: ISalesLn;
+﻿$infoblk = $("#infoblk");
 SalesLnList = [];
 $(function () {
 	forpreorder = true;
@@ -7,9 +6,24 @@ $(function () {
 	setFullPage();
 	initModals();
 
-	SalesOrder = $infoblk.data("salesorder");
+	gTblName = "tblSales";
+
+	Sales = $infoblk.data("salesorder");
 	SalesLnList = $infoblk.data("saleslnlist");
 
-	console.log("SalesOrder:", SalesOrder);
+	
+	$(".NextSalesInvoice").val(Sales.rtsCode);
+	$("#txtNotes").val(Sales.rtsRmks);
+	$("#drpLocation").val(Sales.rtsSalesLoc);
+	selectedCus = $infoblk.data("customer");	
+	selectCus();
+	ItemList = $infoblk.data("items");	
+	currentY = 0;
+	$target = $(`#${gTblName} tbody tr`);
+
+	console.log("Sales:", Sales);
 	console.log("SalesLnList:", SalesLnList);
+	console.log("selectedCus:", selectedCus);
+	console.log("ItemList:", ItemList);
+
 });

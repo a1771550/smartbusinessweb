@@ -121,16 +121,6 @@ function getDevicesOk(data) {
     }
 }
 
-function toggleCRM() {
-    if (enableCRM) {
-        $("#loginmodeblk").removeClass("hide");
-        $("#loginMode").attr("name", "").val("");
-    } else {
-        $("#loginmodeblk").addClass("hide");
-        $("#loginMode").attr("name", "LoginMode").val("pos");
-    }
-}
-
 $("input").on("keydown", function (event) {
     var keycode = event.key;
     if (Number(keycode) == 13) {
@@ -154,35 +144,14 @@ $(function () {
 
     if ((salesmanId == 0 && adminId == 0) || receiptno == null) {
         if (isLocal) {
-            $("#Email").val("utservice_sb1@united.com.hk");
-            //$("#Email").val("sunnyy@united.com.hk");
+            //$("#Email").val("utservice_sb1@united.com.hk");
+            $("#Email").val("sunnyy@united.com.hk");
             //$("#Email").val("utservice@united.com.hk");
             //$("#Email").val("enquiry@united.com.hk");     
             $("#Password").val("Pos123456");
             $("#btnLogin").trigger("focus");
         } else {
-            $("#Email").trigger("focus");
-            //$.getJSON('https://api.ipify.org?format=jsonp&callback=?', function (data) {
-            //    //console.log(JSON.stringify(data, null, 2));
-            //    console.log("debug:", debug);
-            //    let ip = data.ip;
-            //    console.log("ip:" + ip);
-            //    if (debug) {                    
-            //        $("#Email").val("sunnyy@united.com.hk");
-            //        //$("#Email").val("utservice@united.com.hk");
-            //        //$("#Email").val("enquiry@united.com.hk");     
-            //        $("#Password").val("Pos123456");
-            //        $("#btnLogin").trigger("focus");
-            //    } else {
-            //        if (ip == "58.177.211.54" || ip == "210.3.183.162") {
-            //            $("#Email").val("sunnyy@united.com.hk");
-            //            $("#Password").val("Pos123456");
-            //            $("#btnLogin").trigger("focus");
-            //        } else {
-            //            $("#Email").trigger("focus");
-            //        }
-            //    }
-            //});
+            $("#Email").trigger("focus");           
         }
     }
 
@@ -197,14 +166,6 @@ $(function () {
 
         $("#btnLogin").trigger("focus");
     }
-    // var salesmanemail = getParameterByName("salesmanemail");
-    // if (salesmanemail != null) {
-    //   $("#Email").val(salesmanemail);
-    //   $("#Password").val("").trigger("focus");
-    // }
-
-    enableCRM = $infoblk.data("enablecrm") == "True";
-    toggleCRM();
-
+ 
     $("#loginblk").defaultButton("#btnLogin");
 });

@@ -724,7 +724,7 @@ namespace SmartBusinessWeb.Controllers
                 if (model.SalesOrder != null)
                 {
                     model.SerialNoList = (from se in context.SerialNoes
-                                          where se.snoIsActive == true && se.snoRtlSalesCode.ToLower() == salescode.ToLower() && se.snoRtlSalesLoc.ToLower() == location && se.snoRtlSalesDvc.ToLower() == device
+                                          where se.snoIsActive == true && se.snoRtlSalesCode.ToLower() == salescode.ToLower() && se.snoRtlSalesLoc.ToLower() == location && se.snoRtlSalesDvc.ToLower() == device && se.AccountProfileId==apId
                                           select new SerialNoView
                                           {
                                               snoCode = se.snoCode,
@@ -757,9 +757,8 @@ namespace SmartBusinessWeb.Controllers
                             cusPriceLevelID = c.cusPriceLevelID
                         };
                         GetCustomerAddressList(context, ref model.Customer);
-                    }
-
-                    ModelHelper.GetCustomerPriceLevelDesc(context, ref model.Customer);
+						ModelHelper.GetCustomerPriceLevelDesc(context, ref model.Customer);
+					}
 
                     model.SalesLnViews = (from sl in context.RtlSalesLns
                                           join s in context.RtlSales
@@ -828,7 +827,9 @@ namespace SmartBusinessWeb.Controllers
                                     itmName = i.itmName,
                                     itmDesc = i.itmDesc,
                                     itmTaxPc = i.itmTaxPc,
-                                    itmLastSellingPrice = i.itmLastSellingPrice
+                                    itmUseDesc = i.itmUseDesc,
+                                    itmLastSellingPrice = i.itmLastSellingPrice,
+                                    itmBaseSellingPrice = i.itmBaseSellingPrice
                                 };
                                 salesln.Item = item;
                                 model.Items.Add(item);
@@ -3336,7 +3337,7 @@ namespace SmartBusinessWeb.Controllers
         {
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
-                var _customer = context.GetCustomerById16(customerId, false, AccountProfileId).FirstOrDefault();
+                var _customer = context.GetCustomerById19(customerId, false, AccountProfileId).FirstOrDefault();
                 MyobCustomerModel customer = new MyobCustomerModel();
                 if (_customer != null)
                 {
@@ -3363,18 +3364,16 @@ namespace SmartBusinessWeb.Controllers
                     customer.IsLastSellingPrice = _customer.IsLastSellingPrice;
                     customer.unsubscribe = _customer.unsubscribe;
                     GetCustomerAddressList(context, ref customer);
-                }
-
-                var profilename = ModelHelper.GetAccountProfileName(context);
-                customer.AccountProfileName = profilename;
-                ModelHelper.GetCustomerPriceLevelDesc(context, ref customer);
+					customer.AccountProfileName = _customer.AccountProfileName;
+					ModelHelper.GetCustomerPriceLevelDesc(context, ref customer);
+				}
                 return Json(customer, JsonRequestBehavior.AllowGet);
             }
         }
-
-        public static void GetCustomerAddressList(PPWDbContext context, ref PGCustomerModel customer)
+      
+        public void GetCustomerAddressList(PPWDbContext context, ref MyobCustomerModel customer)
         {
-            var _addresslist = context.GetCustomerAddressList(customer.cusCode).ToList();
+            var _addresslist = context.GetCustomerAddressList(AccountProfileId, customer.cusCode).ToList();
             if (_addresslist != null && _addresslist.Count > 0)
             {
                 customer.AddressList = new List<AddressView>();
@@ -3406,41 +3405,8 @@ namespace SmartBusinessWeb.Controllers
                 }
             }
         }
-        public static void GetCustomerAddressList(PPWDbContext context, ref MyobCustomerModel customer)
-        {
-            var _addresslist = context.GetCustomerAddressList(customer.cusCode).ToList();
-            if (_addresslist != null && _addresslist.Count > 0)
-            {
-                customer.AddressList = new List<AddressView>();
-                foreach (var _address in _addresslist)
-                {
-                    customer.AddressList.Add(new AddressView
-                    {
-                        Id = _address.Id,
-                        CusCode = _address.CusCode,
-                        CusAddrLocation = _address.CusAddrLocation,
-                        AccountProfileId = _address.AccountProfileId,
-                        StreetLine1 = _address.StreetLine1,
-                        StreetLine2 = _address.StreetLine2,
-                        StreetLine3 = _address.StreetLine3,
-                        StreetLine4 = _address.StreetLine4,
-                        City = _address.City,
-                        State = _address.State,
-                        Postcode = _address.Postcode,
-                        Country = _address.Country,
-                        Phone1 = _address.Phone1,
-                        Phone2 = _address.Phone2,
-                        Phone3 = _address.Phone3,
-                        Fax = _address.Fax,
-                        Email = _address.Email,
-                        Salutation = _address.Salutation,
-                        ContactName = _address.ContactName,
-                        WWW = _address.WWW
-                    });
-                }
-            }
-        }
-        [HttpGet]
+		
+		[HttpGet]
         public ActionResult GetSessionStartData()
         {
             int lang = (int)Session["CurrentCulture"];

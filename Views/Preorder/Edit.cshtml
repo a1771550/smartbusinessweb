@@ -42,6 +42,6 @@
 <link rel="stylesheet" type="text/css" href="~/Scripts/jsuites/dist/jsuites.css" />
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 
-<div id="infoblk" data-salesorder="@Model.JsonSalesOrder" data-saleslnlist="@Model.JsonSalesLnList"></div>
+<div id="infoblk" data-salesorder="@Model.JsonSalesOrder" data-saleslnlist="@Model.JsonSalesLnList" data-items="@Model.JsonItems" data-customer="@System.Text.Json.JsonSerializer.Serialize(Model.Customer)"></div>
 
 <script src="~/Scripts/ts/js/pos/preorderedit.js?v=@rand"></script>
