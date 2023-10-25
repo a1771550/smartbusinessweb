@@ -23,19 +23,7 @@ namespace SmartBusinessWeb.Controllers
             return View();
         }
 
-
-
-        /// <summary>
-        ///		Get a password-protected url (something like 'http://localhost:59419/Track/d9u%40CXLkcYvgZ2Tsad7') to allow users access a web page to view the result of email tracking.
-        /// </summary>
-        /// <returns>a full url with the password</returns>
-        public string GenUrl()
-        {
-            string cryptedpass = HashHelper.Hash();
-            eTrackEditModel.SaveToken(cryptedpass);
-            return Url.RouteUrl(null, new { pass = cryptedpass }, Request.Url.Scheme);
-        }
-
+        
         //strfrmdate=2023-07-01&strtodate=2023-08-16&blastid=
         [HttpPost]
         public ActionResult AdvancedSearch(List<AdvSearchItem> advSearchItems, eTrackAdvSearchItem eTrackAdvSearchItem)

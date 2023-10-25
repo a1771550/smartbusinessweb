@@ -21,7 +21,7 @@ namespace SmartBusinessWeb.Controllers
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 ReceiptViewModel model = (from r in context.Receipts
-                                          where r.deviceCode.ToLower() == ComInfo.Device.ToLower() && r.shopCode.ToLower() == ComInfo.Shop.ToLower() && r.AccountProfileId == ComInfo.AccountProfileId && r.CompanyId == ComInfo.Id
+                                          where r.deviceCode.ToLower() == ComInfo.Device.ToLower() && r.shopCode.ToLower() == ComInfo.Shop.ToLower() && r.AccountProfileId == ComInfo.AccountProfileId
                                           select new ReceiptViewModel
                                           {
                                               Id = r.Id,

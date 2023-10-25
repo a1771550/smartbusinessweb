@@ -244,7 +244,7 @@ namespace SmartBusinessWeb.Controllers
 					try
 					{
 						/* remove current records first: */
-						List<MyobCurrency> currencys = context.MyobCurrencies.Where(x => x.AccountProfileId == apId && x.CompanyId == ComInfo.Id).ToList();
+						List<MyobCurrency> currencys = context.MyobCurrencies.Where(x => x.AccountProfileId == apId).ToList();
 						context.MyobCurrencies.RemoveRange(currencys);
 						context.SaveChanges();
 						/*********************************/
@@ -268,7 +268,6 @@ namespace SmartBusinessWeb.Controllers
 								NegativeFormat = currency.NegativeFormat,
 								UseLeadingZero = currency.UseLeadingZero,
 								AccountProfileId = apId,
-								CompanyId = ComInfo.Id,
 								CreateTime = DateTime.Now,
 								ModifyTime = DateTime.Now
 							});
@@ -408,7 +407,7 @@ namespace SmartBusinessWeb.Controllers
 					try
 					{
 						#region remove current data first
-						List<Account> accounts = context.Accounts.Where(x => x.AccountProfileId == apId && x.CompanyId == ComInfo.Id).ToList();
+						List<Account> accounts = context.Accounts.Where(x => x.AccountProfileId == apId).ToList();
 						context.Accounts.RemoveRange(accounts);
 						context.SaveChanges();
 						#endregion
@@ -423,8 +422,7 @@ namespace SmartBusinessWeb.Controllers
 							ac.AccountID = account.AccountID;
 							ac.AccountClassificationID = account.AccountClassificationID;
 							ac.AccountTypeID = account.AccountTypeID;
-							ac.AccountLevel = account.AccountLevel;
-							ac.CompanyId = ComInfo.Id;
+							ac.AccountLevel = account.AccountLevel;						
 							newaccounts.Add(ac);
 						}
 

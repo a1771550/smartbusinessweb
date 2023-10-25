@@ -239,8 +239,7 @@ namespace SmartBusinessWeb.Controllers
                 Roles = Helpers.ModelHelper.GetUserRoles(user),
                 AccountProfileId = accountProfileId,
                 ManagerId = user.ManagerId,
-                Device = device,
-                SalesGroupId = context.GetSalesGroupId(user.surUID).FirstOrDefault(),
+                Device = device,                
                 Email = user.Email,
                 shopCode = user.shopCode,
                 dvcCode = user.dvcCode,
@@ -252,9 +251,7 @@ namespace SmartBusinessWeb.Controllers
             Session["SessionToken"] = token;
             Session["IsCentral"] = model.IsCentral;
             Session["eBlastId"] = 0;
-            Session["AccountProfileId"] = model.AccountProfileId;
-            //Session["DBName"] = user.dbName;
-            //Session["ComInfo"] = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.Id == user.CompanyId);
+            Session["AccountProfileId"] = model.AccountProfileId;            
 
             MenuHelper.UpdateMenus(context);
 
@@ -284,12 +281,11 @@ namespace SmartBusinessWeb.Controllers
             device.dvcShop = model.SelectedShop;
             device.dvcCode = model.SelectedDevice;
 
-            var dev = context.Devices.FirstOrDefault(x => x.CompanyId == ComInfo.Id && x.AccountProfileId == ComInfo.AccountProfileId && x.dvcIsActive);
+            var dev = context.Devices.FirstOrDefault(x => x.AccountProfileId == ComInfo.AccountProfileId && x.dvcIsActive);
             //var dev = context.Devices.FirstOrDefault(x => x.dvcIsActive);
             device.dvcUID = dev.dvcUID;
             device.dvcName = dev.dvcName;
-            device.AccountNo = (int)dev.AccountNo;
-            device.CompanyId = dev.CompanyId;
+            device.AccountNo = (int)dev.AccountNo;          
             device.AccountProfileId = dev.AccountProfileId;
             device.dvcStockLoc = dev.dvcStockLoc;
 

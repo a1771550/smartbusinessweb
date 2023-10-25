@@ -1796,8 +1796,7 @@ namespace SmartBusinessWeb.Controllers
 
         [HttpGet]
         public JsonResult GetShopData(string device, string shop, string filename, string strfrmdate, string strtodate, int lang, int accountProfileId)
-        {
-            int companyId = 0;
+        {            
             if (filename.StartsWith("ItemSales_"))
             {
                 device = device.ToLower();
@@ -1813,8 +1812,6 @@ namespace SmartBusinessWeb.Controllers
                 using (var context = new PPWDbContext(Session["DBName"].ToString()))
                 {
                     string accountno = context.ComInfoes.FirstOrDefault().comAccountNo;
-                    companyId = ModelHelper.GetCompanyId(context);
-
                     int year = DateTime.Now.Year;
 
                     DateTime frmdate;
@@ -1868,8 +1865,7 @@ namespace SmartBusinessWeb.Controllers
                                      rtsRmksOnDoc = s.rtsRmksOnDoc,
                                      rtsMonthBase = s.rtsMonthBase,
                                      rtsCheckout = s.rtsCheckout,
-                                     rtsLineTaxAmt = s.rtsLineTaxAmt,
-                                     //CompanyId = s.CompanyId,
+                                     rtsLineTaxAmt = s.rtsLineTaxAmt,                                   
                                      Lang = lang,
                                  }
                                 ).ToList();
@@ -1995,8 +1991,6 @@ namespace SmartBusinessWeb.Controllers
 
                 using (var context = new PPWDbContext(Session["DBName"].ToString()))
                 {
-                    companyId = ModelHelper.GetCompanyId(context);
-
                     customers = (from c in context.PGCustomers
                                  where c.AccountProfileId == accountProfileId && c.cusIsActive == true
                                  select new PGCustomerModel
@@ -2030,35 +2024,21 @@ namespace SmartBusinessWeb.Controllers
             {
                 List<ItemModel> items = new List<ItemModel>();
                 using (var context = new PPWDbContext(Session["DBName"].ToString()))
-                {
-                    companyId = ModelHelper.GetCompanyId(context);
-                    items = ModelHelper.GetPGItemList(context, accountProfileId, companyId, true);
+                {                    
+                    items = ModelHelper.GetPGItemList(context, accountProfileId, true);
                 }
 
                 return Json(items, JsonRequestBehavior.AllowGet);
             }
-
-            //if (filename.StartsWith("PGLocStocks_"))
-            //{
-            //    List<ItemModel> items = new List<ItemModel>();
-            //    using (var context = new PPWDbContext(Session["DBName"].ToString()))
-            //    {
-            //        companyId = ModelHelper.GetCompanyId(context);
-            //        items = ModelHelper.GetPGLocStockList(context, accountProfileId, companyId);
-            //    }
-
-            //    return Json(items, JsonRequestBehavior.AllowGet);
-            //}
 
             if (filename.StartsWith("Devices_"))
             {
                 List<DeviceModel> devices = new List<DeviceModel>();
 
                 using (var context = new PPWDbContext(Session["DBName"].ToString()))
-                {
-                    companyId = ModelHelper.GetCompanyId(context);
+                {                    
                     devices = (from d in context.Devices
-                               where d.AccountProfileId == accountProfileId && d.CompanyId == companyId
+                               where d.AccountProfileId == accountProfileId
                                select new DeviceModel
                                {
                                    dvcIsActive = d.dvcIsActive,
@@ -2081,7 +2061,6 @@ namespace SmartBusinessWeb.Controllers
                                    dvcRefundPrefix = d.dvcRefundPrefix,
                                    AccountNo = (int)d.AccountNo,
                                    AccountProfileId = accountProfileId,
-                                   CompanyId = d.CompanyId
                                }
                                                      ).ToList();
                 }
@@ -3494,7 +3473,7 @@ namespace SmartBusinessWeb.Controllers
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var serialno = (from s in context.SerialNoes
-                                where s.snoCode == sn && s.AccountProfileId == AccountProfileId && s.CompanyId == ComInfo.Id
+                                where s.snoCode == sn && s.AccountProfileId == AccountProfileId
                                 select new SerialNoView
                                 {
                                     snoCode = sn,

@@ -13862,10 +13862,7 @@ class ItemEditFrm extends SimpleForm {
 	}
 
 	submitform() {
-		let url = this.forPGItem
-			? !EditItem && ItemVariations.length > 0
-				? "/PGItem/EditIV"
-				: "/PGItem/Edit"
+		let url = this.forPGItem? "/PGItem/Edit"
 			: !EditItem && ItemVariations.length > 0
 				? "/Item/EditIV"
 				: "/Item/Edit";
@@ -15444,94 +15441,49 @@ const fillInItemForm = (setDrpItemAttrVal: boolean) => {
 		});
 	}
 
-	$("#itmCode").val(selectedItem ? selectedItem!.itmCode : ItemVari!.itmCode);
+	$("#itmCode").val(selectedItem!.itmCode);
 	// console.log("selecteditem.catid:" + selectedItem?.catId);
-	$("#drpCategory").val(
-		selectedItem ? (selectedItem?.catId == 0 ? 1 : selectedItem!.catId) : 1
-	); //itemvari doesn't include category
-	// console.log("category:" + $("#drpCategory").val());
+	$("#drpCategory").val(selectedItem?.catId == 0 ? 1 : selectedItem!.catId); 
 
-	$("#itmSupCode").val(
-		selectedItem ? selectedItem!.itmSupCode : ItemVari!.itmSupCode
-	);
-	$("#itmName").val(selectedItem ? selectedItem!.itmName : ItemVari!.itmName);
+	$("#itmSupCode").val(selectedItem!.itmSupCode);
+	$("#itmName").val(selectedItem!.itmName);
 	$("#BaseSellingPrice").val(
-		selectedItem
-			? Number(selectedItem!.itmBaseSellingPrice)
-			: Number(ItemVari!.itmBaseSellingPrice)
-	);
+		Number(selectedItem!.itmBaseSellingPrice));
 	$("#BuyStdCost").val(
-		selectedItem
-			? Number(selectedItem!.itmBuyStdCost)
-			: Number(ItemVari!.itmBuyStdCost)
-	);
-	$("#itmDesc").val(selectedItem ? selectedItem!.itmDesc : ItemVari!.itmDesc);
+		Number(selectedItem!.itmBuyStdCost));
+	$("#itmDesc").val(selectedItem!.itmDesc);
 	$("#replacing").prop(
 		"checked",
-		selectedItem ? selectedItem!.itmUseDesc : ItemVari!.itmUseDesc
-	);
+		selectedItem!.itmUseDesc);
 
-	$("#PLA").val(selectedItem ? selectedItem!.PLA : ItemVari!.PLA);
-	$("#PLB").val(selectedItem ? selectedItem!.PLB : ItemVari!.PLB);
-	$("#PLC").val(selectedItem ? selectedItem!.PLC : ItemVari!.PLC);
-	$("#PLD").val(selectedItem ? selectedItem!.PLD : ItemVari!.PLD);
-	$("#PLE").val(selectedItem ? selectedItem!.PLE : ItemVari!.PLE);
-	$("#PLF").val(selectedItem ? selectedItem!.PLF : ItemVari!.PLF);
+	$("#PLA").val(selectedItem!.PLA);
+	$("#PLB").val(selectedItem!.PLB);
+	$("#PLC").val(selectedItem!.PLC);
+	$("#PLD").val(selectedItem!.PLD);
+	$("#PLE").val(selectedItem!.PLE);
+	$("#PLF").val(selectedItem!.PLF);
 
 	$("#itmWeight").val(
-		selectedItem ? Number(selectedItem!.itmWeight) : Number(ItemVari!.itmWeight)
+		Number(selectedItem!.itmWeight)
 	);
 	$("#itmWidth").val(
-		selectedItem ? Number(selectedItem!.itmWidth) : Number(ItemVari!.itmWidth)
+		Number(selectedItem!.itmWidth)
 	);
 	$("#itmHeight").val(
-		selectedItem ? Number(selectedItem!.itmHeight) : Number(ItemVari!.itmHeight)
+		Number(selectedItem!.itmHeight)
 	);
 	$("#itmLength").val(
-		selectedItem ? Number(selectedItem!.itmLength) : Number(ItemVari!.itmLength)
+		Number(selectedItem!.itmLength)
 	);
 
 	$("#txtBuyUnit").val(
-		selectedItem ? selectedItem!.itmBuyUnit : ItemVari!.itmBuyUnit
+		selectedItem!.itmBuyUnit
 	);
 	$("#txtSellUnit").val(
-		selectedItem ? selectedItem!.itmSellUnit : ItemVari!.itmSellUnit
+		selectedItem!.itmSellUnit
 	);
 	$("#txtItmSellUnitQuantity").val(
-		selectedItem
-			? Number(selectedItem!.itmSellUnitQuantity)
-			: Number(ItemVari!.itmSellUnitQuantity)
-	);
-
-	if (ItemVari) {
-		if (ItemVari!.ExpenseAccountID !== null && ItemVari!.ExpenseAccountID > 0) {
-			itemAcId = ItemVari!.ExpenseAccountID;
-			getAccountList();
-			getAccountClassificationID();
-			getItemAccountNumber();
-			fillAccountNumber("buy");
-			$("#drpCOS").val(accountList[0].AccountClassificationID);
-		}
-		if (ItemVari!.IncomeAccountID !== null && ItemVari!.IncomeAccountID > 0) {
-			itemAcId = ItemVari!.IncomeAccountID;
-			getAccountList();
-			getAccountClassificationID();
-			getItemAccountNumber();
-			fillAccountNumber("sell");
-			$("#drpIncome").val(accountList[0].AccountClassificationID);
-		}
-		if (
-			ItemVari!.InventoryAccountID !== null &&
-			ItemVari!.InventoryAccountID > 0
-		) {
-			itemAcId = ItemVari!.InventoryAccountID;
-			getAccountList();
-			getAccountClassificationID();
-			getItemAccountNumber();
-			fillAccountNumber("inventory");
-			$("#drpInventory").val(accountList[0].AccountClassificationID);
-		}
-	}
+		Number(selectedItem!.itmSellUnitQuantity));	
 
 	if (selectedItem) {
 		if (!NonABSS) {
@@ -15573,65 +15525,49 @@ const fillInItemForm = (setDrpItemAttrVal: boolean) => {
 
 	$("#chkBatch").prop(
 		"checked",
-		selectedItem ? selectedItem!.chkBat : ItemVari!.chkBat
+		selectedItem!.chkBat
 	);
 	$("#chkSN").prop(
 		"checked",
-		selectedItem ? selectedItem!.chkSN : ItemVari!.chkSN
+		selectedItem!.chkSN
 	);
 	$("#chkExpiry").prop(
 		"checked",
-		selectedItem ? selectedItem!.chkVT : ItemVari!.chkVT
+		selectedItem!.chkVT
 	);
 
 	$("#isActive").prop(
 		"checked",
-		selectedItem ? selectedItem!.itmIsActive : ItemVari!.itmIsActive
+		selectedItem!.itmIsActive
 	);
 
 	//fill in values for hidden fields:
 	$("#itmItemID").val(
-		selectedItem ? Number(selectedItem!.itmItemID) : ItemVari!.itmItemID
+		Number(selectedItem!.itmItemID)
 	);
 	$("#ChkSN").val(
-		selectedItem
-			? selectedItem!.chkSN
+		selectedItem!.chkSN
 				? "True"
-				: "False"
-			: ItemVari!.chkSN
-				? "True"
-				: "False"
+				: "False"			
 	);
 	$("#ChkBatch").val(
-		selectedItem
-			? selectedItem!.chkBat
+		selectedItem!.chkBat
 				? "True"
-				: "False"
-			: ItemVari!.chkBat
-				? "True"
-				: "False"
+				: "False"			
 	);
 	$("#ChkExpiry").val(
-		selectedItem
-			? selectedItem!.chkVT
+		selectedItem!.chkVT
 				? "True"
-				: "False"
-			: ItemVari!.chkVT
-				? "True"
-				: "False"
+				: "False"			
 	);
-	$("#codeinuse").val(selectedItem ? selectedItem!.itmCode : ItemVari!.itmCode);
+	$("#codeinuse").val(selectedItem!.itmCode);
 	$("#scodeinuse").val(
-		selectedItem ? selectedItem!.itmSupCode : ItemVari!.itmSupCode
+		selectedItem!.itmSupCode
 	);
 	$("#ReplacingItemNameOnReceipt").val(
-		selectedItem
-			? selectedItem!.itmUseDesc
+		selectedItem!.itmUseDesc
 				? "True"
-				: "False"
-			: ItemVari!.itmUseDesc
-				? "True"
-				: "False"
+				: "False"			
 	);
 };
 

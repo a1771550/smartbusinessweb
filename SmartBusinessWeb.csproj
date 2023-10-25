@@ -313,7 +313,6 @@
     <Compile Include="Controllers\CRM\eBlastController.cs" />
     <Compile Include="Controllers\CRM\EnquiryController.cs" />
     <Compile Include="Controllers\CRM\eTrackController.cs" />
-    <Compile Include="Controllers\CRM\HotListController.cs" />
     <Compile Include="Controllers\Customer\CustomerController.cs" />
     <Compile Include="Controllers\Customer\PGCustomerController.cs" />
     <Compile Include="Controllers\DataTransferController.cs" />

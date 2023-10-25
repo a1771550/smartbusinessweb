@@ -143,6 +143,8 @@ namespace SmartBusinessWeb.Controllers
         {
             ViewBag.ParentPage = "setup";
             ViewBag.PageName = "othersettings";
+            int apId = ComInfo.AccountProfileId;
+
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 OtherSettingsModel model = new OtherSettingsModel();
@@ -165,7 +167,6 @@ namespace SmartBusinessWeb.Controllers
                                      appVal = os.appVal,
                                      appIsActive = os.appIsActive,
                                      DisplayText = os.appParamEng.Trim() + ":" + os.appParamChs.Trim() + ":" + os.appParamCht.Trim(),
-                                     CompanyId = os.CompanyId
                                  }).ToList();
 
                 switch (lang)
@@ -175,14 +176,14 @@ namespace SmartBusinessWeb.Controllers
                         {
                             os.DisplayText = os.DisplayText.Split(':')[0];
                         }
-                        defaultsalesnotetxt = context.AppParams.FirstOrDefault(x => x.appParam.ToLower() == "defaultsalesnotestxteng" && x.CompanyId == ComInfo.Id).appVal;
+                        defaultsalesnotetxt = context.AppParams.FirstOrDefault(x => x.appParam.ToLower() == "defaultsalesnotestxteng" && x.AccountProfileId == apId).appVal;
                         break;
                     case 1:
                         foreach (var os in otherSettings)
                         {
                             os.DisplayText = os.DisplayText.Split(':')[1];
                         }
-                        defaultsalesnotetxt = context.AppParams.FirstOrDefault(x => x.appParam.ToLower() == "defaultsalesnotestxtchs" && x.CompanyId == ComInfo.Id).appVal;
+                        defaultsalesnotetxt = context.AppParams.FirstOrDefault(x => x.appParam.ToLower() == "defaultsalesnotestxtchs" && x.AccountProfileId == apId).appVal;
                         break;
                     default:
                     case 0:
@@ -190,18 +191,18 @@ namespace SmartBusinessWeb.Controllers
                         {
                             os.DisplayText = os.DisplayText.Split(':')[2];
                         }
-                        defaultsalesnotetxt = context.AppParams.FirstOrDefault(x => x.appParam.ToLower() == "defaultsalesnotestxtcht" && x.CompanyId == ComInfo.Id).appVal;
+                        defaultsalesnotetxt = context.AppParams.FirstOrDefault(x => x.appParam.ToLower() == "defaultsalesnotestxtcht" && x.AccountProfileId == apId).appVal;
                         break;
                 }
 
                 model.OtherSettings = otherSettings;
-                model.DefaultSalesNotes = otherSettings.FirstOrDefault(x => x.appParam == "DefaultSalesNotes" && x.CompanyId == ComInfo.Id).appVal == "1";
+                model.DefaultSalesNotes = otherSettings.FirstOrDefault(x => x.appParam == "DefaultSalesNotes" && x.AccountProfileId == apId).appVal == "1";
                 if (model.DefaultSalesNotes)
                 {
                     model.DefaultSalesNoteTxt = defaultsalesnotetxt;
                 }
                 model.UseDefaultNote = model.DefaultSalesNotes ? 1 : 0;
-                model.EnableLogo = context.AppParams.FirstOrDefault(x => x.appParam.ToLower() == "logoreceipt" && x.CompanyId == ComInfo.Id).appVal == "1";
+                model.EnableLogo = context.AppParams.FirstOrDefault(x => x.appParam.ToLower() == "logoreceipt" && x.AccountProfileId == apId).appVal == "1";
                 if (model.EnableLogo)
                 {
                     model.ReceiptLogo = PPWCommonLib.CommonHelpers.ModelHelper.GetReceiptLogo(ProjectEnum.G3);
@@ -226,14 +227,14 @@ namespace SmartBusinessWeb.Controllers
             {
                 foreach (var key in formCollection.AllKeys)
                 {
-                    AppParam param = context.AppParams.FirstOrDefault(x => x.appParam == key && x.CompanyId == ComInfo.Id);
+                    AppParam param = context.AppParams.FirstOrDefault(x => x.appParam == key && x.AccountProfileId == apId);
                     if (param != null)
                     {
                         param.appVal = formCollection[key];
                     }
                 }
 
-                var defaultsalesnotes = context.AppParams.FirstOrDefault(x => x.appParam == "DefaultSalesNotes" && x.CompanyId == ComInfo.Id);
+                var defaultsalesnotes = context.AppParams.FirstOrDefault(x => x.appParam == "DefaultSalesNotes" && x.AccountProfileId == apId);
                 defaultsalesnotes.appVal = formCollection["UseDefaultNote"];
                 if (defaultsalesnotes.appVal == "1")
                 {
@@ -243,22 +244,22 @@ namespace SmartBusinessWeb.Controllers
                     switch (lang)
                     {
                         case 2:
-                            appParam = context.AppParams.FirstOrDefault(x => x.appParam.ToLower() == "defaultsalesnotestxteng" && x.CompanyId == ComInfo.Id);
+                            appParam = context.AppParams.FirstOrDefault(x => x.appParam.ToLower() == "defaultsalesnotestxteng" && x.AccountProfileId == apId);
                             appParam.appVal = defaultsalesnotetxt;
                             break;
                         case 1:
-                            appParam = context.AppParams.FirstOrDefault(x => x.appParam.ToLower() == "defaultsalesnotestxtchs" && x.CompanyId == ComInfo.Id);
+                            appParam = context.AppParams.FirstOrDefault(x => x.appParam.ToLower() == "defaultsalesnotestxtchs" && x.AccountProfileId == apId);
                             appParam.appVal = defaultsalesnotetxt;
                             break;
                         default:
                         case 0:
-                            appParam = context.AppParams.FirstOrDefault(x => x.appParam.ToLower() == "defaultsalesnotestxtcht" && x.CompanyId == ComInfo.Id);
+                            appParam = context.AppParams.FirstOrDefault(x => x.appParam.ToLower() == "defaultsalesnotestxtcht" && x.AccountProfileId == apId);
                             appParam.appVal = defaultsalesnotetxt;
                             break;
                     }
                 }
 
-                var logoreceipt = context.AppParams.FirstOrDefault(x => x.appParam == "LogoReceipt" && x.CompanyId == ComInfo.Id);
+                var logoreceipt = context.AppParams.FirstOrDefault(x => x.appParam == "LogoReceipt" && x.AccountProfileId == apId);
                 logoreceipt.appVal = formCollection["LogoReceipt"];
 
                 string defaultcusname = formCollection["DefaultCustomerReceipt"];
@@ -277,12 +278,12 @@ namespace SmartBusinessWeb.Controllers
 
                 if (formCollection.AllKeys.Contains("TaxType"))
                 {
-                    var taxtype = context.AppParams.FirstOrDefault(x => x.appParam == "TaxType" && x.CompanyId == ComInfo.Id);
+                    var taxtype = context.AppParams.FirstOrDefault(x => x.appParam == "TaxType" && x.AccountProfileId == apId);
                     taxtype.appVal = formCollection["TaxType"];
                 }
                 if (formCollection.AllKeys.Contains("InclusiveTaxRate"))
                 {
-                    var taxrate = context.AppParams.FirstOrDefault(x => x.appParam == "InclusiveTaxRate" && x.CompanyId == ComInfo.Id);
+                    var taxrate = context.AppParams.FirstOrDefault(x => x.appParam == "InclusiveTaxRate" && x.AccountProfileId == apId);
                     taxrate.appVal = formCollection["InclusiveTaxRate"];
                 }
                

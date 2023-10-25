@@ -154,7 +154,8 @@ $(function () {
 
     if ((salesmanId == 0 && adminId == 0) || receiptno == null) {
         if (isLocal) {
-            $("#Email").val("sunnyy@united.com.hk");
+            $("#Email").val("utservice_sb1@united.com.hk");
+            //$("#Email").val("sunnyy@united.com.hk");
             //$("#Email").val("utservice@united.com.hk");
             //$("#Email").val("enquiry@united.com.hk");     
             $("#Password").val("Pos123456");

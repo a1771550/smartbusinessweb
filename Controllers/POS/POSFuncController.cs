@@ -48,7 +48,7 @@ namespace SmartBusinessWeb.Controllers
 											on st.lstItemCode equals sl.rtlItemCode
 											join s in context.RtlSales
 											on sl.rtlCode equals s.rtsCode
-											where st.lstQuantityAvailable <= 0 && st.CompanyId == ComInfo.Id && st.AccountProfileId == ComInfo.AccountProfileId
+											where st.lstQuantityAvailable <= 0 && st.AccountProfileId == ComInfo.AccountProfileId
 											select new SalesLnView
 											{
 												rtlCode = sl.rtlCode,
@@ -117,7 +117,7 @@ namespace SmartBusinessWeb.Controllers
 
 				//Session currsess = ModelHelper.GetCurrentSession(context); => must not use this method here!!!                
 				Session session = Session["Session"] as Session;
-				Session currsess = context.Sessions.Where(x => x.AccountProfileId == ComInfo.AccountProfileId && x.CompanyId == ComInfo.Id && x.UserCode.ToLower() == session.UserCode.ToLower() && x.sesShop.ToLower() == session.sesShop.ToLower() && x.sesDvc.ToLower() == session.sesDvc.ToLower() && x.sesDateFr == currDate && x.sesIsActive && !x.sesCheckout).OrderByDescending(x => x.sesUID).FirstOrDefault();
+				Session currsess = context.Sessions.Where(x => x.AccountProfileId == ComInfo.AccountProfileId && x.UserCode.ToLower() == session.UserCode.ToLower() && x.sesShop.ToLower() == session.sesShop.ToLower() && x.sesDvc.ToLower() == session.sesDvc.ToLower() && x.sesDateFr == currDate && x.sesIsActive && !x.sesCheckout).OrderByDescending(x => x.sesUID).FirstOrDefault();
 				string msg = ""; bool success = false;
 				if (currsess != null)
 				{
@@ -138,7 +138,6 @@ namespace SmartBusinessWeb.Controllers
 							selAmtSys = dicCountPay[key].selAmtSys,
 							selAmtCount = dicCountPay[key].selAmtCount,
 							AccountProfileId = ComInfo.AccountProfileId,
-							CompanyId = ComInfo.Id
 						};
 						if (dicCountPay[key].isCash == 1)
 						{
@@ -155,7 +154,6 @@ namespace SmartBusinessWeb.Controllers
 						selAmtSys = monthlypaytotal,
 						selAmtCount = 0,
 						AccountProfileId = ComInfo.AccountProfileId,
-						CompanyId = ComInfo.Id
 					};
 					sessionlns.Add(sessionLn);
 					context.SessionLns.AddRange(sessionlns);
@@ -168,7 +166,7 @@ namespace SmartBusinessWeb.Controllers
 					context.SaveChanges();
 					Session["Session"] = currsess;
 
-					bool showreport = context.AppParams.FirstOrDefault(x => x.appParam == "ShowReportButtons" && x.CompanyId == ComInfo.Id && x.AccountProfileId == ComInfo.AccountProfileId).appVal == "1";
+					bool showreport = context.AppParams.FirstOrDefault(x => x.appParam == "ShowReportButtons" && x.AccountProfileId == ComInfo.AccountProfileId).appVal == "1";
 					if (showreport)
 					{
 						DayEndsModel model = new DayEndsModel();
@@ -324,7 +322,6 @@ namespace SmartBusinessWeb.Controllers
 						rtlSalesLn.rtlSellingPriceMinusInclTax = salesLn.rtlSellingPriceMinusInclTax;
 						rtlSalesLn.JobID = salesLn.JobID;
 						rtlSalesLn.AccountProfileId = salesLn.AccountProfileId;
-						rtlSalesLn.CompanyId = salesLn.CompanyId;
 
 						if (dicItemLocQty.ContainsKey(salesLn.rtlItemCode) && dicItemLocQty[salesLn.rtlItemCode].ContainsKey(salesLn.rtlStockLoc))
 						{
@@ -347,7 +344,7 @@ namespace SmartBusinessWeb.Controllers
 
 				if (sales != null)
 				{
-					string salesstatus = context.RtlSales.FirstOrDefault(x => x.rtsCode.ToLower() == Sales.salescode.ToLower() && x.CompanyId == ComInfo.Id && x.AccountProfileId == ComInfo.AccountProfileId).rtsStatus;
+					string salesstatus = context.RtlSales.FirstOrDefault(x => x.rtsCode.ToLower() == Sales.salescode.ToLower() && x.AccountProfileId == ComInfo.AccountProfileId).rtsStatus;
 					string remarks = string.IsNullOrEmpty(Sales.Notes) ? sales.rtsRmks : string.Concat(sales.rtsRmks, ";", Sales.Notes);
 					RtlSale rtlSale = new RtlSale
 					{
@@ -385,12 +382,7 @@ namespace SmartBusinessWeb.Controllers
 						rtsRefCode = Sales.salescode,
 						rtsMonthBase = false,
 						AccountProfileId = sales.AccountProfileId,
-						CompanyId = sales.CompanyId,
-					};
-					//if (dvc != null)
-					//{
-					//    dvc.dvcNextRtlSalesNo += 1;
-					//}
+					};				
 
 					#region Handle Stock
 					SalesEditModel model = new SalesEditModel();
@@ -412,7 +404,6 @@ namespace SmartBusinessWeb.Controllers
 						rtpChange = Sales.Change,
 						rtpPayType = paytype,
 						rtpRoundings = 0,
-						CompanyId = ComInfo.Id,
 						AccountProfileId = ComInfo.AccountProfileId
 					};
 					#endregion
@@ -449,7 +440,6 @@ namespace SmartBusinessWeb.Controllers
 								rtplDvc = device.dvcCode,
 								rtplDate = DateTime.Now.Date,
 								rtplTime = DateTime.Now,
-								CompanyId = ComInfo.Id,
 								AccountProfileId = ComInfo.AccountProfileId
 							};
 							totalpayamt += amt;
@@ -514,9 +504,9 @@ namespace SmartBusinessWeb.Controllers
 							refundcode = ModelHelper.GetNewRefundCode(devicecode, device, context);
 							//totalamount *= -1;
 							int refundamt = (bool)ComInfo.ePayTest ? decimal.ToInt32(totalamount) : decimal.ToInt32(totalamount *= 100);
-							salestotal = (decimal)context.RtlSales.FirstOrDefault(x => x.rtsCode.ToLower() == salescode.ToLower() && x.CompanyId == ComInfo.Id).rtsFinalTotal;
+							salestotal = (decimal)context.RtlSales.FirstOrDefault(x => x.rtsCode.ToLower() == salescode.ToLower() && x.AccountProfileId == apId).rtsFinalTotal;
 
-							var _ps = context.ePayments.FirstOrDefault(x => x.out_trade_no.ToUpper() == salescode.ToUpper() && x.CompanyId == ComInfo.Id);
+							var _ps = context.ePayments.FirstOrDefault(x => x.out_trade_no.ToUpper() == salescode.ToUpper() && x.AccountProfileId == apId);
 							if (_ps != null)
 							{
 								PayService payService = new PayService(_ps.auth_code, _ps.out_trade_no, _ps.body.Split(',').ToList(), decimal.ToInt32(salestotal), ePayMode.Refund);
@@ -590,7 +580,7 @@ namespace SmartBusinessWeb.Controllers
 												refund_status = "SUCCESS",
 												coupon_refund_fee = ps.CouponRefundFee,
 												CreateTime = DateTime.Now,
-												CompanyId = ComInfo.Id
+												AccountProfileId = apId
 											};
 											context.eRefunds.Add(erefund);
 											context.SaveChanges();
@@ -732,7 +722,6 @@ namespace SmartBusinessWeb.Controllers
 					rtlSalesLn.rtlSellingPriceMinusInclTax = sellingprice;
 					rtlSalesLn.JobID = refsalesln.JobID;
 					rtlSalesLn.AccountProfileId = ComInfo.AccountProfileId;
-					rtlSalesLn.CompanyId = ComInfo.Id;
 
 					if (dicItemLocQty.ContainsKey(refundln.itemcode) && dicItemLocQty[refundln.itemcode].ContainsKey(refundln.rtlStockLoc))
 					{
@@ -800,7 +789,6 @@ namespace SmartBusinessWeb.Controllers
 					rtsCheckout = false,
 					rtsCheckoutPortal = CheckoutPortal,
 					AccountProfileId = sales.AccountProfileId,
-					CompanyId = sales.CompanyId,
 					rtsCreateTime = DateTime.Now,
 				};
 				context.RtlSales.Add(rtlSale);
@@ -809,7 +797,7 @@ namespace SmartBusinessWeb.Controllers
 
 			if (device.dvcCode == devicecode)
 			{
-				bool minusqtyonrefund = context.AppParams.FirstOrDefault(x => x.appParam == "EnableMinusStockOnRefund" && x.CompanyId == ComInfo.Id).appVal == "1";
+				bool minusqtyonrefund = context.AppParams.FirstOrDefault(x => x.appParam == "EnableMinusStockOnRefund" && x.AccountProfileId == apId).appVal == "1";
 				if (!minusqtyonrefund)
 				{
 					SalesEditModel model = new SalesEditModel();
@@ -834,8 +822,7 @@ namespace SmartBusinessWeb.Controllers
 				rtpTxType = "RF",
 				rtpChange = Change,
 				rtpEpayType = epaytype,
-				CompanyId = ComInfo.Id,
-				AccountProfileId = ComInfo.AccountProfileId
+				AccountProfileId = apId,
 			};
 
 			context.RtlSalesLns.AddRange(SalesLines);
@@ -869,8 +856,7 @@ namespace SmartBusinessWeb.Controllers
 						rtplDvc = devicecode,
 						rtplDate = DateTime.Now.Date,
 						rtplTime = DateTime.Now,
-						CompanyId = ComInfo.Id,
-						AccountProfileId = ComInfo.AccountProfileId
+						AccountProfileId = apId,
 					};
 					PayLnList.Add(rtlPayLn);
 				}
