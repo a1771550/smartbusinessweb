@@ -1,6 +1,6 @@
 ﻿$infoblk = $("#infoblk");
 priceeditable = false; //item price in deposit should not be editable
-retailType = RtlType.deposit;
+salesType = SalesType.deposit;
 
 function submitRemaining() {
     if (Sales.Change > 0) {

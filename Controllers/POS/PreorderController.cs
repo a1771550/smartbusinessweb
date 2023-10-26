@@ -26,27 +26,29 @@ namespace SmartBusinessWeb.Controllers.POS
 		[HandleError]
 		[CustomAuthorize("retail", "boss", "admin", "superadmin")]
 		[HttpGet]
-		public ActionResult Edit(long Id)
+		public ActionResult Edit(long? Id = 0)
 		{
 			ViewBag.ParentPage = "sales";
 			ViewBag.PageName = "preorderlist";
 			PreorderEditModel model = new PreorderEditModel();
-			model.Get(Id);
+			model.Get((long)Id);
 			return View(model);
 		}
 
 		[HandleError]
 		[CustomAuthorize("retail", "boss", "admin", "superadmin")]
 		[HttpPost]
-		public JsonResult Edit(SalesModel Sales, List<SalesLnView> SalesLnList, List<PayLnView> Payments)
+		public JsonResult Edit(PreSalesModel Sales, List<SalesLnView> SalesLnList, List<PayLnView> Payments)
+		//public JsonResult Edit(PreSalesModel Sales)
 		{
+			string finalsalescode = "";
 			ViewBag.ParentPage = "sales";
 			ViewBag.PageName = "preorderlist";
 			PreorderEditModel model = new PreorderEditModel();
-			string finalsalescode = model.Edit(Sales, SalesLnList, Payments);
+			finalsalescode = model.Edit(Sales, SalesLnList, Payments);
 			if (string.IsNullOrEmpty(Sales.authcode))
 			{
-				return Json(new { msg = "",finalsalescode });
+				return Json(new { msg = "", finalsalescode });
 			}
 			else
 			{

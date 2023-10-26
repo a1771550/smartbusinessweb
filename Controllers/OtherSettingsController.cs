@@ -167,6 +167,7 @@ namespace SmartBusinessWeb.Controllers
                                      appVal = os.appVal,
                                      appIsActive = os.appIsActive,
                                      DisplayText = os.appParamEng.Trim() + ":" + os.appParamChs.Trim() + ":" + os.appParamCht.Trim(),
+                                     AccountProfileId = apId,
                                  }).ToList();
 
                 switch (lang)
@@ -195,13 +196,16 @@ namespace SmartBusinessWeb.Controllers
                         break;
                 }
 
-                model.OtherSettings = otherSettings;
-                model.DefaultSalesNotes = otherSettings.FirstOrDefault(x => x.appParam == "DefaultSalesNotes" && x.AccountProfileId == apId).appVal == "1";
-                if (model.DefaultSalesNotes)
+                model.OtherSettings = otherSettings.ToList();
+                var defaultnotesetting = otherSettings.FirstOrDefault(x => x.appParam == "DefaultSalesNotes" && x.AccountProfileId == apId);
+                if (defaultnotesetting != null)
                 {
-                    model.DefaultSalesNoteTxt = defaultsalesnotetxt;
-                }
-                model.UseDefaultNote = model.DefaultSalesNotes ? 1 : 0;
+					bool usedefaultnote = defaultnotesetting.appVal == "1";
+					model.DefaultSalesNotes = usedefaultnote;
+                    if(model.DefaultSalesNotes) model.DefaultSalesNoteTxt = defaultsalesnotetxt;					
+					model.UseDefaultNote = model.DefaultSalesNotes ? 1 : 0;
+				}
+				
                 model.EnableLogo = context.AppParams.FirstOrDefault(x => x.appParam.ToLower() == "logoreceipt" && x.AccountProfileId == apId).appVal == "1";
                 if (model.EnableLogo)
                 {

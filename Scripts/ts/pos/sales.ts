@@ -29,175 +29,6 @@ $(document).on("click", ".btnRequestApproval", function () {
     }
 });
 
-$(document).on("change", "#drpShop", function () {
-    Sales.SelectedShop = $(this).val() as string;
-});
-$(document).on("change", "#drpDevice", function () {
-    Sales.SelectedDevice = $(this).val() as string;
-});
-
-$(document).on("change", "#drpDeliveryAddr", function () {
-    Sales.deliveryAddressId = <number>$(this).val();
-});
-
-$(document).on("change", "#deposit", function () {
-    if ($(this).is(":checked")) {
-        Sales.Deposit = 1;
-    } else {
-        Sales.Deposit = 0;
-    }
-});
-
-$(document).on("change", "#monthlypay", function () {
-    if ($(this).is(":checked")) {
-        $.fancyConfirm({
-            title: confirmsubmit,
-            message: confirmmonthlypay,
-            shownobtn: true,
-            okButton: oktxt,
-            noButton: canceltxt,
-            callback: function (value) {
-                if (value) {
-                    Sales.MonthlyPay = 1;
-                    payModal.find(".paymenttype").prop("disabled", true);
-                    closePayModal();
-                    submitSales();
-                } else {
-                    Sales.MonthlyPay = 0;
-                    $("#monthlypay").prop("checked", false);
-                    payModal.find(".paymenttype").prop("disabled", false);
-                }
-            },
-        });
-    } else {
-        Sales.MonthlyPay = 0;
-        payModal.find(".paymenttype").prop("disabled", false);
-    }
-});
-
-$(document).on("change", ".batch", function () {
-    currentY = getCurrentY(this);
-    updateRow();
-});
-
-$(document).on("change", "#txtRoundings", function () {
-    let _roundings = $(this).val();
-    if (_roundings !== "") {
-        //minus current roundings first:
-        itotalamt -= Sales.Roundings;
-        //add new roundings:
-        Sales.Roundings = parseFloat(<any>$(this).val());
-        itotalamt += Sales.Roundings;
-    } else {
-        itotalamt -= Sales.Roundings;
-        $(this).val(formatnumber(0));
-    }
-    $("#txtTotal").val(formatnumber(itotalamt));
-});
-
-$(document).on("change", "#txtPayerCode", function () {
-    authcode = <string>$(this).val();
-    if (authcode !== "") {
-        $(".chkpayment").prop("checked", false);
-        if (authcode.indexOf("2") === 0) {
-            //starts with 2
-            //alipay
-            $("#chkAlipay").prop("checked", true);
-            $(".chkpayment").trigger("change");
-            $("#Alipay").val(formatnumber(itotalamt));
-        }
-        if (authcode.indexOf("1") === 0) {
-            //starts with 1
-            //wechat
-            $("#chkWechat").prop("checked", true);
-            $(".chkpayment").trigger("change");
-            $("#Wechat").val(formatnumber(itotalamt));
-        }
-        confirmPay();
-    }
-});
-
-$(document).on("click", "#transactionEpay", function () {
-    //for debug only:
-    //selectedSalesCode = 'SA100256';
-    //printurl += '?issales=1&salesrefundcode=' + selectedSalesCode;
-    $.ajax({
-        type: "GET",
-        url: "/POSFunc/TransactionResult",
-        data: { salescode: selectedSalesCode },
-        success: function (data) {
-            $.fancyConfirm({
-                title: "",
-                message: data.msg,
-                shownobtn: false,
-                okButton: oktxt,
-                noButton: notxt,
-                callback: function (value) {
-                    if (value) {
-                        if (data.status == 1) {
-                            window.open(printurl);
-                            window.location.reload();
-                        } else {
-                        }
-                    }
-                },
-            });
-        },
-        dataType: "json",
-    });
-});
-
-$(document).on("click", ".btnPayment", function () {
-    //console.log('saleslist:', SalesList);
-    if (SalesLnList.length === 0 || $(`#${gTblName} .focus`).length > 0) {
-        falert(salesinfonotenough, oktxt);
-    } else {
-        openPayModal();
-    }
-});
-
-$(document).on("change", ".itemdesc", function () {
-    seq = parseInt($(this).parent("td").parent("tr").find("td:eq(0)").text());
-    selectedSalesLn = $.grep(SalesLnList, function (e: ISalesLn, i) {
-        return e.rtlSeq == seq;
-    })[0];
-    //console.log('selectedsalesitem:', selectedSalesLn);
-    selectedSalesLn.Item.itmDesc = <string>$(this).val();
-});
-
-$(document).on("change", "#drpSalesman", function () {
-    selectedPosSalesmanCode = <string>$(this).val();
-});
-
-$(document).on("dblclick", "#txtCustomerName", function () {
-    GetCustomers4Sales(1);
-});
-
-$(document).on("change", "#txtCustomerName", function (e) {
-    handleCustomerNameChange(e);
-});
-
-$(document).on("dblclick", ".cuscode", function () {
-    closeCusModal();
-    selectedCusCodeName = $(this).data("code");
-    selectedCus = CusList.filter(
-        (x) => x.cusCustomerID.toString() == selectedCusCodeName
-    )[0];
-    if (!selectedCus) {
-        $.ajax({
-            type: "GET",
-            url: "/Api/GetCustomerById",
-            data: { customerId: parseInt(selectedCusCodeName) },
-            success: function (data: ICustomer) {
-                selectedCus = data;
-                selectCus();
-            },
-            dataType: "json",
-        });
-    } else {
-        selectCus();
-    }
-});
 
 $(document).on("click", "#btnNewSales", function () {
     if (SalesLnList.length > 0) {
@@ -304,13 +135,9 @@ $(document).on("dblclick", ".nopo", function () {
     $("#txtCustomerPO").val("N/A");
 });
 
-$(function () {
-    let type = getParameterByName("type");
-    if (type) forpreorder = true;
-    else forsales = true;
-
-    retailType = forsales? RtlType.sales: RtlType.preorder;
-
+$(function () {   
+    forsales = true;
+    salesType = SalesType.retail;
     setFullPage();
     DicLocation = $infoblk.data("jsondiclocation");
     shops = ($infoblk.data("shops") as string).split(",");
@@ -338,269 +165,272 @@ $(function () {
     AccountProfileId = parseInt(<string>$infoblk.data("accountprofileid"));
     initModals();
 
-    if (enablecashdrawer && !checkedcashdrawer) {
-        openCashDrawerModal();
-    }
 
-    editmode = $("#mode").val() === "edit";
-    let _receiptno = getParameterByName("receiptno");
-    let _readonly: boolean =
-        getParameterByName("readonly") !== null &&
-        getParameterByName("readonly") == "1";
+    if (forsales) {
+        if (enablecashdrawer && !checkedcashdrawer) {
+            openCashDrawerModal();
+        }
 
-    let _mode: string = getParameterByName("mode") ?? "";
-    // console.log("_mode:" + _mode);
+        editmode = $("#mode").val() === "edit";
+        let _receiptno = getParameterByName("receiptno");
+        let _readonly: boolean =
+            getParameterByName("readonly") !== null &&
+            getParameterByName("readonly") == "1";
 
-    if (_receiptno !== null || editmode) {
-        receiptno = selectedSalesCode = _receiptno as string;
-        reviewmode = _receiptno !== null && !editmode;
-    }
+        let _mode: string = getParameterByName("mode") ?? "";
+        // console.log("_mode:" + _mode);
 
-    if (reviewmode || editmode || _mode == "created") {
-        //console.log("here");
-        $.ajax({
-            type: "GET",
-            url: "/Api/GetSalesOrderInfo",
-            data: { salescode: selectedSalesCode },
-            success: function (data: ISalesOrderEditModel) {
-                salesInfo = data;
-                //console.log("salesinfo:", salesInfo);
-                selectedCus = salesInfo.Customer ?? initCustomer();//if salesInfo.Customer==null=>GUEST               
+        if (_receiptno !== null || editmode) {
+            receiptno = selectedSalesCode = _receiptno as string;
+            reviewmode = _receiptno !== null && !editmode;
+        }
+
+        if (reviewmode || editmode || _mode == "created") {
+            //console.log("here");
+            $.ajax({
+                type: "GET",
+                url: "/Api/GetSalesOrderInfo",
+                data: { salescode: selectedSalesCode },
+                success: function (data: ISalesOrderEditModel) {
+                    salesInfo = data;
+                    //console.log("salesinfo:", salesInfo);
+                    selectedCus = salesInfo.Customer ?? initCustomer();//if salesInfo.Customer==null=>GUEST               
+                    Sales = initSales();
+                    //console.log("Sales@getsalesorderinfo:", Sales);
+                    Sales.rtsCode = selectedSalesCode;
+                    Sales.rtsCusID = selectedCus.cusCustomerID;
+                    //Sales.rtsDvc = $infoblk.data("device");
+                    //Sales.rtsSalesLoc = $infoblk.data("shop");
+                    Sales.rtsGiftOption = 0;
+                    Sales.rtsRefCode = "";
+                    $(".NextSalesInvoice").val(Sales.rtsCode);
+                    $("#txtNotes").val(salesInfo.SalesOrder.rtsRmks);
+                    $target = $("#txtDeliveryDate").datepicker();
+                    $target.each(function () {
+                        $.datepicker._clearDate(this);
+                    });
+                    let deldate = new Date(salesInfo.SalesOrder.DeliveryDateDisplay);
+                    $target.datepicker("setDate", deldate);
+                    $target.datepicker("option", { dateFormat: "yy-mm-dd" });
+
+                    $("#txtCustomerPO").val(salesInfo.SalesOrder.rtsCustomerPO);
+
+                    deliveryAddressId = <number>salesInfo.SalesOrder.rtsDeliveryAddressId;
+                    //console.log("deliveryAddressId:" + deliveryAddressId);
+                    fillInAddressList();
+
+                    selectCus();
+
+                    ItemList = salesInfo.Items.slice(0);
+                    currentY = 0;
+                    $target = $("#tblSales tbody tr");
+
+                    DicItemSNs = salesInfo.DicItemSNs;
+                    itemsnlist = [];
+                    $.each(salesInfo.SalesLnViews, function (i, e) {
+                        //   console.log(e);
+                        selectedItem = e.Item;
+                        selectedItemCode = selectedItem.itmCode;
+                        //   console.log("selecteditemcode#loop:" + selectedItemCode);
+                        let salesln: ISalesBase = {} as ISalesBase;
+                        salesln.amount = <number>e.rtlSalesAmt;
+                        salesln.batchcode = e.rtlBatchCode;
+                        salesln.discount = <number>e.rtlLineDiscAmt;
+                        salesln.itemcode = selectedItemCode;
+                        salesln.itemdesc = e.Item.itmDesc;
+                        salesln.itemname = e.Item.itmName;
+                        salesln.price = <number>e.rtlSellingPrice;
+                        salesln.qty = <number>e.rtlQty;
+                        salesln.rtlBatchCode = e.rtlBatchCode;
+                        salesln.rtlItemCode = selectedItemCode;
+                        salesln.rtlLineDiscPc = <number>e.rtlLineDiscPc;
+                        salesln.rtlQty = <number>e.rtlQty;
+                        salesln.rtlSalesAmt = <number>e.rtlSalesAmt;
+                        salesln.rtlSellingPrice = <number>e.rtlSellingPrice;
+                        salesln.rtlSeq = <number>e.rtlSeq;
+                        salesln.rtlTaxPc = <number>e.rtlTaxPc;
+                        //   console.log("salesln:", salesln);
+                        SalesList.push(salesln);
+
+                        currentY = i;
+                        let $tr = $target.eq(currentY);
+
+                        let idx = 0;
+                        $tr.find("td:eq(1)").find(".itemcode").val(selectedItemCode);
+                        $tr.find("td:eq(2)").find(".itemdesc").val(e.Item.NameDesc);
+                        // .trigger("change");
+                        idx = 4;
+                        $tr
+                            .find("td")
+                            .eq(idx)
+                            .find(".qty")
+                            .val(<number>e.rtlQty)
+                            .trigger("change");
+                        // console.log("qty triggered change@load");
+
+                        for (const [key, value] of Object.entries(DicItemSNs)) {
+                            // console.log(`key:${key}: value:${value}`);
+                            let keyarr = key.split(":");
+                            if (
+                                e.rtlCode == keyarr[0] &&
+                                e.rtlItemCode == keyarr[1] &&
+                                e.rtlSeq == parseInt(keyarr[2])
+                            ) {
+                                //console.log('matched!');
+                                let arrSN: Array<string> = [];
+                                $.each(value, function (k, v) {
+                                    arrSN.push(v.snoCode);
+                                });
+                                let objSN: IItemSN = {
+                                    itemcode: selectedItem.itmCode,
+                                    seq: <number>e.rtlSeq,
+                                    serialcodes: arrSN,
+                                } as IItemSN;
+                                //   console.log("objsn#loop:", objSN);
+                                itemsnlist.push(objSN);
+                                //   console.log("itemsnlist#loop:", itemsnlist);
+                            }
+                        }
+                        if (e.rtlHasSerialNo) {
+                            setSNmark(false);
+                        }
+
+                        idx = 9;
+                        let $price = $tr.find("td").eq(idx).find(".price");
+                        $price.val(formatnumber(e.rtlSellingPrice!));
+                        $price.prop("readonly", !selectedItemCode.startsWith("/"));
+                        idx++;
+                        $tr.find("td").eq(idx).find(".discpc").val(formatnumber(e.rtlLineDiscPc ?? 0));
+                        idx++;
+                        $tr.find("td").eq(idx).find(".taxpc").val(formatnumber(e.rtlTaxPc ?? 0));
+                        $tr
+                            .find("td")
+                            .last()
+                            .find(".amount")
+                            .val(formatnumber(e.rtlSalesAmt ?? 0));
+                        // .trigger("change");
+
+                        updateRow(e.rtlSellingPrice ?? 0, e.rtlLineDiscPc ?? 0);
+                        // console.log("amount triggered changed@load");
+
+                        addRow();
+                    });
+
+                    const status = getParameterByName("status");
+                    if (!editmode) {
+                        isapprover = $infoblk.data("isapprover") === "True";
+                        ismanager = $infoblk.data("ismanager") === "True";
+                        //console.log("ismanager:", ismanager);
+
+                        if (_readonly) {
+                            /* make all inputs readonly */
+                            $("input").prop("disabled", true);
+                            $("textarea").prop("disabled", true);
+                            $("select").prop("disabled", true);
+                        }
+                        // console.log("isapprover:", isapprover);
+                        // console.log("_mode:" + _mode);
+                        if (isapprover) {
+                            //console.log("specialapproval?", salesInfo.SalesOrder.rtsSpecialApproval);
+                            if (!ismanager && salesInfo.SalesOrder.rtsSpecialApproval && status === "REQUESTING") {
+                                $("button").not(".btnNewSales").addClass("disabled").off("click");
+                            }
+                            if (
+                                _mode === "created" ||
+                                (status != null && (status == "CREATED" || status == "VOIDED"))
+                            ) {
+                                //$("button").not(".btnNewSales, .btnVoid").addClass("disabled").off("click");
+                                //console.log("here");
+                                if (status == "CREATED")
+                                    $("button").not(".btnNewSales, .btnVoid").addClass("disabled").off("click");
+                                if (status == "VOIDED")
+                                    $("button").not(".btnNewSales").addClass("disabled").off("click");
+                            }
+                            //if (status != null && status == "VOIDED") {
+                            //    $("button.btnVoid").addClass("disabled").off("click");
+                            //}
+                        }
+                        else {
+                            // console.log("_readonly:" + _readonly);
+                            if (_readonly) {
+                                $("button").not(".btn-success").addClass("disabled").off("click");
+                            } else {
+                                $("button")
+                                    .not(".btn-success")
+                                    .not(".respond")
+                                    .not(".request")
+                                    .not(".whatspplink")
+                                    .not(".ui-button")
+                                    .addClass("disabled")
+                                    .off("click");
+                                $("button").data("code", selectedSalesCode);
+                            }
+                        }
+                    }
+                    editmode = false;
+
+                    $("#txtTotal").val(
+                        formatnumber(Number(salesInfo.SalesOrder.rtsFinalTotal))
+                    );
+
+                    if (reviewmode || _mode == "created") {
+                        // console.log("here");
+                        $("#tblSales tbody tr").each(function (i, e) {
+                            let itemcode = $(e).find("td").eq(1).find(".itemcode").val();
+                            //console.log("itemcode:" + itemcode);
+                            if (itemcode === "") {
+                                //console.log("here");
+                                $(e).remove();
+                                return false;
+                            }
+                        });
+                    }
+                },
+                dataType: "json",
+            });
+        }
+        else {
+            if (localStore.getItem("sessionstartdata") === null) {
+                openWaitingModal();
+                getRemoteData(
+                    "/Api/GetSessionStartData",
+                    {},
+                    getSessionStartDataOk,
+                    getRemoteDataFail
+                );
+            }
+            else {
+                //if (localStorage.length > 0) {
+                sessionstartdata = JSON.parse(
+                    <string>localStore.getItem("sessionstartdata")
+                );
+                //console.log('sessionstartdata:', sessionstartdata);
+                cpplList = sessionstartdata[0];
+                companyinfo = sessionstartdata[1];
+                receipt = sessionstartdata[2];
+                dicPayTypes = sessionstartdata[3];
+                pagelength = sessionstartdata[5];
+                enableTax = sessionstartdata[6];
+                inclusivetax = sessionstartdata[7];
+                inclusivetaxrate = sessionstartdata[8];
+                salesmanlist = sessionstartdata[9];
+                defaultcustomer = sessionstartdata[4];
+                DicCurrencyExRate = sessionstartdata[10];
+                useForexAPI = sessionstartdata[11];
+                JobList = sessionstartdata[12];
+                //console.log('defaultcustomer:', defaultcustomer);
+                selectedCus = defaultcustomer;
                 Sales = initSales();
-                //console.log("Sales@getsalesorderinfo:", Sales);
-                Sales.rtsCode = selectedSalesCode;
+                /*console.log("Sales@loadpostback:", Sales);*/
                 Sales.rtsCusID = selectedCus.cusCustomerID;
                 //Sales.rtsDvc = $infoblk.data("device");
                 //Sales.rtsSalesLoc = $infoblk.data("shop");
                 Sales.rtsGiftOption = 0;
-                Sales.rtsRefCode = "";                          
-                $(".NextSalesInvoice").val(Sales.rtsCode);              
-                $("#txtNotes").val(salesInfo.SalesOrder.rtsRmks);
-                $target = $("#txtDeliveryDate").datepicker();
-                $target.each(function () {
-                    $.datepicker._clearDate(this);
-                });
-                let deldate = new Date(salesInfo.SalesOrder.DeliveryDateDisplay);
-                $target.datepicker("setDate", deldate);
-                $target.datepicker("option", { dateFormat: "yy-mm-dd" });
+                Sales.rtsRefCode = "";
 
-                $("#txtCustomerPO").val(salesInfo.SalesOrder.rtsCustomerPO);
-
-                deliveryAddressId = <number>salesInfo.SalesOrder.rtsDeliveryAddressId;
-                //console.log("deliveryAddressId:" + deliveryAddressId);
-                fillInAddressList();
-
+                selectedCusCodeName = defaultcustomer.cusCode;
                 selectCus();
-
-                ItemList = salesInfo.Items.slice(0);
-                currentY = 0;
-                $target = $("#tblSales tbody tr");
-
-                DicItemSNs = salesInfo.DicItemSNs;
-                itemsnlist = [];
-                $.each(salesInfo.SalesLnViews, function (i, e) {
-                    //   console.log(e);
-                    selectedItem = e.Item;
-                    selectedItemCode = selectedItem.itmCode;
-                    //   console.log("selecteditemcode#loop:" + selectedItemCode);
-                    let salesln: ISalesBase = {} as ISalesBase;
-                    salesln.amount = <number>e.rtlSalesAmt;
-                    salesln.batchcode = e.rtlBatchCode;
-                    salesln.discount = <number>e.rtlLineDiscAmt;
-                    salesln.itemcode = selectedItemCode;
-                    salesln.itemdesc = e.Item.itmDesc;
-                    salesln.itemname = e.Item.itmName;
-                    salesln.price = <number>e.rtlSellingPrice;
-                    salesln.qty = <number>e.rtlQty;
-                    salesln.rtlBatchCode = e.rtlBatchCode;
-                    salesln.rtlItemCode = selectedItemCode;
-                    salesln.rtlLineDiscPc = <number>e.rtlLineDiscPc;
-                    salesln.rtlQty = <number>e.rtlQty;
-                    salesln.rtlSalesAmt = <number>e.rtlSalesAmt;
-                    salesln.rtlSellingPrice = <number>e.rtlSellingPrice;
-                    salesln.rtlSeq = <number>e.rtlSeq;
-                    salesln.rtlTaxPc = <number>e.rtlTaxPc;
-                    //   console.log("salesln:", salesln);
-                    SalesList.push(salesln);
-
-                    currentY = i;
-                    let $tr = $target.eq(currentY);
-
-                    let idx = 0;
-                    $tr.find("td:eq(1)").find(".itemcode").val(selectedItemCode);
-                    $tr.find("td:eq(2)").find(".itemdesc").val(e.Item.NameDesc);
-                    // .trigger("change");
-                    idx = 4;
-                    $tr
-                        .find("td")
-                        .eq(idx)
-                        .find(".qty")
-                        .val(<number>e.rtlQty)
-                        .trigger("change");
-                    // console.log("qty triggered change@load");
-
-                    for (const [key, value] of Object.entries(DicItemSNs)) {
-                        // console.log(`key:${key}: value:${value}`);
-                        let keyarr = key.split(":");
-                        if (
-                            e.rtlCode == keyarr[0] &&
-                            e.rtlItemCode == keyarr[1] &&
-                            e.rtlSeq == parseInt(keyarr[2])
-                        ) {
-                            //console.log('matched!');
-                            let arrSN: Array<string> = [];
-                            $.each(value, function (k, v) {
-                                arrSN.push(v.snoCode);
-                            });
-                            let objSN: IItemSN = {
-                                itemcode: selectedItem.itmCode,
-                                seq: <number>e.rtlSeq,
-                                serialcodes: arrSN,
-                            } as IItemSN;
-                            //   console.log("objsn#loop:", objSN);
-                            itemsnlist.push(objSN);
-                            //   console.log("itemsnlist#loop:", itemsnlist);
-                        }
-                    }
-                    if (e.rtlHasSerialNo) {
-                        setSNmark(false);
-                    }
-
-                    idx = 9;
-                    let $price = $tr.find("td").eq(idx).find(".price");
-                    $price.val(formatnumber(e.rtlSellingPrice!));
-                    $price.prop("readonly", !selectedItemCode.startsWith("/"));
-                    idx++;
-                    $tr.find("td").eq(idx).find(".discpc").val(formatnumber(e.rtlLineDiscPc ?? 0));
-                    idx++;
-                    $tr.find("td").eq(idx).find(".taxpc").val(formatnumber(e.rtlTaxPc ?? 0));
-                    $tr
-                        .find("td")
-                        .last()
-                        .find(".amount")
-                        .val(formatnumber(e.rtlSalesAmt ?? 0));
-                    // .trigger("change");
-
-                    updateRow(e.rtlSellingPrice ?? 0, e.rtlLineDiscPc ?? 0);
-                    // console.log("amount triggered changed@load");
-
-                    addRow();
-                });
-               
-                const status = getParameterByName("status");
-                if (!editmode) {
-                    isapprover = $infoblk.data("isapprover") === "True";
-                    ismanager = $infoblk.data("ismanager") === "True";
-                    //console.log("ismanager:", ismanager);
-
-                    if (_readonly) {
-                        /* make all inputs readonly */
-                        $("input").prop("disabled", true);
-                        $("textarea").prop("disabled", true);
-                        $("select").prop("disabled", true);
-                    }
-                    // console.log("isapprover:", isapprover);
-                    // console.log("_mode:" + _mode);
-                    if (isapprover) {
-                        //console.log("specialapproval?", salesInfo.SalesOrder.rtsSpecialApproval);
-                        if (!ismanager && salesInfo.SalesOrder.rtsSpecialApproval && status === "REQUESTING") {
-                            $("button").not(".btnNewSales").addClass("disabled").off("click");
-                        }
-                        if (
-                            _mode === "created" ||
-                            (status != null && (status == "CREATED" || status == "VOIDED"))
-                        ) {
-                            //$("button").not(".btnNewSales, .btnVoid").addClass("disabled").off("click");
-                            //console.log("here");
-                            if (status == "CREATED")
-                                $("button").not(".btnNewSales, .btnVoid").addClass("disabled").off("click");
-                            if (status == "VOIDED")
-                                $("button").not(".btnNewSales").addClass("disabled").off("click");
-                        }
-                        //if (status != null && status == "VOIDED") {
-                        //    $("button.btnVoid").addClass("disabled").off("click");
-                        //}
-                    }
-                    else {
-                        // console.log("_readonly:" + _readonly);
-                        if (_readonly) {
-                            $("button").not(".btn-success").addClass("disabled").off("click");
-                        } else {
-                            $("button")
-                                .not(".btn-success")
-                                .not(".respond")
-                                .not(".request")
-                                .not(".whatspplink")
-                                .not(".ui-button")
-                                .addClass("disabled")
-                                .off("click");
-                            $("button").data("code", selectedSalesCode);
-                        }
-                    }
-                }
-                editmode = false;
-
-                $("#txtTotal").val(
-                    formatnumber(Number(salesInfo.SalesOrder.rtsFinalTotal))
-                );
-
-                if (reviewmode || _mode == "created") {
-                    // console.log("here");
-                    $("#tblSales tbody tr").each(function (i, e) {
-                        let itemcode = $(e).find("td").eq(1).find(".itemcode").val();
-                        //console.log("itemcode:" + itemcode);
-                        if (itemcode === "") {
-                            //console.log("here");
-                            $(e).remove();
-                            return false;
-                        }
-                    });
-                }
-            },
-            dataType: "json",
-        });
-    }
-    else {
-        if (localStore.getItem("sessionstartdata") === null) {
-            openWaitingModal();
-            getRemoteData(
-                "/Api/GetSessionStartData",
-                {},
-                getSessionStartDataOk,
-                getRemoteDataFail
-            );
-        }
-        else {
-            //if (localStorage.length > 0) {
-            sessionstartdata = JSON.parse(
-                <string>localStore.getItem("sessionstartdata")
-            );
-            //console.log('sessionstartdata:', sessionstartdata);
-            cpplList = sessionstartdata[0];
-            companyinfo = sessionstartdata[1];
-            receipt = sessionstartdata[2];
-            dicPayTypes = sessionstartdata[3];
-            pagelength = sessionstartdata[5];
-            enableTax = sessionstartdata[6];
-            inclusivetax = sessionstartdata[7];
-            inclusivetaxrate = sessionstartdata[8];
-            salesmanlist = sessionstartdata[9];
-            defaultcustomer = sessionstartdata[4];
-            DicCurrencyExRate = sessionstartdata[10];
-            useForexAPI = sessionstartdata[11];
-            JobList = sessionstartdata[12];
-            //console.log('defaultcustomer:', defaultcustomer);
-            selectedCus = defaultcustomer;            
-            Sales = initSales();
-            /*console.log("Sales@loadpostback:", Sales);*/            
-            Sales.rtsCusID = selectedCus.cusCustomerID;
-            //Sales.rtsDvc = $infoblk.data("device");
-            //Sales.rtsSalesLoc = $infoblk.data("shop");
-            Sales.rtsGiftOption = 0;
-            Sales.rtsRefCode = "";
-
-            selectedCusCodeName = defaultcustomer.cusCode;
-            selectCus();
+            }
         }
     }
 });

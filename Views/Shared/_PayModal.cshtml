@@ -1,19 +1,20 @@
 ﻿@{ 
     bool forsales = ViewData["forsales"] == null ? false : (bool)ViewData["forsales"];
+    bool forpreorder = ViewData["forpreorder"] == null ? false : (bool)ViewData["forpreorder"];
     bool forrefund = ViewData["forrefund"] == null ? false : (bool)ViewData["forrefund"];
     bool fordeposit = ViewData["fordeposit"] == null ? false : (bool)ViewData["fordeposit"];
     bool enableEpay = ViewData["enableEpay"] == null ? false : (bool)ViewData["enableEpay"];
     string rtsCurrency = ViewData["rtsCurrency"] == null ? "HKD" : (string)ViewData["rtsCurrency"];
     List<PaymentType> PaymentTypes = ViewData["PaymentTypes"] == null ? null : (List<PaymentType>)ViewData["PaymentTypes"];
-    Dictionary<string, string> DicPayTypes = (Dictionary<string, string>)ViewData["DicPayTypes"];
-    bool forpreorder = Request.QueryString["type"] != null && Request.QueryString["type"] == "preorder";
+    List<PaymentTypeView> PaymentTypeList = ViewData["PaymentTypeList"] == null ? null : (List<PaymentTypeView>)ViewData["PaymentTypeList"];
+    Dictionary<string, string> DicPayTypes = (Dictionary<string, string>)ViewData["DicPayTypes"];  
 }
 
 <div id="payModal" data-epay="@enableEpay">
 
     @Html.Partial("_ExRateModal", null, new ViewDataDictionary { { "fieldname", "rtsCurrency" }, { "currency", rtsCurrency }, { "lblcls", "col-form-label mx-sm-2" }, { "exratecls", "d-block ml-2 hide" }, { "txtboxattr", "readonly" }, { "txtboxstyle", "width:60px;" }, { "txtboxcls", "disabled" }, { "usedropdown", true } })
     <div class="row">
-        @if (forsales)
+        @if (forsales||forpreorder)
         {
             <div class="col-5">
                 <h2>@Resources.Resource.SalesAmount</h2>
@@ -86,7 +87,7 @@
                 <input class="form-check-input" type="checkbox" value="1" id="monthlypay">
                 <label class="form-check-label" for="monthlypay">@Resources.Resource.MonthlyPay</label>
             </div>
-            if (forsales)
+            if (forsales || forpreorder)
             {
                 <div class="form-check ml-3">
                     <input class="form-check-input" type="checkbox" value="1" id="deposit">
@@ -99,44 +100,66 @@
             <thead class="gray-header">
                 <tr><th>@Resources.Resource.PaymentType</th><th class="text-right">@Resources.Resource.Amount</th></tr>
             </thead>
-            <tbody>
-                @if ((forsales || fordeposit) && PaymentTypes != null)
-                {
-                    int idx = 0;
-                    foreach (PaymentType payment in PaymentTypes)
-                    {
-                        string chkId = string.Concat("chk" + payment.pmtCode);
-                        string _checked = idx == 0 ? "checked" : "";
-                        string _readonly = idx == 0 ? "" : "readonly";
-                        <tr data-idx="@idx">
-                            <td>
-                                <div class="row justify-content-start mx-3">
-                                    <div class="form-check">
-                                        <input type="checkbox" class="mx-2 chkpayment" data-type="@payment.pmtCode" id="@chkId" @_checked />
-                                        <label class="form-check-label" for="@chkId">
-                                            @DicPayTypes[payment.pmtCode]
-                                        </label>
-                                    </div>
-                                </div>
-
-                            </td>
-                            <td class="text-right"><input type="number" min="0" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype" value="0" @_readonly /></td>
-                        </tr>
-
-                        idx++;
-                    }
-                }
-                @if (forrefund && PaymentTypes != null)
-                {
-                    foreach (PaymentType payment in PaymentTypes)
-                    {
-                        if (payment.pmtCode != "Coupon")
-                        {
-                            <tr data-code="@payment.pmtCode"><td>@DicPayTypes[payment.pmtCode]</td><td class="text-right"><input type="number" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype" value="0" /></td></tr>
-                        }
-                    }
-                }
-            </tbody>
+			<tbody>
+				@if (forpreorder && PaymentTypeList != null)
+				{
+					int idx = 0;
+					foreach (var payment in PaymentTypeList)
+					{
+						string chkId = string.Concat("chk" + payment.pmtCode);
+						string _checked = idx == 0 ? "checked" : "";
+						string _readonly = idx == 0 ? "" : "readonly";
+						<tr data-idx="@idx">
+							<td>
+								<div class="row justify-content-start mx-3">
+									<div class="form-check">
+										<input type="checkbox" class="mx-2 chkpayment" data-type="@payment.pmtCode" id="@chkId" @_checked />
+										<label class="form-check-label" for="@chkId">
+											@DicPayTypes[payment.pmtCode]
+										</label>
+									</div>
+								</div>
+							</td>
+							<td class="text-right"><input type="number" min="0" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype" value="0" @_readonly /></td>
+						</tr>
+						idx++;
+					}
+				}
+				@if ((forsales||fordeposit) && PaymentTypes != null)
+				{
+					int idx = 0;
+					foreach (PaymentType payment in PaymentTypes)
+					{
+						string chkId = string.Concat("chk" + payment.pmtCode);
+						string _checked = idx == 0 ? "checked" : "";
+						string _readonly = idx == 0 ? "" : "readonly";
+						<tr data-idx="@idx">
+							<td>
+								<div class="row justify-content-start mx-3">
+									<div class="form-check">
+										<input type="checkbox" class="mx-2 chkpayment" data-type="@payment.pmtCode" id="@chkId" @_checked />
+										<label class="form-check-label" for="@chkId">
+											@DicPayTypes[payment.pmtCode]
+										</label>
+									</div>
+								</div>
+							</td>
+							<td class="text-right"><input type="number" min="0" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype" value="0" @_readonly /></td>
+						</tr>
+						idx++;
+					}
+				}
+				@if (forrefund && PaymentTypes != null)
+				{
+					foreach (PaymentType payment in PaymentTypes)
+					{
+						if (payment.pmtCode != "Coupon")
+						{
+							<tr data-code="@payment.pmtCode"><td>@DicPayTypes[payment.pmtCode]</td><td class="text-right"><input type="number" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype" value="0" /></td></tr>
+						}
+					}
+				}
+			</tbody>
         </table>
     </div>
 

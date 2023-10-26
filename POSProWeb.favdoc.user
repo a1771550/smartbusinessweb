@@ -126,6 +126,11 @@
           <path>Views\POSFunc\Refund.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\POSFunc\Refund.cshtml</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>_SalesBlk.cshtml</name>
+          <path>Views\Shared\_SalesBlk.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Shared\_SalesBlk.cshtml</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

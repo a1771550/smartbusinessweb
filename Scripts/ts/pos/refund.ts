@@ -11,7 +11,7 @@ let RefundSales: IRefundSales;
 let RefundSalesList: Array<IRefundSales> = [];
 let RefundableSalesList: Array<IRefundSales> = [];
 let salesrefundlist: Array<ISalesRefundBase> = [];
-retailType = RtlType.refund;
+salesType = SalesType.refund;
 printurl = $infoblk.data("printurl");
 let refundsalesln: IRefundSales;
 let isEpay = false;

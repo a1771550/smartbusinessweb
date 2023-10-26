@@ -2,6 +2,7 @@
     bool forpurchase = ViewData["forpurchase"] != null;
     bool forwholesales = ViewData["forwholesales"] != null;
     bool forsales = ViewData["forsales"] != null;
+    bool forpreorder = ViewData["forpreorder"] != null;
 }
 <div id="serialModal">
     <span id="seq" class="d-inline-block float-right small font-weight-bold"></span>
@@ -23,7 +24,7 @@
 
     @{ var frmcls = "";}
     <div class="form-inline mb-2 my-4">
-        @if (!forwholesales && !forsales)
+        @if (forpurchase)
         {
             frmcls = "ml-sm-5";
             <div class="form-group">
@@ -40,23 +41,22 @@
     <table id="tblSerial" class="table table-bordered  table-hover table-condensed">
         <thead class="gray-header">
             <tr>
-                @if (!forwholesales && !forsales)
+                @if (forpurchase)
                 {
                     <th style="width:6%;"></th>
                 }
 
                 <th>@Resources.Resource.SerialNo (@Resources.Resource.PurchaseOrder)</th>
-                @if (forpurchase || forwholesales || forsales)
-                {
+               
                     <th>@Resources.Resource.ValidThru</th>
-                }
-                @if (forwholesales || forsales)
+               
+                @if (forwholesales || forsales || forpreorder)
                 {
                     <th>@Resources.Resource.PurchaseOrder</th>
                     <th>@Resources.Resource.Select</th>
 
                 }
-                @if (!forwholesales && !forsales)
+                @if (forpurchase)
                 {
                     <th style="width:10%;"></th>
                 }
