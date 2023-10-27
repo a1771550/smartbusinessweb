@@ -10,7 +10,7 @@
     Dictionary<string, string> DicPayTypes = (Dictionary<string, string>)ViewData["DicPayTypes"];  
 }
 
-<div id="payModal" data-epay="@enableEpay">
+<div id="payModal" data-debug="">
 
     @Html.Partial("_ExRateModal", null, new ViewDataDictionary { { "fieldname", "rtsCurrency" }, { "currency", rtsCurrency }, { "lblcls", "col-form-label mx-sm-2" }, { "exratecls", "d-block ml-2 hide" }, { "txtboxattr", "readonly" }, { "txtboxstyle", "width:60px;" }, { "txtboxcls", "disabled" }, { "usedropdown", true } })
     <div class="row">
@@ -101,7 +101,7 @@
                 <tr><th>@Resources.Resource.PaymentType</th><th class="text-right">@Resources.Resource.Amount</th></tr>
             </thead>
 			<tbody>
-				@if (forpreorder && PaymentTypeList != null)
+				@if ((forpreorder && PaymentTypeList != null)||(fordeposit && PaymentTypeList != null))
 				{
 					int idx = 0;
 					foreach (var payment in PaymentTypeList)
@@ -125,6 +125,7 @@
 						idx++;
 					}
 				}
+              
 				@if ((forsales||fordeposit) && PaymentTypes != null)
 				{
 					int idx = 0;
@@ -149,6 +150,7 @@
 						idx++;
 					}
 				}
+
 				@if (forrefund && PaymentTypes != null)
 				{
 					foreach (PaymentType payment in PaymentTypes)

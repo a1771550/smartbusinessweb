@@ -1,4 +1,5 @@
 ﻿@{
+	bool editmode = ViewData["editmode"] == null ? false : (bool)ViewData["editmode"];
 	string Currency = ViewData["Currency"].ToString();
 	var rtsCurrency = ViewData["rtsCurrency"] ==null ? "HKD" : (string)ViewData["rtsCurrency"];
 	List<SelectListItem> LocationList = (List<SelectListItem>)ViewData["LocationList"];
@@ -7,8 +8,9 @@
 	string Devices = ViewData["Devices"].ToString();
 	string nextsalescode = ViewData["NextSalesCode"].ToString();
 	string DefaultSalesNotesTxt = ViewData["DefaultSalesNotesTxt"]==null?"": ViewData["DefaultSalesNotesTxt"].ToString();
+	bool forpreorder = ViewData["forpreorder"] == null ? false : (bool)ViewData["forpreorder"];
 }
-<div id="salesColblk" class="my-4">
+<div id="salesColblk" class="my-4" data-debug="">
 	<form class="form-inline">
 		<div class="form-group">
 			<label for="txtCustomerName" class="col-form-label mx-sm-2">@Resources.Resource.Customer</label>
@@ -52,7 +54,7 @@
 				<select class="form-control" id="drpDevice">
 					@foreach (var device in Devices.Split(','))
 					{
-						string _selected = device == Device ? "selected" : "";
+						string _selected = editmode?"": device == Device ? "selected" : "";//the device will be selected via js on editmode
 						<option value="@device" @_selected>@device</option>
 					}
 				</select>
@@ -149,7 +151,7 @@
 		<div class="row justify-content-end">
 			<div class="clearfix my-4">
 				<div class="float-right">
-					@Html.Partial("_NormalRetailPaymentBtnBlock", null, new ViewDataDictionary { { "showrecur", showrecur } })
+					@Html.Partial("_NormalRetailPaymentBtnBlock", null, new ViewDataDictionary { { "showrecur", showrecur },{"forpreorder",forpreorder } })
 				</div>
 			</div>
 		</div>

@@ -44,7 +44,7 @@ $(document).on("change", "#chkDelAddr", function () {
 });
 $(document).on("change", ".delqty", function () {
     currentY = getCurrentY(this);
-    console.log("currentY@delqtychange:" + currentY);
+    //console.log("currentY@delqtychange:" + currentY);
     updateRow(getRowPrice(), getRowDiscPc());
 });
 
@@ -512,7 +512,7 @@ function updateWholesales() {
             selectedWholesalesLn.wslHasSn =
                 selectedWholesalesLn.snvtList.length > 0;
 
-            let idx = isInvoice ? 10 : 5;
+            let idx = isInvoice ? PriceIdx4WsInvoice : PriceIdx4WsOrder;
             let _price: number = Number($tr.find("td").eq(idx).find(".price").val());
             selectedWholesalesLn.wslSellingPrice = _price;
             idx++;
@@ -625,7 +625,7 @@ function handleSubmit4Wholesales(forRecurOrder: boolean = false) {
                                 deliveryItem.dlQty = Number(
                                     $(e).find("td").eq(idx).find(".delqty").val()
                                 );
-                                idx = 10;
+                                idx = PriceIdx4WsInvoice;
                                 deliveryItem.SellingPrice = Number(
                                     $(e).find("td").eq(idx).find(".price").val()
                                 );
@@ -654,8 +654,8 @@ function handleSubmit4Wholesales(forRecurOrder: boolean = false) {
                             }
                         }                        
                     });
-                    console.log("DeliveryItems:", DeliveryItems);
-                    console.log("WholeSalesLns:", Wholesales.WholeSalesLns);
+                    //console.log("DeliveryItems:", DeliveryItems);
+                    //console.log("WholeSalesLns:", Wholesales.WholeSalesLns);
                     //return false;
                     if (DeliveryItems.length === 0) {
                         $.fancyConfirm({
@@ -700,7 +700,7 @@ function handleSubmit4Wholesales(forRecurOrder: boolean = false) {
             // console.log(Wholesales.wsExRate);
             updateWholesales();
 
-            console.log("Wholesales:", Wholesales);
+            //console.log("Wholesales:", Wholesales);
             // console.log("recurOrder:", recurOrder);
             //return;
             openWaitingModal();

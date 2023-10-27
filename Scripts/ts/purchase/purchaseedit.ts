@@ -4,7 +4,7 @@ enableTax = $infoblk.data("enabletax") === "True";
 priceeditable = $infoblk.data("priceeditable") === "True";
 disceditable = $infoblk.data("disceditable") === "True";
 
-let purchasestockitems: IPurchaseItem[] = [];
+let purchaseitems: IPurchaseItem[] = [];
 
 $(document).on("click", "#btnReload", function () {
     const Id = $("#Id").val();
@@ -18,7 +18,7 @@ $(document).on("change", ".received", function () {
     seq = currentY + 1;
     let $receivedqty = $(this);
     let receivedqty: number = Number($receivedqty.val());
-    // console.log("receivedqty:" + receivedqty);
+    //console.log("receivedqty:" + receivedqty);
     $.each(Purchase.PurchaseItems, function (i, e) {
         if (e.piSeq == seq) {
             selectedPurchaseItem = structuredClone(e);
@@ -26,7 +26,7 @@ $(document).on("change", ".received", function () {
             return false;
         }
     });
-    let idx = 8;
+    let idx = PriceIdx4PstBill;
     const price = Number($tr.find("td").eq(idx).find(".price").val());
     idx++;
     const discpc = Number($tr.find("td").eq(idx).find(".discpc").val());
@@ -63,14 +63,13 @@ function updatePurchase() {
     if (Purchase.pstStatus !== "order" && Purchase.pstStatus !== "created") {
         //console.log("currenty#updatepurchase:" + currentY);
         $tr = $("#tblPSI tbody tr").eq(currentY);
-
         $.each(Purchase.PurchaseItems, function (i, e) {
             let seq = currentY + 1;
             //console.log("e.piseq:" + e.piSeq + ";rtlSeq:" + seq);
             if (e.piSeq == seq) {
                 e.piReceivedQty = Number($tr.find("td").last().find(".received").val());
                 e.piQty = Number($tr.find("td:eq(4)").find(".qty").val());
-                let idx = 8;
+                let idx = PriceIdx4PstBill;
                 e.piUnitPrice = Number($tr.find("td").eq(idx).find(".price").val());
                 idx++;
                 e.piDiscPc = Number($tr.find("td").eq(idx).find(".discpc").val());
@@ -112,7 +111,7 @@ function updatePurchase() {
                     $(e).find("td:eq(4)").find(".qty").val()
                 );
 
-                let idx: number = 5;
+                let idx: number = PriceIdx4PstOrder;
                 stockitem.piUnitPrice = Number(
                     $(e).find("td").eq(idx).find(".price").val()
                 );
@@ -134,8 +133,6 @@ function updatePurchase() {
                     .eq(idx)
                     .find(".job")
                     .val());
-
-                //console.log("stockitem.JobID:" + stockitem.JobID);
 
                 idx++;
                 stockitem.piAmtPlusTax = Number(
@@ -165,7 +162,7 @@ function handleSubmit4Purchase() {
             if (checkPurchaseItems()) {
                 Purchase.pstStatus = "opened";
                 //console.log("purchasestock:", Purchase);
-                console.log("purchaseitems:", Purchase.PurchaseItems);
+                //console.log("purchaseitems:", Purchase.PurchaseItems);
                 //return false;
                 openWaitingModal();
                 $.ajax({
@@ -190,8 +187,8 @@ function handleSubmit4Purchase() {
         }
         else {
             updatePurchase();
-            console.log("purchasestock:", Purchase);
-            console.log("purchaseitems:", Purchase.PurchaseItems);
+            //console.log("purchase:", Purchase);
+            //console.log("purchaseitems:", Purchase.PurchaseItems);
             //return false;
             openWaitingModal();
             $.ajax({
@@ -339,7 +336,7 @@ $(document).on("change", "#drpSupplier", function () {
                     currcode = GetForeignCurrencyFrmCode(Purchase.supCode!);
                 // console.log("currcode:" + currcode);
                 if (currcode !== "") {
-                    console.log("here");
+                    //console.log("here");
                     $("#pstCurrency").val(currcode).prop("readonly", true);
                     fillInCurrencyModal(currcode);
                     exRate = selectedSupplier.ExchangeRate!;
@@ -415,8 +412,8 @@ $(function () {
             $("#btnViewFile").removeClass("hide");
         }
         //console.log("uploadfilelist length:", Purchase.UploadFileList.length);
-        purchasestockitems = $infoblk.data("jsonpurchasestockitems");
-        console.log("purchasestockitems:", purchasestockitems);
+        purchaseitems = $infoblk.data("jsonpurchaseitems");
+        console.log("purchaseitems:", purchaseitems);
         Purchase.DicItemOptions = $infoblk.data("jsonpurchasedicitemoptions");
         DicItemOptions = Object.assign({}, Purchase.DicItemOptions);
         //console.log("dicitemoptions:", DicItemOptions);
@@ -425,7 +422,7 @@ $(function () {
         //console.log("DicItemGroupedVariations:", DicItemGroupedVariations);   
         let html = "";
         let idx = 0;
-        $.each(purchasestockitems, function (i, stockitem: IPurchaseItem) {
+        $.each(purchaseitems, function (i, stockitem: IPurchaseItem) {
             itemOptions = DicItemOptions[stockitem.itmCode];
             const sntxt = stockitem.piHasSN ? "..." : "";
             //console.log("stockitem.batchlist:", stockitem.batchList);
@@ -508,7 +505,7 @@ $(function () {
             convertCsharpDateStringToJsDate(Purchase.PurchaseDateDisplay)
         );
 
-        Purchase.PurchaseItems = purchasestockitems;
+        Purchase.PurchaseItems = purchaseitems;
         //console.log("purchaseitems:", Purchase.PurchaseItems);
 
         if (Purchase.PromisedDateDisplay != null) {

@@ -11,7 +11,7 @@ let receiptnolist: string[] = [],
 let issilent: boolean = $infoblk.data("issilent") === "True";
 RefundList = [];
 let txtsearch: string = "";
-salesitemlist = [];
+SalesItemList = [];
 let salesitem: ISalesItem;
 approvalmode = $infoblk.data("approvalmode") === "True";
 approvalmode = $infoblk.data("approvalmode") === "True";
@@ -187,7 +187,7 @@ function getSearchOk(data) {
       salesitem.internalnote = e.rtsInternalRmks;
       salesitem.customerpo = e.rtsCustomerPO;
       salesitem.deliverydatedisplay = e.DeliveryDateDisplay;
-      salesitemlist.push(salesitem);
+      SalesItemList.push(salesitem);
       //項目代碼	數量	 價格	折扣%	金額	 銷售日期	退款金額 	退款日期
 
       html +=
@@ -232,7 +232,7 @@ function getSearchOk(data) {
       //html += '</tr>';
       $target.empty().append(html);
     });
-    console.log("salesitemlist#0:", salesitemlist);
+    console.log("SalesItemList#0:", SalesItemList);
     if (html !== "" && approvalmode) {
       $("#tblsearch tfoot").removeClass("hide");
     }
@@ -247,8 +247,8 @@ function getSearchOk(data) {
 }
 
 function salesDetail_search(salescode, itemcode, seq) {
-  console.log("salesitemlist:", salesitemlist);
-  let salesitem: ISalesItem = $.grep(salesitemlist, function (e, i) {
+  console.log("SalesItemList:", SalesItemList);
+  let salesitem: ISalesItem = $.grep(SalesItemList, function (e, i) {
     return e.salescode == salescode && e.itemcode === itemcode && e.rtlSeq == seq;
   })[0];
   console.log("salesitem:", salesitem);
@@ -424,9 +424,9 @@ function salesDetail_search(salescode, itemcode, seq) {
 }
 
 function printReceipt(salescode) {
-  console.log("salesitemlist:", salesitemlist);
+  console.log("SalesItemList:", SalesItemList);
   //function genSales(_qty, _price, _discount, _amt, _itemcode, _itemdesc, _taxrate, _snlist, _batch, _seq)
-  $.each(salesitemlist, function (i, e) {
+  $.each(SalesItemList, function (i, e) {
     genSales(e);
   });
 
@@ -461,15 +461,15 @@ function _getSncodes(
 }
 
 function genSales(salesitem: ISalesItem) {
-  console.log("salesitemlist before push:", salesitemlist);
+  console.log("SalesItemList before push:", SalesItemList);
   let sncodes: string[] = _getSncodes(
     salesitem.salescode,
     salesitem.itemcode,
     salesitem.rtlSeq
   );
   console.log("sncodes:", sncodes);
-  salesitemlist.push(salesitem);
-  console.log("salesitemlist after push:", salesitemlist);
+  SalesItemList.push(salesitem);
+  console.log("SalesItemList after push:", SalesItemList);
 }
 
 $(document).on("change", ".searchmode", function () {

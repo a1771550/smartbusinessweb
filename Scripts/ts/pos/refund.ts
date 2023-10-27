@@ -12,7 +12,6 @@ let RefundSalesList: Array<IRefundSales> = [];
 let RefundableSalesList: Array<IRefundSales> = [];
 let salesrefundlist: Array<ISalesRefundBase> = [];
 salesType = SalesType.refund;
-printurl = $infoblk.data("printurl");
 let refundsalesln: IRefundSales;
 let isEpay = false;
 let epaytype: string = "";
@@ -296,10 +295,7 @@ function getReceiptOk(data) {
         snlist = data.snlist.slice(0);
         //console.log("snlist:", snlist);
         cpplList = data.customerpointpricelevels.slice(0);
-        RefundSalesList = data.salesLns.slice(0);
-
-        // console.log("RefundSalesList#OK:", RefundSalesList);
-        // return;
+        RefundSalesList = data.salesLns.slice(0);       
 
         dicPayTypes = data.dicpaytypes;
         isEpay = data.isEpay;
@@ -363,6 +359,7 @@ function getReceiptOk(data) {
                 PoItemBatVQList = model.PoItemBatVQList.slice(0);
         }
 
+        setupForexInfo();
         fillinRefundForm();
     }
 }
@@ -1227,7 +1224,7 @@ function submitRefund() {
     Refund.rtsEpay = isEpay;
     Refund.rtsFinalTotal = itotalamt;
     Refund.epaytype = epaytype;
-    Refund.CusID =
+    Refund.rtsCusID =
         checkoutportal == "kindgee"
             ? selectedCus.CustId
             : selectedCus.cusCustomerID;
@@ -1312,6 +1309,9 @@ function openRefPayModal() {
     let totalamt = 0;
     RefundList.forEach(x => totalamt += x.amt);
 
+    setExRateDropDown();
+    setForexPayment(totalamt);
+
     $("#refundamount").text(formatmoney(totalamt));
     let _amt: number = round(totalamt, 2);
     if (isEpay) {
@@ -1373,6 +1373,14 @@ $(function () {
     forrefund = true;
     setFullPage();
     initModals();
+
+    comInfo = $infoblk.data("cominfo");
+    exRate = 1;
+    DicCurrencyExRate = $infoblk.data("diccurrencyexrate");
+    useForexAPI = comInfo.UseForexAPI;
+    $("#rtsExRate").val(1);
+    displayExRate(1);
+
     Refund = initSales();
 
     $("#txtDeviceCode").trigger("focus");

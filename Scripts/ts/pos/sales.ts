@@ -9,7 +9,6 @@ device = $infoblk.data("devicecode");
 enablecashdrawer = $infoblk.data("enablecashdrawer") == "1";
 
 let zerostockItemList: Array<IItem> = [];
-printurl = $infoblk.data("printurl");
 
 checkoutportal = $infoblk.data("checkoutportal");
 
@@ -96,9 +95,11 @@ function getSessionStartDataOk(data) {
     salesmanlist = data.salesmanlist;
     enableTax = data.enableTax;
     DicCurrencyExRate = Object.assign({}, data.DicCurrencyExRate);
-    JobList = data.JobList.slice(0);
-
+    //console.log(DicCurrencyExRate);
     useForexAPI = data.UseForexAPI;
+
+    JobList = data.JobList.slice(0);
+    
     try {
         sessionstartdata.push(cpplList);
         sessionstartdata.push(companyinfo);
@@ -139,20 +140,25 @@ $(function () {
     forsales = true;
     salesType = SalesType.retail;
     setFullPage();
+
     DicLocation = $infoblk.data("jsondiclocation");
-    shops = ($infoblk.data("shops") as string).split(",");
-    devices = ($infoblk.data("devices") as string).split(",");
+
+    comInfo = $infoblk.data("cominfo");
+    shop = comInfo.Shop;
+    device = comInfo.Device;
+    shops = comInfo.Shops.split(",");
+    devices = comInfo.Devices.split(",");
+
+    $("#drpLocation").val(shop);
+    $("#drpDevice").val(device);
+
     $("#rtsExRate").val(1);
     displayExRate(1);
 
     batchidx = 5;
     snidx = batchidx + 1;
     vtidx = snidx + 1;
-    
-    shop = $infoblk.data("shop") as string;
-    $("#drpLocation").val(shop);
-    device = $("#drpDevice").val() as string;
-    exRate = 1;
+    //exRate = 1;
     //DicCurrencyExRate = $infoblk.data('jsondiccurrencyexrate');
     gTblName = "tblSales";
     let _url = getParameterByName("url");
@@ -164,7 +170,6 @@ $(function () {
 
     AccountProfileId = parseInt(<string>$infoblk.data("accountprofileid"));
     initModals();
-
 
     if (forsales) {
         if (enablecashdrawer && !checkedcashdrawer) {
@@ -295,7 +300,7 @@ $(function () {
                             setSNmark(false);
                         }
 
-                        idx = 9;
+                        idx = PriceIdx4Sales;
                         let $price = $tr.find("td").eq(idx).find(".price");
                         $price.val(formatnumber(e.rtlSellingPrice!));
                         $price.prop("readonly", !selectedItemCode.startsWith("/"));
@@ -416,7 +421,8 @@ $(function () {
                 salesmanlist = sessionstartdata[9];
                 defaultcustomer = sessionstartdata[4];
                 DicCurrencyExRate = sessionstartdata[10];
-                useForexAPI = sessionstartdata[11];
+                //console.log("DicCurrencyExRate:", DicCurrencyExRate);
+                //useForexAPI = sessionstartdata[11];
                 JobList = sessionstartdata[12];
                 //console.log('defaultcustomer:', defaultcustomer);
                 selectedCus = defaultcustomer;

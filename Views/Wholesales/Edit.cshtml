@@ -115,9 +115,9 @@
         </div>
 
         @{
-            var drphide = !editmode ? "" : (bool)Model.wsChkManualDelAddr ? "hide" : "";
-            var txthide = !editmode ? "hide" : (bool)Model.wsChkManualDelAddr ? "" : "hide";
-            var chkdel = !editmode ? "" : (bool)Model.wsChkManualDelAddr ? "checked" : "";
+            var drphide = !editmode ? "" : Model.wsChkManualDelAddr==null?"": (bool)Model.wsChkManualDelAddr ? "hide" : "";
+            var txthide = !editmode ? "hide" : Model.wsChkManualDelAddr == null ?"hide": (bool)Model.wsChkManualDelAddr ? "" : "hide";
+            var chkdel = !editmode ? "" : Model.wsChkManualDelAddr == null ?"": (bool)Model.wsChkManualDelAddr ? "checked" : "";
         }
 
         <div class="col-12 col-md-4">

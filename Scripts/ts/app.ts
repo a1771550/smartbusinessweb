@@ -7,6 +7,11 @@
 	abstract validform(): boolean;
 	abstract submitform();
 }
+const PriceIdx4Sales: number = 9;
+const PriceIdx4WsOrder: number = 5;
+const PriceIdx4WsInvoice: number = 10;
+const PriceIdx4PstOrder: number = 5;
+const PriceIdx4PstBill: number = 9;
 
 let frmId: string = "";
 let ismanager: boolean = false;
@@ -626,7 +631,7 @@ let RemainList: Array<IDepositRemainItem> = [],
 	depositLns: Array<ISalesLn> = [];
 let totalsalesQty = 0;
 let totalpurchaseQty = 0;
-let salesitemlist: Array<ISalesItem> = [];
+let SalesItemList: Array<ISalesItem> = [];
 let Sales: ISales;
 let SalesList: Array<ISalesBase> = [];
 let SalesLnList: Array<ISalesLn> = [];
@@ -643,7 +648,7 @@ let disceditable: boolean;
 let enablelogo: boolean;
 let enableSN: boolean;
 let enableTax: boolean;
-let printurl: string;
+let printurl: string = "/Print/Index";
 let device: string;
 let printfields: string;
 let phoneno: string;
@@ -4868,17 +4873,9 @@ interface ISalesBase extends IRtlSale {
 	MonthlyPay: number;
 	rtsStatus: string;
 	Notes: string | null;
-	CusID: number;
 	salescode: string;
 	TotalRemainAmt: number | null;
-	rtsDvc: string;
-	/*
-	 Sales.Notes = <string>$("#txtNotes").val();
-	Sales.CusID = selectedCus.cusCustomerID;
-	Sales.salescode = rno;
-	Sales.TotalRemainAmt = itotalremainamt;
-	Sales.rtsDvc = $("#txtDeviceCode").val() as string;
-	*/
+	rtsDvc: string;	
 }
 function initRefundItem(): IRefundBase {
 	return {
@@ -6328,6 +6325,10 @@ interface IeBlast {
 
 let comInfo: IComInfo;
 interface IComInfo extends IEmailSetting {
+	Shop: string;
+	Device: string;
+	Devices: any;
+	Shops: any;
 	UseForexAPI: boolean;
 	comLogo: string;
 	comName: string;
@@ -7872,24 +7873,14 @@ $(document).on("change", ".qty", function () {
 		}
 	}
 	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
+
 	let idx = 0;
-	if (forsales || forpreorder) {
-		idx = 9;
-	}
-	if (forpurchase && Purchase) {
-		if (Purchase.pstStatus == "order") {
-			idx = 5;
-		} else {
-			idx = 8;
-		}
-	}
-	if (forwholesales && Wholesales) {
-		if (Wholesales.wsStatus == "order") {
-			idx = 5;
-		} else {
-			idx = 8;
-		}
-	}
+	if (forsales || forpreorder) idx = PriceIdx4Sales;
+
+	if (forpurchase && Purchase) idx = Purchase.pstStatus == "order" ? PriceIdx4PstOrder : PriceIdx4PstBill;
+
+	if (forwholesales && Wholesales) idx = Wholesales.wsStatus == "order" ? PriceIdx4WsOrder : PriceIdx4WsInvoice;
+
 	let _price: number = Number($tr.find("td").eq(idx).find(".price").val());
 	idx++;
 	let _discpc: number = Number($tr.find("td").eq(idx).find(".discpc").val());
@@ -7914,10 +7905,6 @@ $(document).on("change", ".qty", function () {
 	}
 
 	if (forwholesales) {
-		// if (Wholesales.wsStatus == "invoice") {
-		//   _price = Number($tr.find("td").eq(5).find(".price").val());
-		//   _discpc = Number($tr.find("td").eq(6).find(".discpc").val());
-		// }
 		if (Wholesales.wsStatus == "invoice")
 			$tr.find("td").last().find(".received").attr("max", _qty).val(_qty);
 
@@ -8420,17 +8407,9 @@ function populateItemRow(proId: number = 0) {
 		}
 
 		if (forsales || forpreorder || forpurchase || forwholesales) {
-			if (forpurchase) {
-				if (editmode && Purchase.pstStatus !== "order") idx = 8;
-				else idx = 5;
-			}
-			if (forwholesales) {
-				if (editmode && Wholesales.wsStatus == "invoice") idx = 8;
-				else idx = 5;
-			}
-			if (forsales || forpreorder) {
-				idx = 9;
-			}
+			if (forpurchase) idx = (editmode && Purchase.pstStatus !== "order") ? PriceIdx4PstBill : PriceIdx4PstOrder;
+			if (forwholesales) idx = (editmode && Wholesales.wsStatus == "invoice") ? PriceIdx4WsInvoice : PriceIdx4WsOrder;
+			if (forsales || forpreorder) idx = PriceIdx4Sales;
 
 			if (forsales || forpreorder) {
 				if (selectedItemCode.toString().startsWith("/")) {
@@ -8460,7 +8439,9 @@ function populateItemRow(proId: number = 0) {
 			}
 
 			if (forpurchase) {
+				//console.log("selectedPurchaseItem!.Item:", selectedPurchaseItem!.Item);
 				price = Number(selectedPurchaseItem!.Item.itmBuyStdCost);
+				//console.log("price#popu:" + price);
 				selectedPurchaseItem!.piUnitPrice = price;
 			}
 			if (forwholesales) {
@@ -8469,8 +8450,7 @@ function populateItemRow(proId: number = 0) {
 			}
 
 			price = price / exRate;
-			//console.log('idx@price:' + idx);
-			// console.log("price#selectitem:" + price);
+			//console.log("price#1:" + price);
 			$target
 				.find("td")
 				.eq(idx)
@@ -8891,8 +8871,8 @@ $(document).on("dblclick", ".serialno.pointer", function () {
 				}
 			} else {
 				if (forpurchase) {
-					if (purchasestockitems.length > 0) {
-						$.each(purchasestockitems, function (i, e) {
+					if (purchaseitems.length > 0) {
+						$.each(purchaseitems, function (i, e) {
 							if (e.piSeq == seq) {
 								selectedPurchaseItem = e;
 								return false;
@@ -10127,14 +10107,14 @@ function getRowDiscPc(): number {
 		if (Wholesales.wsStatus == "order" || Wholesales.wsStatus == "created") {
 			_idx = 6;
 		} else {
-			_idx = 10;
+			_idx = 11;
 		}
 	}
 	if (forpurchase) {
 		if (Purchase.pstStatus == "order" || Purchase.pstStatus == "created") {
 			_idx = 6;
 		} else {
-			_idx = 9;
+			_idx = 10;
 		}
 	}
 
@@ -10156,10 +10136,10 @@ function getRowPrice(): number {
 	if (forwholesales) {
 		if (Wholesales.wsStatus == "order" || Wholesales.wsStatus == "created")
 			_idx = 5;
-		if (Wholesales.wsStatus == "invoice") _idx = 9;
+		if (Wholesales.wsStatus == "invoice") _idx = 10;
 	}
 	if (forpurchase) {
-		if (Purchase.pstStatus !== "order") _idx = 8;
+		if (Purchase.pstStatus !== "order") _idx = 9;
 		if (Purchase.pstStatus == "order" || Purchase.pstStatus == "created")
 			_idx = 5;
 	}
@@ -10186,13 +10166,13 @@ function handlePriceChange(event: any) {
 	let _discpc: number;
 	let _idx: number = 0;
 	if (forsales || forpreorder) {
-		_idx = 10;
+		_idx = PriceIdx4Sales + 1;
 	}
 	if (forpurchase && Purchase) {
-		_idx = Purchase.pstStatus == "order" ? 6 : 10;
+		_idx = Purchase.pstStatus == "order" ? PriceIdx4PstOrder + 1 : PriceIdx4PstBill + 1;
 	}
 	if (forwholesales && Wholesales) {
-		_idx = Wholesales.wsStatus == "order" ? 6 : 10;
+		_idx = Wholesales.wsStatus == "order" ? PriceIdx4WsOrder + 1 : PriceIdx4WsInvoice + 1;
 	}
 
 	_discpc = Number(
@@ -10212,15 +10192,11 @@ function handleDiscChange(event: any) {
 	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
 	let _price: number;
 	let _idx: number = 0;
-	if (forsales || forpreorder) {
-		_idx = 9;
-	}
-	if (forwholesales) {
-		_idx = Wholesales.wsStatus == "order" ? 5 : 9;
-	}
-	if (forpurchase) {
-		_idx = Purchase.pstStatus == "order" ? 5 : 9;
-	}
+	if (forsales || forpreorder) _idx = PriceIdx4Sales;
+
+	if (forwholesales) _idx = Wholesales.wsStatus == "order" ? PriceIdx4WsOrder : PriceIdx4WsInvoice;
+
+	if (forpurchase) _idx = Purchase.pstStatus == "order" ? PriceIdx4PstOrder : PriceIdx4PstBill;
 
 	if (_discpc < 0) {
 		$.fancyConfirm({
@@ -10266,16 +10242,13 @@ function updateRow(_price: number = 0, _discount: number = 0) {
 	let pidx = 0,
 		didx = 0,
 		tidx = 0; //price & discpc & taxpc index;
-	if (forsales || forpreorder) {
-		pidx = 9;
-	}
-	if (forpurchase) pidx = Purchase && Purchase.pstStatus !== "order" ? 8 : 5;
-	if (forwholesales)
-		pidx = Wholesales && Wholesales.wsStatus == "invoice" ? 9 : 5;
+
+	if (forsales || forpreorder) pidx = PriceIdx4Sales;
+	if (forpurchase) pidx = Purchase && Purchase.pstStatus !== "order" ? PriceIdx4PstBill : PriceIdx4PstOrder;
+	if (forwholesales) pidx = Wholesales && Wholesales.wsStatus == "invoice" ? PriceIdx4WsInvoice : PriceIdx4WsOrder;
 	didx = pidx + 1;
 	tidx = didx + 1;
-	//console.log("price idx:" + pidx);
-	//console.log("didx:" + didx + ";tidx:" + tidx);
+
 	seq = currentY + 1;
 	if (_price > 0) {
 		// _price = _price * exRate;
@@ -14370,8 +14343,7 @@ function initSales(): ISales {
 		rtsModifyBy: "",
 		rtsModifyTime: null,
 		rtsExRate: 1,
-		rtsCurrency: "HKD",
-		CusID: 0,
+		rtsCurrency: "HKD",		
 		Notes: "",
 		Roundings: 0,
 		Change: 0,
@@ -14720,11 +14692,19 @@ $(document).on("click", "#transactionEpay", function () {
 });
 
 $(document).on("click", ".btnPayment", function () {
-	//console.log('saleslist:', SalesList);
+	//console.log("SalesList:", SalesList);
 	if (SalesLnList.length === 0 || $(`#${gTblName} .focus`).length > 0) {
 		falert(salesinfonotenough, oktxt);
 	} else {
-		openPayModal();
+		if (fordeposit)
+			openPayModel_De();
+		else {
+			if (forsales) openPayModal();
+			if (forpreorder) {
+				if (Sales.rtsUID > 0) openPayModel_De();
+				else openPayModal();
+			}
+		}
 	}
 });
 
@@ -16058,12 +16038,8 @@ function setExRateDropDown() {
 			}
 		}
 	} else {
-		//let html = "";
+		//console.log("DicCurrencyExRate:", DicCurrencyExRate);
 		for (const [key, value] of Object.entries(DicCurrencyExRate)) {
-			// console.log("key:" + key + ";value:" + value);
-			//html += `<tr class="currency" data-key="${key}" data-value="${value}"><td>${key}</td><td>${formatexrate(
-			//    value.toString()
-			//)}</td></tr>`;
 			const displaytxt = key + ` (${formatexrate(value.toString())})`;
 			$("#drpCurrency").append(
 				$("<option>", {
@@ -16072,7 +16048,6 @@ function setExRateDropDown() {
 				})
 			);
 		}
-		//currencyModal.find("#tblCurrency tbody").html(html);
 	}
 }
 
@@ -16122,7 +16097,7 @@ const fillInCurrencyModal = (currcode: string = "") => {
 					Wholesales.wsExRate = exRate;
 				$("#wsExRate").val(exRate);
 			}
-			if (forsales || forpreorder) {
+			if (forsales || forpreorder || fordeposit || forrefund) {
 				if (Sales)
 					Sales.rtsExRate = exRate;
 				$("#rtsExRate").val(exRate);
@@ -16832,18 +16807,10 @@ interface IItemPromotion {
 }
 function selectCus() {
 	selectcus();
-	// console.log("selected cuscode:" + selectedCus.cusCode);
-	let currcode = "";
-	if (!useForexAPI) currcode = GetForeignCurrencyFrmCode(selectedCus.cusCode!);
-	// console.log("currcode:" + currcode);
-	if (currcode !== "") {
-		$("#rtsCurrency").val(currcode).prop("readonly", true);
-		fillInCurrencyModal(currcode);
-	}
-	//console.log("exRate#selectCus:" + exRate);
-	displayExRate(exRate);
 
-	let $rows = $("#tblSales tbody tr");
+	setupForexInfo();
+
+	let $rows = $(`#${gTblName} tbody tr`);
 	//console.log('rows length:' + $rows.length + ';currentY:' + currentY);
 	if ($rows.length === 0) {
 		addRow();
@@ -16891,6 +16858,22 @@ function selectCus() {
 	$("#txtCustomerName").trigger("focus");
 }
 let deliveryAddressId: number = 0;
+function setupForexInfo() {
+	if (!comInfo) comInfo = $infoblk.data("cominfo");
+	if ($.isEmptyObject(DicCurrencyExRate)) DicCurrencyExRate = $infoblk.data("diccurrencyexrate");
+	useForexAPI = comInfo.UseForexAPI;
+	exRate = 1;
+	let currcode = "";
+	if (!useForexAPI) currcode = GetForeignCurrencyFrmCode(selectedCus.cusCode!);
+	//console.log("currcode:" + currcode);
+	if (currcode !== "") {
+		$("#rtsCurrency").val(currcode).prop("readonly", true);
+		fillInCurrencyModal(currcode);
+	}
+	displayExRate(exRate);
+	$("#rtsExRate").val(1);
+}
+
 function selectcus() {
 	selectedCusCodeName = selectedCus.cusCustomerID.toString();
 	//console.log('selectedcuscodename:' + selectedCusCodeName);
@@ -17109,7 +17092,7 @@ function updateSales() {
 				);
 				salesln.rtlQty = Number($(e).find("td:eq(4)").find(".qty").val());
 
-				idx = 9;
+				idx = PriceIdx4Sales;
 				salesln.rtlSellingPrice = Number(
 					$(e).find("td").eq(idx).find(".price").val()
 				);
@@ -17629,9 +17612,9 @@ function submitSales() {
 	}
 }
 
-function _submitSales() {	
+function _submitSales() {
 	let url = forpreorder ? "/Preorder/Edit" : "/POSFunc/ProcessSales";
-	Sales.rtsCusID=Sales.CusID = selectedCus.cusCustomerID;
+	Sales.rtsCusID = Sales.rtsCusID = selectedCus.cusCustomerID;
 	Sales.rtsRmks = $("#txtNotes").val() as string;
 	Sales.rtsInternalRmks = Sales.InternalNotes = $("#txtInternalNotes").val() as string;
 	Sales.authcode = authcode;
@@ -17666,12 +17649,7 @@ function _submitSales() {
 			if (typeof data.epaystatus === "undefined") {
 				if (data.msg === "") {
 					window.open(printurl);
-
-					if (data.zerostockItemcodes !== "") {
-						handleOutOfStocks(data.zerostockItemcodes, salescode);
-					} else {
-						window.location.reload();
-					}
+					window.location.reload();
 				}
 			} else {
 				//console.log('epaystatus:' + data.epaystatus);
@@ -20343,4 +20321,18 @@ function isNumber(evt) {
 
 function getItemCodeBySeq(): string {
 	return $(`#${gTblName} tbody tr`).eq(seq - 1).find("td:eq(1)").find(".itemcode").val()!.toString();
+}
+
+function openPayModel_De() {
+	payModal.dialog("option", { width: 600, title: processpayments });
+	payModal.dialog("open");
+
+	setExRateDropDown();
+	//console.log("itotalremainamt:" + itotalremainamt);
+	setForexPayment(itotalremainamt);
+
+	$("#totalremainamt").text(formatmoney(itotalremainamt));
+	$("#remainamt").text(formatmoney(0));
+	let cashtxt = itotalremainamt.toFixed(2);
+	$("#Cash").val(cashtxt);
 }

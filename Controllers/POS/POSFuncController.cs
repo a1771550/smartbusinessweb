@@ -239,228 +239,18 @@ namespace SmartBusinessWeb.Controllers
 		{
 			ViewBag.ParentPage = "sales";
 			ViewBag.PageName = "deposit";
-			DepositViewModel model = new DepositViewModel(ComInfo.Currency);
+			DepositModel model = new DepositModel();
 			return View(model);
 		}
 
 		[HttpPost]
-		public ActionResult ProcessRemain(SalesModel Sales, List<SalesViewModel> SalesItemList, List<PayLnView> Payments)
+		public ActionResult ProcessRemain(DepositModel Sales, List<SalesViewModel> SalesItemList, List<PayLnView> Payments)
 		{
-			SessUser user = null;
-			string salescode = "";
-			Dictionary<string, Dictionary<string, int>> dicItemLocQty = new Dictionary<string, Dictionary<string, int>>();
-			var itemcodes = SalesItemList.Select(x => x.itemcode).Distinct().ToList();
-			foreach (var itemcode in itemcodes)
-			{
-				dicItemLocQty[itemcode] = new Dictionary<string, int>();
-			}
-
-			#region JS Properties
-
-			#endregion
-
-			using (var context = new PPWDbContext(Session["DBName"].ToString()))
-			{
-				Session session = ModelHelper.GetCurrentSession(context);
-				//int apId = session.AccountProfileId;
-				int apId = ComInfo.AccountProfileId;
-
-				DeviceModel device = ModelHelper.GetDevice(user.surUID, context); //don't use session, as no new salesno will be retreived.
-				Device dvc = context.Devices.Find(device.dvcUID);
-				salescode = Sales.salescode.Replace("DE", ModelHelper.GetInvoicePrefix(dvc));
-
-				List<RtlSalesLn> SalesLines = new List<RtlSalesLn>();
-				List<SerialNo> SerialNoList = new List<SerialNo>();
-				List<RtlPay> PayList = new List<RtlPay>();
-				List<RtlPayLn> PayLnList = new List<RtlPayLn>();
-				Dictionary<string, int> dicItemQty = new Dictionary<string, int>();
-				user = (SessUser)Session["User"];
-				List<PaymentType> PaymentTypes = new List<PaymentType>();
-
-				decimal totaltaxamt = 0;
-				decimal totaldiscpc = 0;
-				decimal totaldiscountamt = 0;
-				//decimal totalremainamt = 0;
-				decimal totalpayamt = 0;
-				decimal totalamount = 0;
-				//decimal linetotal = 0;
-
-				Session["RemainList"] = SalesItemList;
-
-				TaxModel taxModel = ModelHelper.GetTaxInfo(context, CheckoutPortal);
-				var taxableitems = ModelHelper.GetTaxableItemList(context, CheckoutPortal);
-
-				var sales = context.RtlSales.FirstOrDefault(x => x.rtsCode.ToLower() == Sales.salescode.ToLower() && x.AccountProfileId == ComInfo.AccountProfileId);
-				var saleslns = context.RtlSalesLns.Where(x => x.rtlCode.ToLower() == Sales.salescode.ToLower() && x.AccountProfileId == ComInfo.AccountProfileId);
-
-				if (saleslns.Any())
-				{
-					foreach (var salesLn in saleslns)
-					{
-						RtlSalesLn rtlSalesLn = new RtlSalesLn(); //MUST not use object initializer in the loop, otherwise will get error.
-						rtlSalesLn.rtlSalesLoc = salesLn.rtlSalesLoc;
-						rtlSalesLn.rtlStockLoc = salesLn.rtlStockLoc;
-						rtlSalesLn.rtlDvc = Sales.rtsDvc;
-						rtlSalesLn.rtlCode = salescode;
-						rtlSalesLn.rtlSeq = salesLn.rtlSeq;
-						rtlSalesLn.rtlItemCode = salesLn.rtlItemCode;
-						rtlSalesLn.rtlTaxPc = salesLn.rtlTaxPc;
-						rtlSalesLn.rtlLineDiscAmt = salesLn.rtlLineDiscAmt;
-						rtlSalesLn.rtlLineDiscPc = salesLn.rtlLineDiscPc;
-						rtlSalesLn.rtlQty = salesLn.rtlQty;
-						rtlSalesLn.rtlTaxAmt = salesLn.rtlTaxAmt;
-						rtlSalesLn.rtlDate = DateTime.Now;
-						rtlSalesLn.rtlBatch = salesLn.rtlBatch;
-						rtlSalesLn.rtlSalesAmt = salesLn.rtlSalesAmt;
-						rtlSalesLn.rtlType = "RS";
-						rtlSalesLn.rtlSellingPrice = salesLn.rtlSellingPrice;
-						rtlSalesLn.rtlCheckout = false;
-						rtlSalesLn.rtlDesc = salesLn.rtlDesc;
-						rtlSalesLn.rtlRefSales = Sales.salescode;
-						rtlSalesLn.rtlRrpTaxIncl = salesLn.rtlRrpTaxIncl;
-						rtlSalesLn.rtlRrpTaxExcl = salesLn.rtlRrpTaxExcl;
-						rtlSalesLn.rtlSellingPriceMinusInclTax = salesLn.rtlSellingPriceMinusInclTax;
-						rtlSalesLn.JobID = salesLn.JobID;
-						rtlSalesLn.AccountProfileId = salesLn.AccountProfileId;
-
-						if (dicItemLocQty.ContainsKey(salesLn.rtlItemCode) && dicItemLocQty[salesLn.rtlItemCode].ContainsKey(salesLn.rtlStockLoc))
-						{
-							dicItemLocQty[salesLn.rtlItemCode][salesLn.rtlStockLoc] += (int)salesLn.rtlQty;
-						}
-						else
-						{
-							dicItemLocQty[salesLn.rtlItemCode][salesLn.rtlStockLoc] = (int)salesLn.rtlQty;
-						}
-
-						SalesLines.Add(rtlSalesLn);
-						totaltaxamt += salesLn.rtlTaxAmt == null ? 0 : (decimal)salesLn.rtlTaxAmt;
-						totaldiscpc += salesLn.rtlLineDiscPc == null ? 0 : (decimal)salesLn.rtlLineDiscPc;
-						totaldiscountamt += salesLn.rtlLineDiscAmt == null ? 0 : (decimal)salesLn.rtlLineDiscAmt;
-						//totalremainamt += sales.remainamt;
-						totalamount += (decimal)salesLn.rtlSalesAmt;
-						//linetotal += (sales.price * sales.qty) - discountamt + taxamt;
-					}
-				}
-
-				if (sales != null)
-				{
-					string salesstatus = context.RtlSales.FirstOrDefault(x => x.rtsCode.ToLower() == Sales.salescode.ToLower() && x.AccountProfileId == ComInfo.AccountProfileId).rtsStatus;
-					string remarks = string.IsNullOrEmpty(Sales.Notes) ? sales.rtsRmks : string.Concat(sales.rtsRmks, ";", Sales.Notes);
-					RtlSale rtlSale = new RtlSale
-					{
-						rtsAllLoc = sales.rtsAllLoc,
-						rtsSalesLoc = sales.rtsSalesLoc,
-						rtsDvc = sales.rtsDvc,
-						rtsCode = salescode,
-						rtsType = "RS",
-						rtsCusID = sales.rtsCusID,
-						rtsLineTotal = totalamount,
-						rtsLineTotalPlusTax = totalamount + totaltaxamt,
-						rtsFinalDisc = totaldiscpc,
-						rtsFinalDiscAmt = totaldiscountamt,
-						rtsFinalTotal = totalamount + totaltaxamt,
-						rtsCurrency = sales.rtsCurrency,
-						rtsExRate = sales.rtsExRate,
-						rtsRmks = remarks,
-						rtsInternalRmks = sales.rtsInternalRmks,
-						rtsUpldBy = user.UserName,
-						rtsStatus = salesstatus,
-						rtsLineTaxAmt = totaltaxamt,
-						rtsEpay = false,
-						rtsCheckout = false,
-						rtsCheckoutPortal = sales.rtsCheckoutPortal,
-						rtsDeliveryAddress1 = sales.rtsDeliveryAddress1,
-						rtsDeliveryAddress2 = sales.rtsDeliveryAddress2,
-						rtsDeliveryAddress3 = sales.rtsDeliveryAddress3,
-						rtsDeliveryAddress4 = sales.rtsDeliveryAddress4,
-						rtsCustomerPO = sales.rtsCustomerPO,
-						rtsDeliveryDate = sales.rtsDeliveryDate,
-						rtsSaleComment = sales.rtsSaleComment,
-						rtsDate = DateTime.Now.Date,
-						rtsTime = DateTime.Now,
-						rtsCreateTime = DateTime.Now,
-						rtsRefCode = Sales.salescode,
-						rtsMonthBase = false,
-						AccountProfileId = sales.AccountProfileId,
-					};				
-
-					#region Handle Stock
-					SalesEditModel model = new SalesEditModel();
-					model.HandleStockQty(context, dicItemLocQty, true);
-					#endregion
-
-					#region Payment
-					string paytype = "PR"; //pay remaining
-					RtlPay rtlPay = new RtlPay
-					{
-						rtpSalesLoc = device.dvcShop,
-						rtpDvc = device.dvcCode,
-						rtpCode = salescode,
-						rtpSeq = session.sesDvcSeq,
-						//rtpPayAmt = totalamount + Roundings,=> fill in later
-						rtpDate = DateTime.Now.Date,
-						rtpTime = DateTime.Now,
-						rtpTxType = "RS",
-						rtpChange = Sales.Change,
-						rtpPayType = paytype,
-						rtpRoundings = 0,
-						AccountProfileId = ComInfo.AccountProfileId
-					};
-					#endregion
-
-					context.RtlSalesLns.AddRange(SalesLines);
-					context.RtlSales.Add(rtlSale);
-					context.RtlPays.Add(rtlPay);
-
-					#region CustomerPoints
-					ModelHelper.HandleCustomerPoints(context, user, apId, Sales.CusID, totalamount);
-					#endregion
-
-					context.SaveChanges();
-
-					#region PayLns
-					long lastpayId = rtlPay.rtpUID;
-					foreach (PayLnView payment in Payments)
-					{
-						if (payment.Amount > 0)
-						{
-							decimal amt = CommonHelper.RoundDecimal(payment.Amount);
-							if (payment.pmtCode.ToLower() == "cash")
-							{
-								amt -= CommonHelper.RoundDecimal((decimal)Sales.Change);
-							}
-							RtlPayLn rtlPayLn = new RtlPayLn
-							{
-								payId = lastpayId,
-								pmtCode = payment.pmtCode,
-								Amount = CommonHelper.RoundDecimal(amt),
-								AmtReceived = CommonHelper.RoundDecimal(payment.Amount),
-								rtplCode = salescode,
-								rtplSalesLoc = device.dvcShop,
-								rtplDvc = device.dvcCode,
-								rtplDate = DateTime.Now.Date,
-								rtplTime = DateTime.Now,
-								AccountProfileId = ComInfo.AccountProfileId
-							};
-							totalpayamt += amt;
-							PayLnList.Add(rtlPayLn);
-						}
-					}
-
-					if (Sales.TotalRemainAmt == totalpayamt)
-					{
-						rtlPay.rtpPayAmt = CommonHelper.RoundDecimal(totalpayamt);
-						context.RtlPayLns.AddRange(PayLnList);
-					}
-					context.SaveChanges();
-					#endregion
-				}
-
-			}
+			string salescode = ModelHelper.ProcessRemain(Sales, SalesItemList, Payments);
 			return Json(new { msg = "", salescode });
-
 		}
 
+		
 
 		[HandleError]
 		[CustomAuthorize("refund", "boss", "admin", "superadmin")]
@@ -902,11 +692,10 @@ namespace SmartBusinessWeb.Controllers
 
 			using var context = new PPWDbContext(Session["DBName"].ToString());
 			string finalsalescode = model.ProcessSales(context, Sales, SalesLnList, Payments, ref totalpayamt, DeliveryItems);
-			string msg = model.OutOfStockWholeSalesLns != null && model.OutOfStockWholeSalesLns.Count > 0 ? Resources.Resource.ZeroStockItemsWarning : string.Format(Resources.Resource.Delivered, Resources.Resource.WholeSales);
-			string[] zerostockItemcodes = model.OutOfStockWholeSalesLns.Select(x => x.itmCode).ToArray();
+			string msg = Resources.Resource.OrderSavedSuccessfully;			
 			if (string.IsNullOrEmpty(Sales.authcode))
 			{
-				return Json(new { msg = "", finalsalescode, zerostockItemcodes = zerostockItemcodes.Length > 0 ? string.Join(",", zerostockItemcodes) : "" });
+				return Json(new { msg = "", finalsalescode });
 			}
 			else
 			{

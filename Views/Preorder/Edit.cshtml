@@ -1,15 +1,17 @@
 ﻿@model PPWLib.Models.POS.Sales.PreorderEditModel
 
 @{
-	ViewBag.Title = Resources.Resource.Preorder;
+	bool editmode = Model.Sales.rtsUID > 0;
+	bool fordeposit = editmode;
+	ViewBag.Title = editmode? Resources.Resource.SettlePayment: Resources.Resource.Preorder;
 	int rand = CommonHelper.GetVersionRandomNo();
 }
 <link rel="stylesheet" type="text/css" href="~/Content/Sales.css?v=@rand" />
 
-<h3>@ViewBag.Title</h3>
+<h3 data-debug="@(Model.Sales==null)">@ViewBag.Title</h3>
 @*@{ return;}*@
 
-@Html.Partial("_SalesBlk", null, new ViewDataDictionary { { "Currency", Model.Currency }, { "rtsCurrency", Model.Sales.rtsCurrency }, { "LocationList", Model.LocationList }, { "showrecur", false }, { "Device", Model.ComInfo.Device }, { "Devices", Model.ComInfo.Devices }, { "NextSalesCode", Model.Sales.rtsCode }, { "DefaultSalesNotesTxt", Model.Sales.rtsRmks } })
+@Html.Partial("_SalesBlk", null, new ViewDataDictionary { {"editmode",editmode }, { "Currency", Model.Currency }, { "rtsCurrency", Model.Sales.rtsCurrency }, { "LocationList", Model.LocationList }, { "showrecur", false }, { "Device", Model.ComInfo.Device }, { "Devices", Model.ComInfo.Devices }, { "NextSalesCode", Model.Sales.rtsCode }, { "DefaultSalesNotesTxt", Model.Sales.rtsRmks },{"forpreorder",true } })
 
 @Html.HiddenFor(model => model.Sales.rtsExRate)
 @Html.Partial("_CurrencyModal")
@@ -26,7 +28,7 @@
 
 @Html.Partial("_ValidThruModal")
 
-@Html.Partial("_PayModal", null, new ViewDataDictionary { { "forpreorder", true }, { "enableEpay", Model.ComInfo.enableEpay }, { "PaymentTypeList", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes } })
+@Html.Partial("_PayModal", null, new ViewDataDictionary { {"fordeposit",fordeposit }, { "forpreorder", !fordeposit }, { "PaymentTypeList", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes } })
 
 
 @Html.Partial("_ItemVariModal")
@@ -39,12 +41,6 @@
 <link rel="stylesheet" type="text/css" href="~/Scripts/jsuites/dist/jsuites.css" />
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 
-<!--public CommonLib.Models.TaxModel TaxModel { get; set; }
-public bool EnableTax { get; set; }
-public bool InclusiveTax { get; set; }
-public decimal InclusiveTaxRate { get; set; }
-public string TaxCode { get; set; }-->
-
-<div id="infoblk" data-salesorder="@Model.JsonSalesOrder" data-saleslnlist="@Model.JsonSalesLnList" data-items="@Model.JsonItems" data-customer="@JsonSerializer.Serialize(Model.Customer)" data-defaultcustomer="@JsonSerializer.Serialize(Model.DefaultCustomer)" data-customerpointpricelevels="@JsonSerializer.Serialize(Model.CustomerPointPriceLevels)" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicpaytypes="@JsonSerializer.Serialize(Model.DicPayTypes)" data-joblist="@JsonSerializer.Serialize(Model.JobList)" data-taxmodel="@JsonSerializer.Serialize(Model.TaxModel)" data-enabletax="@Model.EnableTax" data-inclusivetax="@Model.InclusiveTax" data-inclusivetaxrate="@Model.InclusiveTaxRate" data-taxcode="@Model.TaxCode" data-diclocation="@JsonSerializer.Serialize(Model.DicLocation)"></div>
+<div id="infoblk" data-sales="@Model.JsonSales" data-saleslnlist="@Model.JsonSalesLnList" data-items="@Model.JsonItems" data-customer="@JsonSerializer.Serialize(Model.Customer)" data-defaultcustomer="@JsonSerializer.Serialize(Model.DefaultCustomer)" data-customerpointpricelevels="@JsonSerializer.Serialize(Model.CustomerPointPriceLevels)" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicpaytypes="@JsonSerializer.Serialize(Model.DicPayTypes)" data-joblist="@JsonSerializer.Serialize(Model.JobList)" data-taxmodel="@JsonSerializer.Serialize(Model.TaxModel)" data-enabletax="@Model.EnableTax" data-inclusivetax="@Model.InclusiveTax" data-inclusivetaxrate="@Model.InclusiveTaxRate" data-taxcode="@Model.TaxCode" data-diclocation="@JsonSerializer.Serialize(Model.DicLocation)" data-dicitemsns="@JsonSerializer.Serialize(Model.DicItemSNs)"></div>
 
 <script src="~/Scripts/ts/js/pos/preorderedit.js?v=@rand"></script>
