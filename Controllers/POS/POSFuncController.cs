@@ -239,14 +239,22 @@ namespace SmartBusinessWeb.Controllers
 		{
 			ViewBag.ParentPage = "sales";
 			ViewBag.PageName = "deposit";
-			DepositModel model = new DepositModel();
+			DepositEditModel model = new DepositEditModel();	
 			return View(model);
 		}
 
-		[HttpPost]
-		public ActionResult ProcessRemain(DepositModel Sales, List<SalesViewModel> SalesItemList, List<PayLnView> Payments)
+		[HttpGet]
+		public JsonResult GetDeposit(string receiptno)
 		{
-			string salescode = ModelHelper.ProcessRemain(Sales, SalesItemList, Payments);
+			DepositEditModel model = new DepositEditModel();
+			model.Get(receiptno);
+			return Json(model, JsonRequestBehavior.AllowGet);
+		}
+
+		[HttpPost]
+		public ActionResult ProcessRemain(DepositModel Sales, List<DepositItem> DepositItemList, List<PayLnView> Payments)
+		{
+			string salescode = ModelHelper.ProcessRemain(Sales, DepositItemList, Payments);
 			return Json(new { msg = "", salescode });
 		}
 

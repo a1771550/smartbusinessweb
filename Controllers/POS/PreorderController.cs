@@ -39,13 +39,11 @@ namespace SmartBusinessWeb.Controllers.POS
 		[CustomAuthorize("retail", "boss", "admin", "superadmin")]
 		[HttpPost]
 		public JsonResult Edit(PreSalesModel Sales, List<SalesLnView> SalesLnList, List<PayLnView> Payments)
-		//public JsonResult Edit(PreSalesModel Sales)
-		{
-			string finalsalescode = "";
+		{			
 			ViewBag.ParentPage = "sales";
 			ViewBag.PageName = "preorderlist";
 			PreorderEditModel model = new PreorderEditModel();
-			finalsalescode = model.Edit(Sales, SalesLnList, Payments);
+			var finalsalescode = model.Edit(Sales, SalesLnList, Payments);
 			if (string.IsNullOrEmpty(Sales.authcode))
 			{
 				return Json(new { msg = "", finalsalescode });

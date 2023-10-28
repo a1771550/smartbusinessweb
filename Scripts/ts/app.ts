@@ -632,9 +632,12 @@ let RemainList: Array<IDepositRemainItem> = [],
 let totalsalesQty = 0;
 let totalpurchaseQty = 0;
 let SalesItemList: Array<ISalesItem> = [];
+let DepositItemList: Array<IDepositItem> = [];
 let Sales: ISales;
+let Deposit: ISales;
 let SalesList: Array<ISalesBase> = [];
 let SalesLnList: Array<ISalesLn> = [];
+let DepositLnList: Array<ISalesLn> = [];
 let currentAmt = 0;
 let _openItemModal = false;
 let rno = "";
@@ -18864,7 +18867,17 @@ interface IIvDelQty extends IIvQty {
 	Id: string;
 	seq: number;
 }
+interface IDepositItem extends ISalesLn {
+    QtyAvailable: number;
+    DepositDate: string;
+    DepositAmtDisplay: string;
+    DepositQty: number;
+    AmtDisplay: string;
+    TaxPcDisplay: string;
+    DiscPcDisplay: string;
+    SellingPriceDisplay: string;
 
+}
 $(document).on("dblclick", ".povari.pointer", function () {
 	$tr = $(this).parent("td").parent("tr");
 	selectedItemCode = (
