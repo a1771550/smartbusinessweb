@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartBusinessWeb", "SmartBu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SBAbssWS", "..\SBAbssWS\SBAbssWS.csproj", "{5B8E501C-34BA-4B25-8CD8-258CB197D63E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPWDebugConsole", "..\PPWDebugConsole\PPWDebugConsole.csproj", "{58B9ECB0-A894-40AF-9A2C-0ECFE3DA241A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{5B8E501C-34BA-4B25-8CD8-258CB197D63E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B8E501C-34BA-4B25-8CD8-258CB197D63E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B8E501C-34BA-4B25-8CD8-258CB197D63E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58B9ECB0-A894-40AF-9A2C-0ECFE3DA241A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58B9ECB0-A894-40AF-9A2C-0ECFE3DA241A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58B9ECB0-A894-40AF-9A2C-0ECFE3DA241A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58B9ECB0-A894-40AF-9A2C-0ECFE3DA241A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
