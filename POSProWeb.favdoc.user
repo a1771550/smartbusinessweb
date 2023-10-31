@@ -80,6 +80,16 @@
           <path>Scripts\ts\pos\preorderedit.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\preorderedit.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>deposit.ts</name>
+          <path>Scripts\ts\pos\deposit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\deposit.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>customeredit.ts</name>
+          <path>Scripts\ts\customer\customeredit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\customer\customeredit.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -196,6 +206,11 @@
           <name>PreorderController.cs</name>
           <path>Controllers\POS\PreorderController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\POS\PreorderController.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>CustomerController.cs</name>
+          <path>Controllers\Customer\CustomerController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Customer\CustomerController.cs</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

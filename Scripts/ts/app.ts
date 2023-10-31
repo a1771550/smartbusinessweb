@@ -994,8 +994,8 @@ function togglePaging(type: string = "item", show: boolean = true) {
 let shop: string = "";
 
 function GetEnquiries(pageIndex) {
-	console.log("sortcol#0:", sortCol);
-	console.log("sortdirection:", sortDirection);
+	//console.log("sortcol#0:", sortCol);
+	//console.log("sortdirection:", sortDirection);
 	$.ajax({
 		type: "GET",
 		url: "/Enquiry/GetEnquiries",
@@ -6457,7 +6457,8 @@ function fillInEnquiry() {
 	enquiry.FollowUpDateInfo.type = "date";
 	enquiry.FollowUpDateInfo.status = $(".followup:checked").val() as string;
 	enquiry.FollowUpDateInfo.JsFollowUpDate = $("#followUpDate").val() as string;
-	enquiry.FollowUpDateInfo.Id = $("#EnquiryInfo_Id").val() as string;
+	//FollowUpDateInfo_Id
+	enquiry.FollowUpDateInfo.Id = $("#FollowUpDateInfo_Id").val() as string;
 }
 
 interface IEnquiry {
@@ -18867,7 +18868,20 @@ interface IIvDelQty extends IIvQty {
 	Id: string;
 	seq: number;
 }
-interface IDepositItem extends ISalesLn {
+
+interface IDepositItem extends ISalesLn {	
+	rtsCode: string;
+	rtsCusID: number;
+	rtsLineTotalPlusTax: number | null;
+	rtsFinalDiscAmt: number | null;
+	rtsFinalTotal: number | null;
+	rtsRmks: string;
+	rtsDate: string;
+	rtsInternalRmks: string;
+	rtsEpay: boolean;
+	rtsSalesLoc: string;
+	rtsDvc: string;
+	roundings: number | null;
     QtyAvailable: number;
     DepositDate: string;
     DepositAmtDisplay: string;
@@ -18875,7 +18889,8 @@ interface IDepositItem extends ISalesLn {
     AmtDisplay: string;
     TaxPcDisplay: string;
     DiscPcDisplay: string;
-    SellingPriceDisplay: string;
+	SellingPriceDisplay: string;
+	
 
 }
 $(document).on("dblclick", ".povari.pointer", function () {

@@ -450,7 +450,7 @@ $(function () {
 	gTblName = "tblDeposit";
 
 	dicPayTypes = $infoblk.data("dicpaytypes");
-	defaultcustomer = $infoblk.data("defaultcustomer");
+	//defaultcustomer = $infoblk.data("defaultcustomer");
 	taxModel = $infoblk.data("taxmodel");
 	inclusivetax = $infoblk.data("inclusivetax") == "True";
 	inclusivetaxrate = $infoblk.data("inclusivetaxrate");

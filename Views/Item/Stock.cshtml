@@ -76,22 +76,7 @@
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script>
-    //function txtStockKeyPress(e) {
-    //    //var txtStock = document.getElementById("txtStock");
-    //    //keyword = txtStock.value;
-    //    //console.log("barcode.value:" + barcode.value);
-    //    //keyword = barcode.value;
-    //    keyword = e.target.value;
-    //    console.log("keyword:" + keyword);
-    //    searchStock(keyword);
-    //}
-
-    //function searchStock(keyword){        
-    //    if (keyword !== "") {
-    //        console.log("keyword:" + keyword);
-    //        GetStocks(1);
-    //    }
-    //}
+    
     var barcode = document.querySelector("#txtStock");
     $('#txtStock').on({
         keypress: function (e) {
@@ -108,16 +93,7 @@
             },500);
 
         }
-        //blur: function () {
-        //    //keyword = barcode.value;
-        //    //searchStock(keyword);
-        //    //barcode.value = "";
-        //    keyword = $(this).val();
-        //    searchStock(keyword);
-        //},
-        //input: function () {
-           
-        //}
+        
     });
 </script>
 <script src="~/Scripts/ts/js/item/stock.js?v=@rand"></script>

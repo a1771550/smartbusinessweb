@@ -52,141 +52,149 @@ $(document).on("click", ".removeenq", function () {
 $(document).on("click", "#addenq", function () {
     window.location.href = "/Enquiry/Add";
 });
-$(document).on('click', '.convert', function () {
+$(document).on("click", ".convert", function () {
     let _$ele = $(this);
+    $.fancyConfirm({
+        title: '',
+        message: $infoblk.data("confirmconverttocustomertxt"),
+        shownobtn: true,
+        okButton: oktxt,
+        noButton: notxt,
+        callback: function (value) {
+            if (value) {
+                const assignedsalesId: number = Number(_$ele.data("salesid"));
+                //console.log("assignedsalesId:" +assignedsalesId);
+                //return;
+                if (assignedsalesId == 0) {
+                    $.fancyConfirm({
+                        title: '',
+                        message: assignsalesmanrequiredtxt,
+                        shownobtn: false,
+                        okButton: oktxt,
+                        noButton: notxt,
+                    });
+                } else {
+                    let _id = _$ele.data('id');
+                    let _msg = '';
 
-    const assignedsalesId: number = Number(_$ele.data("salesid"));
-    //console.log("assignedsalesId:" +assignedsalesId);
-    //return;
-    if (assignedsalesId == 0) {
-        $.fancyConfirm({
-            title: '',
-            message: assignsalesmanrequiredtxt,
-            shownobtn: false,
-            okButton: oktxt,
-            noButton: notxt,
-        });
-    } else {
-        let _id = _$ele.data('id');
-        let _msg = '';
+                    let _email = _$ele.data('email').toString();
+                    let _phone = _$ele.data('phone').toString();
+                    console.log(_email + ";" + _phone);
+                    _email = _email.trim();
+                    _phone = _phone.trim();
 
-        let _email = _$ele.data('email') as string;
-        let _phone = (_$ele.data('phone')).toString();
-        console.log(_email + ";" + _phone);
-        _email = _email.trim();
-        _phone = _phone.trim();
-
-        let _emailduplicated = false;
-        let _phoneduplicated = false;
-        if (currentcontactemaillist.includes(_email)) {
-            _emailduplicated = true;
-        }
-        //console.log(currentcontactphonelist.includes(_phone));
-        if (currentcontactphonelist.includes(_phone)) {
-            _phoneduplicated = true;
-        }
-        console.log(`emaildup:${_emailduplicated}; phonedup:${_phoneduplicated}`);
-        if (_emailduplicated && _phoneduplicated) {
-            let _parameters: string[] = [_email, _phone];
-            console.log('parameters:', _parameters);
-            //return false;
-            $.ajax({
-                type: "GET",
-                url: '/Api/SearchContact',
-                traditional: true,//must add this if passing string array
-                data: { type: 'emailphone', parameters: _parameters },
-                success: function (data: IContact) {
-                    if (data) {
-                        var name = data.cusIsOrganization ? data.cusName : data.cusFirstName + " " + data.cusName;
-                        var mailinusetxt = (<string>$infoblk.data('emailinusetxt')).replace('{0}', `: ${name}`).replace('{1}', `: ${_email}`);
-                        var phoneinusetxt = (<string>$infoblk.data('phoneinusetxt')).replace('{0}', `: ${name}`).replace('{1}', `: ${_phone}`);
-                        _msg = `${mailinusetxt}<br>${phoneinusetxt}<br>${$infoblk.data('confirmprompt')}`;
-                        $.fancyConfirm({
-                            title: '',
-                            message: _msg,
-                            shownobtn: true,
-                            okButton: oktxt,
-                            noButton: notxt,
-                            callback: function (value) {
-                                if (value) {
-                                    window.location.href = `/Enquiry/AddToContact?enqId=${_id}&overwrite=1`;
-                                } else {
-                                    _$ele.trigger("focus");
+                    let _emailduplicated = false;
+                    let _phoneduplicated = false;
+                    if (currentcontactemaillist.includes(_email)) {
+                        _emailduplicated = true;
+                    }
+                    //console.log(currentcontactphonelist.includes(_phone));
+                    if (currentcontactphonelist.includes(_phone)) {
+                        _phoneduplicated = true;
+                    }
+                    //console.log(`emaildup:${_emailduplicated}; phonedup:${_phoneduplicated}`);
+                    if (_emailduplicated && _phoneduplicated) {
+                        let _parameters: string[] = [_email, _phone];
+                        console.log('parameters:', _parameters);
+                        //return false;
+                        $.ajax({
+                            type: "GET",
+                            url: '/Api/SearchContact',
+                            traditional: true,//must add this if passing string array
+                            data: { type: 'emailphone', parameters: _parameters },
+                            success: function (data: IContact) {
+                                if (data) {
+                                    var name = data.cusIsOrganization ? data.cusName : data.cusFirstName + " " + data.cusName;
+                                    var mailinusetxt = (<string>$infoblk.data('emailinusetxt')).replace('{0}', `: ${name}`).replace('{1}', `: ${_email}`);
+                                    var phoneinusetxt = (<string>$infoblk.data('phoneinusetxt')).replace('{0}', `: ${name}`).replace('{1}', `: ${_phone}`);
+                                    _msg = `${mailinusetxt}<br>${phoneinusetxt}<br>${$infoblk.data('confirmprompt')}`;
+                                    $.fancyConfirm({
+                                        title: '',
+                                        message: _msg,
+                                        shownobtn: true,
+                                        okButton: oktxt,
+                                        noButton: notxt,
+                                        callback: function (value) {
+                                            if (value) {
+                                                window.location.href = `/Enquiry/AddToContact?enqId=${_id}&overwrite=1`;
+                                            } else {
+                                                _$ele.trigger("focus");
+                                            }
+                                        }
+                                    });
                                 }
-                            }
+                            },
+                            dataType: 'json'
                         });
                     }
-                },
-                dataType: 'json'
-            });
-        }
-        else if (_emailduplicated) {
-            $.ajax({
-                type: "GET",
-                url: '/Api/SearchContact',
-                data: { type: 'Email', parameters: _email },
-                success: function (data: IContact) {
-                    if (data) {
-                        var name = data.cusIsOrganization ? data.cusName : data.cusFirstName + " " + data.cusName;
-                        var mailinusetxt = (<string>$infoblk.data('emailinusetxt')).replace('{0}', `: ${name}`).replace('{1}', `: ${_email}`);
-                        _msg = `${mailinusetxt}<br>${$infoblk.data('confirmprompt')}`;
-                        $.fancyConfirm({
-                            title: '',
-                            message: _msg,
-                            shownobtn: true,
-                            okButton: oktxt,
-                            noButton: notxt,
-                            callback: function (value) {
-                                if (value) {
-                                    window.location.href = `/Enquiry/AddToContact?enqId=${_id}&overwrite=1`;
-                                } else {
-                                    _$ele.trigger("focus");
+                    else if (_emailduplicated) {
+                        $.ajax({
+                            type: "GET",
+                            url: '/Api/SearchContact',
+                            data: { type: 'Email', parameters: _email },
+                            success: function (data: IContact) {
+                                if (data) {
+                                    var name = data.cusIsOrganization ? data.cusName : data.cusFirstName + " " + data.cusName;
+                                    var mailinusetxt = (<string>$infoblk.data('emailinusetxt')).replace('{0}', `: ${name}`).replace('{1}', `: ${_email}`);
+                                    _msg = `${mailinusetxt}<br>${$infoblk.data('confirmprompt')}`;
+                                    $.fancyConfirm({
+                                        title: '',
+                                        message: _msg,
+                                        shownobtn: true,
+                                        okButton: oktxt,
+                                        noButton: notxt,
+                                        callback: function (value) {
+                                            if (value) {
+                                                window.location.href = `/Enquiry/AddToContact?enqId=${_id}&overwrite=1`;
+                                            } else {
+                                                _$ele.trigger("focus");
+                                            }
+                                        }
+                                    });
                                 }
-                            }
+                            },
+                            dataType: 'json'
                         });
                     }
-                },
-                dataType: 'json'
-            });
-        }
-        else if (_phoneduplicated) {
-            $.ajax({
-                type: "GET",
-                url: '/Api/SearchContact',
-                data: { type: 'phone', parameters: _phone },
-                success: function (data: IContact) {
-                    if (data) {
-                        var name = data.cusIsOrganization ? data.cusName : data.cusFirstName + " " + data.cusName;
-                        var phoneinusetxt = (<string>$infoblk.data('phoneinusetxt')).replace('{0}', `: ${name}`).replace('{1}', `: ${_phone}`);
-                        _msg = `${phoneinusetxt}<br>${$infoblk.data('confirmprompt')}`;
-                        $.fancyConfirm({
-                            title: '',
-                            message: _msg,
-                            shownobtn: true,
-                            okButton: oktxt,
-                            noButton: notxt,
-                            callback: function (value) {
-                                if (value) {
-                                    window.location.href = `/Enquiry/AddToContact?enqId=${_id}&overwrite=1`;
-                                } else {
-                                    _$ele.trigger("focus");
+                    else if (_phoneduplicated) {
+                        $.ajax({
+                            type: "GET",
+                            url: '/Api/SearchContact',
+                            data: { type: 'phone', parameters: _phone },
+                            success: function (data: IContact) {
+                                if (data) {
+                                    var name = data.cusIsOrganization ? data.cusName : data.cusFirstName + " " + data.cusName;
+                                    var phoneinusetxt = (<string>$infoblk.data('phoneinusetxt')).replace('{0}', `: ${name}`).replace('{1}', `: ${_phone}`);
+                                    _msg = `${phoneinusetxt}<br>${$infoblk.data('confirmprompt')}`;
+                                    $.fancyConfirm({
+                                        title: '',
+                                        message: _msg,
+                                        shownobtn: true,
+                                        okButton: oktxt,
+                                        noButton: notxt,
+                                        callback: function (value) {
+                                            if (value) {
+                                                window.location.href = `/Enquiry/AddToContact?enqId=${_id}&overwrite=1`;
+                                            } else {
+                                                _$ele.trigger("focus");
+                                            }
+                                        }
+                                    });
                                 }
-                            }
+                            },
+                            dataType: 'json'
                         });
                     }
-                },
-                dataType: 'json'
-            });
+                    else {
+                        window.location.href = `/Enquiry/AddToContact?enqId=${_id}`;
+                    }
+                }
+            }
         }
-        else {
-            window.location.href = `/Enquiry/AddToContact?enqId=${_id}`;
-        }
-    }
-
-
+    });	
 });
 
-$(document).on('change', '#iPageSize', function () {
+$(document).on("change", "#iPageSize", function () {
     let pagesize: number = <number>$(this).val();
     if (pagesize <= 0) {
         $.fancyConfirm({
@@ -207,7 +215,7 @@ $(document).on('change', '#iPageSize', function () {
     }
 });
 
-$(document).on('dblclick', '.enquiry', function () {
+$(document).on("dblclick", ".enquiry", function () {
     let Id: number = <number>$(this).data('id');
     window.location.href = '/Enquiry/Edit?Id=' + Id;
 });
@@ -218,7 +226,7 @@ $(document).on("click", ".assign", function (e) {
     //console.log("salespersonid:" + $(this).data("salespersonid"));
     handleAssign($(this).data("salespersonid"));
 });
-$(document).on('click', '#btnAssign', function () {
+$(document).on("click", '#btnAssign', function () {
     $target = $(this);
     if (assignEnqIdList.length === 0) {
         let msg = <string>$infoblk.data('selectatleastoneclienttxt');
@@ -324,6 +332,7 @@ function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) 
     EnquiryList = [];
 
     let mgtEmail = document.getElementById("mgt-email");
+    //console.log("msgEmail:", mgtEmail);
     let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", `${enquiryacc}`);
     $("#mgt-email").attr("resource", _resource);
 
@@ -349,10 +358,10 @@ function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) 
                     saveEnquiries(enqlist);
             }
             
-            sortCol = 8;
-            GetEnquiries(pageIndex);
-            
+            sortCol = 8;        
         });
+
+        GetEnquiries(pageIndex);     
     }
     //closeWaitingModal();
 }
@@ -382,14 +391,8 @@ $(function () {
         if (frmdate == currentoldestdate) {
             handleMGTmails(frmdate, todate);
         }
-    } else {
-        //todate == today:
-        //if (formatDate(new Date()) == formatDate(new Date(todate))) {
-        //    //frmdate = todate;
-        //    handleMGTmails(todate, todate);
-        //} else {
+    } else {        
         handleMGTmails(frmdate, todate);
-        //}
     }
     //closeWaitingModal();
     DicAssignedSalesEnqId = $infoblk.data("jsondicassignedsalesenqid");

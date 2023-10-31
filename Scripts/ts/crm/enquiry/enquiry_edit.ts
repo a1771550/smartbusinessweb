@@ -76,7 +76,7 @@ function _validenquiryform(): boolean {
 $(document).on('click', '#btnSave', function () {
 	fillInEnquiry();
     if (_validenquiryform()) {		
-		console.log('enquiry:', enquiry);
+		//console.log('enquiry:', enquiry);
 		//return false;
 		$.ajax({
 			type: "POST",

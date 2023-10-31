@@ -326,7 +326,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                 //don't move the code below to the construction of CustomerModel!!!                
                 model.IpCountry = region != null ? region.EnglishName : "Hong Kong";
                 model.enableCRM = (bool)comInfo.enableCRM;
-                return View("Edit", model);
+                return View(model);
             }
             else
             {

@@ -57,28 +57,7 @@
             </tr>
         </thead>
 
-        @if (Model.CheckoutPortal.ToLower() == "kingdee")
-        {
-            foreach (var customer in Model.KCustomerList)
-            {
-                var email = string.IsNullOrEmpty(customer.CustEmail) ? "N/A" : customer.CustEmail;
-                var checkouttxt = customer.IsCheckout ? Resources.Resource.No : Resources.Resource.Yes;
-                var blinkcls = customer.IsCheckout ? "" : "blinking";
-                <tr data-ischeckout="@customer.IsCheckout" class="small">
-                    <td style="width:110px;max-width:110px;" class="text-center @blinkcls">@customer.CustName</td>
-                    <td style="width:110px;max-width:110px;" class="text-center @blinkcls">@email</td>
-                    <td style="width:110px;max-width:110px;" class="text-center @blinkcls">@checkouttxt</td>
-                    <td style="width:125px;max-width:125px;">
-                        <a class="btn btn-info" role="button" href="/Customer/Edit?customerId=@customer.Id"><span class="small">@Resources.Resource.Edit</span></a>
-
-                        <a class="btn btn-danger kremove" role="button" href="#" data-id="@customer.Id"><span class="small">@Resources.Resource.Remove</span></a>
-                    </td>
-                </tr>
-            }
-        }
-        else
-        {
-            foreach (var customer in customerList)
+            @foreach (var customer in customerList)
             {
                 var email = string.IsNullOrEmpty(customer.cusEmail) ? "N/A" : customer.cusEmail;
                 string cname = customer.cusIsOrganization ? customer.cusName : string.Concat(customer.cusFirstName, " ", customer.cusName);
@@ -97,7 +76,7 @@
                     </td>
                 </tr>
             }
-        }
+       
     </table>
 
     <div id="pagingblk" class="mx-3">
