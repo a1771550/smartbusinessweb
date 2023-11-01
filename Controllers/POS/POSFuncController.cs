@@ -233,31 +233,6 @@ namespace SmartBusinessWeb.Controllers
 			return View(model);
 		}
 
-		[HandleError]
-		[CustomAuthorize("deposit", "boss", "admin", "superadmin")]
-		public ActionResult Deposit()
-		{
-			ViewBag.ParentPage = "sales";
-			ViewBag.PageName = "deposit";
-			DepositEditModel model = new DepositEditModel();	
-			return View(model);
-		}
-
-		[HttpGet]
-		public JsonResult GetDeposit(string receiptno)
-		{
-			DepositEditModel model = new DepositEditModel();
-			model.Get(receiptno);
-			return Json(model, JsonRequestBehavior.AllowGet);
-		}
-
-		[HttpPost]
-		public ActionResult ProcessRemain(DepositModel Sales, List<DepositItem> DepositItemList, List<PayLnView> Payments)
-		{
-			string salescode = ModelHelper.ProcessRemain(Sales, DepositItemList, Payments);
-			return Json(new { msg = "", salescode });
-		}
-
 		
 
 		[HandleError]

@@ -5873,6 +5873,8 @@ interface IReceipt {
 }
 
 interface ISales extends ISalesBase {
+    PayAmt: number;
+    SettleDateDisplay: string;
 	Customer: ICustomer;
 	authcode: string;
 	InternalNotes: string;
@@ -7594,11 +7596,13 @@ function initSalesLn(_seq: number | undefined = 0): ISalesLn {
 		itemVariList: [],
 		batchList: [],
 		snbatseqvtlist: [],
+		SettleDateDisplay:""
 	};
 }
 // let DicPayType: { [Key: string]: string } = {};
 // let DicItemSNs: { [Key: string]: Array<ISerialNo> } = {};
 interface ISalesLn {
+    SettleDateDisplay: string;
 	rtlUID: number;
 	rtlSalesLoc: string;
 	rtlDvc: string;
@@ -14696,19 +14700,23 @@ $(document).on("click", "#transactionEpay", function () {
 });
 
 $(document).on("click", ".btnPayment", function () {
-	//console.log("SalesList:", SalesList);
-	if (SalesLnList.length === 0 || $(`#${gTblName} .focus`).length > 0) {
-		falert(salesinfonotenough, oktxt);
-	} else {
-		if (fordeposit)
-			openPayModel_De();
-		else {
-			if (forsales) openPayModal();
-			if (forpreorder) {
-				if (Sales.rtsUID > 0) openPayModel_De();
-				else openPayModal();
-			}
+	if (forsales) {
+		if (SalesLnList.length === 0 || $(`#${gTblName} .focus`).length > 0) {
+			falert(salesinfonotenough, oktxt);
+		} else {
+			openPayModal();
 		}
+	}
+	if (fordeposit) {		
+		if (DepositLnList.length === 0) {
+			falert(salesinfonotenough, oktxt);
+		} else {
+			openPayModel_De();
+		}
+	}
+	if (forpreorder) {
+		if (Sales.rtsUID > 0) openPayModel_De();
+		else openPayModal();
 	}
 });
 
@@ -18257,12 +18265,12 @@ function handleAssign(salespersonId: number | null) {
 				let html = "";
 				$.each(data, function (i, e: ICrmUser) {
 					let uname = e.UserName;
-					let desc = e.surDesc ?? "N/A";
+					let email = formatEmail(e.Email,e.UserName) ?? "N/A";
 					let notes = e.surNotes ?? "N/A";
 					if (salespersonId != null && salespersonId == e.surUID) {
-						html += `<tr data-id="${e.surUID}" class="selected"><td>${uname}</td><td>${desc}</td><td>${notes}</td><td><span class="small">${e.ModifyTimeDisplay}</span></td></tr>`;
+						html += `<tr data-id="${e.surUID}" class="selected"><td>${uname}</td><td>${email}</td><td>${notes}</td><td><span class="small">${e.ModifyTimeDisplay}</span></td></tr>`;
 					} else {
-						html += `<tr data-id="${e.surUID}" class="pointer" ondblclick="assignSave(${e.surUID});"><td>${uname}</td><td>${desc}</td><td>${notes}</td><td><span class="small">${e.ModifyTimeDisplay}</span></td></tr>`;
+						html += `<tr data-id="${e.surUID}" class="pointer" ondblclick="assignSave(${e.surUID});"><td>${uname}</td><td>${email}</td><td>${notes}</td><td><span class="small">${e.ModifyTimeDisplay}</span></td></tr>`;
 					}
 				});
 				$target = $("#tblsalesmen tbody");
@@ -18883,7 +18891,7 @@ interface IDepositItem extends ISalesLn {
 	rtsDvc: string;
 	roundings: number | null;
     QtyAvailable: number;
-    DepositDate: string;
+    SettleDate: string;
     DepositAmtDisplay: string;
     DepositQty: number;
     AmtDisplay: string;
@@ -20364,3 +20372,11 @@ function openPayModel_De() {
 	let cashtxt = itotalremainamt.toFixed(2);
 	$("#Cash").val(cashtxt);
 }
+
+function formatEmail(email: string, username:string|null=""):string {
+	return `<a class="simplelnk" href="mailto:${email}" target="_blank">${username??email}</a>`;
+}
+
+$(document).on("click", "#btnReload", function () {
+	window.location.reload();
+});

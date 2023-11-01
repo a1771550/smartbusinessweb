@@ -90,6 +90,11 @@
           <path>Scripts\ts\customer\customeredit.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\customer\customeredit.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>enquiry.ts</name>
+          <path>Scripts\ts\crm\enquiry\enquiry.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\crm\enquiry\enquiry.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -140,6 +145,11 @@
           <name>_SalesBlk.cshtml</name>
           <path>Views\Shared\_SalesBlk.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Shared\_SalesBlk.cshtml</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>deposit_Index.cshtml</name>
+          <path>Views\Deposit\Index.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Deposit\Index.cshtml</absolutePath>
         </Favorite>
       </favorites>
     </Folder>
@@ -211,6 +221,16 @@
           <name>CustomerController.cs</name>
           <path>Controllers\Customer\CustomerController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Customer\CustomerController.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>EnquiryController.cs</name>
+          <path>Controllers\CRM\EnquiryController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\CRM\EnquiryController.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>DepositController.cs</name>
+          <path>Controllers\POS\DepositController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\POS\DepositController.cs</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

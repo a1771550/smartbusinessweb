@@ -7,32 +7,29 @@ function submitRemaining() {
 		$("#changeModal").dialog("close");
 	}
 
-	Deposit.Notes = <string>$("#txtNotes").val();
-	Deposit.rtsCusID = selectedCus.cusCustomerID;
-	Deposit.rtlCode = rno;
-	Deposit.TotalRemainAmt = itotalremainamt;
+	Deposit.rtsRmks = <string>$("#txtNotes").val();
 	Deposit.rtsDvc = $("#txtDeviceCode").val() as string;
 
-	console.log("DepositItemList:", DepositItemList);
+	console.log("DepositLnList:", DepositLnList);
 	console.log("Payments:", Payments);
 	//return false;
-	if (DepositItemList.length > 0) {
-		let url = "/POSFunc/ProcessRemain";
+	if (DepositLnList.length > 0) {
+		let url = "/Deposit/ProcessRemain";
 		openWaitingModal();
 		$.ajax({
 			type: "POST",
 			url: url,
-			data: { Deposit, DepositItemList, Payments },
+			data: { Deposit, DepositLnList, Payments },
 			success: function (data) {
 				closeWaitingModal();
-				console.log("returned data:", data);
-				if (data.msg !== "silent") {
+				/*console.log("returned data:", data);*/
+				
 					url =
 						printurl +
 						"?issales=1&salesrefundcode=" +
-						data.rtlCode;
+						data.salescode;
 					window.open(url);
-				}
+				
 				window.location.reload();
 			},
 			dataType: "json",
@@ -89,8 +86,8 @@ $(document).on("click", "#btnSearchReceipt", function () {
 	} else {
 		openWaitingModal();
 		getRemoteData(
-			"/POSFunc/GetDeposit",
-			{ receiptno: rno },
+			"/Deposit/GetDeposit",
+			{ receiptno: rno, phoneno },
 			getReceiptOk_De,
 			getRemoteDataFail
 		);
@@ -102,14 +99,25 @@ function getReceiptOk_De(data) {
 	//console.log("data:", data);
 	//return;
 	if (data.msg != null) {
-		falert(data.msg, oktxt);
+		$.fancyConfirm({
+			title: '',
+			message: data.msg,
+			shownobtn: false,
+			okButton: oktxt,
+			noButton: notxt,
+			callback: function (value) {
+				if (value) {
+					$("#btnReload").trigger("click");
+				}
+			}
+		});	
 	} else {
 		Deposit = data.Deposit;
 		selectedSalesCode = Deposit.rtsCode;
 		selectedCus = data.customer;
 		selectedCusCodeName = selectedCus.cusCode;
 		companyinfo = data.companyinfo;
-		receipt = data.receipt;
+		//receipt = data.receipt;
 		dicPayTypes = data.dicpaytypes;
 		DepositLnList = data.salesLns.slice(0);
 		//console.log('saleslnlist:', DepositLnList);
@@ -118,12 +126,22 @@ function getReceiptOk_De(data) {
 		snlist = data.snlist.slice(0);
 		cpplList = data.customerpointpricelevels.slice(0);
 
-		if (data.depositLns.length > 0) {
-			depositLns = data.depositLns.slice(0);
-		}
-		//console.log('depositLns:', depositLns);
-		itotalremainamt = data.remainamt;
+		//dicPayTypes = $infoblk.data("dicpaytypes");
+		////defaultcustomer = $infoblk.data("defaultcustomer");
+		taxModel = data.taxModel;
+		inclusivetax = data.inclusivetax;
+		inclusivetaxrate = data.inclusivetaxrate;
+		enableTax = data.enableTax;
+		DicLocation = data.DicLocation;
+		JobList = data.JobList;
+		DicCurrencyExRate = data.DicCurrencyExRate;
+
+		$("#txtNotes").val(Deposit.rtsRmks);
+
+		itotalremainamt = Deposit.TotalRemainAmt!;
 		$("#txtTotalRemain").val(formatnumber(itotalremainamt));
+		$(".btnPayment").prop("disabled", itotalremainamt <= 0);
+
 		fillinForm_De();
 		setupForexInfo();
 	}
@@ -171,70 +189,45 @@ function fillinForm_De() {
 		}
 	}
 
-	if (Deposit.rtsRmks !== null) {
-		//console.log("remark:" + Deposit.rtsRmks);
-		let $rblk = $("#salesremarkblk");
-		$rblk.find("span").text(Deposit.rtsRmks);
-		$rblk.show();
-	}
-
 	let html = "";
-	/*let salesitem: IDepositItem;*/
-	let salesitem: IDepositItem;
-
 	$.each(DepositLnList, function (i, e) {
 		let item = $.grep(ItemList, function (ele, idx) {
 			return ele.itmCode == e.rtlItemCode;
 		})[0];
 		let batch = e.rtlBatchCode == null ? "N/A" : e.rtlBatchCode;
 		totalsalesQty += e.rtlQty!;
-		let depositqty: number = 0,
-			depositdate = "N/A",
-			depositamt: number = 0,
-			depositamttxt: string = "";
+		//let depositqty: number = 0,
+		//	depositdate = "N/A",
+		//	depositamt: number = 0,
 
-		if (depositLns.length > 0) {
-			$.each(depositLns, function (index, val) {
-				/* console.log('depositlist seq:' + val.rtl) */
-				if (
-					e.rtlCode.toString().toLowerCase().indexOf("de") >= 0 &&
-					val.rtlItemCode.toString() == e.rtlItemCode.toString() &&
-					val.rtlSeq == e.rtlSeq
-				) {
-					//console.log('depositamt:' + val.DepositAmt);
-					depositamt = val.DepositAmt as number;
-					depositamttxt = formatmoney(val.DepositAmt as number);
-					depositqty = val.rtlQty!;
-					depositdate = val.SalesDateDisplay;
-					return false;
-				}
-			});
-		}
-		//console.log('depositamt:' + depositamt);
-		salesitem = {} as IDepositItem;
-		salesitem.rtlCode = e.rtlCode;
-		salesitem.rtlItemCode = e.rtlItemCode;
-		salesitem.rtlSeq = e.rtlSeq as number;
-		salesitem.rtlDesc = item.itmDesc;
-		salesitem.rtlBatchCode = batch;
-		salesitem.rtlQty = e.rtlQty as number;
-		salesitem.rtlSellingPrice = e.rtlSellingPrice as number;
-		salesitem.SellingPriceDisplay = formatmoney(e.rtlSellingPrice as number);
-		salesitem.rtlLineDiscPc = e.rtlLineDiscPc as number;
-		salesitem.DiscPcDisplay = formatnumber(e.rtlLineDiscPc as number);
-		salesitem.TaxPcDisplay = formatnumber(e.rtlTaxPc as number);
-		salesitem.rtlTaxPc = e.rtlTaxPc as number;
-		salesitem.AmtDisplay = formatmoney(e.rtlSalesAmt as number);
-		salesitem.rtlSalesAmt = e.rtlSalesAmt as number;
-		salesitem.SalesDateDisplay = e.SalesDateDisplay;
-		salesitem.DepositQty = depositqty;
-		salesitem.DepositAmtDisplay = depositamttxt;
-		salesitem.DepositAmt = depositamt;
-		salesitem.DepositDate = depositdate;
-		salesitem.QtyAvailable = item.Qty;
-		salesitem.rtlStockLoc = e.rtlStockLoc;
-		DepositItemList.push(salesitem);
-		//項目代碼	數量	 價格	折扣%	金額	 銷售日期	退款金額 	退款日期 	詳細
+		let depositItem = {} as IDepositItem;
+		depositItem.rtlCode = e.rtlCode;
+		depositItem.rtlItemCode = e.rtlItemCode;
+		depositItem.rtlSeq = e.rtlSeq as number;
+		depositItem.rtlDesc = item.itmDesc;
+		depositItem.rtlBatchCode = batch;
+		depositItem.rtlQty = e.rtlQty as number;
+		depositItem.rtlSellingPrice = e.rtlSellingPrice as number;
+		depositItem.SellingPriceDisplay = formatmoney(e.rtlSellingPrice as number);
+		depositItem.rtlLineDiscPc = e.rtlLineDiscPc as number;
+		depositItem.DiscPcDisplay = formatnumber(e.rtlLineDiscPc as number);
+		depositItem.TaxPcDisplay = formatnumber(e.rtlTaxPc as number);
+		depositItem.rtlTaxPc = e.rtlTaxPc as number;
+		depositItem.AmtDisplay = formatmoney(e.rtlSalesAmt as number);
+		depositItem.rtlSalesAmt = e.rtlSalesAmt as number;
+
+		depositItem.SalesDateDisplay = Deposit.SalesDateDisplay;
+		depositItem.SettleDateDisplay = Deposit.SettleDateDisplay;
+
+		depositItem.DepositAmt = Deposit.PayAmt;
+		depositItem.DepositAmtDisplay = formatnumber(Deposit.PayAmt);
+		
+		depositItem.SettleDate = depositdate;
+		depositItem.QtyAvailable = item.Qty;
+		depositItem.rtlStockLoc = e.rtlStockLoc;
+
+		//DepositItemList.push(depositItem);
+		
 		html +=
 			'<tr data-itmDesc="' +
 			item.itmDesc +
@@ -253,20 +246,20 @@ function fillinForm_De() {
 			'</td><td class="text-right">' +
 			formatnumber(e.rtlSalesAmt as number) +
 			'</td><td class="text-center">' +
-			e.SalesDateDisplay +
+			Deposit.SalesDateDisplay +
 			'</td><td class="text-right">' +
-			formatnumber(depositamt) +
+			formatnumber(Deposit.PayAmt) +
 			'</td><td class="text-center">' +
-			depositdate +
+			Deposit.SettleDateDisplay +
 			'</td><td class="text-center">' +
 			e.rtlStockLoc +
 			"</td></tr>";
 	});
 	//console.log("salesitemlist:", salesitemlist);
 
-	$("#tblDeposit tbody").empty().append(html);
+	$(`#${gTblName} tbody`).empty().append(html);
 
-	$("#tblDeposit tbody tr").each(function (i, e) {
+	$(`#${gTblName} tbody tr`).each(function (i, e) {
 		$(e)
 			.find("td")
 			.each(function (idx, ele) {
@@ -281,161 +274,6 @@ function fillinForm_De() {
 	});
 }
 
-function salesDetail_De(rtlItemCode, seq) {
-	let salesitem = $.grep(DepositItemList, function (e, i) {
-		return e.rtlItemCode === rtlItemCode && e.rtlSeq == seq;
-	})[0];
-	//console.log('salesitem:', salesitem);
-	//console.log('salesdate:' + salesitem.date);
-	//console.log('snlist:', snlist);
-	let _snlist = $.grep(snlist, function (e, i) {
-		console.log(
-			"rtlCode:" +
-			e.snoRtlSalesCode +
-			";rtlSeq:" +
-			e.snoRtlSalesSeq +
-			";date:" +
-			e.SalesDateDisplay
-		);
-		return (
-			e.snoItemCode === rtlItemCode &&
-			e.snoRtlSalesCode === salesitem.rtlCode &&
-			e.snoRtlSalesSeq == seq &&
-			e.SalesDateDisplay == salesitem.SalesDateDisplay
-		);
-	});
-	//console.log('_snlist:', _snlist);
-
-	let html = '<ul class="list-group list-group-flush">';
-	html +=
-		'<li class="list-group-item"><strong>' +
-		receiptnotxt +
-		"</strong>: " +
-		salesitem.rtlCode +
-		"</li>";
-	html +=
-		'<li class="list-group-item"><strong>' +
-		itemcodetxt +
-		"</strong>: " +
-		salesitem.rtlItemCode +
-		"</li>";
-	html +=
-		'<li class="list-group-item"><strong>' +
-		description +
-		"</strong>: " +
-		salesitem.rtlDesc +
-		"</li>";
-	html +=
-		'<li class="list-group-item"><strong>' +
-		batchtxt +
-		"</strong>: " +
-		salesitem.rtlBatchCode +
-		"</li>";
-	if (_snlist.length > 0) {
-		let sncodes: string[] = [];
-		$.each(_snlist, function (i, e) {
-			sncodes.push(e.snoCode);
-		});
-		console.log("sncodes:", sncodes);
-		html +=
-			'<li class="list-group-item"><strong>' +
-			serialnotxt +
-			"</strong>: " +
-			sncodes.join() +
-			"</li>";
-	}
-
-	html +=
-		'<li class="list-group-item"><strong>' +
-		sellingpricetxt +
-		"</strong>: " +
-		salesitem.SellingPriceDisplay +
-		"</li>";
-	html +=
-		'<li class="list-group-item"><strong>' +
-		discountitemheader +
-		"</strong>: " +
-		salesitem.DiscPcDisplay +
-		"</li>";
-	html +=
-		'<li class="list-group-item"><strong>' +
-		taxitemheader +
-		"</strong>: " +
-		salesitem.TaxPcDisplay +
-		"</li>";
-	html +=
-		'<li class="list-group-item"><strong>' +
-		amountitemheader +
-		"</strong>: " +
-		salesitem.AmtDisplay +
-		"</li>";
-	html +=
-		'<li class="list-group-item"><strong>' +
-		salesdatetxt +
-		"</strong>: " +
-		salesitem.SalesDateDisplay +
-		"</li>";
-	html +=
-		'<li class="list-group-item"><strong>' +
-		qtytxt +
-		"</strong>: " +
-		salesitem.rtlQty +
-		"</li>";
-	//html += '<li class="list-group-item"><strong>' + qtyavailable + '</strong>: ' + salesitem.qtyavailable + '</li>';
-	html +=
-		'<li class="list-group-item"><strong>' +
-		depositamt +
-		"</strong>: " +
-		salesitem.DepositAmtDisplay +
-		"</li>";
-	html +=
-		'<li class="list-group-item"><strong>' +
-		depositdate +
-		"</strong>: " +
-		salesitem.DepositDate +
-		"</li>";
-	html += "</ul>";
-	$.fancyConfirm({
-		title: "",
-		message: html,
-		shownobtn: false,
-		okButton: oktxt,
-		noButton: canceltxt,
-		callback: function (value) {
-			if (value) {
-				//focusItemCode();
-			}
-		},
-	});
-}
-
-$(document).on("click", "#btnPayment", function () {
-	if (DepositLnList.length === 0) {
-		falert(salesinfonotenough, oktxt);
-	} else {
-		openPayModel_De();
-	}
-});
-
-
-
-$(document).on("click", "#btnReload", function () {
-	if (DepositLnList.length > 0) {
-		$.fancyConfirm({
-			title: "",
-			message: confirmreload,
-			shownobtn: true,
-			okButton: oktxt,
-			noButton: canceltxt,
-			callback: function (value) {
-				if (value) {
-					window.location.reload();
-				}
-			},
-		});
-	}
-});
-
 $(function () {
 	fordeposit = true;
 	setFullPage();
@@ -449,18 +287,7 @@ $(function () {
 	//Deposit = $infoblk.data("sales");
 	gTblName = "tblDeposit";
 
-	dicPayTypes = $infoblk.data("dicpaytypes");
-	//defaultcustomer = $infoblk.data("defaultcustomer");
-	taxModel = $infoblk.data("taxmodel");
-	inclusivetax = $infoblk.data("inclusivetax") == "True";
-	inclusivetaxrate = $infoblk.data("inclusivetaxrate");
-	enableTax = $infoblk.data("enabletax") == "True";
-	DicLocation = $infoblk.data("diclocation");
-	JobList = $infoblk.data("joblist");
-
-
-
-	$("#txtDeviceCode").trigger("focus");
+	$("#txtReceiptNo").trigger("focus");
 
 	$("#tblDeposit tr td input").hover(
 		function () {

@@ -313,7 +313,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [HttpGet]
-        public ActionResult Edit(int customerId = 0)
+        public ActionResult Edit(int customerId = 0, string enqId="")
         {
             ViewBag.ParentPage = "customer";
             ViewBag.PageName = "edit";
@@ -321,7 +321,7 @@ namespace SmartBusinessWeb.Controllers.Customer
             var comInfo = Session["ComInfo"] as ComInfo;
             if (CheckoutPortal == "abss" || CheckoutPortal.ToLower() == "nonabss")
             {
-                CustomerEditModel cmodel = new CustomerEditModel(customerId, false);
+                CustomerEditModel cmodel = new CustomerEditModel(customerId,enqId,false);
                 var model = cmodel.MyobCustomer;
                 //don't move the code below to the construction of CustomerModel!!!                
                 model.IpCountry = region != null ? region.EnglishName : "Hong Kong";

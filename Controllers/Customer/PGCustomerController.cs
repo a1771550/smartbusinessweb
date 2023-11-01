@@ -132,7 +132,7 @@ namespace SmartBusinessWeb.Controllers.Customer
             //model.IpCountry = "香港";
             var comInfo = Session["ComInfo"] as ComInfo;
 
-            CustomerEditModel cmodel = new CustomerEditModel(customerId, true);
+            CustomerEditModel cmodel = new CustomerEditModel(customerId,"", true);
             var model = cmodel.PGCustomer;
             //don't move the code below to the construction of CustomerModel!!!                
             //model.IpCountry = region.EnglishName;

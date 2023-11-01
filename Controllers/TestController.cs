@@ -1693,77 +1693,7 @@ btest3
             Response.Write(emplist.Count);
         }
 
-        public async Task SendMail()
-        {
-            var idList = "58,59";
-            GetSalesManagerInfoByGroupId_Result salesmanager = new GetSalesManagerInfoByGroupId_Result();
-            var groupId = 1;
-            var contactnamelist = new List<string>();
-
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
-            {
-                salesmanager = context.GetSalesManagerInfoByGroupId(groupId).FirstOrDefault();
-
-                var _contactlist = context.GetContactListByIDs2(idList).ToList();
-                foreach (var contact in _contactlist)
-                {
-                    var contactname = !string.IsNullOrEmpty(contact.cusName) ? contact.cusName : contact.cusContact;
-                    contactnamelist.Add(contactname);
-                }
-            }
-
-            EmailEditModel model = new EmailEditModel();
-            var mailsettings = model.Get();
-            int okcount = 0;
-            int ngcount = 0;
-            MailAddress frm = new MailAddress(mailsettings.emEmail, mailsettings.emDisplayName);
-
-            while (okcount == 0)
-            {
-                if (ngcount >= mailsettings.emMaxEmailsFailed || okcount > 0)
-                {
-                    break;
-                }
-
-                MailAddress to = new MailAddress(salesmanager.Email, salesmanager.UserName);
-                bool addbc = int.Parse(ConfigurationManager.AppSettings["AddBccToDeveloper"]) == 1;
-                MailAddress addressBCC = new MailAddress(ConfigurationManager.AppSettings["DeveloperEmailAddress"], ConfigurationManager.AppSettings["DeveloperEmailName"]);
-                MailMessage message = new MailMessage(frm, to);
-                if (addbc)
-                {
-                    message.Bcc.Add(addressBCC);
-                }
-                message.Subject = Resources.Resource.ContactsAssignedGroup;
-                message.BodyEncoding = Encoding.UTF8;
-                message.IsBodyHtml = true;
-
-                var lilist = "";
-                foreach (var contact in contactnamelist)
-                {
-                    lilist += $"<li>{contact}</li>";
-                }
-                string mailbody = $"<h3>Hi {salesmanager.UserName}</h3><p>The following contacts are assigned to your group:</p><ul>{lilist}</ul>";
-                message.Body = mailbody;
-
-                using (SmtpClient smtp = new SmtpClient(mailsettings.emSMTP_Server, mailsettings.emSMTP_Port))
-                {
-                    smtp.UseDefaultCredentials = false;
-                    smtp.EnableSsl = mailsettings.emSMTP_EnableSSL;
-                    smtp.Credentials = new NetworkCredential(mailsettings.emSMTP_UserName, mailsettings.emSMTP_Pass);
-                    try
-                    {
-                        //EmailHelper.NEVER_EAT_POISON_Disable_CertificateValidation();
-                        await smtp.SendMailAsync(message);
-                        okcount++;
-                    }
-                    catch (Exception)
-                    {
-                        ngcount++;
-                    }
-                }
-            }
-
-        }
+   
 
         public void Debug41()
         {

@@ -1,0 +1,143 @@
+﻿@model PPWLib.Models.POS.Sales.DepositEditModel
+
+@{
+	ViewBag.Title = Resources.Resource.Deposit;
+	int rand = new Random().Next(10000, 100000);
+	string devicecode = (HttpContext.Current.Session["Device"] as DeviceModel).dvcCode;
+}
+
+<link rel="stylesheet" href="~/Content/Sales.css?v=@rand" />
+
+<h2 class="text-center">@ViewBag.Title</h2>
+<div class="d-flex justify-content-center">
+
+	<div class="form-inline mb-2 my-4">
+		<div class="form-group">
+			<label for="txtReceiptNo" class="col-form-label mx-sm-3">@Resources.Resource.DeviceCode</label>
+			<input id="txtDeviceCode" class="form-control" value="@devicecode" />
+			<label for="txtReceiptNo" class="col-form-label mx-sm-3">@Resources.Resource.ReceiptNo</label>
+			<input id="txtReceiptNo" class="form-control" />
+			<label for="txtPhoneNo" class="col-form-label mx-sm-3">@Resources.Resource.PhoneNo</label>
+			<input id="txtPhoneNo" class="form-control" />
+			<button type="button" id="btnSearchReceipt" class="btn btn-success mx-3">@Resources.Resource.SearchReceipt</button>
+			<button type="button" id="btnReload" class="btn btn-warning btnReload">@Resources.Resource.Reload</button>
+		</div>
+	</div>
+</div>
+
+<div class="d-flex justify-content-center">
+	<form id="frmCus" class="form-inline mb-2 my-4">
+		<div class="form-group">
+			<label for="txtCustomerCode" class="col-form-label mx-sm-3">@Resources.Resource.Customer</label>
+			<input type="hidden" id="txtCustomerCode" />
+			<input type="text" readonly class="form-control" id="txtStaticCustomerName" />
+		</div>
+
+		<div class="form-group ml-sm-3">
+			<label for="txtPoints" class="col-form-label mx-sm-3">@Resources.Resource.Points</label>
+			<input type="number" readonly class="form-control" id="txtPoints">
+		</div>
+		<div class="form-group ml-sm-3">
+			<label for="txtPriceLevel" class="col-form-label mx-sm-3">@Resources.Resource.PriceLevel</label>
+			<input type="text" readonly class="form-control" id="txtPriceLevel">
+		</div>
+		<div class="form-group ml-sm-3">
+			<label for="txtPhone" class="col-form-label mx-sm-3">@Resources.Resource.PhoneNo</label>
+			<input type="text" readonly class="form-control" id="txtPhone" />
+		</div>
+	</form>
+</div>
+
+<h4 class="text-center">@Resources.Resource.SalesHistory</h4>
+
+<div style="overflow-x:auto;">
+	<table id="tblDeposit" class="table table-bordered table-condensed table-hover ">
+		<colgroup>
+			@*<col width="50">*@
+			<col width="60">
+			<col width="120">
+			<col width="90">
+			<col width="90">
+			<col width="90">
+			<col width="100">
+			<col width="160">
+			<col width="120">
+			<col width="120">
+			<col width="100">
+		</colgroup>
+		<thead class="resizable black-header">
+			<tr>
+				@*<td class="jexcel_selectall"></td>*@
+				<td class="text-center">@Resources.Resource.Sequence</td>
+				<td class="text-center">@Resources.Resource.ItemCode</td>
+				<td class="text-right">@Resources.Resource.Qty</td>
+				<td class="text-right">@Resources.Resource.Price (@Model.Currency)</td>
+				<td class="text-right">@Resources.Resource.DiscountItemHeader</td>
+				<td class="text-right">@Resources.Resource.AmountItemHeader (@Model.Currency)</td>
+				<td class="text-center">@Resources.Resource.SalesDate</td>
+				<td class="text-right">@Resources.Resource.DepositAmt (@Model.Currency)</td>
+				<td class="text-center">@string.Format(Resources.Resource.DateFormat, Resources.Resource.SettlePayment)</td>
+				<td class="text-center">@Resources.Resource.Location</td>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+</div>
+
+@*<div id="salesremarkblk" class="row justify-content-center" style="display:none;">
+	<h5 style="width:100%;" class="text-center">@string.Concat(Resources.Resource.Sales, Resources.Resource.Notes)</h5>
+	<span></span>
+</div>*@
+
+
+<div class="row mr-1 my-5">
+	<div class="col-12 col-md-6">
+		<p class="formfield">
+			<label for="txtNotes" class="mx-sm-3">@Resources.Resource.Notes</label>
+			<textarea class="form-control d-inline-block misc" id="txtNotes" name="Notes" cols="250" rows="5"></textarea>
+		</p>
+	</div>
+
+	<div class="col-12 col-md-6">
+		<div class="row justify-content-end">
+			<div class="form-inline mb-2">
+				<div class="form-group">
+					<label for="txtTotalRemain" class="col-form-label mx-sm-3">@Resources.Resource.RemainAmt (@Model.Currency)</label>
+					<input type="number" class="form-control misc" id="txtTotalRemain" readonly name="TotalRemain" value="0.00" />
+				</div>
+			</div>
+		</div>
+
+		<div class="row justify-content-end">
+			<div class="form-inline mb-2">
+				<div class="form-group">
+					<button type="button" class="btn btn-primary mr-3 btnPayment">@Resources.Resource.ProcessPayments</button>
+					<a id="btnReload" href="#" role="button" class="btn btn-secondary">@Resources.Resource.Reload</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<input type="hidden" id="rtsExRate" name="rtsExRate" />
+
+@Html.Partial("_ItemModal", null, new ViewDataDictionary { { "currency", Model.Currency }, { "priceheader", Resources.Resource.SellingPrice }, { "forsales", true } })
+
+
+@Html.Partial("_DescModal")
+
+@Html.Partial("_PayModal", null, new ViewDataDictionary { { "fordeposit", true }, { "PaymentTypeList", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes } })
+
+
+
+@Html.Partial("_ChangeModal")
+
+@Html.Partial("_WaitingModal")
+
+<div id="infoblk" data-cominfo="@Model.ComInfo"></div>
+
+<link rel="stylesheet" type="text/css" href="~/Scripts/jspreadsheet/dist/jexcel.css" />
+<link rel="stylesheet" type="text/css" href="~/Scripts/jsuites/dist/jsuites.css" />
+
+<script src="~/Scripts/ts/js/pos/deposit.js?v=@rand"></script>
+

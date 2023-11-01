@@ -18,7 +18,7 @@
         <tr>
             <td>@Resources.Resource.StaffCode</td>
             <td>@Resources.Resource.StaffName</td>
-            @*<td>@Resources.Resource.Status</td>*@
+            <td>@Resources.Resource.Status</td>
             <td></td>
         </tr>
 	</thead>
@@ -27,9 +27,9 @@
 		{
 			if (user.UserCode.ToLower() != "superadmin")
 			{
-				//string status = (bool)user.surIsActive ? Resources.Resource.Active : Resources.Resource.Inactive;
+				string status = (bool)user.surIsActive ? Resources.Resource.Active : Resources.Resource.Inactive;
 				<tr><td>@user.UserCode</td><td>@user.UserName</td>
-		@*<td>@status</td>*@
+		<td>@status</td>
 		<td><button type="button" class="btn btn-info btnedit mx-2" data-userid="@user.surUID">@Resources.Resource.Edit</button>
             <button type="button" class="btn btn-danger btndelete" data-userid="@user.surUID">@Resources.Resource.Remove</button>
 			</td></tr>

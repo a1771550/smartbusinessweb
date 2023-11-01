@@ -460,7 +460,7 @@ tr.code {
   background-color: #f0e8f8!important;
 }
 
-.completedstatusbg
+.completedstatusbg,
 .billbg,
 .openedbg,
 .invoicebg,
@@ -478,7 +478,7 @@ tr.code {
 .okbalance {
   background-color: #e7f5c6 !important;
 }
-.noneedstatusbg
+.noneedstatusbg,
 .outofbalance {
   background-color: #fe9b9b !important;
 }
@@ -684,6 +684,9 @@ tr.disabled {
 a.disabled{
     cursor:default!important;
 }
+.enquiry.disabled{
+    cursor:pointer!important;
+}
 #followupRecordBlk .recordblk .txtarea, #followupRecordBlk .recordblk .buttons {
     display: inline-block;
     vertical-align: bottom;
@@ -758,4 +761,9 @@ th.fa{
 input[type=checkbox]:focus {
     background: #ffffcc;
     outline: 5px solid #ffffcc;
+}
+.simplelnk {
+    color: #007bff!important;
+    text-decoration: none;
+    background-color: transparent;
 }
