@@ -243,7 +243,7 @@
         else if (Model.pstStatus.ToLower() == PurchaseStatus.order.ToString())
         {
 
-            @Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "status", Model.pstStatus }, { "approvalmode", approvalmode } })
+            @Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "status", Model.pstStatus }, { "approvalmode", approvalmode },{"showViewBtn", Model.FileList.Count>0 } })
         }
     </div>
 }

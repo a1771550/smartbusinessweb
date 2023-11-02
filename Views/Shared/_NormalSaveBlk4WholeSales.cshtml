@@ -2,7 +2,8 @@
     bool editmode = (bool)ViewData["editmode"];
     string status = (string)ViewData["status"];
     bool ismanager = (bool)ViewData["ismanager"];
-    //Response.Write(editmode);
+    bool showViewBtn = (bool)ViewData["showViewBtn"];
+    string viewbtncls = showViewBtn ? "" : "hide";
 }
 @if (editmode && status != WholeSalesStatus.invoice.ToString())
 {
@@ -28,7 +29,7 @@ else
 @if (editmode)
 {
     <button type="button" class="btn btn-warning mr-2" id="btnFile">@Resources.Resource.UploadFile</button>
-    <button type="button" class="btn btn-primary mr-2 hide" id="btnViewFile">@Resources.Resource.ViewFile</button>   
+    <button type="button" class="btn btn-primary mr-2 @viewbtncls" id="btnViewFile">@Resources.Resource.ViewFile</button>   
 }
 
 <button type="button" class="btn btn-secondary" id="btnReload">@Resources.Resource.Reload</button>

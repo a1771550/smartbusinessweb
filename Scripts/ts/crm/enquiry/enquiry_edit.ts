@@ -95,8 +95,13 @@ $(document).on('click', '#btnSave', function () {
 $(function () {
 	forenquiry = true;
 	initModals();
+
+	uploadsizelimit = parseInt($infoblk.data("uploadsizelimit"));
+	uploadsizelimitmb = parseInt($infoblk.data("uploadsizelimitmb"));	
+
 	fillInEnquiry();	
 	assignEnqIdList.push($("#Id").val() as string);
+
 	$('#enFrom').trigger("focus");
 
 	if ($("#EnquiryInfo_FollowUpDateDisplay").val() === "") {

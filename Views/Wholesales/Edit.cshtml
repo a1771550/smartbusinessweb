@@ -295,7 +295,7 @@
         }
         else
         {
-            @Html.Partial("_NormalSaveBlk4WholeSales", null, new ViewDataDictionary { { "editmode", editmode }, { "status", Model.wsStatus } })
+            @Html.Partial("_NormalSaveBlk4WholeSales", null, new ViewDataDictionary { { "editmode", editmode }, { "showViewBtn", Model.FileList.Count > 0 }, { "status", Model.wsStatus } })
         }
     </div>
 }

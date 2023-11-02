@@ -3,7 +3,7 @@
     var rand = CommonHelper.GetVersionRandomNo();
 }
 
-<div id="uploadFileModal" class="container">
+<div id="uploadFileModal" class="container" data-debug="@uploadUrl">
     <form action="@uploadUrl" method="post" enctype="multipart/form-data">
         <input type="file" name="uploadFile" id="uploadFile" />
         <button type="button" class="btn btn-success my-2" id="btnUpload">@Resources.Resource.Upload</button>     

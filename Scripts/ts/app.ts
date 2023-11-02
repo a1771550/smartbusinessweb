@@ -6455,15 +6455,21 @@ function fillInEnquiry() {
 		FollowUpStatusDisplay: null,
 		FollowUpDateInfo: {} as IEnquiryInfo,
 		statuscls: null,
+		UploadFileList:[],
 	};
 	enquiry.FollowUpDateInfo.type = "date";
 	enquiry.FollowUpDateInfo.status = $(".followup:checked").val() as string;
 	enquiry.FollowUpDateInfo.JsFollowUpDate = $("#followUpDate").val() as string;
 	//FollowUpDateInfo_Id
 	enquiry.FollowUpDateInfo.Id = $("#FollowUpDateInfo_Id").val() as string;
+	if ($infoblk.data("uploadfilelist") !== "") {
+		enquiry.UploadFileList = ($infoblk.data("uploadfilelist").toString()).split(",");
+		$("#btnViewFile").removeClass("hide");
+	}
 }
 
 interface IEnquiry {
+    UploadFileList: string[];
 	id: string;
 	Id: string | null;
 	from: string;
@@ -15166,22 +15172,7 @@ $(document).on("change", ".form-control.mobile", function () {
 });
 
 $(document).on("click", ".whatsappphone.pointer", function (e) {
-	e.preventDefault();
-	let lnk = $appInfo.data("whatsappapilnk");
-	//console.log("lnk:" + lnk);
-	const txt = $appInfo.data("whatsappapidefaulttxt");
-	//console.log("txt:" + txt);
-	$target = $(this).prev("input");
-	let phoneno = ($target.val() as string).trim();
-	if (!phoneno.startsWith("852")) {
-		phoneno = `852${phoneno}`;
-		$target.val(phoneno);
-	}
-	//console.log($target);
-	//console.log('phone:' + $target.val());
-	lnk = lnk.replace("{0}", $target.val()).replace("{1}", txt);
-	//console.log(lnk);
-	popupCenter({ url: lnk, title: "", w: 900, h: 500 });
+	handleWhatsappClick.call(this, e);
 });
 
 //popupCenter({url: 'http://www.xtf.dk', title: 'xtf', w: 900, h: 500});
@@ -15548,6 +15539,20 @@ let SelectedIVList: Array<IItemVariation> = [];
 $(document).on("keypress", "input[type=number]", function (event) {
 	return blockSpecialChar(event);
 });
+
+function handleWhatsappClick(this: any, e: JQuery.ClickEvent<Document, undefined, any, any>) {
+    e.preventDefault();
+    let lnk = $appInfo.data("whatsappapilnk");
+    const txt = $appInfo.data("whatsappapidefaulttxt");
+    $target = $(this).hasClass("fa") ? $(this).next("input") : $(this).prev("input");
+    let phoneno = ($target.val() as string).trim();
+    if (!phoneno.startsWith("852")) {
+        phoneno = `852${phoneno}`;
+        $target.val(phoneno);
+    }
+    lnk = lnk.replace("{0}", $target.val()).replace("{1}", txt);
+    popupCenter({ url: lnk, title: "", w: 900, h: 500 });
+}
 
 function itemEditPageLoad() {
 	//forsales = false;

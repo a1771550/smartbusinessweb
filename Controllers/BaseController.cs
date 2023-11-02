@@ -36,6 +36,7 @@ namespace SmartBusinessWeb.Controllers
         protected string UploadsPODir { get { return ConfigurationManager.AppSettings["UploadsPODir"]; } }
         protected string UploadsCusDir { get { return ConfigurationManager.AppSettings["UploadsCusDir"]; } }
         protected string UploadsSupDir { get { return ConfigurationManager.AppSettings["UploadsSupDir"]; } }
+        protected string UploadsEnqDir { get { return ConfigurationManager.AppSettings["UploadsEnqDir"]; } }
         protected DateTime DateTime { get { return DateTime.Now; } }
 
         protected override void ExecuteCore()

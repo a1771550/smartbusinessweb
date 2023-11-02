@@ -95,6 +95,11 @@
           <path>Scripts\ts\crm\enquiry\enquiry.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\crm\enquiry\enquiry.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>enquiry_edit.ts</name>
+          <path>Scripts\ts\crm\enquiry\enquiry_edit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\crm\enquiry\enquiry_edit.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
