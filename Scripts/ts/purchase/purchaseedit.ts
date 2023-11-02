@@ -331,9 +331,7 @@ $(document).on("change", "#drpSupplier", function () {
             //also trigger here:   $(document).on("change", ".form-control.card", function ()
 
             if (!useForexAPI) {               
-                let currcode = "";
-                if (!useForexAPI)
-                    currcode = GetForeignCurrencyFrmCode(Purchase.supCode!);
+                let currcode = GetForeignCurrencyFrmCode(Purchase.supCode!);  
                 // console.log("currcode:" + currcode);
                 if (currcode !== "") {
                     //console.log("here");

@@ -8,8 +8,8 @@
 }
 <link rel="stylesheet" type="text/css" href="~/Content/Sales.css?v=@rand" />
 
-<h3 data-debug="@(Model.Sales==null)">@ViewBag.Title</h3>
-@*@{ return;}*@
+<h3>@ViewBag.Title</h3>
+
 
 @Html.Partial("_SalesBlk", null, new ViewDataDictionary { {"editmode",editmode }, { "Currency", Model.Currency }, { "rtsCurrency", Model.Sales.rtsCurrency }, { "LocationList", Model.LocationList }, { "showrecur", false }, { "Device", Model.ComInfo.Device }, { "Devices", Model.ComInfo.Devices }, { "NextSalesCode", Model.Sales.rtsCode }, { "DefaultSalesNotesTxt", Model.Sales.rtsRmks },{"forpreorder",true } })
 

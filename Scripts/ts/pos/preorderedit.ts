@@ -10,7 +10,8 @@ $(function () {
 	snidx = batchidx + 1;
     vtidx = snidx + 1;
 
-	Sales = $infoblk.data("sales");
+    Sales = $infoblk.data("sales");
+    //console.log("Sales:", Sales);
     gTblName = "tblSales";
 
     cpplList = $infoblk.data("customerpointpricelevels");
@@ -33,10 +34,10 @@ $(function () {
     $("#drpDevice").val(device);
 
 	editmode = Sales.rtsUID > 0;
-	if (editmode) {
+    if (editmode) {        
         $("#txtNotes").val(Sales.rtsRmks);
         $("#txtInternalNotes").val(Sales.rtsInternalRmks);
-        $("#txtRoundings").val(formatnumber(Sales.Roundings));
+       /* $("#txtRoundings").val(formatnumber(Sales.Roundings));*/
 		selectedCus = $infoblk.data("customer");		
 		selectCus();
         ItemList = $infoblk.data("items");
@@ -143,6 +144,7 @@ $(function () {
                 
         });
 
+        $("#txtDepositAmt").val(formatnumber(Sales.PayAmt));
         itotalremainamt = Sales.TotalRemainAmt!;
         $("#txtTotalRemain").val(formatnumber(itotalremainamt));
 	} else {

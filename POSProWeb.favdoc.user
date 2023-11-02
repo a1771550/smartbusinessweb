@@ -156,6 +156,11 @@
           <path>Views\Deposit\Index.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Deposit\Index.cshtml</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>preorder_Edit.cshtml</name>
+          <path>Views\Preorder\Edit.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Preorder\Edit.cshtml</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

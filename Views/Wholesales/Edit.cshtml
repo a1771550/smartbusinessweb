@@ -226,7 +226,7 @@
                     if (editmode && Model.wsStatus != WholeSalesStatus.invoice.ToString())
                     {
                         <div class="text-right">
-                            @Html.Partial("_NormalSaveBlk4WholeSales", null, new ViewDataDictionary { { "editmode", editmode }, { "status", Model.wsStatus }, { "ismanager", ismanager } })
+                            @Html.Partial("_NormalSaveBlk4WholeSales", null, new ViewDataDictionary { { "editmode", editmode }, { "showViewBtn", Model.FileList.Count > 0 }, { "status", Model.wsStatus }, { "ismanager", ismanager } })
                         </div>
                     }
                     else
@@ -267,7 +267,7 @@
                 if (editmode && Model.wsStatus != WholeSalesStatus.invoice.ToString())
                 {
                     <div class="text-right">
-                        @Html.Partial("_NormalSaveBlk4WholeSales", null, new ViewDataDictionary { { "editmode", editmode }, { "status", Model.wsStatus }, { "ismanager", ismanager } })
+                        @Html.Partial("_NormalSaveBlk4WholeSales", null, new ViewDataDictionary { { "editmode", editmode }, { "showViewBtn", Model.FileList.Count > 0 }, { "status", Model.wsStatus }, { "ismanager", ismanager } })
                     </div>
                 }
                 else

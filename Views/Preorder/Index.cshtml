@@ -101,107 +101,28 @@ else
 					<th class="text-left colheader" data-col="2" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="CusName">
 						@Resources.Resource.Customer
 					</th>
-					<th class="text-left" data-keyword="@Model.Keyword">
-						@Resources.Resource.ItemOptionsHeader
+					<th class="text-right colheader" data-col="3" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="DepositAmt">
+						@Resources.Resource.DepositAmt (@Model.Currency)
 					</th>
-					<th class="text-left" data-keyword="@Model.Keyword">
-						@Resources.Resource.ItemVariations
+					<th class="text-left colheader" data-col="4" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="Status">
+						@Resources.Resource.Status
 					</th>
 					<th class="text-left">
 						@Resources.Resource.Remark
 					</th>
-					@*<th class="text-center">
-			@Resources.Resource.PurchaseOrder
-		</th>*@
-					@*<th class="text-left colheader" data-col="3" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="rtsStatus">
-			@Resources.Resource.Status
-		</th>*@
-					<th class="text-center colheader" data-col="4" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="rtsTime">@Resources.Resource.InvoiceTime</th>
-					@*<th class="text-center colheader" data-col="5" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="rtsDeliveryDate">@Resources.Resource.DeliveryDate</th>*@
+
+					<th class="text-center colheader" data-col="5" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="rtsTime">@Resources.Resource.InvoiceTime</th>
+
 					<th></th>
 				</tr>
 			</thead>
 			<tbody>
 				@foreach (var item in Model.PagingOrderList)
 				{
-					string bgclr = "";
-					string approvedisabled = "";
-					string rejectdisabled = "";
-					string voiddisabled = "";
-					string passdisabled = "";					
-					string statustxt = "";
-					string _readonly = "1";
 
-					if (item.rtsStatus.ToUpper() == "REQUESTING" && item?.rtsSpecialApproval != null && (bool)item?.rtsSpecialApproval)
+					switch (item.rtsStatus.ToUpper())
 					{
-						bgclr = "requesting_sp_statusbg";
-						statustxt = "特批申請中";
-						_readonly = "0";
-					}
-					else
-					{
-						switch (item.rtsStatus.ToUpper())
-						{
-							case "VOIDED":
-								bgclr = "voidedstatusbg";
-								voiddisabled = "disabled";
-								statustxt = "廢單";
-								break;
-							case "PASSED":
-								bgclr = "passedstatusbg";
-								passdisabled = "disabled";
-								statustxt = "經理待批";
-								break;
-							case "REJECTED":
-								bgclr = "rejectedstatusbg";
-								rejectdisabled = "disabled";
-								statustxt = "拒絕";
-								_readonly = isapprover ? "1" : "0";
-								break;
-							case "KPENDING":
-								bgclr = "kpendingstatusbg";
-								//statustxt = "期貨單";
-								statustxt = "申請中";
-								break;
-							case "REQUESTING":
-								bgclr = "requestingstatusbg";
-								statustxt = "申請中";
-								_readonly = isapprover ? "1" : "0";
-								break;
-							default:
-							case "APPROVED":
-							case "CREATED":
-								bgclr = item?.rtsSpecialApproval != null && (bool)item?.rtsSpecialApproval ? "approved_sp_statusbg" : "approvedstatusbg";
-								approvedisabled = "disabled";
-								rejectdisabled = "disabled";
-								//voiddisabled = "disabled";
-								passdisabled = "disabled";
-								statustxt = item?.rtsSpecialApproval != null && (bool)item?.rtsSpecialApproval ? "特批已批核" : "已批核";
-								break;
-						}
-					}
 
-
-					var itemoptionsdisplay = "";
-					if (!string.IsNullOrEmpty(item.rtlBatch) && !string.IsNullOrEmpty(item.rtlSn) && !string.IsNullOrEmpty(item.rtlValidThru))
-					{
-						itemoptionsdisplay = string.Concat(item.rtlBatch, " | ", item.rtlSn, " | ", item.rtlValidThru);
-					}
-					if (!string.IsNullOrEmpty(item.rtlBatch) && !string.IsNullOrEmpty(item.rtlSn) && string.IsNullOrEmpty(item.rtlValidThru))
-					{
-						itemoptionsdisplay = string.Concat(item.rtlBatch, " | ", item.rtlSn);
-					}
-					if (!string.IsNullOrEmpty(item.rtlBatch) && string.IsNullOrEmpty(item.rtlSn) && !string.IsNullOrEmpty(item.rtlValidThru))
-					{
-						itemoptionsdisplay = string.Concat(item.rtlBatch, " | ", item.rtlValidThru);
-					}
-					if (string.IsNullOrEmpty(item.rtlBatch) && !string.IsNullOrEmpty(item.rtlSn) && !string.IsNullOrEmpty(item.rtlValidThru))
-					{
-						itemoptionsdisplay = string.Concat(item.rtlSn, " | ", item.rtlValidThru);
-					}
-					if (string.IsNullOrEmpty(item.rtlBatch) && string.IsNullOrEmpty(item.rtlSn) && !string.IsNullOrEmpty(item.rtlValidThru))
-					{
-						itemoptionsdisplay = item.rtlValidThru;
 					}
 
 					<tr data-code="@item.rtsCode">
@@ -210,21 +131,17 @@ else
 						</td>
 						<td>@item.SalesPersonName</td>
 						<td class="customer">@item.cusName</td>
-						<td data-bat="@item.rtlBatch" data-hassn="@item.rtlHasSn" data-sn="@item.rtlSn" data-vt="@item.rtlValidThru">@itemoptionsdisplay</td>
-						<td></td>
+						<td class="text-right">@item.DepositAmtDisplay</td>
+						<td>@item.rtsStatus.ToUpper()</td>
 						@{
 							var remark = item.rtsRmks != null && item.rtsRmks.Length > 20 ? string.Concat(item.rtsRmks.Substring(0, 20), "...") : item.rtsRmks ?? "";
 						}
 
 						<td style="width:150px;max-width:150px;" data-remark="@item.rtsRmks" class="remark">@remark</td>
-						@*<td>@item.rtsCustomerPO</td>*@
-						@*<td class="@bgclr">
-							@statustxt
-						</td>*@
-						<td class="text-center">@item.SalesTimeDisplay</td>
-						@*<td data-date="@item.rtsDeliveryDate">@item.DeliveryDateDisplay</td>*@
+						
+						<td class="text-center">@item.SalesTimeDisplay</td>						
 						<td class="button">
-								<button class="btn btn-info detail mr-2" data-id="@item.rtsUID" data-code="@item.rtsCode" data-status="@item.rtsStatus">@Resources.Resource.Detail</button>
+							<button class="btn btn-info detail mr-2" data-id="@item.rtsUID" data-code="@item.rtsCode" data-status="@item.rtsStatus">@Resources.Resource.Detail</button>
 						</td>
 					</tr>
 				}

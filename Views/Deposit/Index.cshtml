@@ -53,30 +53,24 @@
 <div style="overflow-x:auto;">
 	<table id="tblDeposit" class="table table-bordered table-condensed table-hover ">
 		<colgroup>
-			@*<col width="50">*@
 			<col width="60">
 			<col width="120">
 			<col width="90">
 			<col width="90">
 			<col width="90">
 			<col width="100">
-			<col width="160">
-			<col width="120">
-			<col width="120">
+			<col width="160">			
 			<col width="100">
 		</colgroup>
 		<thead class="resizable black-header">
-			<tr>
-				@*<td class="jexcel_selectall"></td>*@
+			<tr>				
 				<td class="text-center">@Resources.Resource.Sequence</td>
 				<td class="text-center">@Resources.Resource.ItemCode</td>
 				<td class="text-right">@Resources.Resource.Qty</td>
 				<td class="text-right">@Resources.Resource.Price (@Model.Currency)</td>
 				<td class="text-right">@Resources.Resource.DiscountItemHeader</td>
 				<td class="text-right">@Resources.Resource.AmountItemHeader (@Model.Currency)</td>
-				<td class="text-center">@Resources.Resource.SalesDate</td>
-				<td class="text-right">@Resources.Resource.DepositAmt (@Model.Currency)</td>
-				<td class="text-center">@string.Format(Resources.Resource.DateFormat, Resources.Resource.SettlePayment)</td>
+				<td class="text-center">@Resources.Resource.SalesDate</td>				
 				<td class="text-center">@Resources.Resource.Location</td>
 			</tr>
 		</thead>
@@ -85,17 +79,12 @@
 	</table>
 </div>
 
-@*<div id="salesremarkblk" class="row justify-content-center" style="display:none;">
-	<h5 style="width:100%;" class="text-center">@string.Concat(Resources.Resource.Sales, Resources.Resource.Notes)</h5>
-	<span></span>
-</div>*@
-
 
 <div class="row mr-1 my-5">
 	<div class="col-12 col-md-6">
 		<p class="formfield">
 			<label for="txtNotes" class="mx-sm-3">@Resources.Resource.Notes</label>
-			<textarea class="form-control d-inline-block misc" id="txtNotes" name="Notes" cols="250" rows="5"></textarea>
+			<textarea class="form-control d-inline-block" id="txtNotes" name="Notes" cols="250" rows="5"></textarea>
 		</p>
 	</div>
 
@@ -103,8 +92,16 @@
 		<div class="row justify-content-end">
 			<div class="form-inline mb-2">
 				<div class="form-group">
+					<label for="txtDepositAmt" class="col-form-label mx-sm-3">@Resources.Resource.DepositAmt (@Model.Currency)</label>
+					<input type="number" class="form-control" id="txtDepositAmt" readonly value="0.00" />
+				</div>
+			</div>
+		</div>
+		<div class="row justify-content-end">
+			<div class="form-inline mb-2">
+				<div class="form-group">
 					<label for="txtTotalRemain" class="col-form-label mx-sm-3">@Resources.Resource.RemainAmt (@Model.Currency)</label>
-					<input type="number" class="form-control misc" id="txtTotalRemain" readonly name="TotalRemain" value="0.00" />
+					<input type="number" class="form-control" id="txtTotalRemain" readonly name="TotalRemain" value="0.00" />
 				</div>
 			</div>
 		</div>

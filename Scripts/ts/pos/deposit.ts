@@ -6,12 +6,10 @@ function submitRemaining() {
 	if (Deposit.Change > 0) {
 		$("#changeModal").dialog("close");
 	}
-
 	Deposit.rtsRmks = <string>$("#txtNotes").val();
 	Deposit.rtsDvc = $("#txtDeviceCode").val() as string;
-
-	console.log("DepositLnList:", DepositLnList);
-	console.log("Payments:", Payments);
+	//console.log("DepositLnList:", DepositLnList);
+	//console.log("Payments:", Payments);
 	//return false;
 	if (DepositLnList.length > 0) {
 		let url = "/Deposit/ProcessRemain";
@@ -22,8 +20,6 @@ function submitRemaining() {
 			data: { Deposit, DepositLnList, Payments },
 			success: function (data) {
 				closeWaitingModal();
-				/*console.log("returned data:", data);*/
-				
 					url =
 						printurl +
 						"?issales=1&salesrefundcode=" +
@@ -139,6 +135,7 @@ function getReceiptOk_De(data) {
 		$("#txtNotes").val(Deposit.rtsRmks);
 
 		itotalremainamt = Deposit.TotalRemainAmt!;
+		$("#txtDepositAmt").val(formatnumber(Deposit.PayAmt));
 		$("#txtTotalRemain").val(formatnumber(itotalremainamt));
 		$(".btnPayment").prop("disabled", itotalremainamt <= 0);
 
@@ -247,11 +244,8 @@ function fillinForm_De() {
 			formatnumber(e.rtlSalesAmt as number) +
 			'</td><td class="text-center">' +
 			Deposit.SalesDateDisplay +
-			'</td><td class="text-right">' +
-			formatnumber(Deposit.PayAmt) +
-			'</td><td class="text-center">' +
-			Deposit.SettleDateDisplay +
-			'</td><td class="text-center">' +
+			'</td>' +
+			'<td class="text-center">' +
 			e.rtlStockLoc +
 			"</td></tr>";
 	});

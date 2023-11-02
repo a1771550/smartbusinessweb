@@ -7546,6 +7546,65 @@ interface ISaleOrder {
 let DicPayType: { [Key: string]: string } = {};
 let DicItemSNs: { [Key: string]: Array<ISerialNo> } = {};
 
+interface IPreSalesLn {
+	SettleDateDisplay: string;
+	rtlUID: number;
+	rtlSalesLoc: string;
+	rtlDvc: string;
+	rtlCode: string;
+	rtlDate: string | null;
+	rtlSeq: number | null;
+	rtlRefSales: string;
+	rtlReasonCode: string;
+	rtlItemCode: string;
+	rtlDesc: string;
+	rtlStockLoc: string;
+	rtlChkBch: boolean | null;
+	rtlBatchCode: string;
+	rtlItemColor: string;
+	rtIsConsignIn: boolean | null;
+	rtlIsConsignOut: boolean | null;
+	rtlIsNoCharge: boolean | null;
+	rtlHasSerialNo: boolean | null;
+	rtlHasSn: boolean | null;
+	rtlChkSn: boolean | null;
+	rtlSnReusable: boolean | null;
+	rtlTaxCode: string;
+	rtlTaxPc: number | null;
+	rtlSellUnit: string;
+	rtlRrpTaxIncl: number | null;
+	rtlRrpTaxExcl: number | null;
+	rtlLineDiscAmt: number | null;
+	rtlLineDiscPc: number | null;
+	rtlDiscSpreadPc: number | null;
+	rtlQty: number | null;
+	rtlTaxAmt: number | null;
+	rtlSalesAmt: number | null;
+	rtlIndex1: number | null;
+	rtlIndex2: number | null;
+	rtlType: string;
+	rtlSellingPrice: number | null;
+	rtlCheckout: boolean | null;
+	rtlSellingPriceMinusInclTax: number | null;
+	rtlParentUID: number | null;
+	Item: IItem;
+	DelItems: IDeliveryItem[];
+	SalesDateDisplay: string;
+	DepositAmt: number | null;
+	JsValidThru: string | null;
+	dlCode: string | null;
+	ivIdList: string | null;
+	SelectedIvList: IItemVariation[];
+	DicItemSNs: Array<typeof DicItemSNs>;
+	JobID: number | null;
+	itemVariList: IPoItemVari[];
+	batchList: IBatch[];
+	snbatseqvtlist: ISnBatSeqVt[];
+	rtpPayAmt: number | null;
+	DepositAmtDisplay: string | null;
+	rtpPayType: string | null;
+	rtpExRate: number | null;
+}
 function initSalesLn(_seq: number | undefined = 0): ISalesLn {
 	//console.log("Sales@initsalseln:", Sales);
 	//console.log("salescode#initsalesln:" + Sales.rtsCode);\
@@ -7602,11 +7661,9 @@ function initSalesLn(_seq: number | undefined = 0): ISalesLn {
 		itemVariList: [],
 		batchList: [],
 		snbatseqvtlist: [],
-		SettleDateDisplay:""
+		SettleDateDisplay: "",			
 	};
 }
-// let DicPayType: { [Key: string]: string } = {};
-// let DicItemSNs: { [Key: string]: Array<ISerialNo> } = {};
 interface ISalesLn {
     SettleDateDisplay: string;
 	rtlUID: number;
@@ -7660,7 +7717,8 @@ interface ISalesLn {
 	JobID: number | null;
 	itemVariList: IPoItemVari[];
 	batchList: IBatch[];
-	snbatseqvtlist: ISnBatSeqVt[];
+	snbatseqvtlist: ISnBatSeqVt[];	
+
 }
 interface IPayLn {
 	Id: number;
@@ -8464,16 +8522,16 @@ function populateItemRow(proId: number = 0) {
 			}
 
 			price = price / exRate;
-			//console.log("price#1:" + price);
+			//console.log("price divided by exrate:" + price);
 			$target
 				.find("td")
 				.eq(idx)
 				.find(".price")
 				.data("price", price)
 				.val(formatnumber(price));
-			//console.log("@selectitem: price:" + price);
-			idx++;
+			console.log("@selectitem: price:" + price);
 
+			idx++;
 			if (isPromotion && proId) {
 				getItemPromotion(selectedSalesLn!.Item, proId);
 				if (itemPromotion && itemPromotion.pro4Period) {
@@ -17104,9 +17162,7 @@ function updateSales() {
 				if (idx >= 0) {
 					salesln.Item = ItemList[idx];
 				}
-				salesln.rtlStockLoc = salesln.rtlSalesLoc = <string>(
-					$(e).find("td:eq(3)").find(".location").val()
-				);
+				
 				salesln.rtlQty = Number($(e).find("td:eq(4)").find(".qty").val());
 
 				idx = PriceIdx4Sales;
@@ -17123,7 +17179,7 @@ function updateSales() {
 					salesln.rtlTaxPc = Number($(e).find("td").eq(idx).find(".taxpc").val());
 				}
 
-				salesln.rtlStockLoc = <string>(
+				salesln.rtlSalesLoc = salesln.rtlStockLoc = <string>(
 					$(e).find("td").eq(-3).find(".location").val()
 				);
 				salesln.JobID = Number($(e).find("td").eq(-2).find(".job").val());

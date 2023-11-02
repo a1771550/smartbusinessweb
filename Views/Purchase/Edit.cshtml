@@ -206,7 +206,7 @@
 
                 if (ismanager && Model.pstStatus.ToLower() == PurchaseStatus.order.ToString() || Model.pstStatus.ToLower() == PurchaseStatus.created.ToString())
                 {
-                    @Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "status", Model.pstStatus }, { "approvalmode", approvalmode } })
+                    @Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "showViewBtn", Model.FileList.Count > 0 }, { "status", Model.pstStatus }, { "approvalmode", approvalmode } })
                 }
 
             }
@@ -215,7 +215,7 @@
                 if (editmode && (Model.pstStatus.ToLower() == PurchaseStatus.order.ToString() || Model.pstStatus.ToLower() == PurchaseStatus.created.ToString() || Model.pstStatus.ToLower() == PurchaseStatus.rejected.ToString()))
                 {
                     <div class="text-right">
-                        @Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "status", Model.pstStatus }, { "approvalmode", approvalmode } })
+                        @Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "showViewBtn", Model.FileList.Count > 0 }, { "status", Model.pstStatus }, { "approvalmode", approvalmode } })
                     </div>
                 }
                 else if (!editmode)
@@ -243,7 +243,7 @@
         else if (Model.pstStatus.ToLower() == PurchaseStatus.order.ToString())
         {
 
-            @Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "status", Model.pstStatus }, { "approvalmode", approvalmode },{"showViewBtn", Model.FileList.Count>0 } })
+            @Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "showViewBtn", Model.FileList.Count > 0 }, { "status", Model.pstStatus }, { "approvalmode", approvalmode },{"showViewBtn", Model.FileList.Count>0 } })
         }
     </div>
 }

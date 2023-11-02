@@ -131,27 +131,50 @@
 	</div>
 
 	<div class="col-4">
-		<div class="row justify-content-end">
-			<div class="form-inline mb-2">
-				<div class="form-group">
-					<label for="txtRoundings" class="col-form-label mx-sm-3">@Resources.Resource.Roundings (@Currency)</label>
-					<input type="text" class="form-control" id="txtRoundings" name="Roundings" style="width:80px;" value="0.00" />
+		@if (forpreorder)
+		{
+			<div class="row justify-content-end">
+				<div class="form-inline mb-2">
+					<div class="form-group">
+						<label for="txtDepositAmt" class="col-form-label mx-sm-3">@Resources.Resource.DepositAmt (@Currency)</label>
+						<input type="number" class="form-control" id="txtDepositAmt" readonly value="0.00" />
+					</div>
 				</div>
 			</div>
-		</div>
-		<div class="row justify-content-end">
-			<div class="form-inline mb-2">
-				<div class="form-group">
-					<label for="txtTotal" class="col-form-label mx-sm-3">@Resources.Resource.TotalAmount (@Currency)</label>
-					<input type="number" class="form-control" id="txtTotal" readonly name="TotalAmount" value="0.00" />
+			<div class="row justify-content-end">
+				<div class="form-inline mb-2">
+					<div class="form-group">
+						<label for="txtTotalRemain" class="col-form-label mx-sm-3">@Resources.Resource.RemainAmt (@Currency)</label>
+						<input type="number" class="form-control" id="txtTotalRemain" readonly name="TotalRemain" value="0.00" />
+					</div>
 				</div>
 			</div>
-		</div>
+		}
+		else
+		{
+			<div class="row justify-content-end">
+				<div class="form-inline mb-2">
+					<div class="form-group">
+						<label for="txtRoundings" class="col-form-label mx-sm-3">@Resources.Resource.Roundings (@Currency)</label>
+						<input type="text" class="form-control" id="txtRoundings" name="Roundings" style="width:80px;" value="0.00" />
+					</div>
+				</div>
+			</div>
+			<div class="row justify-content-end">
+				<div class="form-inline mb-2">
+					<div class="form-group">
+						<label for="txtTotal" class="col-form-label mx-sm-3">@Resources.Resource.TotalAmount (@Currency)</label>
+						<input type="number" class="form-control" id="txtTotal" readonly name="TotalAmount" value="0.00" />
+					</div>
+				</div>
+			</div>
+		}
+
 
 		<div class="row justify-content-end">
 			<div class="clearfix my-4">
 				<div class="float-right">
-					@Html.Partial("_NormalRetailPaymentBtnBlock", null, new ViewDataDictionary { { "showrecur", showrecur },{"forpreorder",forpreorder } })
+					@Html.Partial("_NormalRetailPaymentBtnBlock", null, new ViewDataDictionary { { "showrecur", showrecur }, { "forpreorder", forpreorder } })
 				</div>
 			</div>
 		</div>
