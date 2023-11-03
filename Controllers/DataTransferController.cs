@@ -613,16 +613,16 @@ namespace SmartBusinessWeb.Controllers
 				switch (type)
 				{
 					case "supplier":
-						await ExportData4G3(apId, dmodel, "Suppliers_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
+						await ExportData4SB(apId, dmodel, "Suppliers_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
 						break;
 					case "purchase":
-						await ExportData4G3(apId, dmodel, "Purchase_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
+						await ExportData4SB(apId, dmodel, "Purchase_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
 						break;
 					case "item":
 						filenames = new string[2] { "Items_", "PGLocStocks_" };
 						foreach (var filename in filenames)
 						{
-							await ExportData4G3(apId, dmodel, filename, model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
+							await ExportData4SB(apId, dmodel, filename, model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
 						}
 						break;
 					case "customer":
@@ -630,15 +630,15 @@ namespace SmartBusinessWeb.Controllers
 						filenames = new string[1] { "Customers_" };
 						foreach (var filename in filenames)
 						{
-							await ExportData4G3(apId, dmodel, filename, model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
+							await ExportData4SB(apId, dmodel, filename, model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
 						}
 						break;
 					case "wholesales":
-						await ExportData4G3(apId, dmodel, "Wholesales_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
+						await ExportData4SB(apId, dmodel, "Wholesales_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
 						break;
 					default:
 					case "sales":
-						await ExportData4G3(apId, dmodel, "ItemSales_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
+						await ExportData4SB(apId, dmodel, "ItemSales_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
 						break;
 				}
 
@@ -654,12 +654,11 @@ namespace SmartBusinessWeb.Controllers
 			return CheckoutPortal == "abss" ? Json(new { msg, PendingInvoices = ret, offlinemode = 0 }) : Json(new { msg, PendingInvoices = ret, offlinemode = 0, result = System.Text.Json.JsonSerializer.Serialize(dicResult) });
 		}
 
-		private async Task ExportData4G3(int accountprofileId, DataTransferModel dmodel, string filename, string strfrmdate = "", string strtodate = "", bool includeUploaded = false, int lang = 0)
+		private async Task ExportData4SB(int accountprofileId, DataTransferModel dmodel, string filename, string strfrmdate = "", string strtodate = "", bool includeUploaded = false, int lang = 0)
         {
 			var comInfo = Session["ComInfo"] as ComInfo;
 			SessUser curruser = Session["User"] as SessUser;
-			OnlineModeItem onlineModeItem = new OnlineModeItem();
-			List<long> checkoutIds = new List<long>();
+			OnlineModeItem onlineModeItem = new OnlineModeItem();			
 			DateTime dateTime = DateTime.Now;
 			string checkoutportal = string.Empty;
 			bool approvalmode = (bool)comInfo.ApprovalMode;
@@ -711,8 +710,7 @@ namespace SmartBusinessWeb.Controllers
                 dmodel.SelectedLocation = location;
                 dmodel.Device = device;
 
-                List<string> sqllist = RetailEditModel.GetUploadSqlList(includeUploaded, lang, comInfo, apId, context, connection, frmdate, todate, ref dmodel);
-               
+                List<string> sqllist = RetailEditModel.GetUploadSqlList(includeUploaded, lang, comInfo, apId, context, connection, frmdate, todate, ref dmodel);               
 
                 if (sqllist.Count > 0)
                 {
@@ -729,8 +727,8 @@ namespace SmartBusinessWeb.Controllers
                     {
                         try
                         {
-                            ModelHelper.WriteLog(context, string.Format("Export Sales data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
-                            List<RtlSale> saleslist = context.RtlSales.Where(x => checkoutIds.Any(y => x.rtsUID == y)).ToList();
+                            ModelHelper.WriteLog(context, string.Format("Export PreSalesModel data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
+                            List<RtlSale> saleslist = context.RtlSales.Where(x => x.AccountProfileId==apId && dmodel.RetailCheckOutIds.Any(y => x.rtsUID == y)).ToList();
                             foreach (var sales in saleslist)
                             {
                                 sales.rtsCheckout = true;
@@ -754,7 +752,7 @@ namespace SmartBusinessWeb.Controllers
                     ve.ErrorMessage);
                                 }
                             }
-                            ModelHelper.WriteLog(context, string.Format("Export Sales data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",",sqllist), ConnectionString), "ExportFrmShop");
+                            ModelHelper.WriteLog(context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",",sqllist), ConnectionString), "ExportFrmShop");
                             context.SaveChanges();
                         }
 
@@ -817,7 +815,7 @@ namespace SmartBusinessWeb.Controllers
                         try
                         {
                             ModelHelper.WriteLog(context, string.Format("Export Wholesales data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
-                            List<WholeSale> saleslist = context.WholeSales.Where(x => checkoutIds.Any(y => x.wsUID == y)).ToList();
+                            List<WholeSale> saleslist = context.WholeSales.Where(x => x.AccountProfileId==apId && dmodel.WsCheckOutIds.Any(y => x.wsUID == y)).ToList();
                             foreach (var sales in saleslist)
                             {
                                 sales.wsCheckout = true;

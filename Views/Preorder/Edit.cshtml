@@ -1,7 +1,7 @@
 ﻿@model PPWLib.Models.POS.Sales.PreorderEditModel
 
 @{
-	bool editmode = Model.Sales.rtsUID > 0;
+	bool editmode = Model.PreSalesModel.rtsUID > 0;
 	bool fordeposit = editmode;
 	ViewBag.Title = editmode? Resources.Resource.SettlePayment: Resources.Resource.Preorder;
 	int rand = CommonHelper.GetVersionRandomNo();
@@ -11,9 +11,9 @@
 <h3>@ViewBag.Title</h3>
 
 
-@Html.Partial("_SalesBlk", null, new ViewDataDictionary { {"editmode",editmode }, { "Currency", Model.Currency }, { "rtsCurrency", Model.Sales.rtsCurrency }, { "LocationList", Model.LocationList }, { "showrecur", false }, { "Device", Model.ComInfo.Device }, { "Devices", Model.ComInfo.Devices }, { "NextSalesCode", Model.Sales.rtsCode }, { "DefaultSalesNotesTxt", Model.Sales.rtsRmks },{"forpreorder",true } })
+@Html.Partial("_SalesBlk", null, new ViewDataDictionary { {"editmode",editmode }, { "Currency", Model.Currency }, { "rtsCurrency", Model.PreSalesModel.rtsCurrency }, { "LocationList", Model.LocationList }, { "showrecur", false }, { "Device", Model.ComInfo.Device }, { "Devices", Model.ComInfo.Devices }, { "NextSalesCode", Model.PreSalesModel.rtsCode }, { "DefaultSalesNotesTxt", Model.PreSalesModel.rtsRmks },{"forpreorder",true } })
 
-@Html.HiddenFor(model => model.Sales.rtsExRate)
+@Html.HiddenFor(model => model.PreSalesModel.rtsExRate)
 @Html.Partial("_CurrencyModal")
 
 @Html.Partial("_ItemModal", null, new ViewDataDictionary { { "currency", Model.Currency }, { "priceheader", Resources.Resource.SellingPrice }, { "forpreorder", true } })
@@ -41,6 +41,6 @@
 <link rel="stylesheet" type="text/css" href="~/Scripts/jsuites/dist/jsuites.css" />
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 
-<div id="infoblk" data-sales="@Model.JsonSales" data-saleslnlist="@Model.JsonSalesLnList" data-items="@Model.JsonItems" data-customer="@JsonSerializer.Serialize(Model.Customer)" data-defaultcustomer="@JsonSerializer.Serialize(Model.DefaultCustomer)" data-customerpointpricelevels="@JsonSerializer.Serialize(Model.CustomerPointPriceLevels)" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicpaytypes="@JsonSerializer.Serialize(Model.DicPayTypes)" data-joblist="@JsonSerializer.Serialize(Model.JobList)" data-taxmodel="@JsonSerializer.Serialize(Model.TaxModel)" data-enabletax="@Model.EnableTax" data-inclusivetax="@Model.InclusiveTax" data-inclusivetaxrate="@Model.InclusiveTaxRate" data-taxcode="@Model.TaxCode" data-diclocation="@JsonSerializer.Serialize(Model.DicLocation)" data-dicitemsns="@JsonSerializer.Serialize(Model.DicItemSNs)"></div>
+<div id="infoblk" data-sales="@Model.JsonPreSales" data-saleslnlist="@Model.JsonSalesLnList" data-items="@Model.JsonItems" data-customer="@JsonSerializer.Serialize(Model.Customer)" data-defaultcustomer="@JsonSerializer.Serialize(Model.DefaultCustomer)" data-customerpointpricelevels="@JsonSerializer.Serialize(Model.CustomerPointPriceLevels)" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicpaytypes="@JsonSerializer.Serialize(Model.DicPayTypes)" data-joblist="@JsonSerializer.Serialize(Model.JobList)" data-taxmodel="@JsonSerializer.Serialize(Model.TaxModel)" data-enabletax="@Model.EnableTax" data-inclusivetax="@Model.InclusiveTax" data-inclusivetaxrate="@Model.InclusiveTaxRate" data-taxcode="@Model.TaxCode" data-diclocation="@JsonSerializer.Serialize(Model.DicLocation)" data-dicitemsns="@JsonSerializer.Serialize(Model.DicItemSNs)"></div>
 
 <script src="~/Scripts/ts/js/pos/preorderedit.js?v=@rand"></script>

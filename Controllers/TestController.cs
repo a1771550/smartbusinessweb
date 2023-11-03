@@ -2804,7 +2804,7 @@ btest3
             var shopdatamodel = JsonConvert.DeserializeObject<ShopDataModel>(content);
             var saleslnviews = shopdatamodel.SalesLnViews;
             var stocklist = shopdatamodel.StockList;
-            Response.Write("Sales count:" + shopdatamodel.SalesList.Count + ";salesln count:" + saleslnviews.Count + ";stocklist count" + stocklist.Count + ";payln" + shopdatamodel.PayLnViews.Count);
+            Response.Write("PreSalesModel count:" + shopdatamodel.SalesList.Count + ";salesln count:" + saleslnviews.Count + ";stocklist count" + stocklist.Count + ";payln" + shopdatamodel.PayLnViews.Count);
 
         }
 
@@ -3635,7 +3635,7 @@ btest3
 	  ,[Date]
 	  ,[InvoiceDate]
 			 */
-            string sql = "Select SaleID,CardRecordID,InvoiceNumber,Date,InvoiceDate From Sales";
+            string sql = "Select SaleID,CardRecordID,InvoiceNumber,Date,InvoiceDate From PreSalesModel";
             Repository rs = new Repository();
             DataSet ds = rs.Query(dsn, sql);
             DataTable dt = ds.Tables[0];

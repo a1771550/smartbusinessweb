@@ -172,7 +172,7 @@ namespace SmartBusinessWeb.Controllers
             #region Send DataTransfer Notification
             if (sqllist.Count > 0)
             {
-                msg = $"Hi {comInfo.contactName}, the Sales and Purchase data is successfully uploaded to ABSS.";
+                msg = $"Hi {comInfo.contactName}, the PreSalesModel and Purchase data is successfully uploaded to ABSS.";
                 SendSimpleEmail(comInfo.contactEmail, comInfo.contactName, msg, "ABSS Data Transfer OK", context, apId);
             }
             #endregion
@@ -265,7 +265,7 @@ namespace SmartBusinessWeb.Controllers
             ve.ErrorMessage);
                         }
                     }
-                    ModelHelper.WriteLog(context, string.Format("Export Sales data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
+                    ModelHelper.WriteLog(context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
                     context.SaveChanges();
                 }
             }
@@ -1403,7 +1403,7 @@ namespace SmartBusinessWeb.Controllers
             comboIvId = string.Join("|", comboIvIds);
             using var connection = new SqlConnection(DefaultConnection);
             connection.Open();
-            var currentIV = connection.QueryFirstOrDefault<ItemVariationModel>(@"EXEC dbo.GetItemVari @itemcode=@itemcode,@comboIvId=@comboIvId,@apId=@apId", new { itemcode, comboIvId, apId = AccountProfileId });
+            var currentIV = connection.QueryFirstOrDefault<ItemVariModel>(@"EXEC dbo.GetItemVari @itemcode=@itemcode,@comboIvId=@comboIvId,@apId=@apId", new { itemcode, comboIvId, apId = AccountProfileId });
 
             ModelHelper.GetShops(connection, ref Shops, ref ShopNames, apId);
 

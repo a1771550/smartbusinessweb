@@ -256,7 +256,7 @@ namespace SmartBusinessWeb.Controllers
 			#region JS Properties
 			int isepay = Refund.rtsEpay ? 1 : 0;
 			int CusID = Refund.CusID;
-			string Notes = Refund.Notes;
+			string Notes = Refund.rtsRmks;
 			int Change = (int)Refund.Change;
 			string salescode = Refund.salescode;
 			string devicecode = Refund.SelectedDevice;

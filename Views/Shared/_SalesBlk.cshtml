@@ -133,6 +133,7 @@
 	<div class="col-4">
 		@if (forpreorder)
 		{
+
 			<div class="row justify-content-end">
 				<div class="form-inline mb-2">
 					<div class="form-group">
@@ -146,6 +147,14 @@
 					<div class="form-group">
 						<label for="txtTotalRemain" class="col-form-label mx-sm-3">@Resources.Resource.RemainAmt (@Currency)</label>
 						<input type="number" class="form-control" id="txtTotalRemain" readonly name="TotalRemain" value="0.00" />
+					</div>
+				</div>
+			</div>
+			<div class="row justify-content-end">
+				<div class="form-inline mb-2">
+					<div class="form-group">
+						<label for="txtTotal" class="col-form-label mx-sm-3">@Resources.Resource.TotalAmount (@Currency)</label>
+						<input type="number" class="form-control" id="txtTotal" readonly name="TotalAmount" value="0.00" />
 					</div>
 				</div>
 			</div>

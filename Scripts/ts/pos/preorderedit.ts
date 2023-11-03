@@ -1,5 +1,5 @@
 ﻿$infoblk = $("#infoblk");
-SalesLnList = [];
+PreSalesLnList = [];
 $(function () {
 	forpreorder = true;
 	setFullPage();
@@ -10,13 +10,13 @@ $(function () {
 	snidx = batchidx + 1;
     vtidx = snidx + 1;
 
-    Sales = $infoblk.data("sales");
-    //console.log("Sales:", Sales);
+    PreSales = $infoblk.data("sales");
+    //console.log("PreSales:", PreSales);
     gTblName = "tblSales";
 
     cpplList = $infoblk.data("customerpointpricelevels");
     
-    dicPayTypes = $infoblk.data("dicpaytypes");
+    DicPayTypes = $infoblk.data("dicpaytypes");
 	defaultcustomer = $infoblk.data("defaultcustomer");
 	taxModel = $infoblk.data("taxmodel");
 	inclusivetax = $infoblk.data("inclusivetax")=="True";
@@ -25,27 +25,27 @@ $(function () {
     DicLocation = $infoblk.data("diclocation");	
     JobList = $infoblk.data("joblist");
 
-	$(".NextSalesInvoice").val(Sales.rtsCode);
-	$("#txtNotes").val(Sales.rtsRmks);
+	$(".NextSalesInvoice").val(PreSales.rtsCode);
+	$("#txtNotes").val(PreSales.rtsRmks);
 
-    shop = Sales.rtsSalesLoc;
-    device = Sales.rtsDvc;
+    shop = PreSales.rtsSalesLoc;
+    device = PreSales.rtsDvc;
     $("#drpLocation").val(shop);
     $("#drpDevice").val(device);
 
-	editmode = Sales.rtsUID > 0;
+	editmode = PreSales.rtsUID > 0;
     if (editmode) {        
-        $("#txtNotes").val(Sales.rtsRmks);
-        $("#txtInternalNotes").val(Sales.rtsInternalRmks);
-       /* $("#txtRoundings").val(formatnumber(Sales.Roundings));*/
+        $("#txtNotes").val(PreSales.rtsRmks);
+        $("#txtInternalNotes").val(PreSales.rtsInternalRmks);
+       /* $("#txtRoundings").val(formatnumber(PreSales.Roundings));*/
 		selectedCus = $infoblk.data("customer");		
 		selectCus();
         ItemList = $infoblk.data("items");
-        SalesLnList = $infoblk.data("saleslnlist");
+        PreSalesLnList = $infoblk.data("saleslnlist");
         DicItemSNs = $infoblk.data("dicitemsns");
         
         itemsnlist = [];
-        $.each(SalesLnList, function (i, e) {
+        $.each(PreSalesLnList, function (i, e) {
             //   console.log(e);
             selectedItem = e.Item;
             selectedItemCode = selectedItem.itmCode;
@@ -140,12 +140,12 @@ $(function () {
 
             updateRow(e.rtlSellingPrice ?? 0, e.rtlLineDiscPc ?? 0);
 
-            if (SalesLnList.length>1)addRow();
+            if (PreSalesLnList.length>1)addRow();
                 
         });
 
-        $("#txtDepositAmt").val(formatnumber(Sales.PayAmt));
-        itotalremainamt = Sales.TotalRemainAmt!;
+        $("#txtDepositAmt").val(formatnumber(PreSales.PayAmt));
+        itotalremainamt = PreSales.TotalRemainAmt!;
         $("#txtTotalRemain").val(formatnumber(itotalremainamt));
 	} else {
 		if (defaultcustomer !== null) {

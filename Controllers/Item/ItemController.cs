@@ -96,7 +96,7 @@ namespace SmartBusinessWeb.Controllers.Item
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult EditIV(ItemModel Item = null, ItemVariationModel ItemVari = null, List<ItemAttributeModel> AttrList = null)
+        public JsonResult EditIV(ItemModel Item = null, ItemVariModel ItemVari = null, List<ItemAttributeModel> AttrList = null)
         {
             ViewBag.ParentPage = "item";
             ViewBag.PageName = "item";

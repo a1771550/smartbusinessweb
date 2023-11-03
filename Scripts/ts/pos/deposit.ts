@@ -114,7 +114,7 @@ function getReceiptOk_De(data) {
 		selectedCusCodeName = selectedCus.cusCode;
 		companyinfo = data.companyinfo;
 		//receipt = data.receipt;
-		dicPayTypes = data.dicpaytypes;
+		DicPayTypes = data.dicpaytypes;
 		DepositLnList = data.salesLns.slice(0);
 		//console.log('saleslnlist:', DepositLnList);
 

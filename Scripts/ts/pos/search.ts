@@ -128,8 +128,8 @@ function getSearchOk(data) {
       RefundList = data.refundLns.slice(0);
     }
 
-    dicItemSNs = data.dicItemSNs;
-    console.log("dicitemsns:", dicItemSNs);
+    DicItemSNs = data.dicItemSNs;
+    console.log("dicitemsns:", DicItemSNs);
     ItemList = data.items.slice(0);
 
     let html = "",
@@ -294,7 +294,7 @@ function salesDetail_search(salescode, itemcode, seq) {
       "</li>";
   }
 
-  console.log("dicitemsns:", dicItemSNs);
+  console.log("dicitemsns:", DicItemSNs);
   console.log("itemcode:#detail:" + itemcode + ";rtlSeq#detail:" + seq);
   //if (dicItemSNs !== null) {
   let sncodes: string[] = _getSncodes(salescode, itemcode, seq);
@@ -444,8 +444,8 @@ function _getSncodes(
 ): string[] {
   let codes: string[] = [];
   let _key: string = _salescode + ":" + _itemcode + ":" + _seq;
-  if (typeof dicItemSNs !== "undefined" && dicItemSNs !== null) {
-    for (const [key, value] of Object.entries(dicItemSNs)) {
+  if (typeof DicItemSNs !== "undefined" && DicItemSNs !== null) {
+    for (const [key, value] of Object.entries(DicItemSNs)) {
       console.log(`${key}: ${value}`);
       if (key == _key) {
         console.log("value:", value);

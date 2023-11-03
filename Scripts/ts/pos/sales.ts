@@ -83,7 +83,7 @@ function getSessionStartDataOk(data) {
     cpplList = data.CustomerPointPriceLevels.slice(0);
     companyinfo = data.companyinfo;
     receipt = data.receipt;
-    dicPayTypes = data.dicpaytypes;
+    DicPayTypes = data.dicpaytypes;
     /* itemlist = data.items;*/
     selectedCus = defaultcustomer = data.defaultcustomer;
     //console.log('selectedCus#getsessionok:', selectedCus);
@@ -104,7 +104,7 @@ function getSessionStartDataOk(data) {
         sessionstartdata.push(cpplList);
         sessionstartdata.push(companyinfo);
         sessionstartdata.push(receipt);
-        sessionstartdata.push(dicPayTypes);
+        sessionstartdata.push(DicPayTypes);
         sessionstartdata.push(defaultcustomer);
         sessionstartdata.push(pagelength);
         sessionstartdata.push(enableTax);
@@ -413,7 +413,7 @@ $(function () {
                 cpplList = sessionstartdata[0];
                 companyinfo = sessionstartdata[1];
                 receipt = sessionstartdata[2];
-                dicPayTypes = sessionstartdata[3];
+                DicPayTypes = sessionstartdata[3];
                 pagelength = sessionstartdata[5];
                 enableTax = sessionstartdata[6];
                 inclusivetax = sessionstartdata[7];

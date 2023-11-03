@@ -297,7 +297,7 @@ function getReceiptOk(data) {
         cpplList = data.customerpointpricelevels.slice(0);
         RefundSalesList = data.salesLns.slice(0);       
 
-        dicPayTypes = data.dicpaytypes;
+        DicPayTypes = data.dicpaytypes;
         isEpay = data.isEpay;
 
         if (data.refundLns.length > 0) {
@@ -1218,7 +1218,7 @@ function submitRefund() {
     if (Refund.Change > 0) {
         $("#changeModal").dialog("close");
     }
-    Refund.Notes = <string>$("#txtNotes").val();
+    Refund.rtsRmks = <string>$("#txtNotes").val();
     Refund.salescode = rno;
     Refund.SelectedDevice = $("#txtDeviceCode").val() as string;
     Refund.rtsEpay = isEpay;
