@@ -42,6 +42,7 @@ $(document).on("click", ".detail", function () {
     );
 });
 $(document).on("click", ".colheader", function () {
+    openWaitingModal();
     let $sortorder = $("#sortorder").val($(this).data("order"));
     let $sortname = $("#sortname").val($(this).data("category"));
     $(`#${frmId}`)

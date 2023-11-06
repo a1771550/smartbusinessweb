@@ -147,6 +147,9 @@ $(function () {
         $("#txtDepositAmt").val(formatnumber(PreSales.PayAmt));
         itotalremainamt = PreSales.TotalRemainAmt!;
         $("#txtTotalRemain").val(formatnumber(itotalremainamt));
+
+        $(".btnPayment").prop("disabled", (PreSales.rtsRefCode));
+
 	} else {
 		if (defaultcustomer !== null) {
 			selectedCus = defaultcustomer;

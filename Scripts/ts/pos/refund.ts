@@ -323,8 +323,7 @@ function getReceiptOk(data) {
             {},
             DicItemBatDelQty,
             model.DicItemBatDelQty
-        );
-        DicItemBVList = Object.assign({}, DicItemBVList, model.DicItemBVList);
+        );        
 
         DicItemSnos = Object.assign({}, DicItemSnos, model.DicItemSnos);
         // console.log(DicItemSnos);

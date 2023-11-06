@@ -700,7 +700,7 @@ namespace SmartBusinessWeb.Controllers
                 //string salestype = 
 
                 model.SalesOrder = (from s in context.RtlSales
-                                    where s.rtsCode.ToLower() == salescode.ToLower() && (s.rtsType == "RS"||s.rtsType.ToLower()=="pre") && s.rtsDvc.ToLower() == device && s.rtsSalesLoc.ToLower() == location
+                                    where s.rtsCode.ToLower() == salescode.ToLower() && s.rtsType == "RS" && s.rtsDvc.ToLower() == device && s.rtsSalesLoc.ToLower() == location
                                     select new SalesModel
                                     {
                                         rtsCusID = s.rtsCusID,
@@ -763,7 +763,7 @@ namespace SmartBusinessWeb.Controllers
                     model.SalesLnViews = (from sl in context.RtlSalesLns
                                           join s in context.RtlSales
                                           on sl.rtlCode equals s.rtsCode
-                                          where s.rtsCode.ToLower() == salescode.ToLower() && (s.rtsType == "RS" || s.rtsType.ToLower() == "pre") && s.rtsDvc.ToLower() == device && s.rtsSalesLoc.ToLower() == location
+                                          where s.rtsCode.ToLower() == salescode.ToLower() && s.rtsType == "RS" && s.rtsDvc.ToLower() == device && s.rtsSalesLoc.ToLower() == location
                                           select new SalesLnView
                                           {
                                               CustomerID = s.rtsCusID,
@@ -1211,7 +1211,8 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public JsonResult GetRecurOrder(long orderId)
         {
-            WholeSalesModel sales = null;
+            WholeSalesView sales = null;
+            List<WholeSalesLnModel> wslns = null;
             using var context = new PPWDbContext(Session["DBName"].ToString());
             var s = context.WholeSales.Find(orderId);
             if (s != null)
@@ -1222,7 +1223,7 @@ namespace SmartBusinessWeb.Controllers
                 Device device = context.Devices.Find(dev.dvcUID);
                 //$"{device.dvcNextPurchaseNo:000000}"
                 string nextsalescode = ModelHelper.GetNewSalesCode(user, context);
-                sales = new WholeSalesModel
+                sales = new WholeSalesView
                 {
                     wsUID = s.wsUID,
                     wsSalesLoc = s.wsSalesLoc,
@@ -1295,11 +1296,11 @@ namespace SmartBusinessWeb.Controllers
                 sales.Customer = Customer;
 
                 var saleslns = context.WholeSalesLns.Where(x => x.wslCode == s.wsCode).ToList();
-                sales.WholeSalesLns = new List<WholeSalesLnModel>();
+                wslns = new List<WholeSalesLnModel>();
                 foreach (var sl in saleslns)
                 {
                     var item = context.MyobItems.FirstOrDefault(x => x.itmCode == sl.wslItemCode);
-                    sales.WholeSalesLns.Add(
+                    wslns.Add(
                         new WholeSalesLnModel
                         {
                             wslItemCode = sl.wslItemCode,
@@ -1349,7 +1350,7 @@ namespace SmartBusinessWeb.Controllers
                 }
             }
 
-            return Json(sales, JsonRequestBehavior.AllowGet);
+            return Json(new { sales, wslns }, JsonRequestBehavior.AllowGet);
         }
 
 

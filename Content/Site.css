@@ -677,6 +677,11 @@ input[type="checkbox"].danger {
 tr.selected{
     background-color:#f8d4d4!important;
 }
+.jexcel input.disabled{
+    padding:0!important;
+    margin:0!important;
+    background-color:#bfbcbc!important;
+}
 tr.disabled {
     /*color:white!important;*/
     background-color:#c3fcb0!important;
@@ -766,4 +771,10 @@ input[type=checkbox]:focus {
     color: #007bff!important;
     text-decoration: none;
     background-color: transparent;
+}
+.presettlingstatusbg{
+    background-color:#efd58d;
+}
+.presettledstatusbg{
+    background-color:#dcfcc3;
 }

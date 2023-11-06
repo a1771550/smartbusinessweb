@@ -22,7 +22,7 @@
 else
 {
 	<div class="container" data-count="@Model.PagingOrderList.Count">
-		@using (Html.BeginForm("Index", "PreOrder", FormMethod.Get, new { @Id = "frmPreOrderList" }))
+		@using (Html.BeginForm("Index", "PreOrder", FormMethod.Get, new { @Id = "frmPreOrder" }))
 		{
 			var _salespersonchecked = "";
 			var _salesorderchecked = "";
@@ -78,7 +78,7 @@ else
 
 			<div class="row justify-content-center mb-2">
 				<button id="btnFilter" type="button" name="filter" value="1" class="btn btn-success mr-sm-3">@Resources.Resource.Submit</button>
-				<button id="btnReload" type="button" role="button" class="btn btn-warning">@Resources.Resource.Reload</button>
+				<button id="btnReload" type="button" role="button" class="btn btn-warning" data-reloadurl="/Preorder/Index">@Resources.Resource.Reload</button>
 			</div>
 
 			<input type="hidden" id="sortorder" name="SortOrder" value="@Model.SortOrder" />
@@ -104,7 +104,7 @@ else
 					<th class="text-right colheader" data-col="3" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="DepositAmt">
 						@Resources.Resource.DepositAmt (@Model.Currency)
 					</th>
-					<th class="text-left colheader" data-col="4" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="Status">
+					<th class="text-left colheader" data-col="4" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="rtsStatus">
 						@Resources.Resource.Status
 					</th>
 					<th class="text-left">
@@ -117,31 +117,44 @@ else
 				</tr>
 			</thead>
 			<tbody>
+				@{ 
+					List<string> salesrefcodes = Model.PagingOrderList.Where(x=>x.rtsRefCode!=null).Select(x => x.rtsRefCode).Distinct().ToList();
+					
+				}
+
 				@foreach (var item in Model.PagingOrderList)
 				{
-
-					switch (item.rtsStatus.ToUpper())
+					string statuscls = item.rtsStatus.ToLower()+"statusbg";
+					string statustxt = "";
+					string hidecls = (!salesrefcodes.Contains(item.rtsCode) || item.rtsStatus.ToLower()==SalesStatus.presettled.ToString())?"": "hide";
+					string salescode = item.rtsStatus.ToLower() == SalesStatus.presettled.ToString() ? string.Concat(item.rtsCode, $" (Ref: {item.rtsRefCode})"):item.rtsCode;
+					switch (item.rtsStatus.ToLower())
 					{
-
+						case "presettling":
+							statustxt = Resources.Resource.Ordering;
+							break;
+						case "presettled":
+							statustxt = Resources.Resource.Settled;
+							break;
 					}
 
 					<tr data-code="@item.rtsCode">
 						<td>
-							@item.rtsCode
+							@salescode
 						</td>
 						<td>@item.SalesPersonName</td>
 						<td class="customer">@item.cusName</td>
 						<td class="text-right">@item.DepositAmtDisplay</td>
-						<td>@item.rtsStatus.ToUpper()</td>
+						<td class="@statuscls">@statustxt</td>
 						@{
 							var remark = item.rtsRmks != null && item.rtsRmks.Length > 20 ? string.Concat(item.rtsRmks.Substring(0, 20), "...") : item.rtsRmks ?? "";
-						}
+				}
 
 						<td style="width:150px;max-width:150px;" data-remark="@item.rtsRmks" class="remark">@remark</td>
 						
 						<td class="text-center">@item.SalesTimeDisplay</td>						
 						<td class="button">
-							<button class="btn btn-info detail mr-2" data-id="@item.rtsUID" data-code="@item.rtsCode" data-status="@item.rtsStatus">@Resources.Resource.Detail</button>
+							<button class="btn btn-info detail mr-2 @hidecls" data-id="@item.rtsUID" data-code="@item.rtsCode" data-status="@item.rtsStatus">@Resources.Resource.Detail</button>
 						</td>
 					</tr>
 				}

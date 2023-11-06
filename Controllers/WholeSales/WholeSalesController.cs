@@ -1,5 +1,4 @@
 ﻿using SmartBusinessWeb.Infrastructure;
-using PPWLib.Models.POS;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +7,6 @@ using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
 using PPWLib.Models.WholeSales;
 using PagedList;
-using PPWLib.Models.Purchase;
 using PPWLib.Models;
 using PPWLib.Models.POS.Sales;
 using PPWDAL;
@@ -129,12 +127,12 @@ namespace SmartBusinessWeb.Controllers.WholeSales
         [CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult Delivery(List<DeliveryItemModel> model, WholeSalesModel ws)
+        public JsonResult Delivery(List<DeliveryItemModel> model, WholeSalesView ws, List<WholeSalesLnModel> wslnList)
         {
             ViewBag.ParentPage = "wholesales";
             ViewBag.PageName = "wholesales";
             WholeSalesEditModel wemodel = new WholeSalesEditModel();
-            wemodel.Delivery(model, ws);
+            wemodel.Delivery(model, ws, wslnList);
             string msg = wemodel.OutOfStockWholeSalesLns != null && wemodel.OutOfStockWholeSalesLns.Count > 0 ? Resources.Resource.ZeroStockItemsWarning : string.Format(Resources.Resource.Delivered, Resources.Resource.WholeSales);
             string[] zerostockItemcodes = wemodel.OutOfStockWholeSalesLns.Select(x => x.itmCode).ToArray();
             return Json(new { msg, ws.wsCode, zerostockItemcodes = zerostockItemcodes.Length > 0 ? string.Join(",", zerostockItemcodes) : "" });
@@ -170,7 +168,7 @@ namespace SmartBusinessWeb.Controllers.WholeSales
             WholeSalesEditModel model = new WholeSalesEditModel();
             model.Keyword = Keyword == "" ? null : Keyword;
             model.GetList(user, strfrmdate, strtodate, model.Keyword);
-            if(model.WSList!=null && model.WSList.Count>0)
+            if (model.WSList != null && model.WSList.Count > 0)
                 DoList(SortCol, SortOrder, PageNo, model);
             ViewBag.Title = Resources.Resource.WholeSales;
             return View(model);
@@ -178,13 +176,14 @@ namespace SmartBusinessWeb.Controllers.WholeSales
 
         [HandleError]
         [CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
-        [HttpGet]       
+        [HttpGet]
         public ActionResult Edit(long Id, string type)
         {
             ViewBag.ParentPage = "wholesales";
             ViewBag.PageName = "edit";
             WholeSalesEditModel model = new WholeSalesEditModel(Id, null, 0, type);
-            return View(model.WholeSales);
+            //WholeSalesEditModel.Get(Id, null, 0, type);
+            return View(model);
         }
 
 
@@ -192,11 +191,11 @@ namespace SmartBusinessWeb.Controllers.WholeSales
         [CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult Edit(WholeSalesModel model, RecurOrder recurOrder)
+        public JsonResult Edit(WholeSalesView model, List<WholeSalesLnModel> wslnList, RecurOrder recurOrder)
         {
             ViewBag.ParentPage = "wholesalesedit";
             ViewBag.PageName = "wholesales";
-            SalesReturnMsg msg = WholeSalesEditModel.Edit(model, recurOrder);
+            SalesReturnMsg msg = WholeSalesEditModel.Edit(model, wslnList, recurOrder);
             return Json(msg);
         }
 

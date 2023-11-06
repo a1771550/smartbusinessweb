@@ -1082,7 +1082,6 @@ function OnSuccess(response) {
 			DicItemBatDelQty,
 			model.DicItemBatDelQty
 		);
-		DicItemBVList = Object.assign({}, DicItemBVList, model.DicItemBVList);
 
 		DicItemSnos = Object.assign({}, DicItemSnos, model.DicItemSnos);
 		// console.log(DicItemSnos);
@@ -1106,7 +1105,7 @@ function OnSuccess(response) {
 		//console.log("dicitemvtqtylist:", DicItemVtQtyList);
 		// console.log("dicitemvtdelqtylist:", DicItemVtDelQtyList);
 
-		if (PoItemBatVQList.length > 0) {
+		if (PoItemBatVQList) {
 			const newpolist = model.PoItemBatVQList.slice(0);
 			const currentpolist = PoItemBatVQList.slice(0);
 			const tmplist = [...newpolist, ...currentpolist];
@@ -1229,16 +1228,16 @@ function GetSetSelectedSalesLn(): ISalesLn {
 	return selectedSalesLn;
 }
 function GetSetSelectedWholeSalesLn(): IWholeSalesLn {
-	if (Wholesales.WholeSalesLns.length > 0) {
-		let idx = Wholesales.WholeSalesLns.findIndex((x) => x.wslSeq == seq);
-		if (idx >= 0) selectedWholesalesLn = Wholesales.WholeSalesLns[idx];
+	if (WholeSalesLns.length > 0) {
+		let idx = WholeSalesLns.findIndex((x) => x.wslSeq == seq);
+		if (idx >= 0) selectedWholesalesLn = WholeSalesLns[idx];
 		else {
 			selectedWholesalesLn = initWholeSalesLn();
-			Wholesales.WholeSalesLns.push(selectedWholesalesLn);
+			WholeSalesLns.push(selectedWholesalesLn);
 		}
 	} else {
 		selectedWholesalesLn = initWholeSalesLn();
-		Wholesales.WholeSalesLns.push(selectedWholesalesLn);
+		WholeSalesLns.push(selectedWholesalesLn);
 	}
 	return selectedWholesalesLn;
 }
@@ -7603,6 +7602,7 @@ interface IPreSales {
 	rtsSalesLoc: string;
 	rtsDvc: string;
 	rtsCurrency: string;
+	rtsRefCode: string | null;
 }
 
 interface IPreSalesLn {
@@ -8049,8 +8049,8 @@ $(document).on("change", ".qty", function () {
 		updateRow(_price, _discpc);
 
 		seq = currentY + 1;
-		if (Wholesales.WholeSalesLns.length > 0) {
-			$.each(Wholesales.WholeSalesLns, function (i, e) {
+		if (WholeSalesLns.length > 0) {
+			$.each(WholeSalesLns, function (i, e) {
 				if (e.wslSeq == seq) {
 					if (Wholesales.wsStatus == "invoice") {
 						e.wslDelQty = _qty;
@@ -8742,9 +8742,10 @@ function addRow() {
 	if (forsales)
 		html += `<td><input type="text" class="batch text-center flex" /></td>`; //to be added other classes later
 
-	if (forpreorder) {
-		let batcls = (forpreorder && PreSales.rtsStatus == SalesStatus.presettling) ? "batch" : "b";
-		html += `<td><input type="text" class="${batcls} text-center flex" /></td>`;
+	let disabled = (PreSales && PreSales.rtsStatus == SalesStatus.presettling) ? "" : "disabled";
+	if (forpreorder) {				
+		let batcls = (PreSales.rtsStatus == SalesStatus.presettling) ? "batch" : `b ${disabled}`;
+		html += `<td><input type="text" class="${batcls} text-center flex"  ${disabled} /></td>`;
 	}
 
 	if (
@@ -8764,8 +8765,8 @@ function addRow() {
 		html += `<td><input type="text" class="serialno text-center flex" /></td>`; //to be added other classes later
 
 	if (forpreorder) {
-		let sncls = (forpreorder && PreSales.rtsStatus == SalesStatus.presettling) ? "serialno" : "s";
-		html += `<td><input type="text" class="${sncls} text-center flex" /></td>`
+		let sncls = (PreSales.rtsStatus == SalesStatus.presettling) ? "serialno" : `s ${disabled}`;
+		html += `<td><input type="text" class="${sncls} text-center flex" ${disabled} /></td>`
 	}
 
 
@@ -8798,8 +8799,8 @@ function addRow() {
 		html += `<td><input type="text" class="${vtcls.trim()} text-center flex" /></td>`;
 
 	if (forpreorder) {
-		if (!(PreSales.rtsStatus == SalesStatus.presettling)) vtcls = "v";
-		html += `<td><input type="text" class="${vtcls.trim()} text-center flex" /></td>`;
+		if (!(PreSales.rtsStatus == SalesStatus.presettling)) vtcls = `v ${disabled}`;
+		html += `<td><input type="text" class="${vtcls.trim()} text-center flex" ${disabled} /></td>`;
 	}
 
 	//item variations:
@@ -8977,7 +8978,7 @@ $(document).on("dblclick", ".serialno.pointer", function () {
 					) {
 						DeliveryItems = DicSeqDeliveryItems[seq];
 					}
-					selectedWholesalesLn = Wholesales.WholeSalesLns.find(
+					selectedWholesalesLn = WholeSalesLns.find(
 						(x) => x.wslSeq == seq
 					) as IWholeSalesLn;
 				}
@@ -9020,7 +9021,7 @@ $(document).on("dblclick", ".serialno.pointer", function () {
 					}
 
 					//for itemnamedesc display only:
-					$.each(Wholesales.WholeSalesLns, function (i, e) {
+					$.each(WholeSalesLns, function (i, e) {
 						if (e.wslSeq == seq) {
 							selectedWholesalesLn = structuredClone(e);
 						}
@@ -9996,14 +9997,14 @@ function resetRow() {
 		//console.log("updatedsaleslist#resetrow:", SalesLnList);
 	}
 	if (forwholesales) {
-		$.each(Wholesales.WholeSalesLns, function (i, e) {
+		$.each(WholeSalesLns, function (i, e) {
 			if (e.wslSeq == currentY + 1) {
 				idx = i;
 				return false;
 			}
 		});
 		if (idx > -1) {
-			Wholesales.WholeSalesLns.splice(idx, 1);
+			WholeSalesLns.splice(idx, 1);
 		}
 	}
 	if (forpurchase) {
@@ -10127,10 +10128,10 @@ function resetRow() {
 		}
 	}
 	if (forwholesales) {
-		if (Wholesales.WholeSalesLns.length === 0) {
+		if (WholeSalesLns.length === 0) {
 			addRow();
 		} else {
-			Wholesales.WholeSalesLns.forEach((x, i) => {
+			WholeSalesLns.forEach((x, i) => {
 				addRow();
 				selectedWholesalesLn = structuredClone(x);
 				selectedItemCode = x.wslItemCode;
@@ -10448,8 +10449,8 @@ function updateRow(_price: number = 0, _discount: number = 0) {
 		}
 
 		if (forwholesales) {
-			if (Wholesales.WholeSalesLns.length > 0) {
-				$.each(Wholesales.WholeSalesLns, function (i, e) {
+			if (WholeSalesLns.length > 0) {
+				$.each(WholeSalesLns, function (i, e) {
 					if (e.wslSeq == seq) {
 						selectedWholesalesLn = structuredClone(e);
 						_price = Number(selectedWholesalesLn!.wslSellingPrice);
@@ -10592,7 +10593,7 @@ $(document).on("dblclick", ".itemdesc", function () {
 		})[0];
 	}
 	if (forwholesales) {
-		selectedWholesalesLn = $.grep(Wholesales.WholeSalesLns, function (e, i) {
+		selectedWholesalesLn = $.grep(WholeSalesLns, function (e, i) {
 			return e.wslSeq == seq;
 		})[0];
 	}
@@ -11287,31 +11288,26 @@ function fillInWholeSale(): IWholeSale {
 	snidx = batchidx + 1;
 	vtidx = snidx + 1;
 	return {
-		wsUID: $("#wsUID").val() as number,
-		wsCode: $("#wsCode").val() as string,
+		wsUID: $("#WholeSales_wsUID").val() as number,
+		wsCode: $("#WholeSales_wsCode").val() as string,
 		wsCusID: 0,
 		wsCusCode: $("#drpCustomer").val() as string,
 		wsCustomerPO: $("#wsCustomerPO").val() as string,
 		wsCustomerTerms: $("#wsCustomerTerms").val() as string,
 		wsSalesLoc: $("#drpLocation").val() as string,
-		wsRemark: $("#wsRemark").val() as string,
-		CreateTimeDisplay: "",
-		ModifyTimeDisplay: "",
+		wsRemark: $("#wsRemark").val() as string,		
 		AccountProfileId: 0,
-		CompanyId: 0,
-		WholeSalesLns: [],
-		ReturnItems: [],
-		WSCodeDisplay: "",
+		CompanyId: 0,		
 		wsDate: new Date(),
-		WholesalesDateDisplay: <string>$("#WholesalesDateDisplay").val(),
+		WsDateDisplay: <string>$("#WsDateDisplay").val(),
 		JsWholesalesDate: $wholesalesDateDisplay.val() as string,
-		wsStatus: ($("#wsStatus").val() as string).toLowerCase(),
+		wsStatus: ($("#WholeSales_wsStatus").val() as string).toLowerCase(),
 		wsCurrency: $("#wsCurrency").val() as string,
 		wsExRate: getExRate($("#wsCurrency").val() as string),
 		wsDeliveryDate: null,
-		wsDvc: $("#wsDvc").val() as string,
-		wsRefCode: $("#wsRefCode").val() as string,
-		wsType: $("#wsType").val() as string,
+		wsDvc: $("#WholeSales_wsDvc").val() as string,
+		wsRefCode: $("#WholeSales_wsRefCode").val() as string,
+		wsType: $("#WholeSales_wsType").val() as string,
 		wsCusMbr: "",
 		wsLineTotal: 0,
 		wsLineTotalPlusTax: 0,
@@ -11332,45 +11328,21 @@ function fillInWholeSale(): IWholeSale {
 		wsDeliveryAddress2: "",
 		wsDeliveryAddress3: "",
 		wsDeliveryAddress4: "",
-		DeliveryDateDisplay: <string>$("#DeliveryDateDisplay").val(),
+		DeliveryDateDisplay: <string>$("#WholeSales_DeliveryDateDisplay").val(),
 		JsDeliveryDate: <string>$deliveryDateDisplay.val(),
 		wsReturnDate: "",
-		wsSupplierInvoice: "",
 		wsSaleComment: "",
 		wsCheckout: false,
 		wsCheckoutPortal: "",
-		Device: initDevice(),
-		supplierName: "",
-		ReturnDateDisplay: "",
-		SalesTimeDisplay: "",
-		TrimmedRemark: "",
-		jsonWholeSalesLns: "",
-		enableTax: false,
-		enableSerialNo: false,
-		priceEditable: false,
-		discEditable: false,
-		inclusiveTax: false,
-		Currency: "",
-		itmName: "",
-		itmDesc: "",
-		SubTotal: 0,
-		FormatSubTotal: "",
-		DiscTotal: 0,
-		FormatDiscTotal: "",
-		TaxTotal: 0,
-		FormatTaxTotal: "",
-		Total: 0,
-		FormatTotal: "",
-		jsonDicCurrencyExRate: "",
-		CustomerName: "",
-		Customer: initCustomer(),
-		DeliveryItems: [],
-		MissingItemOptionsSalesLns: [],
+		WsTimeDisplay: "",		
+		EnableTax: false,		
+		InclusiveTax: false,
 		ireviewmode: reviewmode ? 1 : 0,
-		UseForexAPI: $("#UseForexAPI").val() === "True",
+		UseForexAPI: $("#WholeSales_UseForexAPI").val() === "True",
 		wsAllLoc: $("#chkAllLoc").is(":checked"),
 		UploadFileList: [],
 		wsChkManualDelAddr: $("#chkDelAddr").is(":checked"),
+		Customer: {} as ICustomer,
 	};
 }
 interface IWholeSale {
@@ -11410,55 +11382,27 @@ interface IWholeSale {
 	JsDeliveryDate: string | null;
 	wsReturnDate: string | null;
 	wsCurrency: string;
-	wsExRate: number | null;
-	wsSupplierInvoice: string | null;
+	wsExRate: number | null;	
 	wsCustomerTerms: string | null;
 	wsSaleComment: string;
 	wsCheckout: boolean;
 	wsCheckoutPortal: string;
 	AccountProfileId: number;
 	CompanyId: number;
-	CreateTimeDisplay: string;
-	ModifyTimeDisplay: string | null;
-	Device: IDevice;
-	JsWholesalesDate: string;
-	supplierName: string;
-	ReturnDateDisplay: string;
-	SalesTimeDisplay: string;
-	TrimmedRemark: string;
-	WholeSalesLns: Array<IWholeSalesLn>;
-	ReturnItems: Array<IWholeSalesReturnItem>;
-	jsonWholeSalesLns: string;
-	enableTax: boolean;
-	enableSerialNo: boolean;
-	priceEditable: boolean;
-	discEditable: boolean;
-	inclusiveTax: boolean;
-	Currency: string;
-	itmName: string;
-	itmDesc: string;
-	WSCodeDisplay: string;
-	SubTotal: number;
-	FormatSubTotal: string;
-	DiscTotal: number;
-	FormatDiscTotal: string;
-	TaxTotal: number;
-	FormatTaxTotal: string;
-	Total: number;
-	FormatTotal: string;
-	jsonDicCurrencyExRate: string;
-	CustomerName: string;
-	wsDate: Date;
-	WholesalesDateDisplay: string;
-	Customer: ICustomer;
-	DeliveryItems: Array<IWholeSalesLn>;
-	MissingItemOptionsSalesLns: Array<IWholeSalesLn>;
+	JsWholesalesDate: string;	
+	WsDateDisplay: string;
+	WsTimeDisplay: string;	
+	EnableTax: boolean;	
+	InclusiveTax: boolean;	
+	wsDate: Date;		
 	ireviewmode: number;
 	UseForexAPI: boolean;
 	wsAllLoc: boolean;
 	UploadFileList: string[];
 	wsChkManualDelAddr: boolean;
+	Customer: ICustomer;
 }
+let WholeSalesLns: IWholeSalesLn[] = [];
 function initWholeSalesLn(): IWholeSalesLn {
 	return {
 		wslUID: 0,
@@ -11860,8 +11804,6 @@ interface IItemBatchVQ extends IBatchVQ {
 }
 
 let DicItemBatchQty: { [Key: string]: Array<IBatchQty> } = {};
-
-let DicItemBVList: { [Key: string]: { [Key: string]: string[] } } = {};
 
 function initBatchVQ(): IBatchVQ {
 	return {
@@ -17862,38 +17804,39 @@ function handleRecurOrderList(this: any) {
 		type: "GET",
 		url: "/Api/GetRecurOrder",
 		data: { orderId },
-		success: function (data: IWholeSale) {
+		success: function (data) {
+			let ws = data.sales as IWholeSale;
 			//console.log("recurorder data:", data);
 			Wholesales = fillInWholeSale();
-			Wholesales.wsCode = data.wsCode;
-			Wholesales.wsCusID = data.wsCusID;
-			Wholesales.wsDvc = data.wsDvc;
-			Wholesales.wsSalesLoc = data.wsSalesLoc;
-			Wholesales.wsRefCode = data.wsRefCode;
-			Wholesales.wsAllLoc = data.wsAllLoc;
+			Wholesales.wsCode = ws.wsCode;
+			Wholesales.wsCusID = ws.wsCusID;
+			Wholesales.wsDvc = ws.wsDvc;
+			Wholesales.wsSalesLoc = ws.wsSalesLoc;
+			Wholesales.wsRefCode = ws.wsRefCode;
+			Wholesales.wsAllLoc = ws.wsAllLoc;
 
-			Wholesales.wsDeliveryAddressId = data.wsDeliveryAddressId;
+			Wholesales.wsDeliveryAddressId = ws.wsDeliveryAddressId;
 
-			Wholesales.wsCustomerPO = data.wsCustomerPO;
+			Wholesales.wsCustomerPO = ws.wsCustomerPO;
 			$("#txtCustomerPO").val(Wholesales.wsCustomerPO);
 			// console.log("data customer#orderid:", data.Customer);
 			selectedCus = initCustomer();
-			selectedCus.cusCustomerID = data.Customer.cusCustomerID;
-			selectedCus.cusName = data.Customer.cusName;
-			selectedCus.cusPhone = data.Customer.cusPhone;
-			selectedCus.cusPriceLevelID = data.Customer.cusPriceLevelID;
-			selectedCus.cusPointsSoFar = data.Customer.cusPointsSoFar;
-			selectedCus.cusPointsUsed = data.Customer.cusPointsUsed;
-			selectedCus.PointsActive = data.Customer.PointsActive;
+			selectedCus.cusCustomerID = ws.Customer.cusCustomerID;
+			selectedCus.cusName = ws.Customer.cusName;
+			selectedCus.cusPhone = ws.Customer.cusPhone;
+			selectedCus.cusPriceLevelID = ws.Customer.cusPriceLevelID;
+			selectedCus.cusPointsSoFar = ws.Customer.cusPointsSoFar;
+			selectedCus.cusPointsUsed = ws.Customer.cusPointsUsed;
+			selectedCus.PointsActive = ws.Customer.PointsActive;
 			selectedCus.cusPriceLevelDescription =
-				data.Customer.cusPriceLevelDescription;
-			selectedCus.AddressList = data.Customer.AddressList;
-			selectedCus.cusCode = data.Customer.cusCode;
+				ws.Customer.cusPriceLevelDescription;
+			selectedCus.AddressList = ws.Customer.AddressList;
+			selectedCus.cusCode = ws.Customer.cusCode;
 			// console.log("cuscode:" + selectedCus.cusCode);
 			selectCus();
 
 			currentY = 0;
-			$.each(data.WholeSalesLns, function (i, e) {
+			$.each(data.wslns as IWholeSalesLn[], function (i, e) {
 				seq = currentY + 1;
 				selectedItemCode = e.wslItemCode;
 				selectedItem = initItem();
@@ -19228,8 +19171,8 @@ $(document).on("change", ".validthru", function () {
 				},
 			});
 		}
-		if (Wholesales.WholeSalesLns.length > 0) {
-			$.each(Wholesales.WholeSalesLns, function (i, e) {
+		if (WholeSalesLns.length > 0) {
+			$.each(WholeSalesLns, function (i, e) {
 				if (e.wslSeq == seq) {
 					e.JsValidThru = validthru;
 					selectedWholesalesLn = structuredClone(e);
@@ -20481,5 +20424,6 @@ function formatEmail(email: string, username:string|null=""):string {
 }
 
 $(document).on("click", "#btnReload", function () {
-	window.location.reload();
+	if ($(this).data("reloadurl")) window.location.href = $(this).data("reloadurl");
+	else window.location.reload();
 });

@@ -153,10 +153,10 @@ $(document).ready(function () {
   }
   initDatePicker(
     "wholesalesDate",
-    convertCsharpDateStringToJsDate(Wholesales.WholesalesDateDisplay)
+    convertCsharpDateStringToJsDate(Wholesales.WsDateDisplay)
   );
 
-  Wholesales.WholeSalesLns = wholesaleslns;
+  WholeSalesLns = wholesaleslns;
   Wholesales.JsWholesalesDate = <string>$wholesalesDateDisplay.val();
   Wholesales.JsDeliveryDate = <string>$deliveryDateDisplay.val();
 

@@ -1,5 +1,5 @@
 ﻿@{
-	bool editmode = ViewData["editmode"] == null ? false : (bool)ViewData["editmode"];
+	bool editmode = ViewData["editmode"] == null ? true : (bool)ViewData["editmode"];
 	string Currency = ViewData["Currency"].ToString();
 	var rtsCurrency = ViewData["rtsCurrency"] ==null ? "HKD" : (string)ViewData["rtsCurrency"];
 	List<SelectListItem> LocationList = (List<SelectListItem>)ViewData["LocationList"];
@@ -73,9 +73,13 @@
 				<col width="200">
 				<col width="90">
 				<col width="90">
+
+				@*@if (editmode)
+		{*@
 				<col width="90">
 				<col width="90">
 				<col width="90">
+				@*}  *@
 
 				<col width="240" />
 
@@ -95,9 +99,13 @@
 					<td title="@Resources.Resource.Description" style="text-align: center;">@Resources.Resource.Description</td>
 					<td title="@Resources.Resource.BaseUnit" style="text-align: right;">@Resources.Resource.BaseUnit</td>
 					<td title="@Resources.Resource.Qty" style="text-align: right;">@Resources.Resource.Qty</td>
+
+					@*@if (editmode)
+		{*@
 					<td title="@Resources.Resource.Batch" style="text-align: center;">@Resources.Resource.Batch</td>
 					<td title="@Resources.Resource.SerialNo" style="text-align: center;">@Resources.Resource.SerialNoItemHeader</td>
 					<td title="@Resources.Resource.ExpiryDate" style="text-align: center;">@Resources.Resource.ExpiryDate</td>
+					@* } *@
 
 					<td title="@Resources.Resource.ItemVariations" style="text-align: center;">@Resources.Resource.ItemVariations</td>
 

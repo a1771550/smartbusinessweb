@@ -1,8 +1,6 @@
 ﻿$infoblk = $("#infoblk");
-enableSN = $infoblk.data("enablesn") === "True";
+enableSN = true;
 enableTax = $infoblk.data("enabletax") === "True";
-priceeditable = $infoblk.data("priceeditable") === "True";
-disceditable = $infoblk.data("disceditable") === "True";
 
 $wholesalesDateDisplay = $("#wholesalesDate");
 $deliveryDateDisplay = $("#deliveryDate");
@@ -10,14 +8,12 @@ $deliveryDateDisplay = $("#deliveryDate");
 DicBatTotalQty = $infoblk.data("jsondicbattotalqty");
 
 PoItemBatVQList = $infoblk.data("jsonpoitembatvqlist");
-DicItemBVList = $infoblk.data("jsondicitembvlist");
 
-DicItemBatchQty = $infoblk.data("jsondicitembatchqty");
 DicItemBatDelQty = $infoblk.data("jsondicitembatdelqty");
 
 DicItemBatSnVt = $infoblk.data("jsondicitembatsnvt");
 
-DicItemBatSnVtList = $infoblk.data("jsondicitemsnbatvtlist");
+DicItemBatSnVtList = $infoblk.data("jsondicitembatsnvtlist");
 DicItemSnVtList = $infoblk.data("jsondicitemsnvtlist");
 
 DicItemVtQtyList = $infoblk.data("jsondicitemvtqtylist");
@@ -264,7 +260,7 @@ $(document).on("click", "#btnInvoice", function () {
     }
 
     $target.find("tbody tr").each(function (i, e) {
-        const salesln: IWholeSalesLn = Wholesales.WholeSalesLns.filter(
+        const salesln: IWholeSalesLn = WholeSalesLns.filter(
             (x) => x.wslSeq == i + 1
         )[0];
         const orderqty = salesln ? salesln.wslQty : -1;
@@ -429,7 +425,7 @@ $(document).on("click", "#btnInvoice", function () {
                 .addClass("disabled")
                 .prop("disabled", true);
 
-            $.each(Wholesales.WholeSalesLns, function (idx, ele) {
+            $.each(WholeSalesLns, function (idx, ele) {
                 if (
                     ele.wslItemCode.toString().toLowerCase() == itemcode.toLowerCase() &&
                     ele.wslSeq == _seq
@@ -463,8 +459,7 @@ function updateWholesales() {
     Wholesales.wsDeliveryAddressId = Number($("#drpDeliveryAddr").val());
     Wholesales.wsSalesLoc = $("#drpLocation").val() as string;
     Wholesales.wsAllLoc = $("#chkAllLoc").is(":checked");
-
-    Wholesales.WholeSalesLns = [];
+  
     const $selector = $(`#${gTblName} tbody tr`);
     let salesamt: number = 0;
     $selector.each(function (i, e) {
@@ -476,8 +471,8 @@ function updateWholesales() {
         const itemcode = $tr.find("td:eq(1)").find(".itemcode").val();
         if (itemcode) {
             let seq = parseInt(<string>$tr.find("td:first").text());
-            if (Wholesales.WholeSalesLns.length > 0) {
-                selectedWholesalesLn = Wholesales.WholeSalesLns.filter(
+            if (WholeSalesLns.length > 0) {
+                selectedWholesalesLn = WholeSalesLns.filter(
                     (x) => x.wslSeq == seq
                 )[0];
                 if (!selectedWholesalesLn) selectedWholesalesLn = initWholeSalesLn();
@@ -554,9 +549,9 @@ function updateWholesales() {
             // console.log(selectedWholesalesLn);
             salesamt += _amt;
 
-            if (Wholesales.WholeSalesLns.length > 0) {
+            if (WholeSalesLns.length > 0) {
                 let idx = -1;
-                $.each(Wholesales.WholeSalesLns, function (i, e) {
+                $.each(WholeSalesLns, function (i, e) {
                     // console.log("seq:" + seq + ";wlseq:" + e.wslSeq);
                     if (e.wslSeq == selectedWholesalesLn!.wslSeq) {
                         e = structuredClone(selectedWholesalesLn)!;
@@ -565,10 +560,10 @@ function updateWholesales() {
                     }
                 });
                 if (idx === -1) {
-                    Wholesales.WholeSalesLns.push(selectedWholesalesLn);
+                    WholeSalesLns.push(selectedWholesalesLn);
                 }
             } else {
-                Wholesales.WholeSalesLns.push(selectedWholesalesLn);
+                WholeSalesLns.push(selectedWholesalesLn);
             }
         }
     });
@@ -655,7 +650,7 @@ function handleSubmit4Wholesales(forRecurOrder: boolean = false) {
                         }                        
                     });
                     //console.log("DeliveryItems:", DeliveryItems);
-                    //console.log("WholeSalesLns:", Wholesales.WholeSalesLns);
+                    //console.log("WholeSalesLns:", WholeSalesLns);
                     //return false;
                     if (DeliveryItems.length === 0) {
                         $.fancyConfirm({
@@ -681,6 +676,7 @@ function handleSubmit4Wholesales(forRecurOrder: boolean = false) {
                                 ).val(),
                                 model: DeliveryItems,
                                 ws: Wholesales,
+                                wslnList: WholeSalesLns
                             },
                             success: function (data) {
                                 closeWaitingModal();
@@ -712,6 +708,7 @@ function handleSubmit4Wholesales(forRecurOrder: boolean = false) {
                         "input[name=__RequestVerificationToken]"
                     ).val(),
                     model: Wholesales,
+                    wslnList: WholeSalesLns,
                     recurOrder,
                 },
                 success: function (data: ISalesReturnMsg) {
@@ -754,7 +751,7 @@ function validateWSIForm(): boolean {
 
     if (Wholesales.wsCurrency == "") {
         msg += `${$infoblk.data("currencyrequiredtxt")}<br>`;
-        $("#wsCurrency").addClass("focus");
+        $("#WholeSales_wsCurrency").addClass("focus");
     }
 
     if (!Wholesales.wsCusCode) {
@@ -765,7 +762,7 @@ function validateWSIForm(): boolean {
         msg += `${$infoblk.data("locationrequiredtxt")}<br>`;
         $("#drpLocation").addClass("focus");
     }
-    if (Wholesales.WholeSalesLns.length == 0) {
+    if (WholeSalesLns.length == 0) {
         msg += `${$infoblk.data("emptyitemwarning")}<br>`;
         $("#tblWSI tbody tr")
             .eq(0)
@@ -781,7 +778,7 @@ function validateWSIForm(): boolean {
             totaldelqty += e.dlQty;
         });
         let totalorderqty = 0;
-        $.each(Wholesales.WholeSalesLns, function (i, e) {
+        $.each(WholeSalesLns, function (i, e) {
             totalorderqty += e.wslQty!;
         });
         if (totaldelqty > totalorderqty) {
@@ -869,7 +866,7 @@ $(document).on("change", "#wsCustomerPO", function () {
 });
 
 $(document).on("click", "#btnReload", function () {
-    const Id = $("#wsUID").val();
+    const Id = $("#WholeSales_wsUID").val();
     let invoicepara = "";
     if (Wholesales.wsStatus == "invoice") invoicepara = "&status=invoice";
     window.location.href = `/WholeSales/Edit?Id=${Id}&type=order${invoicepara}`;
@@ -931,9 +928,10 @@ function fillInDeliveryItems() {
 }
 
 $(function () {
+    forwholesales = true;
     approvalmode = $infoblk.data("approvalmode") == "True";
     setFullPage();
-    forwholesales = true;
+    
     DicLocation = $infoblk.data("jsondiclocation");
     //console.log("diclocation:", DicLocation);
     JobList = $infoblk.data("jsonjoblist");
@@ -954,13 +952,13 @@ $(function () {
         },
     });
     const status: string =
-        ($("#wsStatus").val() as string).toLowerCase() === "passed"
+        ($("#WholeSales_wsStatus").val() as string).toLowerCase() === "passed"
             ? "requesting"
-            : ($("#wsStatus").val() as string);
+            : ($("#WholeSales_wsStatus").val() as string);
     let bgcls: string = status.toLowerCase().concat("statusbg");
     $("body").addClass(bgcls);
 
-    editmode = Number($("#wsUID").val()) > 0;
+    editmode = Number($("#WholeSales_wsUID").val()) > 0;
     editapproved =
         getParameterByName("mode") != null &&
         getParameterByName("mode") == "editapproved";
@@ -976,7 +974,7 @@ $(function () {
     // console.log("receiptno:" + receiptno);
 
     if (!editmode)
-        $("#wsExRate").val(1);
+        $("#WholeSales_wsExRate").val(1);
 
     if (reviewmode || editmode || editapproved) {
         Wholesales = fillInWholeSale();
@@ -1081,7 +1079,7 @@ $(function () {
             idx++;
         });
 
-        Wholesales.WholeSalesLns = structuredClone(wholesaleslns);
+        WholeSalesLns = structuredClone(wholesaleslns);
         // console.log("html:" + html);
         $target = $(`#${gTblName} tbody`);
         $target.empty().html(html);
@@ -1097,7 +1095,7 @@ $(function () {
 
         initDatePicker(
             "wholesalesDate",
-            convertCsharpDateStringToJsDate(Wholesales.WholesalesDateDisplay)
+            convertCsharpDateStringToJsDate(Wholesales.WsDateDisplay)
         );
 
         Wholesales.JsWholesalesDate = <string>$wholesalesDateDisplay.val();
@@ -1179,7 +1177,7 @@ $(function () {
                 }
             },
             dataType: "json",
-        });
+        });``
     } else {
         DicCurrencyExRate = $infoblk.data("jsondiccurrencyexrate");
     }
