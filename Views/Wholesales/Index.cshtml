@@ -89,7 +89,7 @@
 					</td>
 
 					<td class="text-center">
-						@Html.DisplayFor(modelWholeSales => item.CustomerName)
+						@Html.DisplayFor(modelWholeSales => item.Customer.cusName)
 					</td>
 
 					<td class="text-center">
@@ -105,7 +105,7 @@
 					}
 
 					<td class="text-center">
-						@Html.DisplayFor(modelWholeSales => item.WholesalesDateDisplay)
+						@Html.DisplayFor(modelWholeSales => item.WsDateDisplay)
 					</td>
 					<td class="text-center">
 						@Html.DisplayFor(modelWholeSales => item.DeliveryDateDisplay)

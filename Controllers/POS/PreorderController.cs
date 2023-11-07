@@ -38,7 +38,7 @@ namespace SmartBusinessWeb.Controllers.POS
 		[HandleError]
 		[CustomAuthorize("retail", "boss", "admin", "superadmin")]
 		[HttpPost]
-		public JsonResult Edit(PreSalesModel PreSales, List<PreSalesLn> PreSalesLnList, List<PayLnView> Payments)
+		public JsonResult Edit(PreSalesModel PreSales, List<PreSalesLn> PreSalesLnList, List<PayLnView> Payments, List<DeliveryItemModel> DeliveryItems)
 		{			
 			ViewBag.ParentPage = "sales";
 			ViewBag.PageName = "preorderlist";			

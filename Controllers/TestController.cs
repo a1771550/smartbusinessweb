@@ -47,6 +47,8 @@ using DocumentFormat.OpenXml;
 using CommonLib.Models.MYOB;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using DocumentFormat.OpenXml.ExtendedProperties;
+using System.Windows.Interop;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -92,6 +94,18 @@ namespace SmartBusinessWeb.Controllers
         protected string UploadsWSDir { get { return ConfigurationManager.AppSettings["UploadsWSDir"]; } }
         protected string UploadsPODir { get { return ConfigurationManager.AppSettings["UploadsPODir"]; } }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult Edit(WholeSalesView model, List<WholeSalesLnModel> wslnList)
+        {
+            var msg = new SalesReturnMsg
+            {        
+                cusname = model.Customer.cusName,
+                saleslnlength = wslnList.Count,            
+                ismanager = true
+            };
+            return Json(msg);
+        }
         public void Debug80()
         {
             using (connection)
@@ -786,7 +800,7 @@ namespace SmartBusinessWeb.Controllers
                     }
                 }
 
-                model.taxModel = Helpers.ModelHelper.GetTaxInfo(context, checkoutportal);
+                model.taxModel = Helpers.ModelHelper.GetTaxInfo(context);
 
                 salesamt = (decimal)_sales.rtsFinalTotal;
                 var refunds = context.RtlSales.Where(x => (x.rtsRefCode != null && x.rtsRefCode == receiptno) && x.rtsType == "RF" && x.rtsDvc == devicecode && x.rtsSalesLoc == shop).ToList();

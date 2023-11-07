@@ -578,6 +578,7 @@ let selectedStockInItem: IStockInItem;
 let selectedPurchaseItem: IPurchaseItem | null;
 let selectedWholesalesLn: IWholeSalesLn | null;
 
+let SimpleItemList: ISimpleItem[];
 let ItemList: Array<IItem>;
 let CusList: Array<ICustomer>;
 let contactlist: Array<IContact>;
@@ -4506,7 +4507,7 @@ function handleBatchModalCancel() {
 function handleSerialModalCancel() {
 	closeSerialModal();
 }
-function getActualPrice(_item: IItem): number {
+function getActualPrice(_item: ISimpleItem): number {
 	//console.log('item#getactualprice:', _item);
 	let price = 0;
 	if (selectedCus.cusCode.toLowerCase() !== "guest") {
@@ -4529,11 +4530,11 @@ function getActualPrice(_item: IItem): number {
 			default:
 			case "PLA":
 			case "BSP":
-				price = _item.itmBaseSellingPrice ?? _item.BaseSellingPrice;
+				price = _item.itmBaseSellingPrice!;
 
 		}
 	} else {
-		price = _item.itmBaseSellingPrice ?? _item.BaseSellingPrice;
+		price = _item.itmBaseSellingPrice!;
 	}
 	//console.log('price#getactualprice:' + price);	
 	return price;
@@ -5629,17 +5630,41 @@ function initItem(): IItem {
 		hasItemVari: false,
 	};
 }
-interface IItem {
+
+interface ISimpleItem {
+    QtySellable: number;
+	itmItemID: number;
+	itmCode: string;
+	itmName: string;
+	itmDesc: string;
+	itmUseDesc: boolean | null;	
+	itmTaxPc: number | null;
+	itmSellUnit: string;
+	itmBaseSellingPrice: number | null;
+	itmLastSellingPrice: number;
+
+	PLA: number;
+	PLB: number;
+	PLC: number;
+	PLD: number;
+	PLE: number;
+	PLF: number;
+
+	itmIsTaxedWhenSold: boolean;
+	singleProId: number | null;
+	NameDesc: string;
+
+	ItemPromotions: IItemPromotion[];
+}
+interface IItem extends ISimpleItem {
 	itmIsActive: boolean;
 	itmIsNonStock: boolean;
 	itmIsQtyFractional: boolean;
 	itmIsCombo: boolean;
 	itmChgCtrl: string;
-	itmCode: string;
+	
 	itmCode2: string;
-	itmName: string;
-	itmDesc: string;
-	itmUseDesc: boolean | null;
+	
 	itmUseDesc2: boolean | null;
 	chkSN: boolean | null;
 	itmSnReusable: boolean | null;
@@ -5663,7 +5688,7 @@ interface IItem {
 	itmItemGrp2: string;
 	itmSeries: string;
 	itmTaxCode: string;
-	itmTaxPc: number | null;
+	
 	itmLength: number | null;
 	itmWidth: number | null;
 	itmHeight: number | null;
@@ -5671,7 +5696,7 @@ interface IItem {
 	itmBulkUnit: string;
 	itmBulk2BaseUnit: number | null;
 	itmBuyUnit: string;
-	itmSellUnit: string;
+	
 	itmBuy2Unit: string;
 	itmSell2Unit: string;
 	itmBuy2BaseUnit: number | null;
@@ -5703,19 +5728,14 @@ interface IItem {
 	itmLockTime: string | null;
 	itmLastUnitPrice: number | null;
 	itmUnitCost: number | null;
-	itmLastSellingPrice: number;
+	
 	itmSellUnitQuantity: number | null;
-	itmBaseSellingPrice: number | null;
+	
 	itmBaseUnitPrice: number | null;
-	itmItemID: number | null;
+	
 	itmDSN: string;
 	Qty: number;
-	PLA: number;
-	PLB: number;
-	PLC: number;
-	PLD: number;
-	PLE: number;
-	PLF: number;
+	
 	IsActive: number;
 	IncomeAccountID: number;
 	InventoryAccountID: number;
@@ -5729,7 +5749,7 @@ interface IItem {
 	DicItemAccounts: typeof dicItemAccount;
 	LocQtyList: Array<ILocQty>;
 	SelectedLocation: string;
-	itmIsTaxedWhenSold: boolean;
+	
 	itmIsTaxedWhenBought: boolean;
 	itmTaxExclusiveLastPurchasePrice: number | null;
 	itmTaxInclusiveLastPurchasePrice: number | null;
@@ -5747,17 +5767,17 @@ interface IItem {
 	JsStockList: Array<IJsStock>;
 	JsonJsStockList: string;
 	DicLocQty: { [Key: string]: number };
-	NameDesc: string;
+
 	AttrList: IItemAttribute[];
 	SelectedAttrList4V: IItemAttribute[];
 	itmWeight: number;
 	IsModifyAttr: boolean;
 	TotalBaseStockQty: number;
 	catId: number;
-	ItemPromotions: IItemPromotion[];
+	
 	QtySellable: number;
 	hasSelectedIvs: boolean;
-	singleProId: number | null;
+	
 	hasItemVari: boolean;
 }
 interface ILocQty {
@@ -7605,56 +7625,41 @@ interface IPreSales {
 	rtsRefCode: string | null;
 }
 
-interface IPreSalesLn {
-	SettleDateDisplay: string;
+interface IPreSalesLn {	
 	rtlUID: number;
 	rtlSalesLoc: string;
 	rtlDvc: string;
 	rtlCode: string;
 	rtlDate: string | null;
 	rtlSeq: number | null;
-	rtlRefSales: string;
-	rtlReasonCode: string;
+	rtlRefSales: string;	
 	rtlItemCode: string;
 	rtlDesc: string;
-	rtlStockLoc: string;
-	rtlChkBch: boolean | null;
-	rtlBatchCode: string;
-	rtlItemColor: string;
-	rtIsConsignIn: boolean | null;
-	rtlIsConsignOut: boolean | null;
-	rtlIsNoCharge: boolean | null;
-	rtlHasSerialNo: boolean | null;
+	rtlStockLoc: string;	
+	rtlBatch: string;	
 	rtlHasSn: boolean | null;
-	rtlChkSn: boolean | null;
-	rtlSnReusable: boolean | null;
+	rtlChkSn: boolean | null;	
 	rtlTaxCode: string;
 	rtlTaxPc: number | null;
-	rtlSellUnit: string;
-	rtlRrpTaxIncl: number | null;
-	rtlRrpTaxExcl: number | null;
 	rtlLineDiscAmt: number | null;
 	rtlLineDiscPc: number | null;
-	rtlDiscSpreadPc: number | null;
 	rtlQty: number | null;
 	rtlTaxAmt: number | null;
 	rtlSalesAmt: number | null;
-	rtlIndex1: number | null;
-	rtlIndex2: number | null;
 	rtlType: string;
-	rtlSellingPrice: number | null;
-	rtlCheckout: boolean | null;
-	rtlSellingPriceMinusInclTax: number | null;
-	rtlParentUID: number | null;
-	Item: IItem;
+	rtlSellingPrice: number | null;	
+	rtlSellingPriceMinusInclTax: number | null;	
+	rtlValidThru: string | null;
+	rtlSn: string | null;
+
+	Item: ISimpleItem;
 	DelItems: IDeliveryItem[];
 	SalesDateDisplay: string;	
 	JsValidThru: string | null;
 	ivIdList: string | null;		
 	JobID: number | null;
-	poIitemVariList: IPoItemVari[];
-	batchList: IBatch[];
-	snbatseqvtlist: ISnBatSeqVt[];
+	
+	batchList: IBatch[];	
 	rtpPayAmt: number | null;
 	DepositAmtDisplay: string | null;
 	rtpPayType: string | null;
@@ -7663,13 +7668,14 @@ interface IPreSalesLn {
 	itmDesc: string;
 	itmUseDesc: boolean | null;
 	itmNameDesc: string;
+	itmCode: string;
 	itmTaxPc: number | null;
 	itmBaseUnit: string | null;
 	itmSellUnit: string | null;
 	itmBaseSellingPrice: number | null;
 	itmLastSellingPrice: number | null;
-	itmBuyStdCost: number | null;
 	SalesPersonName: string | null;
+	itmIsTaxedWhenSold: boolean;
 }
 function initSalesLn(_seq: number | undefined = 0): ISalesLn {
 	//console.log("Sales@initsalseln:", Sales);
@@ -7725,8 +7731,7 @@ function initSalesLn(_seq: number | undefined = 0): ISalesLn {
 		rtlHasSerialNo: false,
 		JobID: 0,
 		itemVariList: [],
-		batchList: [],
-		snbatseqvtlist: [],
+		batchList: [],	
 		SettleDateDisplay: "",			
 	};
 }
@@ -7782,8 +7787,7 @@ interface ISalesLn {
 	DicItemSNs: Array<typeof DicItemSNs>;
 	JobID: number | null;
 	itemVariList: IPoItemVari[];
-	batchList: IBatch[];
-	snbatseqvtlist: ISnBatSeqVt[];	
+	batchList: IBatch[];	
 
 }
 interface IPayLn {
@@ -8364,13 +8368,13 @@ function populateItemRow(proId: number = 0) {
 		idx++;
 		const $vt = $target.find("td").eq(idx).find(".validthru");
 		if (forpreorder && (PreSales.rtsStatus == SalesStatus.presettling)) {
-
+			//console.log("here");
 			batcls = "batch";
 			sncls = "serialno";
 			vtcls = "datepicker validthru";
 			let pointercls = "";
 			let vtdisabled = "";
-
+			//console.log(itemOptions);
 			if (itemOptions) {
 				batcls = itemOptions.ChkBatch ? "batch pointer focus" : "";
 				if (itemOptions.ChkSN) {
@@ -8381,14 +8385,13 @@ function populateItemRow(proId: number = 0) {
 				pointercls =
 					itemOptions.ChkBatch || itemOptions.ChkSN ? "" : "pointer";
 
-
 				$bat.addClass(batcls).prop("readonly", true);
-
-
 				$sn.addClass(sncls).prop("readonly", true);
 
 				if (itemOptions.WillExpire)
 					$vt.addClass(pointercls).addClass("focus").attr(vtdisabled);
+				//console.log("batcls:" + batcls);
+				//console.log("$bat:", $bat);
 			}
 		}
 		else {
@@ -8401,19 +8404,21 @@ function populateItemRow(proId: number = 0) {
 					? "nonitemoptions"
 					: "";
 
-
-			const $bat = $target.find("td").eq(idx).find(".batch");
-
 			if (forsales) {
+				//console.log("itemOptions#forsales:", itemOptions);
+				//console.log("$bat#0:", $bat);
 				$bat.data("type", "bat");
 
 				if (itemOptions.ChkBatch) {
 					batcls = `batch pointer focus`;
+					//console.log("selectedItemCode:" + selectedItemCode);
+					//console.log("DicItemBatchQty[selectedItemCode].length:", DicItemBatchQty[selectedItemCode].length);
 					if (DicItemBatchQty[selectedItemCode].length === 0) {
 						missingtxt = itemoptionsinfomissingformat.replace("{0}", batchtxt);
 						batcls = "itemoptionmissing";
 						batmsg = `${missingtxt} ${purchaserequiredmsg}`;
 					}
+					//console.log("batcls:" + batcls);
 					$bat.addClass(batcls);
 				} else {
 					$bat.removeClass("pointer focus");
@@ -8426,13 +8431,13 @@ function populateItemRow(proId: number = 0) {
 				}
 				if (readonly !== "") $bat.prop("readonly", true);
 				$bat.prop("title", batmsg);
-			} else {
+				//console.log("$bat#1:", $bat);
+			}
+			else {
 				if (itemOptions.ChkBatch) $bat.addClass("focus");
 				else $bat.removeClass("batch pointer");
-			}
-
-			idx++;
-			const $sn = $target.find("td").eq(idx).find(".serialno");
+			}			
+		
 			if (forsales) {
 				$sn.data("type", "sn");
 
@@ -8545,7 +8550,7 @@ function populateItemRow(proId: number = 0) {
 			}
 
 			idx++;
-			if (forsales) {
+			if (forsales||forwholesales) {
 				const $iv = $target.find("td").eq(idx).find(".vari");
 				let itemcode = selectedItemCode;
 				let ivpointer = !itemOptions.ChkBatch && !itemOptions.ChkSN && !itemOptions.WillExpire ? "pointer" : "";
@@ -8566,18 +8571,25 @@ function populateItemRow(proId: number = 0) {
 					price = 0;
 				} else {
 					if (selectedCus.cusCode.toLowerCase() !== "guest") {
-						const proItems = selectedCus.customerItems.filter(
-							(x) => x.itmCode == selectedItemCode
-						);
-						const proItem =
-							proItems != null && proItems.length ? proItems[0] : null;
-						if (proItem == null) {
-							price = forsales? getActualPrice(selectedSalesLn!.Item):getActualPrice(selectedPreSalesLn!.Item);
-							$target.find("td").first().removeClass("lastsellingprice");
+						//console.log("selectedCus:", selectedCus);
+						if (selectedCus.customerItems) {
+							const proItems = selectedCus.customerItems.filter(
+								(x) => x.itmCode == selectedItemCode
+							);
+							const proItem =
+								proItems != null && proItems.length ? proItems[0] : null;
+							if (proItem == null) {
+								price = forsales ? getActualPrice(selectedSalesLn!.Item) : getActualPrice(selectedPreSalesLn!.Item);
+								$target.find("td").first().removeClass("lastsellingprice");
+							} else {
+								price = proItem.LastSellingPrice;
+								$target.find("td").first().addClass("lastsellingprice");
+							}
 						} else {
-							price = proItem.LastSellingPrice;
-							$target.find("td").first().addClass("lastsellingprice");
-						}
+							//console.log(selectedPreSalesLn!.Item.itmBaseSellingPrice);
+							price = forsales ? getActualPrice(selectedSalesLn!.Item) : getActualPrice(selectedPreSalesLn!.Item);
+							$target.find("td").first().removeClass("lastsellingprice");
+						}						
 					} else {
 						price = forsales ? getActualPrice(selectedSalesLn!.Item) : getActualPrice(selectedPreSalesLn!.Item);
 						$target.find("td").first().removeClass("lastsellingprice");
@@ -8616,7 +8628,7 @@ function populateItemRow(proId: number = 0) {
 
 				if(forsales)getItemPromotion(selectedSalesLn!.Item, proId);
 					
-				if (forpreorder) getItemPromotion(selectedPreSalesLn!.Item, proId);
+				if (forpreorder) getItemPromotion4SimpleItem(selectedPreSalesLn!.Item, proId);
 					
 				if (itemPromotion && itemPromotion.pro4Period) {
 					discount = itemPromotion.proDiscPc!;
@@ -8672,7 +8684,7 @@ function populateItemRow(proId: number = 0) {
 		selectedWholesalesLn = null;
 		selectedPurchaseItem = null;
 		selectedPreSalesLn = null;
-
+		
 		if ($rows.eq($rows.length).length) {
 			focusItemCode($rows.length);
 		} else if ($rows.eq(currentY + 1).length) {
@@ -8696,6 +8708,15 @@ function populateItemRow(proId: number = 0) {
 }
 
 function getItemPromotion(item: IItem, proId: number) {
+	if (isPromotion && item.ItemPromotions) {
+		// console.log("seqitem itempromotions:", seqitem.ItemPromotions);
+		itemPromotion = item.ItemPromotions.filter(function (el) {
+			return el.proId == proId;
+		})[0];
+		// console.log(itemPromotion);
+	}
+}
+function getItemPromotion4SimpleItem(item: ISimpleItem, proId: number) {
 	if (isPromotion && item.ItemPromotions) {
 		// console.log("seqitem itempromotions:", seqitem.ItemPromotions);
 		itemPromotion = item.ItemPromotions.filter(function (el) {
@@ -8782,7 +8803,7 @@ function addRow() {
 			'<td><input type="datetime" name="validthru" class="validthru small datepicker text-center pointer flex" /></td>';
 	}
 
-	let vtcls = "validthru small ";
+	let vtcls = "validthru "; //don't add small here!
 	if ((forwholesales &&
 		Wholesales.wsStatus != "order" &&
 		Wholesales.wsStatus.toLowerCase() !== "requesting" &&
@@ -8940,6 +8961,7 @@ function fillInDelDetail(arr: string[], title: string) {
 }
 
 $(document).on("dblclick", ".serialno.pointer", function () {
+	//console.log("here");
 	let hasFocusCls: boolean = $(this).hasClass("focus");
 
 	$tr = $(this).parent("td").parent("tr");
@@ -8968,8 +8990,8 @@ $(document).on("dblclick", ".serialno.pointer", function () {
 			},
 		});
 	} else {
-		if (forpurchase || forwholesales || forsales || forrefund) {
-			if (forwholesales || forsales || forrefund) {
+		if (forpurchase || forwholesales || forsales || forpreorder || forrefund) {
+			if (forwholesales || forsales || forpreorder || forrefund) {
 				itemOptions = DicItemOptions[selectedItemCode];
 				if (forwholesales) {
 					if (
@@ -8992,6 +9014,14 @@ $(document).on("dblclick", ".serialno.pointer", function () {
 				})[0];
 			}
 
+			if (forpreorder) {
+				if (DicItemSnVtList && selectedItemCode in DicItemSnVtList)
+					snvtlist = DicItemSnVtList[selectedItemCode].slice(0);
+				selectedPreSalesLn = $.grep(PreSalesLnList, function (e, i) {
+					return e.rtlSeq == seq;
+				})[0];
+			}
+
 			if (editmode) {
 				if (forpurchase) {
 					toggleSnVt();
@@ -9001,6 +9031,7 @@ $(document).on("dblclick", ".serialno.pointer", function () {
 						}
 					});
 				}
+
 				if (forwholesales) {
 					if (Wholesales.wsStatus == "invoice") {
 						snvtlist = DicItemSnVtList[selectedItemCode].slice(0);
@@ -9141,8 +9172,7 @@ $(document).on("dblclick", ".serialno.pointer", function () {
 					}
 				}
 			}
-			openSerialModal(hasFocusCls);
-			//}
+			openSerialModal(hasFocusCls);			
 		}
 	}
 });
@@ -9175,7 +9205,7 @@ function openSerialModal(hasFocusCls: boolean) {
 		$("#txtStaticItemName").val(selectedPurchaseItem!.itmNameDesc);
 		$("#txtStaticQty").val(selectedPurchaseItem!.piReceivedQty);
 	}
-	if (forwholesales || forsales || forrefund || forpreorder) {
+	if (forwholesales || forsales || forpreorder || forrefund) {
 		//console.log("selectedWholesalesLn:", selectedWholesalesLn);
 		if (forwholesales) $("#txtStaticItemName").val(selectedWholesalesLn!.itmNameDesc);
 		if (forsales) $("#txtStaticItemName").val(selectedSalesLn!.Item.NameDesc);
@@ -9219,7 +9249,7 @@ function openSerialModal(hasFocusCls: boolean) {
 			selectedPurchaseItem!.snbatseqvtlist = []; //reset to avoid duplicates
 		}
 	}
-	if ((forwholesales && Wholesales.wsStatus != "order") || forsales) {
+	if ((forwholesales && Wholesales.wsStatus != "order") || forsales || forpreorder) {
 		//console.log("here");
 		//console.log("snvtlist:", snvtlist);
 		if (snvtlist.length > 0) {
@@ -10559,6 +10589,7 @@ function _updaterow($target: JQuery, _amtplustax: number) {
 		updatePurchase();
 	}
 	if (forwholesales) {
+		//console.log("WholeSalesLns#_updaterow:", WholeSalesLns);
 		updateWholesales();
 	}
 }
@@ -11335,7 +11366,7 @@ function fillInWholeSale(): IWholeSale {
 		wsCheckout: false,
 		wsCheckoutPortal: "",
 		WsTimeDisplay: "",		
-		EnableTax: false,		
+		EnableTax: true,		
 		InclusiveTax: false,
 		ireviewmode: reviewmode ? 1 : 0,
 		UseForexAPI: $("#WholeSales_UseForexAPI").val() === "True",
@@ -17056,15 +17087,15 @@ function updatePreSales() {
 
 			if (presalesln) {
 				presalesln.rtlSeq = Number($(e).data("idx")) + 1;
-				presalesln.rtlItemCode = itemcode;
-				let idx = ItemList.findIndex(
-					(x) => x.itmCode.toString() == presalesln!.rtlItemCode.toString()
-				);
+				let idx = 0;
+				//presalesln.rtlItemCode = itemcode;
+				//let idx = ItemList.findIndex(
+				//	(x) => x.itmCode.toString() == presalesln!.rtlItemCode.toString()
+				//);
 
-				if (idx >= 0) {
-					presalesln.Item = ItemList[idx];
-				}
-
+				//if (idx >= 0) {
+				//	presalesln.Item = ItemList[idx];
+				//}
 				presalesln.rtlQty = Number($(e).find("td:eq(4)").find(".qty").val());
 
 				idx = PriceIdx4Sales;
@@ -17702,16 +17733,15 @@ function _submitSales() {
 		PreSales.rtsDvc = $("#drpDevice").val() as string;
 		PreSales.rtsAllLoc = $("#chkAllLoc").is(":checked");
 	}
-	
 
 	//console.log("Sales:", Sales);
 	//console.log("SalesLnList:", SalesLnList);
-	console.log("PreSales:", PreSales);
-	console.log("PreSalesLnList:", PreSalesLnList);
-	console.log("deliveryitems:", DeliveryItems);
-	console.log("Payments:", Payments);
-	let data = forpreorder ? { PreSales, PreSalesLnList, Payments } : { Sales, SalesLnList, Payments, DeliveryItems };
+	//console.log("PreSales:", PreSales);
+	//console.log("PreSalesLnList:", PreSalesLnList);
+	//console.log("deliveryitems:", DeliveryItems);
+	//console.log("Payments:", Payments);
 	//return false;
+	let data = forpreorder ? { PreSales, PreSalesLnList, Payments } : { Sales, SalesLnList, Payments, DeliveryItems };
 	openWaitingModal();
 	$.ajax({
 		type: "POST",
@@ -20074,9 +20104,11 @@ $(document).on("dblclick", ".batch", function () {
 			//change save btn to close btn if !hasFocusCls
 			openBatchModal(hasFocusCls);
 
-			const salesloc: string = forwholesales
-				? Wholesales.wsSalesLoc
-				: Sales.SelectedShop;
+			let salesloc: string = "";
+			if (forwholesales) salesloc = Wholesales.wsSalesLoc;
+			if (forsales) salesloc = Sales.SelectedShop;
+			if (forpreorder) salesloc = PreSales.rtsSalesLoc;
+		
 			batchModal
 				.find("#batchLocSeqItem")
 				.html(

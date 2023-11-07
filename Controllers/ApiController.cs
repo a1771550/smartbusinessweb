@@ -2992,7 +2992,7 @@ namespace SmartBusinessWeb.Controllers
                     }
                 }
 
-                model.taxModel = ModelHelper.GetTaxInfo(context, checkoutportal);
+                model.taxModel = ModelHelper.GetTaxInfo(context);
 
                 salesamt = (decimal)_sales.rtsFinalTotal;
                 var refunds = context.RtlSales.Where(x => (x.rtsRefCode != null && x.rtsRefCode == receiptno) && x.rtsType == "RF" && x.rtsDvc == devicecode && x.rtsSalesLoc == shop).ToList();

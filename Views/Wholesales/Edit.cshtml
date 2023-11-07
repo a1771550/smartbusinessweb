@@ -1,6 +1,6 @@
 ﻿@model PPWLib.Models.WholeSales.WholeSalesEditModel
 @{
-    WholeSalesModel WholeSales = Model.WholeSales;
+    WholeSalesView WholeSales = Model.WholeSalesView;
     bool editmode = WholeSales.wsUID > 0;
     string edittxt = editmode ? Resources.Resource.Edit : Resources.Resource.Add;
     ViewBag.Title = edittxt + " " + Resources.Resource.WholeSales;
@@ -32,7 +32,7 @@
     @Html.HiddenFor(model => WholeSales.wsRefCode)
     @Html.HiddenFor(model => WholeSales.wsDvc)
     @Html.HiddenFor(model => WholeSales.wsType)
-    @Html.HiddenFor(model => WholeSales.UseForexAPI)
+    @Html.HiddenFor(model => Model.UseForexAPI)
     @Html.HiddenFor(model => WholeSales.wsSalesLoc)
     @Html.HiddenFor(model => WholeSales.wsAllLoc)
     @Html.HiddenFor(model => WholeSales.wsDeliveryAddressId)
@@ -159,7 +159,7 @@
     </div>
 
 
-    <div class="d-flex justify-content-center my-4" data-status="@WholeSales.wsStatus" data-enabletax="@WholeSales.EnableTax" data-inclusivetax="@WholeSales.InclusiveTax">
+    <div class="d-flex justify-content-center my-4" data-status="@WholeSales.wsStatus" data-enabletax="@Model.EnableTax" data-inclusivetax="@Model.InclusiveTax">
         @{ var colcls = (WholeSales.wsStatus == WholeSalesStatus.invoice.ToString() || WholeSales.wsStatus == WholeSalesStatus.deliver.ToString() || WholeSales.wsStatus == WholeSalesStatus.partialdeliver.ToString()) ? "" : "hide";}
         <table id="tblWSI" class="jexcel jexcel_overflow" cellpadding="0" cellspacing="0" style="width:100%;">
             <thead class="resizable">
@@ -179,7 +179,7 @@
 
                     <td style="text-align: right; width: 100px;">@Resources.Resource.SellingPrice (@Model.Currency)</td>
                     <td title="@Resources.Resource.DiscPc" style="text-align: right; width: 100px;">@Resources.Resource.DiscPc</td>
-                    @if (WholeSales.EnableTax && !WholeSales.InclusiveTax)
+                    @if (Model.EnableTax && !Model.InclusiveTax)
                     {
                         <td title="@Resources.Resource.Tax" style="text-align: right; width: 100px;">@Resources.Resource.TaxItemHeader</td>
                     }
@@ -301,26 +301,7 @@
 }
 
 <div>
-    @{
-        string page = "Index";
-        if (WholeSales.wsStatus == "quote")
-        {
-            page = "QuotationList";
-        }
-        if (WholeSales.wsStatus == "order")
-        {
-            page = "Index";
-        }
-        if (WholeSales.wsStatus == "open")
-        {
-            page = "OpenBillList";
-        }
-        if (WholeSales.wsStatus == "closed")
-        {
-            page = "ClosedBillList";
-        }
-    }
-    @Html.ActionLink(Resources.Resource.BackToList, page)
+    @Html.ActionLink(Resources.Resource.BackToList, "Index")
 </div>
 
 
@@ -351,7 +332,7 @@
     string exceeduploadfilelimittxt = string.Format(Resources.Resource.ExceedUploadSizeLimitWarning, UploadSizeLimitMB);
 }
 
-<div id="infoblk" data-supplierrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Supplier)" data-locationrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Location)" data-emptyitemwarning="@string.Format(Resources.Resource.EnterAtLeastOneFormat,Resources.Resource.ItemStock)" data-currencyrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Currency)" data-enabletax="@WholeSales.EnableTax" data-jsondiccurrencyexrate="@(JsonSerializer.Serialize(Model.DicCurrencyExRate))" data-batchtxt="@Resources.Resource.Batch" data-sntxt="@Resources.Resource.SerialNoItemHeader" data-validthrutxt="@Resources.Resource.ValidThru" data-jsonwholesaleslns="@(JsonSerializer.Serialize(WholeSales.WholeSalesLns))" data-customerrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Customer)" data-jsonpoitembatvqlist="@(JsonSerializer.Serialize(Model.PoItemBatVQList))" data-jsondicitembatsnvtlist="@JsonSerializer.Serialize(WholeSales.DicItemBatSnVtList))" data-jsondicitemvtqtylist="@(JsonSerializer.Serialize(WholeSales.DicItemVtQtyList))" data-jsondicitemoptions="@(JsonSerializer.Serialize(WholeSales.DicItemOptions))" data-jsondicitembatchqty="@(JsonSerializer.Serialize(Model.DicItemBatchQty))" data-jsondicitemsnvtlist="@(JsonSerializer.Serialize(WholeSales.DicItemSnVtList))" data-jsondicitembatdelqty="@(JsonSerializer.Serialize(WholeSales.DicItemBatDelQty))" data-jsondicitemvtdelqtylist="@JsonSerializer.Serialize(WholeSales.DicItemVtDelQtyList)" data-itemsrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Item)" data-jscustomer="@(JsonSerializer.Serialize(WholeSales.Customer))" data-approvalmode="@approvalmode" data-whatsapplinkurl="@ConfigurationManager.AppSettings["WhatsappLinkUrl"]" data-isapprover="@isapprover" data-delqtymustnotgtorderqtytxt="@Resources.Resource.DeliveryQtyMustNotGtOrderQty" data-jsondiclocation="@JsonSerializer.Serialize(Model.DicLocation)" data-shop="@Model.ComInfo.Shop" data-jsonjoblist="@JsonSerializer.Serialize(Model.JobList)" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-filecode="@WholeSales.wsCode" data-uploadurl="/WholeSales/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@WholeSales.UploadFileName" data-jsondicbattotalqty="@JsonSerializer.Serialize(WholeSales.DicBatTotalQty)" data-jsondicseqdeliveryitems="@JsonSerializer.Serialize(WholeSales.DicSeqDeliveryItems)" data-jsondicitembatsnvt="@JsonSerializer.Serialize(WholeSales.DicItemBatSnVt)" data-jsonpoivinfo="@JsonSerializer.Serialize(WholeSales.PoIvInfo)" data-jsondicivinfo="@JsonSerializer.Serialize(WholeSales.DicIvInfo)" data-dicitemgroupedvariations="@JsonSerializer.Serialize(WholeSales.DicItemGroupedVariations)" data-dicivqtylist="@JsonSerializer.Serialize(WholeSales.DicIvQtyList)" data-dicivdelqtylist="@JsonSerializer.Serialize(WholeSales.DicIvDelQtyList)"></div>
+<div id="infoblk" data-locationrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Location)" data-emptyitemwarning="@string.Format(Resources.Resource.EnterAtLeastOneFormat,Resources.Resource.ItemStock)" data-currencyrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Currency)" data-enabletax="@Model.EnableTax" data-jsondiccurrencyexrate="@(JsonSerializer.Serialize(Model.DicCurrencyExRate))" data-batchtxt="@Resources.Resource.Batch" data-sntxt="@Resources.Resource.SerialNoItemHeader" data-validthrutxt="@Resources.Resource.ValidThru" data-jsonwholesaleslns="@JsonSerializer.Serialize(Model.WholeSalesLns)" data-customerrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Customer)" data-jsonpoitembatvqlist="@JsonSerializer.Serialize(Model.PoItemBatVQList)" data-jsondicitembatsnvtlist="@JsonSerializer.Serialize(Model.DicItemBatSnVtList)" data-jsondicitemvtqtylist="@JsonSerializer.Serialize(Model.DicItemVtQtyList)" data-jsondicitemoptions="@JsonSerializer.Serialize(Model.DicItemOptions)" data-jsondicitembatchqty="@JsonSerializer.Serialize(Model.DicItemBatchQty)" data-jsondicitemsnvtlist="@JsonSerializer.Serialize(Model.DicItemSnVtList)" data-jsondicitembatdelqty="@JsonSerializer.Serialize(Model.DicItemBatDelQty)" data-jsondicitemvtdelqtylist="@JsonSerializer.Serialize(Model.DicItemVtDelQtyList)" data-itemsrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Item)" data-jscustomer="@JsonSerializer.Serialize(WholeSales.Customer)" data-approvalmode="@approvalmode" data-whatsapplinkurl="@ConfigurationManager.AppSettings["WhatsappLinkUrl"]" data-isapprover="@isapprover" data-delqtymustnotgtorderqtytxt="@Resources.Resource.DeliveryQtyMustNotGtOrderQty" data-jsondiclocation="@JsonSerializer.Serialize(Model.DicLocation)" data-shop="@Model.ComInfo.Shop" data-jsonjoblist="@JsonSerializer.Serialize(Model.JobList)" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-filecode="@WholeSales.wsCode" data-uploadurl="/WholeSales/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@WholeSales.UploadFileName" data-jsondicbattotalqty="@JsonSerializer.Serialize(Model.DicBatTotalQty)" data-jsondicseqdeliveryitems="@JsonSerializer.Serialize(Model.DicSeqDeliveryItems)" data-jsondicitembatsnvt="@JsonSerializer.Serialize(Model.DicItemBatSnVt)" data-jsonpoivinfo="@JsonSerializer.Serialize(Model.PoIvInfo)" data-jsondicivinfo="@JsonSerializer.Serialize(Model.DicIvInfo)" data-dicitemgroupedvariations="@JsonSerializer.Serialize(Model.DicItemGroupedVariations)" data-dicivqtylist="@JsonSerializer.Serialize(Model.DicIvQtyList)" data-dicivdelqtylist="@JsonSerializer.Serialize(Model.DicIvDelQtyList)"></div>
 
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>

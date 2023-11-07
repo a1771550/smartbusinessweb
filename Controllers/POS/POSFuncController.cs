@@ -435,7 +435,7 @@ namespace SmartBusinessWeb.Controllers
 
 
 
-			TaxModel taxModel = ModelHelper.GetTaxInfo(context, CheckoutPortal);
+			TaxModel taxModel = ModelHelper.GetTaxInfo(context);
 			var taxableitems = ModelHelper.GetTaxableItemList(context, CheckoutPortal);
 
 			var refsaleslns = context.RtlSalesLns.Where(x => x.rtlCode.ToLower() == salescode.ToLower() && x.AccountProfileId == apId).ToList();
