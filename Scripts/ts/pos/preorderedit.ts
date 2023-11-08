@@ -76,12 +76,23 @@ $(function () {
 		$tr = $(`#${gTblName} tbody tr`).last();
 		if ($tr.find("td").eq(1).find(".itemcode").val() === "") $tr.remove();
 
-		let depositamt = PreSales.rtsFinalTotal! - PreSales.PayAmt;
-		$("#txtDepositAmt").val(formatnumber(depositamt));
-		itotalremainamt = PreSales.PayAmt!;
-		$("#txtTotalRemain").val(formatnumber(itotalremainamt));
+		//console.log("finaltotal:" + PreSales.rtsFinalTotal + ";payamt:" + PreSales.PayAmt);
+		let depositamt = 0;
+		if (PreSales.rtsStatus.toLowerCase() == SalesStatus.presettling.toString()) {
+			depositamt = PreSales.PayAmt;			
+			itotalremainamt = PreSales.rtsFinalTotal! - PreSales.PayAmt;			
+		}
+		if (PreSales.rtsStatus.toLowerCase() == SalesStatus.presettled.toString()) {
+			depositamt = PreSales.rtsFinalTotal! - PreSales.PayAmt;			
+			itotalremainamt = PreSales.PayAmt!;
 
-		$(".btnPayment").prop("disabled", (PreSales.rtsRefCode));
+			$target = $(`#${gTblName} tbody tr`);
+			$target.find("input").prop("disabled", true).prop("readonly", true);
+			$target.find("select").prop("disabled", true).prop("readonly", true);
+			$(".btnPayment").prop("disabled", true);
+		}
+		$("#txtDepositAmt").val(formatnumber(depositamt));
+		$("#txtTotalRemain").val(formatnumber(itotalremainamt));
 
 	} else {
 		if (defaultcustomer !== null) {

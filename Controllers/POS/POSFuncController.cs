@@ -572,14 +572,15 @@ namespace SmartBusinessWeb.Controllers
 			{
 				bool minusqtyonrefund = context.AppParams.FirstOrDefault(x => x.appParam == "EnableMinusStockOnRefund" && x.AccountProfileId == apId).appVal == "1";
 				if (!minusqtyonrefund)
-				{
-					SalesEditModel model = new SalesEditModel();
-					model.HandleStockQty(context, dicItemLocQty, false);
-					SalesModel sale = new SalesModel();
-					sale.salescode = refundcode;
-					sale.rtsDvc = devicecode;
-					sale.rtsSalesLoc = device.dvcShop;
-					model.HandleSalesItemVariOptions(context, sale, null, null, RefundList);
+				{					
+                    SalesEditModel.HandleStockQty(context, dicItemLocQty, false);
+                    SalesModel sale = new SalesModel
+                    {
+                        salescode = refundcode,
+                        rtsDvc = devicecode,
+                        rtsSalesLoc = device.dvcShop
+                    };
+                    SalesEditModel.HandleSalesItemVariOptions(context, sale, null, null, RefundList);
 				}
 			}
 

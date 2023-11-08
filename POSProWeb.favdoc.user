@@ -282,6 +282,10 @@
           <path>PPWDAL\PPWDbContext.edmx\PPWDbContext.Context.tt\PPWDbContext.Context.cs\PPWDbContext</path>
           <viewKind>Solution Explorer</viewKind>
         </Favorite>
+        <Favorite>
+          <name>PreorderEditModel.cs</name>
+          <absolutePath>F:\repos\PPWProject\PPWLib\Models\POS\Sales\PreorderEditModel.cs</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

@@ -5,7 +5,7 @@
 
 <div class="d-none d-md-block text-right">
 	<button id="" type="button" class="btn btn-primary ml-3 my-2 makeorder btnPayment" style="height:5em;">@Resources.Resource.ProcessPayments</button>
-	@if (showrecur)
+	@if (!forpreorder && showrecur)
 	{
 		<button id="" type="button" class="btn btn-info ml-3 my-2 btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
 	}
@@ -13,11 +13,12 @@
 	{
 		<button id="" type="button" class="btn btn-success ml-3 my-2 btnNewSales">@Resources.Resource.NewSales</button>
 	}
+	<button id="" type="button" class="btn btn-warning ml-3 my-2 btnPreorder" onclick="window.location.href = `/Preorder/Edit`">@Resources.Resource.Preorder</button>
 </div>
 
 <div class="d-block d-sm-block d-md-none text-right">
 	<button id="" type="button" class="btn btn-primary d-flex my-2 makeorder btnPayment">@Resources.Resource.ProcessPayments</button>
-	@if (showrecur)
+	@if (!forpreorder && showrecur)
 	{
 		<button id="" type="button" class="btn btn-info d-flex my-2 btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
 	}
@@ -25,5 +26,5 @@
 	{
 		<button id="" type="button" class="btn btn-success d-flex my-2 btnNewSales">@Resources.Resource.NewSales</button>
 	}
-
+	<button id="" type="button" class="btn btn-warning ml-3 my-2 btnPreorder" onclick="window.location.href = `/Preorder/Edit`">@Resources.Resource.Preorder</button>
 </div>

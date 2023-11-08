@@ -38,11 +38,11 @@ namespace SmartBusinessWeb.Controllers.POS
 		[HandleError]
 		[CustomAuthorize("retail", "boss", "admin", "superadmin")]
 		[HttpPost]
-		public JsonResult Edit(PreSalesModel PreSales, List<PreSalesLn> PreSalesLnList, List<PayLnView> Payments, List<DeliveryItemModel> DeliveryItems)
+		public JsonResult Edit(PreSalesModel PreSales, List<PreSalesLn> PreSalesLnList, List<PayLnView> Payments, List<DeliveryItemModel> DeliveryItems=null)
 		{			
 			ViewBag.ParentPage = "sales";
 			ViewBag.PageName = "preorderlist";			
-			var finalsalescode = PreorderEditModel.Edit(PreSales, PreSalesLnList, Payments);
+			var finalsalescode = PreorderEditModel.Edit(PreSales, PreSalesLnList, Payments, DeliveryItems);
 			if (string.IsNullOrEmpty(PreSales.authcode))
 			{
 				return Json(new { msg = "", finalsalescode });
