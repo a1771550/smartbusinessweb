@@ -87,7 +87,7 @@
         <div class="col-12 col-md-4">
             <div class="form-group">
                 <label for="proDateFrm">@Resources.Resource.StartDate</label>
-                @Html.EditorFor(model => model.proDateFrm, new { htmlAttributes = new { @class = "form-control", @type = "datetime" } })
+                @Html.EditorFor(model => model.proDateFrm, new { htmlAttributes = new { @class = "form-control frmdate", @type = "datetime" } })
                 @Html.ValidationMessageFor(model => model.proDateFrm, Resources.Resource.DateStartRequired, new { @class = "text-danger hide" })
                 @Html.HiddenFor(model=>model.DateFrmDisplay)
             </div>
@@ -95,7 +95,7 @@
         <div class="col-12 col-md-4">
             <div class="form-group">
                 <label for="proDateTo">@Resources.Resource.EndDate</label>
-                @Html.EditorFor(model => model.proDateTo, new { htmlAttributes = new { @class = "form-control", @type = "datetime" } })
+                @Html.EditorFor(model => model.proDateTo, new { htmlAttributes = new { @class = "form-control todate", @type = "datetime" } })
                 @Html.ValidationMessageFor(model => model.proDateTo, Resources.Resource.DateEndRequired, new { @class = "text-danger hide" })
                 @Html.HiddenFor(model => model.DateToDisplay)
             </div>

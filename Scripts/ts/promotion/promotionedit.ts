@@ -99,12 +99,12 @@ $(function () {
     initDatePicker(
         "proDateFrm",
         editmode ? new Date($("#DateFrmDisplay").val() as string) : new Date(),
-        editmode
+        false
     );
     initDatePicker(
         "proDateTo",
         editmode ? new Date($("#DateToDisplay").val() as string) : tomorrow,
-        editmode
+        true
     );
     //   promotion = fillPromotion();
     $("#proName").trigger("focus");

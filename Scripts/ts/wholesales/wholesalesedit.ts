@@ -704,7 +704,6 @@ function handleSubmit4Wholesales(forRecurOrder: boolean = false) {
 		else {
 			Wholesales = fillInWholeSale();
 			updateWholesales();
-
 			//console.log("Wholesales:", Wholesales);
 			// console.log("recurOrder:", recurOrder);
 			//console.log("WholeSalesLns:", WholeSalesLns);

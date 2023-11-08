@@ -1419,22 +1419,22 @@ function handleItmCodeDblClick(
 	proId: number | null
 ) {
 	if (itemcode === null && proId === null) {
-		// console.log("here");
+
+		let comboIvId: string = "";
+		let selectedIvList: IItemVariation[] = [];
+
 		$tr = $(el);
 		itemcode = selectedItemCode = $tr.data("code");
 		if ($tr.hasClass("period") || $tr.hasClass("nonperiod")) {
 			proId = Number($tr.data("proid"));
+			//console.log("proId:" + proId);ok
 			isPromotion = true;
-			closeItemModal();
-			$(".itemcode").off("change");
-			populateItemRow(proId!);
-			$(".itemcode").on("change", handleItemCodeChange);
 		} else {
+			isPromotion = false;
 			// console.log("selectedItemCode:" + selectedItemCode);
 			let $lasttd = $tr.find("td").last();
-			let hasSelectedIvs: boolean = $lasttd.find("span").hasClass("saved");
-			let comboIvId: string = "";
-			let selectedIvList: IItemVariation[] = [];
+			let hasSelectedIvs: boolean = $lasttd.find("span").hasClass("saved");			
+			
 			if (hasSelectedIvs) {
 				let $drpItemAttrs = $lasttd.find(".drpItemAttr");
 				let comboIvIdList: string[] = [];
@@ -1454,66 +1454,71 @@ function handleItmCodeDblClick(
 					}
 				}
 			}
-
-			closeItemModal();
-			seq = currentY + 1;
-			if (forsales || forpreorder || forwholesales || forpurchase) {
-				if (forsales) {
-					selectedSalesLn = GetSetSelectedSalesLn();
-					selectedSalesLn!.Item = ItemList.find((x) => x.itmCode == itemcode)!;
-					//console.log(selectedSalesLn!.Item);
-					selectedSalesLn!.ivIdList = comboIvId;
-					selectedSalesLn!.SelectedIvList = selectedIvList
-						? selectedIvList.slice(0)
-						: [];
-				}
-				if (forpreorder) {
-					selectedPreSalesLn = GetSetSelectedPreSalesLn();
-					selectedPreSalesLn!.Item = ItemList.find(
-						(x) => x.itmCode == itemcode
-					)!;
-					//console.log("selectedPreSalesLn!.Item:", selectedPreSalesLn!.Item);ok
-					selectedPreSalesLn!.ivIdList = comboIvId;
-				}
-				if (forwholesales) {
-					selectedWholesalesLn = GetSetSelectedWholeSalesLn();
-					selectedWholesalesLn!.Item = ItemList.find(
-						(x) => x.itmCode == itemcode
-					)!;
-					selectedWholesalesLn.comboIvId = comboIvId;
-					selectedWholesalesLn.SelectedIvList = selectedIvList
-						? selectedIvList.slice(0)
-						: [];
-				}
-				if (forpurchase) {
-					selectedPurchaseItem = GetSetSelectedPurchaseItem();
-					selectedPurchaseItem!.Item = ItemList.find(
-						(x) => x.itmCode == itemcode
-					)!;
-					selectedPurchaseItem!.comboIvId = comboIvId;
-					selectedPurchaseItem!.SelectedIvList = selectedIvList
-						? selectedIvList.slice(0)
-						: [];
-				}
-				populateItemRow();
-			} else {
-				copiedItem = $.grep(ItemList, function (e: IItem, i: number) {
-					return (
-						e.itmCode.toString() == selectedItemCode.toString() &&
-						e.AccountProfileId == AccountProfileId
-					);
-				})[0];
-				if (typeof copiedItem === "undefined") {
-					searchItem();
-				}
-				copyItemAccount();
-			}
 		}
+
+		closeItemModal();
+		seq = currentY + 1;
+		if (forsales || forpreorder || forwholesales || forpurchase) {
+			if (forsales) {
+				selectedSalesLn = GetSetSelectedSalesLn();
+				selectedSalesLn!.Item = ItemList.find((x) => x.itmCode == itemcode)!;
+				//console.log(selectedSalesLn!.Item);
+				selectedSalesLn!.ivIdList = comboIvId;
+				selectedSalesLn!.SelectedIvList = selectedIvList
+					? selectedIvList.slice(0)
+					: [];
+			}
+			if (forpreorder) {
+				selectedPreSalesLn = GetSetSelectedPreSalesLn();
+				selectedPreSalesLn!.Item = ItemList.find(
+					(x) => x.itmCode == itemcode
+				)!;
+				//console.log("selectedPreSalesLn!.Item:", selectedPreSalesLn!.Item);ok
+				selectedPreSalesLn!.ivIdList = comboIvId;
+			}
+			if (forwholesales) {
+				selectedWholesalesLn = GetSetSelectedWholeSalesLn();
+				selectedWholesalesLn!.Item = ItemList.find(
+					(x) => x.itmCode == itemcode
+				)!;
+				selectedWholesalesLn.comboIvId = comboIvId;
+				selectedWholesalesLn.SelectedIvList = selectedIvList
+					? selectedIvList.slice(0)
+					: [];
+			}
+			if (forpurchase) {
+				selectedPurchaseItem = GetSetSelectedPurchaseItem();
+				selectedPurchaseItem!.Item = ItemList.find(
+					(x) => x.itmCode == itemcode
+				)!;
+				selectedPurchaseItem!.comboIvId = comboIvId;
+				selectedPurchaseItem!.SelectedIvList = selectedIvList
+					? selectedIvList.slice(0)
+					: [];
+			}
+			
+			$(".itemcode").off("change");
+			populateItemRow(proId);
+			$(".itemcode").on("change", handleItemCodeChange);
+		}
+		else {
+			copiedItem = $.grep(ItemList, function (e: IItem, i: number) {
+				return (
+					e.itmCode.toString() == selectedItemCode.toString() &&
+					e.AccountProfileId == AccountProfileId
+				);
+			})[0];
+			if (typeof copiedItem === "undefined") {
+				searchItem();
+			}
+			copyItemAccount();
+		}
+
 	} else {
 		isPromotion = true;
 		closeItemModal();
 		$(".itemcode").off("change");
-		populateItemRow(proId!);
+		populateItemRow(proId);
 		$(".itemcode").on("change", handleItemCodeChange);
 	}
 }
@@ -8271,7 +8276,7 @@ $(document).on("dblclick", ".itmcode", function () {
 let itemPromotion: IItemPromotion | null;
 let isPromotion: boolean = false;
 let selectedProId: number = 0;
-function populateItemRow(proId: number = 0) {
+function populateItemRow(proId: number|null = 0) {
 	if (!searchmode && !selectedItemCode) {
 		falert(selectitemrequired, oktxt);
 	} else {
@@ -8290,7 +8295,7 @@ function populateItemRow(proId: number = 0) {
 		let namedesctxt: string;
 		let namedesc: string = "";
 
-		selectedProId = proId;
+		selectedProId = proId??0;
 		//console.log("selectedSalesLn!.Item:", selectedSalesLn!.Item);
 		if (forsales) {
 			selectedSalesLn!.rtlSeq = seq;
@@ -8382,10 +8387,13 @@ function populateItemRow(proId: number = 0) {
 		if (isPromotion) {
 			// console.log("proId:" + proId);
 			if (forsales) {
-				getItemPromotion(selectedSalesLn!.Item, proId);
+				getItemPromotion(selectedSalesLn!.Item, proId!);
+			}
+			if (forpreorder) {
+				getItemPromotion4SimpleItem(selectedPreSalesLn!.Item, proId!);
 			}
 			if (forwholesales) {
-				getItemPromotion(selectedWholesalesLn!.Item, proId);
+				getItemPromotion(selectedWholesalesLn!.Item, proId!);
 			}
 			proqty = itemPromotion!.proQty!;
 			proprice = itemPromotion!.proDiscPc === 0 ? itemPromotion!.proPrice : 0;
@@ -8669,11 +8677,9 @@ function populateItemRow(proId: number = 0) {
 
 			idx++;
 			if (isPromotion && proId) {
-				if (forsales) getItemPromotion(selectedSalesLn!.Item, proId);
-
-				if (forpreorder)
-					getItemPromotion4SimpleItem(selectedPreSalesLn!.Item, proId);
-
+				//if (forsales) getItemPromotion(selectedSalesLn!.Item, proId);
+				//if (forpreorder)
+				//	getItemPromotion4SimpleItem(selectedPreSalesLn!.Item, proId);
 				if (itemPromotion && itemPromotion.pro4Period) {
 					discount = itemPromotion.proDiscPc!;
 				}
@@ -17465,6 +17471,17 @@ interface IRecurOrder {
 	rtsUID: number | null;
 }
 let selectedRecurCode: string = "";
+
+$(document).on("change", ".todate", function () {
+	let todate = $(this).val();
+	//console.log($(this).val());
+	let frmdate = $(".frmdate").first().val();
+	//console.log(frmdate);
+	if (frmdate! > todate!) {
+		$(this).trigger("select").trigger("focus"); 
+	}
+});
+
 // let jsdateformat: string = "dd/mm/yy";
 const jsdateformat: string = "yy-mm-dd";
 function initDatePicker(
@@ -17484,6 +17501,10 @@ function initDatePicker(
 			setTimeout(function () {
 				$(".ui-datepicker").css("z-index", 99999999999999);
 			}, 0);
+		},
+		//todo:
+		focus: function () {
+			$(`#${eleId}`).show();
 		},
 	});
 	//    .next('button').button({
@@ -17853,10 +17874,7 @@ function respondReview(type) {
 							.replace("{1}", msg);
 						window.open(whatsapplnk, "_blank");
 					}
-
 					window.location.href = "/Purchase/PurchaseOrderList";
-
-					//$("#txtSearch").trigger("focus");
 				}
 			},
 			dataType: "json",
@@ -17864,16 +17882,16 @@ function respondReview(type) {
 	}
 }
 function submitSales() {
-	if (forsales) {
+	if (forsales) {		
 		updateSales();
 		Sales.Roundings = isNumeric(Sales.Roundings) ? Sales.Roundings : 0;
-		if (SalesLnList.length > 0 && $(`#${gTblName} .focus`).length === 0) {
+		if (validSalesForm()) {
 			_submitSales();
 		}
 	}
 	if (forpreorder) {
 		updatePreSales();
-		if (PreSalesLnList.length > 0) {
+		if (validSalesForm()) {
 			_submitSales();
 		}
 	}
@@ -17979,10 +17997,14 @@ function _submitSales() {
 	});
 }
 function validSalesForm(): boolean {
-	var msg = "";
-	// console.log("SalesList#validform:", SalesList);
-	if (typeof SalesList === "undefined" || SalesList.length === 0) {
+	var msg = "";	
+	if (forsales && (!SalesLnList || SalesLnList!.length === 0))
 		msg += `${salesinfonotenough}<br>`;
+	if (forpreorder && (!PreSalesLnList || PreSalesLnList!.length === 0))
+		msg += `${salesinfonotenough}<br>`;
+		
+	if ($(`#${gTblName} .focus`).length > 0) {
+		msg += `${salesinfonotenough}<br>`;		
 	}
 	if (msg !== "") {
 		$.fancyConfirm({
