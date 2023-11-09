@@ -581,6 +581,9 @@ function updateWholesales() {
 	$("#txtTotal").val(formatnumber(itotalamt));
 
 	focusItemCode();
+
+	//reset variables:
+	isPromotion = !isPromotion;
 }
 
 function handleSubmit4Wholesales(forRecurOrder: boolean = false) {

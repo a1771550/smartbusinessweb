@@ -13,176 +13,177 @@
 {
 	@Html.AntiForgeryToken()
 
-	<div class="my-4">
+<div class="my-4">
 
-		@Html.HiddenFor(model => model.Id)
+	@Html.HiddenFor(model => model.Id)
+	@Html.HiddenFor(model => model.enId)
 
-		<div class="row">
-			<div class="col-12 col-sm-6">
-				<div class="form-group required">
-					<label for="enFrom">@Resources.Resource.From4Enquiry</label>
-					<input id="enFrom" name="enFrom" type="text" class="form-control" data-from="@Model.enFrom" value="@Model.FromDisplay" />
-				</div>
-
-				<div class="form-group required">
-					<label for="enSubject">@Resources.Resource.Subject</label>
-
-					@Html.EditorFor(model => model.enSubject, new { htmlAttributes = new { @class = "form-control" } })
-
-				</div>
-
-				<div class="form-group required">
-					<label for="enOrganization">@Resources.Resource.Organization</label>
-
-					@Html.EditorFor(model => model.enOrganization, new { htmlAttributes = new { @class = "form-control" } })
-
-				</div>
-
-				<div class="form-group required">
-					<label for="enContact">@Resources.Resource.Contact</label>
-
-					@Html.EditorFor(model => model.enContact, new { htmlAttributes = new { @class = "form-control" } })
-
-				</div>
-			</div>
-			<div class="col-12 col-sm-6">
-				<div class="form-group required">
-					<label for="enEmail">@Resources.Resource.Email</label>
-
-					@Html.EditorFor(model => model.enEmail, new { htmlAttributes = new { @class = "form-control" } })
-
-				</div>
-
-				<div class="form-group required">
-					<label for="enPhone">@Resources.Resource.Phone</label>
-
-					@Html.EditorFor(model => model.enPhone, new { htmlAttributes = new { @class = "form-control" } })
-
-				</div>
-
-				<div class="form-group">
-					<label for="enMobile">@Resources.Resource.Mobile</label>
-					<span class="fa fa-whatsapp whatsappphone pointer text-success"></span>
-					@Html.EditorFor(model => model.enMobile, new { htmlAttributes = new { @class = "form-control" } })
-				</div>
-
-
-				<div class="form-group">
-					<label for="enComment">@Resources.Resource.Note</label>
-					@Html.TextAreaFor(model => model.enComment, new { @class = "form-control", @rows = 7 })
-				</div>
+	<div class="row">
+		<div class="col-12 col-sm-6">
+			<div class="form-group required">
+				<label for="enFrom">@Resources.Resource.From4Enquiry</label>
+				<input id="enFrom" name="enFrom" type="text" class="form-control" data-from="@Model.enFrom" value="@Model.FromDisplay" />
 			</div>
 
+			<div class="form-group required">
+				<label for="enSubject">@Resources.Resource.Subject</label>
+
+				@Html.EditorFor(model => model.enSubject, new { htmlAttributes = new { @class = "form-control" } })
+
+			</div>
+
+			<div class="form-group required">
+				<label for="enOrganization">@Resources.Resource.Organization</label>
+
+				@Html.EditorFor(model => model.enOrganization, new { htmlAttributes = new { @class = "form-control" } })
+
+			</div>
+
+			<div class="form-group required">
+				<label for="enContact">@Resources.Resource.Contact</label>
+
+				@Html.EditorFor(model => model.enContact, new { htmlAttributes = new { @class = "form-control" } })
+
+			</div>
 		</div>
+		<div class="col-12 col-sm-6">
+			<div class="form-group required">
+				<label for="enEmail">@Resources.Resource.Email</label>
 
+				@Html.EditorFor(model => model.enEmail, new { htmlAttributes = new { @class = "form-control" } })
 
-		@if (Model.enAssignedSalesId > 0)
-		{
+			</div>
+
+			<div class="form-group required">
+				<label for="enPhone">@Resources.Resource.Phone</label>
+
+				@Html.EditorFor(model => model.enPhone, new { htmlAttributes = new { @class = "form-control" } })
+
+			</div>
+
 			<div class="form-group">
-				<label for="enAssignedSalesId">@Resources.Resource.Assigned</label>
-
-				<div class="checkbox">
-					@Html.EditorFor(model => model.SalesPersonName, new { htmlAttributes = new { @class = "form-control pointer", @readonly = "readonly" } })
-					@Html.HiddenFor(model => model.enEdited)
-					@Html.HiddenFor(model => model.enAssignedSalesId)
-				</div>
-
+				<label for="enMobile">@Resources.Resource.Mobile</label>
+				<span class="fa fa-whatsapp whatsappphone pointer text-success"></span>
+				@Html.EditorFor(model => model.enMobile, new { htmlAttributes = new { @class = "form-control" } })
 			</div>
-		}
 
-		@{
-			var _needchecked = Model.FollowUpDateInfo == null ? "checked" : Model.FollowUpDateInfo.status == CusFollowUpStatus.need.ToString() ? "checked" : "";
-			var _noneedchecked = Model.FollowUpDateInfo == null ? "" : Model.FollowUpDateInfo.status == CusFollowUpStatus.noneed.ToString() ? "checked" : "";
-			var _completechecked = Model.FollowUpDateInfo == null ? "" : Model.FollowUpDateInfo.status == CusFollowUpStatus.completed.ToString() ? "checked" : "";
-		}
-		<div class="form-group">
-			<label class="mr-4">@string.Format(Resources.Resource.FollowUpFormat, Resources.Resource.Status)</label>
-			<div class="form-check form-check-inline small">
-				<input class="form-check-input followup" type="radio" name="followup" id="radNeed" value="@CusFollowUpStatus.need.ToString()" @_needchecked>
-				<label class="form-check-label" for="radNeed">@Resources.Resource.NeedFollowUp</label>
-			</div>
-			<div class="form-check form-check-inline small">
-				<input class="form-check-input followup" type="radio" name="followup" id="radNoNeed" value="@CusFollowUpStatus.noneed.ToString()" @_noneedchecked>
-				<label class="form-check-label" for="radNoNeed">@Resources.Resource.NoNeedFollowUp</label>
-			</div>
-			<div class="form-check form-check-inline small">
-				<input class="form-check-input followup" type="radio" name="followup" id="radCompleted" value="@CusFollowUpStatus.completed.ToString()" @_completechecked>
-				<label class="form-check-label" for="radCompleted">@Resources.Resource.Completed</label>
+
+			<div class="form-group">
+				<label for="enComment">@Resources.Resource.Note</label>
+				@Html.TextAreaFor(model => model.enComment, new { @class = "form-control", @rows = 7 })
 			</div>
 		</div>
 
+	</div>
+
+
+	@if (Model.enAssignedSalesId > 0)
+	{
 		<div class="form-group">
-			<label class="control-label">@string.Format(Resources.Resource.DateFormat, Resources.Resource.FollowUp)</label>
-			<input type="datetime" class="form-control datepicker" id="followUpDate" />
-			@Html.HiddenFor(model => model.FollowUpDateInfo.followUpDate)
-			@Html.HiddenFor(model => model.FollowUpDateInfo.FollowUpDateDisplay)
-			@Html.HiddenFor(model => model.FollowUpDateInfo.Id)
+			<label for="enAssignedSalesId">@Resources.Resource.Assigned</label>
+
+			<div class="checkbox">
+				@Html.EditorFor(model => model.SalesPersonName, new { htmlAttributes = new { @class = "form-control pointer", @readonly = "readonly" } })
+				@Html.HiddenFor(model => model.enEdited)
+				@Html.HiddenFor(model => model.enAssignedSalesId)
+			</div>
+
 		</div>
+	}
+
+	@{
+		var _needchecked = Model.FollowUpDateInfo == null ? "checked" : Model.FollowUpDateInfo.status == CusFollowUpStatus.need.ToString() ? "checked" : "";
+		var _noneedchecked = Model.FollowUpDateInfo == null ? "" : Model.FollowUpDateInfo.status == CusFollowUpStatus.noneed.ToString() ? "checked" : "";
+		var _completechecked = Model.FollowUpDateInfo == null ? "" : Model.FollowUpDateInfo.status == CusFollowUpStatus.completed.ToString() ? "checked" : "";
+	}
+	<div class="form-group">
+		<label class="mr-4">@string.Format(Resources.Resource.FollowUpFormat, Resources.Resource.Status)</label>
+		<div class="form-check form-check-inline small">
+			<input class="form-check-input followup" type="radio" name="followup" id="radNeed" value="@CusFollowUpStatus.need.ToString()" @_needchecked>
+			<label class="form-check-label" for="radNeed">@Resources.Resource.NeedFollowUp</label>
+		</div>
+		<div class="form-check form-check-inline small">
+			<input class="form-check-input followup" type="radio" name="followup" id="radNoNeed" value="@CusFollowUpStatus.noneed.ToString()" @_noneedchecked>
+			<label class="form-check-label" for="radNoNeed">@Resources.Resource.NoNeedFollowUp</label>
+		</div>
+		<div class="form-check form-check-inline small">
+			<input class="form-check-input followup" type="radio" name="followup" id="radCompleted" value="@CusFollowUpStatus.completed.ToString()" @_completechecked>
+			<label class="form-check-label" for="radCompleted">@Resources.Resource.Completed</label>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="control-label">@string.Format(Resources.Resource.DateFormat, Resources.Resource.FollowUp)</label>
+		<input type="datetime" class="form-control datepicker" id="followUpDate" />
+		@Html.HiddenFor(model => model.FollowUpDateInfo.followUpDate)
+		@Html.HiddenFor(model => model.FollowUpDateInfo.FollowUpDateDisplay)
+		@Html.HiddenFor(model => model.FollowUpDateInfo.Id)
+	</div>
 
 
-		<div id="followupRecordBlk" class="form-group">
-			<label>@string.Format(Resources.Resource.RecordsFormat, Resources.Resource.FollowUp) <span id="addRecord" class="fa fa-plus small text-primary pointer"></span></label>
-			<div class="row">
-				@if (Model.FollowUpRecordList != null && Model.FollowUpRecordList.Count > 0)
+	<div id="followupRecordBlk" class="form-group">
+		<label>@string.Format(Resources.Resource.RecordsFormat, Resources.Resource.FollowUp) <span id="addRecord" class="fa fa-plus small text-primary pointer"></span></label>
+		<div class="row">
+			@if (Model.FollowUpRecordList != null && Model.FollowUpRecordList.Count > 0)
+			{
+				foreach (var record in Model.FollowUpRecordList)
 				{
-					foreach (var record in Model.FollowUpRecordList)
-					{
-						<div class="displayblk col-12 col-sm-4 mb-1" data-enid="@record.enId" data-id="@record.Id">
-							<div class="card">
-								<div class="text-right small"><span class="fa fa-edit text-info record pointer mr-2"></span><span class="fa fa-close text-danger record pointer"></span></div>
-								<div class="card-body">
-									<div class="txtarea" data-id="@record.Id">
-										<p class="recorddisplay">@record.followUpRecord</p>
-										<input type="text" class="form-control recordentry hide" data-record="@record.followUpRecord" onchange="handleRecordChange(this);" />
-										<span class="small d-inline-block lastedited">@string.Format(Resources.Resource.LastEditedByFormat, record.ModifiedBy, record.ModifyTimeDisplay)</span>
-									</div>
+					<div class="displayblk col-12 col-sm-4 mb-1" data-enid="@record.enId" data-id="@record.Id">
+						<div class="card">
+							<div class="text-right small"><span class="fa fa-edit text-info record pointer mr-2"></span><span class="fa fa-close text-danger record pointer"></span></div>
+							<div class="card-body">
+								<div class="txtarea" data-id="@record.Id">
+									<p class="recorddisplay">@record.followUpRecord</p>
+									<input type="text" class="form-control recordentry hide" data-record="@record.followUpRecord" onchange="handleRecordChange(this);" />
+									<span class="small d-inline-block lastedited">@string.Format(Resources.Resource.LastEditedByFormat, record.ModifiedBy, record.ModifyTimeDisplay)</span>
 								</div>
 							</div>
 						</div>
-					}
-				}
-
-				<div class="displayblk template col-12 col-sm-4 mb-1 hide">
-					<div class="card">
-						<div class="text-right small"><span class="fa fa-edit text-info record pointer mr-2"></span><span class="fa fa-close text-danger record pointer"></span></div>
-						<div class="card-body">
-							<div class="txtarea">
-								<p class="recorddisplay"></p>
-								<input type="text" class="form-control recordentry hide" data-record="" onchange="handleRecordChange(this);" />
-								<span class="small d-inline-block lastedited">@Resources.Resource.LastEditedByFormat</span>
-							</div>
-						</div>
 					</div>
-				</div>
+				}
+			}
 
-				<div class="recordblk col-12 col-sm-4 hide" data-enqid="@Model.Id">
-					<div class="card">
-						<div class="card-body">
-							<div class="txtarea">
-								<textarea class="form-control record" name="EnquiryInfo_followUpRecord" rows="5" cols="30"></textarea>
-							</div>
-							<div class="buttons">
-								<button type="button" class="btn btn-secondary saverecord" data-id="@Model.Id"><span class="small">@Resources.Resource.Confirm</span></button>
-							</div>
+			<div class="displayblk template col-12 col-sm-4 mb-1 hide">
+				<div class="card">
+					<div class="text-right small"><span class="fa fa-edit text-info record pointer mr-2"></span><span class="fa fa-close text-danger record pointer"></span></div>
+					<div class="card-body">
+						<div class="txtarea">
+							<p class="recorddisplay"></p>
+							<input type="text" class="form-control recordentry hide" data-record="" onchange="handleRecordChange(this);" />
+							<span class="small d-inline-block lastedited">@Resources.Resource.LastEditedByFormat</span>
 						</div>
 					</div>
 				</div>
 			</div>
 
+			<div class="recordblk col-12 col-sm-4 hide" data-enqid="@Model.Id">
+				<div class="card">
+					<div class="card-body">
+						<div class="txtarea">
+							<textarea class="form-control record" name="EnquiryInfo_followUpRecord" rows="5" cols="30"></textarea>
+						</div>
+						<div class="buttons">
+							<button type="button" class="btn btn-secondary saverecord" data-id="@Model.Id"><span class="small">@Resources.Resource.Confirm</span></button>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
-
-
-
-		<div class="form-group">
-			<button type="button" class="btn btn-warning" id="btnFile">@Resources.Resource.UploadFile</button>
-			<button type="button" class="btn btn-primary ml-2 @btnviewcls" id="btnViewFile">@Resources.Resource.ViewFile</button>
-		</div>
-		<div class="form-group">
-			<button id="btnSave" type="button" role="button" class="btn btn-success">@Resources.Resource.Save</button>
-		</div>
-
 
 	</div>
+
+
+
+	<div class="form-group">
+		<button type="button" class="btn btn-warning" id="btnFile">@Resources.Resource.UploadFile</button>
+		<button type="button" class="btn btn-primary ml-2 @btnviewcls" id="btnViewFile">@Resources.Resource.ViewFile</button>
+	</div>
+	<div class="form-group">
+		<button id="btnSave" type="button" role="button" class="btn btn-success">@Resources.Resource.Save</button>
+	</div>
+
+
+</div>
 }
 
 <div>

@@ -9,7 +9,7 @@
     string priceheader = ViewData["priceheader"] != null ? (string)ViewData["priceheader"] : Resources.Resource.SellingPrice;
 }
 
-<div id="itemModal" data-priceheader="@priceheader">
+<div id="itemModal">
 
     <div class="form-inline mb-2 my-4">
         <div class="form-group">
@@ -21,6 +21,6 @@
         </div>
     </div>
 
-    @Html.Partial("_tblItem", null, new ViewDataDictionary { { "currency", currency }, { "priceheader", priceheader },{ "forpurchase", forpurchase },{"forwholesales",forwholesales },{ "forsales", forsales } })
+    @Html.Partial("_tblItem", null, new ViewDataDictionary { { "currency", currency }, { "priceheader", priceheader },{ "forpurchase", forpurchase },{"forwholesales",forwholesales },{ "forsales", forsales },{"forpreorder",forpreorder } })
 
 </div>

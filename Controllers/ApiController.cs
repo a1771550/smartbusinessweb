@@ -687,7 +687,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public JsonResult GetSalesOrderInfo(string salescode)
         {
-            SalesOrderEditModel model = new SalesOrderEditModel();
+            SalesOrderInfo model = new SalesOrderInfo();
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 Session currsess = ModelHelper.GetCurrentSession(context);
@@ -695,13 +695,13 @@ namespace SmartBusinessWeb.Controllers
                 int lang = currsess.sesLang;
                 string location = currsess.sesShop.ToLower();
                 string device = currsess.sesDvc.ToLower();
-                model.Items = new List<ItemModel>();
-                model.DicItemSNs = new Dictionary<string, List<SerialNoView>>();
+                model.Items = new List<SimpleItem>();
+                model.DicItemSNs = new Dictionary<string, List<SimpleSerial>>();
                 //string salestype = 
 
                 model.SalesOrder = (from s in context.RtlSales
                                     where s.rtsCode.ToLower() == salescode.ToLower() && s.rtsType == "RS" && s.rtsDvc.ToLower() == device && s.rtsSalesLoc.ToLower() == location
-                                    select new SalesModel
+                                    select new SimpleSales
                                     {
                                         rtsCusID = s.rtsCusID,
                                         rtsLineTotalPlusTax = s.rtsLineTotalPlusTax,
@@ -712,11 +712,11 @@ namespace SmartBusinessWeb.Controllers
                                         rtsCode = s.rtsCode,
                                         rtsInternalRmks = s.rtsInternalRmks,
                                         rtsEpay = s.rtsEpay,
-                                        rtsDeliveryAddressId = s.rtsDeliveryAddressId,
-                                        rtsParentUID = s.rtsParentUID,
-                                        rtsCustomerPO = s.rtsCustomerPO,
-                                        rtsDeliveryDate = s.rtsDeliveryDate,
-                                        rtsKawadaUpldBy = s.rtsKawadaUpldBy
+                                        //rtsDeliveryAddressId = s.rtsDeliveryAddressId,
+                                        //rtsParentUID = s.rtsParentUID,
+                                        //rtsCustomerPO = s.rtsCustomerPO,
+                                        //rtsDeliveryDate = s.rtsDeliveryDate,
+                                        //rtsKawadaUpldBy = s.rtsKawadaUpldBy
                                     }).FirstOrDefault();
 
 
@@ -725,7 +725,7 @@ namespace SmartBusinessWeb.Controllers
                 {
                     model.SerialNoList = (from se in context.SerialNoes
                                           where se.snoIsActive == true && se.snoRtlSalesCode.ToLower() == salescode.ToLower() && se.snoRtlSalesLoc.ToLower() == location && se.snoRtlSalesDvc.ToLower() == device && se.AccountProfileId==apId
-                                          select new SerialNoView
+                                          select new SimpleSerial
                                           {
                                               snoCode = se.snoCode,
                                               snoStatus = se.snoStatus,
@@ -738,7 +738,7 @@ namespace SmartBusinessWeb.Controllers
                                           ).ToList();
 
 
-                    var mergeditems = ModelHelper.GetMergedItemList(apId, context);
+                    var items = ModelHelper.GetItemList4Sales(context);
 
                     var c = context.MyobCustomers.FirstOrDefault(x => x.cusCustomerID == model.SalesOrder.rtsCusID);
                     if (c != null)
@@ -764,9 +764,8 @@ namespace SmartBusinessWeb.Controllers
                                           join s in context.RtlSales
                                           on sl.rtlCode equals s.rtsCode
                                           where s.rtsCode.ToLower() == salescode.ToLower() && s.rtsType == "RS" && s.rtsDvc.ToLower() == device && s.rtsSalesLoc.ToLower() == location
-                                          select new SalesLnView
-                                          {
-                                              CustomerID = s.rtsCusID,
+                                          select new SimpleSalesLn
+                                          {                                              
                                               rtlCode = sl.rtlCode,
                                               rtlItemCode = sl.rtlItemCode,
                                               rtlSeq = sl.rtlSeq,
@@ -779,49 +778,50 @@ namespace SmartBusinessWeb.Controllers
                                               rtlSellingPrice = sl.rtlSellingPrice,
                                               rtlDate = sl.rtlDate,
                                               rtlBatch = sl.rtlBatch,
-                                              rtsRmks = s.rtsRmks,
+                                              rtsCusID = s.rtsCusID,
+                                              rtsRmks = s.rtsRmks,                                              
                                               rtsInternalRmks = s.rtsInternalRmks,
-                                              rtsIsEpay = s.rtsEpay,
-                                              rtsCustomerPO = s.rtsCustomerPO,
-                                              rtsDeliveryDate = s.rtsDeliveryDate,
-                                              rtsKawadaUpldBy = s.rtsKawadaUpldBy
+                                              rtsEpay = s.rtsEpay,
+                                              //rtsCustomerPO = s.rtsCustomerPO,
+                                              //rtsDeliveryDate = s.rtsDeliveryDate,
+                                              //rtsKawadaUpldBy = s.rtsKawadaUpldBy
                                           }).ToList();
 
 
 
-                    model.RefundLnViews = (from sl in context.RtlSalesLns
-                                           join s in context.RtlSales
-                                           on sl.rtlRefSales equals s.rtsCode
-                                           where s.rtsRefCode.ToLower() == salescode.ToLower() && s.rtsType == "RF" && s.rtsDvc.ToLower() == device && s.rtsSalesLoc.ToLower() == location
-                                           select new SalesLnView
-                                           {
-                                               CustomerID = s.rtsCusID,
-                                               rtlCode = sl.rtlCode,
-                                               rtlRefSales = sl.rtlRefSales,
-                                               rtlItemCode = sl.rtlItemCode,
-                                               rtlSeq = sl.rtlSeq,
-                                               rtlQty = sl.rtlQty,
-                                               rtlSalesAmt = sl.rtlSalesAmt,
-                                               rtlSellingPrice = sl.rtlSellingPrice,
-                                               rtlDate = sl.rtlDate,
-                                               rtsRmks = s.rtsRmks,
-                                               rtsInternalRmks = s.rtsInternalRmks,
-                                               rtsIsEpay = s.rtsEpay,
-                                               rtsCustomerPO = s.rtsCustomerPO,
-                                               rtsDeliveryDate = s.rtsDeliveryDate,
-                                               rtsKawadaUpldBy = s.rtsKawadaUpldBy
-                                           }).ToList();
+                    //model.RefundLnViews = (from sl in context.RtlSalesLns
+                    //                       join s in context.RtlSales
+                    //                       on sl.rtlRefSales equals s.rtsCode
+                    //                       where s.rtsRefCode.ToLower() == salescode.ToLower() && s.rtsType == "RF" && s.rtsDvc.ToLower() == device && s.rtsSalesLoc.ToLower() == location
+                    //                       select new SalesLnView
+                    //                       {
+                    //                           CustomerID = s.rtsCusID,
+                    //                           rtlCode = sl.rtlCode,
+                    //                           rtlRefSales = sl.rtlRefSales,
+                    //                           rtlItemCode = sl.rtlItemCode,
+                    //                           rtlSeq = sl.rtlSeq,
+                    //                           rtlQty = sl.rtlQty,
+                    //                           rtlSalesAmt = sl.rtlSalesAmt,
+                    //                           rtlSellingPrice = sl.rtlSellingPrice,
+                    //                           rtlDate = sl.rtlDate,
+                    //                           rtsRmks = s.rtsRmks,
+                    //                           rtsInternalRmks = s.rtsInternalRmks,
+                    //                           rtsIsEpay = s.rtsEpay,
+                    //                           rtsCustomerPO = s.rtsCustomerPO,
+                    //                           rtsDeliveryDate = s.rtsDeliveryDate,
+                    //                           rtsKawadaUpldBy = s.rtsKawadaUpldBy
+                    //                       }).ToList();
 
 
 
                     foreach (var salesln in model.SalesLnViews)
                     {
                         //ItemModel item;
-                        foreach (var i in mergeditems)
+                        foreach (var i in items)
                         {
                             if (salesln.rtlItemCode == i.itmCode)
                             {
-                                var item = new ItemModel
+                                var item = new SimpleItem
                                 {
                                     itmCode = i.itmCode,
                                     itmName = i.itmName,
@@ -3099,7 +3099,7 @@ namespace SmartBusinessWeb.Controllers
 
         //[HttpPost]
         [HttpGet]
-        public JsonResult GetItemsAjax(int pageIndex=1, string keyword = "", string location = "", bool forsales = false, bool forwholesales = false, bool forpurchase = false, bool forstock = false, bool fortransfer = false, string type="")
+        public JsonResult GetItemsAjax(int pageIndex=1, string keyword = "", string location = "", bool forsales = false, bool forwholesales = false, bool forpurchase = false, bool forstock = false, bool fortransfer = false, bool forpreorder=false, string type="")
         {
             ItemViewModel model = new ItemViewModel();
 
@@ -3122,7 +3122,7 @@ namespace SmartBusinessWeb.Controllers
             model.Items = itemlist;
 
             var itemcodelist = model.Items.Select(x => x.itmCode).Distinct().ToHashSet();
-            if (forsales || forwholesales || forpurchase)
+            if (forsales || forpreorder || forwholesales || forpurchase)
             {
                 ModelHelper.GetItemOptionsVariInfo(apId, location, context, itemcodelist, model);
             }

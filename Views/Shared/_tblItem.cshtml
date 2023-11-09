@@ -4,7 +4,7 @@
     bool forpurchase = ViewData["forpurchase"] != null ? (bool)ViewData["forpurchase"] : false;
     bool forwholesales = ViewData["forwholesales"] != null ? (bool)ViewData["forwholesales"] : false;
     bool forsales = ViewData["forsales"] != null ? (bool)ViewData["forsales"] : false;
-    bool forpreorder = Request.QueryString["type"] != null && Request.QueryString["type"] == "preorder";
+    bool forpreorder = ViewData["forpreorder"] != null ? (bool)ViewData["forpreorder"] : false;
 
     string priceheader = ViewData["priceheader"] != null ? (string)ViewData["priceheader"] : Resources.Resource.SellingPrice;
 }

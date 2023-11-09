@@ -196,10 +196,10 @@ $(function () {
                 type: "GET",
                 url: "/Api/GetSalesOrderInfo",
                 data: { salescode: selectedSalesCode },
-                success: function (data: ISalesOrderEditModel) {
-                    salesInfo = data;
+                success: function (data: ISalesOrderInfo) {
+                    salesOrderInfo = data;
                     //console.log("salesinfo:", salesInfo);
-                    selectedCus = salesInfo.Customer ?? initCustomer();//if salesInfo.Customer==null=>GUEST               
+                    selectedCus = salesOrderInfo.Customer ?? initCustomer();//if salesInfo.Customer==null=>GUEST               
                     Sales = initSales();
                     //console.log("Sales@getsalesorderinfo:", Sales);
                     Sales.rtsCode = selectedSalesCode;
@@ -209,30 +209,30 @@ $(function () {
                     Sales.rtsGiftOption = 0;
                     Sales.rtsRefCode = "";
                     $(".NextSalesInvoice").val(Sales.rtsCode);
-                    $("#txtNotes").val(salesInfo.SalesOrder.rtsRmks);
+                    $("#txtNotes").val(salesOrderInfo.SalesOrder.rtsRmks);
                     $target = $("#txtDeliveryDate").datepicker();
                     $target.each(function () {
                         $.datepicker._clearDate(this);
                     });
-                    let deldate = new Date(salesInfo.SalesOrder.DeliveryDateDisplay);
+                    let deldate = new Date(salesOrderInfo.SalesOrder.DeliveryDateDisplay);
                     $target.datepicker("setDate", deldate);
                     $target.datepicker("option", { dateFormat: "yy-mm-dd" });
 
-                    $("#txtCustomerPO").val(salesInfo.SalesOrder.rtsCustomerPO);
+                    $("#txtCustomerPO").val(salesOrderInfo.SalesOrder.rtsCustomerPO);
 
-                    deliveryAddressId = <number>salesInfo.SalesOrder.rtsDeliveryAddressId;
+                    deliveryAddressId = <number>salesOrderInfo.SalesOrder.rtsDeliveryAddressId;
                     //console.log("deliveryAddressId:" + deliveryAddressId);
                     fillInAddressList();
 
                     selectCus();
 
-                    ItemList = salesInfo.Items.slice(0);
+                    ItemList = salesOrderInfo.Items.slice(0);
                     currentY = 0;
                     $target = $("#tblSales tbody tr");
 
-                    DicItemSNs = salesInfo.DicItemSNs;
+                    DicItemSNs = salesOrderInfo.DicItemSNs;
                     itemsnlist = [];
-                    $.each(salesInfo.SalesLnViews, function (i, e) {
+                    $.each(salesOrderInfo.SalesLnViews, function (i, e) {
                         //   console.log(e);
                         selectedItem = e.Item;
                         selectedItemCode = selectedItem.itmCode;
@@ -337,7 +337,7 @@ $(function () {
                         // console.log("_mode:" + _mode);
                         if (isapprover) {
                             //console.log("specialapproval?", salesInfo.SalesOrder.rtsSpecialApproval);
-                            if (!ismanager && salesInfo.SalesOrder.rtsSpecialApproval && status === "REQUESTING") {
+                            if (!ismanager && salesOrderInfo.SalesOrder.rtsSpecialApproval && status === "REQUESTING") {
                                 $("button").not(".btnNewSales").addClass("disabled").off("click");
                             }
                             if (
@@ -375,7 +375,7 @@ $(function () {
                     editmode = false;
 
                     $("#txtTotal").val(
-                        formatnumber(Number(salesInfo.SalesOrder.rtsFinalTotal))
+                        formatnumber(Number(salesOrderInfo.SalesOrder.rtsFinalTotal))
                     );
 
                     if (reviewmode || _mode == "created") {

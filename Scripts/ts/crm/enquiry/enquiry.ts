@@ -95,7 +95,7 @@ $(document).on("click", ".convert", function () {
                     //console.log(`emaildup:${_emailduplicated}; phonedup:${_phoneduplicated}`);
                     if (_emailduplicated && _phoneduplicated) {
                         let _parameters: string[] = [_email, _phone];
-                        console.log('parameters:', _parameters);
+                        //console.log('parameters:', _parameters);
                         //return false;
                         $.ajax({
                             type: "GET",
