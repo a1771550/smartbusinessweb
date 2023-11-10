@@ -9,11 +9,11 @@
 }
 <link href="~/Scripts/paginationjs/pagination.css" rel="stylesheet" type="text/css" />
 
-<h3>@ViewBag.Title</h3>
+<h3 data-debug="@(Model.PagingWholeSalesOrderList==null)">@ViewBag.Title</h3>
 
 @if (Model.PagingWholeSalesOrderList == null || Model.PagingWholeSalesOrderList.Count == 0)
 {
-    Html.Partial("_NoRecordFound");
+    @Html.Partial("_NoRecordFound");
 }
 else
 {
@@ -175,7 +175,7 @@ else
                         <td class="@bgclr">
                             @statustxt
                         </td>
-                        <td>@item.SalesTimeDisplay</td>
+                        <td>@item.WsTimeDisplay</td>
                         <td data-date="@item.wsDeliveryDate">@item.DeliveryDateDisplay</td>
                         <td class="button">
 

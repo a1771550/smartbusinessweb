@@ -24,17 +24,6 @@ namespace SmartBusinessWeb.Controllers
 	public class POSFuncController : BaseController
 	{
 		[HandleError]
-		[CustomAuthorize("retail", "boss", "admin", "superadmin")]
-		public ActionResult SalesOrderList(string strfrmdate = "", string strtodate = "", int? PageNo = 1, string SortName = "rtsTime", string SortOrder = "desc", string Keyword = "", int filter = 0, string searchmode = "")
-		{
-			ViewBag.ParentPage = "sales";
-			ViewBag.PageName = "salesorderlist";
-			SalesOrderEditModel model = new();
-			model.GetRetailOrderList(strfrmdate, strtodate, (int)PageNo, SortName, SortOrder, Keyword, filter, searchmode);
-			return View(model);
-		}
-
-		[HandleError]
 		[CustomAuthorize("countpayment", "boss", "admin", "superadmin")]
 		public ActionResult PendingInvoices(int? PageNo = 1)
 		{

@@ -41,9 +41,7 @@
             </div>
 
             <div id="sb-navbar" class="collapse navbar-collapse">
-                <ul class="navbar-nav nav">
-                   
-                        
+                <ul class="navbar-nav nav">                        
                         <li class="dropdown">
                             @{
                                 lnkcls = "nav-link {0}";
@@ -114,7 +112,7 @@
                                                 lnkcls = string.Format(lnkcls, string.Empty);
                                             }
                                         }
-                                        @Html.ActionLink(string.Format(Resources.Resource.ListFormat, Resources.Resource.SalesOrder), "SalesOrderList", "POSFunc", new { }, new { @class = lnkcls })
+                                        @Html.ActionLink(string.Format(Resources.Resource.ListFormat, Resources.Resource.SalesOrder), "Index", "SalesOrder", new { }, new { @class = lnkcls })
                                     </li>
                                 }
                                 @if (HttpContext.Current.Session["Reports"] == null)

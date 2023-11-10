@@ -509,7 +509,7 @@ function updateWholesales() {
 		}
 
 		selectedWholesalesLn.wslHasSn =
-			selectedWholesalesLn.snvtList.length > 0;
+			selectedWholesalesLn.snvtList&&selectedWholesalesLn.snvtList.length > 0;
 
 		let idx = isInvoice ? PriceIdx4WsInvoice : PriceIdx4WsOrder;
 		let _price: number = Number($tr.find("td").eq(idx).find(".price").val());
@@ -1068,10 +1068,10 @@ $(function () {
 				Wholesales.wsStatus.toLowerCase() != "passed"
 			) {
 				//console.log("here");
-				html += `<td class="text-center"><input type="text" name="batch" class="batch pointer" readonly value="${batch}" /></td><td class="text-center"><input type="text" name="serailno" readonly class="serialno pointer" value="${sntxt}" /></td><td class="text-center"><input type="datetime" name="validthru" class="small validthru pointer datepicker" value="${wholesalesln.JsValidThru}" /></td>`;
+				html += `<td class="text-center"><input type="text" name="batch" class="text-center batch pointer" readonly value="${batch}" /></td><td class="text-center"><input type="text" name="serailno" readonly class="text-center serialno pointer" value="${sntxt}" /></td><td class="text-center"><input type="datetime" name="validthru" class="small text-center validthru pointer datepicker" value="${wholesalesln.JsValidThru}" /></td>`;
 
 				//itemvari
-				html += `<td class="text-center"><input type="text" name="vari" class="small vari pointer" value="${vari}" /></td>`;
+				html += `<td class="text-center"><input type="text" name="vari" class="small text-center vari pointer" value="${vari}" /></td>`;
 			}
 			html += `<td class="text-right"><input type="number" name="price" class="price text-right" data-price="${wholesalesln.wslSellingPrice}" value="${formattedprice}" readonly></td><td class="text-right"><input type="number" name="discpc" class="discpc text-right" data-discpc="${wholesalesln.wslLineDiscPc}" value="${formatteddiscpc}" ${_readonly}></td>`;
 			if (enableTax && !inclusivetax) {

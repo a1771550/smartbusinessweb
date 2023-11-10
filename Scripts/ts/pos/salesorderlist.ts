@@ -91,17 +91,10 @@ $(document).on("click", ".edit", function () {
   );
 });
 $(document).on("click", ".detail", function () {
-  window.open(
-    "/POSFunc/Sales?receiptno=" +
-      $(this).data("code") +
-      "&readonly=" +
-      $(this).data("readonly") +
-      "&mode=" +
-      $(this).data("mode") +
-      "&status=" +
-      $(this).data("status"),
-    "_self"
-  );
+    let url = `/SalesOrder/Get?Id=${$(this).data("id")}`;
+    window.open(url,
+        "_self"
+    );
 });
 
 $(document).on("click", ".copy", function () {

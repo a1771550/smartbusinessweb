@@ -28,7 +28,6 @@ $(document).on("click", ".btnRequestApproval", function () {
     }
 });
 
-
 $(document).on("click", "#btnNewSales", function () {
     if (SalesLnList.length > 0) {
         $.fancyConfirm({
@@ -136,6 +135,9 @@ $(document).on("dblclick", ".nopo", function () {
     $("#txtCustomerPO").val("N/A");
 });
 
+let SalesOrderInfo: ISimpleSalesOrderInfo;
+let SimpleSales: ISimpleSales;
+
 $(function () {   
     forsales = true;
     salesType = SalesType.retail;
@@ -189,135 +191,42 @@ $(function () {
             receiptno = selectedSalesCode = _receiptno as string;
             reviewmode = _receiptno !== null && !editmode;
         }
-
+        //console.log("reviewmode:", reviewmode);
+        //console.log("editmode:", editmode);
         if (reviewmode || editmode || _mode == "created") {
             //console.log("here");
             $.ajax({
                 type: "GET",
-                url: "/Api/GetSalesOrderInfo",
+                url: "/SalesOrder/GetSalesOrderInfo",
                 data: { salescode: selectedSalesCode },
-                success: function (data: ISalesOrderInfo) {
-                    salesOrderInfo = data;
+                success: function (data: ISimpleSalesOrderInfo) {                  
+                    SalesOrderInfo = data;
+                    DicItemOptions = structuredClone(SalesOrderInfo.DicItemOptions);
+                    DicCurrencyExRate = structuredClone(SalesOrderInfo.DicCurrencyExRate);
                     //console.log("salesinfo:", salesInfo);
-                    selectedCus = salesOrderInfo.Customer ?? initCustomer();//if salesInfo.Customer==null=>GUEST               
-                    Sales = initSales();
-                    //console.log("Sales@getsalesorderinfo:", Sales);
-                    Sales.rtsCode = selectedSalesCode;
-                    Sales.rtsCusID = selectedCus.cusCustomerID;
-                    //Sales.rtsDvc = $infoblk.data("device");
-                    //Sales.rtsSalesLoc = $infoblk.data("shop");
-                    Sales.rtsGiftOption = 0;
-                    Sales.rtsRefCode = "";
-                    $(".NextSalesInvoice").val(Sales.rtsCode);
-                    $("#txtNotes").val(salesOrderInfo.SalesOrder.rtsRmks);
-                    $target = $("#txtDeliveryDate").datepicker();
-                    $target.each(function () {
-                        $.datepicker._clearDate(this);
-                    });
-                    let deldate = new Date(salesOrderInfo.SalesOrder.DeliveryDateDisplay);
-                    $target.datepicker("setDate", deldate);
-                    $target.datepicker("option", { dateFormat: "yy-mm-dd" });
-
-                    $("#txtCustomerPO").val(salesOrderInfo.SalesOrder.rtsCustomerPO);
-
-                    deliveryAddressId = <number>salesOrderInfo.SalesOrder.rtsDeliveryAddressId;
-                    //console.log("deliveryAddressId:" + deliveryAddressId);
-                    fillInAddressList();
+                    selectedCus = SalesOrderInfo.Customer ?? initCustomer();//if salesInfo.Customer==null=>GUEST               
+                    SimpleSales = structuredClone(SalesOrderInfo.SalesOrder);
+                    //console.log("Sales@getsalesorderinfo:", Sales);  
+                    $(".NextSimpleSalesInvoice").val(SimpleSales.rtsCode);
+                    $("#txtNotes").val(SimpleSales.rtsRmks);
 
                     selectCus();
 
-                    ItemList = salesOrderInfo.Items.slice(0);
+                    SimpleItemList = SalesOrderInfo.Items.slice(0);
                     currentY = 0;
-                    $target = $("#tblSales tbody tr");
+                    gTblName = "tblSales";
+                    $target = $(`#${gTblName} tbody tr`);
 
-                    DicItemSNs = salesOrderInfo.DicItemSNs;
+                    DicItemSnList = SalesOrderInfo.DicItemSNs;
                     itemsnlist = [];
-                    $.each(salesOrderInfo.SalesLnViews, function (i, e) {
-                        //   console.log(e);
-                        selectedItem = e.Item;
-                        selectedItemCode = selectedItem.itmCode;
-                        //   console.log("selecteditemcode#loop:" + selectedItemCode);
-                        let salesln: ISalesBase = {} as ISalesBase;
-                        salesln.amount = <number>e.rtlSalesAmt;
-                        salesln.batchcode = e.rtlBatchCode;
-                        salesln.discount = <number>e.rtlLineDiscAmt;
-                        salesln.itemcode = selectedItemCode;
-                        salesln.itemdesc = e.Item.itmDesc;
-                        salesln.itemname = e.Item.itmName;
-                        salesln.price = <number>e.rtlSellingPrice;
-                        salesln.qty = <number>e.rtlQty;
-                        salesln.rtlBatchCode = e.rtlBatchCode;
-                        salesln.rtlItemCode = selectedItemCode;
-                        salesln.rtlLineDiscPc = <number>e.rtlLineDiscPc;
-                        salesln.rtlQty = <number>e.rtlQty;
-                        salesln.rtlSalesAmt = <number>e.rtlSalesAmt;
-                        salesln.rtlSellingPrice = <number>e.rtlSellingPrice;
-                        salesln.rtlSeq = <number>e.rtlSeq;
-                        salesln.rtlTaxPc = <number>e.rtlTaxPc;
-                        //   console.log("salesln:", salesln);
-                        SalesList.push(salesln);
+                    $.each(SalesOrderInfo.SalesLnViews, function (i:number, e:ISalesLn|ISimpleSalesLn) {
+                        //   console.log(e);                       
+                        var item = structuredClone(e.Item);
+                        selectedItemCode = item.itmCode; 
 
-                        currentY = i;
-                        let $tr = $target.eq(currentY);
-
-                        let idx = 0;
-                        $tr.find("td:eq(1)").find(".itemcode").val(selectedItemCode);
-                        $tr.find("td:eq(2)").find(".itemdesc").val(e.Item.NameDesc);
-                        // .trigger("change");
-                        idx = 4;
-                        $tr
-                            .find("td")
-                            .eq(idx)
-                            .find(".qty")
-                            .val(<number>e.rtlQty)
-                            .trigger("change");
-                        // console.log("qty triggered change@load");
-
-                        for (const [key, value] of Object.entries(DicItemSNs)) {
-                            // console.log(`key:${key}: value:${value}`);
-                            let keyarr = key.split(":");
-                            if (
-                                e.rtlCode == keyarr[0] &&
-                                e.rtlItemCode == keyarr[1] &&
-                                e.rtlSeq == parseInt(keyarr[2])
-                            ) {
-                                //console.log('matched!');
-                                let arrSN: Array<string> = [];
-                                $.each(value, function (k, v) {
-                                    arrSN.push(v.snoCode);
-                                });
-                                let objSN: IItemSN = {
-                                    itemcode: selectedItem.itmCode,
-                                    seq: <number>e.rtlSeq,
-                                    serialcodes: arrSN,
-                                } as IItemSN;
-                                //   console.log("objsn#loop:", objSN);
-                                itemsnlist.push(objSN);
-                                //   console.log("itemsnlist#loop:", itemsnlist);
-                            }
-                        }
-                        if (e.rtlHasSerialNo) {
-                            setSNmark(false);
-                        }
-
-                        idx = PriceIdx4Sales;
-                        let $price = $tr.find("td").eq(idx).find(".price");
-                        $price.val(formatnumber(e.rtlSellingPrice!));
-                        $price.prop("readonly", !selectedItemCode.startsWith("/"));
-                        idx++;
-                        $tr.find("td").eq(idx).find(".discpc").val(formatnumber(e.rtlLineDiscPc ?? 0));
-                        idx++;
-                        $tr.find("td").eq(idx).find(".taxpc").val(formatnumber(e.rtlTaxPc ?? 0));
-                        $tr
-                            .find("td")
-                            .last()
-                            .find(".amount")
-                            .val(formatnumber(e.rtlSalesAmt ?? 0));
-                        // .trigger("change");
-
-                        updateRow(e.rtlSellingPrice ?? 0, e.rtlLineDiscPc ?? 0);
-                        // console.log("amount triggered changed@load");
-
+                        selectedSalesLn = structuredClone(e) as ISalesLn;
+                        currentY = i;                       
+                        populateItemRow();                     
                         addRow();
                     });
 
@@ -333,27 +242,19 @@ $(function () {
                             $("textarea").prop("disabled", true);
                             $("select").prop("disabled", true);
                         }
-                        // console.log("isapprover:", isapprover);
-                        // console.log("_mode:" + _mode);
-                        if (isapprover) {
-                            //console.log("specialapproval?", salesInfo.SalesOrder.rtsSpecialApproval);
-                            if (!ismanager && salesOrderInfo.SalesOrder.rtsSpecialApproval && status === "REQUESTING") {
-                                $("button").not(".btnNewSales").addClass("disabled").off("click");
-                            }
+                      
+                        if (isapprover) {                           
                             if (
                                 _mode === "created" ||
                                 (status != null && (status == "CREATED" || status == "VOIDED"))
                             ) {
-                                //$("button").not(".btnNewSales, .btnVoid").addClass("disabled").off("click");
+                                //$("button").not(".btnNewSimpleSales, .btnVoid").addClass("disabled").off("click");
                                 //console.log("here");
                                 if (status == "CREATED")
                                     $("button").not(".btnNewSales, .btnVoid").addClass("disabled").off("click");
                                 if (status == "VOIDED")
                                     $("button").not(".btnNewSales").addClass("disabled").off("click");
-                            }
-                            //if (status != null && status == "VOIDED") {
-                            //    $("button.btnVoid").addClass("disabled").off("click");
-                            //}
+                            }                           
                         }
                         else {
                             // console.log("_readonly:" + _readonly);
@@ -368,27 +269,18 @@ $(function () {
                                     .not(".ui-button")
                                     .addClass("disabled")
                                     .off("click");
-                                $("button").data("code", selectedSalesCode);
+                                $("button").data("code", SimpleSales.rtsCode);
                             }
                         }
                     }
                     editmode = false;
 
                     $("#txtTotal").val(
-                        formatnumber(Number(salesOrderInfo.SalesOrder.rtsFinalTotal))
+                        formatnumber(Number(SimpleSales.rtsFinalTotal))
                     );
 
                     if (reviewmode || _mode == "created") {
-                        // console.log("here");
-                        $("#tblSales tbody tr").each(function (i, e) {
-                            let itemcode = $(e).find("td").eq(1).find(".itemcode").val();
-                            //console.log("itemcode:" + itemcode);
-                            if (itemcode === "") {
-                                //console.log("here");
-                                $(e).remove();
-                                return false;
-                            }
-                        });
+                        removeEmptyRow();
                     }
                 },
                 dataType: "json",

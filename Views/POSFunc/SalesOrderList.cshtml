@@ -99,9 +99,9 @@ else
                     <th class="text-left colheader" data-col="2" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="CusName">
                         @Resources.Resource.Customer
                     </th>
-                    <th class="text-left" data-keyword="@Model.Keyword">
+                    @*<th class="text-left" data-keyword="@Model.Keyword">
                         @Resources.Resource.ItemOptionsHeader
-                    </th>
+                    </th>*@
                     <th class="text-left">
                         @Resources.Resource.Remark
                     </th>
@@ -206,7 +206,7 @@ else
 						</td>
 						<td>@item.SalesPersonName</td>
 						<td class="customer" data-code="@item.Customer.cusCode" data-name="@item.Customer.cusName">@item.Customer.cusName</td>
-						<td data-bat="@item.rtlBatch" data-hassn="@item.rtlHasSn" data-sn="@item.rtlSn" data-vt="@item.rtlValidThru">@itemoptionsdisplay</td>
+						@*<td data-bat="@item.rtlBatch" data-hassn="@item.rtlHasSn" data-sn="@item.rtlSn" data-vt="@item.rtlValidThru">@itemoptionsdisplay</td>*@
 						@{
 							var remark = item.rtsRmks != null && item.rtsRmks.Length > 20 ? string.Concat(item.rtsRmks.Substring(0, 20), "...") : item.rtsRmks ?? "";
 						}

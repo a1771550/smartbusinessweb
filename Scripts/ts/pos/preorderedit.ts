@@ -73,8 +73,7 @@ $(function () {
 		});
 
 		//remove empty row:
-		$tr = $(`#${gTblName} tbody tr`).last();
-		if ($tr.find("td").eq(1).find(".itemcode").val() === "") $tr.remove();
+		removeEmptyRow();
 
 		//console.log("finaltotal:" + PreSales.rtsFinalTotal + ";payamt:" + PreSales.PayAmt);
 		let depositamt = 0;
@@ -87,8 +86,9 @@ $(function () {
 			itotalremainamt = PreSales.PayAmt!;
 
 			$target = $(`#${gTblName} tbody tr`);
-			$target.find("input").prop("disabled", true).prop("readonly", true);
+			$target.find("input").prop("disabled", true).prop("readonly", true);			
 			$target.find("select").prop("disabled", true).prop("readonly", true);
+			$("textarea").prop("disabled", true).prop("readonly", true);
 			$(".btnPayment").prop("disabled", true);
 		}
 		$("#txtDepositAmt").val(formatnumber(depositamt));

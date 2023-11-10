@@ -335,6 +335,7 @@
     <Compile Include="Controllers\POS\PrintController.cs" />
     <Compile Include="Controllers\POS\ReceiptController.cs" />
     <Compile Include="Controllers\POS\ReportController.cs" />
+    <Compile Include="Controllers\POS\SalesOrderController.cs" />
     <Compile Include="Controllers\Promotion\ItemPeriodPromotionController.cs" />
     <Compile Include="Controllers\Promotion\ItemQtyPromotionController.cs" />
     <Compile Include="Controllers\Promotion\PromotionController.cs" />
@@ -4255,6 +4256,8 @@
     <Content Include="Scripts\ts\js\pos\preorderedit.js.map" />
     <Content Include="Scripts\ts\js\pos\preorderlist.js.map" />
     <Content Include="Views\Deposit\Index.cshtml" />
+    <Content Include="Views\SalesOrder\Index.cshtml" />
+    <Content Include="Views\SalesOrder\Get.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4471,7 +4474,6 @@
     <Content Include="Views\POSFunc\PendingInvoices.cshtml" />
     <Content Include="Views\POSFunc\Refund.cshtml" />
     <Content Include="Views\POSFunc\Sales.cshtml" />
-    <Content Include="Views\POSFunc\SalesOrderList.cshtml" />
     <Content Include="Views\POSFunc\Search.cshtml" />
     <Content Include="Views\PriceLevels\Index.cshtml" />
     <Content Include="Views\Print\Index.cshtml" />

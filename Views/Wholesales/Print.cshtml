@@ -2,7 +2,7 @@
 @{
     ViewBag.Title = Resources.Resource.PrintPreview;
     ComInfo comInfo = Model.ComInfo;
-    PPWLib.Models.WholeSales.WholeSalesModel ws = Model.WholeSales;
+    PPWLib.Models.WholeSales.WholeSalesView ws = Model.WholeSalesView;
     Layout = null;
     string cssbsfile = HttpContext.Current.Session["CssBSFile"] == null ? @"Content/bs4" : HttpContext.Current.Session["CssBSFile"].ToString();
     string scriptbsfile = HttpContext.Current.Session["ScriptBSFile"] == null ? @"Scripts/bs4" : HttpContext.Current.Session["ScriptBSFile"].ToString();
@@ -133,7 +133,7 @@
                         <h5 class="font-weight-bold">@string.Format(Resources.Resource.NumberFormat, Resources.Resource.WholeSales)</h5>
                     </td>
                     <td>
-                        <h5 class="font-weight-normal">@ws.WSCodeDisplay</h5>
+                        <h5 class="font-weight-normal">@ws.wsCode</h5>
                     </td>
                 </tr>
 
@@ -231,7 +231,7 @@
 
         <div id="borderblk" class="mx-4">
             <table id="tblItem" class="table">
-                @{ decimal totalamt = 0; decimal discamt = 0; int collength = (ws.EnableTax && !ws.InclusiveTax) ? 7 : 6; }
+                @{ decimal totalamt = 0; decimal discamt = 0; int collength = (Model.EnableTax && !Model.InclusiveTax) ? 7 : 6; }
 
                 <thead style="border: 1px solid black !important; border-top: none !important;">
                     <tr>
@@ -249,14 +249,14 @@
                         @if (Model.printType != WholeSalesStatus.deliverorder.ToString())
                         {
 
-                            <th style="text-align: right;">@Resources.Resource.UnitPrice (@ws.Currency)</th>
+                            <th style="text-align: right;">@Resources.Resource.UnitPrice (@Model.Currency)</th>
                             <th style="text-align: right;">@Resources.Resource.Discount (%)</th>
-                            if (ws.EnableTax && !ws.InclusiveTax)
+                            if (Model.EnableTax && !Model.InclusiveTax)
                             {
                                 <th style="text-align: right;">@Resources.Resource.TaxItemHeader</th>
                             }
 
-                            <th style="text-align: right; border-right: none !important; border-left: 1px solid black !important; border-bottom: 1px solid black !important;border-right-style:hidden!important;">@Resources.Resource.Amount (@ws.Currency)</th>
+                            <th style="text-align: right; border-right: none !important; border-left: 1px solid black !important; border-bottom: 1px solid black !important;border-right-style:hidden!important;">@Resources.Resource.Amount (@Model.Currency)</th>
                         }
 
 
@@ -266,7 +266,7 @@
                 @if (ws.wsStatus == WholeSalesStatus.order.ToString())
                 {
                     <tbody>
-                        @foreach (var item in ws.WholeSalesLns)
+                        @foreach (var item in Model.WholeSalesLns)
                         {
                             <tr>
                                 <td style="">
@@ -287,7 +287,7 @@
                                     @{ discamt += (decimal)item.wslLineDiscAmt;}
                                     @item.wslLineDiscPc
                                 </td>
-                                @if (ws.EnableTax && !ws.InclusiveTax)
+                                @if (Model.EnableTax && !Model.InclusiveTax)
                                 {
                                     <td class="text-right" style="">@item.wslTaxPc</td>
                                 }
@@ -334,7 +334,7 @@
                 {
                     <tbody data-printtype="@Model.printType">
 
-                        @foreach (var group in ws.GroupedDeliveryItems)
+                        @foreach (var group in Model.GroupedDeliveryItems)
                         {
                             DeliveryItemModel item = group.FirstOrDefault();
                             <tr data-groupcount="@group.Count()">
@@ -419,7 +419,7 @@
                                             discamt += price * (discpc/100) * group.Sum(x => x.dlQty);}
                                         @discpc.ToString("0.00")
                                     </td>
-                                    if (ws.EnableTax && !ws.InclusiveTax)
+                                    if (Model.EnableTax && !Model.InclusiveTax)
                                     {
                                         <td class="text-right" style="">@item.dlTaxPc</td>
                                     }
@@ -489,7 +489,7 @@
                                 <h4>@Resources.Resource.Remark</h4>
                                 <p style="font-size:0.8em;">@ws.TrimmedRemark</p>
                             </td>
-                            @{ colspan = (ws.EnableTax && !ws.InclusiveTax) ? 3 : 2;}
+                            @{ colspan = (Model.EnableTax && !Model.InclusiveTax) ? 3 : 2;}
                             <td colspan="@colspan" class="text-right" style="border-left:none!important;">
                                 <h3>@Resources.Resource.SubTotal:</h3>
                                 <h3>@Resources.Resource.DiscAmt:</h3>
