@@ -1,5 +1,4 @@
-﻿@{
-    List<ItemVariationModel> ItemVariations = ViewData["ItemVariations"] == null ? null : ViewData["ItemVariations"] as List<ItemVariationModel>;
+﻿@{    
     ItemView Item = ViewData["Item"] == null ? null : ViewData["Item"] as ItemView;
     List<ItemAttribute> ItemAttrList = ViewData["ItemAttrList"] == null ? null : ViewData["ItemAttrList"] as List<ItemAttribute>;
 
@@ -34,72 +33,9 @@
 }
 @if (isItemABSS && (ItemAttrList != null && ItemAttrList.Count > 0 && ItemAttrList.Any(x => (bool)x.iaUsed4Variation)))
 {
-    @*const int pageSize = 3;
-    int attrlistcount = ItemAttrList == null ? 0 : ItemAttrList.Count;
-    int pageCount = ItemAttrList == null ? 1 : (int)Math.Ceiling((decimal)ItemAttrList.Count / pageSize);
-
-    <div class="row" style="border-top:1px solid rgba(0,0,0,.1);">
-        <div class="col-12 col-md-2" style="border-right:1px solid rgba(0,0,0,.1);">
-            <fieldset id="variationblk" class="item-border my-3">
-                <legend class="item-border">@Resources.Resource.ItemVariations</legend>
-
-                <div class="clearfix" style="margin-bottom:-3rem;">
-                    <label class="float-right small alert alert-info font-weight-bold">@Resources.Resource.Status: <span id="lblIVStatus"></span></label>
-                </div>
-
-                <input type="hidden" id="pagecount" value="@pageCount" />
-
-                @if (pageCount > 1)
-                {
-                    for (int page = 1; page < pageCount; page++)
-                    {
-
-                        for (int i = (page - 1) * pageSize; i < (page * pageSize) && i < attrlistcount; i++)
-                        {
-                            var attr = ItemAttrList[i];
-                            var ivals = attr.iaValue.Split('|').ToArray();
-
-                            <div class="form-group">
-                                <label for="@attr.Id">@attr.iaName</label>
-                                <select class="form-control drpItemAttr" data-show="@attr.iaShowOnSalesPage" id="@attr.Id" data-name="@attr.iaName">
-                                    @foreach (var val in ivals)
-                                    {
-                                        <option value="@val">@val</option>
-                                    }
-                                </select>
-                            </div>
-                        }
-
-                    }
-                }
-                else
-                {
-                    int page = 1;
-
-                    for (int i = (page - 1) * pageSize; i < (page * pageSize) && i < attrlistcount; i++)
-                    {
-                        var attr = ItemAttrList[i];
-                        var ivals = attr.iaValue.Split('|').ToArray();
-
-                        <div class="form-group">
-                            <label for="@attr.Id">@attr.iaName</label>
-                            <select class="form-control drpItemAttr" data-show="@attr.iaShowOnSalesPage" id="@attr.Id" data-name="@attr.iaName">
-                                @foreach (var val in ivals)
-                                {
-                                    <option value="@val">@val</option>
-                                }
-                            </select>
-                        </div>
-                    }
-
-                }
-            </fieldset>
-
-        </div>
-
-        <div class="col-12 col-md-10">*@
+    
 <div class="container">
-    @Html.Partial("___itemeditform", null, new ViewDataDictionary { { "ItemAttrList", ItemAttrList }, { "ItemVariations", ItemVariations }, { "Item", Item }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList }, { "PGItemNull", pgitemnull }, { "EditItem", EditItem } })
+    @Html.Partial("___itemeditform", null, new ViewDataDictionary { { "ItemAttrList", ItemAttrList }, { "Item", Item }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList }, { "PGItemNull", pgitemnull }, { "EditItem", EditItem } })
 </div>
         @*</div>
     </div>*@
@@ -107,5 +43,5 @@
 else
 {
     <span class="small alert alert-info d-inline-block">@Resources.Resource.ItemVariationsOnly4AbssItemsWAttributes</span>
-    @Html.Partial("___itemeditform", null, new ViewDataDictionary { { "ItemAttrList", ItemAttrList }, { "ItemVariations", ItemVariations }, { "Item", Item }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList }, { "PGItemNull", pgitemnull }, { "EditItem", EditItem } })
+    @Html.Partial("___itemeditform", null, new ViewDataDictionary { { "ItemAttrList", ItemAttrList }, { "Item", Item }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList }, { "PGItemNull", pgitemnull }, { "EditItem", EditItem } })
 }

@@ -1,7 +1,5 @@
 ﻿@{
-    List<string> Shops = ViewData["Shops"] != null ? (List<string>)ViewData["Shops"] : new List<string>();
-    List<ItemVariationModel> ItemVariations = ViewData["ItemVariations"] == null ? null : ViewData["ItemVariations"] as List<ItemVariationModel>;
-    ItemVariationModel ItemVari = ViewData["ItemVari"] == null ? null : ViewData["ItemVari"] as ItemVariationModel;
+    List<string> Shops = ViewData["Shops"] != null ? (List<string>)ViewData["Shops"] : new List<string>();   
     List<ItemAttribute> ItemAttrList = ViewData["ItemAttrList"] == null ? null : ViewData["ItemAttrList"] as List<ItemAttribute>;
 
     PPWLib.Models.Item.PGItemModel PGItem = ViewData["PGItem"] == null ? null : ViewData["PGItem"] as PGItemModel;
@@ -14,8 +12,8 @@
 
     bool editmode = Convert.ToBoolean(ViewData["editmode"]);
 
-    string frmname = (ItemVariations != null || PGItem != null) ? "PGItem" : "Item";
-    string frmId = (ItemVariations != null || PGItem != null) ? "frmPGItem" : "frmItem";
+    string frmname = (PGItem != null) ? "PGItem" : "Item";
+    string frmId = (PGItem != null) ? "frmPGItem" : "frmItem";
     int lang = Convert.ToInt32(ViewData["lang"]);
     bool EnableBuySellUnits = Convert.ToBoolean(ViewData["EnableBuySellUnits"]);
     List<PPWLib.Models.MYOB.AccountModel> ACList = ViewData["ACList"] as List<PPWLib.Models.MYOB.AccountModel>;
@@ -119,7 +117,7 @@
     {
         if (ItemAttrList != null)
         {           
-            @Html.Partial("__ItemEditForm", null, new ViewDataDictionary { { "ItemAttrList", ItemAttrList }, { "ItemVariations", ItemVariations }, { "Item", Item }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "PGItemNull", PGItem == null }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList }, { "EditItem", EditItem } })
+            @Html.Partial("__ItemEditForm", null, new ViewDataDictionary { { "ItemAttrList", ItemAttrList }, { "Item", Item }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "PGItemNull", PGItem == null }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList }, { "EditItem", EditItem } })
 
 
         }
