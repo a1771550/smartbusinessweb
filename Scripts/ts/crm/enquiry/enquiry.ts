@@ -1,13 +1,13 @@
 ﻿$infoblk = $('#infoblk');
-let frmdate = $infoblk.data("frmdate");
-let todate = $infoblk.data("todate");
-let currentoldestdate = $infoblk.data("currentoldestdate");
+frmdate = $infoblk.data("frmdate");
+todate = $infoblk.data("todate");
+currentoldestdate = $infoblk.data("currentoldestdate");
 const assigntosales = $infoblk.data("assignsalestxt");
 const isassignor: boolean = $infoblk.data("isassignor") === "True";
-const enquiryacc: string = $infoblk.data("enquiryacc") as string;
-const pagesize: number = Number($infoblk.data("pagesize"));
+
+pagesize = Number($infoblk.data("pagesize"));
 //from/emailAddress/address ne 'noreply@abssasia.com.hk'
-const resource = `/users/{2}/mailFolders/Inbox/messages?$filter=receivedDateTime ge {0}T00:00:00Z and receivedDateTime lt {1}T23:59:59Z and from/emailAddress/address ne 'autoreply@abssasia.com.hk' and from/emailAddress/address ne 'enquiry@united.com.hk' and from/emailAddress/name ne 'United Technologies (Int''l) Ltd.' and from/emailAddress/name ne 'Kobee Ho' and from/emailAddress/name ne 'Eddy Mok' and from/emailAddress/name ne 'Kim LEUNG' and from/emailAddress/address ne 'lung@united.com.hk' and from/emailAddress/address ne 'sunnyy@united.com.hk' and sender/emailAddress/address eq 'autoreply@united.com.hk'&$count=true&$ConsistencyLevel=eventual&$orderby=receivedDateTime desc`;
+resource = `/users/{2}/mailFolders/Inbox/messages?$filter=receivedDateTime ge {0}T00:00:00Z and receivedDateTime lt {1}T23:59:59Z and from/emailAddress/address ne 'autoreply@abssasia.com.hk' and from/emailAddress/address ne 'enquiry@united.com.hk' and from/emailAddress/name ne 'United Technologies (Int''l) Ltd.' and from/emailAddress/name ne 'Kobee Ho' and from/emailAddress/name ne 'Eddy Mok' and from/emailAddress/name ne 'Kim LEUNG' and from/emailAddress/address ne 'lung@united.com.hk' and from/emailAddress/address ne 'sunnyy@united.com.hk' and sender/emailAddress/address eq 'autoreply@united.com.hk'&$count=true&$ConsistencyLevel=eventual&$orderby=receivedDateTime desc`;
 enqIdList = $infoblk.data("enqidlist") as string[];
 let DicAssignedSalesEnqId: { [Key: string]: number } = {};
 
@@ -263,16 +263,12 @@ $(document).on("click", "#btnReload", function () {
 });
 
 
-function saveEnquiries(enqlist: IEnquiry[]) {
-    //console.log("EnquriyList:", EnquiryList);
-    // return;
+function saveEnquiries(enqlist: IEnquiry[]) {    
     $.ajax({
         //contentType: 'application/json; charset=utf-8',
         type: "POST",
         url: '/Enquiry/Save',
-        data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val(), model: enqlist, frmdate, todate },
-        //success: function (data) {
-        //},
+        data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val(), model: enqlist, frmdate, todate },       
         dataType: 'json'
     });
 }
@@ -335,46 +331,10 @@ function fillInEnqTable() {
     $("#tblmails tbody").empty().html(html);    
 }
 
-function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) {
-    //openWaitingModal();
-    EnquiryList = [];
 
-    let mgtEmail = document.getElementById("mgt-email");
-    //console.log("msgEmail:", mgtEmail);
-    let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", `${enquiryacc}`);
-    $("#mgt-email").attr("resource", _resource);
-
-    if (mgtEmail) {
-        mgtEmail.addEventListener("dataChange", (e: any) => {
-            const response = e.detail.response;
-            //console.log("response value:", response.value);
-            response.value.forEach((x) => {
-                EnquiryList.push(x);                
-                DicEnqContent[x.id] = `${x.body.content} ReceivedDateTime:${x.receivedDateTime}`;
-            });
-            parseEnquiries(DicEnqContent);
-
-            if (EnquiryList.length > 0) {
-                //console.log("enqIdList:", enqIdList);
-                let enqlist: IEnquiry[] = [];
-                EnquiryList.forEach((x) => {
-                    if (!enqIdList.includes(x.id)) {
-                        enqlist.push(x);
-                    }
-                });
-                if (enqlist.length > 0)
-                    saveEnquiries(enqlist);
-            }
-            
-            sortCol = 8;        
-        });
-
-        GetEnquiries(pageIndex);     
-    }
-    //closeWaitingModal();
-}
 
 $(function () {
+    forenquiry = true;
     daterangechange = false;
     setFullPage();
     initModals();  

@@ -114,7 +114,7 @@ namespace SmartBusinessWeb.Controllers
                     bool isadmin = Roles.Any(x => x == RoleType.Admin && x != RoleType.SalesManager);
                     if (isadmin)
                     {
-                        _login(user, context, model, null);
+                        _login(user, isadmin, context, model, null);
 
                         model.RedirectUrl = ApprovalMode ? "/WholeSales/SalesOrderList" : ComInfo.comLandingPage;
                         return Json(new { msg, iscentral = model.IsCentral, redirecturi = model.RedirectUrl });
@@ -124,7 +124,7 @@ namespace SmartBusinessWeb.Controllers
                         DeviceModel device = Helpers.ModelHelper.GetDevice(user.surUID, context);//don't move to below
                         if (device != null)
                         {
-                            _login(user, context, model, device);
+                            _login(user, isadmin, context, model, device);
 
                             if (string.IsNullOrEmpty(model.RedirectUrl))
                             {
@@ -149,7 +149,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
 
-        private void _login(SysUser user, PPWDbContext context, LoginUserModel model, DeviceModel device = null)
+        private void _login(SysUser user,bool isadmin, PPWDbContext context, LoginUserModel model, DeviceModel device = null)
         {
             string token = CommonHelper.GenSessionToken();
             DateTime currDate = DateTime.Now.Date;
@@ -249,7 +249,8 @@ namespace SmartBusinessWeb.Controllers
             Session["SessionToken"] = token;
             Session["IsCentral"] = model.IsCentral;
             Session["eBlastId"] = 0;
-            Session["AccountProfileId"] = model.AccountProfileId;            
+            Session["AccountProfileId"] = model.AccountProfileId;
+            Session["IsAdmin"] = isadmin;
 
             MenuHelper.UpdateMenus(context);
 

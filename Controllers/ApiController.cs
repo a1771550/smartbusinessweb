@@ -26,7 +26,6 @@ using CommonLib.App_GlobalResources;
 using CommonLib.BaseModels;
 using System.Net.Mail;
 using System.Net;
-using PPWLib.Models.POS.Sales;
 using PPWLib.Models.MYOB;
 using PPWLib.Models.POS.MYOB;
 using PPWLib.Helpers;
@@ -42,11 +41,11 @@ using System.Data.Entity.Core.Objects;
 using PPWLib.Models.Purchase.Supplier;
 using PPWCommonLib.BaseModels;
 using PPWLib.Models.Purchase;
-using KingdeeLib.Models.Item;
+using ItemModel = PPWLib.Models.Item.ItemModel;
 
 namespace SmartBusinessWeb.Controllers
 {
-    [AllowAnonymous]
+	[AllowAnonymous]
     public class ApiController : Controller
     {
         private ComInfo ComInfo { get { return Session["ComInfo"] as ComInfo; } }

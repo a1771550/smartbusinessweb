@@ -1,8 +1,45 @@
 ﻿@model PPWLib.Models.POS.Sales.SalesOrderEditInfo
-
 @{
-    ViewBag.Title = "Get";
+	bool editmode = Model.SalesOrder.rtsUID > 0;
+	bool fordeposit = editmode;
+	ViewBag.Title = Resources.Resource.SalesOrder;
+	int rand = CommonHelper.GetVersionRandomNo();
 }
+<link rel="stylesheet" type="text/css" href="~/Content/Sales.css?v=@rand" />
 
-<h2>Get</h2>
+<h3>@ViewBag.Title</h3>
 
+
+@Html.Partial("_SalesBlk", null, new ViewDataDictionary { { "editmode", editmode }, { "Currency", Model.Currency }, { "rtsCurrency", Model.SalesOrder.rtsCurrency }, { "LocationList", Model.LocationList }, { "showrecur", false }, { "Device", Model.ComInfo.Device }, { "Devices", Model.ComInfo.Devices }, { "NextSalesCode", Model.SalesOrder.rtsCode }, { "DefaultSalesNotesTxt", Model.SalesOrder.rtsRmks }, { "forsales", true } })
+
+@Html.HiddenFor(model => model.SalesOrder.rtsExRate)
+@Html.Partial("_CurrencyModal")
+
+@Html.Partial("_ItemModal", null, new ViewDataDictionary { { "currency", Model.Currency }, { "priceheader", Resources.Resource.SellingPrice }, { "forpreorder", true } })
+
+@Html.Partial("_DescModal")
+
+@Html.Partial("_CusModal")
+
+@Html.Partial("_BatchModal")
+
+@Html.Partial("_SerialNoModal", null, new ViewDataDictionary { { "forsales", true } })
+
+@Html.Partial("_ValidThruModal")
+
+@Html.Partial("_PayModal", null, new ViewDataDictionary { { "forsales", true }, { "PaymentTypeList", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes } })
+
+
+@Html.Partial("_ItemVariModal")
+
+@Html.Partial("_ChangeModal")
+
+@Html.Partial("_WaitingModal")
+
+<link rel="stylesheet" type="text/css" href="~/Scripts/jspreadsheet/dist/jexcel.css" />
+<link rel="stylesheet" type="text/css" href="~/Scripts/jsuites/dist/jsuites.css" />
+<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+
+<div id="infoblk" data-sales="@JsonSerializer.Serialize(Model.SalesOrder)" data-saleslnlist="@JsonSerializer.Serialize(Model.SalesLns)" data-customer="@JsonSerializer.Serialize(Model.Customer)" data-customerpointpricelevels="@JsonSerializer.Serialize(Model.CustomerPointPriceLevels)" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicpaytypes="@JsonSerializer.Serialize(Model.DicPayTypes)" data-joblist="@JsonSerializer.Serialize(Model.JobList)" data-taxmodel="@JsonSerializer.Serialize(Model.TaxModel)" data-enabletax="@Model.EnableTax" data-inclusivetax="@Model.InclusiveTax" data-inclusivetaxrate="@Model.InclusiveTaxRate" data-taxcode="@Model.TaxCode" data-diclocation="@JsonSerializer.Serialize(Model.DicLocation)" data-dicitemsns="@JsonSerializer.Serialize(Model.DicItemSNs)" data-dicitemoptions="@JsonSerializer.Serialize(Model.DicItemOptions)" data-jsonpoitembatvqlist="@JsonSerializer.Serialize(Model.PoItemBatVQList)" data-jsondicitembatsnvtlist="@JsonSerializer.Serialize(Model.DicItemBatSnVtList)" data-jsondicitemvtqtylist="@JsonSerializer.Serialize(Model.DicItemVtQtyList)" data-jsondicitembatchqty="@JsonSerializer.Serialize(Model.DicItemBatchQty)" data-jsondicitemsnvtlist="@JsonSerializer.Serialize(Model.DicItemSnVtList)" data-jsondicitembatdelqty="@JsonSerializer.Serialize(Model.DicItemBatDelQty)" data-jsondicitemvtdelqtylist="@JsonSerializer.Serialize(Model.DicItemVtDelQtyList)" data-jsondicbattotalqty="@JsonSerializer.Serialize(Model.DicBatTotalQty)" data-jsondicseqdeliveryitems="@JsonSerializer.Serialize(Model.DicSeqDeliveryItems)" data-jsondicitembatsnvt="@JsonSerializer.Serialize(Model.DicItemBatSnVt)" data-jsonpoivinfo="@JsonSerializer.Serialize(Model.PoIvInfo)" data-jsondicivinfo="@JsonSerializer.Serialize(Model.DicIvInfo)" data-dicitemgroupedvariations="@JsonSerializer.Serialize(Model.DicItemGroupedVariations)" data-dicivqtylist="@JsonSerializer.Serialize(Model.DicIvQtyList)" data-dicivdelqtylist="@JsonSerializer.Serialize(Model.DicIvDelQtyList)"></div>
+
+<script src="~/Scripts/ts/js/pos/salesorderedit.js?v=@rand"></script>

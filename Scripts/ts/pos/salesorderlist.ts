@@ -77,21 +77,14 @@ $(document).on("click", ".whatsapp", function () {
   });
 });
 
-$(document).on("click", ".edit", function () {
-  //console.log("mode:" + $(this).data("mode")); return false;
-  const mode = $(this).data("mode");
-  window.open(
-    "/POSFunc/Sales?receiptno=" +
-      $(this).data("code") +
-      "&readonly=" +
-      $(this).data("readonly") +
-      "&mode=" +
-      mode,
-    "_self"
-  );
-});
 $(document).on("click", ".detail", function () {
-    let url = `/SalesOrder/Get?Id=${$(this).data("id")}`;
+    let Id = $(this).data("id");
+    let status:string = $(this).data("status").toString();
+  //  console.log(status);
+    let url = "";
+    if (status.toLowerCase() == SalesStatus.presettling.toString()) url = `/Preorder/Edit?Id=${Id}`;
+    if (status.toLowerCase() == SalesStatus.presettled.toString() || status.toLowerCase() == SalesStatus.created.toString()) url = `/SalesOrder/Get?Id=${Id}`;  
+   // return false;
     window.open(url,
         "_self"
     );
@@ -123,6 +116,7 @@ $(document).on("click", ".colheader", function () {
 });
 
 $(function () {
+  forsales = true;
   isapprover = $infoblk.data("isapprover") === "True";
   setFullPage();
   //console.log('sortorder:' + $('#currentsortorder').val() + ';sortname:' + $('#sortname').val());

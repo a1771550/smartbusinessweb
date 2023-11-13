@@ -16,23 +16,23 @@ namespace SmartBusinessWeb.Controllers.POS
     public class SalesOrderController : BaseController
     {
         [HttpGet]
-        public ActionResult Get(long salesId)
+        public ActionResult Get(long Id)
         {
             ViewBag.ParentPage = "sales";
             SalesOrderEditInfo model = new SalesOrderEditInfo();
-            model.Get(salesId);
+            model.Get(Id);
             return View(model);
         }
 
         [HandleError]
         [CustomAuthorize("retail", "boss", "admin", "superadmin")]
-        public ActionResult Index(string strfrmdate = "", string strtodate = "", int? PageNo = 1, string SortName = "rtsTime", string SortOrder = "desc", string Keyword = "", int filter = 0, string searchmode = "")
+        public ActionResult Index(string strfrmdate = "", string strtodate = "", int? PageNo = 1, string SortName = "rtsTime", string SortOrder = "desc", string Shop = "", string Device = "", string Keyword = "", int filter = 0, string searchmode = "")
         {
             ViewBag.ParentPage = "sales";
             ViewBag.PageName = "salesorderlist";
-            SalesOrderEditModel model = new();
-            model.GetRetailOrderList(strfrmdate, strtodate, (int)PageNo, SortName, SortOrder, Keyword, filter, searchmode);
-            return View(model);
+			SalesOrderEditInfo model = new();
+			model.GetList(strfrmdate, strtodate, (int)PageNo, SortName, SortOrder, Shop, Device, Keyword, filter, searchmode);
+			return View(model);
         }
     }
 }

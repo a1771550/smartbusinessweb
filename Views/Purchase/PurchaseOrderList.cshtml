@@ -4,7 +4,7 @@
     ViewBag.Title = string.Format(Resources.Resource.ListFormat, Resources.Resource.PurchaseOrder);
     var rand = CommonHelper.GetVersionRandomNo();
     bool approvalmode = Model.ApprovalMode;
-    SessUser user = HttpContext.Current.Session["User"] as SessUser;
+    SessUser user = HttpContext.Current.Session["User"] as SessUser;   
     bool isapprover = user.Roles.Any(x => x == RoleType.Admin || x == RoleType.SalesManager);
 }
 <link href="~/Scripts/paginationjs/pagination.css" rel="stylesheet" type="text/css" />

@@ -254,7 +254,7 @@ $(document).on("click", "#btnBill", function () {
                 .val() as string;
             itemcodelist.push(selectedItemCode);
         }
-        $(e).find("td").eq(4).find(".qty").prop("readonly", true);
+        $(e).find("td").eq(4).find(".qty").prop("isadmin", true);
     });
 
     getDicItemOptionsVariByCodes(itemcodelist, $rows, currentItemCount);
@@ -335,7 +335,7 @@ $(document).on("change", "#drpSupplier", function () {
                 // console.log("currcode:" + currcode);
                 if (currcode !== "") {
                     //console.log("here");
-                    $("#pstCurrency").val(currcode).prop("readonly", true);
+                    $("#pstCurrency").val(currcode).prop("isadmin", true);
                     fillInCurrencyModal(currcode);
                     exRate = selectedSupplier.ExchangeRate!;
                     displayExRate(exRate);
@@ -392,12 +392,12 @@ $(function () {
         getParameterByName("mode") == "editapproved";
 
     let _receiptno = getParameterByName("receiptno");
-    let readonly: boolean = $infoblk.data("isadmin") === "True";
-    //console.log("readonly:", readonly);
+    let isadmin: boolean = $infoblk.data("isadmin") === "True";
+    //console.log("isadmin:", isadmin);
 
     if (_receiptno !== null || editmode) {
-        receiptno = selectedSalesCode = _receiptno as string;
-        reviewmode = _receiptno !== null && !editmode;
+        receiptno = _receiptno as string;
+        reviewmode = _receiptno !== null && isadmin;
     }
     // console.log("receiptno:" + receiptno);
     if(!editmode)
@@ -448,7 +448,7 @@ $(function () {
                 (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") ? "vt pointer" : "validthru datepicker";           
 
             if (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") {
-                html += `<td><input type="text" name="batch" class="pobatch text-center pointer" data-batcode="${batcode}" value="${batch}" readonly /></td><td><input type="text" name="serailno" readonly class="${sncls} text-center" value="${sntxt}" /></td><td><input type="datetime" name="validthru" class="${vtcls} datepicker text-center" value="${vt}" /></td>`;
+                html += `<td><input type="text" name="batch" class="pobatch text-center pointer" data-batcode="${batcode}" value="${batch}" isadmin /></td><td><input type="text" name="serailno" isadmin class="${sncls} text-center" value="${sntxt}" /></td><td><input type="datetime" name="validthru" class="${vtcls} datepicker text-center" value="${vt}" /></td>`;
 
                 //itemvari
                 let vari: string = ((stockitem.itmCode in DicItemGroupedVariations) || (!itemOptions.ChkBatch && !itemOptions.ChkSN && !itemOptions.WillExpire)) ? "..." : "";              
@@ -477,12 +477,13 @@ $(function () {
         });
         $target = $("#tblPSI tbody");
         $target.empty().html(html);
-        if (Purchase.pstStatus === "opened" || Purchase.pstStatus == "partialreceival" || readonly) {
-            $("input").prop("readonly", true).prop("disabled", true);
+        if (Purchase.pstStatus === "opened" || Purchase.pstStatus == "partialreceival" || isadmin) {
+            $("input").prop("isadmin", true).prop("disabled", true);
             $("select").prop("disabled", true);
-            $("textarea").not("#txtField").prop("readonly", true);
-            if (Purchase.pstStatus === "opened" || readonly) {
-                $("button").addClass("disabled");
+            $("textarea").not("#txtField").prop("isadmin", true);
+
+            if (Purchase.pstStatus === "opened") {
+                if(!isadmin) $("button").addClass("disabled");
                 $("#btnSave").addClass("disabled");
                 $("#btnBill").addClass("disabled");
             }

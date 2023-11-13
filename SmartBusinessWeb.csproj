@@ -26,6 +26,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <_MigrateToProjectGuid>7d875f3e-109d-439d-b8f6-c82c2d0bde94</_MigrateToProjectGuid>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -341,6 +342,7 @@
     <Compile Include="Controllers\Promotion\PromotionController.cs" />
     <Compile Include="Controllers\Purchase\PurchaseController.cs" />
     <Compile Include="Controllers\Purchase\SupplierController.cs" />
+    <Compile Include="Controllers\Attendance\AttendanceController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\WholeSales\WholeSalesController.cs" />
     <Compile Include="Global.asax.cs">
@@ -369,6 +371,7 @@
     <Content Include="bundles\images\ui-icons_777777_256x240.png" />
     <Content Include="bundles\images\ui-icons_cc0000_256x240.png" />
     <Content Include="bundles\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\attendance.css" />
     <Content Include="Content\attribute.css" />
     <Content Include="Content\attributecommon.css" />
     <Content Include="Content\attributeedit.css" />
@@ -2874,9 +2877,11 @@
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="libman.json" />
     <Content Include="Images\unsubscribe.webp" />
+    <Content Include="Scripts\ts\js\attendance\attendance.js" />
     <Content Include="Scripts\ts\js\itemtransfer\transfer.js" />
     <Content Include="Scripts\ts\js\pos\preorderedit.js" />
     <Content Include="Scripts\ts\js\pos\preorderlist.js" />
+    <Content Include="Scripts\ts\js\pos\salesorderedit.js" />
     <Content Include="Scripts\ts\js\pos\salesorderlist.js" />
     <Content Include="Static\barcode.html" />
     <Content Include="_app_offline.htm" />
@@ -4258,6 +4263,9 @@
     <Content Include="Views\Deposit\Index.cshtml" />
     <Content Include="Views\SalesOrder\Index.cshtml" />
     <Content Include="Views\SalesOrder\Get.cshtml" />
+    <Content Include="Scripts\ts\js\pos\salesorderedit.js.map" />
+    <Content Include="Views\Attendance\Index.cshtml" />
+    <Content Include="Scripts\ts\js\attendance\attendance.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4602,6 +4610,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Content\bs5\" />
     <Folder Include="Models\" />
+    <Folder Include="Views\SmartAttendence\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
@@ -4696,6 +4705,7 @@
     <TypeScriptCompile Include="Scripts\tinymce\tinymce.d.ts" />
     <TypeScriptCompile Include="Scripts\ts\ajaxpostlist.ts" />
     <TypeScriptCompile Include="Scripts\ts\app.ts" />
+    <TypeScriptCompile Include="Scripts\ts\attendance\attendance.ts" />
     <TypeScriptCompile Include="Scripts\ts\crm\contact\attributes\attribute.ts" />
     <TypeScriptCompile Include="Scripts\ts\crm\contact\attributes\attributecommon.ts" />
     <TypeScriptCompile Include="Scripts\ts\crm\contact\attributes\attributeedit.ts" />
@@ -4758,6 +4768,7 @@
     <TypeScriptCompile Include="Scripts\ts\pos\receipt.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\refund.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\sales.ts" />
+    <TypeScriptCompile Include="Scripts\ts\pos\salesorderedit.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\salesorderlist.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\search.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\showits.ts" />

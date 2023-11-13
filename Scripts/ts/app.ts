@@ -573,6 +573,7 @@ let selectedItemCode: string | number,
 	selectedCusCodeName: string = "";
 let selectedSalesLn: ISalesLn | null;
 let selectedPreSalesLn: IPreSalesLn | null;
+let selectedSaleLn: ISimpleSalesLn | null;
 let selectedCus: ICustomer;
 let selectedStockInItem: IStockInItem;
 let selectedPurchaseItem: IPurchaseItem | null;
@@ -641,6 +642,8 @@ let SalesList: Array<ISalesBase> = [];
 let SalesLnList: Array<ISalesLn> = [];
 let DepositLnList: Array<ISalesLn> = [];
 let PreSalesLnList: IPreSalesLn[] = [];
+let SalesOrder: ISimpleSales;
+let SalesLns: ISimpleSalesLn[] = [];
 let currentAmt = 0;
 let _openItemModal = false;
 let rno = "";
@@ -996,6 +999,46 @@ function togglePaging(type: string = "item", show: boolean = true) {
 }
 let shop: string = "";
 
+function GetAttendances(pageIndex) {
+	$.ajax({
+		type: "GET",
+		url: "/Attendance/GetAttendances",
+		data: { frmdate, todate, pageIndex, sortCol, sortDirection, keyword },
+		success: function (data) {
+			console.log("data:", data);
+			if (data) {
+				AttendanceList = data.pagingAttdList.slice(0);
+				if (AttendanceList && AttendanceList.length > 0) {
+					console.log("sortcol#1:", sortCol);
+					$target = $("#tblmails .colheader");
+					$target.removeClass("fa fa-sort-up fa-sort-down");
+					$target = $target.eq(sortCol);
+					$target.addClass("fa");
+					if (sortDirection.toUpperCase() == "DESC") {
+						sortDirection = "ASC";
+						$target.addClass("fa-sort-down");
+					} else {
+						sortDirection = "DESC";
+						$target.addClass("fa-sort-up");
+					}
+
+					fillInAttdTable();
+
+					$(".attdPager").ASPSnippets_Pager({
+						ActiveCssClass: "current",
+						PagerCssClass: "pager",
+						PageIndex: pageIndex,
+						PageSize: pagesize,
+						RecordCount: data.totalRecord,
+					});
+					$("#totalcount").text(data.totalRecord);
+				}
+			}
+		},
+		dataType: "json",
+		error: onAjaxFailure,
+	});
+}
 function GetEnquiries(pageIndex) {
 	//console.log("sortcol#0:", sortCol);
 	//console.log("sortdirection:", sortDirection);
@@ -6477,7 +6520,9 @@ interface IEnquiry {
 let onedrivefiles: Array<IOneDrive> = [];
 let onedrivefile: IOneDrive;
 let enquiries: Array<IEnquiry> = [];
+let attendances: Array<IAttendance> = [];
 let enquiry: IEnquiry;
+let attendance: IAttendance;
 let nextLink: string = "";
 let contents: string = "";
 
@@ -7436,17 +7481,17 @@ enum RespondType {
 	PassToManager = 3,
 }
 
-let salesOrderInfo: ISalesOrderInfo;
-interface ISalesOrderInfo {
-	SalesOrder: ISaleOrder;
-	SalesLnViews: Array<ISalesLn>;
-	RefundLnViews: Array<ISalesLn>;
-	SerialNoList: Array<ISerialNo>;
-	DicItemSNs: { [Key: string]: Array<ISerialNo> };
-	Items: Array<IItem>;
-	Customer: ICustomer;
-	KSalesmanCode: string;
-}
+//let salesOrderInfo: ISalesOrderInfo;
+//interface ISalesOrderInfo {
+//	SalesOrder: ISaleOrder;
+//	SalesLnViews: Array<ISalesLn>;
+//	RefundLnViews: Array<ISalesLn>;
+//	SerialNoList: Array<ISerialNo>;
+//	DicItemSNs: { [Key: string]: Array<ISerialNo> };
+//	Items: Array<IItem>;
+//	Customer: ICustomer;
+//	KSalesmanCode: string;
+//}
 
 interface ISimpleSales {
 	Currency: string;
@@ -7476,6 +7521,7 @@ interface ISimpleSales {
 	rtsDvc: string;
 	rtsCurrency: string;
 	rtsRefCode: string;
+	PayAmt: number;
 }
 interface ISimpleSalesLn {
 	rtlUID: number;
@@ -7525,38 +7571,26 @@ interface ISimpleSalesLn {
 	rtsCusID: number;
 	rtsRmks: string;
 	Item: ISimpleItem;
-}
-interface ISimpleSN {
-	snoUID: number;
-	snoIsActive: boolean | null;
-	snoCode: string;
-	snoSeq: number | null;
-	snoStatus: string;
-	snoItemCode: string;
-	snoBatchCode: string;
-	snoWillExpire: boolean | null;
-	snoValidDays: number | null;
-	snoValidThru: string | null;
-	snoRedeemable: boolean | null;
-	snoRedeemValue: number | null;
-	snoRedeemRtsCode: string;
-	snoRedeemTime: string | null;
-	snoStockInCode: string;
-	snoStockInSeq: number | null;
-	snoStockInLoc: string;
-	snoStockInDate: string | null;
-	snoStockOutLoc: string;
-	snoRtlSalesLoc: string;
-	snoRtlSalesDvc: string;
-	snoRtlSalesCode: string;
-	snoRtlSalesSeq: number | null;
-	snoRtlSalesDate: string | null;
-	snoWholeSalesCode: string;
-	snoWholeSalesSeq: number | null;
-	snoWholeSalesLoc: string;
-	snoWholeSalesDate: string | null;
-	snoType: string;
-	seq: number | null;
+	DelItems: IDeliveryItem[];
+	SalesDateDisplay: string;
+	JsValidThru: string | null;	
+	batchList: IBatch[];
+	rtpPayAmt: number | null;
+	DepositAmtDisplay: string | null;
+	rtpPayType: string | null;
+	rtpExRate: number | null;
+	itmName: string;
+	itmDesc: string;
+	itmUseDesc: boolean | null;
+	itmNameDesc: string;
+	itmCode: string;
+	itmTaxPc: number | null;
+	itmBaseUnit: string | null;
+	itmSellUnit: string | null;
+	itmBaseSellingPrice: number | null;
+	itmLastSellingPrice: number | null;
+	SalesPersonName: string | null;
+	itmIsTaxedWhenSold: boolean;
 }
 interface ISaleOrder {
 	rtsUID: number;
@@ -7614,21 +7648,9 @@ interface ISaleOrder {
 	rtsGiftOption: number;
 }
 
-interface ISimpleSalesOrderInfo {
-	//Items: ISimpleItem[];	
-	//DicItemSNs: { [key: string]: ISimpleSN[] };
-	//SalesOrder: ISimpleSales;
-	//SerialNoList: ISimpleSN[];
-	//SalesLnViews: ISalesLn[] | ISimpleSalesLn[];
-	//Customer: ICustomer;
-	//DicCurrencyExRate: { [key: string]: number };
-	//DicItemBatchQty: { [Key: string]: Array<IBatchQty> };
-	//DicItemOptions: { [Key: string]: IItemOptions };
-}
-
 let DicPayType: { [Key: string]: string } = {};
 let DicItemSNs: { [Key: string]: Array<ISerialNo> } = {};
-let DicItemSnList: { [Key: string]: Array<ISimpleSN> } = {};
+
 
 interface IPreSales {
 	Currency: string;
@@ -17580,7 +17602,108 @@ interface IRecurOrder {
 	rtsUID: number | null;
 }
 let selectedRecurCode: string = "";
+let frmdate: any;
+let todate: any;
+let currentoldestdate: any;
+let pagesize: number;
+let resource: string;
 
+function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) {
+	if (forenquiry) {
+		const enquiryacc: string = $infoblk.data("enquiryacc") as string;
+		EnquiryList = [];
+
+		let mgtEmail = document.getElementById("mgt-email");
+		//console.log("msgEmail:", mgtEmail);
+		let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", `${enquiryacc}`);
+		//console.log("resource:" + _resource);
+		$("#mgt-email").attr("resource", _resource);
+
+		if (mgtEmail) {
+			mgtEmail.addEventListener("dataChange", (e: any) => {
+				const response = e.detail.response;
+				//console.log("response value:", response.value);
+				response.value.forEach((x) => {
+					EnquiryList.push(x);
+					DicEnqContent[x.id] = `${x.body.content} ReceivedDateTime:${x.receivedDateTime}`;
+				});
+				parseEnquiries(DicEnqContent);
+
+				if (EnquiryList.length > 0) {
+					//console.log("enqIdList:", enqIdList);
+					let enqlist: IEnquiry[] = [];
+					EnquiryList.forEach((x) => {
+						if (!enqIdList.includes(x.id)) {
+							enqlist.push(x);
+						}
+					});
+					if (enqlist.length > 0)
+						saveEnquiries(enqlist);
+				}
+
+				sortCol = 8;
+			});
+
+			GetEnquiries(pageIndex);
+		}
+	}
+	
+	if (forattendance) {
+		//console.log("here");
+		AttendanceList = [];
+		const attendanceacc: string = $infoblk.data("attendanceacc") as string;
+		//console.log("attendanceacc:", attendanceacc);
+		let mgtEmail = document.getElementById("mgt-email");
+		//console.log("msgEmail:", mgtEmail);
+		let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", attendanceacc);
+		//console.log("resource:" + _resource);
+		$("#mgt-email").attr("resource", _resource);
+
+		if (mgtEmail) {
+			mgtEmail.addEventListener("dataChange", (e: any) => {
+				const response = e.detail.response;
+				response.value.forEach((x) => {
+					attendance = {
+						id:"",
+						saId:x.id,
+						receivedDateTime: x.receivedDateTime,
+						receiveddate: "",
+						saName: "",
+						saReceivedDateTime:""
+					};
+					
+					let idx = AttendanceList.findIndex(a => a.saId == x.id);
+					if (idx === -1) {
+						AttendanceList.push(attendance);
+						DicAttdSubject[x.id] = `${x.subject} ReceivedDateTime:${x.receivedDateTime}`;
+					}
+					
+				});
+				console.log("AttendanceList#mgt:", AttendanceList);
+				parseAttendances(DicAttdSubject);
+
+				if (AttendanceList.length > 0) {		
+					//console.log("enqIdList:", enqIdList);
+					let attdlist: IAttendance[] = [];
+					console.log("AttendanceList#00:", AttendanceList);
+					AttendanceList.forEach((x) => {
+						if (!attdIdList.includes(x.saId)) {
+							console.log(x.saId);
+							attdlist.push(x);
+						}
+					});
+					console.log("attdlist:", attdlist);
+					if (attdlist.length > 0)
+						saveAttendances(attdlist);					
+				}
+				
+				sortCol = 0;
+			});
+
+			GetAttendances(pageIndex);
+		}
+	}
+}
 $(document).on("change", ".todate", function () {
 	$target = $(this);
 	let todate = $target.val();
@@ -17744,6 +17867,7 @@ $(document).on("click", ".respond", function () {
 
 let forsupplier: boolean = false;
 let forenquiry: boolean = false;
+let forattendance: boolean = false;
 let forcustomer: boolean = false;
 let forrejectedcustomer: boolean = false;
 let forapprovedcustomer: boolean = false;
@@ -18440,8 +18564,25 @@ $(document).on("click", "#btnViewFile", function () {
 	openViewFileModal();
 });
 let DicEnqContent: { [Key: string]: string } = {};
-//let DicEnqSbContent: { [Key: string]: string } = {};
+let DicAttdSubject: { [Key: string]: string } = {};
+
 let EnquiryList: IEnquiry[] = [];
+let AttendanceList: IAttendance[] = [];
+
+interface IAttendance {
+    saId: string;
+    receiveddate: string;
+    receivedDateTime: string;   
+    id: string;
+	//Id: string;
+	//saId: string;
+	saName: string;
+	saReceivedDateTime: string;
+	//saDate: string | null;
+	//saDateFrm: string;
+	//saDateTo: string;
+}
+
 function filterEnquiry(smail: string): boolean {
 	//no-reply@hkdigitalsale.com
 	//console.log(";smail:" + smail);
@@ -18505,6 +18646,45 @@ function parseEnquiries(DicEnqContent) {
 	}
 }
 
+function parseAttendances(DicAttdSubject) {	
+	//Late arrival report- Testing arrived at 11:38 ReceivedDateTime:2023-11-13T03:39:04Z
+	let regex =
+		/([^\-]+)(\-+)(\s+)(.+)(\s+)(arrived at)(\s+)(\d+)(\:+)(\d+)(\s+)(ReceivedDateTime)(\:)(.+)/gim;
+	attendances = [];
+	for (const [key, value] of Object.entries(DicAttdSubject)) {
+		//console.log(value);
+		let found = (value as string).matchAll(regex);
+		//console.log('found:', found);
+		//return false;
+		if (found) {
+			attendance = {} as IAttendance;
+			attendance.id = "";
+			attendance.saId = key;
+			for (const m of found) {				
+				attendance.receivedDateTime = m[14];
+				attendance.receiveddate = m[14].split("T")[0].trim();
+				attendance.saName = m[4];
+				attendances.push(attendance);
+			}
+		}
+	}
+
+	if (attendances.length > 0) {
+		console.log("AttendanceList#0:", AttendanceList);
+		AttendanceList.forEach((x) => {
+			var attendance = attendances.find((y) => y.saId == x.saId);
+			//console.log("attendance:", attendance);
+			if (attendance) {
+				x.saId = attendance.saId;
+				x.saName = attendance.saName;
+				x.receivedDateTime = attendance.receivedDateTime;
+				x.receiveddate = attendance.receiveddate;
+			}
+		});
+
+		console.log("AttendanceList#1:", AttendanceList);
+	}
+}
 function openEnqMail(ele) {
 	window.location.href = "mailto:" + $(ele).data("mailto");
 }
@@ -18694,6 +18874,7 @@ function handleAssign(salespersonId: number | null) {
 	});
 }
 
+let attdIdList: string[] = [];
 let enqIdList: string[] = [];
 let assignEnqIdList: string[] = [];
 function assignSave(salesmanId: number, enqId: string | null = "") {

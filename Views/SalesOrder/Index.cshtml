@@ -1,4 +1,4 @@
-﻿@model PPWLib.Models.POS.Sales.SalesOrderEditModel
+﻿@model PPWLib.Models.POS.Sales.SalesOrderEditInfo
 @using PagedList.Mvc;
 @{
 	ViewBag.Title = string.Format(Resources.Resource.ListFormat, Resources.Resource.SalesOrder);
@@ -11,16 +11,21 @@
 }
 <link href="~/Scripts/paginationjs/pagination.css" rel="stylesheet" type="text/css" />
 
-<h3>@ViewBag.Title</h3>
+<h3 data-ismanager="@ismanager">@ViewBag.Title</h3>
 
-@if (Model.PagingSalesOrderList == null || Model.PagingSalesOrderList.Count == 0)
+<div class="float-right my-2">
+	<a role="button" class="btn btn-primary btnexsmall mx-2" href="/POSFunc/Sales" title="@string.Format(Resources.Resource.AddFormat,Resources.Resource.SalesOrder)">@string.Format(Resources.Resource.AddFormat, Resources.Resource.SalesOrder)</a>
+	<a role="button" class="btn btn-warning btnexsmall mx-2" href="/PreOrder/Edit" title="@string.Format(Resources.Resource.AddFormat,Resources.Resource.Preorder)">@string.Format(Resources.Resource.AddFormat, Resources.Resource.Preorder)</a>
+</div>
+
+@if (Model.PagingOrderList == null)
 {
-	<div class="alert alert-info" id="norecordfound">@Resources.Resource.NoDataFound</div>
+	@Html.Partial("_NoRecordFound");
 }
 else
 {
-	<div class="container" data-count="@Model.PagingSalesOrderList.Count">
-		@using (Html.BeginForm("SalesOrderList", "POSFunc", FormMethod.Get, new { @Id = "frmSalesOrderList" }))
+	<div class="container" data-count="@Model.PagingOrderList.Count">
+		@using (Html.BeginForm("Index", "PreOrder", FormMethod.Get, new { @Id = "frmPreOrder" }))
 		{
 			var _salespersonchecked = "";
 			var _salesorderchecked = "";
@@ -76,7 +81,7 @@ else
 
 			<div class="row justify-content-center mb-2">
 				<button id="btnFilter" type="button" name="filter" value="1" class="btn btn-success mr-sm-3">@Resources.Resource.Submit</button>
-				<button id="btnReload" type="button" role="button" class="btn btn-warning">@Resources.Resource.Reload</button>
+				<button id="btnReload" type="button" role="button" class="btn btn-warning" data-reloadurl="/SalesOrder/Index">@Resources.Resource.Reload</button>
 			</div>
 
 			<input type="hidden" id="sortorder" name="SortOrder" value="@Model.SortOrder" />
@@ -86,7 +91,7 @@ else
 		}
 	</div>
 
-	<div id="tblblk" class="py-3" data-count="@Model.PagingSalesOrderList.Count" style="overflow-x:scroll;">
+	<div id="tblblk" class="py-3" data-count="@Model.PagingOrderList.Count" style="overflow-x:scroll;">
 		<table id="tblsalesorder" class="table table-bordered table-striped table-hover table-condensed">
 			<thead class="gray-header">
 				<tr>
@@ -99,151 +104,64 @@ else
 					<th class="text-left colheader" data-col="2" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="CusName">
 						@Resources.Resource.Customer
 					</th>
-					@*<th class="text-left" data-keyword="@Model.Keyword">
-							@Resources.Resource.ItemOptionsHeader
-						</th>*@
+					<th class="text-right colheader" data-col="3" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="DepositAmt">
+						@Resources.Resource.DepositAmt (@Model.Currency)
+					</th>
+					<th class="text-left colheader" data-col="4" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="rtsStatus">
+						@Resources.Resource.Status
+					</th>
 					<th class="text-left">
 						@Resources.Resource.Remark
 					</th>
-					@*<th class="text-center">
-							@Resources.Resource.PurchaseOrder
-						</th>
-						<th class="text-left colheader" data-col="3" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="rtsStatus">
-							@Resources.Resource.Status
-						</th>*@
-					<th class="text-center colheader" data-col="4" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="rtsTime">@Resources.Resource.InvoiceTime</th>
-					@*<th class="text-center colheader" data-col="5" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="rtsDeliveryDate">@Resources.Resource.DeliveryDate</th>*@
+
+					<th class="text-center colheader" data-col="5" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="rtsTime">@Resources.Resource.InvoiceTime</th>
+
 					<th></th>
 				</tr>
 			</thead>
 			<tbody>
-				@foreach (var item in Model.PagingSalesOrderList)
+				@{
+					List<string> salesrefcodes = Model.PagingOrderList.Where(x => x.rtsRefCode != null).Select(x => x.rtsRefCode).Distinct().ToList();
+
+				}
+
+				@foreach (var item in Model.PagingOrderList)
 				{
-					string bgclr = "";
-					string approvedisabled = "";
-					string rejectdisabled = "";
-					string voiddisabled = "";
-					string passdisabled = "";
-					string btncls = item.rtsType == "RS" ? "" : "disabled";
+					string statuscls = item.rtsStatus.ToLower() + "statusbg";
 					string statustxt = "";
-					string _readonly = "1";
-
-					if (item.rtsStatus.ToUpper() == "REQUESTING" && item?.rtsSpecialApproval != null && (bool)item?.rtsSpecialApproval)
+					string hidecls = (!salesrefcodes.Contains(item.rtsCode) || item.rtsStatus.ToLower() == SalesStatus.presettled.ToString()) ? "" : "hide";
+					string salescode = item.rtsStatus.ToLower() == SalesStatus.presettled.ToString() ? string.Concat(item.rtsCode, $" (Ref: {item.rtsRefCode})") : item.rtsCode;
+					switch (item.rtsStatus.ToLower())
 					{
-						bgclr = "requesting_sp_statusbg";
-						statustxt = "特批申請中";
-						_readonly = "0";
-					}
-					else
-					{
-						switch (item.rtsStatus.ToUpper())
-						{
-							case "VOIDED":
-								bgclr = "voidedstatusbg";
-								voiddisabled = "disabled";
-								statustxt = "廢單";
-								break;
-							case "PASSED":
-								bgclr = "passedstatusbg";
-								passdisabled = "disabled";
-								statustxt = "經理待批";
-								break;
-							case "APPROVED":
-							case "CREATED":
-								bgclr = item?.rtsSpecialApproval != null && (bool)item?.rtsSpecialApproval ? "approved_sp_statusbg" : "approvedstatusbg";
-								approvedisabled = "disabled";
-								rejectdisabled = "disabled";
-								//voiddisabled = "disabled";
-								passdisabled = "disabled";
-								statustxt = item?.rtsSpecialApproval != null && (bool)item?.rtsSpecialApproval ? "特批已批核" : "已批核";
-								break;
-							case "REJECTED":
-								bgclr = "rejectedstatusbg";
-								rejectdisabled = "disabled";
-								statustxt = "拒絕";
-								_readonly = isapprover ? "1" : "0";
-								break;
-							case "KPENDING":
-								bgclr = "kpendingstatusbg";
-								//statustxt = "期貨單";
-								statustxt = "申請中";
-								break;
-							default:
-							case "REQUESTING":
-								bgclr = "requestingstatusbg";
-								statustxt = "申請中";
-								_readonly = isapprover ? "1" : "0";
-								break;
-						}
+						case "presettling":
+							statustxt = Resources.Resource.Ordering;
+							break;
+						case "presettled":
+							statustxt = Resources.Resource.Settled;
+							break;
+						default:
+						case "created":
+							statustxt = Resources.Resource.Completed;
+							break;
 					}
 
-
-					var itemoptionsdisplay = "";
-					if (!string.IsNullOrEmpty(item.rtlBatch) && !string.IsNullOrEmpty(item.rtlSn) && !string.IsNullOrEmpty(item.rtlValidThru))
-					{
-						itemoptionsdisplay = string.Concat(item.rtlBatch, " | ", item.rtlSn, " | ", item.rtlValidThru);
-					}
-					if (!string.IsNullOrEmpty(item.rtlBatch) && !string.IsNullOrEmpty(item.rtlSn) && string.IsNullOrEmpty(item.rtlValidThru))
-					{
-						itemoptionsdisplay = string.Concat(item.rtlBatch, " | ", item.rtlSn);
-					}
-					if (!string.IsNullOrEmpty(item.rtlBatch) && string.IsNullOrEmpty(item.rtlSn) && !string.IsNullOrEmpty(item.rtlValidThru))
-					{
-						itemoptionsdisplay = string.Concat(item.rtlBatch, " | ", item.rtlValidThru);
-					}
-					if (string.IsNullOrEmpty(item.rtlBatch) && !string.IsNullOrEmpty(item.rtlSn) && !string.IsNullOrEmpty(item.rtlValidThru))
-					{
-						itemoptionsdisplay = string.Concat(item.rtlSn, " | ", item.rtlValidThru);
-					}
-					if (string.IsNullOrEmpty(item.rtlBatch) && string.IsNullOrEmpty(item.rtlSn) && !string.IsNullOrEmpty(item.rtlValidThru))
-					{
-						itemoptionsdisplay = item.rtlValidThru;
-					}
-
-					<tr data-code="@item.rtsCode" data-sp="@item.rtsSpecialApproval" data-status="@item.rtsStatus">
+					<tr data-code="@item.rtsCode">
 						<td>
-							@item.rtsCode
+							@salescode
 						</td>
 						<td>@item.SalesPersonName</td>
-						<td class="customer" data-code="@item.Customer.cusCode" data-name="@item.Customer.cusName">@item.Customer.cusName</td>
-						@*<td data-bat="@item.rtlBatch" data-hassn="@item.rtlHasSn" data-sn="@item.rtlSn" data-vt="@item.rtlValidThru">@itemoptionsdisplay</td>*@
+						<td class="customer">@item.cusName</td>
+						<td class="text-right">@item.DepositAmtDisplay</td>
+						<td class="@statuscls">@statustxt</td>
 						@{
 							var remark = item.rtsRmks != null && item.rtsRmks.Length > 20 ? string.Concat(item.rtsRmks.Substring(0, 20), "...") : item.rtsRmks ?? "";
 						}
 
 						<td style="width:150px;max-width:150px;" data-remark="@item.rtsRmks" class="remark">@remark</td>
-						@*<td>@item.rtsCustomerPO</td>
-							<td class="@bgclr">
-								@statustxt
-							</td>*@
+
 						<td class="text-center">@item.SalesTimeDisplay</td>
-						@*<td data-date="@item.rtsDeliveryDate">@item.DeliveryDateDisplay</td>*@
 						<td class="button">
-
-							@if (isapprover)
-							{
-								<button class="btn btn-info detail mr-2 @btncls" data-id="@item.rtsUID" data-code="@item.rtsCode" data-readonly="@_readonly" data-mode="review" data-status="@item.rtsStatus">@Resources.Resource.Detail</button>
-								<button class="btn btn-secondary copy mr-2 @btncls" data-id="@item.rtsUID">@Resources.Resource.Copy</button>
-
-								if (!ismanager)
-								{
-									<button class="btn btn-primary respond mr-2 @approvedisabled" data-type="approve" data-id="@item.rtsUID" data-code="@item.rtsCode">@Resources.Resource.Approve</button>
-									<button class="btn btn-danger respond mr-2 @rejectdisabled" data-type="reject" data-id="@item.rtsUID" data-code="@item.rtsCode">@Resources.Resource.Reject</button>
-									<button class="btn btn-warning respond mr-2 @passdisabled" data-type="pass" data-id="@item.rtsUID" data-code="@item.rtsCode">@Resources.Resource.PassToManager</button>
-								}
-
-								<button class="btn btn-outline-danger respond void @voiddisabled" data-type="void" data-id="@item.rtsUID" data-code="@item.rtsCode">@Resources.Resource.Void4Order</button>
-							}
-							else
-							{
-								string edittxt = _readonly == "" ? Resources.Resource.Edit : Resources.Resource.Detail;
-								string mode = (item.rtsStatus == "CREATED" || item.rtsStatus == "APPROVED") ? "created" : item.rtsStatus == "VOIDED" ? "readonly" : "edit";
-								<button class="btn btn-info edit mr-2" data-id="@item.rtsUID" data-code="@item.rtsCode" data-readonly="@_readonly" data-mode="@mode" data-status="@item.rtsStatus">@edittxt</button>
-								@*<button class="btn btn-primary whatsapp mr-2" data-id="@item.rtsUID" data-code="@item.rtsCode"><span class="small">@Resources.Resource.ResendWhatsAppMsg</span></button>*@
-							}
-
-
-
+							<button class="btn btn-info detail mr-2 @hidecls" data-id="@item.rtsUID" data-code="@item.rtsCode" data-status="@item.rtsStatus">@Resources.Resource.Detail</button>
 						</td>
 					</tr>
 				}
@@ -251,17 +169,13 @@ else
 		</table>
 		<div id="pagingblk" class="mx-3">
 			<div class="row">
-				@Html.PagedListPager(Model.PagingSalesOrderList, PageNo => Url.Action("SalesOrderList",
+				@Html.PagedListPager(Model.PagingOrderList, PageNo => Url.Action("Index",
 		new { PageNo, SortOrder = Model.SortOrder, SortName = Model.SortName, Keyword = Model.Keyword, strfrmdate = Model.DateFromTxt, strtodate = Model.DateToTxt }))
 			</div>
 		</div>
 	</div>
 	@Html.AntiForgeryToken()
 }
-
-@Html.Partial("_RecurOrderModal", null, new ViewDataDictionary { { "currency", ConfigurationManager.AppSettings["Currency"] } })
-
-@Html.Partial("_WhatsAppLinkModal")
 
 @Html.Partial("_TextAreaModal")
 
@@ -274,11 +188,10 @@ else
 <link rel="stylesheet" type="text/css" href="~/Scripts/daterangepicker/daterangepicker.css" />
 
 <script src="~/Scripts/paginationjs/pagination.js"></script>
-
 <script>
-    $(function () {
-        initDatePickers(StartDayEnum.LastMonthToday, 'YYYY-MM-DD');
-    });
+	$(function () {
+		initDatePickers(StartDayEnum.LastMonthToday, 'YYYY-MM-DD');
+	});
 </script>
 
 <script src="~/Scripts/ts/js/pos/salesorderlist.js?v=@rand"></script>
