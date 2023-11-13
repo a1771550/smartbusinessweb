@@ -682,9 +682,6 @@ namespace SmartBusinessWeb.Controllers
 
             return Json(new { msg, salesman, url, supplier, AdminList });
         }
-
-
-        [HttpGet]
         
 
         [HttpPost]
