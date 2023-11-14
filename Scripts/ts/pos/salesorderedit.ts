@@ -11,7 +11,7 @@ $(function () {
 	vtidx = snidx + 1;
 
 	SalesOrder = $infoblk.data("sales");
-	console.log("SalesOrder:", SalesOrder);
+	//console.log("SalesOrder:", SalesOrder);
 	gTblName = "tblSales";
 
 	cpplList = $infoblk.data("customerpointpricelevels");
@@ -33,8 +33,11 @@ $(function () {
 	$("#drpLocation").val(shop);
 	$("#drpDevice").val(device);
 
-	editmode = SalesOrder.rtsUID > 0;
-	if (editmode) {
+	reviewmode = SalesOrder.rtsUID > 0;
+	if (reviewmode) {
+		let bgcls: string = "deliverstatusbg";
+		$("body").addClass(bgcls);
+
 		$("#txtNotes").val(SalesOrder.rtsRmks);
 		$("#txtInternalNotes").val(SalesOrder.rtsInternalRmks);
 
@@ -44,24 +47,24 @@ $(function () {
 
 		SalesLns = $infoblk.data("saleslnlist");
 		//console.log("SalesLns:", SalesLns);
-		DicItemSNs = $infoblk.data("dicitemsns");
 
+		DicItemSNs = $infoblk.data("dicitemsns");
 		DicItemOptions = $infoblk.data("dicitemoptions");
 		//console.log(DicItemOptions);
 		DicBatTotalQty = $infoblk.data("jsondicbattotalqty");
 		DicItemBatchQty = $infoblk.data("jsondicitembatchqty");
 		DicItemBatDelQty = $infoblk.data("jsondicitembatdelqty");
-
 		PoItemBatVQList = $infoblk.data("jsonpoitembatvqlist");
-
 		DicItemBatSnVt = $infoblk.data("jsondicitembatsnvt");
-
 		DicItemBatSnVtList = $infoblk.data("jsondicitembatsnvtlist");
 		DicItemSnVtList = $infoblk.data("jsondicitemsnvtlist");
-
 		DicItemVtQtyList = $infoblk.data("jsondicitemvtqtylist");
 		DicItemVtDelQtyList = $infoblk.data("jsondicitemvtdelqtylist");
-		//SimpleItemList = [];
+
+		DicSeqDeliveryItems = $infoblk.data(
+			"jsondicseqdeliveryitems"
+		) as typeof DicSeqDeliveryItems;
+
 		itemsnlist = [];
 		$.each(SalesLns, function (i, e) {
 			currentY = i;

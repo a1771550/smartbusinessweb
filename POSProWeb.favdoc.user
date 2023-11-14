@@ -105,6 +105,11 @@
           <path>Scripts\ts\attendance\attendance.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\attendance\attendance.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>salesorderedit.ts</name>
+          <path>Scripts\ts\pos\salesorderedit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\salesorderedit.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -213,11 +218,6 @@
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Item\ItemController.cs</absolutePath>
         </Favorite>
         <Favorite>
-          <name>WholeSalesController.cs</name>
-          <path>Controllers\WholeSales\WholeSalesController.cs</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\WholeSales\WholeSalesController.cs</absolutePath>
-        </Favorite>
-        <Favorite>
           <name>AccountController.cs</name>
           <path>Controllers\AccountController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\AccountController.cs</absolutePath>
@@ -231,11 +231,6 @@
           <name>PrintController.cs</name>
           <path>Controllers\POS\PrintController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\POS\PrintController.cs</absolutePath>
-        </Favorite>
-        <Favorite>
-          <name>PreorderController.cs</name>
-          <path>Controllers\POS\PreorderController.cs</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\POS\PreorderController.cs</absolutePath>
         </Favorite>
         <Favorite>
           <name>CustomerController.cs</name>
@@ -256,6 +251,21 @@
           <name>AttendanceController.cs</name>
           <path>Controllers\Attendance\AttendanceController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Attendance\AttendanceController.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>WholeSalesController.cs</name>
+          <path>Controllers\Sales\WholeSalesController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Sales\WholeSalesController.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>SalesOrderController.cs</name>
+          <path>Controllers\Sales\SalesOrderController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Sales\SalesOrderController.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>PreorderController.cs</name>
+          <path>Controllers\Sales\PreorderController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Sales\PreorderController.cs</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

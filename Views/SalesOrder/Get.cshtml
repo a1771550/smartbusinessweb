@@ -21,11 +21,9 @@
 
 @Html.Partial("_CusModal")
 
-@Html.Partial("_BatchModal")
-
+@Html.Partial("_BatchModal", null, new ViewDataDictionary { { "status", Model.SalesOrder.rtsStatus } })
+@Html.Partial("_ValidThruModal", null, new ViewDataDictionary { { "status", Model.SalesOrder.rtsStatus } })
 @Html.Partial("_SerialNoModal", null, new ViewDataDictionary { { "forsales", true } })
-
-@Html.Partial("_ValidThruModal")
 
 @Html.Partial("_PayModal", null, new ViewDataDictionary { { "forsales", true }, { "PaymentTypeList", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes } })
 

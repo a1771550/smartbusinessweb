@@ -1,6 +1,6 @@
 ﻿@{ 
     string status = ViewData["status"] == null ? "" : (string)ViewData["status"];
-    bool isdeliver = (!string.IsNullOrEmpty(status) && (status == "deliver" || status == "partialdeliver"));
+    bool isdeliver = (!string.IsNullOrEmpty(status) && (status == "deliver" || status == "partialdeliver" || status.ToLower()==SalesStatus.presettled.ToString()||status.ToLower()==SalesStatus.created.ToString()));
     string poqtylbl = string.Concat("(",Resources.Resource.PurchaseOrder, ")");
 }
 <div id="batchModal">

@@ -437,8 +437,6 @@ $(document).on("click", "#btnInvoice", function () {
 				ele.MissingItemOptions = missingtxt !== "";
 			}
 		});
-
-
 	});
 
 	$target
@@ -590,7 +588,7 @@ function handleSubmit4Wholesales(forRecurOrder: boolean = false) {
 	if (validateWSIForm()) {
 		//add those itemoptionless items:
 		if (Wholesales.wsStatus == "invoice") {
-			//console.log("ready to updatewholesales#invoice...");
+			//console.log("ready to updatewholesales#invoice");
 			updateWholesales();
 			if ($(`#${gTblName} .focus`).length > 0) {
 				let msg = `${salesinfonotenough}<br>`;
@@ -905,8 +903,7 @@ function fillInDeliveryItems() {
 
 		itemOptions = DicItemOptions[itemcode];
 		if (!itemOptions) return false;
-
-		//todo: display vt in modal
+		
 		idx = 8;
 		if (itemOptions.WillExpire) {
 			$target = $(e)
@@ -1071,7 +1068,7 @@ $(function () {
 				html += `<td class="text-center"><input type="text" name="batch" class="text-center batch pointer" readonly value="${batch}" /></td><td class="text-center"><input type="text" name="serailno" readonly class="text-center serialno pointer" value="${sntxt}" /></td><td class="text-center"><input type="datetime" name="validthru" class="small text-center validthru pointer datepicker" value="${wholesalesln.JsValidThru}" /></td>`;
 
 				//itemvari
-				html += `<td class="text-center"><input type="text" name="vari" class="small text-center vari pointer" value="${vari}" /></td>`;
+				html += `<td class="text-center"><input type="text" name="vari" class="text-center vari pointer" value="${vari}" /></td>`;
 			}
 			html += `<td class="text-right"><input type="number" name="price" class="price text-right" data-price="${wholesalesln.wslSellingPrice}" value="${formattedprice}" readonly></td><td class="text-right"><input type="number" name="discpc" class="discpc text-right" data-discpc="${wholesalesln.wslLineDiscPc}" value="${formatteddiscpc}" ${_readonly}></td>`;
 			if (enableTax && !inclusivetax) {

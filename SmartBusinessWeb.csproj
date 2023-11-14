@@ -332,12 +332,12 @@
     <Compile Include="Controllers\POS\PaymentTypesController.cs" />
     <Compile Include="Controllers\POS\PayServiceController.cs" />
     <Compile Include="Controllers\POS\POSFuncController.cs" />
-    <Compile Include="Controllers\POS\PreorderController.cs" />
+    <Compile Include="Controllers\Sales\PreorderController.cs" />
     <Compile Include="Controllers\POS\PriceLevelsController.cs" />
     <Compile Include="Controllers\POS\PrintController.cs" />
     <Compile Include="Controllers\POS\ReceiptController.cs" />
     <Compile Include="Controllers\POS\ReportController.cs" />
-    <Compile Include="Controllers\POS\SalesOrderController.cs" />
+    <Compile Include="Controllers\Sales\SalesOrderController.cs" />
     <Compile Include="Controllers\Promotion\ItemPeriodPromotionController.cs" />
     <Compile Include="Controllers\Promotion\ItemQtyPromotionController.cs" />
     <Compile Include="Controllers\Promotion\PromotionController.cs" />
@@ -345,7 +345,7 @@
     <Compile Include="Controllers\Purchase\SupplierController.cs" />
     <Compile Include="Controllers\Records\AttendanceController.cs" />
     <Compile Include="Controllers\TestController.cs" />
-    <Compile Include="Controllers\WholeSales\WholeSalesController.cs" />
+    <Compile Include="Controllers\Sales\WholeSalesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
