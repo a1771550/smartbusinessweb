@@ -8,7 +8,7 @@ pagesize = Number($infoblk.data("pagesize"));
 //from/emailAddress/address ne 'noreply@abssasia.com.hk'
 resource = `/users/{2}/mailFolders/Inbox/messages?$filter=receivedDateTime ge {0}T00:00:00Z and receivedDateTime lt {1}T23:59:59Z and startswith(subject, 'Late arrival report')&$count=true&$ConsistencyLevel=eventual&$orderby=receivedDateTime desc`;
 attdIdList = $infoblk.data("attdidlist") as string[];
-console.log("attdIdList:", attdIdList);
+//console.log("attdIdList:", attdIdList);
 
 $(document).on("click", "#btnSearch", function () {
     keyword = $("#txtKeyword").val() as string;
@@ -73,12 +73,12 @@ function attdTemplate(data: IAttendance[]): string {
        
         html += `<tr class="attendance" role="button" data-id="${Id}">`;
        
-        html += `<td style="width:100px; max-width:100px;">${(x.receivedDateTime)}</td>
+        html += `<td style="width:180px; max-width:180px;">${(x.saReceivedDateTime)}</td>
                                     <td style="width:120px;max-width:120px;">${x.saName}</td>`;   
 
-            html += `<a href="#" data-id="${Id}"role='button' class='btn btn-warning convert ml-2 small'><span class="fa-solid  fa-hand-point-right"></span></a><a href="#" data-id="${Id}" title="${removetxt}" role='button' class='btn btn-danger removeenq ml-2 small'><span class="fa-solid fa-trash"></span></a>`;
+          
 
-        html += `</td></tr>`;
+        html += `</tr>`;
     });
     return html;
 }
@@ -92,7 +92,7 @@ function fillInAttdTable() {
 $(function () {
     forattendance = true;
     daterangechange = false;
-    setFullPage();
+    //setFullPage();
     initModals();
 
     let keyword = getParameterByName('Keyword');
@@ -104,8 +104,7 @@ $(function () {
 
     let strfrmdate = getParameterByName("strfrmdate");
     //openWaitingModal();
-    if (strfrmdate) {
-        //console.log("currentoldestdate:" + currentoldestdate);
+    if (strfrmdate) {        
         frmdate = strfrmdate;
         //console.log("frmdate:" + frmdate);
         if (frmdate < currentoldestdate) {

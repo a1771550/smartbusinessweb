@@ -100,6 +100,11 @@
           <path>Scripts\ts\crm\enquiry\enquiry_edit.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\crm\enquiry\enquiry_edit.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>attendance.ts</name>
+          <path>Scripts\ts\attendance\attendance.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\attendance\attendance.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -246,6 +251,11 @@
           <name>DepositController.cs</name>
           <path>Controllers\POS\DepositController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\POS\DepositController.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>AttendanceController.cs</name>
+          <path>Controllers\Attendance\AttendanceController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Attendance\AttendanceController.cs</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

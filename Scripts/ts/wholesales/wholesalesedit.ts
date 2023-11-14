@@ -947,7 +947,7 @@ $(function () {
 
 	DicLocation = $infoblk.data("jsondiclocation");
 	//console.log("diclocation:", DicLocation);
-	JobList = $infoblk.data("jsonjoblist");
+	MyobJobList = $infoblk.data("jsonjoblist");
 	uploadsizelimit = Number($infoblk.data("uploadsizelimit"));
 	//console.log("uploadsizelimit:" + uploadsizelimit);
 	uploadsizelimitmb = Number($infoblk.data("uploadsizelimitmb"));

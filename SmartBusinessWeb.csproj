@@ -325,6 +325,7 @@
     <Compile Include="Controllers\Item\ItemController.cs" />
     <Compile Include="Controllers\Item\PGItemController.cs" />
     <Compile Include="Controllers\Item\TransferController.cs" />
+    <Compile Include="Controllers\Records\JobController.cs" />
     <Compile Include="Controllers\JsonController.cs" />
     <Compile Include="Controllers\OtherSettingsController.cs" />
     <Compile Include="Controllers\POS\DepositController.cs" />
@@ -342,7 +343,7 @@
     <Compile Include="Controllers\Promotion\PromotionController.cs" />
     <Compile Include="Controllers\Purchase\PurchaseController.cs" />
     <Compile Include="Controllers\Purchase\SupplierController.cs" />
-    <Compile Include="Controllers\Attendance\AttendanceController.cs" />
+    <Compile Include="Controllers\Records\AttendanceController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\WholeSales\WholeSalesController.cs" />
     <Compile Include="Global.asax.cs">
@@ -2655,6 +2656,7 @@
     <Content Include="Content\images\calendar.svg" />
     <Content Include="Content\images\X-office-calendar.svg" />
     <Content Include="Content\Item.css" />
+    <Content Include="Content\job.css" />
     <Content Include="Content\jquery-ui.css" />
     <Content Include="Content\onedrive.css" />
     <Content Include="Content\othersettings.css" />
@@ -2879,6 +2881,7 @@
     <Content Include="Images\unsubscribe.webp" />
     <Content Include="Scripts\ts\js\attendance\attendance.js" />
     <Content Include="Scripts\ts\js\itemtransfer\transfer.js" />
+    <Content Include="Scripts\ts\js\job\job.js" />
     <Content Include="Scripts\ts\js\pos\preorderedit.js" />
     <Content Include="Scripts\ts\js\pos\preorderlist.js" />
     <Content Include="Scripts\ts\js\pos\salesorderedit.js" />
@@ -4266,6 +4269,8 @@
     <Content Include="Scripts\ts\js\pos\salesorderedit.js.map" />
     <Content Include="Views\Attendance\Index.cshtml" />
     <Content Include="Scripts\ts\js\attendance\attendance.js.map" />
+    <Content Include="Views\Job\Index.cshtml" />
+    <Content Include="Scripts\ts\js\job\job.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4754,6 +4759,7 @@
     <TypeScriptCompile Include="Scripts\ts\item\pgitem.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\pgitemedit.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\stock.ts" />
+    <TypeScriptCompile Include="Scripts\ts\job\job.ts" />
     <TypeScriptCompile Include="Scripts\ts\login.ts" />
     <TypeScriptCompile Include="Scripts\ts\othersettings.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\accessrights.ts" />

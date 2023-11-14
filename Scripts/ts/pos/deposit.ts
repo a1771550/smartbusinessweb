@@ -129,7 +129,7 @@ function getReceiptOk_De(data) {
 		inclusivetaxrate = data.inclusivetaxrate;
 		enableTax = data.enableTax;
 		DicLocation = data.DicLocation;
-		JobList = data.JobList;
+		MyobJobList = data.JobList;
 		DicCurrencyExRate = data.DicCurrencyExRate;
 
 		$("#txtNotes").val(Deposit.rtsRmks);

@@ -364,7 +364,7 @@ $(function () {
     setFullPage();
     forpurchase = true;
     DicLocation = $infoblk.data("jsondiclocation");
-    JobList = $infoblk.data("jsonjoblist");
+    MyobJobList = $infoblk.data("jsonjoblist");
     uploadsizelimit = parseInt($infoblk.data("uploadsizelimit"));
     uploadsizelimitmb = parseInt($infoblk.data("uploadsizelimitmb"));
     shop = $infoblk.data("shop") as string;

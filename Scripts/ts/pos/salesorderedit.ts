@@ -23,7 +23,7 @@ $(function () {
 	inclusivetaxrate = $infoblk.data("inclusivetaxrate");
 	enableTax = $infoblk.data("enabletax") == "True";
 	DicLocation = $infoblk.data("diclocation");
-	JobList = $infoblk.data("joblist");
+	MyobJobList = $infoblk.data("joblist");
 
 	$(".NextSalesInvoice").val(SalesOrder.rtsCode);
 	$("#txtNotes").val(SalesOrder.rtsRmks);

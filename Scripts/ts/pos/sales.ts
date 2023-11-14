@@ -97,7 +97,7 @@ function getSessionStartDataOk(data) {
     //console.log(DicCurrencyExRate);
     useForexAPI = data.UseForexAPI;
 
-    JobList = data.JobList.slice(0);
+    MyobJobList = data.JobList.slice(0);
     
     try {
         sessionstartdata.push(cpplList);
@@ -112,7 +112,7 @@ function getSessionStartDataOk(data) {
         sessionstartdata.push(salesmanlist);
         sessionstartdata.push(DicCurrencyExRate);
         sessionstartdata.push(useForexAPI);
-        sessionstartdata.push(JobList);
+        sessionstartdata.push(MyobJobList);
         localStore.setItem("sessionstartdata", JSON.stringify(sessionstartdata));
     } catch (e) {
         alert("Please go away");
@@ -315,7 +315,7 @@ $(function () {
                 DicCurrencyExRate = sessionstartdata[10];
                 //console.log("DicCurrencyExRate:", DicCurrencyExRate);
                 //useForexAPI = sessionstartdata[11];
-                JobList = sessionstartdata[12];
+                MyobJobList = sessionstartdata[12];
                 //console.log('defaultcustomer:', defaultcustomer);
                 selectedCus = defaultcustomer;
                 Sales = initSales();

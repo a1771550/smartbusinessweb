@@ -999,17 +999,57 @@ function togglePaging(type: string = "item", show: boolean = true) {
 }
 let shop: string = "";
 
+function GetJobs(pageIndex) {
+	$.ajax({
+		type: "GET",
+		url: "/Job/GetJobs",
+		data: { frmdate, todate, pageIndex, sortCol, sortDirection, keyword },
+		success: function (data) {
+			//console.log("data:", data);
+			if (data && data.pagingJobList) {
+				JobList = data.pagingJobList.slice(0);
+				if (JobList && JobList.length > 0) {
+					//console.log("sortcol#1:", sortCol);
+					$target = $("#tblmails .colheader");
+					$target.removeClass("fa fa-sort-up fa-sort-down");
+					$target = $target.eq(sortCol);
+					$target.addClass("fa");
+					if (sortDirection.toUpperCase() == "DESC") {
+						sortDirection = "ASC";
+						$target.addClass("fa-sort-down");
+					} else {
+						sortDirection = "DESC";
+						$target.addClass("fa-sort-up");
+					}
+
+					fillInJobTable();
+
+					$(".Pager").ASPSnippets_Pager({
+						ActiveCssClass: "current",
+						PagerCssClass: "pager",
+						PageIndex: pageIndex,
+						PageSize: pagesize,
+						RecordCount: data.totalRecord,
+					});
+					$("#totalcount").text(data.totalRecord);
+				}
+			}
+		},
+		dataType: "json",
+		error: onAjaxFailure,
+	});
+}
 function GetAttendances(pageIndex) {
 	$.ajax({
 		type: "GET",
 		url: "/Attendance/GetAttendances",
 		data: { frmdate, todate, pageIndex, sortCol, sortDirection, keyword },
 		success: function (data) {
-			console.log("data:", data);
+			//console.log("data:", data);
 			if (data) {
 				AttendanceList = data.pagingAttdList.slice(0);
 				if (AttendanceList && AttendanceList.length > 0) {
-					console.log("sortcol#1:", sortCol);
+					//console.log("sortcol#1:", sortCol);
 					$target = $("#tblmails .colheader");
 					$target.removeClass("fa fa-sort-up fa-sort-down");
 					$target = $target.eq(sortCol);
@@ -1024,7 +1064,7 @@ function GetAttendances(pageIndex) {
 
 					fillInAttdTable();
 
-					$(".attdPager").ASPSnippets_Pager({
+					$(".Pager").ASPSnippets_Pager({
 						ActiveCssClass: "current",
 						PagerCssClass: "pager",
 						PageIndex: pageIndex,
@@ -1066,7 +1106,7 @@ function GetEnquiries(pageIndex) {
 
 					fillInEnqTable();
 
-					$(".enqPager").ASPSnippets_Pager({
+					$(".Pager").ASPSnippets_Pager({
 						ActiveCssClass: "current",
 						PagerCssClass: "pager",
 						PageIndex: pageIndex,
@@ -1401,8 +1441,8 @@ function _writeItems(itemList: IItem[]) {
 
 		seq = currentY + 1;
 		let urlist = "";
-		if (!forpurchase) {			
-			if (((forsales||forwholesales) && !outofstock)||forpreorder)urlist = genProUrList(urlist, item);						
+		if (!forpurchase) {
+			if (((forsales || forwholesales) && !outofstock) || forpreorder) urlist = genProUrList(urlist, item);
 		}
 		html += `<td style="width:250px;min-width:250px;">${urlist}</td>`;
 		html += "</tr>";
@@ -1420,19 +1460,22 @@ function _writeItems(itemList: IItem[]) {
 	}
 }
 
-$(document).on("click", ".enqPager .page", function () {
-	pageindex = Number($(this).attr("page"));
-	GetEnquiries(pageindex);
-});
 $(document).on("click", "#tblmails th", function () {
 	sortName = $(this).data("category");
 	sortCol = Number($(this).data("col"));
 	pageindex = 1;
-	GetEnquiries(pageindex);
+	if (forenquiry) GetEnquiries(pageindex);
+	if (forattendance) GetAttendances(pageindex);
+	if (forjob) GetJobs(pageindex);
+	
 });
 $(document).on("click", ".Pager .page", function () {
 	pageindex = Number($(this).attr("page"));
-	GetItems(pageindex);
+	if (forenquiry) GetEnquiries(pageindex);
+	if (forattendance) GetAttendances(pageindex);
+	if (forjob) GetJobs(pageindex);
+	if(forsales||forpreorder||forwholesales||forpurchase)
+		GetItems(pageindex);
 });
 $(document).on("click", "#tblItem th a", function () {
 	sortName = $(this).data("category");
@@ -1442,17 +1485,17 @@ $(document).on("click", "#tblItem th a", function () {
 	GetItems(pageindex);
 });
 function genProUrList(urlist: string, item: IItem) {
-    urlist = "<ul class='nostylelist'>";
-    if (ItemVari &&
-        ItemVari.ItemPromotions.length > 0 &&
-        (forsales || forpreorder || forwholesales)) {
-        urlist += genPromotionHtml(ItemVari.ItemPromotions);
-    } else if (item.ItemPromotions.length > 0 &&
-        (forsales || forpreorder || forwholesales)) {
-        urlist += genPromotionHtml(item.ItemPromotions);
-    }
-    urlist += "</ul>";
-    return urlist;
+	urlist = "<ul class='nostylelist'>";
+	if (ItemVari &&
+		ItemVari.ItemPromotions.length > 0 &&
+		(forsales || forpreorder || forwholesales)) {
+		urlist += genPromotionHtml(ItemVari.ItemPromotions);
+	} else if (item.ItemPromotions.length > 0 &&
+		(forsales || forpreorder || forwholesales)) {
+		urlist += genPromotionHtml(item.ItemPromotions);
+	}
+	urlist += "</ul>";
+	return urlist;
 }
 
 function genPromotionHtml(ItemPromotions: IItemPromotion[]) {
@@ -6521,8 +6564,10 @@ let onedrivefiles: Array<IOneDrive> = [];
 let onedrivefile: IOneDrive;
 let enquiries: Array<IEnquiry> = [];
 let attendances: Array<IAttendance> = [];
+let jobs: Array<IJob> = [];
 let enquiry: IEnquiry;
 let attendance: IAttendance;
+let job: IJob;
 let nextLink: string = "";
 let contents: string = "";
 
@@ -7573,7 +7618,7 @@ interface ISimpleSalesLn {
 	Item: ISimpleItem;
 	DelItems: IDeliveryItem[];
 	SalesDateDisplay: string;
-	JsValidThru: string | null;	
+	JsValidThru: string | null;
 	batchList: IBatch[];
 	rtpPayAmt: number | null;
 	DepositAmtDisplay: string | null;
@@ -9098,7 +9143,7 @@ function addRow() {
 }
 function setJobListOptions(selectedJobId: number = 0) {
 	let jobs: string = `<option value="0">---</option>`;
-	JobList.forEach((x) => {
+	MyobJobList.forEach((x) => {
 		const selected: string = selectedJobId == x.JobID ? "selected" : "";
 		jobs += `<option value='${x.JobID}' ${selected}>${x.JobName}</option>`;
 	});
@@ -11645,7 +11690,7 @@ function fillInWholeSale(): IWholeSale {
 		Customer: {} as ICustomer,
 		CustomerName: $("#txtCustomerName").val() == null ? null : $("#txtCustomerName").val()!.toString(),
 		TrimmedRemark: "",
-		CreateBy:""
+		CreateBy: ""
 	};
 }
 interface IWholeSale {
@@ -17647,7 +17692,7 @@ function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) 
 			GetEnquiries(pageIndex);
 		}
 	}
-	
+
 	if (forattendance) {
 		//console.log("here");
 		AttendanceList = [];
@@ -17664,43 +17709,104 @@ function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) 
 				const response = e.detail.response;
 				response.value.forEach((x) => {
 					attendance = {
-						id:"",
-						saId:x.id,
+						id: "",
+						saId: x.id,
 						receivedDateTime: x.receivedDateTime,
 						receiveddate: "",
 						saName: "",
-						saReceivedDateTime:""
+						saReceivedDateTime: ""
 					};
-					
+
 					let idx = AttendanceList.findIndex(a => a.saId == x.id);
 					if (idx === -1) {
 						AttendanceList.push(attendance);
 						DicAttdSubject[x.id] = `${x.subject} ReceivedDateTime:${x.receivedDateTime}`;
 					}
-					
+
 				});
-				console.log("AttendanceList#mgt:", AttendanceList);
+				//console.log("AttendanceList#mgt:", AttendanceList);
+				//console.log("DicAttdSubject#mgt:", DicAttdSubject);
 				parseAttendances(DicAttdSubject);
 
-				if (AttendanceList.length > 0) {		
+				if (AttendanceList.length > 0) {
 					//console.log("enqIdList:", enqIdList);
 					let attdlist: IAttendance[] = [];
-					console.log("AttendanceList#00:", AttendanceList);
+					//console.log("AttendanceList#00:", AttendanceList);
 					AttendanceList.forEach((x) => {
 						if (!attdIdList.includes(x.saId)) {
-							console.log(x.saId);
+							//console.log(x.saId);
 							attdlist.push(x);
 						}
 					});
-					console.log("attdlist:", attdlist);
+					//console.log("attdlist:", attdlist);
 					if (attdlist.length > 0)
-						saveAttendances(attdlist);					
+						saveAttendances(attdlist);
 				}
-				
+
 				sortCol = 0;
 			});
 
 			GetAttendances(pageIndex);
+		}
+	}
+
+	if (forjob) {
+		//console.log("here");
+		JobList = [];
+		const jobacc: string = $infoblk.data("jobacc") as string;
+		//console.log("jobacc:", jobacc);
+		let mgtEmail = document.getElementById("mgt-email");
+		//console.log("msgEmail:", mgtEmail);
+		let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", jobacc);
+		//console.log("resource:" + _resource);
+		$("#mgt-email").attr("resource", _resource);
+
+		if (mgtEmail) {
+			mgtEmail.addEventListener("dataChange", (e: any) => {
+				const response = e.detail.response;
+
+				response.value.forEach((x) => {
+					job = {
+						id: "",
+						joId: x.id,
+						receivedDateTime: x.receivedDateTime,
+						receiveddate: (x.receivedDateTime as string).split("T")[0].trim(),
+						joClient: "",
+						joTime: "",
+						joReceivedDateTime: "",
+						joAttachements: ""
+					};
+					//console.log("receivedDateTime:", x.receivedDateTime);
+					let idx = JobList.findIndex(a => a.joId == x.id);
+					if (idx === -1) {
+						JobList.push(job);
+						console.log("subject:" + x.subject);
+						DicJobSubject[x.id] = `${x.subject}`;
+					}
+
+				});
+				//console.log("JobList#mgt:", JobList);
+				parseJobs(DicJobSubject);
+
+				if (JobList.length > 0) {
+					//console.log("enqIdList:", enqIdList);
+					let joblist: IJob[] = [];
+					//console.log("JobList#00:", JobList);
+					JobList.forEach((x) => {
+						if (!attdIdList.includes(x.joId)) {
+							//console.log(x.joId);
+							joblist.push(x);
+						}
+					});
+					//console.log("joblist:", joblist);
+					if (joblist.length > 0)
+						saveJobs(joblist);
+				}
+
+				sortCol = 0;
+			});
+
+			GetJobs(pageIndex);
 		}
 	}
 }
@@ -17868,6 +17974,7 @@ $(document).on("click", ".respond", function () {
 let forsupplier: boolean = false;
 let forenquiry: boolean = false;
 let forattendance: boolean = false;
+let forjob: boolean = false;
 let forcustomer: boolean = false;
 let forrejectedcustomer: boolean = false;
 let forapprovedcustomer: boolean = false;
@@ -18191,7 +18298,7 @@ function _submitSales() {
 			if (typeof data.epaystatus === "undefined") {
 				if (data.msg === "") {
 					window.open(printurl);
-					if(forsales)
+					if (forsales)
 						window.location.reload();
 					if (forpreorder)
 						window.location.href = "/Preorder/Index";
@@ -18551,7 +18658,7 @@ interface IMyobJob {
 	FinishDate: string | null;
 	CustomerID: number | null;
 }
-let JobList: IMyobJob[] = [];
+let MyobJobList: IMyobJob[] = [];
 
 let CustomerOptionList: string[] = [];
 let SupplierOptionList: string[] = [];
@@ -18565,15 +18672,17 @@ $(document).on("click", "#btnViewFile", function () {
 });
 let DicEnqContent: { [Key: string]: string } = {};
 let DicAttdSubject: { [Key: string]: string } = {};
+let DicJobSubject: { [Key: string]: string } = {};
 
 let EnquiryList: IEnquiry[] = [];
 let AttendanceList: IAttendance[] = [];
+let JobList: IJob[] = [];
 
 interface IAttendance {
-    saId: string;
-    receiveddate: string;
-    receivedDateTime: string;   
-    id: string;
+	saId: string;
+	receiveddate: string;
+	receivedDateTime: string;
+	id: string;
 	//Id: string;
 	//saId: string;
 	saName: string;
@@ -18582,7 +18691,16 @@ interface IAttendance {
 	//saDateFrm: string;
 	//saDateTo: string;
 }
-
+interface IJob {
+	joClient: string;
+	joTime: string;
+	joAttachements: string;
+	receivedDateTime: string;
+	receiveddate: string;
+	id: string;
+	joId: string;
+	joReceivedDateTime: string;
+}
 function filterEnquiry(smail: string): boolean {
 	//no-reply@hkdigitalsale.com
 	//console.log(";smail:" + smail);
@@ -18646,7 +18764,33 @@ function parseEnquiries(DicEnqContent) {
 	}
 }
 
-function parseAttendances(DicAttdSubject) {	
+function parseJobs(DicJobSubject) {
+	//Late arrival report- Testing arrived at 11:38 ReceivedDateTime:2023-11-13T03:39:04Z
+	let regex =
+		/([^\-]+)(\-+)(.+)(\s+)(\d+\/+\d+\/+\d+)(\s+)(\d+\:+\d+\s+\-+\s+\d+\:+\d+)/gmi;
+
+	for (const [key, value] of Object.entries(DicJobSubject)) {
+		//console.log("value:", value);
+		let found = (value as string).matchAll(regex);
+		//console.log('found:', found);
+		//return false;
+		if (found) {
+			JobList.forEach((x) => {
+				if (x.joId == key) {
+					for (const m of found) {
+						//console.log("m[3]:" + m[3].trim() + ";m[7]:" + m[7]);
+						x.joClient = m[3];
+						x.joTime = m[7];
+					}					
+				}
+			});
+		}
+	}
+
+	console.log("JobList#parse:", JobList);
+}
+
+function parseAttendances(DicAttdSubject) {
 	//Late arrival report- Testing arrived at 11:38 ReceivedDateTime:2023-11-13T03:39:04Z
 	let regex =
 		/([^\-]+)(\-+)(\s+)(.+)(\s+)(arrived at)(\s+)(\d+)(\:+)(\d+)(\s+)(ReceivedDateTime)(\:)(.+)/gim;
@@ -18660,9 +18804,10 @@ function parseAttendances(DicAttdSubject) {
 			attendance = {} as IAttendance;
 			attendance.id = "";
 			attendance.saId = key;
-			for (const m of found) {				
+			for (const m of found) {
 				attendance.receivedDateTime = m[14];
 				attendance.receiveddate = m[14].split("T")[0].trim();
+				//console.log("m[4]:", m[4]);
 				attendance.saName = m[4];
 				attendances.push(attendance);
 			}
@@ -18670,7 +18815,7 @@ function parseAttendances(DicAttdSubject) {
 	}
 
 	if (attendances.length > 0) {
-		console.log("AttendanceList#0:", AttendanceList);
+		//console.log("AttendanceList#0:", AttendanceList);
 		AttendanceList.forEach((x) => {
 			var attendance = attendances.find((y) => y.saId == x.saId);
 			//console.log("attendance:", attendance);
@@ -18682,7 +18827,7 @@ function parseAttendances(DicAttdSubject) {
 			}
 		});
 
-		console.log("AttendanceList#1:", AttendanceList);
+		//console.log("AttendanceList#1:", AttendanceList);
 	}
 }
 function openEnqMail(ele) {
@@ -18874,6 +19019,7 @@ function handleAssign(salespersonId: number | null) {
 	});
 }
 
+let jobIdList: string[] = [];
 let attdIdList: string[] = [];
 let enqIdList: string[] = [];
 let assignEnqIdList: string[] = [];
@@ -20695,11 +20841,11 @@ $(document).on("dblclick", ".batch", function () {
 	}
 });
 function getSalesLoc() {
-    let salesloc: string = "";
-    if (forsales) salesloc = Sales.SelectedShop;
-    if (forpreorder) salesloc = PreSales.rtsSalesLoc;
-    if (forwholesales) salesloc = Wholesales.wsSalesLoc;
-    return salesloc;
+	let salesloc: string = "";
+	if (forsales) salesloc = Sales.SelectedShop;
+	if (forpreorder) salesloc = PreSales.rtsSalesLoc;
+	if (forwholesales) salesloc = Wholesales.wsSalesLoc;
+	return salesloc;
 }
 
 function getInCurrDel(inCurrDel: boolean, batcode: string, pocode: string) {

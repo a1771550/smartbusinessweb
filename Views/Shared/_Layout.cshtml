@@ -639,8 +639,26 @@
 									@Html.ActionLink(report.Name, "Show" + report.Code, "Report", new { }, new { @class = lnkcls });
 								}
 							}
+						</div>
+					</li>
 
-
+					<li class="dropdown">
+						@{
+							reportlnktxt = Resources.Resource.Record;
+							reportlnkcls = "nav-link dropdown-toggle {0}";
+							if (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "records")
+							{
+								reportlnkcls = string.Format(reportlnkcls, "active");
+							}
+							else
+							{
+								reportlnkcls = string.Format(reportlnkcls, string.Empty);
+							}
+						}
+						<a href="#" class="@reportlnkcls" data-toggle="dropdown">
+							@reportlnktxt  <span class="caret"></span>
+						</a>
+						<div class="dropdown-menu">
 							@{
 								lnkcls = "dropdown-item {0}";
 								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "attendance")
@@ -654,95 +672,104 @@
 							}
 							@Html.ActionLink(Resources.Resource.AttendanceRecords, "Index", "Attendance", null, new { @class = lnkcls })
 
+							@{
+								lnkcls = "dropdown-item {0}";
+								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "job")
+								{
+									lnkcls = string.Format(lnkcls, "active");
+								}
+								else
+								{
+									lnkcls = string.Format(lnkcls, string.Empty);
+								}
+							}
+							@Html.ActionLink(Resources.Resource.JobRecords, "Index", "Job", null, new { @class = lnkcls })
+						</div>
+					</li>
 
-			</div>
+					<li class="dropdown">
+						@{lnkcls = "nav-link {0}";
+							if (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "setup")
+							{
+								lnkcls = string.Format(lnkcls, "active");
+							}
+							else
+							{
+								lnkcls = string.Format(lnkcls, string.Empty);
+							}
+						}
+						<a href="#" class="@lnkcls" data-toggle="dropdown">
+							<span class="dropdown-toggle">@Resources.Resource.Setup</span>
+						</a>
+						@{ bool tmp = HttpContext.Current.Session["Menus"] == null;}
+						<div class="dropdown-menu" data-debug="@tmp">
+							@{
+								Dictionary<string, Menu> dicSetupMenus = (Dictionary<string, Menu>)HttpContext.Current.Session["Menus"];
+							}
+							@if (dicSetupMenus != null)
+							{
+								foreach (string key in dicSetupMenus.Keys)
+								{
+									lnkcls = "dropdown-item {0}";
+									Menu menu = dicSetupMenus[key];
+									if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == key.ToLower()) { lnkcls = string.Format(lnkcls, "active"); } else { lnkcls = string.Format(lnkcls, string.Empty); }
+									@Html.ActionLink(menu.DisplayText, menu.ActionName, menu.ControllerName, new { }, new { @class = lnkcls });
+								}
+							}
+
+							@{
+								lnkcls = "dropdown-item {0}";
+								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "accessrights")
+								{
+									lnkcls = string.Format(lnkcls, "active");
+								}
+								else
+								{
+									lnkcls = string.Format(lnkcls, string.Empty);
+								}
+							}
+							@Html.ActionLink(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.User), "Index", "AccessRight", new { }, new { @class = lnkcls })
+
+							@{
+								lnkcls = "dropdown-item {0}";
+								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "exchangerate")
+								{
+									lnkcls = string.Format(lnkcls, "active");
+								}
+								else
+								{
+									lnkcls = string.Format(lnkcls, string.Empty);
+								}
+								<a href="/Othersettings/ExchangeRate" class="@lnkcls">@string.Format(Resources.Resource.SetupFormat, Resources.Resource.ExchangeRate)</a>
+							}
+
+							@if (defaultcheckoutportal.ToLower() == "kingdee")
+							{
+								lnkcls = "dropdown-item {0}";
+								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "kingdee")
+								{
+									lnkcls = string.Format(lnkcls, "active");
+								}
+								else
+								{
+									lnkcls = string.Format(lnkcls, string.Empty);
+								}
+								<a href="/Othersettings/KingdeeAccountInfo" class="@lnkcls">@Resources.Resource.KingdeeAccountInfo</a>
+							}
+						</div>
 					</li>
 
 
 
-			<li class="dropdown">
-				@{lnkcls = "nav-link {0}";
-					if (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "setup")
-					{
-						lnkcls = string.Format(lnkcls, "active");
-					}
-					else
-					{
-						lnkcls = string.Format(lnkcls, string.Empty);
-					}
-				}
-				<a href="#" class="@lnkcls" data-toggle="dropdown">
-					<span class="dropdown-toggle">@Resources.Resource.Setup</span>
-				</a>
-				@{ bool tmp = HttpContext.Current.Session["Menus"] == null;}
-				<div class="dropdown-menu" data-debug="@tmp">
-					@{
-						Dictionary<string, Menu> dicSetupMenus = (Dictionary<string, Menu>)HttpContext.Current.Session["Menus"];
-					}
-					@if (dicSetupMenus != null)
-					{
-						foreach (string key in dicSetupMenus.Keys)
-						{
-							lnkcls = "dropdown-item {0}";
-							Menu menu = dicSetupMenus[key];
-							if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == key.ToLower()) { lnkcls = string.Format(lnkcls, "active"); } else { lnkcls = string.Format(lnkcls, string.Empty); }
-							@Html.ActionLink(menu.DisplayText, menu.ActionName, menu.ControllerName, new { }, new { @class = lnkcls });
-						}
-					}
 
-					@{
-						lnkcls = "dropdown-item {0}";
-						if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "accessrights")
-						{
-							lnkcls = string.Format(lnkcls, "active");
-						}
-						else
-						{
-							lnkcls = string.Format(lnkcls, string.Empty);
-						}
-					}
-					@Html.ActionLink(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.User), "Index", "AccessRight", new { }, new { @class = lnkcls })
+				</ul>
 
-					@{
-						lnkcls = "dropdown-item {0}";
-						if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "exchangerate")
-						{
-							lnkcls = string.Format(lnkcls, "active");
-						}
-						else
-						{
-							lnkcls = string.Format(lnkcls, string.Empty);
-						}
-						<a href="/Othersettings/ExchangeRate" class="@lnkcls">@string.Format(Resources.Resource.SetupFormat, Resources.Resource.ExchangeRate)</a>
-					}
+			</div>
 
-					@if (defaultcheckoutportal.ToLower() == "kingdee")
-					{
-						lnkcls = "dropdown-item {0}";
-						if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "kingdee")
-						{
-							lnkcls = string.Format(lnkcls, "active");
-						}
-						else
-						{
-							lnkcls = string.Format(lnkcls, string.Empty);
-						}
-						<a href="/Othersettings/KingdeeAccountInfo" class="@lnkcls">@Resources.Resource.KingdeeAccountInfo</a>
-					}
-				</div>
-			</li>
+			<input type="hidden" id="checkoutportal" value="@defaultcheckoutportal.ToLower()" />
+			<input type="hidden" id="shop" value="@shop" />
 
-
-
-
-			</ul>
-
-		</div>
-
-		<input type="hidden" id="checkoutportal" value="@defaultcheckoutportal.ToLower()" />
-		<input type="hidden" id="shop" value="@shop" />
-
-		@Html.Partial("_LoginPartial", null, new ViewDataDictionary { { "iscentral", false } })
+			@Html.Partial("_LoginPartial", null, new ViewDataDictionary { { "iscentral", false } })
 
 
 

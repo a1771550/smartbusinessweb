@@ -1,0 +1,98 @@
+﻿@model PPWLib.Models.Job.JobEditModel
+
+@{
+	ViewBag.Title = Resources.Resource.JobRecords;
+	var rand = CommonHelper.GetVersionRandomNo();
+	var totaltxt = CultureHelper.CurrentCulture == 2 ? string.Concat(Resources.Resource.Total, " ", Resources.Resource.Record, "s") : String.Concat(Resources.Resource.Total, "", Resources.Resource.Record);
+
+	//var idlist = string.Join(",", Model.IdList);
+	var user = HttpContext.Current.Session["User"] as SessUser;
+	const string mgturl = @"https://unpkg.com/@microsoft/mgt@2/dist/bundle/mgt-loader.js";
+	//const string datacount = @"@odata.count";
+	//const string nextlink = @"@odata.nextLink";
+	string DateFrmTxt = Request["strfrmdate"] ?? CommonHelper.FormatDate(DateTime.Now.AddDays(int.Parse(ConfigurationManager.AppSettings["DaysFrm4Job"])));
+	string DateToTxt = Request["strtodate"] ?? CommonHelper.FormatDate(DateTime.Today.Date);
+
+	var daterange = string.Concat("<strong>", DateFrmTxt, "</strong>", $" {Resources.Resource.To} ", "<strong>", DateToTxt, "</strong>");
+	string jobacc = ConfigurationManager.AppSettings["JobEmail"];
+
+}
+<link href="~/Scripts/paginationjs/pagination.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/job.css?v=@rand" rel="stylesheet" type="text/css" />
+<script src="@mgturl"></script>
+
+<h2>@ViewBag.Title</h2>
+
+<div id="norecordfound" class="container hide">@Resources.Resource.NoDataFound</div>
+@using (Html.BeginForm("Index", "Job", FormMethod.Post, new { @id = "frmjob" }))
+{
+
+	<div class="row justify-content-center my-3">
+		@Html.Partial("_DatesRange", null, new ViewDataDictionary { { "DateFromTxt", DateFrmTxt }, { "DateToTxt", DateToTxt } })
+		<button id="btnFilter" type="button" class="btn btn-success mx-4">@Resources.Resource.Submit</button>
+
+		<button id="btnReload" type="button" class="btn btn-warning">@Resources.Resource.Reload</button>
+	</div>
+
+	<div class="row justify-content-center">
+		<div class="form-inline mb-2 my-4">
+			<div class="form-group">
+				<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Model.Keyword" />
+				<button id="btnSearch" type="button" class="btn btn-success ml-3">@Resources.Resource.Search</button>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="row justify-content-end">
+		<div class=""><span id="datetxt">@Html.Raw(daterange)</span></div>
+
+	</div>
+	<div class="row justify-content-end my-1">
+
+		<div class="text-right"><span>@totaltxt: <span id="totalcount" class="font-weight-bold"></span></span></div>
+	</div>
+}
+<hr />
+
+<mgt-msal2-provider client-id="84a18ff1-0613-4bb7-a88e-004fa6feab9e"></mgt-msal2-provider>
+<mgt-login></mgt-login>
+<mgt-get id="mgt-email" resource="" scopes="Mail.Read" max-pages="0">
+</mgt-get>
+
+@*<div class="row d-block">
+	<div class="overflow-auto">*@
+<table id="tblmails" class="table table-bordered table-hover table-condensed">
+	<thead class="gray-header font-weight-bold">
+		<tr>
+			<th scope="col" class="colheader" data-col="0" data-category="saReceivedDateTime">@Resources.Resource.DateTime</th>
+			<th scope="col" class="colheader" data-col="1" data-category="saName">@Resources.Resource.Name</th>
+
+		</tr>
+	</thead>
+	<tbody>
+	</tbody>
+</table>
+<br />
+<div class="Pager"></div>
+@*</div>
+	</div>*@
+
+@Html.AntiForgeryToken()
+
+@Html.Partial("_WaitingModal")
+
+<div id="infoblk" data-jobacc="@jobacc" data-frmdate="@DateFrmTxt" data-todate="@DateToTxt" data-currentoldestdate="@Model.CurrentOldestDate" data-jobidlist="@string.Join(",",Model.JobIdList)" data-emailinusetxt="@Resources.Resource.ContactEmailInUseAlertMsg" data-phoneinusetxt="@Resources.Resource.ContactPhoneInUseAlertMsg" data-confirmprompt="@Resources.Resource.ConfirmContinue" data-assignsalesmanrequiredtxt="@Resources.Resource.AssignSalesmanRequired" data-sendmailprompt="@Resources.Resource.SendEmailNotification4AssignedSalespeoplePrompt" data-pagesize="@ConfigurationManager.AppSettings["JobPageSize"]" data-confirmconverttocustomertxt="@string.Format(Resources.Resource.ConfirmFormat,Resources.Resource.ConvertToCustomer)"></div>
+
+<script type="text/javascript" src="~/Scripts/daterangepicker/moment.min.js"></script>
+<script type="text/javascript" src="~/Scripts/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="~/Scripts/daterangepicker/daterangepicker.css" />
+
+<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+<script>
+	$(function () {
+		initDatePickers(StartDayEnum.LastMonth, "YYYY-MM-DD");
+	});
+</script>
+
+<script src="~/Scripts/ts/js/job/job.js?v=@rand"></script>
