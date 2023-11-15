@@ -53,6 +53,8 @@ let forpassedtomanager: boolean = false;
 let recreateOnVoid: number = 0;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
+const rejectedtxt: string = $txtblk.data("rejectedtxt");
+const approvedtxt: string = $txtblk.data("approvedtxt");
 const transferdblclickhints: string = $txtblk.data("transferdblclickhints");
 const currentbatchtypesellableqtytxt: string = $txtblk.data(
 	"currentbatchtypesellableqtytxt"
@@ -999,6 +1001,46 @@ function togglePaging(type: string = "item", show: boolean = true) {
 }
 let shop: string = "";
 
+function GetTrainings(pageIndex) {
+	$.ajax({
+		type: "GET",
+		url: "/Training/GetTrainings",
+		data: { frmdate, todate, pageIndex, sortCol, sortDirection, keyword },
+		success: function (data) {
+			//console.log("data:", data);
+			if (data && data.pagingTrainingList) {
+				TrainingList = data.pagingTrainingList.slice(0);
+				if (TrainingList && TrainingList.length > 0) {
+					//console.log("sortcol#1:", sortCol);
+					$target = $("#tblmails .colheader");
+					$target.removeClass("fa fa-sort-up fa-sort-down");
+					$target = $target.eq(sortCol);
+					$target.addClass("fa");
+					if (sortDirection.toUpperCase() == "DESC") {
+						sortDirection = "ASC";
+						$target.addClass("fa-sort-down");
+					} else {
+						sortDirection = "DESC";
+						$target.addClass("fa-sort-up");
+					}
+
+					fillInTrainingTable();
+
+					$(".Pager").ASPSnippets_Pager({
+						ActiveCssClass: "current",
+						PagerCssClass: "pager",
+						PageIndex: pageIndex,
+						PageSize: pagesize,
+						RecordCount: data.totalRecord,
+					});
+					$("#totalcount").text(data.totalRecord);
+				}
+			}
+		},
+		dataType: "json",
+		error: onAjaxFailure,
+	});
+}
 function GetJobs(pageIndex) {
 	$.ajax({
 		type: "GET",
@@ -1467,13 +1509,14 @@ $(document).on("click", "#tblmails th", function () {
 	if (forenquiry) GetEnquiries(pageindex);
 	if (forattendance) GetAttendances(pageindex);
 	if (forjob) GetJobs(pageindex);
-
+	if (fortraining) GetTrainings(pageindex);
 });
 $(document).on("click", ".Pager .page", function () {
 	pageindex = Number($(this).attr("page"));
 	if (forenquiry) GetEnquiries(pageindex);
 	if (forattendance) GetAttendances(pageindex);
 	if (forjob) GetJobs(pageindex);
+	if (fortraining) GetTrainings(pageindex);
 	if (forsales || forpreorder || forwholesales || forpurchase)
 		GetItems(pageindex);
 });
@@ -6568,6 +6611,7 @@ let jobs: Array<IJob> = [];
 let enquiry: IEnquiry;
 let attendance: IAttendance;
 let job: IJob;
+let training: ITraining;
 let nextLink: string = "";
 let contents: string = "";
 
@@ -17731,20 +17775,24 @@ function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) 
 						id: "",
 						saId: x.id,
 						receivedDateTime: x.receivedDateTime,
-						receiveddate: "",
+						receiveddate: getReceivedDate(x.receivedDateTime),
 						saName: "",
-						saReceivedDateTime: ""
+						saReceivedDateTime: "",
+						saCheckInTime: "",
+						saCheckOutTime: "",
+						strDate:"",
+						saDate: null,
+						DateDisplay:"",
 					};
 
 					let idx = AttendanceList.findIndex(a => a.saId == x.id);
 					if (idx === -1) {
 						AttendanceList.push(attendance);
-						DicAttdSubject[x.id] = `${x.subject} ReceivedDateTime:${x.receivedDateTime}`;
+						DicAttdSubject[x.id] = `${x.subject}`;
 					}
 
 				});
-				//console.log("AttendanceList#mgt:", AttendanceList);
-				//console.log("DicAttdSubject#mgt:", DicAttdSubject);
+				
 				parseAttendances(DicAttdSubject);
 
 				if (AttendanceList.length > 0) {
@@ -17787,19 +17835,24 @@ function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) 
 				response.value.forEach((x) => {
 					job = {
 						id: "",
+						joStaffName: x.from.emailAddress.name,
+						joStaffEmail: x.from.emailAddress.address,
 						joId: x.id,
 						receivedDateTime: x.receivedDateTime,
-						receiveddate: (x.receivedDateTime as string).split("T")[0].trim(),
+						receiveddate: getReceivedDate(x.receivedDateTime),
 						joClient: "",
 						joTime: "",
 						joReceivedDateTime: "",
-						joAttachements: ""
+						joAttachements: "",
+						strDate:"",
+						joDate: null,
+						DateDisplay:""
 					};
 					//console.log("receivedDateTime:", x.receivedDateTime);
 					let idx = JobList.findIndex(a => a.joId == x.id);
 					if (idx === -1) {
 						JobList.push(job);
-						console.log("subject:" + x.subject);
+						//console.log("subject:" + x.subject);
 						DicJobSubject[x.id] = `${x.subject}`;
 					}
 
@@ -17828,6 +17881,73 @@ function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) 
 			GetJobs(pageIndex);
 		}
 	}
+
+	if (fortraining) {
+		//console.log("here");
+		TrainingList = [];
+		const trainingacc: string = $infoblk.data("trainingacc") as string;
+		//console.log("trainingacc:", trainingacc);
+		let mgtEmail = document.getElementById("mgt-email");
+		//console.log("msgEmail:", mgtEmail);
+		let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", trainingacc);
+		//console.log("resource:" + _resource);
+		$("#mgt-email").attr("resource", _resource);
+
+		if (mgtEmail) {
+			mgtEmail.addEventListener("dataChange", (e: any) => {
+				const response = e.detail.response;
+
+				response.value.forEach((x) => {
+					training = {
+						id: "",
+						trApplicant: "",
+						trEmail: "",
+						trId: x.id,
+						receivedDateTime: x.receivedDateTime,
+						receiveddate: getReceivedDate(x.receivedDateTime),
+						trCompany: "",
+						trIndustry: "",
+						trAttendance: 0,
+						trIsApproved: (x.subject as string).startsWith("[Confirmed]"),
+						trReceivedDateTime: "",						
+						trPhone: "",
+						strDate:"",
+						trDate: null,
+						DateDisplay: ""
+					};
+					//console.log("receivedDateTime:", x.receivedDateTime);
+					let idx = TrainingList.findIndex(a => a.trId == x.id);
+					if (idx === -1) {
+						TrainingList.push(training);
+						//console.log("content:" + x.body.content);
+						DicTrainingContent[x.id] = `${x.body.content}`;
+					}
+
+				});
+				//console.log("TrainingList#mgt:", TrainingList);
+				parseTrainings(DicTrainingContent);
+
+				if (TrainingList.length > 0) {
+					//console.log("enqIdList:", enqIdList);
+					let traininglist: ITraining[] = [];
+					//console.log("TrainingList#00:", TrainingList);
+					TrainingList.forEach((x) => {
+						if (!attdIdList.includes(x.trId)) {
+							//console.log(x.joId);
+							traininglist.push(x);
+						}
+					});
+					//console.log("traininglist:", traininglist);
+					if (traininglist.length > 0)
+						saveTrainings(traininglist);
+				}
+
+				sortCol = 0;
+			});
+
+			GetTrainings(pageIndex);
+		}
+	}
 }
 $(document).on("change", ".todate", function () {
 	$target = $(this);
@@ -17845,6 +17965,10 @@ $(document).on("change", ".todate", function () {
 
 // let jsdateformat: string = "dd/mm/yy";
 const jsdateformat: string = "yy-mm-dd";
+function getReceivedDate(receivedDateTime:string): string {
+    return (receivedDateTime).split("T")[0].trim();
+}
+
 function initDatePicker(
 	eleId: string,
 	date: Date = new Date(),
@@ -17994,6 +18118,7 @@ let forsupplier: boolean = false;
 let forenquiry: boolean = false;
 let forattendance: boolean = false;
 let forjob: boolean = false;
+let fortraining: boolean = false;
 let forcustomer: boolean = false;
 let forrejectedcustomer: boolean = false;
 let forapprovedcustomer: boolean = false;
@@ -18692,11 +18817,12 @@ $(document).on("click", "#btnViewFile", function () {
 let DicEnqContent: { [Key: string]: string } = {};
 let DicAttdSubject: { [Key: string]: string } = {};
 let DicJobSubject: { [Key: string]: string } = {};
+let DicTrainingContent: { [Key: string]: string } = {};
 
 let EnquiryList: IEnquiry[] = [];
 let AttendanceList: IAttendance[] = [];
 let JobList: IJob[] = [];
-
+let TrainingList: ITraining[] = [];
 interface IAttendance {
 	saId: string;
 	receiveddate: string;
@@ -18705,12 +18831,17 @@ interface IAttendance {
 	//Id: string;
 	//saId: string;
 	saName: string;
+	saCheckInTime: string;
+	saCheckOutTime: string | null;
 	saReceivedDateTime: string;
-	//saDate: string | null;
-	//saDateFrm: string;
+	strDate: string;
+	saDate: Date | null;
+	DateDisplay: string;
 	//saDateTo: string;
 }
 interface IJob {
+	joStaffName: string;	
+	joStaffEmail: string;
 	joClient: string;
 	joTime: string;
 	joAttachements: string;
@@ -18719,6 +18850,26 @@ interface IJob {
 	id: string;
 	joId: string;
 	joReceivedDateTime: string;
+	strDate: string;
+	joDate: Date | null;
+	DateDisplay: string;
+}
+interface ITraining {
+	trId: string;
+	trApplicant: string;
+	trCompany: string;
+	trEmail: string;
+	trIndustry: string;
+	trPhone: string;
+	trAttendance: number;
+	trIsApproved: boolean;
+	trReceivedDateTime: string;
+	receivedDateTime: string;
+	receiveddate: string;
+	id: string;
+	strDate: string;
+	trDate: Date|null;
+	DateDisplay: string;
 }
 function filterEnquiry(smail: string): boolean {
 	//no-reply@hkdigitalsale.com
@@ -18789,64 +18940,65 @@ function parseJobs(DicJobSubject) {
 		/([^\-]+)(\-+)(.+)(\s+)(\d+\/+\d+\/+\d+)(\s+)(\d+\:+\d+\s+\-+\s+\d+\:+\d+)/gmi;
 
 	for (const [key, value] of Object.entries(DicJobSubject)) {
-		//console.log("value:", value);
 		let found = (value as string).matchAll(regex);
-		//console.log('found:', found);
-		//return false;
 		if (found) {
 			JobList.forEach((x) => {
 				if (x.joId == key) {
-					for (const m of found) {
-						//console.log("m[3]:" + m[3].trim() + ";m[7]:" + m[7]);
-						x.joClient = m[3];
-						x.joTime = m[7];
+					for (const m of found) {						
+						x.joClient = m[3].trim();
+						x.joTime = m[7].trim();
 					}
 				}
 			});
 		}
 	}
-
-	console.log("JobList#parse:", JobList);
+	//console.log("JobList#parse:", JobList);
 }
 
-function parseAttendances(DicAttdSubject) {
-	//Late arrival report- Testing arrived at 11:38 ReceivedDateTime:2023-11-13T03:39:04Z
+function parseTrainings(DicTrainingContent) {
+	/*
+	<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body><p><span style=\"font-family:verdana\">Dear </span><span style=\"font-family:verdana\">Fanny Chow</span><span style=\"font-family:verdana\">,<br><br>Thank you for register abss Accounting Software Getting Start Training Course.<br><br>Please find your course details as below:<br>Company: </span><span style=\"font-family:verdana\">Sense-Ware Asia Limited</span><span style=\"font-family:verdana\"><br>Name: </span><span style=\"font-family:verdana\">Fanny Chow</span><span style=\"font-family:verdana\"><br>Industry: </span><span style=\"font-family:verdana\">trading</span><span style=\"font-family:verdana\"><br>Attendance: </span><span style=\"font-family:verdana\">1</span><span style=\"font-family:verdana\"><br>Date: </span><span style=\"font-family:verdana\">2023-11-15</span><span style=\"font-family:verdana\"><br>Time: 9:30 am - 11:30 am (After 11:30 am is Q&amp;A session)<br>Address: Unit 1501, Westlands Center, 20 Westlands Road, Quarry Bay<br><br>Chinese/English notes provided<br><br><br>感謝您註冊 abss 會計軟件入門培訓課程。<br><br>請找到您的課程詳細信息，如下所示：<br>公司: </span><span style=\"font-family:verdana\">Sense-Ware Asia Limited</span><span style=\"font-family:verdana\"><br>名稱: </span><span style=\"font-family:verdana\">Fanny Chow</span><span style=\"font-family:verdana\"><br>行業: </span><span style=\"font-family:verdana\">trading</span><span style=\"font-family:verdana\"><br>出席人數: </span><span style=\"font-family:verdana\">1</span><span style=\"font-family:verdana\"><br>出席日期: </span><span style=\"font-family:verdana\">2023-11-15</span><span style=\"font-family:verdana\"><br>時間: 早上 9:30 至 11:30 (之後 Q&amp;A 為問答環節)<br>地址: 鰂魚涌華蘭路20號華蘭中心15樓1501室<br><br>附送中文/英文筆記<br><br><br><br>United Technologies (Int'l) Ltd.<br>ABSS Hong Kong and Macau Official Technical Service Provider<br>聯訊科技 (國際) 有限公司<br>ABSS 香港及澳門官方指定技術服務供應商<br><br>Email: enquiry@united.com.hk<br>Web: https://united.com.hk<br>Phone: (852) 2960 1002</span></p></body></html>
+	*/
 	let regex =
-		/([^\-]+)(\-+)(\s+)(.+)(\s+)(arrived at)(\s+)(\d+)(\:+)(\d+)(\s+)(ReceivedDateTime)(\:)(.+)/gim;
-	attendances = [];
-	for (const [key, value] of Object.entries(DicAttdSubject)) {
-		//console.log(value);
+		/Company\:[^\<]+\<+[^\>]+\>+[^\>]+\>+([^\<]+)\<+[^\>]+\>+[^\>]+\>+[^\>]+\>+Name\:[^\>]+\>+[^\>]+\>([^\<]+)[^\>]+\>+[^\>]+\>+[^\>]+\>+Industry\:[^\>]+\>+[^\>]+\>+([^\<]+)[^\>]+\>+[^\>]+\>+[^\>]+\>+Attendance\:[^\>]+\>+[^\>]+\>+([^\<]+)[^\>]+\>+[^\>]+\>+[^\>]+\>+Date\:[^\>]+\>+[^\>]+\>+([^\<]+)[^\>]+\>+[^\>]+\>+[^\>]+\>+Time\:([^\(]+)[^\>]+\>+/gmi;
+
+	for (const [key, value] of Object.entries(DicTrainingContent)) {
 		let found = (value as string).matchAll(regex);
-		//console.log('found:', found);
-		//return false;
 		if (found) {
-			attendance = {} as IAttendance;
-			attendance.id = "";
-			attendance.saId = key;
-			for (const m of found) {
-				attendance.receivedDateTime = m[14];
-				attendance.receiveddate = m[14].split("T")[0].trim();
-				//console.log("m[4]:", m[4]);
-				attendance.saName = m[4];
-				attendances.push(attendance);
-			}
+			TrainingList.forEach((x) => {
+				if (x.trId == key) {
+					for (const m of found) {
+						x.trCompany = m[1].trim();
+						x.trApplicant = m[2].trim();
+						x.trIndustry = m[3].trim();
+						x.trAttendance = Number(m[4]);
+						x.strDate = m[5].trim();						
+					}
+				}
+			});
 		}
 	}
+	//console.log("TrainingList#parse:", TrainingList);
+}
 
-	if (attendances.length > 0) {
-		//console.log("AttendanceList#0:", AttendanceList);
-		AttendanceList.forEach((x) => {
-			var attendance = attendances.find((y) => y.saId == x.saId);
-			//console.log("attendance:", attendance);
-			if (attendance) {
-				x.saId = attendance.saId;
-				x.saName = attendance.saName;
-				x.receivedDateTime = attendance.receivedDateTime;
-				x.receiveddate = attendance.receiveddate;
-			}
-		});
-
-		//console.log("AttendanceList#1:", AttendanceList);
+//todo:
+function parseAttendances(DicAttdSubject) {
+	//Late arrival report- Testing arrived at 11:38
+	let regex =
+		/[^\-]+\-+\s+(.+)\s+arrived\s+at\s+(.+)/gmi;	
+	for (const [key, value] of Object.entries(DicAttdSubject)) {
+		//console.log(value);
+		let found = (value as string).matchAll(regex);	
+		if (found) {
+			AttendanceList.forEach((x) => {				
+				if (x.saId == key) {					
+					for (const m of found) {						
+						x.saName = m[1].trim();
+						x.saCheckInTime = m[2].trim();
+					}
+				}
+			});
+		}
 	}
 }
 function openEnqMail(ele) {
@@ -19038,6 +19190,7 @@ function handleAssign(salespersonId: number | null) {
 	});
 }
 
+let trainingIdList: string[] = [];
 let jobIdList: string[] = [];
 let attdIdList: string[] = [];
 let enqIdList: string[] = [];

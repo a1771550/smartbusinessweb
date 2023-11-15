@@ -314,6 +314,7 @@
     <Compile Include="Controllers\CRM\eBlastController.cs" />
     <Compile Include="Controllers\CRM\EnquiryController.cs" />
     <Compile Include="Controllers\CRM\eTrackController.cs" />
+    <Compile Include="Controllers\Records\TrainingController.cs" />
     <Compile Include="Controllers\Customer\CustomerController.cs" />
     <Compile Include="Controllers\Customer\PGCustomerController.cs" />
     <Compile Include="Controllers\DataTransferController.cs" />
@@ -2674,6 +2675,7 @@
     <Content Include="Content\select2\select2.min.css" />
     <Content Include="Content\stock.css" />
     <Content Include="Content\stocktransfer.css" />
+    <Content Include="Content\training.css" />
     <Content Include="Content\transfer.css" />
     <Content Include="Content\wholesalesprint.css" />
     <Content Include="favicon.ico" />
@@ -2879,13 +2881,14 @@
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="libman.json" />
     <Content Include="Images\unsubscribe.webp" />
-    <Content Include="Scripts\ts\js\attendance\attendance.js" />
     <Content Include="Scripts\ts\js\itemtransfer\transfer.js" />
-    <Content Include="Scripts\ts\js\job\job.js" />
     <Content Include="Scripts\ts\js\pos\preorderedit.js" />
     <Content Include="Scripts\ts\js\pos\preorderlist.js" />
     <Content Include="Scripts\ts\js\pos\salesorderedit.js" />
     <Content Include="Scripts\ts\js\pos\salesorderlist.js" />
+    <Content Include="Scripts\ts\js\records\attendance.js" />
+    <Content Include="Scripts\ts\js\records\job.js" />
+    <Content Include="Scripts\ts\js\records\training.js" />
     <Content Include="Static\barcode.html" />
     <Content Include="_app_offline.htm" />
     <Content Include="PrivateSettings.config" />
@@ -4268,9 +4271,11 @@
     <Content Include="Views\SalesOrder\Get.cshtml" />
     <Content Include="Scripts\ts\js\pos\salesorderedit.js.map" />
     <Content Include="Views\Attendance\Index.cshtml" />
-    <Content Include="Scripts\ts\js\attendance\attendance.js.map" />
     <Content Include="Views\Job\Index.cshtml" />
-    <Content Include="Scripts\ts\js\job\job.js.map" />
+    <Content Include="Views\Training\Index.cshtml" />
+    <Content Include="Scripts\ts\js\records\attendance.js.map" />
+    <Content Include="Scripts\ts\js\records\job.js.map" />
+    <Content Include="Scripts\ts\js\records\training.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4710,7 +4715,7 @@
     <TypeScriptCompile Include="Scripts\tinymce\tinymce.d.ts" />
     <TypeScriptCompile Include="Scripts\ts\ajaxpostlist.ts" />
     <TypeScriptCompile Include="Scripts\ts\app.ts" />
-    <TypeScriptCompile Include="Scripts\ts\attendance\attendance.ts" />
+    <TypeScriptCompile Include="Scripts\ts\records\attendance.ts" />
     <TypeScriptCompile Include="Scripts\ts\crm\contact\attributes\attribute.ts" />
     <TypeScriptCompile Include="Scripts\ts\crm\contact\attributes\attributecommon.ts" />
     <TypeScriptCompile Include="Scripts\ts\crm\contact\attributes\attributeedit.ts" />
@@ -4759,7 +4764,7 @@
     <TypeScriptCompile Include="Scripts\ts\item\pgitem.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\pgitemedit.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\stock.ts" />
-    <TypeScriptCompile Include="Scripts\ts\job\job.ts" />
+    <TypeScriptCompile Include="Scripts\ts\records\job.ts" />
     <TypeScriptCompile Include="Scripts\ts\login.ts" />
     <TypeScriptCompile Include="Scripts\ts\othersettings.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\accessrights.ts" />
@@ -4791,6 +4796,7 @@
     <TypeScriptCompile Include="Scripts\ts\purchase\purchaseorderlist.ts" />
     <TypeScriptCompile Include="Scripts\ts\purchase\supplier.ts" />
     <TypeScriptCompile Include="Scripts\ts\purchase\supplieredit.ts" />
+    <TypeScriptCompile Include="Scripts\ts\records\training.ts" />
     <TypeScriptCompile Include="Scripts\ts\test.ts" />
     <TypeScriptCompile Include="Scripts\ts\wholesales\delivery.ts" />
     <TypeScriptCompile Include="Scripts\ts\wholesales\salesorderlist.ts" />

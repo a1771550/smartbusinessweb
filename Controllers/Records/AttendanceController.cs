@@ -30,12 +30,15 @@ namespace SmartBusinessWeb.Controllers.Records
 			#region Sorting
 			switch (sortCol)
 			{				
-				case 1:
+				case 2:
 					pagingAttdList = sortDirection.ToLower() == "desc" ? attendancelist.OrderByDescending(x => x.saName).ThenByDescending(x => x.saReceivedDateTime).Skip(skip).Take(pagesize).ToList() : attendancelist.OrderBy(x => x.saName).ThenBy(x => x.saReceivedDateTime).Skip(skip).Take(pagesize).ToList();
-					break;				
+					break;
+				case 1:
+					pagingAttdList = sortDirection.ToLower() == "desc" ? attendancelist.OrderByDescending(x => x.saCheckInTime).ThenByDescending(x => x.saReceivedDateTime).Skip(skip).Take(pagesize).ToList() : attendancelist.OrderBy(x => x.saCheckInTime).ThenBy(x => x.saReceivedDateTime).Skip(skip).Take(pagesize).ToList();
+					break;
 				default:
 				case 0:
-					pagingAttdList = sortDirection.ToLower() == "desc" ? attendancelist.OrderByDescending(x => x.saReceivedDateTime).Skip(skip).Take(pagesize).ToList() : attendancelist.OrderBy(x => x.saReceivedDateTime).Skip(skip).Take(pagesize).ToList();
+					pagingAttdList = sortDirection.ToLower() == "desc" ? attendancelist.OrderByDescending(x => x.saDate).Skip(skip).Take(pagesize).ToList() : attendancelist.OrderBy(x => x.saDate).Skip(skip).Take(pagesize).ToList();
 					break;
 			}
 			#endregion

@@ -43,11 +43,11 @@
 	</div>
 
 
-	<div class="row justify-content-end">
+	<div class="row justify-content-end mx-2">
 		<div class=""><span id="datetxt">@Html.Raw(daterange)</span></div>
 		
 	</div>
-	<div class="row justify-content-end my-1">
+	<div class="row justify-content-end my-1 mx-2">
 		
 		<div class="text-right"><span>@totaltxt: <span id="totalcount" class="font-weight-bold"></span></span></div>
 	</div>
@@ -64,8 +64,9 @@
 <table id="tblmails" class="table table-bordered table-hover table-condensed">
 	<thead class="gray-header font-weight-bold">
 		<tr>
-			<th scope="col" class="colheader" data-col="0" data-category="saReceivedDateTime">@Resources.Resource.DateTime</th>
-			<th scope="col" class="colheader" data-col="1" data-category="saName">@Resources.Resource.Name</th>
+			<th scope="col" class="colheader" data-col="0">@string.Format(Resources.Resource.DateFormat, Resources.Resource.Attendance)</th>
+			<th scope="col" class="colheader" data-col="1">@string.Format(Resources.Resource.TimeFormat, Resources.Resource.CheckIn)</th>
+			<th scope="col" class="colheader" data-col="2">@Resources.Resource.StaffName</th>
 
 		</tr>
 	</thead>
@@ -94,7 +95,7 @@
 	});
 </script>
 
-<script src="~/Scripts/ts/js/attendance/attendance.js?v=@rand"></script>
+<script src="~/Scripts/ts/js/records/attendance.js?v=@rand"></script>
 
 
 

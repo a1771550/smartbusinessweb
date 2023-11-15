@@ -110,6 +110,21 @@
           <path>Scripts\ts\pos\salesorderedit.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\salesorderedit.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>attendance.ts</name>
+          <path>Scripts\ts\records\attendance.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\records\attendance.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>job.ts</name>
+          <path>Scripts\ts\records\job.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\records\job.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>training.ts</name>
+          <path>Scripts\ts\records\training.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\records\training.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -248,11 +263,6 @@
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\POS\DepositController.cs</absolutePath>
         </Favorite>
         <Favorite>
-          <name>AttendanceController.cs</name>
-          <path>Controllers\Attendance\AttendanceController.cs</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Attendance\AttendanceController.cs</absolutePath>
-        </Favorite>
-        <Favorite>
           <name>WholeSalesController.cs</name>
           <path>Controllers\Sales\WholeSalesController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Sales\WholeSalesController.cs</absolutePath>
@@ -266,6 +276,16 @@
           <name>PreorderController.cs</name>
           <path>Controllers\Sales\PreorderController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Sales\PreorderController.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>AttendanceController.cs</name>
+          <path>Controllers\Records\AttendanceController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Records\AttendanceController.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>JobController.cs</name>
+          <path>Controllers\Records\JobController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Records\JobController.cs</absolutePath>
         </Favorite>
       </favorites>
     </Folder>
