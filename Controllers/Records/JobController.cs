@@ -33,9 +33,12 @@ namespace SmartBusinessWeb.Controllers.Records
 					pagingJobList = sortDirection.ToLower() == "desc" ? joblist.OrderByDescending(x => x.joTime).ThenByDescending(x => x.joReceivedDateTime).Skip(skip).Take(pagesize).ToList() : joblist.OrderBy(x => x.joTime).ThenBy(x => x.joReceivedDateTime).Skip(skip).Take(pagesize).ToList();
 					break;
 				case 2:
-					pagingJobList = sortDirection.ToLower() == "desc" ? joblist.OrderByDescending(x => x.joStaffName).ThenByDescending(x => x.joReceivedDateTime).Skip(skip).Take(pagesize).ToList() : joblist.OrderBy(x => x.joStaffName).ThenBy(x => x.joReceivedDateTime).Skip(skip).Take(pagesize).ToList();
+					pagingJobList = sortDirection.ToLower() == "desc" ? joblist.OrderByDescending(x => x.joWorkingHrs).ThenByDescending(x => x.joReceivedDateTime).Skip(skip).Take(pagesize).ToList() : joblist.OrderBy(x => x.joWorkingHrs).ThenBy(x => x.joReceivedDateTime).Skip(skip).Take(pagesize).ToList();
 					break;
 				case 3:
+					pagingJobList = sortDirection.ToLower() == "desc" ? joblist.OrderByDescending(x => x.joStaffName).ThenByDescending(x => x.joReceivedDateTime).Skip(skip).Take(pagesize).ToList() : joblist.OrderBy(x => x.joStaffName).ThenBy(x => x.joReceivedDateTime).Skip(skip).Take(pagesize).ToList();
+					break;
+				case 4:
 					pagingJobList = sortDirection.ToLower() == "desc" ? joblist.OrderByDescending(x => x.joClient).ThenByDescending(x => x.joReceivedDateTime).Skip(skip).Take(pagesize).ToList() : joblist.OrderBy(x => x.joClient).ThenBy(x => x.joReceivedDateTime).Skip(skip).Take(pagesize).ToList();
 					break;			
 				default:

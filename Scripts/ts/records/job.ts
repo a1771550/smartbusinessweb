@@ -79,6 +79,7 @@ function jobTemplate(data: IJob[]): string {
 
         html += `<td style="width:180px; max-width:180px;">${(x.DateDisplay)}</td>
         <td style="width:120px;max-width:120px;">${x.joTime}</td>
+        <td style="width:120px;max-width:120px;">${x.joWorkingHrs}</td>
          <td style="width:120px;max-width:120px;">${formatEmail(x.joStaffEmail, x.joStaffName)}</td>
           <td style="width:120px;max-width:120px;">${x.joClient}</td>`;
         html += `</tr>`;
