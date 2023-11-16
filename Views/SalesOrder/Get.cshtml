@@ -28,7 +28,7 @@
 @Html.Partial("_PayModal", null, new ViewDataDictionary { { "forsales", true }, { "PaymentTypeList", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes } })
 
 
-@Html.Partial("_ItemVariModal")
+@Html.Partial("_ItemVariModal", null, new ViewDataDictionary { { "status", Model.SalesOrder.rtsStatus } })
 
 @Html.Partial("_ChangeModal")
 

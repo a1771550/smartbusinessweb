@@ -61,6 +61,8 @@ $(function () {
 		DicItemVtQtyList = $infoblk.data("jsondicitemvtqtylist");
 		DicItemVtDelQtyList = $infoblk.data("jsondicitemvtdelqtylist");
 
+		DicIvInfo = $infoblk.data("jsondicivinfo");
+
 		DicSeqDeliveryItems = $infoblk.data(
 			"jsondicseqdeliveryitems"
 		) as typeof DicSeqDeliveryItems;

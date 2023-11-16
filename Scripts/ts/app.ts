@@ -9294,11 +9294,26 @@ $(document).on("dblclick", ".serialno.pointer", function () {
 			}
 
 			if (forsales || forrefund) {
-				if (DicItemSnVtList && selectedItemCode in DicItemSnVtList)
-					snvtlist = DicItemSnVtList[selectedItemCode].slice(0);
-				selectedSalesLn = $.grep(SalesLnList, function (e, i) {
-					return e.rtlSeq == seq;
-				})[0];
+				if (reviewmode) {
+					DeliveryItems = DicSeqDeliveryItems[seq];
+					selectedSaleLn = SalesLns.find((x) => x.rtlSeq == seq) as ISimpleSalesLn;
+
+					DeliveryItems.forEach((x) => {
+						if (x.seq == seq) {
+							snvtlist.push({
+								pocode: x.pstCode,
+								sn: x.snoCode ?? "",
+								vt: x.VtDisplay,
+							} as ISnVt);
+						}
+					});
+				} else {
+					if (DicItemSnVtList && selectedItemCode in DicItemSnVtList)
+						snvtlist = DicItemSnVtList[selectedItemCode].slice(0);
+					selectedSalesLn = $.grep(SalesLnList, function (e, i) {
+						return e.rtlSeq == seq;
+					})[0];
+				}					
 			}
 
 			if (forpreorder) {
@@ -9345,7 +9360,8 @@ $(document).on("dblclick", ".serialno.pointer", function () {
 						}
 					});
 				}
-			} else {
+			}
+			else {
 				if (forpurchase) {
 					if (purchaseitems.length > 0) {
 						$.each(purchaseitems, function (i, e) {
@@ -9496,7 +9512,7 @@ function openSerialModal(hasFocusCls: boolean) {
 		//console.log("selectedWholesalesLn:", selectedWholesalesLn);
 		if (forwholesales)
 			$("#txtStaticItemName").val(selectedWholesalesLn!.itmNameDesc);
-		if (forsales) $("#txtStaticItemName").val(selectedSalesLn!.Item.NameDesc);
+		if (forsales) reviewmode ? $("#txtStaticItemName").val(selectedSaleLn!.Item.NameDesc): $("#txtStaticItemName").val(selectedSalesLn!.Item.NameDesc);
 		if (forpreorder)
 			$("#txtStaticItemName").val(selectedPreSalesLn!.itmNameDesc);
 
@@ -9582,6 +9598,7 @@ function writeSN(
 		let _disabled = hasFocusCls ? "" : "disabled";
 
 		if (DeliveryItems.length > 0) {
+			/*console.log("here");*/
 			$.each(DeliveryItems, function (i, v) {
 				if (hasFocusCls) {
 					if (v.snoCode == _sn) {
@@ -17779,8 +17796,7 @@ function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) 
 						saName: "",
 						saReceivedDateTime: "",
 						saCheckInTime: "",
-						saCheckOutTime: "",
-						strDate:"",
+						saCheckOutTime: "",					
 						saDate: null,
 						DateDisplay:"",
 					};
@@ -17842,9 +17858,9 @@ function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) 
 						receiveddate: getReceivedDate(x.receivedDateTime),
 						joClient: "",
 						joTime: "",
+						joWorkingHrs:0,
 						joReceivedDateTime: "",
-						joAttachements: "",
-						strDate:"",
+						joAttachements: "",						
 						joDate: null,
 						DateDisplay:""
 					};
@@ -17890,11 +17906,12 @@ function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) 
 		let mgtEmail = document.getElementById("mgt-email");
 		//console.log("msgEmail:", mgtEmail);
 		let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", trainingacc);
-		//console.log("resource:" + _resource);
+		console.log("resource:" + _resource);
 		$("#mgt-email").attr("resource", _resource);
 
 		if (mgtEmail) {
 			mgtEmail.addEventListener("dataChange", (e: any) => {
+				//console.log("e.detail.response:", e.detail.response);
 				const response = e.detail.response;
 
 				response.value.forEach((x) => {
@@ -18833,8 +18850,7 @@ interface IAttendance {
 	saName: string;
 	saCheckInTime: string;
 	saCheckOutTime: string | null;
-	saReceivedDateTime: string;
-	strDate: string;
+	saReceivedDateTime: string;	
 	saDate: Date | null;
 	DateDisplay: string;
 	//saDateTo: string;
@@ -18844,13 +18860,13 @@ interface IJob {
 	joStaffEmail: string;
 	joClient: string;
 	joTime: string;
+	joWorkingHrs: number | null;
 	joAttachements: string;
 	receivedDateTime: string;
 	receiveddate: string;
 	id: string;
 	joId: string;
-	joReceivedDateTime: string;
-	strDate: string;
+	joReceivedDateTime: string;	
 	joDate: Date | null;
 	DateDisplay: string;
 }
@@ -18981,7 +18997,6 @@ function parseTrainings(DicTrainingContent) {
 	//console.log("TrainingList#parse:", TrainingList);
 }
 
-//todo:
 function parseAttendances(DicAttdSubject) {
 	//Late arrival report- Testing arrived at 11:38
 	let regex =
@@ -21258,7 +21273,7 @@ $(document).on("dblclick", ".vari.pointer", function () {
 	if (
 		(forwholesales &&
 			(Wholesales.wsStatus.toLowerCase() === "deliver" ||
-				Wholesales.wsStatus.toLowerCase() === "partialdeliver") || (forsales && Sales.rtsStatus.toLowerCase() == SalesStatus.created.toString()) || (forpreorder && PreSales.rtsStatus.toLowerCase() == SalesStatus.presettled.toString()))
+				Wholesales.wsStatus.toLowerCase() === "partialdeliver")) || ((forsales && reviewmode) && (SalesOrder.rtsStatus.toLowerCase() == SalesStatus.created.toString() || SalesOrder.rtsStatus.toLowerCase() == SalesStatus.presettled.toString()))
 	) {
 		DeliveryItems = DicSeqDeliveryItems[seq].slice(0);
 		deliveryItem = DeliveryItems[0];

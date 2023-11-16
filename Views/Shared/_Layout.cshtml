@@ -684,6 +684,19 @@
 								}
 							}
 							@Html.ActionLink(Resources.Resource.JobRecords, "Index", "Job", null, new { @class = lnkcls })
+
+							@{
+								lnkcls = "dropdown-item {0}";
+								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "training")
+								{
+									lnkcls = string.Format(lnkcls, "active");
+								}
+								else
+								{
+									lnkcls = string.Format(lnkcls, string.Empty);
+								}
+							}
+							@Html.ActionLink(Resources.Resource.TrainingRecords, "Index", "Training", null, new { @class = lnkcls })
 						</div>
 					</li>
 

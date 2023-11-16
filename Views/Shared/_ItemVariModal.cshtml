@@ -1,6 +1,6 @@
 ﻿@{ 
     string status = ViewData["status"] == null ? "" : (string)ViewData["status"];
-    bool isdeliver = (!string.IsNullOrEmpty(status) && (status == "deliver" || status == "partialdeliver"));
+    bool isdeliver = (!string.IsNullOrEmpty(status) && (status == "deliver" || status == "partialdeliver" || status.ToLower() == SalesStatus.created.ToString()||status.ToLower()==SalesStatus.presettled.ToString()));
 }
 <div id="itemVariModal" style="background-color: #eae3fc;">
     <div class="container">

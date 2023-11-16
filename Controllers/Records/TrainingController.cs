@@ -19,7 +19,7 @@ namespace SmartBusinessWeb.Controllers.Records
 			connection.Open();
 			if (string.IsNullOrEmpty(keyword)) keyword = null;
 			//todate = CommonHelper.FormatDate(CommonHelper.GetDateFrmString4SQL(todate).AddDays(-1), DateFormat.YYYYMMDD);
-			List<TrainingModel> joblist = connection.Query<TrainingModel>(@"EXEC dbo.GetTrainings @apId=@apId,@frmdate=@frmdate,@todate=@todate,@keyword=@keyword", new { apId, frmdate, todate, keyword }).ToList();
+			List<TrainingModel> traininglist = connection.Query<TrainingModel>(@"EXEC dbo.GetTrainings @apId=@apId,@frmdate=@frmdate,@todate=@todate,@keyword=@keyword", new { apId, frmdate, todate, keyword }).ToList();
 			int pagesize = int.Parse(ConfigurationManager.AppSettings["TrainingPageSize"]);
 			int skip = (pageIndex - 1) * pagesize;
 			List<TrainingModel> pagingTrainingList = new List<TrainingModel>();
@@ -28,31 +28,31 @@ namespace SmartBusinessWeb.Controllers.Records
 			switch (sortCol)
 			{
 				case 2:
-					pagingTrainingList = sortDirection.ToLower() == "desc" ? joblist.OrderByDescending(x => x.trApplicant).ThenByDescending(x => x.trDate).Skip(skip).Take(pagesize).ToList() : joblist.OrderBy(x => x.trApplicant).ThenBy(x => x.trDate).Skip(skip).Take(pagesize).ToList();
+					pagingTrainingList = sortDirection.ToLower() == "desc" ? traininglist.OrderByDescending(x => x.trApplicant).ThenByDescending(x => x.trDate).Skip(skip).Take(pagesize).ToList() : traininglist.OrderBy(x => x.trApplicant).ThenBy(x => x.trDate).Skip(skip).Take(pagesize).ToList();
 					break;
 				case 1:
-					pagingTrainingList = sortDirection.ToLower() == "desc" ? joblist.OrderByDescending(x => x.trCompany).ThenByDescending(x => x.trDate).Skip(skip).Take(pagesize).ToList() : joblist.OrderBy(x => x.trCompany).ThenBy(x => x.trDate).Skip(skip).Take(pagesize).ToList();
+					pagingTrainingList = sortDirection.ToLower() == "desc" ? traininglist.OrderByDescending(x => x.trCompany).ThenByDescending(x => x.trDate).Skip(skip).Take(pagesize).ToList() : traininglist.OrderBy(x => x.trCompany).ThenBy(x => x.trDate).Skip(skip).Take(pagesize).ToList();
 					break;
 				case 3:
-					pagingTrainingList = sortDirection.ToLower() == "desc" ? joblist.OrderByDescending(x => x.trEmail).ThenByDescending(x => x.trDate).Skip(skip).Take(pagesize).ToList() : joblist.OrderBy(x => x.trEmail).ThenBy(x => x.trDate).Skip(skip).Take(pagesize).ToList();
+					pagingTrainingList = sortDirection.ToLower() == "desc" ? traininglist.OrderByDescending(x => x.trEmail).ThenByDescending(x => x.trDate).Skip(skip).Take(pagesize).ToList() : traininglist.OrderBy(x => x.trEmail).ThenBy(x => x.trDate).Skip(skip).Take(pagesize).ToList();
 					break;
 				case 4:
-					pagingTrainingList = sortDirection.ToLower() == "desc" ? joblist.OrderByDescending(x => x.trIndustry).ThenByDescending(x => x.trDate).Skip(skip).Take(pagesize).ToList() : joblist.OrderBy(x => x.trIndustry).ThenBy(x => x.trDate).Skip(skip).Take(pagesize).ToList();
+					pagingTrainingList = sortDirection.ToLower() == "desc" ? traininglist.OrderByDescending(x => x.trIndustry).ThenByDescending(x => x.trDate).Skip(skip).Take(pagesize).ToList() : traininglist.OrderBy(x => x.trIndustry).ThenBy(x => x.trDate).Skip(skip).Take(pagesize).ToList();
 					break;
 				case 5:
-					pagingTrainingList = sortDirection.ToLower() == "desc" ? joblist.OrderByDescending(x => x.trAttendance).ThenByDescending(x => x.trDate).Skip(skip).Take(pagesize).ToList() : joblist.OrderBy(x => x.trAttendance).ThenBy(x => x.trDate).Skip(skip).Take(pagesize).ToList();
+					pagingTrainingList = sortDirection.ToLower() == "desc" ? traininglist.OrderByDescending(x => x.trAttendance).ThenByDescending(x => x.trDate).Skip(skip).Take(pagesize).ToList() : traininglist.OrderBy(x => x.trAttendance).ThenBy(x => x.trDate).Skip(skip).Take(pagesize).ToList();
 					break;
 				case 6:
-					pagingTrainingList = sortDirection.ToLower() == "desc" ? joblist.OrderByDescending(x => x.trIsApproved).ThenByDescending(x => x.trDate).Skip(skip).Take(pagesize).ToList() : joblist.OrderBy(x => x.trIsApproved).ThenBy(x => x.trDate).Skip(skip).Take(pagesize).ToList();
+					pagingTrainingList = sortDirection.ToLower() == "desc" ? traininglist.OrderByDescending(x => x.trIsApproved).ThenByDescending(x => x.trDate).Skip(skip).Take(pagesize).ToList() : traininglist.OrderBy(x => x.trIsApproved).ThenBy(x => x.trDate).Skip(skip).Take(pagesize).ToList();
 					break;
 				default:
 				case 0:
-					pagingTrainingList = sortDirection.ToLower() == "desc" ? joblist.OrderByDescending(x => x.trDate).Skip(skip).Take(pagesize).ToList() : joblist.OrderBy(x => x.trDate).Skip(skip).Take(pagesize).ToList();
+					pagingTrainingList = sortDirection.ToLower() == "desc" ? traininglist.OrderByDescending(x => x.trDate).Skip(skip).Take(pagesize).ToList() : traininglist.OrderBy(x => x.trDate).Skip(skip).Take(pagesize).ToList();
 					break;
 			}
 			#endregion
 
-			return Json(new { pagingTrainingList, totalRecord = joblist.Count }, JsonRequestBehavior.AllowGet);
+			return Json(new { pagingTrainingList, totalRecord = traininglist.Count }, JsonRequestBehavior.AllowGet);
 		}
 
 		[HttpPost]
@@ -68,7 +68,7 @@ namespace SmartBusinessWeb.Controllers.Records
 		public ActionResult Index(string Keyword = "", string strfrmdate = "", string strtodate = "")
 		{
 			ViewBag.ParentPage = "records";
-			ViewBag.PageName = "job";
+			ViewBag.PageName = "training";
 			TrainingEditModel model = new TrainingEditModel(strfrmdate, strtodate, Keyword);
 			return View(model);
 		}

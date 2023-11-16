@@ -6,7 +6,7 @@ currentoldestdate = $infoblk.data("currentoldestdate");
 
 pagesize = Number($infoblk.data("pagesize"));
 //from/emailAddress/address ne 'noreply@abssasia.com.hk'
-resource = `/users/{2}/mailFolders/Inbox/messages?$filter=receivedDateTime ge {0}T00:00:00Z and receivedDateTime lt {1}T23:59:59Z and contains(subject, 'Training') and (from/emailAddress/address) eq 'enquiry@united.com.hk'&$count=true&$ConsistencyLevel=eventual&$orderby=receivedDateTime desc`;
+resource = `/users/{2}/mailFolders/Inbox/messages?$filter=receivedDateTime ge {0}T00:00:00Z and receivedDateTime lt {1}T23:59:59Z and startswith(subject, '%5BConfirmed%5D')&$count=true&$ConsistencyLevel=eventual&$orderby=receivedDateTime desc`;
 trainingIdList = $infoblk.data("trainingidlist") as string[];
 
 $(document).on("click", "#btnSearch", function () {
