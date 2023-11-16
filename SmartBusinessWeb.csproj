@@ -314,6 +314,7 @@
     <Compile Include="Controllers\CRM\eBlastController.cs" />
     <Compile Include="Controllers\CRM\EnquiryController.cs" />
     <Compile Include="Controllers\CRM\eTrackController.cs" />
+    <Compile Include="Controllers\Records\JournalController.cs" />
     <Compile Include="Controllers\Records\TrainingController.cs" />
     <Compile Include="Controllers\Customer\CustomerController.cs" />
     <Compile Include="Controllers\Customer\PGCustomerController.cs" />
@@ -4620,6 +4621,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Content\bs5\" />
     <Folder Include="Models\" />
+    <Folder Include="Views\Journal\" />
     <Folder Include="Views\SmartAttendence\" />
   </ItemGroup>
   <ItemGroup>
