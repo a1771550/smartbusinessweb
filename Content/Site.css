@@ -713,7 +713,8 @@ a.disabled{
     padding-right:.5em;
 }
 
-.form-control.datepicker, .form-control.range, .form-control.datetimepicker {
+.form-control.datepicker,
+.form-control.range, .form-control.datetimepicker {
     cursor:pointer;
     text-align: center;
     background-image: url('images/calendar.svg');

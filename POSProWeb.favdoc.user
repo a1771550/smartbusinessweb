@@ -125,6 +125,16 @@
           <path>Scripts\ts\records\training.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\records\training.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>journaledit.ts</name>
+          <path>Scripts\ts\records\journaledit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\records\journaledit.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>journallist.ts</name>
+          <path>Scripts\ts\records\journallist.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\records\journallist.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

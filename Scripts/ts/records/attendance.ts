@@ -71,7 +71,7 @@ function attdTemplate(data: IAttendance[]): string {
     data.forEach((x) => {
         const Id = x.id;    
        
-        html += `<tr class="attendance" role="button" data-id="${Id}">`;
+        html += `<tr class="attendance" role="button" data-Id="${Id}">`;
        
         html += `<td style="width:180px; max-width:180px;">${(x.DateDisplay)}</td>
          <td style="width:120px;max-width:120px;">${x.saCheckInTime}</td>

@@ -1,0 +1,100 @@
+﻿@model PPWLib.Models.Journal.JournalEditModel
+
+@{
+	JournalModel journal = Model.Journal;
+	List<JournalLnView> journalLns = Model.JournalLnList;
+	bool edit = journalLns.Count > 0;
+	int rand = CommonHelper.GetVersionRandomNo();
+	string Currency = Model.Currency;
+}
+<h2>@ViewBag.Title</h2>
+@using (Html.BeginForm("Edit", "Journal", FormMethod.Get, new { @Id = "frmJournal", @class = "my-4" }))
+{
+	@Html.AntiForgeryToken()
+
+	@Html.HiddenFor(model => journal.Id)
+	@Html.HiddenFor(model => journal.JournalNumber)
+
+	<div class="row">
+		<div class="col-12 col-md-3">
+			<div class="form-group">
+				<label>@(string.Format(Resources.Resource.IdFormat, Resources.Resource.Journal))</label>
+				@Html.EditorFor(model => journal.JournalNumber, new { htmlAttributes = new { @class = "form-control", @readonly = true } })
+			</div>
+		</div>
+		<div class="col-12 col-md-3">
+			@Html.Partial("_Date")
+		</div>
+
+		<div class="col-12 col-md-3">
+			<div class="form-group">
+				<label>@Resources.Resource.Memo</label>
+				<textarea id="memo" name="Memo" rows="3" class="form-control flex">@journal.Memo</textarea>
+			</div>
+		</div>
+	</div>
+	<hr />
+
+	<div class="row justify-content-end my-2 mx-2 small">
+		<button id="btnAdd" class="btn btn-primary float-right" title="@string.Format(Resources.Resource.AddFormat, Resources.Resource.Record)"><i class="fa fa-plus"></i></button>
+	</div>
+
+	<div class="justify-content-center">
+		<div class="overflow-auto">
+			<table id="tblJournal" class="table table-condensed table-hover table-bordered">
+				<thead class="gray-header">
+					<tr>
+						<th>@Resources.Resource.AccountNo</th>
+						<th>@string.Format(Resources.Resource.NameFormat, Resources.Resource.Account4Journal)</th>
+						<th>@Resources.Resource.Debit</th>
+						<th>@Resources.Resource.Credit</th>
+						<th>@Resources.Resource.Job4Myob</th>
+						<th>@Resources.Resource.AllocationMemo</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+
+	<div class="row justify-content-end mx-1">		
+		<div class="form-inline mb-2">
+			<div class="form-group">
+				<label for="txtDepositAmt" class="col-form-label mx-sm-3">@string.Format(Resources.Resource.TotalFormat, Resources.Resource.Debit) (@Currency)</label>
+				<input type="number" class="form-control" id="txtDepositAmt" readonly value="0.00" />
+			</div>
+		</div>
+	</div>
+	<div class="row justify-content-end mx-1">
+		<div class="form-inline mb-2">
+			<div class="form-group">
+				<label for="txtTotalRemain" class="col-form-label mx-sm-3">@string.Format(Resources.Resource.TotalFormat, Resources.Resource.Credit) (@Currency)</label>
+				<input type="number" class="form-control" id="txtTotalRemain" readonly name="TotalRemain" value="0.00" />
+			</div>
+		</div>
+	</div>
+	<div class="row justify-content-end mx-1">
+		<div class="form-inline mb-2">
+			<div class="form-group">
+				<label for="txtTotal" class="col-form-label mx-sm-3">@Resources.Resource.OutOfBalance (@Currency)</label>
+				<input type="number" class="form-control" id="txtTotal" readonly name="TotalAmount" value="0.00" />
+			</div>
+		</div>
+	</div>
+
+
+	<button type="button" id="btnSave" class="btn btn-success float-right">@Resources.Resource.Save</button>
+}
+<div>
+	@Html.ActionLink(Resources.Resource.BackToList, "Index")
+</div>
+
+@Html.Partial("_WaitingModal")
+
+@Html.Partial("_AccountModal")
+
+@Html.Partial("_TextAreaModal", null, new ViewDataDictionary { { "FieldName", Resources.Resource.AllocationMemo } })
+
+<div id="infoblk" data-joblist="@JsonSerializer.Serialize(Model.JobList)" data-dicacaccounts="@JsonSerializer.Serialize(Model.DicAcAccounts)"></div>
+<script src="~/Scripts/ts/js/records/journaledit.js?v=@rand"></script>
+

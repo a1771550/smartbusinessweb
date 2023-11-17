@@ -1,0 +1,9 @@
+﻿@{
+	bool required = ViewData["required"] == null ? false : Convert.ToBoolean(ViewData["required"]);
+	string requiredcls = required ? "required" : "";
+}
+<div class="form-group @requiredcls">
+	<label class="control-label" for="strDate">@Resources.Resource.Date</label>
+	<input type="datetime" class="form-control datepicker" name="strDate" id="strDate" />
+</div>
+

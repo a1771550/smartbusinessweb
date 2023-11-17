@@ -24,7 +24,7 @@ $(document).on("click", "#btnSearch", function () {
     }        
 });
 $(document).on("click", ".removeenq", function () {
-    const enqId = $(this).data("id");
+    const enqId = $(this).data("Id");
     $.fancyConfirm({
         title: '',
         message: confirmremovetxt,
@@ -74,7 +74,7 @@ $(document).on("click", ".convert", function () {
                         noButton: notxt,
                     });
                 } else {
-                    let _id = _$ele.data('id');
+                    let _id = _$ele.data('Id');
                     let _msg = '';
 
                     let _email = _$ele.data('email').toString();
@@ -216,7 +216,7 @@ $(document).on("change", "#iPageSize", function () {
 });
 
 $(document).on("dblclick", ".enquiry", function () {
-    let Id: number = <number>$(this).data('id');
+    let Id: number = <number>$(this).data('Id');
     if ($(this).hasClass("disabled")) {
         window.location.href = '/Customer/Edit?enqId=' + Id;
     } else {        
@@ -290,12 +290,12 @@ function enqTemplate(data: IEnquiry[]): string {
         let trcls = converted ? "disabled" : "";
         //let statuscls = (x.FollowUpStatus)&&x.FollowUpStatus!=="need"&&? x.FollowUpStatus!.concat("statusbg"):"";
         // string statuscls = string.Concat(customer.FollowUpStatus, "statusbg");
-        html += `<tr class="enquiry ${trcls} ${x.statuscls}" role="button" data-id="${Id}">`;
+        html += `<tr class="enquiry ${trcls} ${x.statuscls}" role="button" data-Id="${Id}">`;
 
         if (isassignor) {
             let _checked = assigned ? "checked" : "";
             let _disabled = assigned ? "disabled" : "";
-            html += `<td style="width:10px;max-width:10px;"><input type="checkbox" class="form-check enqchk" data-id="${Id}" ${_checked} ${_disabled} data-salespersonid="${salespersonId}" ${trcls}></td>`;
+            html += `<td style="width:10px;max-width:10px;"><input type="checkbox" class="form-check enqchk" data-Id="${Id}" ${_checked} ${_disabled} data-salespersonid="${salespersonId}" ${trcls}></td>`;
         }
 
         let from = converted ? removeAnchorTag(x.from) : x.from;
@@ -314,12 +314,12 @@ function enqTemplate(data: IEnquiry[]): string {
         html += `<td style="width:120px;min-width:130px;">`;
 
         if (converted) {
-            html += `<a href="#" data-id="${Id}" title="${removetxt}" role='button' class='btn btn-danger removeenq ml-2 small'><span class="fa-solid fa-trash"></span></a>`;
+            html += `<a href="#" data-Id="${Id}" title="${removetxt}" role='button' class='btn btn-danger removeenq ml-2 small'><span class="fa-solid fa-trash"></span></a>`;
         } else {
             if (isassignor)
-                html += `<a href="#" data-email="${x.email}" data-id="${Id}" data-salespersonid="${salespersonId}" title="${assigntosales}" role='button' class='btn btn-info assign ${trcls} small'><span class="fa fa-user"></span></a>`;
+                html += `<a href="#" data-email="${x.email}" data-Id="${Id}" data-salespersonid="${salespersonId}" title="${assigntosales}" role='button' class='btn btn-info assign ${trcls} small'><span class="fa fa-user"></span></a>`;
 
-            html += `<a href="#" data-salesid="${x.enAssignedSalesId}" data-email="${x.email}" data-phone="${x.phone}" data-id="${Id}" title="${converttocustomertxt}" role='button' class='btn btn-warning convert ml-2 ${trcls} small'><span class="fa-solid  fa-hand-point-right"></span></a><a href="#" data-id="${Id}" title="${removetxt}" role='button' class='btn btn-danger removeenq ml-2 ${trcls} small'><span class="fa-solid fa-trash"></span></a>`;
+            html += `<a href="#" data-salesid="${x.enAssignedSalesId}" data-email="${x.email}" data-phone="${x.phone}" data-Id="${Id}" title="${converttocustomertxt}" role='button' class='btn btn-warning convert ml-2 ${trcls} small'><span class="fa-solid  fa-hand-point-right"></span></a><a href="#" data-Id="${Id}" title="${removetxt}" role='button' class='btn btn-danger removeenq ml-2 ${trcls} small'><span class="fa-solid fa-trash"></span></a>`;
         }
 
         html += `</td></tr>`;

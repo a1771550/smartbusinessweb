@@ -1,5 +1,30 @@
 ﻿$infoblk = $("#infoblk");
 
+$(document).on("click", ".remove", function () {
+    const Id = $(this).data("id");
+    $.fancyConfirm({
+        title: "",
+        message: confirmremovetxt,
+        shownobtn: true,
+        okButton: oktxt,
+        noButton: notxt,
+        callback: function (value) {
+            if (value) {
+                $.ajax({
+                    //contentType: 'application/json; charset=utf-8',
+                    type: "POST",
+                    url: "/ItemCategory/Delete",
+                    data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(),Id },
+                    success: function (data) {                       
+                        if (data.msg) $("#btnReload").trigger("click");
+                    },
+                    dataType: "json"
+                });                
+            } else $("#txtKeyword").trigger("focus");
+        }
+    });
+});
+
 $(document).on('click', '#btnReload', function () {
     window.location.href = '/ItemCategory/Index';
 });
@@ -17,7 +42,7 @@ $(function () {
   //  .addClass("container-fluid");
   let $sortorder = $("#sortorder");
     let $sortcol = $("#sortcol");
-    console.log($sortcol.val() + ";" + $sortorder.val());
+    //console.log($sortcol.val() + ";" + $sortorder.val());
   $target = $(".colheader").eq(<number>$sortcol.val());
   let sortcls =
     $sortorder.val() === "desc" ? "fa fa-sort-up" : "fa fa-sort-down";

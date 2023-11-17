@@ -56,5 +56,14 @@ namespace SmartBusinessWeb.Controllers.Item
             return Json("");
             //return RedirectToAction("Index");
         }
-    }
+
+		[HandleError]
+		[CustomAuthorize("item", "boss", "admin", "superadmin")]
+		[HttpPost]
+        public JsonResult Delete(int Id)
+        {
+            ItemCategoryEditModel.Delete(Id);
+            return Json(new {msg=Resources.Resource.Removed});
+        }
+	}
 }

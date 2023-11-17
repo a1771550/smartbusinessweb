@@ -24,127 +24,123 @@
 
 	if (Model.PagingWSList == null)
 	{
-		@Html.Partial("_NoRecordFound");
+		@Html.Partial("_NoRecordFound"); return;
 	}
-	else
-	{
-		<div class="row justify-content-center py-3">
-			@Html.Partial("_DatesRange", null, new ViewDataDictionary { { "DateFromTxt", Model.DateFromTxt }, { "DateToTxt", Model.DateToTxt } })
+
+	<div class="row justify-content-center py-3">
+		@Html.Partial("_DatesRange", null, new ViewDataDictionary { { "DateFromTxt", Model.DateFromTxt }, { "DateToTxt", Model.DateToTxt } })
+	</div>
+
+	<div class="d-flex justify-content-center form-inline mb-2 my-4">
+		<div class="form-group">
+			<input type="text" class="form-control" id="txtKeyword" placeholder="@Resources.Resource.KeywordRequired" />
+			<button id="btnSearch" type="button" class="btn btn-primary ml-4">@Resources.Resource.Search</button>
+			<button id="btnReload" type="button" class="btn btn-warning ml-4">@Resources.Resource.Reload</button>
 		</div>
+	</div>
 
-		<div class="d-flex justify-content-center form-inline mb-2 my-4">
-			<div class="form-group">
-				<input type="text" class="form-control" id="txtKeyword" placeholder="@Resources.Resource.KeywordRequired" />
-				<button id="btnSearch" type="button" class="btn btn-primary ml-4">@Resources.Resource.Search</button>
-				<button id="btnReload" type="button" class="btn btn-warning ml-4">@Resources.Resource.Reload</button>
-			</div>
-		</div>
-
-		<table id="tblWholeSales" class="table table-bordered  table-hover table-condensed">
-			<colgroup>
-				<col width="100">
-				<col width="100">
-				<col width="100">
-				@if (Model.ListMode == WholeSalesStatus.all)
-				{
-					<col width="60">
-				}
-
-				<col width="100">
-				<col width="100">
-				@if (CultureHelper.CurrentCulture == 2)
-				{
-					<col width="140">
-					<col width="170" />
-				}
-				else
-				{
-					<col width="120">
-					<col width="140" />
-				}
-
-			</colgroup>
-			<thead class="gray-header">
-				<tr>
-					<th class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">@Resources.Resource.Code</th>
-					<th class="text-center colheader" data-col="1" data-keyword="@Model.Keyword">@Resources.Resource.Customer</th>
-					<th class="text-center colheader" data-col="2" data-keyword="@Model.Keyword">@Resources.Resource.Location</th>
-					@if (Model.ListMode == WholeSalesStatus.all)
-					{
-						<th class="text-center colheader" data-col="3" data-keyword="@Model.Keyword">@Resources.Resource.Status</th>
-					}
-
-					<th class="text-center colheader" data-col="4" data-keyword="@Model.Keyword"><span class="font-weight-bold">@string.Format(Resources.Resource.DateFormat, Resources.Resource.WholeSales)</span></th>
-					<th class="text-center colheader" data-col="5" data-keyword="@Model.Keyword"><span class="font-weight-bold">@Resources.Resource.DeliveryDate</span></th>
-					<th></th>
-					<th>@Resources.Resource.Print</th>
-				</tr>
-			</thead>
-			@{ string status = "";}
-			@foreach (var item in Model.PagingWSList)
+	<table id="tblWholeSales" class="table table-bordered  table-hover table-condensed">
+		<colgroup>
+			<col width="100">
+			<col width="100">
+			<col width="100">
+			@if (Model.ListMode == WholeSalesStatus.all)
 			{
-				<tr>
-					<td class="text-center">
-						@Html.DisplayFor(modelWholeSales => item.wsCode)
-					</td>
-
-					<td class="text-center">
-						@Html.DisplayFor(modelWholeSales => item.CustomerName)
-					</td>
-
-					<td class="text-center">
-						@Html.DisplayFor(modelWholeSales => item.wsSalesLoc)
-					</td>
-					@if (Model.ListMode == WholeSalesStatus.all)
-					{
-						status = item.wsStatus == "CREATED" ? "order" : item.wsStatus;
-						string bgcls = string.Concat(status.ToLower(), "bg");
-						<td class="text-center @bgcls">
-							@status.ToUpper()
-						</td>
-					}
-
-					<td class="text-center">
-						@Html.DisplayFor(modelWholeSales => item.WsDateDisplay)
-					</td>
-					<td class="text-center">
-						@Html.DisplayFor(modelWholeSales => item.DeliveryDateDisplay)
-					</td>
-					<td>
-						@{var edittxt = item.wsStatus == WholeSalesStatus.order.ToString() ? Resources.Resource.Edit : Resources.Resource.Detail;}
-						<a class="btn btn-info edit mr-1 btnsmall" role="button" href="/WholeSales/Edit?Id=@item.wsUID&type=@item.wsStatus">@edittxt</a>
-						<a class="btn btn-danger remove btnsmall" role="button" href="#" data-id="@item.wsUID">@Resources.Resource.Remove</a>
-					</td>
-					<td>
-						@if (item.wsStatus == WholeSalesStatus.deliver.ToString() || item.wsStatus == WholeSalesStatus.partialdeliver.ToString())
-						{
-							<a class="btn btn-primary print mr-1 btnsmall" role="button" href="/WholeSales/Print?Id=@item.wsUID&type=@item.wsStatus" target="_blank"><span class="">@Resources.Resource.Invoice</span></a>
-							<a class="btn btn-primary print btnsmall" role="button" href="/WholeSales/Print?Id=@item.wsUID&type=@WholeSalesStatus.deliverorder.ToString()" target="_blank"><span class="">@Resources.Resource.DeliveryOrder</span></a>
-						}
-						else
-						{
-							if (status == "order")
-							{
-								<a class="btn btn-primary print mr-1 btnsmall" role="button" href="/WholeSales/Print?Id=@item.wsUID&type=@item.wsStatus" target="_blank"><span class="">@Resources.Resource.WholeSaleOrder</span></a>
-							}
-						}
-					</td>
-				</tr>
+				<col width="60">
 			}
 
-		</table>
+			<col width="100">
+			<col width="100">
+			@if (CultureHelper.CurrentCulture == 2)
+			{
+				<col width="140">
+				<col width="170" />
+			}
+			else
+			{
+				<col width="120">
+				<col width="140" />
+			}
 
-		<div id="pagingblk" class="mx-3">
-			<div class="row">
-				@Html.PagedListPager(Model.PagingWSList, PageNo => Url.Action("Index",
-		new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
-			</div>
-			<input type="hidden" id="sortorder" name="SortOrder" value="@Model.SortOrder" />
-			<input type="hidden" id="sortcol" value="@Model.SortCol" />
+		</colgroup>
+		<thead class="gray-header">
+			<tr>
+				<th class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">@Resources.Resource.Code</th>
+				<th class="text-center colheader" data-col="1" data-keyword="@Model.Keyword">@Resources.Resource.Customer</th>
+				<th class="text-center colheader" data-col="2" data-keyword="@Model.Keyword">@Resources.Resource.Location</th>
+				@if (Model.ListMode == WholeSalesStatus.all)
+				{
+					<th class="text-center colheader" data-col="3" data-keyword="@Model.Keyword">@Resources.Resource.Status</th>
+				}
+
+				<th class="text-center colheader" data-col="4" data-keyword="@Model.Keyword"><span class="font-weight-bold">@string.Format(Resources.Resource.DateFormat, Resources.Resource.WholeSales)</span></th>
+				<th class="text-center colheader" data-col="5" data-keyword="@Model.Keyword"><span class="font-weight-bold">@Resources.Resource.DeliveryDate</span></th>
+				<th></th>
+				<th>@Resources.Resource.Print</th>
+			</tr>
+		</thead>
+		@{ string status = "";}
+		@foreach (var item in Model.PagingWSList)
+		{
+			<tr>
+				<td class="text-center">
+					@Html.DisplayFor(modelWholeSales => item.wsCode)
+				</td>
+
+				<td class="text-center">
+					@Html.DisplayFor(modelWholeSales => item.CustomerName)
+				</td>
+
+				<td class="text-center">
+					@Html.DisplayFor(modelWholeSales => item.wsSalesLoc)
+				</td>
+				@if (Model.ListMode == WholeSalesStatus.all)
+				{
+					status = item.wsStatus == "CREATED" ? "order" : item.wsStatus;
+					string bgcls = string.Concat(status.ToLower(), "bg");
+					<td class="text-center @bgcls">
+						@status.ToUpper()
+					</td>
+				}
+
+				<td class="text-center">
+					@Html.DisplayFor(modelWholeSales => item.WsDateDisplay)
+				</td>
+				<td class="text-center">
+					@Html.DisplayFor(modelWholeSales => item.DeliveryDateDisplay)
+				</td>
+				<td>
+					@{var edittxt = item.wsStatus == WholeSalesStatus.order.ToString() ? Resources.Resource.Edit : Resources.Resource.Detail;}
+					<a class="btn btn-info edit mr-1 btnsmall" role="button" href="/WholeSales/Edit?Id=@item.wsUID&type=@item.wsStatus">@edittxt</a>
+					<a class="btn btn-danger remove btnsmall" role="button" href="#" data-id="@item.wsUID">@Resources.Resource.Remove</a>
+				</td>
+				<td>
+					@if (item.wsStatus == WholeSalesStatus.deliver.ToString() || item.wsStatus == WholeSalesStatus.partialdeliver.ToString())
+					{
+						<a class="btn btn-primary print mr-1 btnsmall" role="button" href="/WholeSales/Print?Id=@item.wsUID&type=@item.wsStatus" target="_blank"><span class="">@Resources.Resource.Invoice</span></a>
+						<a class="btn btn-primary print btnsmall" role="button" href="/WholeSales/Print?Id=@item.wsUID&type=@WholeSalesStatus.deliverorder.ToString()" target="_blank"><span class="">@Resources.Resource.DeliveryOrder</span></a>
+					}
+					else
+					{
+						if (status == "order")
+						{
+							<a class="btn btn-primary print mr-1 btnsmall" role="button" href="/WholeSales/Print?Id=@item.wsUID&type=@item.wsStatus" target="_blank"><span class="">@Resources.Resource.WholeSaleOrder</span></a>
+						}
+					}
+				</td>
+			</tr>
+		}
+
+	</table>
+
+	<div id="pagingblk" class="mx-3">
+		<div class="row">
+			@Html.PagedListPager(Model.PagingWSList, PageNo => Url.Action("Index",
+	new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
 		</div>
-	}
-
-
+		<input type="hidden" id="sortorder" name="SortOrder" value="@Model.SortOrder" />
+		<input type="hidden" id="sortcol" value="@Model.SortCol" />
+	</div>
 }
 
 @Html.Partial("_WaitingModal")

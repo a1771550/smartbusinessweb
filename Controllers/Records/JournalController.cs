@@ -1,9 +1,8 @@
-﻿using SmartBusinessWeb.Infrastructure;
-using System;
+﻿using PPWLib.Models.Journal;
+using SmartBusinessWeb.Infrastructure;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
+using Resources = CommonLib.App_GlobalResources;
 
 namespace SmartBusinessWeb.Controllers.Records
 {
@@ -12,9 +11,55 @@ namespace SmartBusinessWeb.Controllers.Records
     {
 		[HandleError]
 		[CustomAuthorize("reports", "boss", "admin", "superadmin")]
-		public ActionResult Index()
-        {
-            return View();
-        }
-    }
+		public ActionResult Index(int SortCol = 2, string SortOrder = "desc", string Keyword = null, int? PageNo = 1)
+		{
+			ViewBag.Title = Resources.Resource.Journal;
+			ViewBag.ParentPage = "reports";
+			ViewBag.PageName = "journal";
+			JournalEditModel model = new JournalEditModel
+			{
+				CurrentSortOrder = SortOrder,
+				Keyword = Keyword,
+				SortCol = SortCol,
+			};
+			model.GetList(SortCol, SortOrder, Keyword);
+			model.PageNo = PageNo ?? 1;
+			model.SortOrder = SortOrder == "desc" ? "asc" : "desc";			
+			return View(model);
+		}
+
+		[HandleError]
+		[CustomAuthorize("reports", "boss", "admin", "superadmin")]
+		[HttpGet]
+		public ActionResult Edit(string Id = "")
+		{
+			ViewBag.ParentPage = "reports";
+			ViewBag.PageName = "journal";
+			ViewBag.Title = string.IsNullOrEmpty(Id) ? string.Format(Resources.Resource.AddFormat, Resources.Resource.Journal) : string.Format(Resources.Resource.EditFormat, Resources.Resource.Journal);
+			JournalEditModel model = new JournalEditModel(Id);
+			return View(model);
+		}
+
+		[HandleError]
+		[CustomAuthorize("reports", "boss", "admin", "superadmin")]
+		[HttpPost]
+		public ActionResult Edit(JournalModel model, List<JournalLnView> JournalLns)
+		{
+			ViewBag.ParentPage = "reports";
+			ViewBag.PageName = "journal";
+			
+			JournalEditModel emodel = new JournalEditModel();
+			emodel.Edit(model, JournalLns);
+			return Json("");
+		}
+
+		[HandleError]
+		[CustomAuthorize("reports", "boss", "admin", "superadmin")]
+		[HttpPost]
+		public JsonResult Delete(string Id)
+		{
+			JournalEditModel.Delete(Id);
+			return Json(new { msg = Resources.Resource.Removed });
+		}
+	}
 }

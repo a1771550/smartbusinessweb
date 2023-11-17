@@ -3,7 +3,7 @@ $target = $('#tblcontact tbody');
 let assignedcontactlist: { [Key: string]: string };
 
 $(document).on('dblclick', '.sgid', function () {
-    AssignContactsToGroup($(this).data('id'));
+    AssignContactsToGroup($(this).data('Id'));
 });
 
 function AssignContactsToGroup(sgId: number) {
@@ -90,7 +90,7 @@ function OnGetSalesGroupSuccess(response) {
         $("#tblSalesGroup tr").not($("#tblSalesGroup tr:first-child")).remove();
         for (const [key, value] of Object.entries(DicSalesGroup)) {
             let salesgroup = value[0];
-            row.addClass('sgid pointer').attr('data-id', salesgroup.Id);
+            row.addClass('sgid pointer').attr('data-Id', salesgroup.Id);
             let salesnamelist: string[] = [];
             $.each(value, function (i, e) {
                 salesnamelist.push(e.UserName);
@@ -137,7 +137,7 @@ function OnGetSalesGroupSuccess(response) {
                     //uncheck the contacts:
                     $('#tblcontact tbody tr').each(function (k, v) {
                         $target = $(v).find('td:first').find('.chk');
-                        let contactId: number = $target.data('id');
+                        let contactId: number = $target.data('Id');
                         if (e == contactId) {
                             $target.prop('checked', false);
                         }
@@ -230,7 +230,7 @@ $('#btnSearchAttr').on('click', function (e) {
 
 $(document).on('dblclick', '.hotid', function () {
     closeHotListModal();
-    let id: number = <number>$(this).data('id');
+    let id: number = <number>$(this).data('Id');
     console.log('hotid:' + id);
     console.log('IdList:', IdList);
     console.log('dicHotListContacts:', dicHotListContacts);
@@ -369,7 +369,7 @@ function OnGetHotListSuccess(response) {
 
         $.each(modelhotlistlist, function () {
             var hotlist = this;
-            row.addClass('hotid pointer').attr('data-id', hotlist.Id);
+            row.addClass('hotid pointer').attr('data-Id', hotlist.Id);
             //console.log('hotlist:', hotlist);
             $("td", row).eq(0).html(hotlist.hoName);
             $("td", row).eq(1).html(hotlist.SalesPersonName);
@@ -527,7 +527,7 @@ $('#btnBlast').on('click', function (e) {
 //}
 
 $(document).on('click', '.detail', function () {
-    let contactId = $(this).data('id');
+    let contactId = $(this).data('Id');
     $.ajax({
         type: "GET",
         url: '/Contact/Detail',
@@ -553,7 +553,7 @@ $(document).on('click', '.detail', function () {
 });
 
 $(document).on('click', '.remove', function () {
-    let cusId = $(this).data('id');
+    let cusId = $(this).data('Id');
     let apId = $(this).data('apid');
     let token = $('input[name=__RequestVerificationToken]').val();
     $.fancyConfirm({

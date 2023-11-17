@@ -17,7 +17,7 @@ function populateTblonedrives(response) {
     let dataHtml: string = '';
     $.each(response, function (i, e) {
         var tagfile = `<a href='${e.odFileWebUrl}' class='filelnk' target='_blank'>${e.odFileName}</a>`;
-        dataHtml += `<tr><td>${tagfile}</td><td>${e.CreateTimeDisplay}</td><td><a href="#" class="btn btn-primary getlink" role="button" data-link="${e.odFileWebUrl}" data-id="${e.Id}">${_getlinktxt}</td></tr>`;
+        dataHtml += `<tr><td>${tagfile}</td><td>${e.CreateTimeDisplay}</td><td><a href="#" class="btn btn-primary getlink" role="button" data-link="${e.odFileWebUrl}" data-Id="${e.Id}">${_getlinktxt}</td></tr>`;
     });
     $('#pagingblk').hide();//hide mvc paging
     $('#tblonedrive tbody').empty().html(dataHtml);

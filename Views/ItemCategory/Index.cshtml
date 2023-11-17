@@ -54,7 +54,7 @@
                      @{ 
                          string disabled = item.Removable ? "" : "disabled";
                      }
-                        @Html.ActionLink(Resources.Resource.Remove,null, new { Id=item.Id }, new { @class = "btn btn-danger remove " + disabled, @role = "button" })
+                        <button type="button" class="btn btn-danger remove @disabled" data-id="@item.Id">@Resources.Resource.Remove</button>
                     </td>
                 </tr>
             }

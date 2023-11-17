@@ -1,6 +1,5 @@
 ﻿$infoblk = $("#infoblk");
-var current_page = 1;
-var records_per_page = 5;
+
 
 $(function () {
     //setFullPage();

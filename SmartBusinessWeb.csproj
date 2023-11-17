@@ -2889,6 +2889,8 @@
     <Content Include="Scripts\ts\js\pos\salesorderlist.js" />
     <Content Include="Scripts\ts\js\records\attendance.js" />
     <Content Include="Scripts\ts\js\records\job.js" />
+    <Content Include="Scripts\ts\js\records\journaledit.js" />
+    <Content Include="Scripts\ts\js\records\journallist.js" />
     <Content Include="Scripts\ts\js\records\training.js" />
     <Content Include="Static\barcode.html" />
     <Content Include="_app_offline.htm" />
@@ -4277,6 +4279,11 @@
     <Content Include="Scripts\ts\js\records\attendance.js.map" />
     <Content Include="Scripts\ts\js\records\job.js.map" />
     <Content Include="Scripts\ts\js\records\training.js.map" />
+    <Content Include="Views\Journal\Index.cshtml" />
+    <Content Include="Views\Journal\Edit.cshtml" />
+    <Content Include="Views\Shared\_Date.cshtml" />
+    <Content Include="Scripts\ts\js\records\journallist.js.map" />
+    <Content Include="Scripts\ts\js\records\journaledit.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4468,8 +4475,6 @@
     <Content Include="Views\GlobalAttribute\Index.cshtml" />
     <Content Include="Views\GraphSettings\Edit.cshtml" />
     <Content Include="Views\GraphSettings\Index.cshtml" />
-    <Content Include="Views\HotList\Edit.cshtml" />
-    <Content Include="Views\HotList\Index.cshtml" />
     <Content Include="Views\Item\Edit.cshtml" />
     <Content Include="Views\Item\Stock.cshtml" />
     <Content Include="Views\Item\ZeroStocks.cshtml" />
@@ -4479,7 +4484,6 @@
     <Content Include="Views\ItemPeriodPromotion\Index.cshtml" />
     <Content Include="Views\ItemQtyPromotion\Edit.cshtml" />
     <Content Include="Views\ItemQtyPromotion\Index.cshtml" />
-    <Content Include="Views\OneDrive\Index.cshtml" />
     <Content Include="Views\OtherSettings\ExchangeRate.cshtml" />
     <Content Include="Views\OtherSettings\Index.cshtml" />
     <Content Include="Views\OtherSettings\KingdeeAccountInfo.cshtml" />
@@ -4621,7 +4625,6 @@
     <Folder Include="App_Data\" />
     <Folder Include="Content\bs5\" />
     <Folder Include="Models\" />
-    <Folder Include="Views\Journal\" />
     <Folder Include="Views\SmartAttendence\" />
   </ItemGroup>
   <ItemGroup>
@@ -4798,6 +4801,8 @@
     <TypeScriptCompile Include="Scripts\ts\purchase\purchaseorderlist.ts" />
     <TypeScriptCompile Include="Scripts\ts\purchase\supplier.ts" />
     <TypeScriptCompile Include="Scripts\ts\purchase\supplieredit.ts" />
+    <TypeScriptCompile Include="Scripts\ts\records\journaledit.ts" />
+    <TypeScriptCompile Include="Scripts\ts\records\journallist.ts" />
     <TypeScriptCompile Include="Scripts\ts\records\training.ts" />
     <TypeScriptCompile Include="Scripts\ts\test.ts" />
     <TypeScriptCompile Include="Scripts\ts\wholesales\delivery.ts" />

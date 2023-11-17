@@ -75,7 +75,7 @@ function jobTemplate(data: IJob[]): string {
 			<th scope="col" class="colheader" data-col="2">@Resources.Resource.Client</th>
 			<th scope="col" class="colheader" data-col="3">@Resources.Resource.TimeRange</th>
         */
-        html += `<tr class="job" role="button" data-id="${Id}">`;
+        html += `<tr class="job" role="button" data-Id="${Id}">`;
 
         html += `<td style="width:180px; max-width:180px;">${(x.DateDisplay)}</td>
         <td style="width:120px;max-width:120px;">${x.joTime}</td>

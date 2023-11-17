@@ -13,6 +13,8 @@ const PriceIdx4WsInvoice: number = 10;
 const PriceIdx4PstOrder: number = 5;
 const PriceIdx4PstBill: number = 9;
 
+let current_page = 1;
+let records_per_page = 5;
 let frmId: string = "";
 let ismanager: boolean = false;
 let TransferList: Array<IStockTransfer> = [];
@@ -671,7 +673,7 @@ let dicAttrVals: { [Key: string]: string } = {};
 let dicAttrs: { [Key: string]: IAttribute } = {};
 let selectedAttribute: IAttribute;
 let reload: boolean = false;
-let dicAcAccounts: { [Key: string]: Array<IAccount> } = {};
+let DicAcAccounts: { [Key: string]: Array<IAccount> } = {};
 let nonstock: boolean = false;
 let isreplacing: boolean = false;
 let itemAcId: number = 0;
@@ -682,6 +684,7 @@ let fordeposit: boolean = false;
 let forpurchase: boolean = false;
 let fordayends: boolean = false;
 let forstockin: boolean = false;
+let forjournal: boolean = false;
 let itemaccountmode: ItemAccountMode;
 let AccountProfileId: number;
 let accountList: Array<IAccount> = [];
@@ -1461,17 +1464,17 @@ function _writeItems(itemList: IItem[]) {
 		let _chkexpcls = _chkexp == "checked" ? "danger" : "";
 
 		let chklist = `<div class="form-check form-check-inline">
-        <input class="form-check-input ${_chkbatcls}" type="checkbox" id="chkBatch" value="1" disabled ${_chkbated}>
+        <input class="form-check-input ${_chkbatcls}" type="checkbox" Id="chkBatch" value="1" disabled ${_chkbated}>
         <label class="form-check-label" for="chkBatch">${batchtxt}</label>
     </div>
 
     <div class="form-check form-check-inline">
-        <input class="form-check-input ${_chksncls}" type="checkbox" id="chkSN" value="1" disabled ${_chksned}>
+        <input class="form-check-input ${_chksncls}" type="checkbox" Id="chkSN" value="1" disabled ${_chksned}>
         <label class="form-check-label" for="chkSN">${serialnotxt}</label>
     </div>
 
     <div class="form-check form-check-inline">
-        <input class="form-check-input ${_chkexpcls}" type="checkbox" id="chkExpiry" value="1" disabled ${_chkexp}>
+        <input class="form-check-input ${_chkexpcls}" type="checkbox" Id="chkExpiry" value="1" disabled ${_chkexp}>
         <label class="form-check-label" for="chkExpiry">${expirydatetxt}</label>
     </div>`;
 
@@ -1770,12 +1773,12 @@ function OnSearchCustomersSuccess(response) {
 			$.each(CusList, function () {
 				var customer = this;
 				row.addClass("cuscode").attr("data-code", customer.cusCustomerID);
-				let chktag = `<input type="checkbox" class="chk" data-id="${customer.cusCustomerID}">`;
-				let detailtag = `<a href="#" class="btn btn-success detail" role="button" data-id="${customer.cusCustomerID}">${detailtxt}</a></td>`;
-				let callhistorytag = `<a href="/CallHistory/Index?customerId=${customer.cusCustomerID}" class="btn btn-outline-warning" role="button" data-id="${customer.AccountProfileId}"><span class="small">${callhistorytxt}</span></a>`;
+				let chktag = `<input type="checkbox" class="chk" data-Id="${customer.cusCustomerID}">`;
+				let detailtag = `<a href="#" class="btn btn-success detail" role="button" data-Id="${customer.cusCustomerID}">${detailtxt}</a></td>`;
+				let callhistorytag = `<a href="/CallHistory/Index?customerId=${customer.cusCustomerID}" class="btn btn-outline-warning" role="button" data-Id="${customer.AccountProfileId}"><span class="small">${callhistorytxt}</span></a>`;
 				let attrtag = `<a class="btn btn-primary" role="button" href="/CustomerAttribute/Index?customerId=${customer.cusCustomerID}&AccountProfileId=${customer.AccountProfileId}">${attributetxt}</a>`;
 				let editremovetag = `<a class="btn btn-info" role="button" href="/Customer/Edit?customerId=${customer.cusCustomerID}&AccountProfileId=${customer.AccountProfileId}"><span class="small">${edittxt}</span></a>
-                    <a class="btn btn-danger remove" role="button" href="#" data-id="${customer.cusCustomerID}" data-apid="${customer.AccountProfileId}"><span class="small">${removetxt}</span></a>`;
+                    <a class="btn btn-danger remove" role="button" href="#" data-Id="${customer.cusCustomerID}" data-apid="${customer.AccountProfileId}"><span class="small">${removetxt}</span></a>`;
 				let salesman =
 					customer.SalesPerson == null ? "N/A" : customer.SalesPerson.UserName;
 				$("td", row)
@@ -2062,7 +2065,7 @@ function addValRow(selectedAttribute: IAttribute, attval: string = "") {
 	$("#attrName").val(selectedAttribute.attrName);
 	let row: string = `<div class="row my-2">
  <label class="control-label" for="attval">${attvaltxt}</label>
-            <input type="text" id="attval" name="attrValue" data-attid="${attrId}" class="form-control text attval" value="${attval}">
+            <input type="text" Id="attval" name="attrValue" data-attid="${attrId}" class="form-control text attval" value="${attval}">
         </div>`;
 	comboModal.find(".container").empty().append(row);
 	comboModal
@@ -2123,7 +2126,7 @@ const getPaymentRemain = (): number => {
 };
 
 function setRemain($e: JQuery, amt: number, forsales: boolean = true) {
-	let type: string = <string>$e.attr("id")?.toString();
+	let type: string = <string>$e.attr("Id")?.toString();
 	//console.log('type:' + type);
 	//console.log('dicpaytypes:', dicPayTypes);
 	let iscash = false;
@@ -2290,7 +2293,7 @@ const GetPaymentsInfo = () => {
 	let _totalpay: number = 0;
 	$("#tblPay .form-control").each(function (i, e) {
 		if ($(e).val() !== "") {
-			let typecode: string = <string>$(e).attr("id");
+			let typecode: string = <string>$(e).attr("Id");
 			let amt: number = parseFloat(<string>$(e).val());
 			let paytype: IPaymentType = {
 				payId: 0,
@@ -3021,7 +3024,7 @@ function openDropDownModal(ele: JQuery<any>) {
 	//let _selecttxt: string = `-- ${selecttxt} --`;
 	//options += `<option value=''>${_selecttxt}</option>`;
 
-	$dropdown.attr("id", _attrname);
+	$dropdown.attr("Id", _attrname);
 	let _items: string[] = $(ele).data("attrvalue").split("||");
 	$.each(_items, function (i, e) {
 		options += `<option value="${e}">${e}</option>`;
@@ -3913,7 +3916,7 @@ function initModals() {
 					text: oktxt,
 					click: function () {
 						closeTextAreaModal();
-						if (approvalmode) {
+						if (approvalmode && (forsales || forpreorder || forpurchase || forwholesales)) {
 							//reject reason:
 							rejectreason = <string>(
 								$("#textareaModal").find("#txtField").val()
@@ -3930,6 +3933,13 @@ function initModals() {
 							$target.data("remark", remark);
 							if (remark !== "") {
 								$target.val("...");
+							}
+						}
+						if (forjournal) {
+							if (selectedJournalLn) {
+								selectedJournalLn.AllocationMemo = <string>(
+									$("#textareaModal").find("#txtField").val()
+								);
 							}
 						}
 					},
@@ -4294,7 +4304,7 @@ function initModals() {
 					class: "savebtn",
 					click: function () {
 						let $ele = dropdownModal.find(".dropdown");
-						let _id: string = <string>$ele.attr("id");
+						let _id: string = <string>$ele.attr("Id");
 						console.log("_id:" + _id);
 						let _val: string = <string>$ele.val();
 						if (_val !== "") {
@@ -5614,13 +5624,13 @@ function initItem(): IItem {
 		PLF: Number($("#PLF").val()),
 		IsActive: $("#isActive").is(":checked") ? 1 : 0,
 		IncomeAccountID: $("#IncomeAccountID").length
-			? Number($("#IncomeAccountID").data("id"))
+			? Number($("#IncomeAccountID").data("Id"))
 			: 0,
 		InventoryAccountID: $("#InventoryAccountID").length
-			? Number($("#InventoryAccountID").data("id"))
+			? Number($("#InventoryAccountID").data("Id"))
 			: 0,
 		ExpenseAccountID: $("#ExpenseAccountID").length
-			? Number($("#ExpenseAccountID").data("id"))
+			? Number($("#ExpenseAccountID").data("Id"))
 			: 0,
 		AccountProfileId: 0,
 		itmIsBought: $("#buy").length ? $("#buy").is(":checked") : false,
@@ -6499,7 +6509,7 @@ function convertStringToDate(
 
 function fillInEnquiry() {
 	enquiry = {
-		id: <string>$("#id").val(),
+		id: <string>$("#Id").val(),
 		Id: <string>$("#Id").val(),
 		enId: <string>$("#enId").val(),
 		from: <string>$("#enFrom").val(),
@@ -6682,7 +6692,7 @@ function handleCheckall(checked: boolean) {
 			IdList = $infoblk.data("idlist").split(",");
 		} else {
 			$(".chk").each(function (i, e) {
-				IdList.push($(e).data("id"));
+				IdList.push($(e).data("Id"));
 			});
 		}
 	} else {
@@ -6722,7 +6732,7 @@ function handleCheckEnqAll(checked: boolean) {
 		//    assignEnqIdList = idlist.slice(0);
 		//} else {
 		$(".enqchk").each(function (i, e) {
-			assignEnqIdList.push($(e).data("id"));
+			assignEnqIdList.push($(e).data("Id"));
 		});
 		//}
 	} else {
@@ -6747,7 +6757,7 @@ $(".chk").on("input", function (e) {
 	e.stopPropagation();
 });
 $(document).on("change", ".chk", function (e) {
-	let _id: number = <number>$(this).data("id");
+	let _id: number = <number>$(this).data("Id");
 	if ($(this).is(":checked")) {
 		IdList.push(_id);
 	} else {
@@ -6766,7 +6776,7 @@ $(document).on("change", ".chk", function (e) {
 	//console.log("idlist:", IdList);
 });
 $(document).on("change", ".enqchk", function (e) {
-	let _id: string = <string>$(this).data("id");
+	let _id: string = <string>$(this).data("Id");
 	if ($(this).is(":checked")) {
 		assignEnqIdList.push(_id);
 	} else {
@@ -6895,7 +6905,7 @@ let hotlistlist: Array<IHotList>;
 function initHotList(ele: JQuery | null): IHotList {
 	return ele === null
 		? {
-			Id: <number>$("#id").val(),
+			Id: <number>$("#Id").val(),
 			hoName: <string>$("#hoName").val(),
 			hoSalesmanResponsible: <number>$("#drpSalesmen").val(),
 			hoDescription: <string>$("#hoDescription").val(),
@@ -6905,7 +6915,7 @@ function initHotList(ele: JQuery | null): IHotList {
 			SalesmanList: [],
 		}
 		: {
-			Id: <number>$(ele).data("id"),
+			Id: <number>$(ele).data("Id"),
 			hoName: <string>$(ele).data("name"),
 			hoSalesmanResponsible: <number>$(ele).data("salesmanresponsible"),
 			hoDescription: <string>$(ele).data("desc"),
@@ -7087,7 +7097,7 @@ function toggleNames() {
 let emailsetting: IEmailSetting;
 function initEmailSetting(): IEmailSetting {
 	return {
-		Id: <number>$("#id").val(),
+		Id: <number>$("#Id").val(),
 		emOffice365: <string>$("#emOffice365").val() == "True",
 		iOffice365: <number>$("#iOffice365").val(),
 		emSMTP_Server: <string>$("#emSMTP_Server").val(),
@@ -8733,7 +8743,7 @@ function populateItemRow(proId: number | null = 0) {
 	}
 	else {
 		if (reviewmode) {
-			if (itemOptions.ChkSN)$sn.addClass("pointer").val("...");
+			if (itemOptions.ChkSN) $sn.addClass("pointer").val("...");
 		}
 		else {
 			if (itemOptions.ChkSN) {
@@ -8742,7 +8752,7 @@ function populateItemRow(proId: number | null = 0) {
 			} else {
 				$sn.removeClass("serialno pointer");
 			}
-		}		
+		}
 	}
 
 	if ((forsales && !reviewmode) || (forpreorder && PreSales.rtsStatus == SalesStatus.presettling)) {
@@ -8809,11 +8819,11 @@ function populateItemRow(proId: number | null = 0) {
 			} else {
 				$vt.removeClass("validthru pointer").datepicker("disable");
 			}
-		}		
+		}
 	}
 
 	idx++;
-	if ((forsales&&!reviewmode) || (forpreorder && PreSales.rtsStatus == SalesStatus.prestart) || forwholesales) {		
+	if ((forsales && !reviewmode) || (forpreorder && PreSales.rtsStatus == SalesStatus.prestart) || forwholesales) {
 		let itemcode = selectedItemCode;
 		let ivpointer =
 			!itemOptions.ChkBatch && !itemOptions.ChkSN && !itemOptions.WillExpire
@@ -9154,7 +9164,7 @@ function addRow() {
 
 	//let jobs: string = "";
 	//JobList.forEach((x) => jobs += `<option value='${x.JobID}'>${x.JobName}</option>`);
-	html += `<td><select class="job flex">${setJobListOptions(0)}</select></td>`;
+	html += `<td><select class="Job flex">${setJobListOptions(0)}</select></td>`;
 
 	if (forsales || forpreorder || forwholesales)
 		html +=
@@ -9231,7 +9241,7 @@ function focusItemCode(idx: number = -1) {
 }
 
 function fillInDelDetail(arr: string[], title: string) {
-	let html = `<h4>${title}</h4><table id="" class="table table-bordered table-striped table-hover table-condensed">`;
+	let html = `<h4>${title}</h4><table Id="" class="table table-bordered table-striped table-hover table-condensed">`;
 	$.each(arr, function (i, e) {
 		html += "<tr>";
 		html += `<td>${e}</td>`;
@@ -9313,7 +9323,7 @@ $(document).on("dblclick", ".serialno.pointer", function () {
 					selectedSalesLn = $.grep(SalesLnList, function (e, i) {
 						return e.rtlSeq == seq;
 					})[0];
-				}					
+				}
 			}
 
 			if (forpreorder) {
@@ -9512,7 +9522,7 @@ function openSerialModal(hasFocusCls: boolean) {
 		//console.log("selectedWholesalesLn:", selectedWholesalesLn);
 		if (forwholesales)
 			$("#txtStaticItemName").val(selectedWholesalesLn!.itmNameDesc);
-		if (forsales) reviewmode ? $("#txtStaticItemName").val(selectedSaleLn!.Item.NameDesc): $("#txtStaticItemName").val(selectedSalesLn!.Item.NameDesc);
+		if (forsales) reviewmode ? $("#txtStaticItemName").val(selectedSaleLn!.Item.NameDesc) : $("#txtStaticItemName").val(selectedSalesLn!.Item.NameDesc);
 		if (forpreorder)
 			$("#txtStaticItemName").val(selectedPreSalesLn!.itmNameDesc);
 
@@ -9585,7 +9595,7 @@ function writeSN(
 	let _snseq = $("#tblSerial tbody").find("tr").length + 1;
 	let html: string = "";
 
-	html = `<tr id='${_sn}' data-itemcode="${selectedItemCode}" data-sn='${_sn}'>`;
+	html = `<tr Id='${_sn}' data-itemcode="${selectedItemCode}" data-sn='${_sn}'>`;
 
 	if (!forwholesales && !forsales && !forpreorder) html += `<td>${_snseq}</td>`;
 
@@ -9616,7 +9626,7 @@ function writeSN(
 
 		html += `<td>${pocode}</td>`;
 
-		html += `<td><input type="checkbox" id="chksnvt${_sn}" class="chksnvt" data-pocode="${pocode}" data-sn="${_sn}" data-vt="${_validthru}" ${_checked} ${_disabled}></td>`;
+		html += `<td><input type="checkbox" Id="chksnvt${_sn}" class="chksnvt" data-pocode="${pocode}" data-sn="${_sn}" data-vt="${_validthru}" ${_checked} ${_disabled}></td>`;
 	}
 
 	if (!forwholesales && !forsales && !forpreorder)
@@ -9846,7 +9856,7 @@ function confirmSNs() {
 	if (forwholesales || forsales || forpreorder) {
 		$("#tblSerial tbody tr").each(function (i, e) {
 			$target = $(e).find("td:eq(3)").find(".chksnvt");
-			let snvtId = $target.attr("id");
+			let snvtId = $target.attr("Id");
 			let pocode = $target.data("pocode");
 			let _snvt = {
 				pocode: pocode,
@@ -10059,7 +10069,7 @@ $(document).on("click", "#btnSearchSN", function () {
 				if (e.serialcodes.includes(searchsn)) {
 					window.location.href = "#" + searchsn;
 					$("#tblSerial tbody tr").each(function (i, e) {
-						if ($(e).prop("id") === searchsn) {
+						if ($(e).prop("Id") === searchsn) {
 							$(e).addClass("highlight_row");
 							found = true;
 							return false;
@@ -10073,7 +10083,7 @@ $(document).on("click", "#btnSearchSN", function () {
 				if (e.sn == searchsn) {
 					window.location.href = "#" + searchsn;
 					$("#tblSerial tbody tr").each(function (i, e) {
-						if ($(e).prop("id") === searchsn) {
+						if ($(e).prop("Id") === searchsn) {
 							$(e).addClass("highlight_row");
 							found = true;
 							return false;
@@ -10467,7 +10477,7 @@ function resetRow() {
 	const $location = $target.eq(currentY).find("td").eq(idx).find(".location");
 	$location.val($location.find("option").eq(1).val() as string);
 	idx++;
-	const $job = $target.eq(currentY).find("td").eq(idx).find(".job");
+	const $job = $target.eq(currentY).find("td").eq(idx).find(".Job");
 	$job.val($job.find("option").first().val() as string);
 
 	const $amount = $target.eq(currentY).find("td").last().find(".amount");
@@ -11338,7 +11348,7 @@ function OnGetStocksOK(response) {
 			//let _disabled = (itemoption) && itemoption.Disabled ? "disabled" : "";
 			let _disabled = _checked !== "" ? "disabled" : "";
 			if (forstock)
-				html += `<td style="width:10px;max-width:10px;"><input type="checkbox" class="form-check chk" data-id="${item.itmItemID}" ${_checked} ${_disabled}></td>`;
+				html += `<td style="width:10px;max-width:10px;"><input type="checkbox" class="form-check chk" data-Id="${item.itmItemID}" ${_checked} ${_disabled}></td>`;
 
 			if (!fortransfer && enablebuysellunits) {
 				html = html
@@ -11456,7 +11466,7 @@ function OnGetStocksOK(response) {
 
 				let _html = forstock
 					? `${locqtydisplay}`
-					: `<input type="number" class="${inputcls}" data-isprimary="${isprimary}" data-code="${item.itmCode}" style="width:70%;" data-shop="${e}" data-onhandstock="${item.OnHandStock}" data-id="${Id}" data-oldval="${locqty}" data-abssqty="${abssqty}" data-itemid="${item.itmItemID}" value="${locqty}" ${readonly} title="${transferdblclickhints}"/>`;
+					: `<input type="number" class="${inputcls}" data-isprimary="${isprimary}" data-code="${item.itmCode}" style="width:70%;" data-shop="${e}" data-onhandstock="${item.OnHandStock}" data-Id="${Id}" data-oldval="${locqty}" data-abssqty="${abssqty}" data-itemid="${item.itmItemID}" value="${locqty}" ${readonly} title="${transferdblclickhints}"/>`;
 
 				html += `<td class="text-right" style="width:${qtycolwidth};max-width:${qtycolwidth}">${_html}</td>`;
 
@@ -11470,7 +11480,7 @@ function OnGetStocksOK(response) {
 				html += `<td style="width:${qtycolwidth};max-width:${qtycolwidth}" class="text-right">${_html}</td>`;
 			}
 			if (forstock) {
-				let _html = `<button class="btn btn-info mr-2 edit btnsmall" type="button" data-id="${item.itmItemID}" onclick="editItem(${item.itmItemID});"><span class="">${edittxt}</span></button>`;
+				let _html = `<button class="btn btn-info mr-2 edit btnsmall" type="button" data-Id="${item.itmItemID}" onclick="editItem(${item.itmItemID});"><span class="">${edittxt}</span></button>`;
 				/* _html += `<button class="btn btn-danger editiv btnsmall" type="button" data-id="${item.itmItemID}" onclick="editItem(${item.itmItemID});"><span class="">${itemvariationtxt}</span></button>`;*/
 				html += `<td>${_html}</td>`;
 			}
@@ -12467,7 +12477,7 @@ function initDeliveryItem(
 			dlBatId: null,
 			dlVtId: null,
 			dlStockLoc: $td.eq(lidx).find(".location").val() as string,
-			JobID: Number($td.eq(jidx).find(".job").val()),
+			JobID: Number($td.eq(jidx).find(".Job").val()),
 			ivIdList: null,
 			ivList: [],
 		};
@@ -13289,7 +13299,7 @@ function confirmIvQty() {
 					deliveryItem.dlQty = newivqty;
 					deliveryItem.seq = seq;
 					deliveryItem.pstCode = $(v).data("pocode") as string;
-					deliveryItem.dlCode = $(v).data("id") as string;
+					deliveryItem.dlCode = $(v).data("Id") as string;
 					deliveryItem.ivIdList = $(v).data("ividlist").toString().trim();
 					deliveryItem.itmCode = $(v).data("itemcode") as string;
 
@@ -13357,7 +13367,7 @@ function confirmIvQty() {
 							.first()
 							.find(".ivdelqty")
 							.each(function (k, v) {
-								let dlCode = $(v).attr("id") as string;
+								let dlCode = $(v).attr("Id") as string;
 								let idx = -1;
 								$.each(DeliveryItems, function (index, ele: IDeliveryItem) {
 									if (ele.dlCode == dlCode) {
@@ -13547,7 +13557,7 @@ function confirmVtQty() {
 					}
 					deliveryItem.pstCode = $(v).data("pocode") as string;
 					deliveryItem!.dlQty = deliveryItem!.newvtqty;
-					deliveryItem.dlCode = $(v).attr("id") as string;
+					deliveryItem.dlCode = $(v).attr("Id") as string;
 					deliveryItem.JsVt = $(v).data("vt").toString().trim();
 					deliveryItem.itmCode = $(v).data("itemcode") as string;
 
@@ -13615,7 +13625,7 @@ function confirmVtQty() {
 							.first()
 							.find(".vtdelqty")
 							.each(function (k, v) {
-								let dlCode = $(v).attr("id") as string;
+								let dlCode = $(v).attr("Id") as string;
 								let idx = -1;
 								$.each(DeliveryItems, function (index, ele: IDeliveryItem) {
 									if (ele.dlCode == dlCode) {
@@ -13681,7 +13691,7 @@ function confirmBatchSnQty() {
 						deliveryItem!.dlQty = deliveryItem!.newbdq;
 
 						deliveryItem.pstCode = $(v).data("pocode") as string;
-						deliveryItem.dlCode = $(v).attr("id") as string;
+						deliveryItem.dlCode = $(v).attr("Id") as string;
 						deliveryItem.dlBatch = $(v).data("batch") as string;
 						deliveryItem.JsVt = $(v).data("batvt").toString().trim();
 						deliveryItem.itmCode = selectedItemCode.toString();
@@ -13718,7 +13728,7 @@ function confirmBatchSnQty() {
 				.each(function (k, v) {
 					$target = $(v);
 					let sn: string = $target.val() as string;
-					let batId: string = $target.attr("id") as string;
+					let batId: string = $target.attr("Id") as string;
 					let batcode: string = $target.data("batcode") as string;
 					let vt: string = $target.data("snvt").toString().trim();
 					let pocode: string = $target.data("pocode") as string;
@@ -13812,7 +13822,7 @@ function confirmBatchSnQty() {
 								.eq(1)
 								.find(".batdelqty")
 								.each(function (k, v) {
-									let dlCode = $(v).attr("id") as string;
+									let dlCode = $(v).attr("Id") as string;
 									let idx = -1;
 									$.each(DeliveryItems, function (index, ele: IDeliveryItem) {
 										if (ele.dlCode == dlCode) {
@@ -13831,7 +13841,7 @@ function confirmBatchSnQty() {
 									$target = $(v);
 									$target.prop("checked", false);
 									let sn: string = $target.val() as string;
-									let batId: string = $target.attr("id") as string;
+									let batId: string = $target.attr("Id") as string;
 									let batcode: string = $target.data("batcode") as string;
 
 									//todo: snvtlist
@@ -13935,7 +13945,7 @@ function getItemInfo4BatSnVtIv(sn: string | null = null) {
 		.find(".location")
 		.val() as string;
 	idx++;
-	deliveryItem!.JobID = Number($tr.find("td").eq(idx).find(".job").val());
+	deliveryItem!.JobID = Number($tr.find("td").eq(idx).find(".Job").val());
 }
 
 let snvtlist: ISnVt[] = [];
@@ -14056,13 +14066,13 @@ const populateSelectedItem = () => {
 	selectedItem!.PLE = Number($("#PLE").val());
 	selectedItem!.PLF = Number($("#PLF").val());
 	selectedItem!.IncomeAccountID = $("#IncomeAccountID").length
-		? Number($("#IncomeAccountID").data("id"))
+		? Number($("#IncomeAccountID").data("Id"))
 		: 0;
 	selectedItem!.InventoryAccountID = $("#InventoryAccountID").length
-		? Number($("#InventoryAccountID").data("id"))
+		? Number($("#InventoryAccountID").data("Id"))
 		: 0;
 	selectedItem!.ExpenseAccountID = $("#ExpenseAccountID").length
-		? Number($("#ExpenseAccountID").data("id"))
+		? Number($("#ExpenseAccountID").data("Id"))
 		: 0;
 	selectedItem!.itmIsBought = $("#buy").length
 		? $("#buy").is(":checked")
@@ -14096,7 +14106,7 @@ const populateSelectedItem = () => {
 		let itemcode = $("#itmCode").val() as string;
 		$(".drpItemAttr").each(function (i, e) {
 			let attr: IItemAttribute = initItemAttr(itemcode);
-			attr.Id = Number($(e).attr("id"));
+			attr.Id = Number($(e).attr("Id"));
 			attr.iaName = $(e).data("name");
 			attr.iaValue = $(e).val() as string;
 			attr.iaUsed4Variation = true;
@@ -14134,13 +14144,13 @@ const populateItemVari = () => {
 	ItemVari!.PLE = Number($("#PLE").val());
 	ItemVari!.PLF = Number($("#PLF").val());
 	ItemVari!.IncomeAccountID = $("#IncomeAccountID").length
-		? Number($("#IncomeAccountID").data("id"))
+		? Number($("#IncomeAccountID").data("Id"))
 		: 0;
 	ItemVari!.InventoryAccountID = $("#InventoryAccountID").length
-		? Number($("#InventoryAccountID").data("id"))
+		? Number($("#InventoryAccountID").data("Id"))
 		: 0;
 	ItemVari!.ExpenseAccountID = $("#ExpenseAccountID").length
-		? Number($("#ExpenseAccountID").data("id"))
+		? Number($("#ExpenseAccountID").data("Id"))
 		: 0;
 	ItemVari!.itmIsBought = $("#buy").length ? $("#buy").is(":checked") : false;
 	ItemVari!.itmIsSold = $("#sell").length ? $("#sell").is(":checked") : false;
@@ -14164,7 +14174,7 @@ const populateItemVari = () => {
 		let itemcode = $("#itmCode").val() as string;
 		$(".drpItemAttr").each(function (i, e) {
 			let attr: IItemAttribute = initItemAttr(itemcode);
-			attr.Id = Number($(e).attr("id"));
+			attr.Id = Number($(e).attr("Id"));
 			attr.iaName = $(e).data("name");
 			attr.iaValue = $(e).val() as string;
 			attr.iaUsed4Variation = true;
@@ -14404,15 +14414,15 @@ function searchAccount() {
 }
 function copyItemAccount() {
 	itemAcId = copiedItem.IncomeAccountID;
-	$("#IncomeAccountID").data("id", itemAcId);
+	$("#IncomeAccountID").data("Id", itemAcId);
 	itemaccountmode = ItemAccountMode.Sell;
 	selectItemAccount();
 	itemAcId = copiedItem.ExpenseAccountID;
-	$("#ExpenseAccountID").data("id", itemAcId);
+	$("#ExpenseAccountID").data("Id", itemAcId);
 	itemaccountmode = ItemAccountMode.Buy;
 	selectItemAccount();
 	itemAcId = copiedItem.InventoryAccountID;
-	$("#InventoryAccountID").data("id", itemAcId);
+	$("#InventoryAccountID").data("Id", itemAcId);
 	itemaccountmode = ItemAccountMode.Inventory;
 	selectItemAccount();
 	if (selectedItem) {
@@ -14435,7 +14445,7 @@ $(document).on("change", ".itemaccount", function () {
 	//console.log('itemaccountmodel:' + itemaccountmode);
 	if (AcClfID !== "") {
 		//console.log('itemaccountmodel:', itemaccountmode);
-		accountList = dicAcAccounts[AcClfID];
+		accountList = DicAcAccounts[AcClfID];
 		//console.log('aclist:', accountList);
 		changeAccountPage(1);
 	}
@@ -14462,15 +14472,27 @@ function changeAccountPage(page) {
 	for (var i = currentstartpage; i < currentendpage; i++) {
 		var e = _list[i];
 		if (typeof e !== "undefined")
-			output += `<tr><td>${e.AccountNumber}</td><td>${e.AccountName}</td><td>${e.ACDescription}</td><td><input type="radio" class="radaccount" data-acid="${e.AccountID}"></td></tr>`;
+			output += `<tr><td>${e.AccountNumber}</td><td>${e.AccountName}</td><td>${e.ACDescription}</td><td><input type="radio" class="radaccount" data-acno="${e.AccountNumber}" data-acdesc="${e.ACDescription}" data-acname="${e.AccountName}"></td></tr>`;
 	}
-	output += `<script>
-        $(document).on('Change','.radaccount',function(){
+
+	if (forjournal) {
+		//populateAccount4Journal
+		output += `<script>
+        $(document).on("change",".radaccount",function(){		
+            closeAccountModal();
+            populateAccount4Journal($(this).data("acno"),$(this).data("acname"));
+        });
+</script>`;
+	} else {
+		output += `<script>
+        $(document).on("change",".radaccount",function(){
             itemAcId = $(this).data('acid');
             closeAccountModal();
             selectItemAccount();
         });
 </script>`;
+	}
+	
 	accountModal
 		.find(".container")
 		.find("#tblAccount tbody")
@@ -14479,8 +14501,8 @@ function changeAccountPage(page) {
 
 	if (_list.length > records_per_page) {
 		//<div class="Pager"><span id="recordtxt" class="font-weight-bold">項目 <span id="recordrange">1 - 10</span> 共 <span id="recordcount">15</span></span><span>1</span><a style="cursor:pointer" class="page" page="2">2</a><a style="cursor:pointer" class="page" page="2">&gt;</a><a style="cursor:pointer" class="page" page="2">&gt;&gt;</a></div>
-		let html = `<div class="Pager"><span id="recordtxt" class="font-weight-bold">${itemtxt} <span id="recordrange">${currentstartpage + 1
-			} - ${currentendpage}</span> ${pagetotaltxt} <span id="recordcount">${_list.length
+		let html = `<div class="Pager"><span Id="recordtxt" class="font-weight-bold">${itemtxt} <span Id="recordrange">${currentstartpage + 1
+			} - ${currentendpage}</span> ${pagetotaltxt} <span Id="recordcount">${_list.length
 			}</span></span>`;
 		for (var i = 0; i < numAccountPages(); i++) {
 			if (i === page - 1) {
@@ -14502,13 +14524,13 @@ function changeAccountPage(page) {
 $(document).on("change", ".chkitemac", function () {
 	let ischecked = $(this).is(":checked");
 
-	if (!NonABSS && !ischecked && $(this).attr("id") == "inventory") {
+	if (!NonABSS && !ischecked && $(this).attr("Id") == "inventory") {
 		$("#drpInventory").prop("selectedIndex", 0);
 		$(".accountno").eq(2).val("");
 		selectedItem!.InventoryAccountID = 0;
 	}
 
-	itemaccountmode = getItemAccountMode(<string>$(this).attr("id"));
+	itemaccountmode = getItemAccountMode(<string>$(this).attr("Id"));
 
 	if (itemaccountmode === ItemAccountMode.Buy) {
 		selectedItem!.itmIsBought = ischecked;
@@ -14552,7 +14574,7 @@ function getAccountClassificationID() {
 	});
 }
 function getAccountList() {
-	for (const [key, value] of Object.entries(dicAcAccounts)) {
+	for (const [key, value] of Object.entries(DicAcAccounts)) {
 		$.each(value, function (i, e) {
 			if (e.AccountID === itemAcId) {
 				accountList = value.slice(0);
@@ -14575,7 +14597,7 @@ function fillAccountNumber(_itemaccountmode: string) {
 			<string>$(e).data("itemaccountmode").toLowerCase() === _itemaccountmode
 		) {
 			$(this).val(ItemAccountNumber);
-			$(this).data("id", itemAcId);
+			$(this).data("Id", itemAcId);
 			return false;
 		}
 	});
@@ -14832,7 +14854,7 @@ function handleBatVtQtyChange(this: any, lastCellCls: string) {
 	let qty: number = Number($(this).val());
 	let maxqty: number = Number($(this).attr("max"));
 	let tblIndex: number = Number($(this).data("tblindex"));
-	let tmpId: string = $(this).data("id").toString();
+	let tmpId: string = $(this).data("Id").toString();
 	let itemcode: string = $(this).data("itemcode").toString();
 	let receiver: string = $(this).data("shop").toString();
 	$tr = $(this).parent("div").parent("td").parent("tr");
@@ -15786,7 +15808,7 @@ const populateIaAccordion = (addRow: boolean) => {
 		const chkused = c.iaUsed4Variation ? "checked" : "";
 
 		return `
-            <h3>${c.iaName}<span class="small danger float-right" data-id="${c.tmpId}" onclick="toggleAccordionState(1);removeItemAttr(this);" style="background-color:white;border-radius:3px;padding:1px;">${removetxt}</span></h3>
+            <h3>${c.iaName}<span class="small danger float-right" data-Id="${c.tmpId}" onclick="toggleAccordionState(1);removeItemAttr(this);" style="background-color:white;border-radius:3px;padding:1px;">${removetxt}</span></h3>
                 <div class="row">
                     <div class="col-12 col-md-3">
                         <label>${nametxt}</label>
@@ -15820,7 +15842,7 @@ const populateIaAccordion = (addRow: boolean) => {
 
 	if (addRow) {
 		let latestId = `attr#${ItemAttrList.length}`;
-		html.push(`<h3>${customattributetxt}<span class="small danger float-right" data-id="${latestId}" onclick="toggleAccordionState(1);removeItemAttr(this);" style="background-color:white;border-radius:3px;padding:1px;">${removetxt}</span></h3>
+		html.push(`<h3>${customattributetxt}<span class="small danger float-right" data-Id="${latestId}" onclick="toggleAccordionState(1);removeItemAttr(this);" style="background-color:white;border-radius:3px;padding:1px;">${removetxt}</span></h3>
                 <div class="row">
                     <div class="col-12 col-md-3">
                         <label>${nametxt}</label>
@@ -15949,7 +15971,7 @@ const toggleAccordionState = (state: number) => {
 };
 
 const removeItemAttr = (ele) => {
-	let tmpId = $(ele).data("id") as string;
+	let tmpId = $(ele).data("Id") as string;
 	let $ianame = $(ele)
 		.parent("button")
 		.parent("div")
@@ -16025,7 +16047,7 @@ function itemEditPageLoad() {
 	initModals();
 	$("#itmCode").trigger("focus");
 	//console.log('codelist:', codelist);
-	dicAcAccounts = $infoblk.data("jsondicacaccounts");
+	DicAcAccounts = $infoblk.data("jsondicacaccounts");
 	//console.log('dicacaccounts:', dicAcAccounts);
 	editmode = <number>$("#itmItemID").val() > 0;
 	if (editmode) {
@@ -16348,7 +16370,7 @@ $(document).on("change", ".positive", function () {
 	if (!selectedItem) {
 		return;
 	}
-	let pl: string = <string>$(this).attr("id")?.toLowerCase();
+	let pl: string = <string>$(this).attr("Id")?.toLowerCase();
 	let plp: number = <number>$(this).val();
 	switch (pl) {
 		case "plb":
@@ -16626,7 +16648,7 @@ function getKeyByValue(object, value) {
 let currencyReferrer: string;
 $(document).on("dblclick", ".exrate", function () {
 	if (!$(this).hasClass("disabled")) {
-		currencyReferrer = $(this).attr("id") as string;
+		currencyReferrer = $(this).attr("Id") as string;
 		fillInCurrencyModal();
 		openCurrencyModal();
 	}
@@ -16796,7 +16818,7 @@ let DicOriCards: { [Key: string]: string } = {};
 let DicFilteredCards: { [Key: string]: string } = {};
 function fillInCategory() {
 	ItemCategory = {} as ICategory;
-	ItemCategory.Id = editmode ? Number($("#id").val()) : 0;
+	ItemCategory.Id = editmode ? Number($("#Id").val()) : 0;
 	ItemCategory.catName = $("#catName").val() as string;
 	ItemCategory.catDesc = $("#catDesc").val() as string;
 	ItemCategory.catNameTC = $("#catNameTC").val() as string;
@@ -16877,7 +16899,7 @@ function OnSearchCustomersOK(data) {
 
 			html += `<td style="width:125px;max-width:125px;">
                     <a class="btn btn-info" role="button" href="/Customer/Edit?customerId=${customer.cusCustomerID}&AccountProfileId=${customer.AccountProfileId}"><span class="small">${edittxt}</span></a>
-                    <a class="btn btn-danger remove" role="button" href="#" data-id="${customer.cusCustomerID}" data-apid="${customer.AccountProfileId}"><span class="small">${removetxt}</span></a>
+                    <a class="btn btn-danger remove" role="button" href="#" data-Id="${customer.cusCustomerID}" data-apid="${customer.AccountProfileId}"><span class="small">${removetxt}</span></a>
                 </td>
             </tr>`;
 		});
@@ -17031,7 +17053,7 @@ function fillInCustomer() {
 }
 
 $(document).on("click", ".itemremove", function () {
-	let itemId = $(this).data("id");
+	let itemId = $(this).data("Id");
 	$.fancyConfirm({
 		title: "",
 		message: confirmremovetxt,
@@ -17542,7 +17564,7 @@ function updatePreSales() {
 				presalesln.rtlSalesLoc = presalesln.rtlStockLoc = <string>(
 					$(e).find("td").eq(-3).find(".location").val()
 				);
-				presalesln.JobID = Number($(e).find("td").eq(-2).find(".job").val());
+				presalesln.JobID = Number($(e).find("td").eq(-2).find(".Job").val());
 				//console.log("presalesln.jobid:" + presalesln.JobID);
 				const amt: number = Number(
 					$(e).find("td").eq(-1).find(".amount").val()
@@ -17624,7 +17646,7 @@ function updateSales() {
 				salesln.rtlSalesLoc = salesln.rtlStockLoc = <string>(
 					$(e).find("td").eq(-3).find(".location").val()
 				);
-				salesln.JobID = Number($(e).find("td").eq(-2).find(".job").val());
+				salesln.JobID = Number($(e).find("td").eq(-2).find(".Job").val());
 				//console.log("salesln.jobid:" + salesln.JobID);
 				const amt: number = Number(
 					$(e).find("td").eq(-1).find(".amount").val()
@@ -17796,9 +17818,9 @@ function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) 
 						saName: "",
 						saReceivedDateTime: "",
 						saCheckInTime: "",
-						saCheckOutTime: "",					
+						saCheckOutTime: "",
 						saDate: null,
-						DateDisplay:"",
+						DateDisplay: "",
 					};
 
 					let idx = AttendanceList.findIndex(a => a.saId == x.id);
@@ -17808,7 +17830,7 @@ function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) 
 					}
 
 				});
-				
+
 				parseAttendances(DicAttdSubject);
 
 				if (AttendanceList.length > 0) {
@@ -17858,11 +17880,11 @@ function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) 
 						receiveddate: getReceivedDate(x.receivedDateTime),
 						joClient: "",
 						joTime: "",
-						joWorkingHrs:0,
+						joWorkingHrs: 0,
 						joReceivedDateTime: "",
-						joAttachements: "",						
+						joAttachements: "",
 						joDate: null,
-						DateDisplay:""
+						DateDisplay: ""
 					};
 					//console.log("receivedDateTime:", x.receivedDateTime);
 					let idx = JobList.findIndex(a => a.joId == x.id);
@@ -17926,9 +17948,9 @@ function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) 
 						trIndustry: "",
 						trAttendance: 0,
 						trIsApproved: (x.subject as string).startsWith("[Confirmed]"),
-						trReceivedDateTime: "",						
+						trReceivedDateTime: "",
 						trPhone: "",
-						strDate:"",
+						strDate: "",
 						trDate: null,
 						DateDisplay: ""
 					};
@@ -17982,8 +18004,8 @@ $(document).on("change", ".todate", function () {
 
 // let jsdateformat: string = "dd/mm/yy";
 const jsdateformat: string = "yy-mm-dd";
-function getReceivedDate(receivedDateTime:string): string {
-    return (receivedDateTime).split("T")[0].trim();
+function getReceivedDate(receivedDateTime: string): string {
+	return (receivedDateTime).split("T")[0].trim();
 }
 
 function initDatePicker(
@@ -17994,30 +18016,19 @@ function initDatePicker(
 	setDate: boolean = true,
 	showToday: boolean = false
 ) {
+	/*console.log("here");*/
 	if (format === "") format = jsdateformat;
 
 	$(`#${eleId}`).datepicker({
 		dateFormat: format,
-		//showOn: 'button',
 		beforeShow: function () {
 			setTimeout(function () {
 				$(".ui-datepicker").css("z-index", 99999999999999);
 			}, 0);
 		},
-		//focus: function () {
-		//	console.log("reopen the datepicker");
-		//	$(`#${eleId}`).show();
-		//},//not working!!!
 	});
-	//    .next('button').button({
-	//    icons: {
-	//        primary: 'ui-icon-calendar'
-	//    }, text: false
-	//});
 
 	if (setDate) {
-		//if(eleId=="txtDeliveryDate")
-		//      console.log("date#:", date);
 		$(`#${eleId}`).datepicker("setDate", date);
 	}
 
@@ -18075,7 +18086,7 @@ $(document).on("click", ".respond", function () {
 	let type: string = $(this).data("type");
 
 	if (forcustomer) {
-		customerId = $(this).data("id") as number;
+		customerId = $(this).data("Id") as number;
 		selectedCus = initCustomer();
 		selectedCus.cusCode = $(this).data("code");
 		selectedCus.cusCustomerID = customerId;
@@ -18850,13 +18861,48 @@ interface IAttendance {
 	saName: string;
 	saCheckInTime: string;
 	saCheckOutTime: string | null;
-	saReceivedDateTime: string;	
+	saReceivedDateTime: string;
 	saDate: Date | null;
 	DateDisplay: string;
 	//saDateTo: string;
 }
+
+let Journal: IJournal;
+let JournalLns: IJournalLn[] = [];
+let selectedJournalLn: IJournalLn;
+interface IJournal {
+	Id: string;
+	JournalNumber: string;
+	strDate: string;
+	JournalDate: string;
+	Memo: string;
+	Inclusive: boolean;
+	TaxCode: string;
+	ImportDutyAmount: number | null;
+	CurrencyCode: string;
+	ExchangeRate: number | null;
+	Category: string;
+	DateDisplay: string;
+}
+interface IJournalLn {
+	mainId: string;
+	JournalDate: string;
+	Memo: string;
+	Id: number;
+	JournalNumber: string;
+	Seq: number;
+	AccountName: string;
+	AccountNumber: string;
+	DebitExTaxAmount: number | null;
+	DebitIncTaxAmount: number | null;
+	CreditExTaxAmount: number | null;
+	CreditIncTaxAmount: number | null;
+	Job: string;
+	AllocationMemo: string;
+	DateDisplay: string;
+}
 interface IJob {
-	joStaffName: string;	
+	joStaffName: string;
 	joStaffEmail: string;
 	joClient: string;
 	joTime: string;
@@ -18866,7 +18912,7 @@ interface IJob {
 	receiveddate: string;
 	id: string;
 	joId: string;
-	joReceivedDateTime: string;	
+	joReceivedDateTime: string;
 	joDate: Date | null;
 	DateDisplay: string;
 }
@@ -18884,8 +18930,13 @@ interface ITraining {
 	receiveddate: string;
 	id: string;
 	strDate: string;
-	trDate: Date|null;
+	trDate: Date | null;
 	DateDisplay: string;
+}
+function initJournalLn(journalno: string) {
+	selectedJournalLn = {} as IJournalLn;
+	selectedJournalLn.JournalNumber = journalno;
+	selectedJournalLn.Seq = currentY + 1;	
 }
 function filterEnquiry(smail: string): boolean {
 	//no-reply@hkdigitalsale.com
@@ -18960,7 +19011,7 @@ function parseJobs(DicJobSubject) {
 		if (found) {
 			JobList.forEach((x) => {
 				if (x.joId == key) {
-					for (const m of found) {						
+					for (const m of found) {
 						x.joClient = m[3].trim();
 						x.joTime = m[7].trim();
 					}
@@ -18988,7 +19039,7 @@ function parseTrainings(DicTrainingContent) {
 						x.trApplicant = m[2].trim();
 						x.trIndustry = m[3].trim();
 						x.trAttendance = Number(m[4]);
-						x.strDate = m[5].trim();						
+						x.strDate = m[5].trim();
 					}
 				}
 			});
@@ -19000,14 +19051,14 @@ function parseTrainings(DicTrainingContent) {
 function parseAttendances(DicAttdSubject) {
 	//Late arrival report- Testing arrived at 11:38
 	let regex =
-		/[^\-]+\-+\s+(.+)\s+arrived\s+at\s+(.+)/gmi;	
+		/[^\-]+\-+\s+(.+)\s+arrived\s+at\s+(.+)/gmi;
 	for (const [key, value] of Object.entries(DicAttdSubject)) {
 		//console.log(value);
-		let found = (value as string).matchAll(regex);	
+		let found = (value as string).matchAll(regex);
 		if (found) {
-			AttendanceList.forEach((x) => {				
-				if (x.saId == key) {					
-					for (const m of found) {						
+			AttendanceList.forEach((x) => {
+				if (x.saId == key) {
+					for (const m of found) {
 						x.saName = m[1].trim();
 						x.saCheckInTime = m[2].trim();
 					}
@@ -19192,9 +19243,9 @@ function handleAssign(salespersonId: number | null) {
 					let email = formatEmail(e.Email, e.UserName) ?? "N/A";
 					let notes = e.surNotes ?? "N/A";
 					if (salespersonId != null && salespersonId == e.surUID) {
-						html += `<tr data-id="${e.surUID}" class="selected"><td>${uname}</td><td>${email}</td><td>${notes}</td><td><span class="small">${e.ModifyTimeDisplay}</span></td></tr>`;
+						html += `<tr data-Id="${e.surUID}" class="selected"><td>${uname}</td><td>${email}</td><td>${notes}</td><td><span class="small">${e.ModifyTimeDisplay}</span></td></tr>`;
 					} else {
-						html += `<tr data-id="${e.surUID}" class="pointer" ondblclick="assignSave(${e.surUID});"><td>${uname}</td><td>${email}</td><td>${notes}</td><td><span class="small">${e.ModifyTimeDisplay}</span></td></tr>`;
+						html += `<tr data-Id="${e.surUID}" class="pointer" ondblclick="assignSave(${e.surUID});"><td>${uname}</td><td>${email}</td><td>${notes}</td><td><span class="small">${e.ModifyTimeDisplay}</span></td></tr>`;
 					}
 				});
 				$target = $("#tblsalesmen tbody");
@@ -19342,7 +19393,7 @@ const endsWithNumber = (text) => {
 $(document).on("click", ".fa-close.record", function () {
 	$target = $(this).parent("div").parent(".card").parent(".displayblk");
 	let model: ICustomerInfo = {
-		Id: Number($target.data("id")),
+		Id: Number($target.data("Id")),
 		cusId,
 	} as ICustomerInfo;
 	$.ajax({
@@ -19380,7 +19431,7 @@ function handleRecordChange(ele) {
 		};
 		if (forcustomer) {
 			customerInfo = {
-				Id: Number($target.data("id")),
+				Id: Number($target.data("Id")),
 				followUpRecord: record,
 			} as ICustomerInfo;
 			url = "/Customer/EditRecord";
@@ -19388,7 +19439,7 @@ function handleRecordChange(ele) {
 		}
 		if (forenquiry) {
 			enquiryInfo = {
-				Id: $target.data("id").toString(),
+				Id: $target.data("Id").toString(),
 				followUpRecord: record,
 			} as IEnquiryInfo;
 			url = "/Enquiry/EditRecord";
@@ -19440,11 +19491,11 @@ function infoCallBackOk(data: IInfoBase[]) {
 			let lastedited: string = lasteditedbyformat
 				.replace("{0}", x.ModifiedBy!)
 				.replace("{1}", x.ModifyTimeDisplay!);
-			html += `<div class="displayblk col-12 col-sm-4 mb-1" data-enqid="${x.enId}" data-cusid="${x.cusId}" data-id="${x.Id}">
+			html += `<div class="displayblk col-12 col-sm-4 mb-1" data-enqid="${x.enId}" data-cusid="${x.cusId}" data-Id="${x.Id}">
                             <div class="card">
                                 <div class="text-right small"><span class="fa fa-edit text-info record pointer mr-2"></span><span class="fa fa-close text-danger record pointer"></span></div>
                                 <div class="card-body">
-                                    <div class="txtarea" data-id="${x.Id}">
+                                    <div class="txtarea" data-Id="${x.Id}">
                                         <p class="recorddisplay">${x.followUpRecord}</p>
                                         <input type="text" class="form-control recordentry hide" data-record="${x.followUpRecord}" onchange="handleRecordChange(this);" />
                                         <span class="small d-inline-block lastedited">${lastedited}</span>
@@ -19641,7 +19692,7 @@ function confirmAdvancedSearch() {
 						(data as ICustomer[]).forEach((customer) => {
 							const email = customer.cusEmail ?? "N/A";
 							const cname = customer.cusName;
-							html += `<tr class="${customer.statuscls}" data-id="${customer.cusCustomerID}">
+							html += `<tr class="${customer.statuscls}" data-Id="${customer.cusCustomerID}">
                     <td style="width:110px;max-width:110px;" class="text-center">${cname}</td>
                     <td style="width:100px;max-width:100px;" class="text-center">${customer.cusContact}</td>
                     <td style="width:110px;max-width:110px;" class="text-center">${email}</td>
@@ -19652,7 +19703,7 @@ function confirmAdvancedSearch() {
 
                     <td style="width:120px;max-width:120px;">
                         <a class="btn btn-info btnsmall" role="button" href="/Customer/Edit?customerId=${customer.cusCustomerID}">${edittxt}</a>
-                        <a class="btn btn-danger btnsmall remove" role="button" href="#" data-id="${customer.cusCustomerID}" data-apid="${customer.AccountProfileId}">${removetxt}</a>
+                        <a class="btn btn-danger btnsmall remove" role="button" href="#" data-Id="${customer.cusCustomerID}" data-apid="${customer.AccountProfileId}">${removetxt}</a>
                     </td>
                 </tr>`;
 						});
@@ -19662,7 +19713,7 @@ function confirmAdvancedSearch() {
 						(data as IeTrack[]).forEach((etrack) => {
 							const email = etrack.Email ?? "N/A";
 							const cname = etrack.ContactName;
-							html += `<tr class="${etrack.statuscls}" data-id="${etrack.ContactId}">
+							html += `<tr class="${etrack.statuscls}" data-Id="${etrack.ContactId}">
                              <td style="width:110px;max-width:110px;" class="text-left">${etrack.BlastSubject}</td>
                     <td style="width:110px;max-width:110px;" class="text-left">${cname}</td>
                     <td style="width:100px;max-width:100px;" class="text-left">${etrack.Organization}</td>
@@ -20096,7 +20147,7 @@ $(document).on("change", ".validthru", function () {
 					.val() as string;
 				idx++;
 
-				deliveryItem.JobID = Number($tr.find("td").eq(idx).find(".job").val());
+				deliveryItem.JobID = Number($tr.find("td").eq(idx).find(".Job").val());
 				idx++;
 
 				deliveryItem.dlAmt = deliveryItem.dlAmtPlusTax = Number(
@@ -20433,7 +20484,7 @@ $(document).on("dblclick", ".validthru.pointer", function () {
             <label for="${vtdelqtyId}">
                 ${vtdisplay} (${pocode})
              </label>
-              <input type="text" class="form-control vtdelqty mx-2" id="${vtdelqtyId}" data-vtseq="${vtseq}" data-itemcode="${selectedItemCode}" data-vtid="${vtId}" data-pocode=${pocode} data-vtqty="${e.qty}" data-vt="${e.vt}" min="0" max="${e.qty}" data-currentvdq="${currentvdq}" ${disabled} style="max-width:80px;" value="${currentvdq}">
+              <input type="text" class="form-control vtdelqty mx-2" Id="${vtdelqtyId}" data-vtseq="${vtseq}" data-itemcode="${selectedItemCode}" data-vtid="${vtId}" data-pocode=${pocode} data-vtqty="${e.qty}" data-vt="${e.vt}" min="0" max="${e.qty}" data-currentvdq="${currentvdq}" ${disabled} style="max-width:80px;" value="${currentvdq}">
            </div>`; //don't use number type here => errorpone!!!
 
 					/**
@@ -20478,8 +20529,8 @@ $(document).on("dblclick", ".batch", function () {
 
 	if (
 		(forwholesales &&
-		(Wholesales.wsStatus.toLowerCase() === "deliver" ||
-			Wholesales.wsStatus.toLowerCase() === "partialdeliver"))|| (forsales && reviewmode)
+			(Wholesales.wsStatus.toLowerCase() === "deliver" ||
+				Wholesales.wsStatus.toLowerCase() === "partialdeliver")) || (forsales && reviewmode)
 	) {
 		DeliveryItems = DicSeqDeliveryItems[seq].slice(0);
 
@@ -20854,7 +20905,7 @@ $(document).on("dblclick", ".batch", function () {
             <label for="${batdelqtyId}">
                 ${vtdisplay} (${v.pocode})
              </label>
-              <input type="text" class="form-control batdelqty mx-2" id="${batdelqtyId}" data-batseq="${batseq}" data-itemcode="${selectedItemCode}" data-batch="${v.batchcode}" data-pocode=${v.pocode} data-batqty="${v.batchqty}" data-batvt="${v.vt}" min="0" max="${v.batchqty}" data-currentbdq="${currentbdq}" ${disabled} style="max-width:80px;" value="${currentbdq}">
+              <input type="text" class="form-control batdelqty mx-2" Id="${batdelqtyId}" data-batseq="${batseq}" data-itemcode="${selectedItemCode}" data-batch="${v.batchcode}" data-pocode=${v.pocode} data-batqty="${v.batchqty}" data-batvt="${v.vt}" min="0" max="${v.batchqty}" data-currentbdq="${currentbdq}" ${disabled} style="max-width:80px;" value="${currentbdq}">
            </div>`;
 							}
 						}); //don't use number type here => errorpone!!!
@@ -20894,7 +20945,7 @@ $(document).on("dblclick", ".batch", function () {
 								if (ele.batcode == e.batcode && ele.pocode == pocode) {
 									let vtdisplay = ele.vt ? ele.vt : "N/A";
 									chksnlist += `<div class="form-check">
-              <input class="chkbatsnvt" type="checkbox" value="${ele.sn}" data-itemcode="${selectedItemCode}" data-pocode="${pocode}" data-batcode="${ele.batcode}" data-snvt="${ele.vt}" id="chkbatsnvt${ele.sn}" ${_checked} ${_disabled}>
+              <input class="chkbatsnvt" type="checkbox" value="${ele.sn}" data-itemcode="${selectedItemCode}" data-pocode="${pocode}" data-batcode="${ele.batcode}" data-snvt="${ele.vt}" Id="chkbatsnvt${ele.sn}" ${_checked} ${_disabled}>
               <label class="" for="chkbatsnvt${ele.sn}">
                 ${ele.sn} (${vtdisplay}) (${ele.pocode})
               </label>
@@ -20935,7 +20986,7 @@ $(document).on("dblclick", ".batch", function () {
 								if (ele.batcode == e.batcode && ele.pocode == pocode) {
 									let vtdisplay = ele.vt ? ele.vt : "N/A";
 									chksnlist += `<div class="form-check">
-              <input class="chkbatsnvt" type="checkbox" value="${ele.sn}" data-itemcode="${selectedItemCode}" data-pocode="${pocode}" data-batcode="${ele.batcode}" data-snvt="${ele.vt}" id="chkbatsnvt${ele.sn}" ${_checked} ${_disabled}>
+              <input class="chkbatsnvt" type="checkbox" value="${ele.sn}" data-itemcode="${selectedItemCode}" data-pocode="${pocode}" data-batcode="${ele.batcode}" data-snvt="${ele.vt}" Id="chkbatsnvt${ele.sn}" ${_checked} ${_disabled}>
               <label class="" for="chkbatsnvt${ele.sn}">
                 ${ele.sn} (${vtdisplay})
               </label>
@@ -21029,7 +21080,7 @@ $(document).on("dblclick", ".batch", function () {
 });
 function getSalesLoc() {
 	let salesloc: string = "";
-	if (forsales) reviewmode?salesloc=SalesOrder.rtsSalesLoc: salesloc = Sales.SelectedShop;
+	if (forsales) reviewmode ? salesloc = SalesOrder.rtsSalesLoc : salesloc = Sales.SelectedShop;
 	if (forpreorder) salesloc = PreSales.rtsSalesLoc;
 	if (forwholesales) salesloc = Wholesales.wsSalesLoc;
 	return salesloc;
@@ -21226,7 +21277,7 @@ function addItemVariRow(hasFocusCls: boolean, maxqty: number) {
             <label for="${ivdelqtyId}">
                ${pocode}
              </label>
-              <input type="text" class="form-control ivdelqty mx-2" id="${ivdelqtyId}" data-ivseq="${ivseq}" data-itemcode="${selectedItemCode}" data-id="${Id}" data-pocode=${pocode} data-ivqty="${maxqty}" data-totalqty="${e.qty}" data-ividlist="${e.ivIdList}" min="0" max="${maxqty}" data-currentivdq="${currentivdq}" ${disabled} style="max-width:80px;" value="${currentivdq}">
+              <input type="text" class="form-control ivdelqty mx-2" Id="${ivdelqtyId}" data-ivseq="${ivseq}" data-itemcode="${selectedItemCode}" data-Id="${Id}" data-pocode=${pocode} data-ivqty="${maxqty}" data-totalqty="${e.qty}" data-ividlist="${e.ivIdList}" min="0" max="${maxqty}" data-currentivdq="${currentivdq}" ${disabled} style="max-width:80px;" value="${currentivdq}">
            </div>`; //don't use number type here => errorpone!!!
 
 					/**

@@ -134,10 +134,6 @@ function getSessionStartDataOk(data) {
 $(document).on("dblclick", ".nopo", function () {
     $("#txtCustomerPO").val("N/A");
 });
-
-
-
-
 $(function () {   
     forsales = true;
     salesType = SalesType.retail;

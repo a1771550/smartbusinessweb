@@ -138,8 +138,6 @@
 						</ul>
 					</li>
 
-
-
 					<li class="dropdown">
 						@{lnkcls = "nav-link {0}";
 							if (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "customer")
@@ -208,8 +206,6 @@
 							@Html.ActionLink(Resources.Resource.Enquiry, "Index", "Enquiry", new { }, new { @class = lnkcls })
 						</div>
 					</li>
-
-
 
 					<li class="dropdown">
 						@{lnkcls = "nav-link {0}";
@@ -315,8 +311,6 @@
 						</ul>
 					</li>
 
-
-
 					<li class="dropdown">
 						@{lnkcls = "nav-link dropdown-toggle {0}";
 							if (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "promotion")
@@ -407,8 +401,6 @@
 						</ul>
 					</li>
 
-
-
 					<li class="dropdown">
 						@{lnkcls = "nav-link dropdown-toggle {0}";
 							if (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "wholesales")
@@ -473,8 +465,6 @@
 
 						</div>
 					</li>
-
-
 
 					<li class="dropdown">
 						@{lnkcls = "nav-link dropdown-toggle {0}";
@@ -697,6 +687,19 @@
 								}
 							}
 							@Html.ActionLink(Resources.Resource.TrainingRecords, "Index", "Training", null, new { @class = lnkcls })
+
+							@{
+								lnkcls = "dropdown-item {0}";
+								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "journal")
+								{
+									lnkcls = string.Format(lnkcls, "active");
+								}
+								else
+								{
+									lnkcls = string.Format(lnkcls, string.Empty);
+								}
+							}
+							@Html.ActionLink(Resources.Resource.JournalRecords, "Index", "Journal", null, new { @class = lnkcls })
 						</div>
 					</li>
 
