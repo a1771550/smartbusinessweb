@@ -36,7 +36,7 @@
 	<hr />
 
 	<div class="row justify-content-end my-2 mx-2 small">
-		<button id="btnAdd" class="btn btn-primary float-right" title="@string.Format(Resources.Resource.AddFormat, Resources.Resource.Record)"><i class="fa fa-plus"></i></button>
+		<button type="button" id="btnAdd" class="btn btn-primary float-right" title="@string.Format(Resources.Resource.AddFormat, Resources.Resource.Record)"><i class="fa fa-plus"></i></button>
 	</div>
 
 	<div class="justify-content-center">
@@ -60,24 +60,24 @@
 	<div class="row justify-content-end mx-1">		
 		<div class="form-inline mb-2">
 			<div class="form-group">
-				<label for="txtDepositAmt" class="col-form-label mx-sm-3">@string.Format(Resources.Resource.TotalFormat, Resources.Resource.Debit) (@Currency)</label>
-				<input type="number" class="form-control" id="txtDepositAmt" readonly value="0.00" />
+				<label for="debitAmt" class="col-form-label mx-sm-3">@string.Format(Resources.Resource.TotalFormat, Resources.Resource.Debit) (@Currency)</label>
+				<input type="number" class="form-control" id="debitAmt" readonly value="0.00" />
 			</div>
 		</div>
 	</div>
 	<div class="row justify-content-end mx-1">
 		<div class="form-inline mb-2">
 			<div class="form-group">
-				<label for="txtTotalRemain" class="col-form-label mx-sm-3">@string.Format(Resources.Resource.TotalFormat, Resources.Resource.Credit) (@Currency)</label>
-				<input type="number" class="form-control" id="txtTotalRemain" readonly name="TotalRemain" value="0.00" />
+				<label for="creditAmt" class="col-form-label mx-sm-3">@string.Format(Resources.Resource.TotalFormat, Resources.Resource.Credit) (@Currency)</label>
+				<input type="number" class="form-control" id="creditAmt" readonly value="0.00" />
 			</div>
 		</div>
 	</div>
 	<div class="row justify-content-end mx-1">
 		<div class="form-inline mb-2">
 			<div class="form-group">
-				<label for="txtTotal" class="col-form-label mx-sm-3">@Resources.Resource.OutOfBalance (@Currency)</label>
-				<input type="number" class="form-control" id="txtTotal" readonly name="TotalAmount" value="0.00" />
+				<label for="outOfBalance" class="col-form-label mx-sm-3">@Resources.Resource.OutOfBalance (@Currency)</label>
+				<input type="number" class="form-control" id="outOfBalance" readonly value="0.00" />
 			</div>
 		</div>
 	</div>
@@ -95,6 +95,6 @@
 
 @Html.Partial("_TextAreaModal", null, new ViewDataDictionary { { "FieldName", Resources.Resource.AllocationMemo } })
 
-<div id="infoblk" data-joblist="@JsonSerializer.Serialize(Model.JobList)" data-dicacaccounts="@JsonSerializer.Serialize(Model.DicAcAccounts)"></div>
+<div id="infoblk" data-joblist="@JsonSerializer.Serialize(Model.JobList)" data-dicacaccounts="@JsonSerializer.Serialize(Model.DicAcAccounts)" data-dcaccerrtxt="@Resources.Resource.DebitAccMustNotEqCreditAcc"></div>
 <script src="~/Scripts/ts/js/records/journaledit.js?v=@rand"></script>
 

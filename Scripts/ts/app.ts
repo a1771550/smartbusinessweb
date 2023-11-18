@@ -3936,8 +3936,8 @@ function initModals() {
 							}
 						}
 						if (forjournal) {
-							if (selectedJournalLn) {
-								selectedJournalLn.AllocationMemo = <string>(
+							if (selectedJournalLn1) {
+								selectedJournalLn1.AllocationMemo = <string>(
 									$("#textareaModal").find("#txtField").val()
 								);
 							}
@@ -14451,6 +14451,16 @@ $(document).on("change", ".itemaccount", function () {
 	}
 });
 
+$(document).on("change", ".radaccount", function () {
+	closeAccountModal();
+	if (forjournal)
+		populateAccount4Journal($(this).data("acno"), $(this).data("acname"));
+	else {		
+		itemAcId = $(this).data('acid');	
+		//console.log("itemAcId:", itemAcId);
+		selectItemAccount();
+	}
+});
 function changeAccountPage(page) {
 	let _list: Array<IAccount> = [];
 	if (filteredAccountList.length > 0) {
@@ -14472,27 +14482,9 @@ function changeAccountPage(page) {
 	for (var i = currentstartpage; i < currentendpage; i++) {
 		var e = _list[i];
 		if (typeof e !== "undefined")
-			output += `<tr><td>${e.AccountNumber}</td><td>${e.AccountName}</td><td>${e.ACDescription}</td><td><input type="radio" class="radaccount" data-acno="${e.AccountNumber}" data-acdesc="${e.ACDescription}" data-acname="${e.AccountName}"></td></tr>`;
+			output += `<tr><td>${e.AccountNumber}</td><td>${e.AccountName}</td><td>${e.ACDescription}</td><td><input type="radio" class="radaccount" data-acid="${e.AccountID}" data-acno="${e.AccountNumber}" data-acdesc="${e.ACDescription}" data-acname="${e.AccountName}"></td></tr>`;
 	}
 
-	if (forjournal) {
-		//populateAccount4Journal
-		output += `<script>
-        $(document).on("change",".radaccount",function(){		
-            closeAccountModal();
-            populateAccount4Journal($(this).data("acno"),$(this).data("acname"));
-        });
-</script>`;
-	} else {
-		output += `<script>
-        $(document).on("change",".radaccount",function(){
-            itemAcId = $(this).data('acid');
-            closeAccountModal();
-            selectItemAccount();
-        });
-</script>`;
-	}
-	
 	accountModal
 		.find(".container")
 		.find("#tblAccount tbody")
@@ -18869,7 +18861,8 @@ interface IAttendance {
 
 let Journal: IJournal;
 let JournalLns: IJournalLn[] = [];
-let selectedJournalLn: IJournalLn;
+let selectedJournalLn1: IJournalLn|null;
+let selectedJournalLn2: IJournalLn|null;
 interface IJournal {
 	Id: string;
 	JournalNumber: string;
@@ -18933,10 +18926,25 @@ interface ITraining {
 	trDate: Date | null;
 	DateDisplay: string;
 }
-function initJournalLn(journalno: string) {
-	selectedJournalLn = {} as IJournalLn;
-	selectedJournalLn.JournalNumber = journalno;
-	selectedJournalLn.Seq = currentY + 1;	
+function initJournalLnPair(journalno: string) {
+	console.log("currentY#initpair:" + currentY);
+	if (currentY % 2 == 0) {
+		selectedJournalLn1 = {} as IJournalLn;
+		selectedJournalLn1.JournalNumber = journalno;		
+		selectedJournalLn1.Seq = currentY + 1;
+		selectedJournalLn1.AccountNumber = "";
+		selectedJournalLn1.AccountName = "";
+		selectedJournalLn1.DebitExTaxAmount = 0;
+		selectedJournalLn1.CreditExTaxAmount = 0;
+
+		selectedJournalLn2 = {} as IJournalLn;
+		selectedJournalLn2.JournalNumber = journalno;
+		selectedJournalLn2.Seq = currentY + 2;
+		selectedJournalLn2.AccountNumber = "";
+		selectedJournalLn2.AccountName = "";
+		selectedJournalLn2.DebitExTaxAmount = 0;
+		selectedJournalLn2.CreditExTaxAmount = 0;
+	}	
 }
 function filterEnquiry(smail: string): boolean {
 	//no-reply@hkdigitalsale.com
