@@ -2895,6 +2895,8 @@
     <Content Include="Static\barcode.html" />
     <Content Include="_app_offline.htm" />
     <Content Include="PrivateSettings.config" />
+    <None Include="Properties\PublishProfiles\IISProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\SBAzure.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

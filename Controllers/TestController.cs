@@ -59,7 +59,7 @@ namespace SmartBusinessWeb.Controllers
         //private ComInfo ComInfo { get { return Session["ComInfo"] as ComInfo; } }
         //protected string CheckoutPortal { get { return ComInfo.DefaultCheckoutPortal; } }
         //private string ConnectionString { get { return string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ;", ComInfo.MYOBDriver, ComInfo.MYOBUID, ComInfo.MYOBPASS, ComInfo.MYOBDb, ComInfo.MYOBExe, ComInfo.MYOBKey); } }
-        private string DefaultConnection{ get { return Session["DBName"] == null ? ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", "POSPro") : ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", Session["DBName"].ToString()); } }
+        private string DefaultConnection{ get { return Session["DBName"] == null ? ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", "SmartBusinessWeb_db") : ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", Session["DBName"].ToString()); } }
         private SqlConnection connection { get { return new SqlConnection(DefaultConnection); } }
         private string centralbaseUrl = UriHelper.GetAppUrl();
         protected string DateFormat { get { return ConfigurationManager.AppSettings["DateFormat"]; } }
@@ -96,7 +96,7 @@ namespace SmartBusinessWeb.Controllers
         
         public void Debug81()
         {
-            using var context = new PPWDbContext("POSPro");
+            using var context = new PPWDbContext("SmartBusinessWeb_db");
             Response.Write(context.Journals.Count());
         }
 
@@ -126,7 +126,7 @@ namespace SmartBusinessWeb.Controllers
                 Response.Write(salesOrder.rtsCode+"<br>"+salesorderlist.Count);
             }
         }
-        public void SwitchDB(string dbname="POSPro")
+        public void SwitchDB(string dbname="SmartBusinessWeb_db")
         {
             try
             {

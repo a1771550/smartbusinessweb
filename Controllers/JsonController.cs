@@ -72,7 +72,7 @@ namespace SmartBusinessWeb.Controllers
             ComInfo comInfo = context.ComInfoes.FirstOrDefault(x => x.AccountProfileId == apId);
             if (comInfo != null)
             {
-                string DefaultConnection = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", dbname);
+                string DefaultConnection = ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", dbname);
                 using var connection = new SqlConnection(DefaultConnection);
                 connection.Open();
                 DataTransferModel dmodel = new DataTransferModel
@@ -118,7 +118,7 @@ namespace SmartBusinessWeb.Controllers
             ComInfo comInfo = context.ComInfoes.FirstOrDefault(x => x.AccountProfileId == apId);
             if (comInfo != null)
             {
-                string DefaultConnection = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", dbname);
+                string DefaultConnection = ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", dbname);
                 using var connection = new SqlConnection(DefaultConnection);
                 connection.Open();
                 DataTransferModel dmodel = new DataTransferModel
@@ -198,7 +198,7 @@ namespace SmartBusinessWeb.Controllers
                 HandleDateRanges(strfrmdate, strtodate, out frmdate, out todate);
                 #endregion
 
-                var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", dbname);
+                var connectionString = ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", dbname);
 
                 data.sqllist = PurchaseEditModel.GetUploadPurchaseSqlList(apId, ref dmodel, strfrmdate, strtodate, comInfo, context, frmdate, todate, connectionString);
                 data.checkoutIds = dmodel.PoCheckOutIds;
