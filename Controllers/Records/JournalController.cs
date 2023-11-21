@@ -11,7 +11,7 @@ namespace SmartBusinessWeb.Controllers.Records
     {
 		[HandleError]
 		[CustomAuthorize("reports", "boss", "admin", "superadmin")]
-		public ActionResult Index(int SortCol = 2, string SortOrder = "desc", string Keyword = null, int? PageNo = 1)
+		public ActionResult Index(int sortCol = 6, string SortOrder = "desc", string Keyword = null, int? PageNo = 1)
 		{
 			ViewBag.Title = Resources.Resource.Journal;
 			ViewBag.ParentPage = "reports";
@@ -20,9 +20,9 @@ namespace SmartBusinessWeb.Controllers.Records
 			{
 				CurrentSortOrder = SortOrder,
 				Keyword = Keyword,
-				SortCol = SortCol,
+				SortCol = sortCol,
 			};
-			model.GetList(SortCol, SortOrder, Keyword);
+			model.GetList(sortCol, SortOrder, Keyword);
 			model.PageNo = PageNo ?? 1;
 			model.SortOrder = SortOrder == "desc" ? "asc" : "desc";			
 			return View(model);

@@ -1047,7 +1047,7 @@ function GetTrainings(pageIndex) {
 function GetJobs(pageIndex) {
 	$.ajax({
 		type: "GET",
-		url: "/Job/GetJobs",
+		url: "/JobName/GetJobs",
 		data: { frmdate, todate, pageIndex, sortCol, sortDirection, keyword },
 		success: function (data) {
 			//console.log("data:", data);
@@ -9164,7 +9164,7 @@ function addRow() {
 
 	//let jobs: string = "";
 	//JobList.forEach((x) => jobs += `<option value='${x.JobID}'>${x.JobName}</option>`);
-	html += `<td><select class="Job flex">${setJobListOptions(0)}</select></td>`;
+	html += `<td><select class="JobName flex">${setJobListOptions(0)}</select></td>`;
 
 	if (forsales || forpreorder || forwholesales)
 		html +=
@@ -10477,7 +10477,7 @@ function resetRow() {
 	const $location = $target.eq(currentY).find("td").eq(idx).find(".location");
 	$location.val($location.find("option").eq(1).val() as string);
 	idx++;
-	const $job = $target.eq(currentY).find("td").eq(idx).find(".Job");
+	const $job = $target.eq(currentY).find("td").eq(idx).find(".JobName");
 	$job.val($job.find("option").first().val() as string);
 
 	const $amount = $target.eq(currentY).find("td").last().find(".amount");
@@ -12477,7 +12477,7 @@ function initDeliveryItem(
 			dlBatId: null,
 			dlVtId: null,
 			dlStockLoc: $td.eq(lidx).find(".location").val() as string,
-			JobID: Number($td.eq(jidx).find(".Job").val()),
+			JobID: Number($td.eq(jidx).find(".JobName").val()),
 			ivIdList: null,
 			ivList: [],
 		};
@@ -13945,7 +13945,7 @@ function getItemInfo4BatSnVtIv(sn: string | null = null) {
 		.find(".location")
 		.val() as string;
 	idx++;
-	deliveryItem!.JobID = Number($tr.find("td").eq(idx).find(".Job").val());
+	deliveryItem!.JobID = Number($tr.find("td").eq(idx).find(".JobName").val());
 }
 
 let snvtlist: ISnVt[] = [];
@@ -14453,6 +14453,7 @@ $(document).on("change", ".itemaccount", function () {
 
 $(document).on("change", ".radaccount", function () {
 	closeAccountModal();
+	//console.log("here");
 	if (forjournal)
 		populateAccount4Journal($(this).data("acno"), $(this).data("acname"));
 	else {		
@@ -17556,7 +17557,7 @@ function updatePreSales() {
 				presalesln.rtlSalesLoc = presalesln.rtlStockLoc = <string>(
 					$(e).find("td").eq(-3).find(".location").val()
 				);
-				presalesln.JobID = Number($(e).find("td").eq(-2).find(".Job").val());
+				presalesln.JobID = Number($(e).find("td").eq(-2).find(".JobName").val());
 				//console.log("presalesln.jobid:" + presalesln.JobID);
 				const amt: number = Number(
 					$(e).find("td").eq(-1).find(".amount").val()
@@ -17638,7 +17639,7 @@ function updateSales() {
 				salesln.rtlSalesLoc = salesln.rtlStockLoc = <string>(
 					$(e).find("td").eq(-3).find(".location").val()
 				);
-				salesln.JobID = Number($(e).find("td").eq(-2).find(".Job").val());
+				salesln.JobID = Number($(e).find("td").eq(-2).find(".JobName").val());
 				//console.log("salesln.jobid:" + salesln.JobID);
 				const amt: number = Number(
 					$(e).find("td").eq(-1).find(".amount").val()
@@ -18890,8 +18891,9 @@ interface IJournalLn {
 	DebitIncTaxAmount: number | null;
 	CreditExTaxAmount: number | null;
 	CreditIncTaxAmount: number | null;
-	Job: string;
-	AllocationMemo: string;
+	JobID: number | null;
+	JobName: string|null;
+	AllocationMemo: string|null;
 	DateDisplay: string;
 }
 interface IJob {
@@ -18927,7 +18929,7 @@ interface ITraining {
 	DateDisplay: string;
 }
 function initJournalLnPair(journalno: string) {
-	console.log("currentY#initpair:" + currentY);
+	//console.log("currentY#initpair:" + currentY);
 	if (currentY % 2 == 0) {
 		selectedJournalLn1 = {} as IJournalLn;
 		selectedJournalLn1.JournalNumber = journalno;		
@@ -20155,7 +20157,7 @@ $(document).on("change", ".validthru", function () {
 					.val() as string;
 				idx++;
 
-				deliveryItem.JobID = Number($tr.find("td").eq(idx).find(".Job").val());
+				deliveryItem.JobID = Number($tr.find("td").eq(idx).find(".JobName").val());
 				idx++;
 
 				deliveryItem.dlAmt = deliveryItem.dlAmtPlusTax = Number(

@@ -30,9 +30,11 @@ $(document).on('click', '#btnReload', function () {
 });
 
 $(document).on('click', '.colheader', function () {
-    let $sortcol = $('<input>').attr({ type: 'hidden', name: 'SortCol', value: $(this).data('col') });
-    let $keyword = $('<input>').attr({ type: 'hidden', name: 'Keyword', value: $(this).data('keyword') });
-    $('#frmJournal').append($sortcol).append($keyword).trigger("submit");
+    $("#sortcol").val($(this).data("col"));
+    //let $sortorder = $('<input>').attr({ type: 'hidden', name: 'SortOrder', value: $("#sortorder").val() });
+    //let $sortcol = $('<input>').attr({ type: 'hidden', name: 'SortCol', value: $(this).data('col') });
+    //let $keyword = $('<input>').attr({ type: 'hidden', name: 'Keyword', value: $(this).data('keyword') });
+    $('#frmJournal').trigger("submit");
 });
 
 $(function () {
@@ -40,7 +42,7 @@ $(function () {
     setFullPage();
     let $sortorder = $("#sortorder");
     let $sortcol = $("#sortcol");
-    //console.log($sortcol.val() + ";" + $sortorder.val());
+    console.log($sortcol.val() + ";" + $sortorder.val());
     $target = $(".colheader").eq(<number>$sortcol.val());
     let sortcls =
         $sortorder.val() === "desc" ? "fa fa-sort-up" : "fa fa-sort-down";

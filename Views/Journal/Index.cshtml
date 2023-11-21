@@ -28,26 +28,37 @@
 		</div>
 	</div>
 
+	int idx = 0;
+
 	<div id="norecord" class="alert alert-warning hide">@Resources.Resource.NoDataFound</div>
 	<table id="tblJournal" class="table table-bordered  table-hover table-condensed">
 		<thead class="gray-header">
 			<tr>
-				<th scope="col" class="text-center colheader" data-col="0">
+				<th scope="col" class="text-center colheader" data-col="@idx">
 					@Resources.Resource.ID
 				</th>
-				<th scope="col" class="text-center colheader" data-col="2">
-					@Resources.Resource.Account4Journal
+				@{idx++;}
+				<th scope="col" class="text-center colheader" data-col="@idx">
+					@Resources.Resource.AccountNo
 				</th>
-				<th scope="col" class="text-center colheader" data-col="3">
-					@Resources.Resource.Debit
+				@{idx++;}
+				<th scope="col" class="text-center colheader" data-col="@idx">
+					@string.Format(Resources.Resource.AccountFormat, Resources.Resource.Name)
 				</th>
-				<th scope="col" class="text-center colheader" data-col="4">
-					@Resources.Resource.Credit
-				</th>
-				<th scope="col" class="text-center colheader" data-col="5">
+				@{idx++;}
+			<th scope="col" class="text-center colheader" data-col="@idx">
+				@Resources.Resource.Debit (@Model.Currency)
+			</th>
+				@{idx++;}
+			<th scope="col" class="text-center colheader" data-col="@idx">
+				@Resources.Resource.Credit (@Model.Currency)
+			</th>
+				@{idx++;}
+				<th scope="col" class="text-center colheader" data-col="@idx">
 					@Resources.Resource.Job4Myob
 				</th>
-				<th scope="col" class="text-center colheader" data-col="6">
+				@{idx++;}
+				<th scope="col" class="text-center colheader" data-col="@idx">
 					@Resources.Resource.Date
 				</th>
 				<th></th>
@@ -60,24 +71,27 @@
 					@Html.DisplayFor(model => item.JournalNumber)
 				</td>
 				<td class="text-center">
-					@Html.DisplayFor(model => string.Concat(item.AccountNumber, " ", item.AccountName))
+					@item.AccountNumber
 				</td>
 				<td class="text-center">
-					@Html.DisplayFor(model => CommonHelper.FormatNumber(item.CreditExTaxAmount ?? 0))
+					@item.AccountName
 				</td>
 				<td class="text-center">
-					@Html.DisplayFor(model => CommonHelper.FormatNumber(item.CreditExTaxAmount ?? 0))
+					@CommonHelper.FormatNumber(item.DebitExTaxAmount ?? 0)
 				</td>
 				<td class="text-center">
-					@Html.DisplayFor(model => item.Job)
+					@CommonHelper.FormatNumber(item.CreditExTaxAmount ?? 0)
+				</td>
+				<td class="text-center">
+					@Html.DisplayFor(model => item.JobName)
 				</td>
 				<td class="text-center">
 					@Html.DisplayFor(model => item.DateDisplay)
 				</td>
 				<td>
-					@Html.ActionLink(Resources.Resource.Edit, "Edit", new { Id = item.Id }, new { @class = "btn btn-info", @role = "button" })
+					@Html.ActionLink(Resources.Resource.Edit, "Edit", new { Id = item.mainId }, new { @class = "btn btn-info", @role = "button" })
 
-					<button type="button" class="btn btn-danger remove" data-id="@item.Id">@Resources.Resource.Remove</button>
+					<button type="button" class="btn btn-danger remove" data-id="@item.mainId">@Resources.Resource.Remove</button>
 				</td>
 			</tr>
 		}
@@ -87,17 +101,18 @@
 	<div id="pagingblk" class="mx-3">
 		<div class="row">
 			@Html.PagedListPager(Model.PagingJournalList, PageNo => Url.Action("Index",
-new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
+new { PageNo, SortOrder = Model.CurrentSortOrder, SortCol = Model.SortCol, Keyword = Model.Keyword }))
 		</div>
 	</div>
-
+	<input type="hidden" name="CurrentSortOrder" id="currentsortorder" value="@Model.CurrentSortOrder" />
 	<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
-	<input type="hidden" id="sortcol" value="@Model.SortCol" />
+	<input type="hidden" id="sortcol" name="sortCol" value="@Model.SortCol" />
+
 }
 
 @Html.Partial("_WaitingModal")
 <div id="infoblk"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
-<script src="/Scripts/ts/js/records/journal.js?v=@rand"></script>
+<script src="/Scripts/ts/js/records/journallist.js?v=@rand"></script>
 

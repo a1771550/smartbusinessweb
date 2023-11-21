@@ -211,7 +211,7 @@ namespace SmartBusinessWeb.Controllers
 						}
 						context.MyobJobs.AddRange(newjobs);
 						context.SaveChanges();
-						ModelHelper.WriteLog(context, "Import Job data from Central done", "ImportFrmCentral");
+						ModelHelper.WriteLog(context, "Import JobName data from Central done", "ImportFrmCentral");
 						transaction.Commit();
 					}
 					catch (DbEntityValidationException e)
@@ -230,7 +230,7 @@ namespace SmartBusinessWeb.Controllers
 				ve.ErrorMessage);
 							}
 						}
-						ModelHelper.WriteLog(context, string.Format("Import Job data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
+						ModelHelper.WriteLog(context, string.Format("Import JobName data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
 						context.SaveChanges();
 					}
 				}

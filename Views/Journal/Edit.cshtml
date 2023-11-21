@@ -46,8 +46,8 @@
 					<tr>
 						<th>@Resources.Resource.AccountNo</th>
 						<th>@string.Format(Resources.Resource.NameFormat, Resources.Resource.Account4Journal)</th>
-						<th>@Resources.Resource.Debit</th>
-						<th>@Resources.Resource.Credit</th>
+						<th>@Resources.Resource.Debit (@Model.Currency)</th>
+						<th>@Resources.Resource.Credit (@Model.Currency)</th>
 						<th>@Resources.Resource.Job4Myob</th>
 						<th>@Resources.Resource.AllocationMemo</th>
 					</tr>
@@ -95,6 +95,6 @@
 
 @Html.Partial("_TextAreaModal", null, new ViewDataDictionary { { "FieldName", Resources.Resource.AllocationMemo } })
 
-<div id="infoblk" data-joblist="@JsonSerializer.Serialize(Model.JobList)" data-dicacaccounts="@JsonSerializer.Serialize(Model.DicAcAccounts)" data-dcaccerrtxt="@Resources.Resource.DebitAccMustNotEqCreditAcc"></div>
+<div id="infoblk" data-joblist="@JsonSerializer.Serialize(Model.JobList)" data-dicacaccounts="@JsonSerializer.Serialize(Model.DicAcAccounts)" data-dcaccerrtxt="@Resources.Resource.DebitAccMustNotEqCreditAcc" data-journallnlist="@JsonSerializer.Serialize(Model.JournalLnList)"></div>
 <script src="~/Scripts/ts/js/records/journaledit.js?v=@rand"></script>
 
