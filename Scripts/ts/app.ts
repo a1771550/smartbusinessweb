@@ -18877,6 +18877,7 @@ interface IJournal {
 	ExchangeRate: number | null;
 	Category: string;
 	DateDisplay: string;
+	IsCheckOut: boolean;
 }
 interface IJournalLn {
 	mainId: string;

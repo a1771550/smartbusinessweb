@@ -21,7 +21,28 @@ namespace SmartBusinessWeb.Controllers
     [System.Web.Http.AllowAnonymous]
     public class JsonController : Controller
     {
-        [System.Web.Http.HttpPost]
+		[System.Web.Mvc.AllowAnonymous]
+		[System.Web.Mvc.HttpPost]
+		public async Task<HttpResponseMessage> PostTest(int apId, FormCollection form)
+		{
+			HttpRequestMessage request = new HttpRequestMessage();
+			string dbname = GetDbName(apId);
+			using var context = new PPWDbContext(dbname);
+			ModelHelper.WriteLog(context, form["msg"], form["type"]);
+			await context.SaveChangesAsync();
+			return request.CreateResponse(System.Net.HttpStatusCode.OK);
+		}
+
+		[System.Web.Mvc.AllowAnonymous]
+		[System.Web.Mvc.HttpGet]
+		public string GetTest(int apId)
+		{
+			string dbname = GetDbName(apId);
+			using var context = new PPWDbContext(dbname);
+			return string.Concat("User Count:" + context.SysUsers.Count());
+		}
+
+		[System.Web.Http.HttpPost]
         public async Task<HttpResponseMessage> HttpPost(int apId, [FromBody] List<DebugLog> logs)
         {            
             HttpRequestMessage request = new HttpRequestMessage();
@@ -33,22 +54,9 @@ namespace SmartBusinessWeb.Controllers
             }            
             await context.SaveChangesAsync();
             return request.CreateResponse(System.Net.HttpStatusCode.OK);
-        }
+        }       
 
-        [System.Web.Mvc.AllowAnonymous]
-        [System.Web.Mvc.HttpPost]
-        public async Task<HttpResponseMessage> PostTest(int apId, FormCollection form)
-        {            
-            HttpRequestMessage request = new HttpRequestMessage();
-            string dbname = GetDbName(apId);
-            using var context = new PPWDbContext(dbname);
-            ModelHelper.WriteLog(context, form["msg"], form["type"]);
-            await context.SaveChangesAsync();
-            return request.CreateResponse(System.Net.HttpStatusCode.OK);
-        }
-
-
-        [System.Web.Http.HttpPost]
+		[System.Web.Http.HttpPost]
         public async Task<HttpResponseMessage> CheckOutRetail(int apId, [FromBody] HashSet<long> checkoutIds)
         {
             HttpRequestMessage request = new HttpRequestMessage();

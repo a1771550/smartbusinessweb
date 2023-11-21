@@ -82,7 +82,14 @@ new { apId = @"\d+", strfrmdate = @"\d+\-\d+\-\d+", strtodate = @"\d+\-\d+\-\d+"
 new { controller = "Json", action = "GetPoCount" },
 new { apId = @"\d+", strfrmdate = @"\d+\-\d+\-\d+", strtodate = @"\d+\-\d+\-\d+", location = @"\w+" }
    );
-            routes.MapRoute(
+			routes.MapRoute(
+   null,
+   "abss-json/{apId}/gettest",
+new { controller = "Json", action = "GetTest" },
+new { apId = @"\d+" }
+   );
+
+			routes.MapRoute(
    null,
    "abss-json/{apId}/checkoutretail",
 new { controller = "Json", action = "CheckOutRetail" },

@@ -297,6 +297,11 @@
           <path>Controllers\Records\JobController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Records\JobController.cs</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>JournalController.cs</name>
+          <path>Controllers\Records\JournalController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Records\JournalController.cs</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

@@ -27,12 +27,14 @@ using PPWLib.Models.POS.Customer;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using PPWLib.Models.POS.Sales;
+using PPWLib.Models.Journal;
 
 namespace SmartBusinessWeb.Controllers
 {
 	[CustomAuthenticationFilter]
 	public class DataTransferController : BaseController
 	{
+		private string sqlfields4Journal { get { return ModelHelper.sqlfields4Journal; } }
 		private string sqlfields4Sales { get { return ModelHelper.sqlfields4Sales; } }
         private string sqlfields4Deposit { get { return ModelHelper.sqlfields4Deposit; } }
 
@@ -669,6 +671,97 @@ namespace SmartBusinessWeb.Controllers
 		
 			using var connection = new SqlConnection(DefaultConnection);
 			connection.Open();
+
+			if (filename.StartsWith("Journal_"))
+			{
+				#region Date Ranges
+				int year = DateTime.Now.Year;
+				DateTime frmdate;
+				DateTime todate;
+				if (string.IsNullOrEmpty(strfrmdate))
+				{
+					//frmdate = new DateTime(year, 1, 1);
+					frmdate = DateTime.Today;
+				}
+				else
+				{
+					int mth = int.Parse(strfrmdate.Split('/')[1]);
+					int day = int.Parse(strfrmdate.Split('/')[0]);
+					year = int.Parse(strfrmdate.Split('/')[2]);
+					frmdate = new DateTime(year, mth, day);
+				}
+				if (string.IsNullOrEmpty(strtodate))
+				{
+					//todate = new DateTime(year, 12, 31);
+					todate = DateTime.Today;
+				}
+				else
+				{
+					int mth = int.Parse(strtodate.Split('/')[1]);
+					int day = int.Parse(strtodate.Split('/')[0]);
+					year = int.Parse(strtodate.Split('/')[2]);
+					todate = new DateTime(year, mth, day);
+				}
+				#endregion
+
+				var session = ModelHelper.GetCurrentSession(context);
+				var location = session.sesShop.ToLower();
+				var device = session.sesDvc.ToLower();
+
+				dmodel.RetailCheckOutIds = new HashSet<long>();
+				dmodel.SelectedLocation = location;
+				dmodel.Device = device;
+
+				List<string> sqllist = JournalEditModel.GetUploadSqlList(includeUploaded, lang, comInfo, apId, context, connection, frmdate, todate, ref dmodel);
+
+				if (sqllist.Count > 0)
+				{
+					#region Write to MYOB
+					using (localhost.Dayends dayends = new localhost.Dayends())
+					{
+						dayends.Url = comInfo.WebServiceUrl;
+						dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
+					}
+					#endregion
+
+					#region Write sqllist into Log & update checkoutIds
+					using (var transaction = context.Database.BeginTransaction())
+					{
+						try
+						{
+							ModelHelper.WriteLog(context, string.Format("Export PreSalesModel data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
+							List<RtlSale> saleslist = context.RtlSales.Where(x => x.AccountProfileId == apId && dmodel.RetailCheckOutIds.Any(y => x.rtsUID == y)).ToList();
+							foreach (var sales in saleslist)
+							{
+								sales.rtsCheckout = true;
+							}
+							context.SaveChanges();
+							transaction.Commit();
+						}
+						catch (DbEntityValidationException e)
+						{
+							transaction.Rollback();
+							StringBuilder sb = new StringBuilder();
+							foreach (var eve in e.EntityValidationErrors)
+							{
+								sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+									eve.Entry.Entity.GetType().Name, eve.Entry.State);
+								foreach (var ve in eve.ValidationErrors)
+								{
+									sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+					ve.PropertyName,
+					eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+					ve.ErrorMessage);
+								}
+							}
+							ModelHelper.WriteLog(context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
+							context.SaveChanges();
+						}
+
+					}
+					#endregion
+				}
+			}
 
 			if (filename.StartsWith("ItemSales_"))
             {
