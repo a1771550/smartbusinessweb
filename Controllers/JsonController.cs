@@ -134,7 +134,7 @@ namespace SmartBusinessWeb.Controllers
                     SelectedLocation = location,
                     includeUploaded = includeUploaded == 1
                 };
-                dmodel.WsCheckOutIds = new HashSet<long>();
+                dmodel.CheckOutIds_WS = new HashSet<long>();
 
                 #region Date Ranges
                 DateTime frmdate, todate;
@@ -142,7 +142,7 @@ namespace SmartBusinessWeb.Controllers
                 #endregion               
 
                 data.sqllist = WholeSalesEditModel.GetUploadSqlList(dmodel.includeUploaded, 2, comInfo, apId, context, connection, frmdate, todate, ref dmodel);
-                data.checkoutIds = dmodel.WsCheckOutIds;
+                data.checkoutIds = dmodel.CheckOutIds_WS;
             }
             return System.Text.Json.JsonSerializer.Serialize(data);
         }

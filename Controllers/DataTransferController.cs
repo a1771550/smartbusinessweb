@@ -614,6 +614,9 @@ namespace SmartBusinessWeb.Controllers
 				string[] filenames;
 				switch (type)
 				{
+					case "journal":
+						await ExportData4SB(apId, dmodel, "Journal_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
+						break;
 					case "supplier":
 						await ExportData4SB(apId, dmodel, "Suppliers_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
 						break;
@@ -888,7 +891,7 @@ namespace SmartBusinessWeb.Controllers
                 var location = session.sesShop.ToLower();
                 var device = session.sesDvc.ToLower();
 
-				dmodel.WsCheckOutIds = new HashSet<long>();
+				dmodel.CheckOutIds_WS = new HashSet<long>();
 				dmodel.SelectedLocation = location;
 				dmodel.Device = device;
 
@@ -908,7 +911,7 @@ namespace SmartBusinessWeb.Controllers
                         try
                         {
                             ModelHelper.WriteLog(context, string.Format("Export Wholesales data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
-                            List<WholeSale> saleslist = context.WholeSales.Where(x => x.AccountProfileId==apId && dmodel.WsCheckOutIds.Any(y => x.wsUID == y)).ToList();
+                            List<WholeSale> saleslist = context.WholeSales.Where(x => x.AccountProfileId==apId && dmodel.CheckOutIds_WS.Any(y => x.wsUID == y)).ToList();
                             foreach (var sales in saleslist)
                             {
                                 sales.wsCheckout = true;

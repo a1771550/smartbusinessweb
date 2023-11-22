@@ -18869,8 +18869,7 @@ interface IJournal {
 	JournalNumber: string;
 	strDate: string;
 	JournalDate: string;
-	Memo: string;
-	Inclusive: boolean;
+	Memo: string;	
 	TaxCode: string;
 	ImportDutyAmount: number | null;
 	CurrencyCode: string;
@@ -18878,6 +18877,7 @@ interface IJournal {
 	Category: string;
 	DateDisplay: string;
 	IsCheckOut: boolean;
+	Inclusive: boolean;
 }
 interface IJournalLn {
 	mainId: string;
@@ -18896,6 +18896,7 @@ interface IJournalLn {
 	JobName: string|null;
 	AllocationMemo: string|null;
 	DateDisplay: string;
+	Inclusive: boolean;
 }
 interface IJob {
 	joStaffName: string;
