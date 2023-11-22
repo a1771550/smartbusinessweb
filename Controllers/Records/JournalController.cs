@@ -11,7 +11,7 @@ namespace SmartBusinessWeb.Controllers.Records
     {
 		[HandleError]
 		[CustomAuthorize("reports", "boss", "admin", "superadmin")]
-		public ActionResult Index(int sortCol = 6, string SortOrder = "desc", string Keyword = null, int? PageNo = 1)
+		public ActionResult Index(int sortCol = 5, string SortOrder = "desc", string Keyword = null, int? PageNo = 1)
 		{
 			ViewBag.Title = Resources.Resource.Journal;
 			ViewBag.ParentPage = "reports";
