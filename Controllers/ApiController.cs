@@ -42,6 +42,7 @@ using PPWLib.Models.Purchase.Supplier;
 using PPWCommonLib.BaseModels;
 using PPWLib.Models.Purchase;
 using ItemModel = PPWLib.Models.Item.ItemModel;
+using PPWLib.Models.Users;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -57,6 +58,7 @@ namespace SmartBusinessWeb.Controllers
         private int PageSize { get { return ComInfo == null ? int.Parse(ConfigurationManager.AppSettings["PageLength"]) : (int)ComInfo.PageLength; } }     
         private int AccountProfileId { get { return ComInfo == null ? int.Parse(ConfigurationManager.AppSettings["AccountProfileId"]) : (int)Session["AccountProfileId"]; } }
         private int apId { get { return AccountProfileId; } }       
+        private string DbName { get { return Session["DBName"].ToString(); } }
         private string CheckoutPortal { get { return ComInfo.DefaultCheckoutPortal; } }
         private string DefaultConnection { get { return Session["DBName"] == null ? ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", "SmartBusinessWeb_db") : ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", Session["DBName"].ToString()); } }
         private List<string> Shops;
@@ -3293,87 +3295,7 @@ namespace SmartBusinessWeb.Controllers
             }
         }
 
-        //too many items for json... 
-        [HttpGet]
-        public ActionResult GetAllStocks(JqueryDatatableParam param)
-        {
-            Dictionary<string, List<ItemModel>> dicItemQty = new Dictionary<string, List<ItemModel>>();
-            List<ItemModel> items = new List<ItemModel>();
-
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
-            {
-                string lastupdatetime = string.Empty;
-                var allownegativestock = context.AppParams.Single(x => x.appParam == "EnableAllowNegativeStockOnSales").appVal;
-
-                items = (from st in context.MyobLocStocks
-                         join i in context.MyobItems
-                         on st.lstItemCode equals i.itmCode
-                         select new ItemModel
-                         {
-                             LocStockId = st.lstItemLocationID,
-                             itmCode = i.itmCode,
-                             itmName = i.itmName,
-                             itmDesc = i.itmDesc,
-                             itmTaxPc = i.itmTaxPc,
-                             itmLastUnitPrice = i.itmLastUnitPrice,
-                             itmBaseSellingPrice = i.itmBaseSellingPrice,
-                             lstStockLoc = st.lstStockLoc,
-                             QuantityAvailable = (int)st.lstQuantityAvailable
-                         }
-                ).ToList();
-
-                string[] shops = context.MyobLocStocks.Select(x => x.lstStockLoc).Distinct().ToArray();
-                DateTime _lastupdatetime = (DateTime)context.DebugLogs.OrderByDescending(x => x.Id).FirstOrDefault().CreateTime;
-                lastupdatetime = CommonHelper.FormatDateTime(_lastupdatetime);
-
-                foreach (string shop in shops)
-                {
-                    dicItemQty.Add(shop, new List<ItemModel>());
-                }
-                foreach (string shop in dicItemQty.Keys)
-                {
-                    foreach (var item in items)
-                    {
-                        if (item.lstStockLoc == shop)
-                        {
-                            dicItemQty[shop].Add(item);
-                        }
-                    }
-                }
-            }
-
-            var sortColumnIndex = Convert.ToInt32(HttpContext.Request.QueryString["iSortCol_0"]);
-            var sortDirection = HttpContext.Request.QueryString["sSortDir_0"];
-            if (sortColumnIndex == 0)
-            {
-                items = sortDirection == "asc" ? items.OrderBy(c => c.itmCode).ToList() : items.OrderByDescending(c => c.itmCode).ToList();
-            }
-            else if (sortColumnIndex == 1)
-            {
-                items = sortDirection == "asc" ? items.OrderBy(c => c.itmDesc).ToList() : items.OrderByDescending(c => c.itmDesc).ToList();
-            }
-            else if (sortColumnIndex == 2)
-            {
-                items = sortDirection == "asc" ? items.OrderBy(c => c.itmBaseSellingPrice).ToList() : items.OrderByDescending(c => c.itmBaseSellingPrice).ToList();
-            }
-            else if (sortColumnIndex == 3)
-            {
-                items = sortDirection == "asc" ? items.OrderBy(c => c.QuantityAvailable.ToString()).ToList() : items.OrderByDescending(c => c.QuantityAvailable.ToString()).ToList();
-            }
-
-            //Paging
-            var displayResult = items.Skip(param.iDisplayStart)
-               .Take(param.iDisplayLength).ToList();
-            var totalRecords = items.Count();
-            return Json(new
-            {
-                param.sEcho,
-                iTotalRecords = totalRecords,
-                iTotalDisplayRecords = totalRecords,
-                aaData = displayResult
-            }, JsonRequestBehavior.AllowGet);
-        }
-
+    
         [HttpGet]
         public JsonResult CheckIfFileLocked(string file = "")
         {
@@ -3391,7 +3313,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public JsonResult GetCitiesFrmMyobCustomList()
         {
-            using var context = new PPWDbContext(Session["DBName"].ToString());
+            using var context = new PPWDbContext(DbName);
             var customlist = context.MyobCustomLists.Where(x => x.AccountProfileId == apId).ToList();
             var MyobCities = new List<City>();
             foreach (var city in customlist.Where(x => x.CustomListNumber == 2).ToList())

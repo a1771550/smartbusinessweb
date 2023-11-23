@@ -8,6 +8,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
+using PPWLib.Models.Users;
 
 namespace SmartBusinessWeb.Controllers
 {

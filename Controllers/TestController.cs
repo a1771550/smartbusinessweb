@@ -46,6 +46,7 @@ using DocumentFormat.OpenXml;
 using CommonLib.Models.MYOB;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using PPWLib.Models.Users;
 
 namespace SmartBusinessWeb.Controllers
 {

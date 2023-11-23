@@ -334,11 +334,12 @@
     <Compile Include="Controllers\POS\PaymentTypesController.cs" />
     <Compile Include="Controllers\POS\PayServiceController.cs" />
     <Compile Include="Controllers\POS\POSFuncController.cs" />
+    <Compile Include="Controllers\Report\AbssReportController.cs" />
     <Compile Include="Controllers\Sales\PreorderController.cs" />
     <Compile Include="Controllers\POS\PriceLevelsController.cs" />
     <Compile Include="Controllers\POS\PrintController.cs" />
     <Compile Include="Controllers\POS\ReceiptController.cs" />
-    <Compile Include="Controllers\POS\ReportController.cs" />
+    <Compile Include="Controllers\Report\ReportController.cs" />
     <Compile Include="Controllers\Sales\SalesOrderController.cs" />
     <Compile Include="Controllers\Promotion\ItemPeriodPromotionController.cs" />
     <Compile Include="Controllers\Promotion\ItemQtyPromotionController.cs" />
@@ -4627,6 +4628,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Content\bs5\" />
     <Folder Include="Models\" />
+    <Folder Include="Views\AMReport\" />
     <Folder Include="Views\SmartAttendence\" />
   </ItemGroup>
   <ItemGroup>

@@ -10,6 +10,7 @@ using CommonLib.Helpers;
 using System.Configuration;
 using System.Web.Security;
 using Helpers = PPWLib.Helpers;
+using PPWLib.Models.Users;
 
 namespace SmartBusinessWeb.Controllers
 {

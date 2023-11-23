@@ -20,6 +20,7 @@ namespace SmartBusinessWeb.Controllers
         protected int CompanyId { get { return ComInfo.Id; } }
         protected int AccountProfileId { get { return ComInfo.AccountProfileId; } }
         protected int apId { get { return ComInfo.AccountProfileId; } }
+        protected string DbName { get { return Session["DBName"].ToString(); } }
         protected bool NonABSS { get { return ComInfo.DefaultCheckoutPortal.ToLower() == "nonabss"; } }
         protected string CentralBaseUrl = UriHelper.GetAppUrl();
         protected string CentralApiUrl = ConfigurationManager.AppSettings["CentralApiUrl"];
