@@ -1,14 +1,15 @@
 ﻿using PPWCommonLib.CommonModels;
 using PPWDAL;
+using PPWLib.Helpers;
 using PPWLib.Models.Item;
-using PPWMyobLib;
+using PPWLib.Models.Quotation;
 using SmartBusinessWeb.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
+using CommonLib.App_GlobalResources;
 
 namespace SmartBusinessWeb.Controllers.Report
 {
@@ -18,32 +19,20 @@ namespace SmartBusinessWeb.Controllers.Report
 		List<UserEmployee> userEmployees = new List<UserEmployee>();
 		private string ItemsLastUpdateTimeDisplay;
 		private string StocksLastUpdateTimeDisplay;
-		
-		[AllowAnonymous]
-		public string SQLTest()
+		int userId => SessUser.surUID;
+
+		[HandleError]
+		[CustomAuthorize("reports", "admin1", "admin", "superadmin")]
+		public ActionResult Quotation()
 		{
-			string selectedProfile = "Clearwtr.MYO";
-			string sql = "Select e.Name,e.EmployeeID From Employees e;";
-			Repository rs = new Repository();
-			DataSet ds = rs.Query(sql, selectedProfile);
-			DataTable dt = ds.Tables[0];
-			List<Employee> employees = (from DataRow dr in dt.Rows
-										select new Employee()
-										{
-											Name = dr[0].ToString(),
-											ID = int.Parse(dr[1].ToString())
-										}).ToList();
-			string stroutput = "";
-			foreach (Employee employee in employees)
-			{
-				stroutput += employee.ID + ";" + employee.Name + "<br>";
-			}
-			return stroutput;
-			/*
-				19;Jones, Mary
-				20;Long, Alan
-			 */
+			ViewBag.ParentPage = "abssreports";
+			ViewBag.PageName = "quotation";
+			ViewBag.Title = Resource.Quotation;
+			QuotationEditModel model = new QuotationEditModel();
+			//model.GetList();
+			return View(model);
 		}
+
 
 		[HandleError]
 		[CustomAuthorize("Inventory", "Admin", "SuperAdmin")]
@@ -184,10 +173,9 @@ namespace SmartBusinessWeb.Controllers.Report
 		}
 		public ActionResult GetQuotations(JqueryDatatableParam param)
 		{
-			var quotations = ModelHelper.GetQuotationListFrmDB(apId, UserCode);
+			var quotations = QuotationHelper.GetQuotationListFrmDB(apId, SessUser.surUID);
 
-
-			if (Session["LoginName"].ToString().ToLower() != "admin")
+			if (!UserHelper.CheckIfARAdmin(SessUser))
 			{
 				using (var context = new PPWDbContext(DbName))
 				{
@@ -302,9 +290,10 @@ namespace SmartBusinessWeb.Controllers.Report
 		}
 		public ActionResult GetQuotationsM(JqueryDatatableParam param)
 		{
-			var quotations = ModelHelper.GetQuotationListFrmDB(apId, UserCode);
+			int userId = SessUser.surUID;
+			var quotations = QuotationHelper.GetQuotationListFrmDB(apId, userId);
 
-			if (Session["LoginName"].ToString().ToLower() != "admin")
+			if (!UserHelper.CheckIfARAdmin(SessUser))
 			{
 				using (var context = new PPWDbContext(DbName))
 				{
@@ -406,9 +395,9 @@ namespace SmartBusinessWeb.Controllers.Report
 		}
 		public ActionResult GetAccountReceivables(JqueryDatatableParam param)
 		{
-			List<AccountReceivableView> accountReceivables = ModelHelper.GetARListFrmDB(apId, companyCode);
+			List<AccountReceivableView> accountReceivables = ARHelper.GetARListFrmDB(apId);
 
-			if (Session["LoginName"].ToString().ToLower() != "admin")
+			if (!UserHelper.CheckIfARAdmin(SessUser))
 			{
 				using (var context = new PPWDbContext(DbName))
 				{
@@ -510,9 +499,9 @@ namespace SmartBusinessWeb.Controllers.Report
 
 		public ActionResult GetAccountReceivablesM(JqueryDatatableParam param)
 		{
-			List<AccountReceivableView> accountReceivables = ModelHelper.GetARListFrmDB(apId, companyCode);
+			List<AccountReceivableView> accountReceivables = ARHelper.GetARListFrmDB(apId);
 
-			if (Session["LoginName"].ToString().ToLower() != "admin")
+			if (!UserHelper.CheckIfARAdmin(SessUser))
 			{
 				using (var context = new PPWDbContext(DbName))
 				{
@@ -615,9 +604,9 @@ namespace SmartBusinessWeb.Controllers.Report
 		}
 		public ActionResult GetSalesPersonPerformances(JqueryDatatableParam param)
 		{
-			List<SPPView> salesPersonPerformances = ModelHelper.GetSPPListFrmDB(apId, companyCode);
+			List<SPPView> salesPersonPerformances = SPPHelper.GetSPPListFrmDB(apId);
 
-			if (Session["LoginName"].ToString().ToLower() != "admin")
+			if (!UserHelper.CheckIfARAdmin(SessUser))
 			{
 				using (var context = new PPWDbContext(DbName))
 				{
@@ -730,9 +719,9 @@ namespace SmartBusinessWeb.Controllers.Report
 		}
 		public ActionResult GetSalesPersonPerformancesM(JqueryDatatableParam param)
 		{
-			List<SPPView> salesPersonPerformances = ModelHelper.GetSPPListFrmDB(apId, companyCode);
+			List<SPPView> salesPersonPerformances = SPPHelper.GetSPPListFrmDB(apId);
 
-			if (Session["LoginName"].ToString().ToLower() != "admin")
+			if (!UserHelper.CheckIfARAdmin(SessUser))
 			{
 				using (var context = new PPWDbContext(DbName))
 				{
@@ -834,9 +823,9 @@ namespace SmartBusinessWeb.Controllers.Report
 		}
 		public ActionResult GetCustomersInvoicess(JqueryDatatableParam param)
 		{
-			List<CIView> customersInvoicess = ModelHelper.GetCIListFrmDB(apId, companyCode);
+			List<CIView> customersInvoicess = CIHelper.GetCIListFrmDB(apId);
 
-			if (Session["LoginName"].ToString().ToLower() != "admin")
+			if (!UserHelper.CheckIfARAdmin(SessUser))
 			{
 				using (var context = new PPWDbContext(DbName))
 				{
@@ -950,9 +939,9 @@ namespace SmartBusinessWeb.Controllers.Report
 		}
 		public ActionResult GetCustomersInvoicessM(JqueryDatatableParam param)
 		{
-			List<CIView> customersInvoicess = ModelHelper.GetCIListFrmDB(apId, companyCode);
+			List<CIView> customersInvoicess = CIHelper.GetCIListFrmDB(apId);
 
-			if (Session["LoginName"].ToString().ToLower() != "admin")
+			if (!UserHelper.CheckIfARAdmin(SessUser))
 			{
 				using (var context = new PPWDbContext(DbName))
 				{

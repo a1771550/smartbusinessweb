@@ -779,3 +779,10 @@ input[type=checkbox]:focus {
 .presettledstatusbg{
     background-color:#dcfcc3;
 }
+.px120{
+    width:120px;max-width:120px;
+}
+.px140 {
+    width: 140px;
+    max-width: 140px;
+}

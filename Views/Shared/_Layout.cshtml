@@ -634,6 +634,38 @@
 
 					<li class="dropdown">
 						@{
+							reportlnktxt = Resources.Resource.Report;
+							reportlnkcls = "nav-link dropdown-toggle {0}";
+							if (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "abssreports")
+							{
+								reportlnkcls = string.Format(reportlnkcls, "active");
+							}
+							else
+							{
+								reportlnkcls = string.Format(reportlnkcls, string.Empty);
+							}
+						}
+						<a href="#" class="@reportlnkcls" data-toggle="dropdown">
+							@string.Format(Resources.Resource.ReportFormat, "ABSS") <span class="caret"></span>
+						</a>
+						<div class="dropdown-menu">
+							@{
+								lnkcls = "dropdown-item {0}";
+								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "quotation")
+								{
+									lnkcls = string.Format(lnkcls, "active");
+								}
+								else
+								{
+									lnkcls = string.Format(lnkcls, string.Empty);
+								}
+							}
+							@Html.ActionLink(Resources.Resource.Quotation, "Quotation", "ABSSReport", null, new { @class = lnkcls })
+						</div>
+					</li>
+
+					<li class="dropdown">
+						@{
 							reportlnktxt = Resources.Resource.Record;
 							reportlnkcls = "nav-link dropdown-toggle {0}";
 							if (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "records")

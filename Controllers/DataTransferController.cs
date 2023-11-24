@@ -23,11 +23,11 @@ using FileHelper = PPWCommonLib.CommonHelpers.FileHelper;
 using PPWLib.Helpers;
 using PPWLib.Models.Purchase;
 using PPWLib.Models.WholeSales;
-using PPWLib.Models.POS.Customer;
-using Dapper;
+using PPWLib.Models.Customer;
 using Microsoft.Data.SqlClient;
 using PPWLib.Models.POS.Sales;
 using PPWLib.Models.Journal;
+using PPWLib.Models.Quotation;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -170,11 +170,16 @@ namespace SmartBusinessWeb.Controllers
 			SessUser curruser = Session["User"] as SessUser;
 
 			using var context = new PPWDbContext(Session["DBName"].ToString());
-			string ConnectionString = GetConnectionString(context, "READ", apId);
+			string AbssConnectionString = GetAbssConnectionString(context, "READ", apId);
+
+			if (filename.StartsWith("Quotation_"))
+			{
+				QuotationHelper.SaveQuotationsToDB();
+			}
 
 			if (filename.StartsWith("Job_"))
 			{
-				List<MyobJobModel> joblist = MYOBHelper.GetJobList(ConnectionString);
+				List<MyobJobModel> joblist = MYOBHelper.GetJobList(AbssConnectionString);
 				using (var transaction = context.Database.BeginTransaction())
 				{
 					try
@@ -240,7 +245,7 @@ namespace SmartBusinessWeb.Controllers
 
 			if (filename.StartsWith("Currency_"))
 			{
-				List<MyobCurrencyModel> emplist = MYOBHelper.GetCurrencyList(ConnectionString);
+				List<MyobCurrencyModel> emplist = MYOBHelper.GetCurrencyList(AbssConnectionString);
 				using (var transaction = context.Database.BeginTransaction())
 				{
 					try
@@ -308,17 +313,17 @@ namespace SmartBusinessWeb.Controllers
 
 			if (filename.StartsWith("Employees_"))
 			{
-				ModelHelper.SaveEmployeesFrmCentral(apId, context, ConnectionString, curruser);
+				ModelHelper.SaveEmployeesFrmCentral(apId, context, AbssConnectionString, curruser);
 			}
 
 			if (filename.StartsWith("Customers_"))
 			{
-				ModelHelper.SaveCustomersFrmCentral(context, ConnectionString, apId);
+				ModelHelper.SaveCustomersFrmCentral(context, AbssConnectionString, apId);
 			}
 
 			if (filename.StartsWith("Items_"))
 			{
-				ModelHelper.SaveItemsFrmCentral(apId, context, ConnectionString);
+				ModelHelper.SaveItemsFrmCentral(apId, context, AbssConnectionString);
 			}
 
 			if (filename.StartsWith("Tax_"))
@@ -402,7 +407,7 @@ namespace SmartBusinessWeb.Controllers
 
 			if (filename.StartsWith("Account_"))
 			{
-				List<AccountModel> accountlist = MYOBHelper.GetAccountList(ConnectionString);
+				List<AccountModel> accountlist = MYOBHelper.GetAccountList(AbssConnectionString);
 
 				using (var transaction = context.Database.BeginTransaction())
 				{
@@ -670,7 +675,7 @@ namespace SmartBusinessWeb.Controllers
 			int apId = comInfo.AccountProfileId;
 
 			using var context = new PPWDbContext(Session["DBName"].ToString());
-			string ConnectionString = GetConnectionString(context, "READ_WRITE", apId);
+			string ConnectionString = GetAbssConnectionString(context, "READ_WRITE", apId);
 		
 			using var connection = new SqlConnection(DefaultConnection);
 			connection.Open();
@@ -1247,7 +1252,7 @@ namespace SmartBusinessWeb.Controllers
 		{
 			using var context = new PPWDbContext(Session["DBName"].ToString());
 
-			string ConnectionString = GetConnectionString(context, "READ_WRITE", apId);
+			string ConnectionString = GetAbssConnectionString(context, "READ_WRITE", apId);
 			ModelHelper.GetDataTransferData(context, accountprofileId, CheckOutType.Suppliers, ref dmodel);
 
 			List<string> columns = new List<string>();
@@ -1302,7 +1307,7 @@ namespace SmartBusinessWeb.Controllers
 
 			using (var context = new PPWDbContext(Session["DBName"].ToString()))
 			{
-				string ConnectionString = GetConnectionString(context, "READ_WRITE", AccountProfileId);
+				string ConnectionString = GetAbssConnectionString(context, "READ_WRITE", AccountProfileId);
 				ModelHelper.GetDataTransferData(context, AccountProfileId, CheckOutType.PGCustomers, ref dmodel);
 
 				if (dmodel.CustomerList.Count > 0)
@@ -1419,7 +1424,7 @@ namespace SmartBusinessWeb.Controllers
 
 			using (var context = new PPWDbContext(Session["DBName"].ToString()))
 			{
-				string ConnectionString = GetConnectionString(context, "READ_WRITE", AccountProfileId);
+				string ConnectionString = GetAbssConnectionString(context, "READ_WRITE", AccountProfileId);
 				ModelHelper.GetDataTransferData(context, AccountProfileId, CheckOutType.MyobCustomers, ref dmodel);
 
 				if (dmodel.CustomerList.Count > 0)
@@ -1448,7 +1453,7 @@ namespace SmartBusinessWeb.Controllers
 
 			using (var context = new PPWDbContext(Session["DBName"].ToString()))
 			{
-				string ConnectionString = GetConnectionString(context, "READ_WRITE", AccountProfileId);
+				string ConnectionString = GetAbssConnectionString(context, "READ_WRITE", AccountProfileId);
 				List<string> columns = new List<string>();
 
 				int colcount = ApprovalMode ? MyobHelper.ImportCustomerBasicColCount4Approval : MyobHelper.ImportCustomerBasicColCount;
@@ -1503,7 +1508,7 @@ namespace SmartBusinessWeb.Controllers
 				}
 			}
 		}
-		private string GetConnectionString(PPWDbContext context, string accesstype, int apId)
+		private string GetAbssConnectionString(PPWDbContext context, string accesstype, int apId)
 		{
 			return MYOBHelper.GetConnectionString(context, accesstype, apId);
 		}

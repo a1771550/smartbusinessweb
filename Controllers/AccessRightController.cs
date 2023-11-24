@@ -9,7 +9,7 @@ using Resources = CommonLib.App_GlobalResources;
 using ModelHelper = PPWLib.Helpers.ModelHelper;
 using CommonLib.Helpers;
 using System.Configuration;
-using PPWLib.Models.Users;
+using PPWLib.Models.User;
 
 namespace SmartBusinessWeb.Controllers
 {

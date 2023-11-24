@@ -10,7 +10,8 @@ using CommonLib.Helpers;
 using System.Configuration;
 using System.Web.Security;
 using Helpers = PPWLib.Helpers;
-using PPWLib.Models.Users;
+using PPWLib.Models.User;
+using System.Collections.Generic;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -86,62 +87,62 @@ namespace SmartBusinessWeb.Controllers
                 var _roleuser = context.LoginPCUser8(model.Email, hash, model.SelectedDevice, model.SelectedShop).ToList();//because of multi-roles!
                 var roles = _roleuser.Select(x => x.rlCode).Distinct().ToList();
                 if (_roleuser != null && _roleuser.Count >= 1)
-                {
-                    var __user = _roleuser.FirstOrDefault();
-                    user = new SysUser
-                    {
-                        surUID = __user.surUID,
-                        surIsActive = __user.surIsActive,
-                        UserCode = __user.UserCode,
-                        UserName = __user.UserName,
-                        UserRole = string.Join(",", roles),
-                        DisplayName = __user.DisplayName,
-                        Email = __user.Email,
-                        dvcCode = model.SelectedDevice,
-                        shopCode = model.SelectedShop,
-                        dvcIP = __user.dvcIP,
-                        surNetworkName = __user.surNetworkName,
-                        ManagerId = __user.ManagerId,
-                        surDesc = __user.surDesc,
-                        surNotes = __user.surNotes,
-                        AccountProfileId = __user.AccountProfileId,
-                        surCreateTime = __user.surCreateTime,
-                        surModifyTime = __user.surModifyTime,
-                    };
-                    Session["ComInfo"] = comInfo;
-                    msg = "ok";
+				{
+					var __user = _roleuser.FirstOrDefault();
+					user = new SysUser
+					{
+						surUID = __user.surUID,
+						surIsActive = __user.surIsActive,
+						UserCode = __user.UserCode,
+						UserName = __user.UserName,
+						UserRole = string.Join(",", roles),
+						DisplayName = __user.DisplayName,
+						Email = __user.Email,
+						dvcCode = model.SelectedDevice,
+						shopCode = model.SelectedShop,
+						dvcIP = __user.dvcIP,
+						surNetworkName = __user.surNetworkName,
+						ManagerId = __user.ManagerId,
+						surDesc = __user.surDesc,
+						surNotes = __user.surNotes,
+						AccountProfileId = __user.AccountProfileId,
+						surCreateTime = __user.surCreateTime,
+						surModifyTime = __user.surModifyTime,
+					};
+					Session["ComInfo"] = comInfo;
+					msg = "ok";
 
-                    var Roles = Helpers.ModelHelper.GetUserRoles(user);
-                    bool isadmin = Roles.Any(x => x == RoleType.Admin && x != RoleType.SalesManager);
-                    if (isadmin)
-                    {
-                        _login(user, isadmin, context, model, null);
+					var Roles = UserHelper.GetUserRoles(user);
+					bool isadmin = UserHelper.CheckIfAdmin(Roles);
+					if (isadmin)
+					{
+						_login(user, isadmin, context, model, null);
 
-                        model.RedirectUrl = ApprovalMode ? "/WholeSales/SalesOrderList" : ComInfo.comLandingPage;
-                        return Json(new { msg, iscentral = model.IsCentral, redirecturi = model.RedirectUrl });
-                    }
-                    else
-                    {
-                        DeviceModel device = Helpers.ModelHelper.GetDevice(user.surUID, context);//don't move to below
-                        if (device != null)
-                        {
-                            _login(user, isadmin, context, model, device);
+						model.RedirectUrl = ApprovalMode ? "/WholeSales/SalesOrderList" : ComInfo.comLandingPage;
+						return Json(new { msg, iscentral = model.IsCentral, redirecturi = model.RedirectUrl });
+					}
+					else
+					{
+						DeviceModel device = Helpers.ModelHelper.GetDevice(user.surUID, context);//don't move to below
+						if (device != null)
+						{
+							_login(user, isadmin, context, model, device);
 
-                            if (string.IsNullOrEmpty(model.RedirectUrl))
-                            {
-                                model.RedirectUrl = ComInfo.comLandingPage;
-                            }
+							if (string.IsNullOrEmpty(model.RedirectUrl))
+							{
+								model.RedirectUrl = ComInfo.comLandingPage;
+							}
 
-                            return Json(new { msg, iscentral = model.IsCentral, redirecturi = model.RedirectUrl });
-                        }
-                        else
-                        {
-                            msg = Resources.Resource.SalesDeviceNotFound;
-                            return Json(new { msg });
-                        }
-                    }
-                }
-                else
+							return Json(new { msg, iscentral = model.IsCentral, redirecturi = model.RedirectUrl });
+						}
+						else
+						{
+							msg = Resources.Resource.SalesDeviceNotFound;
+							return Json(new { msg });
+						}
+					}
+				}
+				else
                 {
                     msg = Resources.Resource.InvalidLogin;
                     return Json(new { msg });
@@ -149,8 +150,9 @@ namespace SmartBusinessWeb.Controllers
             }
         }
 
+		
 
-        private void _login(SysUser user,bool isadmin, PPWDbContext context, LoginUserModel model, DeviceModel device = null)
+		private void _login(SysUser user,bool isadmin, PPWDbContext context, LoginUserModel model, DeviceModel device = null)
         {
             string token = CommonHelper.GenSessionToken();
             DateTime currDate = DateTime.Now.Date;
@@ -235,7 +237,7 @@ namespace SmartBusinessWeb.Controllers
                 EnableCheckDayends = enablecheckdayends,
                 NetworkName = user.surNetworkName,
                 PrinterName = printername,
-                Roles = Helpers.ModelHelper.GetUserRoles(user),
+                Roles = UserHelper.GetUserRoles(user),
                 AccountProfileId = accountProfileId,
                 ManagerId = user.ManagerId,
                 Device = device,                

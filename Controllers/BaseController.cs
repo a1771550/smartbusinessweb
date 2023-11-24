@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using PPWDAL;
 using Resources = CommonLib.App_GlobalResources;
+using PPWLib.Models;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -21,7 +22,8 @@ namespace SmartBusinessWeb.Controllers
         protected int AccountProfileId { get { return ComInfo.AccountProfileId; } }
         protected int apId { get { return ComInfo.AccountProfileId; } }
         protected string DbName { get { return Session["DBName"].ToString(); } }
-        protected bool NonABSS { get { return ComInfo.DefaultCheckoutPortal.ToLower() == "nonabss"; } }
+		protected SessUser SessUser => Session["User"] as SessUser;
+		protected bool NonABSS { get { return ComInfo.DefaultCheckoutPortal.ToLower() == "nonabss"; } }
         protected string CentralBaseUrl = UriHelper.GetAppUrl();
         protected string CentralApiUrl = ConfigurationManager.AppSettings["CentralApiUrl"];
         protected bool IsDeploy { get { return ComInfo == null ? ConfigurationManager.AppSettings["IsDeploy"]=="1":(bool)ComInfo.IsDeploy; } }        

@@ -1,4 +1,4 @@
-﻿@model PPWLib.Models.POS.Customer.MyobCustomerModel
+﻿@model PPWLib.Models.Customer.MyobCustomerModel
 @{
     string plsentertxt = string.Format(Resources.Resource.PlsEnterFormat, string.Format(string.Format(Resources.Resource.ValueFormat, string.Format(Resources.Resource.AllFormat, string.Format(Resources.Resource.DropDownFormat, Resources.Resource.CustomAttribute)))));
 
@@ -17,7 +17,7 @@
     string _checked = "checked";
     bool isorgan = true;
     int iorgan = 1;
-    var tmpcust = new PPWLib.Models.POS.Customer.MyobCustomerModel();
+    var tmpcust = new PPWLib.Models.Customer.MyobCustomerModel();
     tmpcust.Address = new CommonLib.Models.MYOB.AddressModel();
     if (edit)
     {

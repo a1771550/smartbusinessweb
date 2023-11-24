@@ -6,10 +6,7 @@ $(document).on("click", ".import", function () {
         type: "GET",
         url: "/Api/CheckIfFileLocked",
         data: { file: "" },
-        success: function (data) {
-            // console.log("data:", data);
-            // blocked = data === "1";
-            // console.log("blocked:", blocked);
+        success: function (data) {            
             if (data == "1") {
                 $.fancyConfirm({
                     title: "",
@@ -20,6 +17,9 @@ $(document).on("click", ".import", function () {
                 });
             } else {
                 switch (type) {
+                    case "quotation":
+                        $("#filename").val("Quotation_");
+                        break;
                     case "job":
                         $("#filename").val("Job_");
                         break;
@@ -57,6 +57,9 @@ $(document).on("click", ".import", function () {
                         falert($infoblk.data("importdonemsg"), oktxt);
                         closeWaitingModal();
                         switch (type) {
+                            case "quotation":
+                                $("#btnImportQuotation").off("click").prop("disabled", true);
+                                break;
                             case "job":
                                 $("#btnImportJob").off("click").prop("disabled", true);
                                 break;

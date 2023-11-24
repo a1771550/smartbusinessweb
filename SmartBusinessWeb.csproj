@@ -4287,6 +4287,7 @@
     <Content Include="Views\Shared\_Date.cshtml" />
     <Content Include="Scripts\ts\js\records\journallist.js.map" />
     <Content Include="Scripts\ts\js\records\journaledit.js.map" />
+    <Content Include="Views\AbssReport\Quotation.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4629,7 +4630,6 @@
     <Folder Include="Content\bs5\" />
     <Folder Include="Models\" />
     <Folder Include="Views\AMReport\" />
-    <Folder Include="Views\SmartAttendence\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

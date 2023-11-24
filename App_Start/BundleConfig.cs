@@ -10,7 +10,7 @@ namespace SmartBusinessWeb.App_Start
             bundles.Add(new StyleBundle("~/bundles/maincss").Include(
                 "~/Content/bs4/bootstrap.min.css",
                 "~/Content/bs4/bootstrap-theme.min.css",
-                "~/Content/DataTables/css/dataTables.bootstrap.css",
+                //"~/Content/DataTables/css/dataTables.bootstrap.css",
                 "~/Content/DataTables/css/responsive.bootstrap.min.css"
                 ));
 
@@ -20,9 +20,9 @@ namespace SmartBusinessWeb.App_Start
             "~/Scripts/moment.min.js",
             "~/Scripts/respond.min.js",
             "~/Scripts/modernizr-2.8.3.js",
-            "~/Scripts/DataTables/jquery.dataTables{version}.js",
-            "~/Scripts/DataTables/dataTables.select{version}.js",
-            "~/Scripts/DataTables/dataTables.bootstrap4{version}.js"
+            "~/Scripts/DataTables/jquery.dataTables.min.js",
+            "~/Scripts/DataTables/dataTables.select.min.js",
+            "~/Scripts/DataTables/dataTables.bootstrap4.min.js"
             ));
 
             bundles.Add(new ScriptBundle("~/bundles/fancyjpower").Include(

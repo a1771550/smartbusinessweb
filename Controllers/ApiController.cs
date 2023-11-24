@@ -35,14 +35,14 @@ using PPWLib.Models.WholeSales;
 using Dapper;
 using PPWLib.Models.POS.Settings;
 using System.Data.Entity;
-using MyobCustomerModel = PPWLib.Models.POS.Customer.MyobCustomerModel;
+using MyobCustomerModel = PPWLib.Models.Customer.MyobCustomerModel;
 using System.Web;
 using System.Data.Entity.Core.Objects;
 using PPWLib.Models.Purchase.Supplier;
 using PPWCommonLib.BaseModels;
 using PPWLib.Models.Purchase;
 using ItemModel = PPWLib.Models.Item.ItemModel;
-using PPWLib.Models.Users;
+using PPWLib.Models.User;
 
 namespace SmartBusinessWeb.Controllers
 {

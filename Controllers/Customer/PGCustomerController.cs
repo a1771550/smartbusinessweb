@@ -5,7 +5,7 @@ using SmartBusinessWeb.Infrastructure;
 using PPWDAL;
 using PPWLib.Helpers;
 using PPWLib.Models;
-using PPWLib.Models.POS.Customer;
+using PPWLib.Models.Customer;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
