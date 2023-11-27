@@ -1,0 +1,332 @@
+﻿@model PPWLib.Models.Quotation.QuotationEditModel
+
+<div class="text-center">
+	<h2 class="d-none d-sm-block">@Resources.Resource.Quotation</h2>
+	<h3 class="d-block d-sm-none">@Resources.Resource.Quotation</h3>
+</div>
+
+<div class="d-none d-sm-block">
+	<div class="table-responsive my-3">
+		<table id="tblGrid" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0">
+			<thead>
+				<tr>
+					<th scope="col">@string.Format(Resources.Resource.NumberFormat,Resources.Resource.Order)</th>
+					<th scope="col">@Resources.Resource.Date</th>
+					<th scope="col">@Resources.Resource.Customer</th>
+					<th scope="col">@Resources.Resource.ItemNumber</th>
+					<th scope="col">@Resources.Resource.ItemName</th>
+					<th scope="col">@Resources.Resource.SalesPerson</th>
+					<th scope="col">@Resources.Resource.Qty</th>
+					<th scope="col">@Resources.Resource.SellingPrice (@Model.Currency)</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+</div>
+<div class="d-block d-sm-none">
+	<div class="row">
+		<div class="table-responsive">
+			<table id="tblGridm" class="table table-striped table-bordered table-hover dt-responsive" cellspacing="0">
+				<thead>
+					<tr>
+						<th scope="col">@Resources.Resource.Customer</th>
+						<th scope="col">@Resources.Resource.ItemName</th>
+						<th scope="col">@Resources.Resource.SellingPrice</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+	</div>
+
+	<div id="itemdetail" title="Detail">
+
+	</div>
+</div>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script type="text/javascript" src="https://cdn.datatables.net/datetime/1.1.0/js/dataTables.dateTime.min.js"></script>
+<script>
+	var $window = $(window);
+	var datatable;
+	var datatableM;
+	var webbind = false;
+	var mobilebind = false;
+	pagesize = @Model.PageSize;
+	// Date range filter
+	//var minDate, maxDate;
+	var minDateM, maxDateM;
+
+	$(document).on('click', '#btnReset', function () {
+		window.location.reload();
+	});
+
+	$(function () {
+		setFullPage();
+		// Execute on load
+		checkWidth();
+		// Bind event listener
+		$(window).resize(checkWidth);
+
+		$("#itemdetail").dialog({
+			show: { effect: "blind", duration: 800 },
+			autoOpen: false,
+		});
+	});
+
+	function bindtable() {
+		datatable = $('#tblGrid').DataTable({
+			'autoWidth': false,
+			'scrollX': 'true',
+			'scrollY': 700,
+			'scrollCollapse': true,
+			"pageLength": pagesize,
+			"bLengthChange": false,
+			"sAjaxSource": "/AbssReport/GetQuotations",
+			"bServerSide": true,
+			"bProcessing": true,
+			"bSearchable": true,
+			"order": [[1, 'desc']],
+			"language": {
+				"emptyTable": "@Resources.Resource.NoDataFound",
+				"processing":
+					"<i class=\"fa fa-spinner fa-spin fa-3x fa-fw\" style=\"color:#2a2b2b;\"></i><span class=\"sr-only\">@Resources.Resource.Loading...</span>"
+			},
+			//main.InvoiceNumber as 'Order No',main.InvoiceDate as Sales,c.Name as CustomerName,i.ItemNumber,i.ItemName,e.Name as 'SalesPersonName',l.Quantity as Qty,l.TaxInclusiveUnitPrice
+			"columns": [
+				{
+					"data": "InvoiceNumber",
+					"searchable": true,
+				},
+				{
+					"data": "InvoiceDateDisplay",
+					"searchable": true,
+				},
+				{
+					"data": "CustomerName",
+					"searchable": true
+				},
+				{
+					"data": "ItemNumber",
+					"searchable": true
+				}, {
+					"data": "ItemName",
+					"searchable": true
+				}, {
+					"data": "SalesPersonName",
+					"searchable": true
+				},
+				{
+					"data": "Qty",
+					"searchable": true
+				},
+				{
+					"data": "SellingPrice",
+					"searchable": true
+				},
+				{
+					"data": "InvoiceDateStart",
+					"visible": false,
+					"searchable": true,
+				},
+				{
+					"data": "InvoiceDateEnd",
+					"visible": false,
+					"searchable": true
+				}
+			],
+			"columnDefs": [{
+				targets: 7,
+				createdCell: function (td, cellData, rowData, row, col) {
+						$(td).css('text-align', 'right');
+				}
+			}],
+			"drawCallback": function (settings) {
+				webbind = true;
+				$('#tblGrid').find('thead tr th:eq(7)').css({ 'text-align': 'right' });
+				$('input[name="datetimesmin"]').daterangepicker({
+					singleDatePicker: true,
+					showDropdowns: true,
+					minYear: 1901,
+					maxYear: parseInt(moment().format('YYYY'), 10),
+					locale: {
+						format: 'MM/DD/YYYY'
+					}
+				}, function (start, end, label) {
+					minDate = new Date(start).toDateString();
+					doFilter();
+
+				});
+				$('input[name="datetimesmax"]').daterangepicker({
+					singleDatePicker: true,
+					showDropdowns: true,
+					minYear: 1901,
+					maxYear: parseInt(moment().format('YYYY'), 10),
+					locale: {
+						format: 'MM/DD/YYYY'
+					}
+				}, function (start, end, label) {
+					maxDate = new Date(end).toDateString();
+					doFilter();
+
+				});
+				let $tfilter = $('#tblGrid_wrapper');
+				if ($tfilter.find('#btnReset').length === 0) {
+					let ele = `<div class="row justify-content-end mx-4 my-2 small"><div class="col-sm-12 col-md-6 text-right"><button id="btnReset" type="button" class="btn btn-warning">@Resources.Resource.Reset</button></div></div>`;
+					$(ele).insertBefore($tfilter.find('.row:eq(0)'));
+				}
+				let $filter = $tfilter.find("#tblGrid_filter");
+				if ($filter.length) {
+					$filter.addClass("mx-4");
+					$filter.find("input").appendTo($filter).trigger("focus");
+					$filter.find("label").text(searchtxt+":");
+				}
+			},
+		});
+	}
+
+	function bindtableM() {
+		datatableM = $('#tblGridm').DataTable({
+			"pageLength": pagesize,
+			"bLengthChange": false,
+			"sAjaxSource": "/AbssReport/GetQuotationsM",
+			"bServerSide": true,
+			"bProcessing": true,
+			"bSearchable": true,
+			"order": [[0, 'desc']],
+			"language": {
+				"emptyTable": "@Resources.Resource.NoDataFound",
+				"processing":
+					'<i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:#2a2b2b;"></i><span class="sr-only">@Resources.Resource.Loading...</span> '
+			},
+			//main.InvoiceNumber as 'Order No',main.InvoiceDate as Sales,c.Name as CustomerName,i.ItemNumber,i.ItemName,e.Name as 'SalesPersonName',l.Quantity as Qty,l.TaxInclusiveUnitPrice
+			"columns": [
+				{
+					"data": "CustomerName",
+					"autoWidth": true,
+					"searchable": true
+				},
+				{
+					"data": "ItemName",
+					"autoWidth": true,
+					"searchable": true
+				},
+				{
+					"data": "SellingPrice",
+					"autoWidth": true,
+					"searchable": true
+				},
+				{
+					"data": "InvoiceDateStart",
+					"visible": false,
+					"searchable": true,
+				},
+				{
+					"data": "InvoiceDateEnd",
+					"visible": false,
+					"searchable": true
+				},
+				{
+					"data": "InvoiceNumber",
+					"visible": false,
+					"searchable": true
+				},
+				{
+					"data": "InvoiceDateDisplay",
+					"visible": false,
+					"searchable": true
+				},
+				{
+					"data": "ItemNumber",
+					"visible": false,
+					"searchable": true
+				},
+				{
+					"data": "SalesPersonName",
+					"visible": false,
+					"searchable": true
+				},
+				{
+					"data": "Qty",
+					"visible": false,
+					"searchable": true
+				}
+			],
+			"drawCallback": function (settings) {
+				mobilebind = true;
+				let $tfilter = $('#tblGridm_wrapper');
+				if ($tfilter.find('#btnReset').length === 0) {
+					let ele = '<div class="row mb-3 small"><div class="col-sm-12 col-md-6"></div><div class="col-sm-12 col-md-6 text-right"><button id="btnReset" type="button" class="btn btn-secondary" style="font-size:1.6em;">@Resources.Resource.Reset</button></div></div>';
+					$(ele).insertBefore($tfilter.find('.row:eq(0)'));
+				}
+				$('#tblGridm tbody').on('click', 'tr', function () {
+					let rdata = datatableM.row(this).data();
+					@*console.log(rdata);*@
+					let html = "";
+					let $detail = $('#itemdetail');
+					html += "<p><strong>@string.Format(Resources.Resource.NumberFormat, Resources.Resource.Order):</strong><br>" + rdata.InvoiceNumber + "</p>";
+					html += "<p><strong>@Resources.Resource.Sales:</strong><br>" + rdata.InvoiceDateDisplay + "</p>";
+					html += "<p><strong>@Resources.Resource.Customer:</strong><br>" + rdata.CustomerName + "</p>";
+					html += "<p><strong>@Resources.Resource.ItemNumber:</strong><br>" + rdata.ItemNumber + "</p>";
+					html += "<p><strong>@Resources.Resource.ItemName:</strong><br>" + rdata.ItemName + "</p>";
+					html += "<p><strong>@Resources.Resource.SalesPerson:</strong><br>" + rdata.SalesPersonName + "</p>";
+					html += "<p><strong>@Resources.Resource.Qty:</strong><br>" + rdata.Qty + "</p>";
+					html += "<p><strong>@Resources.Resource.SellingPrice:</strong><br>" + rdata.SellingPrice + "</p>";
+					$detail.empty().append(html).dialog("open");
+				});
+				$('input[type=search]').css({ 'height': '22px' });
+				$('input[name="datetimesmin"]').daterangepicker({
+					singleDatePicker: true,
+					showDropdowns: true,
+					minYear: 1901,
+					maxYear: parseInt(moment().format('YYYY'), 10),
+					locale: {
+						format: 'MM/DD/YYYY'
+					}
+				}, function (start, end, label) {
+					minDateM = new Date(start).toDateString();
+					doFilterM();
+
+				});
+				$('input[name="datetimesmax"]').daterangepicker({
+					singleDatePicker: true,
+					showDropdowns: true,
+					minYear: 1901,
+					maxYear: parseInt(moment().format('YYYY'), 10),
+					locale: {
+						format: 'MM/DD/YYYY'
+					}
+				}, function (start, end, label) {
+					maxDateM = new Date(end).toDateString();
+					doFilterM();
+
+				});
+			},
+		});
+	}
+
+	function doFilter() {
+		let s = datatable.columns().search('');
+		s = s.columns(8).search(minDate);
+		s = s.columns(9).search(maxDate);
+		s.draw();
+	}
+	function doFilterM() {
+		let s = datatableM.columns().search('');
+		s = s.columns(3).search(minDateM);
+		s = s.columns(4).search(maxDateM);
+		s.draw();
+	}
+
+	function checkWidth() {
+		var windowsize = $window.width();
+		//console.log('windowsize:' + windowsize);
+		if (windowsize > 450) {
+			if (!webbind) bindtable();
+		} else {
+			if (!mobilebind) bindtableM();
+		}
+	}
+</script>
+
