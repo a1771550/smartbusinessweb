@@ -10,6 +10,7 @@ using System.Data;
 using System.Linq;
 using System.Web.Mvc;
 using CommonLib.App_GlobalResources;
+using PPWLib.Models.AccountReceivable;
 
 namespace SmartBusinessWeb.Controllers.Report
 {
@@ -29,10 +30,18 @@ namespace SmartBusinessWeb.Controllers.Report
 			ViewBag.PageName = "quotation";
 			ViewBag.Title = Resource.Quotation;
 			QuotationEditModel model = new QuotationEditModel();
-			//model.GetList();
 			return View(model);
 		}
-
+		[HandleError]
+		[CustomAuthorize("reports", "admin1", "admin", "superadmin")]
+		public ActionResult AccountReceivable()
+		{
+			ViewBag.ParentPage = "abssreports";
+			ViewBag.PageName = "receivable";
+			ViewBag.Title = Resource.AccountReceivable;
+			AREditModel model = new AREditModel();
+			return View(model);
+		}
 
 		[HandleError]
 		[CustomAuthorize("Inventory", "Admin", "SuperAdmin")]

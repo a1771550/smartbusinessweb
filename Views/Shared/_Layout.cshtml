@@ -661,6 +661,18 @@
 								}
 							}
 							@Html.ActionLink(Resources.Resource.Quotation, "Quotation", "ABSSReport", null, new { @class = lnkcls })
+							@{
+								lnkcls = "dropdown-item {0}";
+								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "accountreceivable")
+								{
+									lnkcls = string.Format(lnkcls, "active");
+								}
+								else
+								{
+									lnkcls = string.Format(lnkcls, string.Empty);
+								}
+							}
+							@Html.ActionLink(Resources.Resource.AccountReceivable, "AccountReceivable", "ABSSReport", null, new { @class = lnkcls })
 						</div>
 					</li>
 

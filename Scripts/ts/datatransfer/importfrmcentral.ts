@@ -17,6 +17,9 @@ $(document).on("click", ".import", function () {
                 });
             } else {
                 switch (type) {
+                    case "accountreceivable":
+                        $("#filename").val("AccountReceivable_");
+                        break;
                     case "quotation":
                         $("#filename").val("Quotation_");
                         break;
@@ -57,6 +60,9 @@ $(document).on("click", ".import", function () {
                         falert($infoblk.data("importdonemsg"), oktxt);
                         closeWaitingModal();
                         switch (type) {
+                            case "accountreceivable":
+                                $("#btnImportAR").off("click").prop("disabled", true);
+                                break;
                             case "quotation":
                                 $("#btnImportQuotation").off("click").prop("disabled", true);
                                 break;

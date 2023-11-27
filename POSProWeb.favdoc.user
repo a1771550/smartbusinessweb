@@ -135,6 +135,16 @@
           <path>Scripts\ts\records\journallist.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\records\journallist.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>exportfrmshop.ts</name>
+          <path>Scripts\ts\datatransfer\exportfrmshop.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\datatransfer\exportfrmshop.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>importfrmcentral.ts</name>
+          <path>Scripts\ts\datatransfer\importfrmcentral.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\datatransfer\importfrmcentral.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

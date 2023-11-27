@@ -4288,6 +4288,7 @@
     <Content Include="Scripts\ts\js\records\journallist.js.map" />
     <Content Include="Scripts\ts\js\records\journaledit.js.map" />
     <Content Include="Views\AbssReport\Quotation.cshtml" />
+    <Content Include="Views\AbssReport\AccountReceivable.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">

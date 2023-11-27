@@ -172,6 +172,11 @@ namespace SmartBusinessWeb.Controllers
 			using var context = new PPWDbContext(Session["DBName"].ToString());
 			string AbssConnectionString = GetAbssConnectionString(context, "READ", apId);
 
+			if (filename.StartsWith("AccountReceivable_"))
+			{
+				ARHelper.SaveARsToDB();
+			}
+
 			if (filename.StartsWith("Quotation_"))
 			{
 				QuotationHelper.SaveQuotationsToDB();
