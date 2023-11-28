@@ -742,11 +742,11 @@ namespace SmartBusinessWeb.Controllers
 					{
 						try
 						{
-							ModelHelper.WriteLog(context, string.Format("Export PreSalesModel data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
-							List<RtlSale> saleslist = context.RtlSales.Where(x => x.AccountProfileId == apId && dmodel.RetailCheckOutIds.Any(y => x.rtsUID == y)).ToList();
-							foreach (var sales in saleslist)
+							ModelHelper.WriteLog(context, string.Format("Export Journal data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
+							List<Journal> journallist = context.Journals.Where(x => x.AccountProfileId == apId && dmodel.CheckOutIds_Journal.Any(y => x.Id == y)).ToList();
+							foreach (var journal in journallist)
 							{
-								sales.rtsCheckout = true;
+								journal.IsCheckOut = true;
 							}
 							context.SaveChanges();
 							transaction.Commit();

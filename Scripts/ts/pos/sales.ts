@@ -72,7 +72,7 @@ $(document).on("change", "#txtCashDrawerAmt", function () {
     }
 });
 
-let localStore = window["localStorage"];
+
 let sessionstartdata: Array<any> = [];
 
 function getSessionStartDataOk(data) {

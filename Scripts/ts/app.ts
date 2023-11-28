@@ -16437,7 +16437,7 @@ function numAccountPages(): number {
 		return Math.ceil(accountList.length / records_per_page);
 	}
 }
-
+let localStore = window["localStorage"];
 $(document).on("click", "#btnEditItemAttr", function () {
 	$("#itemattrblk").show();
 	ItemAttrList = $infoblk.data("jsonattrlist");

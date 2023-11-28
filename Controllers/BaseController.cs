@@ -80,8 +80,9 @@ namespace SmartBusinessWeb.Controllers
                 }
                 else
                 {
-                    // The session has lost data. This happens often when debugging. Log out so the user can log back in
-                    Request.GetOwinContext().Authentication.SignOut(CookieAuthenticationDefaults.AuthenticationType);
+					// The session has lost data. This happens often when debugging. Log out so the user can log back in
+					//Microsoft.Owin.Host.SystemWeb
+					Request.GetOwinContext().Authentication.SignOut(CookieAuthenticationDefaults.AuthenticationType);
                     filterContext.Result = RedirectToAction("Index", "Enquiry");
                 }
             }
