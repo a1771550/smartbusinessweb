@@ -1049,7 +1049,7 @@ function GetTrainings(pageIndex) {
 function GetJobs(pageIndex) {
 	$.ajax({
 		type: "GET",
-		url: "/JobName/GetJobs",
+		url: "/Job/GetJobs",
 		data: { frmdate, todate, pageIndex, sortCol, sortDirection, keyword },
 		success: function (data) {
 			//console.log("data:", data);
