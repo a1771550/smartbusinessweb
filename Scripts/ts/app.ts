@@ -21382,3 +21382,9 @@ function removeEmptyRow() {
 	$tr = $(`#${gTblName} tbody tr`).last();
 	if ($tr.find("td").eq(1).find(".itemcode").val() === "") $tr.remove();
 }
+function showReturnMsg(msg: string, timeout:number=3000, fadeout:number=1000) {
+	$("#returnMsg").addClass("small alert alert-success").text(msg);
+	setTimeout(function () {
+		$("#returnMsg").fadeOut(fadeout);
+	}, timeout);
+}
