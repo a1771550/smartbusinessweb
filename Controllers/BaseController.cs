@@ -16,6 +16,7 @@ namespace SmartBusinessWeb.Controllers
 {
     public abstract class BaseController : Controller
     {
+        public string DefaultDbName { get { return ConfigurationManager.AppSettings["DefaultDbName"]; } }
         public string DefaultConnection { get { return Session["DBName"] == null ? ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", "SmartBusinessWeb_db") : ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", Session["DBName"].ToString()); } }
         protected ComInfo ComInfo { get { return Session["ComInfo"] as ComInfo; } }
         protected int CompanyId { get { return ComInfo.Id; } }

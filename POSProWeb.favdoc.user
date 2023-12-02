@@ -211,6 +211,11 @@
           <path>Views\Preorder\Index.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Preorder\Index.cshtml</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>_LoginPage.cshtml</name>
+          <path>Views\Shared\_LoginPage.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Shared\_LoginPage.cshtml</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -375,6 +380,11 @@
           <name>Site.css</name>
           <path>Content\Site.css</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\Site.css</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>login.css</name>
+          <path>Content\login.css</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\login.css</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

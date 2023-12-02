@@ -2661,6 +2661,7 @@
     <Content Include="Content\Item.css" />
     <Content Include="Content\job.css" />
     <Content Include="Content\jquery-ui.css" />
+    <Content Include="Content\login.css" />
     <Content Include="Content\onedrive.css" />
     <Content Include="Content\othersettings.css" />
     <Content Include="Content\PagedList.css" />
@@ -2684,6 +2685,7 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Images\20220625crmgen2-blue.jpg" />
+    <Content Include="Images\background.jpeg" />
     <Content Include="Images\btnunsubscribe.jpg" />
     <Content Include="Images\calendar.gif" />
     <Content Include="Images\calendar.png" />
@@ -2692,14 +2694,18 @@
     <Content Include="Images\callhistorycontactstat_tr.jpeg" />
     <Content Include="Images\cancel.png" />
     <Content Include="Images\default.png" />
+    <Content Include="Images\down-arrow.svg" />
     <Content Include="Images\favicon.png" />
     <Content Include="Images\giphy.gif" />
     <Content Include="Images\hotlistcontactstat_cn.jpeg" />
     <Content Include="Images\hotlistcontactstat_en.jpeg" />
     <Content Include="Images\hotlistcontactstat_tr.jpeg" />
+    <Content Include="Images\i-1.svg" />
+    <Content Include="Images\i-2.svg" />
     <Content Include="Images\loading.gif" />
     <Content Include="Images\logo.jpg" />
     <Content Include="Images\logo.png" />
+    <Content Include="Images\logo.svg" />
     <Content Include="Images\ms-symbollockup_signin_light.png" />
     <Content Include="Images\plus.png" />
     <Content Include="Images\png_cool.jpg" />
@@ -4289,6 +4295,7 @@
     <Content Include="Scripts\ts\js\records\journaledit.js.map" />
     <Content Include="Views\AbssReport\Quotation.cshtml" />
     <Content Include="Views\AbssReport\AccountReceivable.cshtml" />
+    <Content Include="Views\Shared\_ReturnMsg.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4630,7 +4637,6 @@
     <Folder Include="App_Data\" />
     <Folder Include="Content\bs5\" />
     <Folder Include="Models\" />
-    <Folder Include="Views\AMReport\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
@@ -4885,7 +4891,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50407</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://localhost</IISUrl>
+          <IISUrl>https://localhost:9696</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

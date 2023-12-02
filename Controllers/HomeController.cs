@@ -5,6 +5,7 @@ using PPWDAL;
 using ModelHelper = PPWLib.Helpers.ModelHelper;
 using PPWCommonLib.CommonHelpers;
 using CommonLib.Helpers;
+using System.Configuration;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -19,15 +20,11 @@ namespace SmartBusinessWeb.Controllers
 
 		public ActionResult ChangeCurrentCulture(int Id)
         {
-            //  
-            // Change the current culture for this user.  
-            //  
             CultureHelper.CurrentCulture = Id;
-            //  
-            // Cache the new current culture into the user HTTP session.   
-            //  
             Session["CurrentCulture"] = Id;
-            using(var context = new PPWDbContext(Session["DBName"].ToString()))
+            string dbname = Session["DBName"] == null ? DefaultDbName : Session["DBName"].ToString();
+
+			using (var context = new PPWDbContext(dbname))
 			{
                 Session currsess = null;
                 if (Session["SessionToken"] == null)

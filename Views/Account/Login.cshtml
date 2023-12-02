@@ -5,64 +5,55 @@
     int rand = new Random().Next(1000, 10000);
     string cssbsfile = HttpContext.Current.Session["CssBSFile"].ToString();
     string scriptbsfile = HttpContext.Current.Session["ScriptBSFile"].ToString();
+	string selectedLangTxt = CommonHelper.GetSelectedLangTxt(CultureHelper.CurrentCulture);
 }
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - @sitename</title>
-    <link rel="icon" type="image/png" href="~/Content/favicon_io/favicon-16x16.png">
-    @Styles.Render("~/bundles/logincss")
-    @Scripts.Render("~/bundles/loginjs")
-    @*<link href="/Content/bs4/bootstrap.min.css" rel="stylesheet" />
-        <link href="/Content/bs4/bootstrap-theme.min.css" rel="stylesheet" />
-        <script src="/Scripts/jquery-3.6.0.js"></script>
-        <script src="/Scripts/modernizr-2.8.3.js"></script>
-        <script src="/Scripts/bs4/bootstrap.min.js"></script>*@
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>@ViewBag.Title - @sitename</title>
+	<link rel="icon" type="image/png" href="~/Content/favicon_io/favicon-16x16.png">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="~/Content/login.css?v=@rand">
+	@*@Styles.Render("~/bundles/logincss")*@
+	@Scripts.Render("~/bundles/loginjs")
 
-    <!-- don't bundle the ui script=>side effect!-->
-    <link href="/Scripts/jquery-ui/jquery-ui.min.css" rel="stylesheet" />
-    <script src="/Scripts/jquery-ui/jquery-ui.min.js"></script>
-    <script src="/Scripts/jquery-default-button.min.js"></script>
-    <link href="/Content/Site.css?v=31474" rel="stylesheet" type="text/css" />
+	<link href="/Scripts/jquery-ui/jquery-ui.min.css" rel="stylesheet" />
+	<script src="/Scripts/jquery-ui/jquery-ui.min.js"></script>
+	<script src="/Scripts/jquery-default-button.min.js"></script>
+	@*<link href="/Content/Site.css?v=31474" rel="stylesheet" />*@
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="/" title="@sitename"><img src="~/Images/logo.jpg" alt="@sitename" title="@sitename" /></a>
-            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div id="navbar" class="collapse navbar-collapse">
-                <ul class="navbar-nav nav">
-                    @*@if (!iscentral)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">@shop @device</a>
-                            </li>
-                        }*@
+	<!-- header part start -->
+	<header class="header">
+		
+		<div class="language-box">
+			<div class="selected-language">
+				<h5>@selectedLangTxt</h5>
+				<span><img src="~/images/down-arrow.svg" class="m-img-fluid" alt="icon"></span>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">@Resources.Resource.Login</a>
-                    </li>
-                    @Html.Partial("_LangPartial", null, new ViewDataDictionary { { "pagename", "login" } })
+				<div class="all-language-box">
+					<p>@Html.ActionLink("繁", "ChangeCurrentCulture", "Home", new { Id = 0 }, new { @class = "dropdown-item lang", @data_culture = "0" })</p>
+					<p>@Html.ActionLink("简", "ChangeCurrentCulture", "Home", new { Id = 1 }, new { @class = "dropdown-item lang", @data_culture = "1" })</p>
+					<p>@Html.ActionLink("Eng", "ChangeCurrentCulture", "Home", new { Id = 2 }, new { @class = "dropdown-item lang", @data_culture = "2" })</p>
+				</div>
+			</div>
+		</div>
+	</header>
+	<!-- header part end -->
+	
 
+	@Html.Partial("_TxtBlk")
+	<script src="~/Scripts/ts/js/app.js?v=@rand"></script>
 
-                </ul>
-            </div>
-        </div>
-
-    </nav>
-
-    @Html.Partial("_TxtBlk")
-    <script src="~/Scripts/ts/js/app.js?v=@rand"></script>
-
-    <div class="container">
-        <div class="">
-            @Html.Partial("_LoginPage")
-        </div>
-    </div>
+	<div class="container">
+		<div class="">
+			@Html.Partial("_LoginPage")
+		</div>
+	</div>
 
 </body>
 </html>

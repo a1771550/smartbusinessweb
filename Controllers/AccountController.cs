@@ -66,23 +66,7 @@ namespace SmartBusinessWeb.Controllers
 
                 ComInfo comInfo = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == apId);
 
-                bool isdeploy = (bool)comInfo.IsDeploy;
-                if (isdeploy)
-                {
-                    if (model.LoginMode == "pos")
-                    {
-                        var icount = context.GetPOSUserSessionCount4(model.surUID, model.SelectedShop).FirstOrDefault();
-                        if (icount != null)
-                        {
-                            int poslic = int.Parse(ConfigurationManager.AppSettings["POSMaxDevicesAllowedInSameTime"]);
-                            if ((int)icount.PosUserSessionSum == poslic)
-                            {
-                                msg = string.Format(Resources.Resource.OnlyDevicesAllowedInSameTime, poslic);
-                                return Json(new { msg });
-                            }
-                        }
-                    }
-                }
+               
 
                 var _roleuser = context.LoginPCUser8(model.Email, hash, model.SelectedDevice, model.SelectedShop).ToList();//because of multi-roles!
                 var roles = _roleuser.Select(x => x.rlCode).Distinct().ToList();
@@ -254,10 +238,7 @@ namespace SmartBusinessWeb.Controllers
             Session["eBlastId"] = 0;
             Session["AccountProfileId"] = model.AccountProfileId;
             Session["IsAdmin"] = isadmin;
-
             MenuHelper.UpdateMenus(context);
-
-            Session["AccessMode"] = model.LoginMode; //ConfigurationManager.AppSettings["defaultCRM"] == "1" ? "crm" : "pos";
         }
 
         private DeviceModel GetDeviceInfo(LoginUserModel model, PPWDbContext context)
@@ -343,8 +324,7 @@ namespace SmartBusinessWeb.Controllers
                 Session["CheckedCashDrawer"] = null;
                 Session["PendingInvoices"] = null;
                 Session["IsCentral"] = null;
-                Session["eBlastId"] = null;
-                Session["AccessMode"] = null;
+                Session["eBlastId"] = null;              
                 Session["ExportFrmShopPageTitle"] = null;
                 Session["ImportFrmCentralPageTitle"] = null;
                 Session["CssBSFile"] = null;

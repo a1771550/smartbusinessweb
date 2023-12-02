@@ -46,7 +46,8 @@ function validform() {
     }
 }
 
-$(document).on("click", "#btnLogin", function () {
+$(document).on("click", "#btnLogin", function (e) {
+    //e.preventDefault();
     let redirecturl: string =
         getParameterByName("redirectUrl") ?? $infoblk.data("redirecturl");
 
@@ -61,32 +62,20 @@ $(document).on("click", "#btnLogin", function () {
     //return false;
     let valid = validform();
     if (valid) {
-        openWaitingModal();
+        //openWaitingModal();
         //return false
         $.ajax({
             type: "POST",
             url: url,
             data: $("#frmLogin").serialize(),
             success: function (data) {
-                closeWaitingModal();
+                //closeWaitingModal();
                 //console.log("data:", data);
                 //return false;
                 if (data.msg === "ok") {
                     window.location.href = data.redirecturi;
                 } else {
                     $("#msg").removeClass("hide").empty().text(data.msg);
-                    // $.fancyConfirm({
-                    //     title: '',
-                    //     message: data.msg,
-                    //     shownobtn: false,
-                    //     okButton: oktxt,
-                    //     noButton: canceltxt,
-                    //     callback: function (value) {
-                    //         if (value) {
-                    //             $('#Email').trigger("focus");
-                    //         }
-                    //     }
-                    // });
                 }
             },
             dataType: "json",
