@@ -2702,6 +2702,20 @@
     <Content Include="Images\hotlistcontactstat_tr.jpeg" />
     <Content Include="Images\i-1.svg" />
     <Content Include="Images\i-2.svg" />
+    <Content Include="Images\items\blackbuck.bmp" />
+    <Content Include="Images\items\FLAG_B24.BMP" />
+    <Content Include="Images\items\logo.bmp" />
+    <Content Include="Images\items\photo1.jpg" />
+    <Content Include="Images\items\photo10.jpg" />
+    <Content Include="Images\items\photo11.jpg" />
+    <Content Include="Images\items\photo2.jpg" />
+    <Content Include="Images\items\photo3.jpg" />
+    <Content Include="Images\items\photo4.jpg" />
+    <Content Include="Images\items\photo5.jpg" />
+    <Content Include="Images\items\photo6.jpg" />
+    <Content Include="Images\items\photo7.jpg" />
+    <Content Include="Images\items\photo8.jpg" />
+    <Content Include="Images\items\photo9.jpg" />
     <Content Include="Images\loading.gif" />
     <Content Include="Images\logo.jpg" />
     <Content Include="Images\logo.png" />
@@ -2712,7 +2726,6 @@
     <Content Include="Images\remove.png" />
     <Content Include="Images\sample500.jpg" />
     <Content Include="Images\samples\blackbuck.bmp" />
-    <Content Include="Images\samples\FLAG_B24 %282%29.BMP" />
     <Content Include="Images\samples\FLAG_B24.BMP" />
     <Content Include="Images\samples\logo.bmp" />
     <Content Include="Images\samples\photo1.jpg" />
@@ -2900,6 +2913,21 @@
     <Content Include="Scripts\ts\js\records\journallist.js" />
     <Content Include="Scripts\ts\js\records\training.js" />
     <Content Include="Static\barcode.html" />
+    <Content Include="Static\POS\images\banana.png" />
+    <Content Include="Static\POS\images\cherry.png" />
+    <Content Include="Static\POS\images\icon-512.png" />
+    <Content Include="Static\POS\images\favicon.png" />
+    <Content Include="Static\POS\images\icecream.png" />
+    <Content Include="Static\POS\images\icon.png" />
+    <Content Include="Static\POS\images\orange.png" />
+    <Content Include="Static\POS\images\strawberry.png" />
+    <Content Include="Static\POS\images\watermelon.png" />
+    <Content Include="Static\POS\JS-POS-cart.js" />
+    <Content Include="Static\POS\JS-POS-orders.js" />
+    <Content Include="Static\POS\JS-POS-products.js" />
+    <Content Include="Static\POS\JS-POS-worker.js" />
+    <Content Include="Static\POS\JS-POS.css" />
+    <Content Include="Static\POS\JS-POS.html" />
     <Content Include="_app_offline.htm" />
     <Content Include="PrivateSettings.config" />
     <None Include="Properties\PublishProfiles\IISProfile.pubxml" />
@@ -4296,6 +4324,10 @@
     <Content Include="Views\AbssReport\Quotation.cshtml" />
     <Content Include="Views\AbssReport\AccountReceivable.cshtml" />
     <Content Include="Views\Shared\_ReturnMsg.cshtml" />
+    <Content Include="Static\POS\.hintrc" />
+    <Content Include="Static\POS\0-JS-POS.MD" />
+    <Content Include="Static\POS\JS-POS-manifest.json" />
+    <Content Include="Views\POSFunc\AdvSales.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4891,7 +4923,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50407</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://localhost:9696</IISUrl>
+          <IISUrl>https://localhost</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

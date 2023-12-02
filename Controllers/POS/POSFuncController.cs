@@ -637,9 +637,10 @@ namespace SmartBusinessWeb.Controllers
 			return refundcode;
 		}
 
+
 		[HandleError]
 		[CustomAuthorize("retail", "boss", "admin", "superadmin")]
-		public ActionResult Sales(string receiptno = "", string mode = "", string type="")
+		public ActionResult AdvSales(string receiptno = "", string mode = "", string type = "")
 		{
 			string defaultcheckoutportal = ModelHelper.HandleCheckoutPortal();
 			Session["ImportFrmShopPageTitle"] = Resources.Resource.DayendsImportFrmShop;
@@ -653,6 +654,26 @@ namespace SmartBusinessWeb.Controllers
 			ViewBag.PageName = "sales";
 			SessUser user = Session["User"] as SessUser;
 			SalesModel model = new SalesModel(user, ComInfo.Currency, receiptno, mode, type);
+			model.CheckoutPortal = defaultcheckoutportal;
+			return View(model);			
+		}
+
+		[HandleError]
+		[CustomAuthorize("retail", "boss", "admin", "superadmin")]
+		public ActionResult Sales(int pageIndex = 1, string keyword = "", string location = "")
+		{
+			string defaultcheckoutportal = ModelHelper.HandleCheckoutPortal();
+			Session["ImportFrmShopPageTitle"] = Resources.Resource.DayendsImportFrmShop;
+			Session["ImportFrmCentralPageTitle"] = Resources.Resource.DayendsImportFrmCentral;
+			Session["SBToABSSOK"] = Resources.Resource.SBToABSSOK;
+			Session["ABSSToSBOK"] = Resources.Resource.ABSSToSBOK;
+			ViewBag.DefaultCheckoutPortal = defaultcheckoutportal;
+
+			Session["AccessMode"] = "pos";
+			ViewBag.ParentPage = "sales";
+			ViewBag.PageName = "sales";
+			//SessUser user = Session["User"] as SessUser;
+			SalesModel model = new SalesModel(pageIndex, keyword, location);
 			model.CheckoutPortal = defaultcheckoutportal;
 			return View(model);
 		}
