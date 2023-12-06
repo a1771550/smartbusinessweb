@@ -9165,8 +9165,8 @@ function addRow() {
 	html += `<td><select class="location flex">${locations}</select></td>`;
 
 	//let jobs: string = "";
-	//JobList.forEach((x) => jobs += `<option value='${x.JobID}'>${x.JobName}</option>`);
-	html += `<td><select class="JobName flex">${setJobListOptions(0)}</select></td>`;
+	//JobList.forEach((x) => jobs += `<option value='${x.JobID}'>${x.job}</option>`);
+	html += `<td><select class="job flex">${setJobListOptions(0)}</select></td>`;
 
 	if (forsales || forpreorder || forwholesales)
 		html +=
@@ -10479,7 +10479,7 @@ function resetRow() {
 	const $location = $target.eq(currentY).find("td").eq(idx).find(".location");
 	$location.val($location.find("option").eq(1).val() as string);
 	idx++;
-	const $job = $target.eq(currentY).find("td").eq(idx).find(".JobName");
+	const $job = $target.eq(currentY).find("td").eq(idx).find(".job");
 	$job.val($job.find("option").first().val() as string);
 
 	const $amount = $target.eq(currentY).find("td").last().find(".amount");
@@ -12479,7 +12479,7 @@ function initDeliveryItem(
 			dlBatId: null,
 			dlVtId: null,
 			dlStockLoc: $td.eq(lidx).find(".location").val() as string,
-			JobID: Number($td.eq(jidx).find(".JobName").val()),
+			JobID: Number($td.eq(jidx).find(".job").val()),
 			ivIdList: null,
 			ivList: [],
 		};
@@ -13947,7 +13947,7 @@ function getItemInfo4BatSnVtIv(sn: string | null = null) {
 		.find(".location")
 		.val() as string;
 	idx++;
-	deliveryItem!.JobID = Number($tr.find("td").eq(idx).find(".JobName").val());
+	deliveryItem!.JobID = Number($tr.find("td").eq(idx).find(".job").val());
 }
 
 let snvtlist: ISnVt[] = [];
@@ -17559,7 +17559,7 @@ function updatePreSales() {
 				presalesln.rtlSalesLoc = presalesln.rtlStockLoc = <string>(
 					$(e).find("td").eq(-3).find(".location").val()
 				);
-				presalesln.JobID = Number($(e).find("td").eq(-2).find(".JobName").val());
+				presalesln.JobID = Number($(e).find("td").eq(-2).find(".job").val());
 				//console.log("presalesln.jobid:" + presalesln.JobID);
 				const amt: number = Number(
 					$(e).find("td").eq(-1).find(".amount").val()
@@ -17641,7 +17641,7 @@ function updateSales() {
 				salesln.rtlSalesLoc = salesln.rtlStockLoc = <string>(
 					$(e).find("td").eq(-3).find(".location").val()
 				);
-				salesln.JobID = Number($(e).find("td").eq(-2).find(".JobName").val());
+				salesln.JobID = Number($(e).find("td").eq(-2).find(".job").val());
 				//console.log("salesln.jobid:" + salesln.JobID);
 				const amt: number = Number(
 					$(e).find("td").eq(-1).find(".amount").val()
@@ -20161,7 +20161,7 @@ $(document).on("change", ".validthru", function () {
 					.val() as string;
 				idx++;
 
-				deliveryItem.JobID = Number($tr.find("td").eq(idx).find(".JobName").val());
+				deliveryItem.JobID = Number($tr.find("td").eq(idx).find(".job").val());
 				idx++;
 
 				deliveryItem.dlAmt = deliveryItem.dlAmtPlusTax = Number(

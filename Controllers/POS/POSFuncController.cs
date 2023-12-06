@@ -660,7 +660,7 @@ namespace SmartBusinessWeb.Controllers
 
 		[HandleError]
 		[CustomAuthorize("retail", "boss", "admin", "superadmin")]
-		public ActionResult Sales(int pageIndex = 1, string keyword = "", string location = "")
+		public ActionResult Sales(string receiptno = "", int pageIndex = 1, string keyword = "", string location = "")
 		{
 			string defaultcheckoutportal = ModelHelper.HandleCheckoutPortal();
 			Session["ImportFrmShopPageTitle"] = Resources.Resource.DayendsImportFrmShop;
@@ -672,8 +672,7 @@ namespace SmartBusinessWeb.Controllers
 			Session["AccessMode"] = "pos";
 			ViewBag.ParentPage = "sales";
 			ViewBag.PageName = "sales";
-			//SessUser user = Session["User"] as SessUser;
-			SalesModel model = new SalesModel(pageIndex, keyword, location);
+			SalesModel model = new SalesModel(receiptno, pageIndex, keyword, location);
 			model.CheckoutPortal = defaultcheckoutportal;
 			return View(model);
 		}
