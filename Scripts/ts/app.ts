@@ -1607,8 +1607,8 @@ function updateRows() {
 	if (selectedCus || selectedSupplier) {
 		//console.log("here");
 		$(`#${gTblName} tbody tr`).each(function (i, e) {
-			if ($(e).find("td").eq(1).find(".itemcode").val() !== "") {
-				//console.log("here");
+			if ($(e).find("td").eq(1).find(".itemcode").val() !== "") {				
+				//todo: to be verified updaterows
 				const taxidx = forpurchase && Purchase.pstStatus !== "order" ? -5 : -4;
 				//console.log("selectedCus.TaxPercentageRate:" + selectedCus.TaxPercentageRate);
 				const taxpc = forpurchase
@@ -10659,20 +10659,20 @@ function handleLocationChange(event: any) {
 function getRowDiscPc(): number {
 	let _idx = 0;
 	if (forsales || forpreorder) {
-		_idx = 10;
+		_idx = PriceIdx4Sales+1;
 	}
 	if (forwholesales) {
 		if (Wholesales.wsStatus == "order" || Wholesales.wsStatus == "created") {
-			_idx = 6;
+			_idx = PriceIdx4WsOrder+1;
 		} else {
-			_idx = 11;
+			_idx = PriceIdx4WsInvoice+1;
 		}
 	}
 	if (forpurchase) {
 		if (Purchase.pstStatus == "order" || Purchase.pstStatus == "created") {
-			_idx = 6;
+			_idx = PriceIdx4PstBill+1;
 		} else {
-			_idx = 10;
+			_idx = PriceIdx4PstOrder+1;
 		}
 	}
 
@@ -10689,17 +10689,17 @@ function getRowPrice(): number {
 	let _price: number;
 	let _idx: number = 0;
 	if (forsales || forpreorder) {
-		_idx = 9;
+		_idx = PriceIdx4Sales;
 	}
 	if (forwholesales) {
 		if (Wholesales.wsStatus == "order" || Wholesales.wsStatus == "created")
-			_idx = 5;
-		if (Wholesales.wsStatus == "invoice") _idx = 10;
+			_idx = PriceIdx4WsOrder;
+		if (Wholesales.wsStatus == "invoice") _idx = PriceIdx4WsInvoice;
 	}
 	if (forpurchase) {
-		if (Purchase.pstStatus !== "order") _idx = 9;
+		if (Purchase.pstStatus !== "order") _idx = PriceIdx4PstBill
 		if (Purchase.pstStatus == "order" || Purchase.pstStatus == "created")
-			_idx = 5;
+			_idx = PriceIdx4PstOrder;
 	}
 
 	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
