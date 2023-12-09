@@ -242,14 +242,24 @@ function setJournalPair() {
 }
 
 function populateDrpAccount(): string {
+	let selectedEQ = addMode ? "" : AcClfID && AcClfID == "EQ" ? "selected" : "";
+	let selectedEXP = addMode ? "" : AcClfID && AcClfID == "EXP" ? "selected" : "";
+	let selectedL = addMode ? "" : AcClfID && AcClfID == "L" ? "selected" : "";
+	let selectedOEXP = addMode ? "" : AcClfID && AcClfID == "OEXP" ? "selected" : "";
+	let selectedOI = addMode ? "" : AcClfID && AcClfID == "OI" ? "selected" : "";	
 	let selectedCOS = addMode ? "" : AcClfID && AcClfID == "COS" ? "selected" : "";
 	let selectedI = addMode ? "" : AcClfID && AcClfID == "I" ? "selected" : "";
 	let selectedA = addMode ? "" : AcClfID && AcClfID == "A" ? "selected" : "";
 	return `<select class="drpAccount form-control">
 			<option value="">- ${selecttxt} -</option>
-			<option value="COS" ${selectedCOS}>${cosaccounttxt}</option>
-			<option value="I" ${selectedI}>${incomeaccount4tstxt}</option>
 			<option value="A" ${selectedA}>${assetaccount4inventorytxt}</option>
+			<option value="L" ${selectedL}>${liabilitytxt}</option>
+			<option value="EQ" ${selectedEQ}>${equitytxt}</option>
+			<option value="I" ${selectedI}>${incomeaccount4tstxt}</option>
+			<option value="COS" ${selectedCOS}>${cosaccounttxt}</option>
+			<option value="EXP" ${selectedEXP}>${expensetxt}</option>
+			<option value="OI" ${selectedOI}>${otherincometxt}</option>
+			<option value="OEXP" ${selectedOEXP}>${otherexpensetxt}</option>
 		</select>`;
 }
 function addJournalRow() {

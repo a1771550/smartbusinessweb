@@ -388,15 +388,6 @@ namespace SmartBusinessWeb.Controllers.Customer
             return Json(new { });
         }
 
-        [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult KDelete(int customerId)
-        {
-            ViewBag.ParentPage = ViewBag.PageName = "customer";
-            SalesCustomerEditModel.Delete(customerId);
-            return Json(new { });
-        }
+        
     }
 }
