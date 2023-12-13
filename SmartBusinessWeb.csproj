@@ -311,6 +311,8 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\ApiController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\DefaultController.cs" />
+    <Compile Include="Controllers\SimpleContactController.cs" />
     <Compile Include="Controllers\CRM\eBlastController.cs" />
     <Compile Include="Controllers\CRM\EnquiryController.cs" />
     <Compile Include="Controllers\CRM\eTrackController.cs" />
@@ -2912,6 +2914,7 @@
     <Content Include="Scripts\ts\js\records\journaledit.js" />
     <Content Include="Scripts\ts\js\records\journallist.js" />
     <Content Include="Scripts\ts\js\records\training.js" />
+    <Content Include="Scripts\ts\js\simplecontact\edit.js" />
     <Content Include="Static\barcode.html" />
     <Content Include="Static\POS\images\banana.png" />
     <Content Include="Static\POS\images\cherry.png" />
@@ -4328,6 +4331,11 @@
     <Content Include="Static\POS\0-JS-POS.MD" />
     <Content Include="Static\POS\JS-POS-manifest.json" />
     <Content Include="Views\POSFunc\AdvSales.cshtml" />
+    <Content Include="Views\SimpleContact\Edit.cshtml" />
+    <Content Include="Scripts\ts\js\simplecontact\edit.js.map" />
+    <Content Include="Views\Shared\_SimpleLayout.cshtml" />
+    <Content Include="Views\Default\PrivacyPolicy.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4339,7 +4347,6 @@
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
@@ -4847,6 +4854,7 @@
     <TypeScriptCompile Include="Scripts\ts\records\journaledit.ts" />
     <TypeScriptCompile Include="Scripts\ts\records\journallist.ts" />
     <TypeScriptCompile Include="Scripts\ts\records\training.ts" />
+    <TypeScriptCompile Include="Scripts\ts\simplecontact\edit.ts" />
     <TypeScriptCompile Include="Scripts\ts\test.ts" />
     <TypeScriptCompile Include="Scripts\ts\wholesales\delivery.ts" />
     <TypeScriptCompile Include="Scripts\ts\wholesales\salesorderlist.ts" />

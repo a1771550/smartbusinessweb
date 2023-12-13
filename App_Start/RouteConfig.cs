@@ -192,7 +192,7 @@ new {apId=@"\d+"}
             routes.MapRoute(
           null,
           "PrivacyPolicy",
-          new { controller = "OtherSettings", action = "PrivacyPolicy" }
+          new { controller = "Default", action = "PrivacyPolicy" }
       );
 
             routes.MapRoute(
@@ -209,7 +209,13 @@ new {apId=@"\d+"}
            new { keyword = @"\w+" }
        );
 
-            routes.MapRoute(
+			routes.MapRoute(
+		  null,
+		  "Contact",
+		  new { controller = "SimpleContact", action = "Edit" }
+	  );
+
+			routes.MapRoute(
            null,
            "contacts",
            new { controller = "Api", action = "GetContacts" }

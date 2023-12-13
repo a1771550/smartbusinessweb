@@ -21,13 +21,7 @@ namespace SmartBusinessWeb.Controllers
     [CustomAuthenticationFilter]
     public class OtherSettingsController : BaseController
     {
-        [HandleError]
-        [CustomAuthorize("othersettings", "boss", "admin", "superadmin")]
-        public ActionResult PrivacyPolicy()
-        {
-            ViewBag.ParentPage = "setup";
-            return View();
-        }
+       
 
         [HandleError]
         [CustomAuthorize("othersettings", "boss", "admin", "superadmin")]

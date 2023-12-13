@@ -21387,9 +21387,17 @@ function removeEmptyRow() {
 	$tr = $(`#${gTblName} tbody tr`).last();
 	if ($tr.find("td").eq(1).find(".itemcode").val() === "") $tr.remove();
 }
-function showReturnMsg(msg: string, timeout:number=3000, fadeout:number=1000) {
-	$("#returnMsg").addClass("small alert alert-success").text(msg);
+function showMsg(Id:string, msg: string, alertCls:string, timeout:number=3000, fadeout:number=1000) {
+	$(`#${Id}`).addClass(`small alert alert-${alertCls}`).html(msg);
 	setTimeout(function () {
-		$("#returnMsg").fadeOut(fadeout);
+		$(`#${Id}`).fadeOut(fadeout);
 	}, timeout);
+}
+
+interface ISimpleContact {
+	Id: number;
+	Name: string;
+	Phone: string;
+	Email: string;
+	Message: string;
 }
