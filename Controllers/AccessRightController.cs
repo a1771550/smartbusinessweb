@@ -155,6 +155,7 @@ namespace SmartBusinessWeb.Controllers
                             {
                                 UserCode = user.UserCode,
                                 FuncCode = code,
+                                AccountProfileId = apId,
                                 CreateTime = DateTime,
                                 ModifyTime = DateTime
                             };
@@ -224,7 +225,8 @@ namespace SmartBusinessWeb.Controllers
                         {
                             UserCode = user.UserCode,
                             FuncCode = code,
-                            CreateTime = DateTime,
+							AccountProfileId = apId,
+							CreateTime = DateTime,
                             ModifyTime = DateTime
                         };
                         ars.Add(ar);
