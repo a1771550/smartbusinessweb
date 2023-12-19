@@ -74,7 +74,7 @@ $(document).on("click", ".convert", function () {
                         noButton: notxt,
                     });
                 } else {
-                    let _id = _$ele.data('Id');
+                    let _id = _$ele.data("id");
                     let _msg = '';
 
                     let _email = _$ele.data('email').toString();
@@ -216,7 +216,7 @@ $(document).on("change", "#iPageSize", function () {
 });
 
 $(document).on("dblclick", ".enquiry", function () {
-    let Id: number = <number>$(this).data('Id');
+    let Id: number = <number>$(this).data("id");
     if ($(this).hasClass("disabled")) {
         window.location.href = '/Customer/Edit?enqId=' + Id;
     } else {        

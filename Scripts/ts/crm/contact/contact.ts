@@ -3,7 +3,7 @@ $target = $('#tblcontact tbody');
 let assignedcontactlist: { [Key: string]: string };
 
 $(document).on('dblclick', '.sgid', function () {
-    AssignContactsToGroup($(this).data('Id'));
+    AssignContactsToGroup($(this).data("id"));
 });
 
 function AssignContactsToGroup(sgId: number) {
@@ -137,7 +137,7 @@ function OnGetSalesGroupSuccess(response) {
                     //uncheck the contacts:
                     $('#tblcontact tbody tr').each(function (k, v) {
                         $target = $(v).find('td:first').find('.chk');
-                        let contactId: number = $target.data('Id');
+                        let contactId: number = $target.data("id");
                         if (e == contactId) {
                             $target.prop('checked', false);
                         }
@@ -230,7 +230,7 @@ $('#btnSearchAttr').on('click', function (e) {
 
 $(document).on('dblclick', '.hotid', function () {
     closeHotListModal();
-    let id: number = <number>$(this).data('Id');
+    let id: number = <number>$(this).data("id");
     console.log('hotid:' + id);
     console.log('IdList:', IdList);
     console.log('dicHotListContacts:', dicHotListContacts);
@@ -527,7 +527,7 @@ $('#btnBlast').on('click', function (e) {
 //}
 
 $(document).on('click', '.detail', function () {
-    let contactId = $(this).data('Id');
+    let contactId = $(this).data("id");
     $.ajax({
         type: "GET",
         url: '/Contact/Detail',
@@ -553,7 +553,7 @@ $(document).on('click', '.detail', function () {
 });
 
 $(document).on('click', '.remove', function () {
-    let cusId = $(this).data('Id');
+    let cusId = $(this).data("id");
     let apId = $(this).data('apid');
     let token = $('input[name=__RequestVerificationToken]').val();
     $.fancyConfirm({
