@@ -648,32 +648,26 @@ namespace SmartBusinessWeb.Controllers
 			Session["SBToABSSOK"] = Resources.Resource.SBToABSSOK;
 			Session["ABSSToSBOK"] = Resources.Resource.ABSSToSBOK;
 			ViewBag.DefaultCheckoutPortal = defaultcheckoutportal;
-
-			Session["AccessMode"] = "pos";
+			
 			ViewBag.ParentPage = "sales";
-			ViewBag.PageName = "sales";
+			ViewBag.PageName = "advsales";
 			SessUser user = Session["User"] as SessUser;
-			SalesModel model = new SalesModel(user, ComInfo.Currency, receiptno, mode, type);
-			model.CheckoutPortal = defaultcheckoutportal;
+			SalesModel model = new SalesModel(user, receiptno, mode, type);
 			return View(model);			
 		}
 
 		[HandleError]
 		[CustomAuthorize("retail", "boss", "admin", "superadmin")]
-		public ActionResult Sales(string receiptno = "", int pageIndex = 1, string keyword = "", string location = "")
-		{
-			string defaultcheckoutportal = ModelHelper.HandleCheckoutPortal();
+		public ActionResult Sales()
+		{			
 			Session["ImportFrmShopPageTitle"] = Resources.Resource.DayendsImportFrmShop;
 			Session["ImportFrmCentralPageTitle"] = Resources.Resource.DayendsImportFrmCentral;
 			Session["SBToABSSOK"] = Resources.Resource.SBToABSSOK;
-			Session["ABSSToSBOK"] = Resources.Resource.ABSSToSBOK;
-			ViewBag.DefaultCheckoutPortal = defaultcheckoutportal;
+			Session["ABSSToSBOK"] = Resources.Resource.ABSSToSBOK;			
 
-			Session["AccessMode"] = "pos";
 			ViewBag.ParentPage = "sales";
 			ViewBag.PageName = "sales";
-			SalesModel model = new SalesModel(receiptno, pageIndex, keyword, location);
-			model.CheckoutPortal = defaultcheckoutportal;
+			SalesModel model = new SalesModel(true);
 			return View(model);
 		}
 

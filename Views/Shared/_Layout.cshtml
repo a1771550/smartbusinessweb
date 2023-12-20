@@ -55,6 +55,7 @@
 							}
 						}
 						<a class="@lnkcls dropdown-toggle" href="#" data-toggle="dropdown">@Resources.Resource.Retail</a>
+
 						<ul class="dropdown-menu" role="menu">
 							@if (!isadmin)
 							{
@@ -71,6 +72,18 @@
 									@Html.ActionLink(string.Format(Resources.Resource.OrderFormat, Resources.Resource.Retail), "Sales", "POSFunc", new { }, new { @class = lnkcls })
 								</li>
 
+								lnkcls = "dropdown-item {0}";
+								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "advsales")
+								{
+									lnkcls = string.Format(lnkcls, "active");
+								}
+								else
+								{
+									lnkcls = string.Format(lnkcls, string.Empty);
+								}
+								<li>
+									@Html.ActionLink(string.Concat(string.Format(Resources.Resource.OrderFormat, Resources.Resource.Retail), "(",Resources.Resource.Advanced,")"), "AdvSales", "POSFunc", new { }, new { @class = lnkcls })
+								</li>
 
 
 								lnkcls = "dropdown-item {0}";

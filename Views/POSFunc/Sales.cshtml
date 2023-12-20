@@ -2,223 +2,244 @@
 @{
 	ViewBag.Title = Resources.Resource.Sales;
 	int rand = new Random().Next(10000, 100000);
-
 }
-
-
-@*<link rel="stylesheet" href="~/Content/pos/fontawesome/css/fontawesome.min.css">*@
 <link rel="stylesheet" href="~/Content/pos/pos.css?v=@rand">
+<link rel="stylesheet" href="~/Content/Sales.css?v=@rand">
 
-<div class="page-wrapper ms-0" style="min-height: 1358px;">
+<div class="page-wrapper ms-0">
 	<div class="content">
+
 		<div class="row">
 			<div class="col-lg-8 col-sm-12 tabs_wrapper">
-				<div class="page-header ">
-					<div class="page-title">
-						<h4>Categories</h4>
-						<h6>Manage your purchases</h6>
+
+				<!-- Tab links -->
+				<div class="tab">
+					<button class="tablinks" onclick="openItem(this, 'SimpleItem')">@Resources.Resource.IllustratedProduct</button>
+					<button class="tablinks" onclick="openItem(this, 'Fruit')">@Resources.Resource.AccountSoftware</button>
+					<button class="tablinks" onclick="openItem(this, 'Other')">@string.Format(Resources.Resource.OtherFormat, Resources.Resource.Item)</button>
+				</div>
+
+				
+
+				<div id="SimpleItem" class="tab_content" data-tab="SimpleItem">
+
+					<div class="page-header ">
+						<div class="page-title">
+							<h4>@Resources.Resource.IllustratedProduct</h4>
+							<h6>@Resources.Resource.ManageYourPurchases</h6>
+						</div>
+					</div>
+
+					<div class="row">
+
+						@foreach (var item in Model.SimpleItemList)
+						{
+							<div class="col-lg-3 col-sm-6 d-flex ">
+								<div class="productset flex-fill pointer" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode">
+									<div class="productsetimg">
+										<img src="~/images/items/@item.itmPicFile" alt="@item.NameDesc">
+										<h6>@Resources.Resource.Qty: @item.QuantityAvailable</h6>
+
+										<div data-id="@item.itmItemID" class="check-product">
+											<i class="fa fa-check"></i>
+										</div>
+									</div>
+									<div class="productsetcontent">
+										<h5>@item.CategoryName</h5>
+										<h4><span class="itmnamedesc">@item.NameDesc</span></h4>
+										<h6><span class="itmprice">@Model.Currency@CommonHelper.FormatNumber(item.itmBaseSellingPrice)</span></h6>
+										<div class="discount-box">
+
+											<label class="small" for="discount">@Resources.Resource.DiscPc:</label>
+
+											<input type="number" class="itmdesc" name="discount" min="0" step="1">
+
+										</div>
+									</div>
+								</div>
+							</div>
+						}
+
+
 					</div>
 				</div>
-				<div class="tabs_container">
-					<div class="tab_content active" data-tab="fruits">
-						<div class="row">
 
-							<div class="col-lg-3 col-sm-6 d-flex ">
-								<div class="productset flex-fill">
-									<div class="productsetimg">
-										<img src="~/images/pos/product/product29.jpg" alt="img">
-										<h6>Qty: 5.00</h6>
-										<div class="check-product">
-											<i class="fa fa-check">
-
-											</i>
-										</div>
-									</div>
-									<div class="productsetcontent">
-										<h5>Fruits</h5>
-										<h4>Orange</h4>
-										<h6>15.00</h6>
+				<div id="Fruit" class="tab_content" data-tab="Fruit">
+					<div class="page-header ">
+						<div class="page-title">
+							<h4>@Resources.Resource.AccountSoftware</h4>
+							<h6>@Resources.Resource.ManageYourPurchases</h6>
+						</div>
+					</div>
+					<div class="row ">
+						<div class="col-lg-3 col-sm-6 d-flex ">
+							<div class="productset flex-fill">
+								<div class="productsetimg">
+									<img src="~/images/pos/product/product29.jpg" alt="img">
+									<h6>Qty: 5.00</h6>
+									<div class="check-product">
+										<i class="fa fa-check"></i>
 									</div>
 								</div>
-							</div>
-
-							<div class="col-lg-3 col-sm-6 d-flex ">
-								<div class="productset flex-fill">
-									<div class="productsetimg">
-										<img src="~/images/pos/product/product31.jpg" alt="img">
-										<h6>Qty: 1.00</h6>
-										<div class="check-product">
-											<i class="fa fa-check">
-
-											</i>
-										</div>
-									</div>
-									<div class="productsetcontent">
-										<h5>Fruits</h5>
-										<h4>Strawberry</h4>
-										<h6>35.00</h6>
-									</div>
-								</div>
-							</div>
-
-							<div class="col-lg-3 col-sm-6 d-flex ">
-								<div class="productset flex-fill">
-									<div class="productsetimg">
-										<img src="~/images/pos/product/product35.jpg" alt="img">
-										<h6>Qty: 5.00</h6>
-										<div class="check-product">
-											<i class="fa fa-check"></i>
-										</div>
-									</div>
-									<div class="productsetcontent">
-										<h5>Fruits</h5>
-										<h4>Banana</h4>
-										<h6>20.00</h6>
-									</div>
-								</div>
-							</div>
-
-							<div class="col-lg-3 col-sm-6 d-flex ">
-								<div class="productset flex-fill">
-									<div class="productsetimg">
-										<img src="~/images/pos/product/product37.jpg" alt="img">
-										<h6>Qty: 5.00</h6>
-										<div class="check-product">
-											<i class="fa fa-check"></i>
-										</div>
-									</div>
-									<div class="productsetcontent">
-										<h5>Fruits</h5>
-										<h4>Limon</h4>
-										<h6>15.00</h6>
-									</div>
-								</div>
-							</div>
-							<div class="col-lg-3 col-sm-6 d-flex ">
-								<div class="productset flex-fill">
-									<div class="productsetimg">
-										<img src="~/images/pos/product/product54.jpg" alt="img">
-										<h6>Qty: 5.00</h6>
-										<div class="check-product">
-											<i class="fa fa-check"></i>
-										</div>
-									</div>
-									<div class="productsetcontent">
-										<h5>Fruits</h5>
-										<h4>Apple</h4>
-										<h6>15.00</h6>
-									</div>
+								<div class="productsetcontent">
+									<h5>Fruits</h5>
+									<h4>Orange</h4>
+									<h6>15.00</h6>
 								</div>
 							</div>
 						</div>
-					</div>
-					
-					<div class="tab_content" data-tab="fruits1">
-						<div class="row ">
-							<div class="col-lg-3 col-sm-6 d-flex ">
-								<div class="productset flex-fill">
-									<div class="productsetimg">
-										<img src="~/images/pos/product/product29.jpg" alt="img">
-										<h6>Qty: 5.00</h6>
-										<div class="check-product">
-											<i class="fa fa-check"></i>
-										</div>
-									</div>
-									<div class="productsetcontent">
-										<h5>Fruits</h5>
-										<h4>Orange</h4>
-										<h6>15.00</h6>
+						<div class="col-lg-3 col-sm-6 d-flex ">
+							<div class="productset flex-fill">
+								<div class="productsetimg">
+									<img src="~/images/pos/product/product31.jpg" alt="img">
+									<h6>Qty: 1.00</h6>
+									<div class="check-product">
+										<i class="fa fa-check"></i>
 									</div>
 								</div>
-							</div>
-							<div class="col-lg-3 col-sm-6 d-flex ">
-								<div class="productset flex-fill">
-									<div class="productsetimg">
-										<img src="~/images/pos/product/product31.jpg" alt="img">
-										<h6>Qty: 1.00</h6>
-										<div class="check-product">
-											<i class="fa fa-check"></i>
-										</div>
-									</div>
-									<div class="productsetcontent">
-										<h5>Fruits</h5>
-										<h4>Strawberry</h4>
-										<h6>35.00</h6>
-									</div>
+								<div class="productsetcontent">
+									<h5>Fruits</h5>
+									<h4>Strawberry</h4>
+									<h6>35.00</h6>
 								</div>
 							</div>
-							<div class="col-lg-3 col-sm-6 d-flex ">
-								<div class="productset flex-fill">
-									<div class="productsetimg">
-										<img src="~/images/pos/product/product35.jpg" alt="img">
-										<h6>Qty: 5.00</h6>
-										<div class="check-product">
-											<i class="fa fa-check"></i>
-										</div>
-									</div>
-									<div class="productsetcontent">
-										<h5>Fruits</h5>
-										<h4>Banana</h4>
-										<h6>20.00</h6>
+						</div>
+						<div class="col-lg-3 col-sm-6 d-flex ">
+							<div class="productset flex-fill">
+								<div class="productsetimg">
+									<img src="~/images/pos/product/product35.jpg" alt="img">
+									<h6>Qty: 5.00</h6>
+									<div class="check-product">
+										<i class="fa fa-check"></i>
 									</div>
 								</div>
+								<div class="productsetcontent">
+									<h5>Fruits</h5>
+									<h4>Banana</h4>
+									<h6>20.00</h6>
+								</div>
 							</div>
-							<div class="col-lg-3 col-sm-6 d-flex ">
-								<div class="productset flex-fill">
-									<div class="productsetimg">
-										<img src="~/images/pos/product/product37.jpg" alt="img">
-										<h6>Qty: 5.00</h6>
-										<div class="check-product">
-											<i class="fa fa-check"></i>
-										</div>
+						</div>
+						<div class="col-lg-3 col-sm-6 d-flex ">
+							<div class="productset flex-fill">
+								<div class="productsetimg">
+									<img src="~/images/pos/product/product37.jpg" alt="img">
+									<h6>Qty: 5.00</h6>
+									<div class="check-product">
+										<i class="fa fa-check"></i>
 									</div>
-									<div class="productsetcontent">
-										<h5>Fruits</h5>
-										<h4>Limon</h4>
-										<h6>15.00</h6>
-									</div>
+								</div>
+								<div class="productsetcontent">
+									<h5>Fruits</h5>
+									<h4>Limon</h4>
+									<h6>15.00</h6>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
+
+				<div id="Other" class="tab_content" data-tab="Other">
+					<div class="page-header ">
+						<div class="page-title">
+							<h4>@string.Format(Resources.Resource.OtherFormat, Resources.Resource.Item)</h4>
+							<h6>@Resources.Resource.ManageYourPurchases</h6>
+						</div>
+					</div>
+					<div class="row ">
+						<div class="col-lg-3 col-sm-6 d-flex ">
+							<div class="productset flex-fill">
+								<div class="productsetimg">
+									<img src="~/images/items/photo6.jpg" alt="img">
+									<h6>Qty: 5.00</h6>
+									<div class="check-product">
+										<i class="fa fa-check"></i>
+									</div>
+								</div>
+								<div class="productsetcontent">
+									<h5>Fruits</h5>
+									<h4>Orange</h4>
+									<h6>15.00</h6>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-3 col-sm-6 d-flex ">
+							<div class="productset flex-fill">
+								<div class="productsetimg">
+									<img src="~/images/items/photo7.jpg" alt="img">
+									<h6>Qty: 1.00</h6>
+									<div class="check-product">
+										<i class="fa fa-check"></i>
+									</div>
+								</div>
+								<div class="productsetcontent">
+									<h5>Fruits</h5>
+									<h4>Strawberry</h4>
+									<h6>35.00</h6>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-3 col-sm-6 d-flex ">
+							<div class="productset flex-fill">
+								<div class="productsetimg">
+									<img src="~/images/items/photo8.jpg" alt="img">
+									<h6>Qty: 5.00</h6>
+									<div class="check-product">
+										<i class="fa fa-check"></i>
+									</div>
+								</div>
+								<div class="productsetcontent">
+									<h5>Fruits</h5>
+									<h4>Banana</h4>
+									<h6>20.00</h6>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-3 col-sm-6 d-flex ">
+							<div class="productset flex-fill">
+								<div class="productsetimg">
+									<img src="~/images/items/photo9.jpg" alt="img">
+									<h6>Qty: 5.00</h6>
+									<div class="check-product">
+										<i class="fa fa-check"></i>
+									</div>
+								</div>
+								<div class="productsetcontent">
+									<h5>Fruits</h5>
+									<h4>Limon</h4>
+									<h6>15.00</h6>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
 			</div>
+
 			<div class="col-lg-4 col-sm-12 " data-select2-id="10">
 				<div class="order-list">
 					<div class="orderid">
-						<h4>Order List</h4>
-						<h5>Transaction id : #65565</h5>
+						<h4>@Resources.Resource.OrderList</h4>
+						<h5>@Resources.Resource.TransactionId : <span id="salescode" class="font-weight-bold">@Model.NextSalesCode</span></h5>
 					</div>
 				</div>
-				<div class="card card-order" data-select2-id="19">
+				<div class="card card-order">
 					<div class="card-body">
 						<div class="row">
 							<div class="col-12">
-								<a href="javascript:void(0);" class="pos btn btn-adds" data-bs-toggle="modal" data-bs-target="#create"><i class="fa fa-plus me-2"></i>Add Customer</a>
+								<a href="/PGCustomer/Edit" class="pos btn btn-adds" target="_blank"><i class="fa fa-plus me-2"></i>@string.Format(Resources.Resource.AddFormat, Resources.Resource.Customer)</a>
 							</div>
 							<div class="col-lg-12">
-								<div class="select-split ">
-									<div class="select-group w-100">
-										<select class="select select2-hidden-accessible flex" data-select2-id="1" tabindex="-1" aria-hidden="true">
-											<option data-select2-id="3">Walk-in Customer</option>
-											<option>Kim Leung</option>
-										</select><span class="select2 select2-container select2-container--default" dir="ltr" data-select2-id="2" style="width: 100%;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-4wpa-container"><span class="select2-selection__rendered" id="select2-4wpa-container" role="textbox" aria-readonly="true" title="Walk-in Customer">Walk-in Customer</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
-									</div>
+								<div class="w-100 mb-2 clearfix">
+									<input type="text" class="pos form-control flex" id="txtCustomerName" placeholder="@string.Format(Resources.Resource.Required, Resources.Resource.Customer)" />
+									<span class="my-2 small cuscode font-weight-bold text-primary float-right"></span>
 								</div>
+
 							</div>
-							<div class="col-lg-12">
-								<div class="select-split">
-									<div class="select-group w-100">
-										<select class="select select2-hidden-accessible flex" data-select2-id="4" tabindex="-1" aria-hidden="true">
-											<option data-select2-id="6">Product </option>
-											<option>Barcode</option>
-										</select><span class="select2 select2-container select2-container--default" dir="ltr" data-select2-id="5" style="width: 100%;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-bwso-container"><span class="select2-selection__rendered" id="select2-bwso-container" role="textbox" aria-readonly="true" title="Product ">Product </span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
-									</div>
-								</div>
-							</div>
+
 							<div class="col-12">
 								<div class="text-end">
-									<a class="pos btn btn-scanner-set"><img src="~/images/pos/icons/scanner1.svg" alt="img" class="me-2">Scan bardcode</a>
+									<a class="pos btn btn-scanner-set"><img src="~/images/pos/icons/scanner1.svg" alt="img" class="me-2">@Resources.Resource.ScanBarcode</a>
 								</div>
 							</div>
 						</div>
@@ -227,8 +248,8 @@
 					</div>
 					<div class="card-body pt-0">
 						<div class="totalitem">
-							<h4>Total items : 2</h4>
-							<a class="pos" href="javascript:void(0);">Clear all</a>
+							<h4>@Resources.Resource.TotalItems : <span id="totalItems">2</span></h4>
+							<a class="pos" href="javascript:void(0);">@Resources.Resource.ClearAll</a>
 						</div>
 						<div class="product-table">
 							<div class="productcontet">
@@ -292,22 +313,26 @@
 							<div class="setvalue">
 								<ul>
 									<li>
-										<h5>Subtotal </h5>
-										<h6>55.00$</h6>
+										<h5>@Resources.Resource.SubTotal </h5>
+										<h6>@Model.Currency <span id="subtotal">55.00</span></h6>
 									</li>
 									<li>
-										<h5>Tax </h5>
-										<h6>5.00$</h6>
+										<h5>@Resources.Resource.Discount </h5>
+										<h6>@Model.Currency <span id="discount">0.00</span></h6>
+									</li>
+									<li>
+										<h5>@Resources.Resource.Tax </h5>
+										<h6>@Model.Currency <span id="tax">5.00</span></h6>
 									</li>
 									<li class="total-value">
-										<h5>Total </h5>
-										<h6>60.00$</h6>
+										<h5>@Resources.Resource.Total </h5>
+										<h6>@Model.Currency <span class="totalamt">60.00</span></h6>
 									</li>
 								</ul>
 							</div>
 							<div class="btn-totallabel">
-								<h5>Checkout</h5>
-								<h6>60.00$</h6>
+								<h5>@Resources.Resource.Checkout</h5>
+								<h6>@Model.Currency <span class="checkout totalamt">60.00</span></h6>
 							</div>
 						</div>
 					</div>
@@ -316,8 +341,15 @@
 		</div>
 	</div>
 </div>
+<input type="hidden" id="lang" value="@CultureHelper.CurrentCulture" />
 
+@Html.Partial("_DescModal")
 
+@Html.Partial("_CusModal")
 
+@Html.Partial("_WaitingModal")
 
+<div id="infoblk"></div>
+
+<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script src="~/Scripts/ts/js/pos/sales.js?v=@rand"></script>

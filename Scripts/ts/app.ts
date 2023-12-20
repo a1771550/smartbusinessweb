@@ -687,6 +687,7 @@ let itemAcId: number = 0;
 let selectedItem: IItem | null;
 //let seqItem: { [Key: number]: IItem } = {};
 let forsales: boolean = false;
+let forsimplesales: boolean = false;
 let fordeposit: boolean = false;
 let forpurchase: boolean = false;
 let fordayends: boolean = false;
@@ -5682,6 +5683,7 @@ function initItem(): IItem {
 		hasSelectedIvs: false,
 		singleProId: 0,
 		hasItemVari: false,
+		CategoryName:"",
 	};
 }
 
@@ -5709,6 +5711,7 @@ interface ISimpleItem {
 	NameDesc: string;
 
 	ItemPromotions: IItemPromotion[];
+	CategoryName: string;
 }
 interface IItem extends ISimpleItem {
 	itmIsActive: boolean;
@@ -17262,52 +17265,54 @@ interface IItemPromotion {
 function selectCus() {
 	selectcus();
 
-	setupForexInfo();
-
-	let $rows = $(`#${gTblName} tbody tr`);
-	//console.log('rows length:' + $rows.length + ';currentY:' + currentY);
-	if ($rows.length === 0) {
-		addRow();
-	} else {
-		if ($rows.last().find("td:eq(1)").find(".itemcode").val() !== "") {
+	if (!forsimplesales) {
+		setupForexInfo();
+		let $rows = $(`#${gTblName} tbody tr`);
+		//console.log('rows length:' + $rows.length + ';currentY:' + currentY);
+		if ($rows.length === 0) {
 			addRow();
 		} else {
-			focusItemCode($rows.length - 1);
-		}
-		//reset sales rows:
-		resetPay(false); //reset all variables first
-		itotalamt = 0;
-		//console.log('SalesList#selectCus#1:', SalesList);
-		$rows.each(function (i, e) {
-			currentY = $(e).data("idx");
-			let _seq = currentY + 1;
-			//console.log('currentY:' + currentY);
-			$target = $rows.eq(currentY);
-
-			let _itemcode: any = $target.find("td:eq(1)").find(".itemcode").val();
-			let _selectedItemCode: string = _itemcode.toString();
-			//console.log('_selectedItemCode:' + _selectedItemCode);
-			if (_selectedItemCode !== "") {
-				let salesln: ISalesLn = $.grep(SalesLnList, function (v, k) {
-					return (
-						v.rtlSeq == _seq && v.Item.itmCode.toString() == _selectedItemCode
-					);
-				})[0];
-				//console.log('salesln:', salesln);
-
-				if (typeof salesln !== "undefined") {
-					let price = getActualPrice(salesln!.Item);
-					//let qty = salesln.rtlQty;
-					let discount = salesln.rtlLineDiscPc as number;
-					//let taxrate = salesln.taxrate;
-					//console.log('qty:' + qty + ';price:' + price + ';disc:' + discount + ';tax:' + taxrate);
-					updateRow(price, discount);
-					_selectedItemCode = "";
-					currentY = -1;
-				}
+			if ($rows.last().find("td:eq(1)").find(".itemcode").val() !== "") {
+				addRow();
+			} else {
+				focusItemCode($rows.length - 1);
 			}
-		});
+			//reset sales rows:
+			resetPay(false); //reset all variables first
+			itotalamt = 0;
+			//console.log('SalesList#selectCus#1:', SalesList);
+			$rows.each(function (i, e) {
+				currentY = $(e).data("idx");
+				let _seq = currentY + 1;
+				//console.log('currentY:' + currentY);
+				$target = $rows.eq(currentY);
+
+				let _itemcode: any = $target.find("td:eq(1)").find(".itemcode").val();
+				let _selectedItemCode: string = _itemcode.toString();
+				//console.log('_selectedItemCode:' + _selectedItemCode);
+				if (_selectedItemCode !== "") {
+					let salesln: ISalesLn = $.grep(SalesLnList, function (v, k) {
+						return (
+							v.rtlSeq == _seq && v.Item.itmCode.toString() == _selectedItemCode
+						);
+					})[0];
+					//console.log('salesln:', salesln);
+
+					if (typeof salesln !== "undefined") {
+						let price = getActualPrice(salesln!.Item);
+						//let qty = salesln.rtlQty;
+						let discount = salesln.rtlLineDiscPc as number;
+						//let taxrate = salesln.taxrate;
+						//console.log('qty:' + qty + ';price:' + price + ';disc:' + discount + ';tax:' + taxrate);
+						updateRow(price, discount);
+						_selectedItemCode = "";
+						currentY = -1;
+					}
+				}
+			});
+		}
 	}
+		
 	// console.log("here");
 	$("#txtCustomerName").trigger("focus");
 }
@@ -21394,6 +21399,7 @@ function showMsg(Id:string, msg: string, alertCls:string, timeout:number=3000, f
 	}, timeout);
 }
 
+let selectedSimpleItem: ISimpleItem;
 interface ISimpleContact {
 	Id: number;
 	Name: string;
