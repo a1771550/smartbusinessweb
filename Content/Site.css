@@ -738,7 +738,7 @@ a.disabled{
     font-size:60%;
 }
 
-.btn:not(.btnsmall){
+.btn:not(.btnsmall):not(.btn-adds){
     font-size:90%;
 }
 

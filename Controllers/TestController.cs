@@ -3865,7 +3865,12 @@ btest3
         { 
             Response.Write(CommonHelper.GetUrlHost(url));                   
         }
-    }
+
+		public ActionResult POS()
+		{
+			return Redirect(Url.Content("~/static/pos_draft/index.html"));
+		}
+	}
 
     public class TestModel
     {

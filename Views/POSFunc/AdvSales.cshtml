@@ -1,0 +1,110 @@
+﻿@model PPWLib.Models.SalesModel
+@{
+	ViewBag.Title = Resources.Resource.Sales;
+	int rand = new Random().Next(10000, 100000);
+	int enablecashdrawer = (bool)System.Web.HttpContext.Current.Session["EnableCashDrawer"] ? 1 : 0;
+	int checkedcashdrawer = 1;
+	if (enablecashdrawer == 1)
+	{
+		checkedcashdrawer = Session["CheckedCashDrawer"] == null ? 1 : (bool)System.Web.HttpContext.Current.Session["CheckedCashDrawer"] ? 1 : 0;
+	}
+	bool enableEpay = (bool)Model.ComInfo.enableEpay;
+	string defaultcheckoutportal = ViewBag.DefaultCheckoutPortal.ToLower();
+	bool nonabss = defaultcheckoutportal == "nonabss";
+	string absschecked = "";
+	string kingdeechecked = "";
+	if (!nonabss)
+	{
+		absschecked = defaultcheckoutportal == "abss" ? "checked" : "";
+		kingdeechecked = defaultcheckoutportal == "kingdee" ? "checked" : "";
+	}
+	//bool approvalmode = (bool)Model.ComInfo.ApprovalMode;
+	var currency = Model.ComInfo.Currency;
+	bool showrecur = false;
+	SessUser user = System.Web.HttpContext.Current.Session["User"] as SessUser;
+	//bool isadmin = user.Roles.Any(x => x == RoleType.Admin);
+	bool NonABSS = Model.ComInfo.DefaultCheckoutPortal != "abss";
+	bool editmode = !string.IsNullOrEmpty(Model.Mode) && Model.Mode == "edit";
+	string subtitle = Resources.Resource.MakeSales;
+
+	if (Request.QueryString["type"] != null)
+	{
+		subtitle = string.Concat(subtitle, " (", Resources.Resource.Preorder, ")");
+	}
+}
+<link rel="stylesheet" type="text/css" href="~/Content/Sales.css?v=@rand" />
+<h3>@subtitle</h3>
+
+@if (!nonabss)
+{
+	if (ConfigurationManager.AppSettings["HideAbssKingdeeOptions"] == "0")
+	{
+		<div class="row justify-content-end mx-1 ">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input checkoutportal" type="radio" id="abss" value="abss" disabled @absschecked>
+				<label class="form-check-label" for="abss">ABSS</label>
+			</div>
+			<div class="form-check form-check-inline">
+				<input class="form-check-input checkoutportal" type="radio" id="kingdee" value="kingdee" disabled @kingdeechecked>
+				<label class="form-check-label" for="kingdee">@Resources.Resource.Kingdee</label>
+			</div>
+		</div>
+	}
+}
+
+@if (showrecur)
+{
+	<div class="row justify-content-start my-4">
+		<div class="col-12 col-md-2">
+			<button type="button" id="btnUseRecur" class="btn btn-outline-info">@Resources.Resource.UseRecurring</button>
+		</div>
+
+	</div>
+}
+
+@Html.Partial("_SalesBlk", null, new ViewDataDictionary { { "Currency", Model.Currency }, { "rtsCurrency", Model.rtsCurrency }, { "LocationList", Model.LocationList }, { "showrecur", showrecur }, { "Device", Model.ComInfo.Device }, { "Devices", Model.ComInfo.Devices },{"NextSalesCode",Model.NextSalesCode },{ "DefaultSalesNotesTxt",Model.DefaultSalesNotesTxt } })
+
+@Html.HiddenFor(model => model.rtsExRate)
+@Html.Partial("_CurrencyModal")
+
+@Html.Partial("_ItemModal", null, new ViewDataDictionary { { "currency", Model.Currency }, { "priceheader", Resources.Resource.SellingPrice }, { "forsales", true } })
+
+@Html.Partial("_DescModal")
+
+@Html.Partial("_CusModal")
+
+@Html.Partial("_BatchModal")
+
+@Html.Partial("_SerialNoModal", null, new ViewDataDictionary { { "forsales", true } })
+
+@Html.Partial("_ValidThruModal")
+
+@Html.Partial("_PayModal", null, new ViewDataDictionary { { "forsales", true }, { "enableEpay", enableEpay }, { "PaymentTypes", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes } })
+
+@Html.Partial("_ItemVariModal")
+
+@Html.Partial("_ChangeModal")
+
+@Html.Partial("_WaitingModal")
+
+<div id="cashdrawerModal">
+	@Html.AntiForgeryToken()
+	<div class="row justify-content-center">
+		<div class="form-inline mt-4">
+			<input type="number" class="form-control" id="txtCashDrawerAmt" />
+			@*<button type="button" class="btn btn-success mx-4" id="btnCashDrawerAmt">@Resources.Resource.Submit</button>*@
+		</div>
+	</div>
+
+	<p class="warning"></p>
+</div>
+
+
+
+<div id="infoblk" data-enablecashdrawer="@enablecashdrawer" data-checkedcashdrawer="@checkedcashdrawer" data-currency="@Model.Currency" data-priceeditable="@Model.PriceEditable" data-disceditable="@Model.DiscEditable" data-enabletax="@Model.TaxModel.EnableTax" data-enablelogo="@Model.EnableLogo" data-inclusivetaxrate="@Model.TaxModel.TaxRate" data-accountprofileid="@Model.AccountProfileId" data-checkoutportal="@ViewBag.DefaultCheckoutPortal.ToLower()" data-salesmanrequiredtxt="@string.Format(Resources.Resource.PleaseFormat,string.Format(Resources.Resource.SelectFormat,Resources.Resource.SalesPerson))" data-jsondiclocation="@Model.JsonDicLocation" data-jsondicbattotalqty="@Model.JsonDicBatTotalQty" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)"></div>
+
+<link rel="stylesheet" type="text/css" href="~/Scripts/jspreadsheet/dist/jexcel.css" />
+<link rel="stylesheet" type="text/css" href="~/Scripts/jsuites/dist/jsuites.css" />
+<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+
+<script src="~/Scripts/ts/js/pos/advsales.js?v=@rand"></script>

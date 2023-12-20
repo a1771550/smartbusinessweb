@@ -1,0 +1,67 @@
+﻿@{
+	string sitename = Resources.Resource.SiteName;
+	string lnkcls = "nav-link {0}";
+	string pagename = ViewBag.PageName ?? string.Empty;	
+	int rand = CommonHelper.GetVersionRandomNo();	
+	string cssbsfile = @"Content/bs4";
+	string scriptbsfile = @"Scripts/bs4";
+}
+
+<!DOCTYPE html>
+<html>
+@Html.Partial("_Head", null, new ViewDataDictionary { { "cssbsfile", cssbsfile }, { "scriptbsfile", scriptbsfile }, { "PageTitle", ViewBag.Title } })
+<body>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" role="navigation">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="/" title="@sitename"><img src="~/Images/logo.jpg" alt="@sitename" title="@sitename" /></a>
+				<button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#sb-navbar">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container">
+		<div>
+			@if (TempData["message"] != null)
+			{
+				<div id="msgblk" class="alert alert-success">@TempData["message"]</div>
+			}
+			@if (TempData["warning"] != null)
+			{
+				<div id="warnblk" class="alert alert-danger">@TempData["warning"]</div>
+			}
+		</div>
+	</div>
+
+	@Html.Partial("_TxtBlk")
+
+	<div id="appInfo" data-whatsappapilnk="@ConfigurationManager.AppSettings["WhatsappLinkUrl"]" data-whatsappapidefaulttxt="@ConfigurationManager.AppSettings["WhatsappAPIDefaultText"]"></div>
+
+	<script src="~/Scripts/ts/js/app.js?v=@rand"></script>
+
+	<div class="container body-content">
+
+		@RenderBody()
+
+		@Html.Partial("_Footer")
+	</div>
+
+	@RenderSection("scripts", required: false)
+
+	<span id="pagename" class="hide" data-page="@pagename"></span>
+
+	<script>
+		$(function () {
+			let $msgblk = $('#msgblk');
+			if ($msgblk.text() !== null) {
+				timer = setTimeout(function () {
+					$msgblk.hide('slow');
+				}, 4000);
+			}
+		});
+
+	</script>
+</body>
+</html>
