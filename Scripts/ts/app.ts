@@ -5683,12 +5683,14 @@ function initItem(): IItem {
 		hasSelectedIvs: false,
 		singleProId: 0,
 		hasItemVari: false,
-		CategoryName:"",
+		CategoryName: "",
 	};
 }
 
 interface ISimpleItem {
+    itmPicFile: string|null;
 	QtySellable: number;
+	Qty: number;
 	itmItemID: number;
 	itmCode: string;
 	itmName: string;
@@ -5790,8 +5792,7 @@ interface IItem extends ISimpleItem {
 
 	itmBaseUnitPrice: number | null;
 
-	itmDSN: string;
-	Qty: number;
+	itmDSN: string;	
 
 	IsActive: number;
 	IncomeAccountID: number;
@@ -5835,7 +5836,7 @@ interface IItem extends ISimpleItem {
 	QtySellable: number;
 	hasSelectedIvs: boolean;
 
-	hasItemVari: boolean;
+	hasItemVari: boolean;	
 }
 interface ILocQty {
 	LocCode: string;
@@ -21399,6 +21400,7 @@ function showMsg(Id:string, msg: string, alertCls:string, timeout:number=3000, f
 	}, timeout);
 }
 
+let selectedSimpleItemList: ISimpleItem[] = [];
 let selectedSimpleItem: ISimpleItem;
 interface ISimpleContact {
 	Id: number;

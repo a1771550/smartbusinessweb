@@ -7025,7 +7025,7 @@ span.select2-container.select2-container--default.select2-container--open {
 	height: 23px;
 	color: #fff;
 	position: absolute;
-	left: 1px;
+	left: 0;
 	top: 0;
 	background: #253DA1;
 	border-radius: 4px 0;

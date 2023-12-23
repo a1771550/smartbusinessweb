@@ -396,6 +396,11 @@
           <path>Content\pos\style.CSS</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\pos\style.CSS</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>Sales.css</name>
+          <path>Content\pos\Sales.css</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\pos\Sales.css</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
   </folders>

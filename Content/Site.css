@@ -111,7 +111,8 @@ img {
 }
 
 .fancybox-is-open.fc-container .fancybox-bg {
-  opacity: 0.95;
+  /*opacity: 0.95;*/
+  opacity:0.3;
 }
 
 .fc-content {
