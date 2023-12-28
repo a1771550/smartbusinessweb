@@ -5678,12 +5678,13 @@ function initItem(): IItem {
 		IsModifyAttr: false,
 		TotalBaseStockQty: 0,
 		catId: 0,
-		ItemPromotions: [] as IItemPromotion[],
+		ItemPromotions: [],
 		QtySellable: 0,
 		hasSelectedIvs: false,
 		singleProId: 0,
 		hasItemVari: false,
 		CategoryName: "",
+		discpc:0,
 	};
 }
 
@@ -5698,8 +5699,7 @@ interface ISimpleItem {
 	itmUseDesc: boolean | null;
 	itmTaxPc: number | null;
 	itmSellUnit: string;
-	itmBaseSellingPrice: number | null;
-	itmLastSellingPrice: number;
+	itmBaseSellingPrice: number | null;	
 
 	PLA: number;
 	PLB: number;
@@ -5709,11 +5709,15 @@ interface ISimpleItem {
 	PLF: number;
 
 	itmIsTaxedWhenSold: boolean;
-	singleProId: number | null;
+	
 	NameDesc: string;
-
-	ItemPromotions: IItemPromotion[];
+	
 	CategoryName: string;
+	discpc: number;
+
+	itmLastSellingPrice: number;
+	singleProId: number | null;
+	ItemPromotions: IItemPromotion[];
 }
 interface IItem extends ISimpleItem {
 	itmIsActive: boolean;
@@ -5837,6 +5841,9 @@ interface IItem extends ISimpleItem {
 	hasSelectedIvs: boolean;
 
 	hasItemVari: boolean;	
+	//itmLastSellingPrice: number;
+	//singleProId: number | null;
+	//ItemPromotions: IItemPromotion[];
 }
 interface ILocQty {
 	LocCode: string;

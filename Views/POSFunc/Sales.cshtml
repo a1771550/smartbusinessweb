@@ -42,7 +42,7 @@
 									<div class="productset flex-fill pointer" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode" data-price="@item.itmBaseSellingPrice" data-file="@item.itmPicFile">
 										<div class="productsetimg">
 											<img src="~/images/items/@item.itmPicFile" alt="@item.NameDesc">
-											<h6>@Resources.Resource.Qty: @item.QuantityAvailable</h6>
+											<h6>@Resources.Resource.Qty: @item.QtySellable</h6>
 
 											<div data-id="@item.itmItemID" class="check-product">
 												<i class="fa fa-check"></i>
@@ -56,7 +56,7 @@
 
 												<label class="small" for="discount">@Resources.Resource.DiscPc:</label>
 
-												<input type="number" class="itmdesc" name="discount" min="0" step="1">
+												<input type="number" class="sdiscpc small flex" name="discpc" min="0">
 
 											</div>
 										</div>

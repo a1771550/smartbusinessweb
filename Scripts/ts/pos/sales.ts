@@ -1,22 +1,39 @@
 ﻿$infoblk = $("#infoblk");
 const formatzero = formatnumber(0);
-$(document).on("click", "#btnClear", function () {
-    selectedSimpleItemList = [];
-    $("#productcontent").empty();
-    $("#totalItems").text(0);
 
-    $("#sumblk").find(".sum").text(formatzero);   
+$(document).on("change", ".sdiscpc", function () {
+	//todo:
+	handleProductCheck(this, true);
+	populateProductList();
+});
+$(document).on("click", "#btnClear", function () {
+	selectedSimpleItemList = [];
+	$("#productcontent").empty();
+	$("#totalItems").text(0);
+
+	$("#sumblk").find(".sum").text(formatzero);
 });
 
 $(document).on("change", ".simpleqty", function () {
-    console.log("qty:" + $(this).val());
+	console.log("qty:" + $(this).val());
 });
 function populateProductList() {
-    let html = "";   
-    selectedSimpleItemList.forEach((x: ISimpleItem) => {
-        let imgpath = x.itmPicFile ? `images/items/${x.itmPicFile}` : `images/default.png`;
-        let subtotal: number = x.Qty * (x.itmBaseSellingPrice??0);
-        html += `<ul class="product-lists">
+	let subtotal: number = 0, total: number = 0, disc: number = 0;
+	let html = "";
+
+	selectedSimpleItemList.forEach((x: ISimpleItem) => {
+		let imgpath = x.itmPicFile ? `images/items/${x.itmPicFile}` : `images/default.png`;
+		let _subtotal: number = x.Qty * (x.itmBaseSellingPrice ?? 0);
+		console.log("x.discpc:" + x.discpc);
+		let _disc: number = _subtotal * x.discpc / 100;
+		
+		subtotal += _subtotal;
+
+		disc += _disc;
+
+		let _amt = _subtotal - _disc;
+
+		html += `<ul class="product-lists">
 									<li>
 										<div class="productimg">
 											<div class="productimgs">
@@ -39,89 +56,111 @@ function populateProductList() {
 											</div>
 										</div>
 									</li>
-									<li><span class="subtotal">${formatnumber(subtotal)}</span></li>
+									<li><span class="subtotal">${formatnumber(_amt)}</span></li>
 									<li><a role="button" class="pos confirm-text removeitem" href="javascript:void(0);" data-id="${x.itmItemID}"><img src="/images/pos/icons/delete-2.svg" alt="img"></a></li>
 								</ul>`;
-    });    
+	});
 
-    $("#productcontent").empty().html(html);
+	$("#productcontent").empty().html(html);
+	$("#totalItems").text(selectedSimpleItemList.length);
+	console.log("subtotal:" + subtotal + ";disc:" + disc);
+	total = subtotal - disc;
+
+	$("#subtotal").text(formatnumber(subtotal));
+	$("#discount").text(formatnumber(disc));
+	$("#totalamt").text(formatnumber(total));
 }
 
 $(document).on("click", ".pos.btn-scanner-set", function () {
-    //todo:
+	//todo:
 });
 
 function openTapContent(ele, tapName) {
-    // Declare all variables
-    var i, tab_content, tablinks;
+	// Declare all variables
+	var i, tab_content, tablinks;
 
-    // Get all elements with class="tab_content" and hide them
-    tab_content = document.getElementsByClassName("tab_content");
-    for (i = 0; i < tab_content.length; i++) {
-        tab_content[i].style.display = "none";
-    }
+	// Get all elements with class="tab_content" and hide them
+	tab_content = document.getElementsByClassName("tab_content");
+	for (i = 0; i < tab_content.length; i++) {
+		tab_content[i].style.display = "none";
+	}
 
-    // Get all elements with class="tablinks" and remove the class "active"
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
+	// Get all elements with class="tablinks" and remove the class "active"
+	tablinks = document.getElementsByClassName("tablinks");
+	for (i = 0; i < tablinks.length; i++) {
+		tablinks[i].className = tablinks[i].className.replace(" active", "");
+	}
 
-    // Show the current tab, and add an "active" class to the button that opened the tab
-    document.getElementById(tapName)!.style.display = "block";
-    ele.className += " active";
+	// Show the current tab, and add an "active" class to the button that opened the tab
+	document.getElementById(tapName)!.style.display = "block";
+	ele.className += " active";
 }
 
 
-function toggleProductCheck(ele:HTMLElement):boolean {    
-    $target = $(ele).find(".check-product");
-    let show = $target.hasClass("hide");
-    if (show) {
-        $target.removeClass("hide");
-        $target.parent(".productsetimg").parent(".productset").addClass("productsethover");
-    } else {
-        $target.addClass("hide");
-        $target.parent(".productsetimg").parent(".productset").removeClass("productsethover");
-    }
-    return show;
+function toggleProductCheck(ele: HTMLElement, show:boolean) {
+	$target = $(ele).find(".check-product");	
+	if (show) {
+		$target.removeClass("hide");
+		$target.parent(".productsetimg").parent(".productset").addClass("productsethover");
+	} else {
+		$target.addClass("hide");
+		$target.parent(".productsetimg").parent(".productset").removeClass("productsethover");
+	}
 }
 
-function handleProductCheck(ele: HTMLElement, increment:boolean) {    
-    if (selectedSimpleItemList.length > 0) {
-        let idx = selectedSimpleItemList.findIndex(x => x.itmItemID == selectedSimpleItem.itmItemID);
-        if (increment) {          
-            if (idx < 0) selectedSimpleItemList.push(selectedSimpleItem);
-        } else {            
-            if (idx >= 0) selectedSimpleItemList.splice(idx, 1);
-        }        
-    } else {
-       
-        if (increment) {
-            selectedSimpleItem = { itmCode: $(ele).data("code"), NameDesc: $(ele).data("namedesc"), itmItemID: Number($(ele).data("id")), Qty: 1, itmBaseSellingPrice: Number($(ele).data("price")), itmPicFile:$(ele).data("file") } as ISimpleItem;
-            selectedSimpleItemList.push(selectedSimpleItem);
-        }
-            
-    }
+function handleProductCheck(ele: HTMLElement, increment: boolean) {
+	let Id: number = Number($(ele).data("id"));
+	let discpc: number = Number($(ele).find(".productsetcontent").find(".discount-box").find(".sdiscpc").val());
+	console.log("discpc:", discpc);//0
+	if (selectedSimpleItemList.length > 0) {
+		let idx = selectedSimpleItemList.findIndex(x => x.itmItemID == Id);
+
+		if (increment) {
+			if (idx < 0) {
+				populateSimpleItem();
+				selectedSimpleItemList.push(selectedSimpleItem);
+			}
+		} else {
+			if (idx >= 0) selectedSimpleItemList.splice(idx, 1);
+		}
+	} else {
+
+		if (increment) {
+			populateSimpleItem();
+			selectedSimpleItemList.push(selectedSimpleItem);
+		}
+
+	}
+
+	function populateSimpleItem() {
+		selectedSimpleItem = { itmCode: $(ele).data("code"), NameDesc: $(ele).data("namedesc"), itmItemID: Id, Qty: 1, itmBaseSellingPrice: Number($(ele).data("price")), itmPicFile: $(ele).data("file"), discpc: discpc } as ISimpleItem;
+	}
 }
 
-$(document).on("click", ".productset.pointer", function () {   
-    let increment:boolean = toggleProductCheck(this);
-    handleProductCheck(this, increment);
-    populateProductList();
+$(document).on("click", ".check-product", function () {
+	toggleProductCheck(this, false);
+	handleProductCheck(this, false);
+	populateProductList();
 });
 
-$(function () {   
-    forsimplesales = true;
-    salesType = SalesType.retail;
-    setFullPage();
-    initModals();
+$(document).on("click", ".productset.pointer", function () {
+	toggleProductCheck(this,true);
+	handleProductCheck(this, true);
+	populateProductList();
+});
 
-    $("body").css({ "padding-top": "0" });
-    lang = Number($("#lang").val());
-    if (lang != 2) $(".btn-scanner-set").css({ "letter-spacing": ".7rem" });
+$(function () {
+	forsimplesales = true;
+	salesType = SalesType.retail;
+	setFullPage();
+	initModals();
 
-    openTapContent(this, $infoblk.data("defaultcatname"));
-    $(".tab").find("button").first().addClass("active");
+	$("body").css({ "padding-top": "0" });
+	lang = Number($("#lang").val());
+	if (lang != 2) $(".btn-scanner-set").css({ "letter-spacing": ".7rem" });
 
-    $(".check-product").addClass("hide");
+	openTapContent(this, $infoblk.data("defaultcatname"));
+	$(".tab").find("button").first().addClass("active");
+
+	$(".check-product").addClass("hide");
 });
