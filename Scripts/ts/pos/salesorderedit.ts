@@ -1,5 +1,5 @@
 ﻿$infoblk = $("#infoblk");
-SalesLns = [];
+SimpleSalesLns = [];
 $(function () {
 	forsales = true;
 	setFullPage();
@@ -45,7 +45,7 @@ $(function () {
 		//console.log("selectedCus:", selectedCus);
 		selectCus();
 
-		SalesLns = $infoblk.data("saleslnlist");
+		SimpleSalesLns = $infoblk.data("saleslnlist");
 		//console.log("SalesLns:", SalesLns);
 
 		DicItemSNs = $infoblk.data("dicitemsns");
@@ -68,7 +68,7 @@ $(function () {
 		) as typeof DicSeqDeliveryItems;
 
 		itemsnlist = [];
-		$.each(SalesLns, function (i, e) {
+		$.each(SimpleSalesLns, function (i, e) {
 			currentY = i;
 			//console.log(e.Item);
 			selectedItemCode = e.itmCode;

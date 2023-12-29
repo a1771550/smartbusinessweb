@@ -145,6 +145,11 @@
           <path>Scripts\ts\datatransfer\importfrmcentral.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\datatransfer\importfrmcentral.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>advsales.ts</name>
+          <path>Scripts\ts\pos\advsales.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\advsales.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

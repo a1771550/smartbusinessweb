@@ -672,7 +672,68 @@ namespace SmartBusinessWeb.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult ProcessSales(SalesModel Sales, List<SalesLnView> SalesLnList, List<PayLnView> Payments, List<DeliveryItemModel> DeliveryItems)
+		public ActionResult ProcessSales(SalesModel Sales, List<SimpleSalesLn> SimpleSalesLns, List<PayLnView> Payments)
+		{
+			SalesEditModel model = new SalesEditModel();
+			decimal totalpayamt = 0;
+
+			using var context = new PPWDbContext(Session["DBName"].ToString());
+			string finalsalescode = model.ProcessSimpleSales(context, Sales, SimpleSalesLns, Payments, ref totalpayamt);
+			string msg = Resources.Resource.OrderSavedSuccessfully;
+			if (string.IsNullOrEmpty(Sales.authcode))
+			{
+				return Json(new { msg = "", finalsalescode });
+			}
+			else
+			{
+				#region ePayment
+				var epayReturn = SalesEditModel.HandleEPayMent4SimpleSales(Sales, SimpleSalesLns, ref totalpayamt, context, finalsalescode, apId);
+				var _ps = epayReturn.ps;
+				if (epayReturn.nodelist != null)
+				{
+					if (string.IsNullOrEmpty(epayReturn.message))
+					{
+						if (epayReturn.status == "0")
+						{
+							if (epayReturn.resultcode != "0")
+							{
+
+								if (_ps.NeedQuery && _ps.ErrCode == "USERPAYING")
+								{
+									return Json(new { msg = "needquery_userpaying", finalsalescode, _ps, epaystatus = -1 });
+								}
+								else
+								{
+									return Json(new { msg = Resources.Resource.ePaymentFailed, finalsalescode, _ps, epaystatus = 0 });
+								}
+							}
+							else
+							{
+								return Json(new { msg = Resources.Resource.ePaymentSuccessful, finalsalescode, epaystatus = 1 });
+							}
+						}
+						else
+						{
+							return Json(new { msg = Resources.Resource.ePaymentFailed, finalsalescode, _ps, epaystatus = 0 });
+
+						}
+					}
+					else
+					{
+						return Json(new { msg = epayReturn.message, finalsalescode, _ps, epaystatus = 0 });
+					}
+				}
+				else
+				{
+					return Json(new { msg = Resources.Resource.ePaymentFailed, finalsalescode, _ps, epaystatus = 0 });
+				}
+				#endregion
+			}
+		}
+
+
+		[HttpPost]
+		public ActionResult ProcessAdvSales(SalesModel Sales, List<SalesLnView> SalesLnList, List<PayLnView> Payments, List<DeliveryItemModel> DeliveryItems)
 		{
 			SalesEditModel model = new SalesEditModel();
 			decimal totalpayamt = 0;

@@ -1,39 +1,64 @@
 ﻿$infoblk = $("#infoblk");
 const formatzero = formatnumber(0);
 
+$(document).on("click", "#btnCheckout", function () {
+	let amt = Number($(this).find(".totalamt").text());
+	if (amt > 0) {
+		if (Sales.rtsCusID > 0) openPayModal(amt);
+		else $("#txtCustomerName").trigger("focus");
+	}
+});
 $(document).on("change", ".sdiscpc", function () {
-	//todo:
-	handleProductCheck(this, true);
+	let discpc: number = Number($(this).val());
+	//console.log("discpc#change:", discpc);//10
+	handleProductCheck(this, discpc, true);
 	populateProductList();
 });
 $(document).on("click", "#btnClear", function () {
-	selectedSimpleItemList = [];
+	SelectedSimpleItemList = [];
 	$("#productcontent").empty();
 	$("#totalItems").text(0);
 
 	$("#sumblk").find(".sum").text(formatzero);
 });
+$(document).on("click", ".operator", function () {
+	let Id: number = Number($(this).data("id"));
+	let idx = SelectedSimpleItemList.findIndex(x => x.itmItemID == Id);
 
-$(document).on("change", ".simpleqty", function () {
-	console.log("qty:" + $(this).val());
+	let qty: number = 0;
+	//console.log("id:" + $(this).data("id"));
+	if ($(this).hasClass("dec")) {
+		$target = $(this).next(".simpleqty");
+		qty = Number($target.val());
+		qty--;
+	} else {
+		$target = $(this).prev(".simpleqty");
+		qty = Number($target.val());
+		qty++;
+	}
+	if (qty < 0) qty = 0;
+
+	SelectedSimpleItemList[idx].Qty = qty;
+	//console.log("qty:", qty);
+	populateProductList();
 });
 function populateProductList() {
 	let subtotal: number = 0, total: number = 0, disc: number = 0;
 	let html = "";
 
-	selectedSimpleItemList.forEach((x: ISimpleItem) => {
+	SelectedSimpleItemList.forEach((x: ISimpleItem) => {
 		let imgpath = x.itmPicFile ? `images/items/${x.itmPicFile}` : `images/default.png`;
 		let _subtotal: number = x.Qty * (x.itmBaseSellingPrice ?? 0);
-		console.log("x.discpc:" + x.discpc);
+		//console.log("x.discpc:" + x.discpc);
 		let _disc: number = _subtotal * x.discpc / 100;
-		
+
 		subtotal += _subtotal;
 
 		disc += _disc;
 
 		let _amt = _subtotal - _disc;
 
-		html += `<ul class="product-lists">
+		html += `<ul class="product-lists" data-code="${x.itmCode}" data-id="${x.itmItemID}" data-discpc="${x.discpc}" data-disc="${_disc}" data-price="${x.itmBaseSellingPrice}" data-namedesc="${x.NameDesc}" data-amt="${_amt}">
 									<li>
 										<div class="productimg">
 											<div class="productimgs">
@@ -48,9 +73,9 @@ function populateProductList() {
 												</div>
 												<div class="increment-decrement">
 													<div class="input-groups">
-														<input type="button" value="-" class="button-minus dec button" data-id="${x.itmItemID}" onclick="handleSaleItemQty('-','${x.itmItemID}')">
+														<input type="button" value="-" class="button-minus dec button operator" data-id="${x.itmItemID}">
 														<input type="text" name="child" value="${x.Qty}" class="quantity-field simpleqty" data-id="${x.itmItemID}">
-														<input type="button" value="+" class="button-plus inc button" data-id="${x.itmItemID}" onclick="handleSaleItemQty('+','${x.itmItemID}')">
+														<input type="button" value="+" class="button-plus inc button operator" data-id="${x.itmItemID}">
 													</div>
 												</div>
 											</div>
@@ -62,17 +87,18 @@ function populateProductList() {
 	});
 
 	$("#productcontent").empty().html(html);
-	$("#totalItems").text(selectedSimpleItemList.length);
-	console.log("subtotal:" + subtotal + ";disc:" + disc);
+	$("#totalItems").text(SelectedSimpleItemList.length);
+	//console.log("subtotal:" + subtotal + ";disc:" + disc);
 	total = subtotal - disc;
 
 	$("#subtotal").text(formatnumber(subtotal));
 	$("#discount").text(formatnumber(disc));
-	$("#totalamt").text(formatnumber(total));
+	$(".totalamt").text(formatnumber(total));
 }
 
 $(document).on("click", ".pos.btn-scanner-set", function () {
-	//todo:
+	openBarCodeModal();
+	$("#txtItemCode").trigger("focus");
 });
 
 function openTapContent(ele, tapName) {
@@ -97,8 +123,8 @@ function openTapContent(ele, tapName) {
 }
 
 
-function toggleProductCheck(ele: HTMLElement, show:boolean) {
-	$target = $(ele).find(".check-product");	
+function toggleProductCheck(ele: HTMLElement, show: boolean) {
+	$target = $(ele).find(".check-product");
 	if (show) {
 		$target.removeClass("hide");
 		$target.parent(".productsetimg").parent(".productset").addClass("productsethover");
@@ -108,52 +134,64 @@ function toggleProductCheck(ele: HTMLElement, show:boolean) {
 	}
 }
 
-function handleProductCheck(ele: HTMLElement, increment: boolean) {
+function handleProductCheck(ele: HTMLElement, discpc: number, increment: boolean) {
 	let Id: number = Number($(ele).data("id"));
-	let discpc: number = Number($(ele).find(".productsetcontent").find(".discount-box").find(".sdiscpc").val());
-	console.log("discpc:", discpc);//0
-	if (selectedSimpleItemList.length > 0) {
-		let idx = selectedSimpleItemList.findIndex(x => x.itmItemID == Id);
+	//console.log("discpc#handle:", discpc);//0
+	if (SelectedSimpleItemList.length > 0) {
+		let idx = SelectedSimpleItemList.findIndex(x => x.itmItemID == Id);
 
 		if (increment) {
 			if (idx < 0) {
 				populateSimpleItem();
-				selectedSimpleItemList.push(selectedSimpleItem);
+				SelectedSimpleItemList.push(selectedSimpleItem);
+			} else {
+				//update discpc:
+				SelectedSimpleItemList[idx].discpc = discpc;
 			}
 		} else {
-			if (idx >= 0) selectedSimpleItemList.splice(idx, 1);
+			if (idx >= 0) SelectedSimpleItemList.splice(idx, 1);
 		}
 	} else {
 
 		if (increment) {
 			populateSimpleItem();
-			selectedSimpleItemList.push(selectedSimpleItem);
+			SelectedSimpleItemList.push(selectedSimpleItem);
 		}
 
 	}
 
 	function populateSimpleItem() {
-		selectedSimpleItem = { itmCode: $(ele).data("code"), NameDesc: $(ele).data("namedesc"), itmItemID: Id, Qty: 1, itmBaseSellingPrice: Number($(ele).data("price")), itmPicFile: $(ele).data("file"), discpc: discpc } as ISimpleItem;
+		//console.log("discpc#popu:", discpc);
+		selectedSimpleItem = { itmCode: $(ele).data("code"), NameDesc: $(ele).data("namedesc"), itmItemID: Id, Qty: 1, itmBaseSellingPrice: Number($(ele).data("price")), itmPicFile: $(ele).data("file"), discpc } as ISimpleItem;
 	}
 }
 
 $(document).on("click", ".check-product", function () {
 	toggleProductCheck(this, false);
-	handleProductCheck(this, false);
+	let discpc: number = Number($(this).parent(".productsetimg").parent(".productset").find(".productsetcontent").find(".discount-box").find(".sdiscpc").val());
+	handleProductCheck(this, discpc, false);
 	populateProductList();
 });
 
 $(document).on("click", ".productset.pointer", function () {
-	toggleProductCheck(this,true);
-	handleProductCheck(this, true);
+	toggleProductCheck(this, true);
+	let discpc: number = Number($(this).find(".productsetcontent").find(".discount-box").find(".sdiscpc").val());
+	handleProductCheck(this, discpc, true);
 	populateProductList();
 });
 
 $(function () {
 	forsimplesales = true;
-	salesType = SalesType.retail;
+	salesType = SalesType.simplesales;
 	setFullPage();
 	initModals();
+
+	comInfo = $infoblk.data("cominfo");
+	DicPayTypes = $infoblk.data("dicpaytypes");
+	DicCurrencyExRate = $infoblk.data("diccurrencyexrate");
+
+	$("#rtsExRate").val(1);
+	displayExRate(1);
 
 	$("body").css({ "padding-top": "0" });
 	lang = Number($("#lang").val());
@@ -163,4 +201,6 @@ $(function () {
 	$(".tab").find("button").first().addClass("active");
 
 	$(".check-product").addClass("hide");
+
+	Sales = initSimpleSales();
 });

@@ -19,8 +19,8 @@
 						<button class="tablinks" onclick="openTapContent(this, '@category.NameDisplay')">@category.NameDisplay</button>
 					}
 					@*<button class="tablinks" onclick="openItem(this, 'SimpleItem')">@Resources.Resource.IllustratedProduct</button>
-			<button class="tablinks" onclick="openItem(this, 'Fruit')">@Resources.Resource.AccountSoftware</button>
-			<button class="tablinks" onclick="openItem(this, 'Other')">@string.Format(Resources.Resource.OtherFormat, Resources.Resource.Item)</button>*@
+						<button class="tablinks" onclick="openItem(this, 'Fruit')">@Resources.Resource.AccountSoftware</button>
+						<button class="tablinks" onclick="openItem(this, 'Other')">@string.Format(Resources.Resource.OtherFormat, Resources.Resource.Item)</button>*@
 				</div>
 
 				@foreach (var category in Model.CategoryList)
@@ -44,7 +44,7 @@
 											<img src="~/images/items/@item.itmPicFile" alt="@item.NameDesc">
 											<h6>@Resources.Resource.Qty: @item.QtySellable</h6>
 
-											<div data-id="@item.itmItemID" class="check-product">
+											<div class="check-product" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode" data-price="@item.itmBaseSellingPrice" data-file="@item.itmPicFile">
 												<i class="fa fa-check"></i>
 											</div>
 										</div>
@@ -56,7 +56,7 @@
 
 												<label class="small" for="discount">@Resources.Resource.DiscPc:</label>
 
-												<input type="number" class="sdiscpc small flex" name="discpc" min="0">
+												<input type="number" class="sdiscpc small flex" name="discpc" min="0" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode" data-price="@item.itmBaseSellingPrice" data-file="@item.itmPicFile">
 
 											</div>
 										</div>
@@ -84,15 +84,36 @@
 							<div class="col-12">
 								<a href="/PGCustomer/Edit" class="pos btn btn-adds" target="_blank"><i class="fa fa-plus me-2"></i>@string.Format(Resources.Resource.AddFormat, Resources.Resource.Customer)</a>
 							</div>
-							<div class="col-lg-12">
-								<div class="w-100 mb-2 clearfix">
-									<input type="text" class="pos form-control flex" id="txtCustomerName" placeholder="@string.Format(Resources.Resource.Required, Resources.Resource.Customer)" />
-									<span class="my-2 small cuscode font-weight-bold text-primary float-right"></span>
-								</div>
+						</div>
 
+						<div class="row justify-content-between mb-3">
+							<div class="col-12 col-md-6 clearfix">
+								<input type="text" class="pos form-control flex" id="txtCustomerName" placeholder="@string.Format(Resources.Resource.Required, Resources.Resource.Customer)" />
+								@*<span class="my-2 small cuscode font-weight-bold text-primary float-right"></span>*@
+								<input type="hidden" id="rtsCusID" />
 							</div>
 
-							<div class="col-12">
+							<div class="col-12 col-md-6">
+								<input type="text" class="pos form-control flex" id="txtPhone" placeholder="@Resources.Resource.PhoneNo" />
+							</div>
+						</div>
+
+						<div class="row justify-content-between">
+							<div class="col-12 col-md-4">
+								<input type="text" class="pos form-control flex" id="txtPriceLevel" placeholder="@Resources.Resource.PriceLevel" />
+							</div>
+
+							<div class="col-12 col-md-4">
+								<input type="text" class="pos form-control flex" id="txtPoints" placeholder="@Resources.Resource.Points" />
+							</div>
+
+							<div class="col-12 col-md-4">
+								<input type="text" class="form-control exrate" id="rtsCurrency" name="rtsCurrency" value="@Model.rtsCurrency" placeholder="@Resources.Resource.Currency" readonly />
+							</div>
+						</div>
+
+						<div class="row mt-4 justify-content-end">
+							<div class="col-12 col-md-6">
 								<div class="text-end">
 									<a class="pos btn btn-scanner-set"><img src="~/images/pos/icons/scanner1.svg" alt="img" class="me-2">@Resources.Resource.ScanBarcode</a>
 								</div>
@@ -108,8 +129,7 @@
 						</div>
 						<div class="product-table">
 							<div id="productcontent" class="productcontet">
-								
-							
+								<!--populated by js-->
 							</div>
 						</div>
 						<div class="split-card">
@@ -135,7 +155,7 @@
 									</li>
 								</ul>
 							</div>
-							<div class="btn-totallabel">
+							<div id="btnCheckout" class="btn-totallabel pointer">
 								<h5>@Resources.Resource.Checkout</h5>
 								<h6>@Model.Currency <span class="checkout totalamt sum">0.00</span></h6>
 							</div>
@@ -147,6 +167,11 @@
 	</div>
 </div>
 <input type="hidden" id="lang" value="@CultureHelper.CurrentCulture" />
+<input type="hidden" id="drpLocation" value="@Model.ComInfo.Shop"/>
+<input type="hidden" id="drpDevice" value="@Model.ComInfo.Device"/>
+
+@Html.HiddenFor(model => model.rtsExRate)
+@Html.Partial("_CurrencyModal")
 
 @Html.Partial("_DescModal")
 
@@ -154,7 +179,11 @@
 
 @Html.Partial("_WaitingModal")
 
-<div id="infoblk" data-defaultcatname="@Model.CategoryList.First().NameDisplay"></div>
+@Html.Partial("_PayModal", null, new ViewDataDictionary { { "forsales", true }, { "enableEpay", true }, { "PaymentTypes", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes } })
+
+@Html.Partial("_BarcodeModal")
+
+<div id="infoblk" data-defaultcatname="@Model.CategoryList.First().NameDisplay" data-currency="@Model.Currency" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicpaytypes="@JsonSerializer.Serialize(Model.DicPayTypes)" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script src="~/Scripts/ts/js/pos/sales.js?v=@rand"></script>

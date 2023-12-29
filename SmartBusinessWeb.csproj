@@ -4513,6 +4513,7 @@
     <Content Include="Static\POS_draft\assets\plugins\fontawesome\webfonts\fa-solid-900.woff2" />
     <Content Include="Views\POSFunc\AdvSales.cshtml" />
     <Content Include="Scripts\ts\js\pos\advsales.js.map" />
+    <Content Include="Views\Shared\_BarcodeModal.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -5092,7 +5093,6 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  
   <Import Project="..\SmartBusinessWeb\packages\Microsoft.TypeScript.MSBuild.5.2.2\build\Microsoft.TypeScript.MSBuild.targets" Condition="Exists('..\SmartBusinessWeb\packages\Microsoft.TypeScript.MSBuild.5.2.2\build\Microsoft.TypeScript.MSBuild.targets')" />
   <Import Project="..\SmartBusinessWeb\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\SmartBusinessWeb\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
   <Import Project="..\SmartBusinessWeb\packages\Microsoft.Data.SqlClient.SNI.5.1.0\build\net462\Microsoft.Data.SqlClient.SNI.targets" Condition="Exists('..\SmartBusinessWeb\packages\Microsoft.Data.SqlClient.SNI.5.1.0\build\net462\Microsoft.Data.SqlClient.SNI.targets')" />
@@ -5106,7 +5106,6 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <Import Project="..\SmartBusinessWeb\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.4.1.0\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets" Condition="Exists('..\SmartBusinessWeb\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.4.1.0\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets')" />
-  
   <Import Project="packages\Microsoft.Data.SqlClient.SNI.5.1.1\build\net462\Microsoft.Data.SqlClient.SNI.targets" Condition="Exists('packages\Microsoft.Data.SqlClient.SNI.5.1.1\build\net462\Microsoft.Data.SqlClient.SNI.targets')" />
   <Import Project="packages\Microsoft.TypeScript.MSBuild.5.3.3\build\Microsoft.TypeScript.MSBuild.targets" Condition="Exists('packages\Microsoft.TypeScript.MSBuild.5.3.3\build\Microsoft.TypeScript.MSBuild.targets')" />
 </Project>
