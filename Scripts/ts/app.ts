@@ -6220,7 +6220,7 @@ interface JQuery {
 	before({ }): any;
 	accordion({ }): any;
 	pagination({ }): any;
-	editableSelect({ }): any;
+	//editableSelect({ }): any;
 	button(): any;
 	button({ }): any;
 	button({ }, { }, { }): any;
