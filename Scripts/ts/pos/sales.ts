@@ -1,47 +1,56 @@
 ﻿$infoblk = $("#infoblk");
 const formatzero = formatnumber(0);
 
-$(document).on("click", "#btnCheckout", function () {
-	let amt = Number($(this).find(".totalamt").text());
-	if (amt > 0) {
-		if (Sales.rtsCusID > 0) openPayModal(amt);
-		else $("#txtCustomerName").trigger("focus");
-	}
-});
-$(document).on("change", ".sdiscpc", function () {
-	let discpc: number = Number($(this).val());
-	//console.log("discpc#change:", discpc);//10
-	handleProductCheck(this, discpc, true);
+$(document).on("change", "#txtItemCode", function () {	
+	/*console.log("here");*/
+	handleProductCheck(null, 0, true);
 	populateProductList();
 });
-$(document).on("click", "#btnClear", function () {
-	SelectedSimpleItemList = [];
-	$("#productcontent").empty();
-	$("#totalItems").text(0);
-
-	$("#sumblk").find(".sum").text(formatzero);
-});
-$(document).on("click", ".operator", function () {
-	let Id: number = Number($(this).data("id"));
-	let idx = SelectedSimpleItemList.findIndex(x => x.itmItemID == Id);
-
-	let qty: number = 0;
-	//console.log("id:" + $(this).data("id"));
-	if ($(this).hasClass("dec")) {
-		$target = $(this).next(".simpleqty");
-		qty = Number($target.val());
-		qty--;
+function handleProductCheck(ele: HTMLElement | null, discpc: number, increment: boolean) {
+	let Id: number = 0;
+	if (!ele) {
+		//8885010236425;ABSSV28.9
+		//console.log("here");
+		Id = 5;
+		populateSimpleItem();
 	} else {
-		$target = $(this).prev(".simpleqty");
-		qty = Number($target.val());
-		qty++;
+		Id = Number($(ele!).data("id"));
+		//console.log("discpc#handle:", discpc);//0
 	}
-	if (qty < 0) qty = 0;
 
-	SelectedSimpleItemList[idx].Qty = qty;
-	//console.log("qty:", qty);
-	populateProductList();
-});
+	if (SelectedSimpleItemList.length > 0) {
+		let idx = SelectedSimpleItemList.findIndex(x => x.itmItemID == Id);
+
+		if (increment) {
+			if (idx < 0) {
+				populateSimpleItem();
+				SelectedSimpleItemList.push(selectedSimpleItem);
+			} else {
+				//update discpc:
+				SelectedSimpleItemList[idx].discpc = discpc;
+			}
+		} else {
+			if (idx >= 0) SelectedSimpleItemList.splice(idx, 1);
+		}
+	} else {
+
+		if (increment) {
+			populateSimpleItem();
+			SelectedSimpleItemList.push(selectedSimpleItem);
+		}
+
+	}
+
+	function populateSimpleItem() {
+		//console.log("discpc#popu:", discpc);
+		//console.log("ele:", ele);
+		if (!ele)
+			selectedSimpleItem = { itmCode: "ABSSV28.9", NameDesc: "ABSS Accounting v28.9", itmItemID: Id, Qty: 1, itmBaseSellingPrice: 4188, itmPicFile: "abss2p.jpg", discpc } as ISimpleItem;
+		else selectedSimpleItem = { itmCode: $(ele!).data("code"), NameDesc: $(ele!).data("namedesc"), itmItemID: Id, Qty: 1, itmBaseSellingPrice: Number($(ele!).data("price")), itmPicFile: $(ele!).data("file"), discpc } as ISimpleItem;
+
+		//console.log("selectedSimpleItem:", selectedSimpleItem);
+	}
+}
 function populateProductList() {
 	let subtotal: number = 0, total: number = 0, disc: number = 0;
 	let html = "";
@@ -95,11 +104,53 @@ function populateProductList() {
 	$("#discount").text(formatnumber(disc));
 	$(".totalamt").text(formatnumber(total));
 }
-
 $(document).on("click", ".pos.btn-scanner-set", function () {
 	openBarCodeModal();
 	$("#txtItemCode").trigger("focus");
 });
+$(document).on("click", "#btnCheckout", function () {
+	let amt = Number($(this).find(".totalamt").text());
+	if (amt > 0) {
+		if (Sales.rtsCusID > 0) openPayModal(amt);
+		else $("#txtCustomerName").trigger("focus");
+	}
+});
+$(document).on("change", ".sdiscpc", function () {
+	let discpc: number = Number($(this).val());
+	//console.log("discpc#change:", discpc);//10
+	handleProductCheck(this, discpc, true);
+	populateProductList();
+});
+$(document).on("click", "#btnClear", function () {
+	SelectedSimpleItemList = [];
+	$("#productcontent").empty();
+	$("#totalItems").text(0);
+
+	$("#sumblk").find(".sum").text(formatzero);
+});
+$(document).on("click", ".operator", function () {
+	let Id: number = Number($(this).data("id"));
+	let idx = SelectedSimpleItemList.findIndex(x => x.itmItemID == Id);
+
+	let qty: number = 0;
+	//console.log("id:" + $(this).data("id"));
+	if ($(this).hasClass("dec")) {
+		$target = $(this).next(".simpleqty");
+		qty = Number($target.val());
+		qty--;
+	} else {
+		$target = $(this).prev(".simpleqty");
+		qty = Number($target.val());
+		qty++;
+	}
+	if (qty < 0) qty = 0;
+
+	SelectedSimpleItemList[idx].Qty = qty;
+	//console.log("qty:", qty);
+	populateProductList();
+});
+
+
 
 function openTapContent(ele, tapName) {
 	// Declare all variables
@@ -134,37 +185,7 @@ function toggleProductCheck(ele: HTMLElement, show: boolean) {
 	}
 }
 
-function handleProductCheck(ele: HTMLElement, discpc: number, increment: boolean) {
-	let Id: number = Number($(ele).data("id"));
-	//console.log("discpc#handle:", discpc);//0
-	if (SelectedSimpleItemList.length > 0) {
-		let idx = SelectedSimpleItemList.findIndex(x => x.itmItemID == Id);
 
-		if (increment) {
-			if (idx < 0) {
-				populateSimpleItem();
-				SelectedSimpleItemList.push(selectedSimpleItem);
-			} else {
-				//update discpc:
-				SelectedSimpleItemList[idx].discpc = discpc;
-			}
-		} else {
-			if (idx >= 0) SelectedSimpleItemList.splice(idx, 1);
-		}
-	} else {
-
-		if (increment) {
-			populateSimpleItem();
-			SelectedSimpleItemList.push(selectedSimpleItem);
-		}
-
-	}
-
-	function populateSimpleItem() {
-		//console.log("discpc#popu:", discpc);
-		selectedSimpleItem = { itmCode: $(ele).data("code"), NameDesc: $(ele).data("namedesc"), itmItemID: Id, Qty: 1, itmBaseSellingPrice: Number($(ele).data("price")), itmPicFile: $(ele).data("file"), discpc } as ISimpleItem;
-	}
-}
 
 $(document).on("click", ".check-product", function () {
 	toggleProductCheck(this, false);

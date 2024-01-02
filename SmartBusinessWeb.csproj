@@ -2778,6 +2778,11 @@
     <Content Include="Images\hotlistcontactstat_tr.jpeg" />
     <Content Include="Images\i-1.svg" />
     <Content Include="Images\i-2.svg" />
+    <Content Include="Images\items\abss2p.jpg" />
+    <Content Include="Images\items\abssp.png" />
+    <Content Include="Images\items\abssp2.png" />
+    <Content Include="Images\items\absspp.png" />
+    <Content Include="Images\items\absspp2.png" />
     <Content Include="Images\items\blackbuck.bmp" />
     <Content Include="Images\items\FLAG_B24.BMP" />
     <Content Include="Images\items\logo.bmp" />
