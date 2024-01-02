@@ -4519,6 +4519,8 @@
     <Content Include="Views\POSFunc\AdvSales.cshtml" />
     <Content Include="Scripts\ts\js\pos\advsales.js.map" />
     <Content Include="Views\Shared\_BarcodeModal.cshtml" />
+    <Content Include="Scripts\package-lock.json" />
+    <Content Include="Scripts\package.json" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
