@@ -3343,14 +3343,6 @@
     <Content Include="Scripts\jquery-ui\overcast\jquery-ui.theme.css" />
     <Content Include="Scripts\jquery-ui\overcast\jquery-ui.theme.min.css" />
     <Content Include="Scripts\jquery-ui\overcast\LICENSE.txt" />
-    <Content Include="Scripts\jquery_editable_select\.gitignore" />
-    <Content Include="Scripts\jquery_editable_select\dist\jquery-editable-select.css" />
-    <Content Include="Scripts\jquery_editable_select\dist\jquery-editable-select.js" />
-    <Content Include="Scripts\jquery_editable_select\dist\jquery-editable-select.min.css" />
-    <Content Include="Scripts\jquery_editable_select\dist\jquery-editable-select.min.js" />
-    <Content Include="Scripts\jquery_editable_select\Gruntfile.js" />
-    <Content Include="Scripts\jquery_editable_select\src\jquery-editable-select.css" />
-    <Content Include="Scripts\jquery_editable_select\src\jquery-editable-select.js" />
     <Content Include="Scripts\jspreadsheet\dist\index.js" />
     <Content Include="Scripts\jspreadsheet\dist\jexcel.css" />
     <Content Include="Scripts\jspreadsheet\dist\jexcel.theme.css" />
@@ -4648,10 +4640,6 @@
     <Content Include="Scripts\node_modules\moment\package.json" />
     <Content Include="Scripts\node_modules\moment\README.md" />
     <Content Include="Scripts\node_modules\.package-lock.json" />
-    <Content Include="Scripts\jquery_editable_select\bower.json" />
-    <Content Include="Scripts\jquery_editable_select\LICENSE" />
-    <Content Include="Scripts\jquery_editable_select\package.json" />
-    <Content Include="Scripts\jquery_editable_select\README.md" />
     <Content Include="Scripts\jspreadsheet\lang\de_DE.json" />
     <Content Include="Scripts\jspreadsheet\lang\en_GB.json" />
     <Content Include="Scripts\jspreadsheet\lang\fr_FR.json" />
