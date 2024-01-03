@@ -27,25 +27,26 @@
 <div id="norecordfound" class="container hide">@Resources.Resource.NoDataFound</div>
 @using (Html.BeginForm("Index", "Enquiry", FormMethod.Post, new { @id = "frmenquiry" }))
 {
+	@*<div id="searchblk" class="small">*@
+		<div class="row justify-content-center my-3">
+			@Html.Partial("_DatesRange", null, new ViewDataDictionary { { "DateFromTxt", DateFrmTxt }, { "DateToTxt", DateToTxt } })
+			<button id="btnFilter" type="button" class="btn btn-success mx-4">@Resources.Resource.Submit</button>
 
-    <div class="row justify-content-center my-3">
-        @Html.Partial("_DatesRange", null, new ViewDataDictionary { { "DateFromTxt", DateFrmTxt }, { "DateToTxt", DateToTxt } })
-        <button id="btnFilter" type="button" class="btn btn-success mx-4">@Resources.Resource.Submit</button>
+			<button id="btnReload" type="button" class="btn btn-warning">@Resources.Resource.Reload</button>
+		</div>
 
-        <button id="btnReload" type="button" class="btn btn-warning">@Resources.Resource.Reload</button>
-    </div>
+		<div class="row justify-content-center">
+			<div class="form-inline mb-2 my-4">
+				<div class="form-group">
+					<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Model.Keyword" />
+					<button id="btnSearch" type="button" class="btn btn-success ml-3">@Resources.Resource.Search</button>
+				</div>
+			</div>
+		</div>
+	@*</div>*@
+   
 
-    <div class="row justify-content-center">
-        <div class="form-inline mb-2 my-4">
-            <div class="form-group">
-                <input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Model.Keyword" />
-                <button id="btnSearch" type="button" class="btn btn-success ml-3">@Resources.Resource.Search</button>             
-            </div>
-        </div>
-    </div>
-
-
-    <div class="row justify-content-between my-2 mx-2">
+    <div class="row justify-content-between my-2 mx-2 small">
         <div class="col-12 col-sm-6">
             @if (isassignor)
             {
@@ -103,15 +104,15 @@
 </table>
 <br />
 <div class="Pager"></div>
-@*</div>
-    </div>*@
+
+<div id="sortCol" name="sortCol" value="@Model.SortCol"></div>
 
 @Html.AntiForgeryToken()
 
 @Html.Partial("_SalesmenModal")
 
 @Html.Partial("_WaitingModal")
-<div id="infoblk" data-frmdate="@DateFrmTxt" data-todate="@DateToTxt" data-assignsalestxt="@Resources.Resource.AssignToSalesman" data-isassignor="@isassignor" data-enquiryacc="@enquiryacc" data-currentoldestdate="@Model.CurrentOldestDate" data-enqidlist="@string.Join(",",Model.EnqIdList)" data-jsondicassignedsalesenqid="@Model.JsonDicAssignedSalesEnqId" data-currentcontactemaillist="@string.Join(",",Model.CurrentContactEmailList)" data-currentcontactphonelist="@string.Join(",",Model.CurrentContactPhoneList)" data-emailinusetxt="@Resources.Resource.ContactEmailInUseAlertMsg" data-phoneinusetxt="@Resources.Resource.ContactPhoneInUseAlertMsg" data-confirmprompt="@Resources.Resource.ConfirmContinue" data-assignsalesmanrequiredtxt="@Resources.Resource.AssignSalesmanRequired" data-sendmailprompt="@Resources.Resource.SendEmailNotification4AssignedSalespeoplePrompt" data-pagesize="@ConfigurationManager.AppSettings["EnquiryPageSize"]" data-confirmconverttocustomertxt="@string.Format(Resources.Resource.ConfirmFormat,Resources.Resource.ConvertToCustomer)"></div>
+<div id="infoblk" data-frmdate="@DateFrmTxt" data-todate="@DateToTxt" data-assignsalestxt="@Resources.Resource.AssignToSalesman" data-isassignor="@isassignor" data-enquiryacc="@enquiryacc" data-currentoldestdate="@Model.CurrentOldestDate" data-enqidlist="@string.Join(",",Model.EnqIdList)" data-jsondicassignedsalesenqid="@Model.JsonDicAssignedSalesEnqId" data-currentcontactemaillist="@string.Join(",",Model.CurrentContactEmailList)" data-currentcontactphonelist="@string.Join(",",Model.CurrentContactPhoneList)" data-emailinusetxt="@Resources.Resource.ContactEmailInUseAlertMsg" data-phoneinusetxt="@Resources.Resource.ContactPhoneInUseAlertMsg" data-confirmprompt="@Resources.Resource.ConfirmContinue" data-assignsalesmanrequiredtxt="@Resources.Resource.AssignSalesmanRequired" data-sendmailprompt="@Resources.Resource.SendEmailNotification4AssignedSalespeoplePrompt" data-pagesize="@ConfigurationManager.AppSettings["EnquiryPageSize"]" data-confirmconverttocustomertxt="@string.Format(Resources.Resource.ConfirmFormat,Resources.Resource.ConvertToCustomer)" data-selectatleastoneenquirytxt="@string.Format(Resources.Resource.SelectAtLeastOne,Resources.Resource.Enquiry)"></div>
 
 <script type="text/javascript" src="~/Scripts/daterangepicker/moment.min.js"></script>
 <script type="text/javascript" src="~/Scripts/daterangepicker/daterangepicker.min.js"></script>

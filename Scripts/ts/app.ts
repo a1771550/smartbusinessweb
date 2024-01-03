@@ -55,7 +55,7 @@ let forpassedtomanager: boolean = false;
 let recreateOnVoid: number = 0;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
-const barcodetxt:string = $txtblk.data("barcodetxt");
+const barcodetxt: string = $txtblk.data("barcodetxt");
 const expensetxt: string = $txtblk.data("expensetxt");
 const equitytxt: string = $txtblk.data("equitytxt");
 const liabilitytxt: string = $txtblk.data("liabilitytxt");
@@ -551,7 +551,7 @@ let waitingModal: any,
 	contactModal: any,
 	poItemVariModal: any,
 	itemVariModal: any,
-	barcodeModal:any,
+	barcodeModal: any,
 	transferModal: any;
 
 let sysdateformat: string = "yyyy-mm-dd";
@@ -1136,16 +1136,17 @@ function GetAttendances(pageIndex) {
 function GetEnquiries(pageIndex) {
 	//console.log("sortcol#0:", sortCol);
 	//console.log("sortdirection:", sortDirection);
+	//return;
 	$.ajax({
 		type: "GET",
 		url: "/Enquiry/GetEnquiries",
 		data: { frmdate, todate, pageIndex, sortCol, sortDirection, keyword },
 		success: function (data) {
-			console.log("data:", data);
+			//console.log("data:", data);
 			if (data) {
 				EnquiryList = data.pagingEnqList.slice(0);
 				if (EnquiryList && EnquiryList.length > 0) {
-					console.log("sortcol#1:", sortCol);
+					//console.log("sortcol#1:", sortCol);
 					$target = $("#tblmails .colheader");
 					$target.removeClass("fa fa-sort-up fa-sort-down");
 					$target = $target.eq(sortCol);
@@ -2459,7 +2460,7 @@ function confirmPay() {
 				}
 				if (_couponamt >= _totalamt) {
 					resetPay(true);
-					if(forsales)
+					if (forsales)
 						submitSales();
 					if (forsimplesales) submitSimpleSales();
 					//        break;
@@ -5672,13 +5673,13 @@ function initItem(): IItem {
 		PLF: Number($("#PLF").val()),
 		IsActive: $("#isActive").is(":checked") ? 1 : 0,
 		IncomeAccountID: $("#IncomeAccountID").length
-			? Number($("#IncomeAccountID").data("Id"))
+			? Number($("#IncomeAccountID").data("id"))
 			: 0,
 		InventoryAccountID: $("#InventoryAccountID").length
-			? Number($("#InventoryAccountID").data("Id"))
+			? Number($("#InventoryAccountID").data("id"))
 			: 0,
 		ExpenseAccountID: $("#ExpenseAccountID").length
-			? Number($("#ExpenseAccountID").data("Id"))
+			? Number($("#ExpenseAccountID").data("id"))
 			: 0,
 		AccountProfileId: 0,
 		itmIsBought: $("#buy").length ? $("#buy").is(":checked") : false,
@@ -6750,7 +6751,7 @@ function handleCheckall(checked: boolean) {
 			IdList = $infoblk.data("idlist").split(",");
 		} else {
 			$(".chk").each(function (i, e) {
-				IdList.push($(e).data("Id"));
+				IdList.push($(e).data("id"));
 			});
 		}
 	} else {
@@ -6790,7 +6791,7 @@ function handleCheckEnqAll(checked: boolean) {
 		//    assignEnqIdList = idlist.slice(0);
 		//} else {
 		$(".enqchk").each(function (i, e) {
-			assignEnqIdList.push($(e).data("Id"));
+			assignEnqIdList.push($(e).data("id"));
 		});
 		//}
 	} else {
@@ -6815,7 +6816,7 @@ $(".chk").on("input", function (e) {
 	e.stopPropagation();
 });
 $(document).on("change", ".chk", function (e) {
-	let _id: number = <number>$(this).data("Id");
+	let _id: number = <number>$(this).data("id");
 	if ($(this).is(":checked")) {
 		IdList.push(_id);
 	} else {
@@ -6834,22 +6835,17 @@ $(document).on("change", ".chk", function (e) {
 	//console.log("idlist:", IdList);
 });
 $(document).on("change", ".enqchk", function (e) {
-	let _id: string = <string>$(this).data("Id");
-	if ($(this).is(":checked")) {
-		assignEnqIdList.push(_id);
+	let _id: string = <string>$(this).data("id");
+	let idx = assignEnqIdList.findIndex(x => x == _id);
+	if ($(this).is(":checked")) {	
+		if (idx < 0)
+			assignEnqIdList.push(_id);
 	} else {
-		let idx = -1;
-		$.each(assignEnqIdList, function (i, e) {
-			if (e == _id) {
-				idx = i;
-				return false;
-			}
-		});
 		if (idx >= 0) {
 			assignEnqIdList.splice(idx, 1);
 		}
 	}
-	//console.log("idlist:", IdList);
+	console.log("assignEnqIdList#change:", assignEnqIdList);
 });
 function handleChk(checked: boolean) {
 	$(".chk").each(function (i, e) {
@@ -6973,7 +6969,7 @@ function initHotList(ele: JQuery | null): IHotList {
 			SalesmanList: [],
 		}
 		: {
-			Id: <number>$(ele).data("Id"),
+			Id: <number>$(ele).data("id"),
 			hoName: <string>$(ele).data("name"),
 			hoSalesmanResponsible: <number>$(ele).data("salesmanresponsible"),
 			hoDescription: <string>$(ele).data("desc"),
@@ -13357,7 +13353,7 @@ function confirmIvQty() {
 					deliveryItem.dlQty = newivqty;
 					deliveryItem.seq = seq;
 					deliveryItem.pstCode = $(v).data("pocode") as string;
-					deliveryItem.dlCode = $(v).data("Id") as string;
+					deliveryItem.dlCode = $(v).data("id") as string;
 					deliveryItem.ivIdList = $(v).data("ividlist").toString().trim();
 					deliveryItem.itmCode = $(v).data("itemcode") as string;
 
@@ -14124,13 +14120,13 @@ const populateSelectedItem = () => {
 	selectedItem!.PLE = Number($("#PLE").val());
 	selectedItem!.PLF = Number($("#PLF").val());
 	selectedItem!.IncomeAccountID = $("#IncomeAccountID").length
-		? Number($("#IncomeAccountID").data("Id"))
+		? Number($("#IncomeAccountID").data("id"))
 		: 0;
 	selectedItem!.InventoryAccountID = $("#InventoryAccountID").length
-		? Number($("#InventoryAccountID").data("Id"))
+		? Number($("#InventoryAccountID").data("id"))
 		: 0;
 	selectedItem!.ExpenseAccountID = $("#ExpenseAccountID").length
-		? Number($("#ExpenseAccountID").data("Id"))
+		? Number($("#ExpenseAccountID").data("id"))
 		: 0;
 	selectedItem!.itmIsBought = $("#buy").length
 		? $("#buy").is(":checked")
@@ -14202,13 +14198,13 @@ const populateItemVari = () => {
 	ItemVari!.PLE = Number($("#PLE").val());
 	ItemVari!.PLF = Number($("#PLF").val());
 	ItemVari!.IncomeAccountID = $("#IncomeAccountID").length
-		? Number($("#IncomeAccountID").data("Id"))
+		? Number($("#IncomeAccountID").data("id"))
 		: 0;
 	ItemVari!.InventoryAccountID = $("#InventoryAccountID").length
-		? Number($("#InventoryAccountID").data("Id"))
+		? Number($("#InventoryAccountID").data("id"))
 		: 0;
 	ItemVari!.ExpenseAccountID = $("#ExpenseAccountID").length
-		? Number($("#ExpenseAccountID").data("Id"))
+		? Number($("#ExpenseAccountID").data("id"))
 		: 0;
 	ItemVari!.itmIsBought = $("#buy").length ? $("#buy").is(":checked") : false;
 	ItemVari!.itmIsSold = $("#sell").length ? $("#sell").is(":checked") : false;
@@ -14976,7 +14972,7 @@ function handleBatVtQtyChange(this: any, lastCellCls: string) {
 	let qty: number = Number($(this).val());
 	let maxqty: number = Number($(this).attr("max"));
 	let tblIndex: number = Number($(this).data("tblindex"));
-	let tmpId: string = $(this).data("Id").toString();
+	let tmpId: string = $(this).data("id").toString();
 	let itemcode: string = $(this).data("itemcode").toString();
 	let receiver: string = $(this).data("shop").toString();
 	$tr = $(this).parent("div").parent("td").parent("tr");
@@ -16093,7 +16089,7 @@ const toggleAccordionState = (state: number) => {
 };
 
 const removeItemAttr = (ele) => {
-	let tmpId = $(ele).data("Id") as string;
+	let tmpId = $(ele).data("id") as string;
 	let $ianame = $(ele)
 		.parent("button")
 		.parent("div")
@@ -17175,7 +17171,7 @@ function fillInCustomer() {
 }
 
 $(document).on("click", ".itemremove", function () {
-	let itemId = $(this).data("Id");
+	let itemId = $(this).data("id");
 	$.fancyConfirm({
 		title: "",
 		message: confirmremovetxt,
@@ -17723,12 +17719,12 @@ function updateSimpleSales() {
 	Sales.rtsCusID = Number($("#rtsCusID").val());
 	Sales.authcode = authcode;
 	Sales.rtsCurrency = $("#rtsCurrency").val() as string;
-	Sales.rtsExRate = exRate;	
+	Sales.rtsExRate = exRate;
 
 	SimpleSalesLns = [];
 	$(".product-lists").each(function (i, e) {
 		let salesLn: ISimpleSalesLn = {
-			rtlItemCode: $(e).data("code"), rtlLineDiscPc: Number($(e).data("discpc")), rtlLineDiscAmt: Number($(e).data("disc")), rtlQty: Number($(e).find(".simpleqty").val()), rtlSellingPrice:Number($(e).data("price")), rtlDesc:$(e).data("desc"), rtlSalesAmt:Number($(e).data("amt")), rtlSalesLoc:comInfo.Shop, rtlStockLoc:comInfo.Shop
+			rtlItemCode: $(e).data("code"), rtlLineDiscPc: Number($(e).data("discpc")), rtlLineDiscAmt: Number($(e).data("disc")), rtlQty: Number($(e).find(".simpleqty").val()), rtlSellingPrice: Number($(e).data("price")), rtlDesc: $(e).data("desc"), rtlSalesAmt: Number($(e).data("amt")), rtlSalesLoc: comInfo.Shop, rtlStockLoc: comInfo.Shop
 		} as ISimpleSalesLn;
 		SimpleSalesLns.push(salesLn);
 	});
@@ -18228,7 +18224,7 @@ $(document).on("click", ".respond", function () {
 	let type: string = $(this).data("type");
 
 	if (forcustomer) {
-		customerId = $(this).data("Id") as number;
+		customerId = $(this).data("id") as number;
 		selectedCus = initCustomer();
 		selectedCus.cusCode = $(this).data("code");
 		selectedCus.cusCustomerID = customerId;
@@ -19495,13 +19491,8 @@ let jobIdList: string[] = [];
 let attdIdList: string[] = [];
 let enqIdList: string[] = [];
 let assignEnqIdList: string[] = [];
-function assignSave(salesmanId: number, enqId: string | null = "") {
+function assignSave(salesmanId: number) {
 	closeSalesmenModal();
-	//console.log('salesmanId:' + salesmanId);
-
-	if (assignEnqIdList.length == 0 && enqId) {
-		assignEnqIdList.push(enqId);
-	}
 
 	//sendmail4assignmentprompt
 	$.fancyConfirm({
@@ -19627,7 +19618,7 @@ const endsWithNumber = (text) => {
 $(document).on("click", ".fa-close.record", function () {
 	$target = $(this).parent("div").parent(".card").parent(".displayblk");
 	let model: ICustomerInfo = {
-		Id: Number($target.data("Id")),
+		Id: Number($target.data("id")),
 		cusId,
 	} as ICustomerInfo;
 	$.ajax({
@@ -19665,7 +19656,7 @@ function handleRecordChange(ele) {
 		};
 		if (forcustomer) {
 			customerInfo = {
-				Id: Number($target.data("Id")),
+				Id: Number($target.data("id")),
 				followUpRecord: record,
 			} as ICustomerInfo;
 			url = "/Customer/EditRecord";
@@ -19673,7 +19664,7 @@ function handleRecordChange(ele) {
 		}
 		if (forenquiry) {
 			enquiryInfo = {
-				Id: $target.data("Id").toString(),
+				Id: $target.data("id").toString(),
 				followUpRecord: record,
 			} as IEnquiryInfo;
 			url = "/Enquiry/EditRecord";
@@ -21608,7 +21599,7 @@ function showMsg(Id: string, msg: string, alertCls: string, timeout: number = 30
 		$(`#${Id}`).fadeOut(fadeout);
 	}, timeout);
 }
-
+let isassignor: boolean;
 let SelectedSimpleItemList: ISimpleItem[] = [];
 let selectedSimpleItem: ISimpleItem;
 interface ISimpleContact {

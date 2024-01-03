@@ -11,13 +11,19 @@
     "strict": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "types": [ "jquery","node" ],
-    "typeRoots": [ "../node_modules/@types" ],    
+    "types": [ "jquery", "node" ],
+    "typeRoots": [ "../node_modules/@types" ],
     "lib": [
       "dom",
       "es2020"
       //"es2015.iterable"
-    ]
+    ],
+    "paths": {
+      // This is solely to stop a bug with @types/node as of 12/15/2023
+      "undici-types": [
+        "../node_modules/undici-types/index.d.ts"
+      ]
+    }
   },
   "compileOnSave": true,
   //"include": ["ts/*"],

@@ -190,7 +190,6 @@ namespace SmartBusinessWeb.Controllers
 
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
-        // GET: Enquiry
         public ActionResult Index(string Keyword = "", string strfrmdate = "", string strtodate = "")
         {
             ViewBag.ParentPage = "customer";

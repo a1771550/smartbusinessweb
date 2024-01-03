@@ -3,7 +3,7 @@ frmdate = $infoblk.data("frmdate");
 todate = $infoblk.data("todate");
 currentoldestdate = $infoblk.data("currentoldestdate");
 const assigntosales = $infoblk.data("assignsalestxt");
-const isassignor: boolean = $infoblk.data("isassignor") === "True";
+isassignor = $infoblk.data("isassignor") === "True";
 
 pagesize = Number($infoblk.data("pagesize"));
 //from/emailAddress/address ne 'noreply@abssasia.com.hk'
@@ -24,7 +24,7 @@ $(document).on("click", "#btnSearch", function () {
     }        
 });
 $(document).on("click", ".removeenq", function () {
-    const enqId = $(this).data("Id");
+    const enqId = $(this).data("id");
     $.fancyConfirm({
         title: '',
         message: confirmremovetxt,
@@ -233,7 +233,7 @@ $(document).on("click", ".assign", function (e) {
 $(document).on("click", '#btnAssign', function () {
     $target = $(this);
     if (assignEnqIdList.length === 0) {
-        let msg = <string>$infoblk.data('selectatleastoneclienttxt');
+        let msg = <string>$infoblk.data('selectatleastoneenquirytxt');
         $.fancyConfirm({
             title: '',
             message: msg,
@@ -254,16 +254,36 @@ $(document).on("click", "#btnFilter", function (e) {
     e.preventDefault();
     frmdate = $("#datetimesmin").val() as string;
     todate = $("#datetimesmax").val() as string;
+    sortDirection = "DESC";
     //window.location.href = `/Enquiry/Index?strfrmdate=${frmdate}&strtodate=${todate}`;
-    handleMGTmails(frmdate, todate);
+    //handleMGTmails(frmdate, todate);
+    GetEnquiries(1);
 });
 
 $(document).on("click", "#btnReload", function () {
     window.location.href = "/Enquiry/Index";
 });
 
+function filterEnquiries(enquiryies: IEnquiry[]): IEnquiry[] {
+    let uniqueEmailSubjects: string[] = [];
+    let filterlist: IEnquiry[] = [];
+    enquiryies.forEach((x) => {
+        let emailsubject = x.email.trim() + x.subject.trim();
+        if (!uniqueEmailSubjects.includes(emailsubject)) {
+            uniqueEmailSubjects.push(emailsubject);
+            filterlist.push(x);
+        }
+    });    
 
-function saveEnquiries(enqlist: IEnquiry[]) {    
+    filterlist.sort((a, b) => Date.parse(b.receiveddate) - Date.parse(a.receiveddate));
+
+    return filterlist;
+}
+
+function saveEnquiries(enqlist: IEnquiry[]) {
+    enqlist = filterEnquiries(enqlist);
+    //console.log("filtered list:", enqlist);
+    //return;
     $.ajax({
         //contentType: 'application/json; charset=utf-8',
         type: "POST",
@@ -331,11 +351,10 @@ function fillInEnqTable() {
     $("#tblmails tbody").empty().html(html);    
 }
 
-
-
 $(function () {
     forenquiry = true;
     daterangechange = false;
+
     setFullPage();
     initModals();  
 
@@ -347,7 +366,10 @@ $(function () {
     $('#txtKeyword').trigger("focus");
 
     let strfrmdate = getParameterByName("strfrmdate");
-    //openWaitingModal();
+
+    sortCol = 8;
+    //if (isassignor) sortCol++;
+
     if (strfrmdate) {
         //console.log("currentoldestdate:" + currentoldestdate);
         frmdate = strfrmdate;
@@ -364,4 +386,6 @@ $(function () {
     }
     //closeWaitingModal();
     DicAssignedSalesEnqId = $infoblk.data("jsondicassignedsalesenqid");
+
+    
 });

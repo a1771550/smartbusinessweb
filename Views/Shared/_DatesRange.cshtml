@@ -1,10 +1,11 @@
 ﻿@{ 
     string datefromtxt = (string)ViewData["DateFromTxt"];
     string datetotxt = (string)ViewData["DateToTxt"];
+    string ctrlcls = ViewData["ctrlcls"] == null ? "" : (string)ViewData["ctrlcls"]; 
 }
 <span class="label mx-3">@Resources.Resource.From</span>
-<input class="col-12 col-md-3 form-control range" type="text" id="datetimesmin" name="strfrmdate" />
+<input class="col-12 col-md-3 form-control range @ctrlcls" type="text" id="datetimesmin" name="strfrmdate" />
 <span class="mx-3">@Resources.Resource.To</span>
-<input class="col-12 col-md-3 form-control range" type="text" id="datetimesmax" name="strtodate" />
+<input class="col-12 col-md-3 form-control range @ctrlcls" type="text" id="datetimesmax" name="strtodate" />
 <input type="hidden" id="DateFromTxt" name="DateFromTxt" value="@datefromtxt"/>
 <input type="hidden" id="DateToTxt" name="DateToTxt" value="@datetotxt" />

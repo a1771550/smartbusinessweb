@@ -13,14 +13,11 @@
 			<div class="col-lg-8 col-sm-12 tabs_wrapper">
 
 				<!-- Tab links -->
-				<div class="tab">
+				<div class="tab small">
 					@foreach (var category in Model.CategoryList)
 					{
 						<button class="tablinks" onclick="openTapContent(this, '@category.NameDisplay')">@category.NameDisplay</button>
-					}
-					@*<button class="tablinks" onclick="openItem(this, 'SimpleItem')">@Resources.Resource.IllustratedProduct</button>
-						<button class="tablinks" onclick="openItem(this, 'Fruit')">@Resources.Resource.AccountSoftware</button>
-						<button class="tablinks" onclick="openItem(this, 'Other')">@string.Format(Resources.Resource.OtherFormat, Resources.Resource.Item)</button>*@
+					}				
 				</div>
 
 				@foreach (var category in Model.CategoryList)
@@ -30,7 +27,7 @@
 						<div class="page-header ">
 							<div class="page-title">
 								<h4>@category.NameDisplay</h4>
-								<h6>@Resources.Resource.ManageYourPurchases</h6>
+								<span class="small">@Resources.Resource.ManageYourPurchases</span>
 							</div>
 						</div>
 

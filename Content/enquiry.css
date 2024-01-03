@@ -1,5 +1,6 @@
 ﻿.enquiry:not(.disabled){
     cursor:pointer;
+    font-size:90%;
 }
 #tblmails tbody .btn{
     font-size:80%;

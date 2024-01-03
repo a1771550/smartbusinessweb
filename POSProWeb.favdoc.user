@@ -226,6 +226,11 @@
           <path>Views\Shared\_Head.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Shared\_Head.cshtml</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>enq-Index.cshtml</name>
+          <path>Views\Enquiry\Index.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Enquiry\Index.cshtml</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -405,6 +410,11 @@
           <name>Sales.css</name>
           <path>Content\pos\Sales.css</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\pos\Sales.css</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>enquiry.css</name>
+          <path>Content\enquiry.css</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\enquiry.css</absolutePath>
         </Favorite>
       </favorites>
     </Folder>
