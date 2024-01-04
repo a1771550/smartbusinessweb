@@ -231,6 +231,16 @@
           <path>Views\Enquiry\Index.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Enquiry\Index.cshtml</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>AccountReceivable.cshtml</name>
+          <path>Views\AbssReport\AccountReceivable.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\AbssReport\AccountReceivable.cshtml</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>Quotation.cshtml</name>
+          <path>Views\AbssReport\Quotation.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\AbssReport\Quotation.cshtml</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

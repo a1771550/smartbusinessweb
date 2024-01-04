@@ -730,13 +730,13 @@ a.disabled{
 }
 
 .btnsmall{
-    font-size:90%;
+    font-size:90%!important;
 }
 .btnexsmall{
-    font-size:80%;
+    font-size:80%!important;
 }
 .exsmall{
-    font-size:60%;
+    font-size:60%!important;
 }
 
 .btn:not(.btnsmall):not(.btn-adds){
@@ -788,3 +788,13 @@ input[type=checkbox]:focus {
     max-width: 140px;
 }
 
+table.dataTable thead > tr > th.sorting_desc.text-right:before, table.dataTable thead > tr > th.sorting_desc.text-right:after {
+    right: 230px !important;
+}
+table.dataTable thead > tr > th.sorting_asc.text-right:before, table.dataTable thead > tr > th.sorting_asc.text-right:after {
+    right: 230px !important;
+}
+
+.dataTable{
+    font-size:75%!important;
+}

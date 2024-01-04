@@ -1,5 +1,8 @@
 ﻿@model PPWLib.Models.Quotation.QuotationEditModel
 
+    <link href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.css" rel="stylesheet">
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.js"></script>
+
 <div class="text-center">
 	<h2 class="d-none d-sm-block">@Resources.Resource.Quotation</h2>
 	<h3 class="d-block d-sm-none">@Resources.Resource.Quotation</h3>
@@ -7,17 +10,17 @@
 
 <div class="d-none d-sm-block">
 	<div class="table-responsive my-3">
-		<table id="tblGrid" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0">
+		<table id="tblGrid" class="table table-striped table-bordered dt-responsive nowrap display" cellspacing="0">
 			<thead>
 				<tr>
-					<th scope="col">@string.Format(Resources.Resource.NumberFormat,Resources.Resource.Order)</th>
-					<th scope="col">@Resources.Resource.Date</th>
-					<th scope="col">@Resources.Resource.Customer</th>
-					<th scope="col">@Resources.Resource.ItemNumber</th>
-					<th scope="col">@Resources.Resource.ItemName</th>
-					<th scope="col">@Resources.Resource.SalesPerson</th>
-					<th scope="col">@Resources.Resource.Qty</th>
-					<th scope="col">@Resources.Resource.SellingPrice (@Model.Currency)</th>
+					<th>@string.Format(Resources.Resource.NumberFormat,Resources.Resource.Order)</th>
+					<th>@Resources.Resource.Date</th>
+					<th>@Resources.Resource.Customer</th>
+					<th>@Resources.Resource.ItemNumber</th>
+					<th>@Resources.Resource.ItemName</th>
+					<th>@Resources.Resource.SalesPerson</th>
+					<th>@Resources.Resource.Qty</th>
+					<th>@Resources.Resource.SellingPrice (@Model.Currency)</th>
 				</tr>
 			</thead>
 		</table>
@@ -29,9 +32,9 @@
 			<table id="tblGridm" class="table table-striped table-bordered table-hover dt-responsive" cellspacing="0">
 				<thead>
 					<tr>
-						<th scope="col">@Resources.Resource.Customer</th>
-						<th scope="col">@Resources.Resource.ItemName</th>
-						<th scope="col">@Resources.Resource.SellingPrice</th>
+						<th>@Resources.Resource.Customer</th>
+						<th>@Resources.Resource.ItemName</th>
+						<th>@Resources.Resource.SellingPrice</th>
 					</tr>
 				</thead>
 			</table>
@@ -54,13 +57,7 @@
 	var webbind = false;
 	var mobilebind = false;
 	pagesize = @Model.PageSize;
-	// Date range filter
-	//var minDate, maxDate;
-	var minDateM, maxDateM;
-
-	$(document).on('click', '#btnReset', function () {
-		window.location.reload();
-	});
+	var minDateM, maxDateM;	
 
 	$(function () {
 		setFullPage();
@@ -78,11 +75,12 @@
 	function bindtable() {
 		datatable = $('#tblGrid').DataTable({
 			'autoWidth': false,
-			'scrollX': 'true',
-			'scrollY': 700,
-			'scrollCollapse': true,
-			"pageLength": pagesize,
+			fixedHeader: {
+				header: true,
+			},
 			"bLengthChange": false,
+			'scrollY': '65vh',
+			"pageLength": pagesize,		
 			"sAjaxSource": "/AbssReport/GetQuotations",
 			"bServerSide": true,
 			"bProcessing": true,
@@ -98,32 +96,40 @@
 				{
 					"data": "InvoiceNumber",
 					"searchable": true,
+					"orderable": true
 				},
 				{
 					"data": "InvoiceDateDisplay",
 					"searchable": true,
+					"orderable": true
 				},
 				{
 					"data": "CustomerName",
-					"searchable": true
+					"searchable": true,
+					"orderable": true
 				},
 				{
 					"data": "ItemNumber",
-					"searchable": true
+					"searchable": true,
+					"orderable": true
 				}, {
 					"data": "ItemName",
-					"searchable": true
+					"searchable": true,
+					"orderable": true
 				}, {
 					"data": "SalesPersonName",
-					"searchable": true
+					"searchable": true,
+					"orderable": true
 				},
 				{
 					"data": "Qty",
-					"searchable": true
+					"searchable": true,
+					"orderable": true
 				},
 				{
 					"data": "SellingPrice",
-					"searchable": true
+					"searchable": true,
+					"orderable": true
 				},
 				{
 					"data": "InvoiceDateStart",
@@ -136,52 +142,67 @@
 					"searchable": true
 				}
 			],
-			"columnDefs": [{
-				targets: 7,
-				createdCell: function (td, cellData, rowData, row, col) {
-						$(td).css('text-align', 'right');
-				}
-			}],
-			"drawCallback": function (settings) {
+			/*
+			$header.find("tr th").eq(0).addClass("text-center");
+$header.find("tr th").eq(1).addClass("text-right");
+$header.find("tr th").eq(2).addClass("text-center");
+$header.find("tr th").eq(3).addClass("text-center");
+$header.find("tr th").eq(4).addClass("text-center");
+$header.find("tr th").eq(5).addClass("text-center");
+$header.find("tr th").eq(6).addClass("text-right");
+$header.find("tr th").eq(7).addClass("text-right");
+			*/
+			"columnDefs": [
+				{
+					targets: [1,6,7],
+					createdCell: function (td, cellData, rowData, row, col) {
+						$(td).css({ 'text-align': 'right', "width": "236px" });
+					},
+				},
+				{
+					targets: [0,2,3,4,5],
+					createdCell: function (td, cellData, rowData, row, col) {
+						$(td).css('text-align', 'center');
+					},
+				},
+			],
+			drawCallback: function (settings) {
+				//console.log("settings:", settings);
 				webbind = true;
-				$('#tblGrid').find('thead tr th:eq(7)').css({ 'text-align': 'right' });
-				$('input[name="datetimesmin"]').daterangepicker({
-					singleDatePicker: true,
-					showDropdowns: true,
-					minYear: 1901,
-					maxYear: parseInt(moment().format('YYYY'), 10),
-					locale: {
-						format: 'MM/DD/YYYY'
-					}
-				}, function (start, end, label) {
-					minDate = new Date(start).toDateString();
-					doFilter();
+				let $header = $(".dataTables_scrollHeadInner table thead");
+				$header.find("tr th").eq(0).addClass("text-center");
+				$header.find("tr th").eq(1).addClass("text-right");
+				$header.find("tr th").eq(2).addClass("text-center");
+				$header.find("tr th").eq(3).addClass("text-center");
+				$header.find("tr th").eq(4).addClass("text-center");
+				$header.find("tr th").eq(5).addClass("text-center");
+				$header.find("tr th").eq(6).addClass("text-right");
+				$header.find("tr th").eq(7).addClass("text-right");
 
-				});
-				$('input[name="datetimesmax"]').daterangepicker({
-					singleDatePicker: true,
-					showDropdowns: true,
-					minYear: 1901,
-					maxYear: parseInt(moment().format('YYYY'), 10),
-					locale: {
-						format: 'MM/DD/YYYY'
-					}
-				}, function (start, end, label) {
-					maxDate = new Date(end).toDateString();
-					doFilter();
-
-				});
-				let $tfilter = $('#tblGrid_wrapper');
-				if ($tfilter.find('#btnReset').length === 0) {
-					let ele = `<div class="row justify-content-end mx-4 my-2 small"><div class="col-sm-12 col-md-6 text-right"><button id="btnReset" type="button" class="btn btn-warning">@Resources.Resource.Reset</button></div></div>`;
-					$(ele).insertBefore($tfilter.find('.row:eq(0)'));
-				}
-				let $filter = $tfilter.find("#tblGrid_filter");
+				let $twrapper = $('#tblGrid_wrapper');				
+				let $filter = $twrapper.find("#tblGrid_filter");
 				if ($filter.length) {
-					$filter.addClass("mx-4");
-					$filter.find("input").appendTo($filter).trigger("focus");
-					$filter.find("label").text(searchtxt+":");
+					let $input = $filter.find("input");
+					let $reload = $(`<button type="button" class="btn btn-warning btnexsmall btnReload mx-2" title="${reloadtxt}" onclick="window.location.reload();"><i class="fa fa-refresh"></i></button>`);
+					if ($filter.find(".btnReload").length === 0)
+						$reload.appendTo($filter);
+
+					$filter.addClass("mx-4 small");					
+
+					$input.attr("placeholder",searchtxt).appendTo($filter).trigger("focus");
+					$filter.find("label").remove();
 				}
+				
+				$(".dataTables_paginate").addClass("small");
+				$(".paginate_button.previous").text(previoustxt);
+				$(".paginate_button.next").text(nexttxt);
+
+				var table = $('#tblGrid').DataTable();
+				var info = table.page.info();
+				/*console.log("info:", info);*/
+				$('.dataTables_info').html(
+					paginginfoformat.replace("{0}", info.page + 1).replace("{1}", info.pages).replace("{2}", info.recordsTotal)
+				);	
 			},
 		});
 	}
@@ -319,14 +340,6 @@
 		s.draw();
 	}
 
-	function checkWidth() {
-		var windowsize = $window.width();
-		//console.log('windowsize:' + windowsize);
-		if (windowsize > 450) {
-			if (!webbind) bindtable();
-		} else {
-			if (!mobilebind) bindtableM();
-		}
-	}
+
 </script>
 

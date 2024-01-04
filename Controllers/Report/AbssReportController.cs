@@ -477,6 +477,10 @@ namespace SmartBusinessWeb.Controllers.Report
 			{
 				accountReceivables = sortDirection == "asc" ? accountReceivables.OrderBy(c => c.InvoiceDate).ToList() : accountReceivables.OrderByDescending(c => c.InvoiceDate).ToList();
 			}
+			else if (sortColumnIndex == 1)
+			{
+				accountReceivables = sortDirection == "asc" ? accountReceivables.OrderBy(c => c.DueDate).ToList() : accountReceivables.OrderByDescending(c => c.DueDate).ToList();
+			}
 			else if (sortColumnIndex == 2)
 			{
 				accountReceivables = sortDirection == "asc" ? accountReceivables.OrderBy(c => c.CustomerName).ToList() : accountReceivables.OrderByDescending(c => c.CustomerName).ToList();
@@ -488,6 +492,14 @@ namespace SmartBusinessWeb.Controllers.Report
 			else if (sortColumnIndex == 4)
 			{
 				accountReceivables = sortDirection == "asc" ? accountReceivables.OrderBy(c => c.Discount).ToList() : accountReceivables.OrderByDescending(c => c.Discount).ToList();
+			}
+			else if (sortColumnIndex == 5)
+			{
+				accountReceivables = sortDirection == "asc" ? accountReceivables.OrderBy(c => c.TotalDue).ToList() : accountReceivables.OrderByDescending(c => c.TotalDue).ToList();
+			}
+			else if (sortColumnIndex == 6)
+			{
+				accountReceivables = sortDirection == "asc" ? accountReceivables.OrderBy(c => c.AmountApplied).ToList() : accountReceivables.OrderByDescending(c => c.AmountApplied).ToList();
 			}
 			#endregion
 

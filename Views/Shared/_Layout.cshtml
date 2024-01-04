@@ -676,7 +676,7 @@
 							@Html.ActionLink(Resources.Resource.Quotation, "Quotation", "ABSSReport", null, new { @class = lnkcls })
 							@{
 								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "accountreceivable")
+								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "receivable")
 								{
 									lnkcls = string.Format(lnkcls, "active");
 								}

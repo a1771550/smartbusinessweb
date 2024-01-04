@@ -2964,6 +2964,7 @@
     <Content Include="Scripts\ts\js\records\training.js" />
     <Content Include="Scripts\ts\js\simplecontact\edit.js" />
     <Content Include="Static\barcode.html" />
+    <Content Include="Static\datatables.html" />
     <Content Include="Static\POS\images\banana.png" />
     <Content Include="Static\POS\images\cherry.png" />
     <Content Include="Static\POS\images\icon-512.png" />

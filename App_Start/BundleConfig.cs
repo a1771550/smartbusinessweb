@@ -19,10 +19,11 @@ namespace SmartBusinessWeb.App_Start
             "~/Scripts/bs4/bootstrap.min.js",
             "~/Scripts/moment.min.js",
             "~/Scripts/respond.min.js",
-            "~/Scripts/modernizr-2.8.3.js",
-            "~/Scripts/DataTables/jquery.dataTables.min.js",
-            "~/Scripts/DataTables/dataTables.select.min.js",
-            "~/Scripts/DataTables/dataTables.bootstrap4.min.js"
+            "~/Scripts/modernizr-2.8.3.js"
+            //,
+            //"~/Scripts/DataTables/jquery.dataTables.min.js",
+            //"~/Scripts/DataTables/dataTables.select.min.js",
+            //"~/Scripts/DataTables/dataTables.bootstrap4.min.js"
             ));
 
             bundles.Add(new ScriptBundle("~/bundles/fancyjpower").Include(
