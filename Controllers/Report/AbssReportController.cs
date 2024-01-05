@@ -11,6 +11,8 @@ using System.Linq;
 using System.Web.Mvc;
 using CommonLib.App_GlobalResources;
 using PPWLib.Models.AccountReceivable;
+using PPWLib.Models.SPP;
+using PPWLib.Models.CI;
 
 namespace SmartBusinessWeb.Controllers.Report
 {
@@ -21,6 +23,28 @@ namespace SmartBusinessWeb.Controllers.Report
 		private string ItemsLastUpdateTimeDisplay;
 		private string StocksLastUpdateTimeDisplay;
 		int userId => SessUser.surUID;
+
+		[HandleError]
+		[CustomAuthorize("reports", "admin1", "admin", "superadmin")]
+		public ActionResult CI()
+		{
+			ViewBag.ParentPage = "abssreports";
+			ViewBag.PageName = "ci";
+			ViewBag.Title = Resource.CustomerInvoices;
+			CIEditModel model = new CIEditModel();
+			return View(model);
+		}
+
+		[HandleError]
+		[CustomAuthorize("reports", "admin1", "admin", "superadmin")]
+		public ActionResult SPP()
+		{
+			ViewBag.ParentPage = "abssreports";
+			ViewBag.PageName = "spp";
+			ViewBag.Title = Resource.SalesPersonPerformance;
+			SPPEditModel model = new SPPEditModel();
+			return View(model);
+		}
 
 		[HandleError]
 		[CustomAuthorize("reports", "admin1", "admin", "superadmin")]
@@ -691,7 +715,7 @@ namespace SmartBusinessWeb.Controllers.Report
 				salesPersonPerformances = salesPersonPerformances.Where(x => x.InvoiceDate >= frmdate && x.InvoiceDate <= todate).ToList();
 			}
 			//Sorting:Invoice Number	Invoice Date	SalesPerson	Total Paid	Outstanding Balance	Tax Inclusive Freight	Total Tax	Total Sales
-
+			#region Sorting
 			var sortColumnIndex = Convert.ToInt32(HttpContext.Request.QueryString["iSortCol_0"]);
 			var sortDirection = HttpContext.Request.QueryString["sSortDir_0"];
 			if (sortColumnIndex == 0)
@@ -726,10 +750,15 @@ namespace SmartBusinessWeb.Controllers.Report
 			{
 				salesPersonPerformances = sortDirection == "asc" ? salesPersonPerformances.OrderBy(c => c.InvoiceStatus).ToList() : salesPersonPerformances.OrderByDescending(c => c.InvoiceStatus).ToList();
 			}
+			#endregion
+
+			#region Paging
 			//Paging
 			var displayResult = salesPersonPerformances.Skip(param.iDisplayStart)
 			   .Take(param.iDisplayLength).ToList();
 			var totalRecords = salesPersonPerformances.Count();
+			#endregion
+
 			return Json(new
 			{
 				param.sEcho,

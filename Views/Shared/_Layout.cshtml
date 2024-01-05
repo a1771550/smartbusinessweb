@@ -674,6 +674,7 @@
 								}
 							}
 							@Html.ActionLink(Resources.Resource.Quotation, "Quotation", "ABSSReport", null, new { @class = lnkcls })
+
 							@{
 								lnkcls = "dropdown-item {0}";
 								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "receivable")
@@ -686,6 +687,32 @@
 								}
 							}
 							@Html.ActionLink(Resources.Resource.AccountReceivable, "AccountReceivable", "ABSSReport", null, new { @class = lnkcls })
+
+							@{
+								lnkcls = "dropdown-item {0}";
+								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "spp")
+								{
+									lnkcls = string.Format(lnkcls, "active");
+								}
+								else
+								{
+									lnkcls = string.Format(lnkcls, string.Empty);
+								}
+							}
+							@Html.ActionLink(Resources.Resource.SalesPersonPerformance, "SPP", "ABSSReport", null, new { @class = lnkcls })
+
+							@{
+								lnkcls = "dropdown-item {0}";
+								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "ci")
+								{
+									lnkcls = string.Format(lnkcls, "active");
+								}
+								else
+								{
+									lnkcls = string.Format(lnkcls, string.Empty);
+								}
+							}
+							@Html.ActionLink(Resources.Resource.CustomerInvoices, "CI", "ABSSReport", null, new { @class = lnkcls })
 						</div>
 					</li>
 
