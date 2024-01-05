@@ -167,30 +167,9 @@
 				$header.find("tr th").eq(5).addClass("text-right");
 				$header.find("tr th").eq(6).addClass("text-right");
 
-				let $twrapper = $('#tblGrid_wrapper');
-				let $filter = $twrapper.find("#tblGrid_filter");
-				if ($filter.length) {
-					let $input = $filter.find("input");
-					let $reload = $(`<button type="button" class="btn btn-warning btnexsmall btnReload mx-2" title="${reloadtxt}" onclick="window.location.reload();"><i class="fa fa-refresh"></i></button>`);
-					if ($filter.find(".btnReload").length === 0)
-						$reload.appendTo($filter);
+				setSearchBox4AbssReports()
 
-					$filter.addClass("mx-4 small");
-
-					$input.attr("placeholder", searchtxt).appendTo($filter).trigger("focus");
-					$filter.find("label").remove();
-				}
-
-				$(".dataTables_paginate").addClass("small");
-				$(".paginate_button.previous").text(previoustxt);
-				$(".paginate_button.next").text(nexttxt);
-				
-				var table = $('#tblGrid').DataTable();
-				var info = table.page.info();
-				/*console.log("info:", info);*/
-				$('.dataTables_info').html(				
-					paginginfoformat.replace("{0}",info.page+1).replace("{1}",info.pages).replace("{2}", info.recordsTotal)
-				);				
+				localizePagingInfo();				
 			},
 		});
 	}
