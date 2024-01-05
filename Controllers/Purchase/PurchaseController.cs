@@ -151,7 +151,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
             ViewBag.ParentPage = "purchase";
             ViewBag.PageName = type;
             PurchaseEditModel model = new PurchaseEditModel(Id, type);
-            return View(model.Purchase);
+            return View(model);
         }
 
         [HandleError]

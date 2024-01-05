@@ -798,3 +798,7 @@ table.dataTable thead > tr > th.sorting_asc.text-right:before, table.dataTable t
 .dataTable{
     font-size:75%!important;
 }
+
+#tblPayment{
+    background-color:white;
+}

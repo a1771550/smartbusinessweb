@@ -13,6 +13,8 @@ const PriceIdx4WsInvoice: number = 10;
 const PriceIdx4PstOrder: number = 5;
 const PriceIdx4PstBill: number = 9;
 
+let user: ISysUser;
+let lastppId: number = 1;
 let current_page = 1;
 let records_per_page = 5;
 let frmId: string = "";
@@ -56,9 +58,9 @@ let recreateOnVoid: number = 0;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 const paginginfoformat: string = $txtblk.data("paginginfoformat");
-const reloadtxt:string = $txtblk.data("reloadtxt");
-const nexttxt:string = $txtblk.data("nexttxt");
-const previoustxt:string = $txtblk.data("previoustxt");
+const reloadtxt: string = $txtblk.data("reloadtxt");
+const nexttxt: string = $txtblk.data("nexttxt");
+const previoustxt: string = $txtblk.data("previoustxt");
 const barcodetxt: string = $txtblk.data("barcodetxt");
 const expensetxt: string = $txtblk.data("expensetxt");
 const equitytxt: string = $txtblk.data("equitytxt");
@@ -1498,14 +1500,14 @@ function _writeItems(itemList: IItem[]) {
 		let displaycls = item.hasItemVari ? "text-success" : "text-danger";
 		html += `<td><span class="fa fa-${facls} ${displaycls}"></span></td>`;
 
-		seq = currentY + 1;
-		let urlist = "";
 		if (!forpurchase) {
+			seq = currentY + 1;
+			let urlist = "";
 			if (((forsales || forwholesales) && !outofstock) || forpreorder) urlist = genProUrList(urlist, item);
+			html += `<td style="width:250px;min-width:250px;">${urlist}</td>`;
 		}
-		html += `<td style="width:250px;min-width:250px;">${urlist}</td>`;
+
 		html += "</tr>";
-		//}
 	});
 	$("#tblItem tbody").empty().append(html);
 	if (!forpurchase) {
@@ -6841,7 +6843,7 @@ $(document).on("change", ".chk", function (e) {
 $(document).on("change", ".enqchk", function (e) {
 	let _id: string = <string>$(this).data("id");
 	let idx = assignEnqIdList.findIndex(x => x == _id);
-	if ($(this).is(":checked")) {	
+	if ($(this).is(":checked")) {
 		if (idx < 0)
 			assignEnqIdList.push(_id);
 	} else {
@@ -8092,11 +8094,7 @@ interface IPurchase {
 	// pstLocStock: string;
 	pstSalesLoc: string;
 	pstRemark: string;
-	pstPurchaseDate: Date;
-	CreateTimeDisplay: string;
-	ModifyTimeDisplay: string | null;
-	AccountProfileId: number;
-	CompanyId: number;
+	pstPurchaseDate: Date;	
 	PurchaseItems: Array<IPurchaseItem>;
 	ReturnItems: Array<IReturnItem>;
 	PSCodeDisplay: string;
@@ -8113,6 +8111,7 @@ interface IPurchase {
 	UploadFileList: string[];
 	DicItemOptions: { [Key: string]: IItemOptions };
 	ItemVariationList: IItemVariation[];
+	pstAmount: number;
 }
 function initPurchaseItem(): IPurchaseItem {
 	return {
@@ -8219,7 +8218,7 @@ function getCurrentY(ele) {
 }
 let ReturnableItemList: Array<IPurchaseItem> = [];
 
-$(document).on("change", ".qty", function () {
+function handleQtyChange(this:any) {
 	currentY = getCurrentY(this);
 	let _qty: number = Number($(this).val());
 	// console.log("_qty:" + _qty);
@@ -8351,6 +8350,9 @@ $(document).on("change", ".qty", function () {
 			}
 		}
 	}
+}
+$(document).on("change", ".qty", function () {
+	handleQtyChange.call(this);
 });
 
 $(document).on("change", ".location", function (e) {
@@ -8368,10 +8370,13 @@ $(document).on("change", ".discpc", function (e) {
 });
 
 $(document).on("change", ".taxpc", function () {
-	currentY = getCurrentY(this);
-	//console.log("here");
-	updateRow(getRowPrice(), getRowDiscPc());
+	handleTaxChange.call(this);
 });
+
+function handleTaxChange(this: any) {
+    currentY = getCurrentY(this);
+    updateRow(getRowPrice(), getRowDiscPc());
+}
 
 function getDicItemOptionsVariByCodes(
 	itemcodelist: string[],
@@ -8686,12 +8691,15 @@ function populateItemRow(proId: number | null = 0) {
 	}
 
 	idx++;
-	$target.find(`td:eq(${idx})`).find(".qty").val(qty).data({
+	let $qty = $target.find(`td:eq(${idx})`).find(".qty");
+	$qty.off("change");
+	$qty.val(qty).data({
 		proqty: proqty,
 		proprice: proprice,
 		prodiscpc: prodiscpc,
 		qtysellable: qtysellable,
 	});
+	$qty.on("change", handleQtyChange);
 
 	let batmsg: string = "";
 	let snmsg: string = "";
@@ -8969,14 +8977,14 @@ function populateItemRow(proId: number | null = 0) {
 		}
 
 		price = price / exRate;
-		//console.log("price divided by exrate:" + price);
-		$target
+		let $price = $target
 			.find("td")
 			.eq(idx)
-			.find(".price")
-			.data("price", price)
+			.find(".price");
+		$price.off("change");
+			$price.data("price", price)
 			.val(formatnumber(price));
-		//console.log("@selectitem: price:" + price);
+		$price.on("change", handlePriceChange);
 
 		idx++;
 		if (isPromotion && proId) {
@@ -8989,23 +8997,27 @@ function populateItemRow(proId: number | null = 0) {
 		}
 
 		let $discpc = $target.find("td").eq(idx).find(".discpc");
+		$discpc.off("change");
 		//console.log("formated discpc:" + formatnumber(discount));
 		$discpc.data("discpc", discount).val(formatnumber(discount));
+		$discpc.on("change", handleDiscChange);
 		//console.log("$discpc val:" + $discpc.val());
 		if (!enableTax) $discpc.trigger("change");
 
 		idx++;
-
 		if (enableTax && !inclusivetax) {
-			//console.log("here");
-			$target
+			let $tax = $target
 				.find("td")
 				.eq(idx)
-				.find(".taxpc")
-				.data("taxpc", taxrate)
+				.find(".taxpc");
+
+			$tax.off("change");
+			$tax.data("taxpc", taxrate)
 				.prop("readonly", true)
-				.val(formatnumber(taxrate))
-				.trigger("change");
+				.val(formatnumber(taxrate));
+			$tax.on("change", handleTaxChange);
+
+				$tax.trigger("change");
 			//idx++;
 		}
 
@@ -9078,7 +9090,7 @@ function addRow() {
 		idx +
 		'" data-amt="0" data-amtplustax="0"><td><span>' +
 		i +
-		'</span></td><td><input type="text" name="itemcode" class="itemcode text-left flex" /></td><td><input type="text" class="itemdesc small flex text-left" data-itemname="" /></td>';
+		'</span></td><td><input type="text" name="itemcode" class="itemcode text-center flex" /></td><td><input type="text" class="itemdesc small flex text-center" data-itemname="" /></td>';
 	if (forpurchase) {
 		html += `<td><input type="text" class="baseunit text-right flex" data-baseunit="" /></td>`;
 	}
@@ -9218,11 +9230,11 @@ function addRow() {
 		let selected: string = key == shop ? "selected" : "";
 		locations += `<option value='${key}' ${selected}>${value}</option>`;
 	}
-	html += `<td><select class="location flex">${locations}</select></td>`;
+	html += `<td><select class="location flex text-center">${locations}</select></td>`;
 
 	//let jobs: string = "";
 	//JobList.forEach((x) => jobs += `<option value='${x.JobID}'>${x.job}</option>`);
-	html += `<td><select class="job flex">${setJobListOptions(0)}</select></td>`;
+	html += `<td><select class="job flex text-center">${setJobListOptions(0)}</select></td>`;
 
 	if (forsales || forpreorder || forwholesales)
 		html +=
@@ -10726,9 +10738,9 @@ function getRowDiscPc(): number {
 	}
 	if (forpurchase) {
 		if (Purchase.pstStatus == "order" || Purchase.pstStatus == "created") {
-			_idx = PriceIdx4PstBill + 1;
-		} else {
 			_idx = PriceIdx4PstOrder + 1;
+		} else {
+			_idx = PriceIdx4PstBill + 1;			
 		}
 	}
 
@@ -10809,6 +10821,7 @@ function handlePriceChange(event: any) {
 function handleDiscChange(event: any) {
 	currentY = getCurrentY(event.target);
 	let _discpc: number = Number($(event.target).val());
+	//console.log("_discpc#change:" + _discpc);
 	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
 	let _price: number;
 	let _idx: number = 0;
@@ -10838,17 +10851,13 @@ function handleDiscChange(event: any) {
 			},
 		});
 	} else {
-		_price = Number($tr.find("td").eq(_idx).find(".price").val());
-		// _price = _price * exRate;
-		// console.log(
-		//   "_price@discpc change:" + _price + ";discpc@discpc change:" + _discpc
-		// );
+		_price = Number($tr.find("td").eq(_idx).find(".price").val());		
 		updateRow(_price, _discpc);
 	}
 }
 
 function updateRow(_price: number = 0, _discount: number = 0) {
-	//  console.log("_price#updaterow:" + _price);
+	//console.log("_price#updaterow:" + _price + ";_disc:" + _discount);
 	$target = $(`#${gTblName} tbody tr`).eq(currentY);
 	seq = currentY + 1;
 
@@ -10877,7 +10886,10 @@ function updateRow(_price: number = 0, _discount: number = 0) {
 			Wholesales && Wholesales.wsStatus == "invoice"
 				? PriceIdx4WsInvoice
 				: PriceIdx4WsOrder;
+
+	//console.log("pidx:" + pidx);
 	didx = pidx + 1;
+	//console.log("didx:" + didx);
 	tidx = didx + 1;
 
 	seq = currentY + 1;
@@ -14057,11 +14069,7 @@ function fillInPurchase(
 		pstSupplierInvoice: <string>$("#pstSupplierInvoice").val(),
 		pstSalesLoc: <string>$("#drpLocation").val(),
 		pstAllLoc: $("#chkAllLoc").is(":checked"),
-		pstRemark: <string>$("#pstRemark").val(),
-		CreateTimeDisplay: "",
-		ModifyTimeDisplay: "",
-		AccountProfileId: 0,
-		CompanyId: 0,
+		pstRemark: <string>$("#pstRemark").val(),		
 		PurchaseItems: [],
 		ReturnItems: [],
 		PSCodeDisplay: "",
@@ -14081,6 +14089,7 @@ function fillInPurchase(
 		UploadFileList: [],
 		DicItemOptions: Object.assign({}, dicItemOptions),
 		ItemVariationList: $infoblk.data("jsonitemvarilist"),
+		pstAmount:Number($("#pstAmount").val())
 	};
 }
 
@@ -21612,4 +21621,51 @@ interface ISimpleContact {
 	Phone: string;
 	Email: string;
 	Message: string;
+}
+
+let PurchasePayments: IPurchasePayment[] = [];
+interface IPurchasePayment {
+	Id: number;
+	pstCode: string;
+	supCode: string;
+	Amount: number;
+	AccountNo: string;
+	ppDate: string;
+	JsCreateDate: string;
+	JsModifyDate: string;
+	//ppChequeNo: string;
+}
+
+function addPayRow() {
+	let Id: number = lastppId++;
+	$tr = $("#tblPayment tbody tr").last();
+	let lastseq = ($tr.length) ? Number($tr.find("td").first().text()) + 1 : 1;
+	//console.log("Id:", Id);
+	let strdate: string = formatDate();
+	let strdatetime: string = formatDateTime();
+	let html = `<tr data-id="${Id}">
+	<td class="text-center">${lastseq}</td>
+	<td class="text-center"><input type="text" class="form-control text-center chequeno" /></td>
+	<td class="text-center"><input type="text" class="form-control text-center accountno" /></td>
+	<td class="text-right"><input type="number" class="form-control pay text-right" data-id="${Id}" value="${formatnumber(0)}" /></td>
+	<td class="text-right"><input type="datetime" class="form-control datepicker" id="ppDate" name="ppDate" value="${strdate}" /></td>
+	<td class="text-right">${strdatetime}</td>
+	<td class="text-center">${user.UserName}</td>
+	`;
+	html += `</tr>`;
+	$("#tblPayment tbody").append(html);
+}
+
+function updatePaymentList() {
+	$("#tblPayment tbody tr").each(function (i, e) {
+		let Id: number = Number($(e).data("id"));
+		console.log("Id:" + Id);
+		let $amt = $(e).find("td").eq(1).find(".pay");
+		let amt: number = Number($amt.val());
+		if (amt > 0) {
+			let chequeno: string = ($(e).find("td").eq(2).find(".chequeno").val() as string).trim();
+			PurchasePayments.find(x => x.Id == Id)!.Amount = amt;
+			//PurchasePayments.find(x => x.Id == Id)!.ppChequeNo = chequeno;
+		}
+	});
 }
