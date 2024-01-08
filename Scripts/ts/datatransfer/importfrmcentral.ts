@@ -17,6 +17,12 @@ $(document).on("click", ".import", function () {
                 });
             } else {
                 switch (type) {
+                    case "spp":
+                        $("#filename").val("SPP_");
+                        break;
+                    case "ci":
+                        $("#filename").val("CI_");
+                        break;
                     case "accountreceivable":
                         $("#filename").val("AccountReceivable_");
                         break;
@@ -183,4 +189,9 @@ $(document).on("change", ".chkfile", function () {
             filelist.splice(index, 1);
         }
     }
+});
+
+$(function () {
+    setFullPage();
+    initModals();
 });

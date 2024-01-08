@@ -493,7 +493,7 @@ $(function () {
 		}
 		//console.log("uploadfilelist length:", Purchase.UploadFileList.length);
 		purchaseitems = $infoblk.data("jsonpurchaseitems");
-		console.log("purchaseitems:", purchaseitems);
+		//console.log("purchaseitems:", purchaseitems);
 		Purchase.DicItemOptions = $infoblk.data("jsonpurchasedicitemoptions");
 		DicItemOptions = Object.assign({}, Purchase.DicItemOptions);
 		//console.log("dicitemoptions:", DicItemOptions);
@@ -524,7 +524,7 @@ $(function () {
 			const formattedtaxpc: string = formatnumber(<number>stockitem.piTaxPc);
 
 			var baseunit: string = stockitem.piBaseUnit ?? "N/A";
-			html += `<tr data-idx="${idx}" data-qty="${stockitem.piQty}" class=""><td><span>${stockitem.piSeq}</span></td><td><input type="text" name="itemcode" class="itemcode text-left" value="${stockitem.itmCode}"></td><td><input type="text" name="itemdesc" class="itemdesc text-left" data-itemname="${stockitem.itmName}" value="${stockitem.itmNameDesc}"></td><td class="text-right"><input type="text" name="baseunit" class="baseunit text-right" value="${baseunit}"></td><td class="text-right"><input type="number" name="qty" class="qty text-right" value="${stockitem.piQty}"></td>`;
+			html += `<tr data-idx="${idx}" data-qty="${stockitem.piQty}" class=""><td><span>${stockitem.piSeq}</span></td><td><input type="text" name="itemcode" class="itemcode text-left" value="${stockitem.itmCode}"></td><td><input type="text" name="itemdesc" class="itemdesc text-left small" data-itemname="${stockitem.itmNameDesc}" value="${stockitem.itmNameDesc}" title="${stockitem.itmNameDesc}"></td><td class="text-right"><input type="text" name="baseunit" class="baseunit text-right" value="${baseunit}"></td><td class="text-right"><input type="number" name="qty" class="qty text-right" value="${stockitem.piQty}"></td>`;
 			var sncls = (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") ? "posn pointer" : "serialno";
 			var vtcls =
 				(Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") ? "vt pointer" : "validthru datepicker";
@@ -559,11 +559,11 @@ $(function () {
 		});
 		$target = $("#tblPSI tbody");
 		$target.empty().html(html);
-		if (Purchase.pstStatus === "opened" || Purchase.pstStatus == "partialreceival" || isadmin) {
+		if (Purchase.pstStatus === "opened" || Purchase.pstStatus == "partialreceival") {
 
-			$("input").prop("isadmin", true).prop("disabled", true);
+			$("input:not([type='file'])").prop("isadmin", true).prop("disabled", true);
 			$("select").prop("disabled", true);
-			$("textarea").not("#txtField").prop("isadmin", true);
+			$("textarea").not("#txtField").prop("isadmin", true).prop("disabled", true);
 
 			if (Purchase.pstStatus === "opened" && reviewmode) {
 				if (!isadmin) $("button").addClass("disabled");

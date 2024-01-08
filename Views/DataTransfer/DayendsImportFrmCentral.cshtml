@@ -14,35 +14,39 @@
 {
     @Html.AntiForgeryToken() 
    
-<div class="row justify-content-end my-3 mx-1">
-	<button type="button" class="mx-3 btn btn-info" id="btnGetPath">@Resources.Resource.GetPath</button>
+<div class="d-flex my-3 mx-1">
+	<ul class="horizontallist">
+		<li><button type="button" class="mx-3 btn btn-info" id="btnGetPath">@Resources.Resource.GetPath</button></li>
 
-	<button type="button" class="btn btn-success mr-3 import" data-type="customer" id="btnImportCustomer">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Customer)</button>
-
-	<button type="button" class="btn btn-outline-success mr-3 import" data-type="supplier" id="btnImportSupplier">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Supplier)</button>
-	@if (ViewBag.DefaultCheckoutPortal.ToLower() == "abss")
-	{
-		<button type="button" class="btn btn-warning import mr-3" data-type="currency" id="btnImportCurrency">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Currency)</button>
-	}
-
-	@{
-		bool abssemployee = ConfigurationManager.AppSettings["AbssEmployeeMode"] == "1";
-		if (abssemployee)
+		<li><button type="button" class="btn btn-success mr-3 import" data-type="customer" id="btnImportCustomer">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Customer)</button></li>
+		<li><button type="button" class="btn btn-outline-success mr-3 import" data-type="supplier" id="btnImportSupplier">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Supplier)</button></li>
+		@if (ViewBag.DefaultCheckoutPortal.ToLower() == "abss")
 		{
-			<button type="button" class="btn btn-outline-success mr-3" data-type="employee" id="btnImportEmployee">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Employee)</button>
+			<li><button type="button" class="btn btn-warning import mr-3" data-type="currency" id="btnImportCurrency">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Currency)</button></li>
 		}
-	}
+		@{
+			bool abssemployee = ConfigurationManager.AppSettings["AbssEmployeeMode"] == "1";
+			if (abssemployee)
+			{
+				<li><button type="button" class="btn btn-outline-success mr-3" data-type="employee" id="btnImportEmployee">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Employee)</button></li>
+			}
+		}
 
-	<button type="button" class="btn btn-info mr-3 import" data-type="item" id="btnImportItem">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Item)</button>
-	<button type="button" class="btn btn-primary mr-3 import" data-type="quotation" id="btnImportQuotation">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Quotation)</button>
-	<button type="button" class="btn btn-success mr-3 import" data-type="accountreceivable" id="btnImportAR">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.AccountReceivable)</button>
+		<li><button type="button" class="btn btn-info mr-3 import" data-type="item" id="btnImportItem">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Item)</button></li>
+		<li><button type="button" class="btn btn-primary mr-3 import" data-type="quotation" id="btnImportQuotation">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Quotation)</button></li>
+		<li><button type="button" class="btn btn-success mr-3 import" data-type="accountreceivable" id="btnImportAR">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.AccountReceivable)</button></li>
+		<li><button type="button" class="btn btn-info mr-3 import" data-type="spp" id="btnImportSPP">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.SalesPersonPerformance)</button></li>
+		<li><button type="button" class="btn btn-warning mr-3 import" data-type="ci" id="btnImportCI">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.CustomerInvoices)</button></li>
 
-	@if (ViewBag.DefaultCheckoutPortal.ToLower() == "abss")
-	{
-		<button type="button" class="btn btn-outline-success mr-3 import" data-type="account" id="btnImportAccount">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.ItemAccount)</button>
-		<button type="button" class="btn btn-outline-warning import mr-3" data-type="job" id="btnImportJob">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Job4Myob)</button>
-		<button type="button" class="btn btn-outline-info import" data-type="tax" id="btnImportTax">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Tax)</button>
-	}
+
+		@if (ViewBag.DefaultCheckoutPortal.ToLower() == "abss")
+		{
+			<li><button type="button" class="btn btn-outline-success mr-3 import" data-type="account" id="btnImportAccount">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.ItemAccount)</button></li>
+			<li><button type="button" class="btn btn-outline-warning import mr-3" data-type="job" id="btnImportJob">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Job4Myob)</button></li>
+			<li><button type="button" class="btn btn-outline-info import" data-type="tax" id="btnImportTax">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Tax)</button></li>
+		}
+	</ul>
+	
 
 
 	<input type="hidden" id="filename" name="filename" />
