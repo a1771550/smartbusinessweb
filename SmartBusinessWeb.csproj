@@ -4468,6 +4468,8 @@
     <Content Include="Scripts\package.json" />
     <Content Include="Views\AbssReport\SPP.cshtml" />
     <Content Include="Views\AbssReport\CI.cshtml" />
+    <Content Include="Views\Shared\_VoidPaymentModal.cshtml" />
+    <Content Include="Views\Shared\_FileModal.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">

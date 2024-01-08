@@ -3,7 +3,6 @@ editmode = $("#journal_Id").val() != "";
 const journalno = $("#journal_JournalNumber").val()!.toString();
 const strdate = $("#strDate").val()!.toString();
 const dcaccerrtxt: string = $infoblk.data("dcaccerrtxt");
-let addMode = false;
 
 $(document).on("change", ".memo", function () {
 	let memo = $(this).val() as string;
@@ -58,7 +57,7 @@ $(document).on("change", ".amt", function () {
 				else if (x.CreditExTaxAmount == 0) x.CreditExTaxAmount = amt;
 				console.log("x:", x);
 			}
-			
+
 		});
 	}
 	//console.log("JournalLns#amtchange:", JournalLns);
@@ -76,7 +75,7 @@ $(document).on("change", ".amt", function () {
 
 	setAmts(totalDebit, totalCredit);
 
-	toggleAmt(currentY, false);
+	toggleJournalAmt(currentY, false);
 });
 function setAmts(totalDebit: number, totalCredit: number) {
 	$("#debitAmt").val(formatnumber(totalDebit));
@@ -93,7 +92,7 @@ function setAmts(totalDebit: number, totalCredit: number) {
 }
 
 function fillInJournal() {
-	Journal.Id = editmode? $("#journal_Id").val() as string:"";
+	Journal.Id = editmode ? $("#journal_Id").val() as string : "";
 	Journal.JournalNumber = journalno;
 	Journal.strDate = $("#strDate").val() as string;
 	Journal.Memo = $("#memo").val() as string;
@@ -162,16 +161,8 @@ function populateAccount4Journal(acno: string, acname: string) {
 		});
 	}
 }
-function setAccName(tr: JQuery<Element>, acno: string, acname: string) {
-	let idx = 0;
-	let $td = tr.find("td").eq(idx);
-	$td.find(".drpAccount").remove();
-	$td.html(`<input type="text" class="form-control acno" value="${acno}">`);
-	idx++;
-	tr.find("td").eq(idx).find(".acname").val(acname);
-}
 
-function toggleAmt(idx: number, enabled: boolean) {
+function toggleJournalAmt(idx: number, enabled: boolean) {
 	$tr = $(`#${gTblName} tbody tr`).eq(idx);
 	if (enabled) {
 		$tr.find("td").find(".amt").prop("readonly", !enabled);
@@ -192,18 +183,7 @@ function toggleAmt(idx: number, enabled: boolean) {
 	}
 
 }
-$(document).on("change", ".drpAccount", function () {
-	currentY = $(this).parent("td").parent("tr").index();
 
-	GetSetJournalLnPair();
-
-	AcClfID = $(this).val()!.toString();
-	if (AcClfID !== "") {
-		accountList = DicAcAccounts[AcClfID];
-		changeAccountPage(1);
-		toggleAmt(currentY, true);
-	}
-});
 $(document).on("dblclick", ".memo", function () {
 	openTextAreaModal();
 });
@@ -241,27 +221,7 @@ function setJournalPair() {
 	JournalLns.push(selectedJournalLn2!);
 }
 
-function populateDrpAccount(): string {
-	let selectedEQ = addMode ? "" : AcClfID && AcClfID == "EQ" ? "selected" : "";
-	let selectedEXP = addMode ? "" : AcClfID && AcClfID == "EXP" ? "selected" : "";
-	let selectedL = addMode ? "" : AcClfID && AcClfID == "L" ? "selected" : "";
-	let selectedOEXP = addMode ? "" : AcClfID && AcClfID == "OEXP" ? "selected" : "";
-	let selectedOI = addMode ? "" : AcClfID && AcClfID == "OI" ? "selected" : "";	
-	let selectedCOS = addMode ? "" : AcClfID && AcClfID == "COS" ? "selected" : "";
-	let selectedI = addMode ? "" : AcClfID && AcClfID == "I" ? "selected" : "";
-	let selectedA = addMode ? "" : AcClfID && AcClfID == "A" ? "selected" : "";
-	return `<select class="drpAccount form-control">
-			<option value="">- ${selecttxt} -</option>
-			<option value="A" ${selectedA}>${assetaccount4inventorytxt}</option>
-			<option value="L" ${selectedL}>${liabilitytxt}</option>
-			<option value="EQ" ${selectedEQ}>${equitytxt}</option>
-			<option value="I" ${selectedI}>${incomeaccount4tstxt}</option>
-			<option value="COS" ${selectedCOS}>${cosaccounttxt}</option>
-			<option value="EXP" ${selectedEXP}>${expensetxt}</option>
-			<option value="OI" ${selectedOI}>${otherincometxt}</option>
-			<option value="OEXP" ${selectedOEXP}>${otherexpensetxt}</option>
-		</select>`;
-}
+
 function addJournalRow() {
 	let html = "";
 	for (let i = 0; i <= 1; i++) {

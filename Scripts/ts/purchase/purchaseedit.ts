@@ -5,7 +5,6 @@ priceeditable = $infoblk.data("priceeditable") === "True";
 disceditable = $infoblk.data("disceditable") === "True";
 
 let purchaseitems: IPurchaseItem[] = [];
-
 $(document).on("click", "#btnSave", function () {
 	updatePaymentList();
 	console.log("PurchasePayments:", PurchasePayments);
@@ -21,6 +20,20 @@ $(document).on("click", "#btnSave", function () {
 		dataType: "json"
 	});
 });
+
+
+function populateAccount4Purchase(acno: string, acname: string) {
+	//console.log("acno:" + acno + ";acname:" + acname);
+	//console.log("currentY:" + currentY);
+	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
+	let Id = Number($tr.data("id"));
+
+	setAccName($tr, acno, acname);
+
+	PurchasePayments.forEach((x) => {
+		if (x.Id==Id) x.AccountNo = acno;
+	});
+}
 function toggleDblDisabled(this: any) {
 	$(this).prop("disabled", !$(this).prop("disabled"));
 	if (!$(this).prop("disabled")) $(this).trigger("focus");
@@ -35,7 +48,7 @@ $(document).on("change", ".pay", function () {
 	let Id: number = Number($amt.data("id"));
 	let amterrtxt = $infoblk.data("amterrtxt");
 	let amtcls: string = "text-danger";
-	let accountno: string = "";	
+	let accountno: string = "";
 
 	if (amt > 0) {
 
@@ -561,7 +574,9 @@ $(function () {
 		$target.empty().html(html);
 		if (Purchase.pstStatus === "opened" || Purchase.pstStatus == "partialreceival") {
 
-			$("input:not([type='file'])").prop("isadmin", true).prop("disabled", true);
+			gTblName = "tblPayment";
+
+			$("input:not([type='file'],[id='txtUserName'])").prop("isadmin", true).prop("disabled", true);
 			$("select").prop("disabled", true);
 			$("textarea").not("#txtField").prop("isadmin", true).prop("disabled", true);
 
@@ -574,13 +589,15 @@ $(function () {
 			$(".respond").data("code", receiptno);
 			setValidThruDatePicker();
 
+			DicAcAccounts = $infoblk.data("dicacaccounts");
+
 			//console.log("here");
 			if (!reviewmode && (Purchase.pstStatus.toLowerCase() == "order" || Purchase.pstStatus.toLowerCase() == "created")) addRow();
 
 			if (editmode) {
 				user = $infoblk.data("user");
 				addPayRow();
-			} 
+			}
 		}
 		else {
 			if (Purchase.pstStatus.toLowerCase() == "requesting")

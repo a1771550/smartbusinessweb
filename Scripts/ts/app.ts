@@ -7,30 +7,7 @@
 	abstract validform(): boolean;
 	abstract submitform();
 }
-const PriceIdx4Sales: number = 9;
-const PriceIdx4WsOrder: number = 5;
-const PriceIdx4WsInvoice: number = 10;
-const PriceIdx4PstOrder: number = 5;
-const PriceIdx4PstBill: number = 9;
 
-let user: ISysUser;
-let lastppId: number = 1;
-let current_page = 1;
-let records_per_page = 5;
-let frmId: string = "";
-let ismanager: boolean = false;
-let TransferList: Array<IStockTransfer> = [];
-let isLocal: boolean = false;
-let $infoblk: any;
-let customerId: number = 0;
-let batdelqtychange: boolean = false;
-let chkbatsnvtchange: boolean = false;
-let vtdelqtychange: boolean = false;
-let stockTransferCode: string = "";
-let isapprover: boolean = false;
-let isadmin: boolean = false;
-let minDate = "",
-	maxDate = "";
 let $appInfo = $("#appInfo");
 let $txtblk = $("#txtblk");
 let salesman: ICrmUser;
@@ -55,8 +32,12 @@ let forrejectedpo: boolean = false;
 let forapprovedpo: boolean = false;
 let forpassedtomanager: boolean = false;
 let recreateOnVoid: number = 0;
+let UserName: string = "";
+let NamesMatch: boolean = false;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
+const confirmvoidpaymenttxt: string = $txtblk.data("confirmvoidpaymenttxt");
+const void4paymenttxt: string = $txtblk.data("void4paymenttxt");
 const paginginfoformat: string = $txtblk.data("paginginfoformat");
 const reloadtxt: string = $txtblk.data("reloadtxt");
 const nexttxt: string = $txtblk.data("nexttxt");
@@ -117,6 +98,33 @@ const salestxt: string = $txtblk.data("salestxt");
 const recurringordertxt: string = $txtblk.data("recurringordertxt");
 const convertdaterequiredtxt: string = $txtblk.data("convertdaterequiredtxt");
 const convertdatetxt: string = $txtblk.data("convertdatetxt");
+
+let addMode = false;
+
+const PriceIdx4Sales: number = 9;
+const PriceIdx4WsOrder: number = 5;
+const PriceIdx4WsInvoice: number = 10;
+const PriceIdx4PstOrder: number = 5;
+const PriceIdx4PstBill: number = 9;
+
+let user: ISysUser;
+let lastppId: number = 1;
+let current_page = 1;
+let records_per_page = 5;
+let frmId: string = "";
+let ismanager: boolean = false;
+let TransferList: Array<IStockTransfer> = [];
+let isLocal: boolean = false;
+let $infoblk: any;
+let customerId: number = 0;
+let batdelqtychange: boolean = false;
+let chkbatsnvtchange: boolean = false;
+let vtdelqtychange: boolean = false;
+let stockTransferCode: string = "";
+let isapprover: boolean = false;
+let isadmin: boolean = false;
+let minDate = "",
+	maxDate = "";
 const currency: string =
 	$infoblk && $infoblk.data("currency") ? $infoblk.data("currency") : "$";
 const itemqtypromotiontxt: string = $txtblk.data("itemqtypromotiontxt");
@@ -558,7 +566,8 @@ let waitingModal: any,
 	poItemVariModal: any,
 	itemVariModal: any,
 	barcodeModal: any,
-	transferModal: any;
+	transferModal: any,
+	voidPaymentModal: any;
 
 let sysdateformat: string = "yyyy-mm-dd";
 //let jsdateformat: string = "dd/mm/yy";
@@ -3298,11 +3307,36 @@ function openBarCodeModal() {
 }
 function closeBarCodeModal() {
 	barcodeModal.dialog("close");
-	//todo: 8885010236425 replaced with current simple item...
-	//handleProductCheck();
-	//populateProductList();
+}
+
+function openVoidPaymentModal() {
+	voidPaymentModal.dialog("open");
+	voidPaymentModal.find("#txtUserName").trigger("focus");
+}
+function closeVoidPaymentModal() {
+	voidPaymentModal.dialog("close");
+	UserName = "";
+	NamesMatch = false;
 }
 function initModals() {
+	voidPaymentModal = $("#voidPaymentModal").dialog({
+		width: 500,
+		title: void4paymenttxt,
+		autoOpen: false,
+		modal: true,
+		buttons: [
+			{
+				text: savetxt,
+				class: "savebtn",
+				click: handleVoidPayment,
+			},
+			{
+				class: "secondarybtn",
+				text: canceltxt,
+				click: closeVoidPaymentModal
+			},
+		],
+	});
 	barcodeModal = $("#barcodeModal").dialog({
 		width: 400,
 		title: barcodetxt,
@@ -8096,7 +8130,7 @@ interface IPurchase {
 	// pstLocStock: string;
 	pstSalesLoc: string;
 	pstRemark: string;
-	pstPurchaseDate: Date;	
+	pstPurchaseDate: Date;
 	PurchaseItems: Array<IPurchaseItem>;
 	ReturnItems: Array<IReturnItem>;
 	PSCodeDisplay: string;
@@ -8220,7 +8254,7 @@ function getCurrentY(ele) {
 }
 let ReturnableItemList: Array<IPurchaseItem> = [];
 
-function handleQtyChange(this:any) {
+function handleQtyChange(this: any) {
 	currentY = getCurrentY(this);
 	let _qty: number = Number($(this).val());
 	// console.log("_qty:" + _qty);
@@ -8376,8 +8410,8 @@ $(document).on("change", ".taxpc", function () {
 });
 
 function handleTaxChange(this: any) {
-    currentY = getCurrentY(this);
-    updateRow(getRowPrice(), getRowDiscPc());
+	currentY = getCurrentY(this);
+	updateRow(getRowPrice(), getRowDiscPc());
 }
 
 function getDicItemOptionsVariByCodes(
@@ -8984,7 +9018,7 @@ function populateItemRow(proId: number | null = 0) {
 			.eq(idx)
 			.find(".price");
 		$price.off("change");
-			$price.data("price", price)
+		$price.data("price", price)
 			.val(formatnumber(price));
 		$price.on("change", handlePriceChange);
 
@@ -9019,7 +9053,7 @@ function populateItemRow(proId: number | null = 0) {
 				.val(formatnumber(taxrate));
 			$tax.on("change", handleTaxChange);
 
-				$tax.trigger("change");
+			$tax.trigger("change");
 			//idx++;
 		}
 
@@ -10742,7 +10776,7 @@ function getRowDiscPc(): number {
 		if (Purchase.pstStatus == "order" || Purchase.pstStatus == "created") {
 			_idx = PriceIdx4PstOrder + 1;
 		} else {
-			_idx = PriceIdx4PstBill + 1;			
+			_idx = PriceIdx4PstBill + 1;
 		}
 	}
 
@@ -10853,7 +10887,7 @@ function handleDiscChange(event: any) {
 			},
 		});
 	} else {
-		_price = Number($tr.find("td").eq(_idx).find(".price").val());		
+		_price = Number($tr.find("td").eq(_idx).find(".price").val());
 		updateRow(_price, _discpc);
 	}
 }
@@ -14071,7 +14105,7 @@ function fillInPurchase(
 		pstSupplierInvoice: <string>$("#pstSupplierInvoice").val(),
 		pstSalesLoc: <string>$("#drpLocation").val(),
 		pstAllLoc: $("#chkAllLoc").is(":checked"),
-		pstRemark: <string>$("#pstRemark").val(),		
+		pstRemark: <string>$("#pstRemark").val(),
 		PurchaseItems: [],
 		ReturnItems: [],
 		PSCodeDisplay: "",
@@ -14091,7 +14125,7 @@ function fillInPurchase(
 		UploadFileList: [],
 		DicItemOptions: Object.assign({}, dicItemOptions),
 		ItemVariationList: $infoblk.data("jsonitemvarilist"),
-		pstAmount:Number($("#pstAmount").val())
+		pstAmount: Number($("#pstAmount").val())
 	};
 }
 
@@ -14525,6 +14559,8 @@ $(document).on("change", ".radaccount", function () {
 	//console.log("here");
 	if (forjournal)
 		populateAccount4Journal($(this).data("acno"), $(this).data("acname"));
+	if (forpurchase)
+		populateAccount4Purchase($(this).data("acno"), $(this).data("acname"));
 	else {
 		itemAcId = $(this).data('acid');
 		//console.log("itemAcId:", itemAcId);
@@ -17865,6 +17901,7 @@ function fillInAddressList(): JQuery<HTMLElement> {
 	}
 	return $drpaddr;
 }
+let today = new Date();
 let tomorrow = new Date();
 tomorrow.setDate(tomorrow.getDate() + 1);
 let yesterday = new Date();
@@ -18162,17 +18199,20 @@ function getReceivedDate(receivedDateTime: string): string {
 }
 
 function initDatePicker(
-	eleId: string,
+	selector: string,
 	date: Date = new Date(),
 	showPastDates: boolean = true,
 	format: string = "",
 	setDate: boolean = true,
-	showToday: boolean = false
+	showToday: boolean = false,
+	isClass: boolean = false
 ) {
 	/*console.log("here");*/
 	if (format === "") format = jsdateformat;
 
-	$(`#${eleId}`).datepicker({
+	let $ele = isClass ? $(`.${selector}`) : $(`#${selector}`);
+
+	$ele.datepicker({
 		dateFormat: format,
 		beforeShow: function () {
 			setTimeout(function () {
@@ -18182,11 +18222,11 @@ function initDatePicker(
 	});
 
 	if (setDate) {
-		$(`#${eleId}`).datepicker("setDate", date);
+		$ele.datepicker("setDate", date);
 	}
 
 	if (!showPastDates) {
-		$(`#${eleId}`).datepicker("option", {
+		$ele.datepicker("option", {
 			minDate: showToday ? new Date() : date,
 			autoOpen: false,
 		});
@@ -19773,7 +19813,7 @@ $(document).on("click", ".saverecord", function () {
 				followUpRecord: record,
 			} as ICustomerInfo;
 			data.model = customerInfo;
-			url = cusId>0? "/Customer/SaveRecord":"";
+			url = cusId > 0 ? "/Customer/SaveRecord" : "";
 		}
 		if (forenquiry) {
 			enquiryInfo = {
@@ -19781,7 +19821,7 @@ $(document).on("click", ".saverecord", function () {
 				followUpRecord: record,
 			} as IEnquiryInfo;
 			data.model = enquiryInfo;
-			url = enqId!=""? "/Enquiry/SaveRecord":"";
+			url = enqId != "" ? "/Enquiry/SaveRecord" : "";
 		}
 		callback = infoCallBackOk;
 		$target = $target.parent(".row").parent("#followupRecordBlk");
@@ -19885,15 +19925,15 @@ interface IeTrack {
 }
 let eTrackAdvSearchItem: IeTrackAdvSearchItem = {} as IeTrackAdvSearchItem;
 function handleAddRecordClick(this: any) {
-    $target = $(this).parent("label").parent("#followupRecordBlk");
-    $target
-        .find(".recordblk")
-        .first()
-        .clone()
-        .removeClass("hide")
-        .appendTo("#followupRecordBlk .row")
-        .find(".record")
-        .trigger("focus");
+	$target = $(this).parent("label").parent("#followupRecordBlk");
+	$target
+		.find(".recordblk")
+		.first()
+		.clone()
+		.removeClass("hide")
+		.appendTo("#followupRecordBlk .row")
+		.find(".record")
+		.trigger("focus");
 }
 
 function confirmAdvancedSearch() {
@@ -21634,11 +21674,25 @@ interface IPurchasePayment {
 	supCode: string;
 	Amount: number;
 	AccountNo: string;
+	AccountName: string;
+	ChequeNo: string;
+	fileName: string | null;
 	ppDate: string;
 	JsCreateDate: string;
 	JsModifyDate: string;
-	ChequeNo: string;
 }
+
+$(document).on("click", ".btnVoid", function () {
+	if (forpurchase) {
+		openVoidPaymentModal();
+	}
+});
+
+$(document).on("click", ".btnUpload", function () {
+	if (forpurchase) {
+
+	}
+});
 
 function addPayRow() {
 	let Id: number = lastppId++;
@@ -21647,18 +21701,27 @@ function addPayRow() {
 	//console.log("Id:", Id);
 	let strdate: string = formatDate();
 	let strdatetime: string = formatDateTime();
-	//todo:
+
 	let html = `<tr data-id="${Id}">
 	<td class="text-center">${lastseq}</td>
-	<td class="text-center"><input type="text" class="form-control text-center chequeno" /></td>
-	<td class="text-center"><input type="text" class="form-control text-center accountno" /></td>
+	<td class="text-center"><input type="text" class="form-control text-center chequeno" maxlength="8" /></td>
+	<td class="text-center">${populateDrpAccount()}</td>`;
+	//<span class="accountno acname" data-accno="@payment.AccountNo">@payment.AccountName</span>
+	html +=`<td class="text-center"><span class="accountno acname"></span></td>
 	<td class="text-right"><input type="number" class="form-control pay text-right" data-id="${Id}" value="${formatnumber(0)}" /></td>
-	<td class="text-right"><input type="datetime" class="form-control datepicker" id="ppDate" name="ppDate" value="${strdate}" /></td>
+	<td class="text-right"><input type="datetime" class="form-control datepicker ppdate" name="ppDate" value="${strdate}" /></td>
+	<td class="text-left text-wrap"></td>
 	<td class="text-right">${strdatetime}</td>
 	<td class="text-center">${user.UserName}</td>
+	<td>
+									<button type="button" class="btn btn-success btnsmall80 btnUpload mr-2" data-id="${Id}" title="${uploadfiletxt}"><i class="fa fa-upload"></i></button>
+									<button type="button" class="btn btn-danger btnsmall80 btnVoid mr-2" data-id="${Id}" title="${void4paymenttxt}"><i class="fa fa-trash"></i></button>
+								</td>
 	`;
 	html += `</tr>`;
 	$("#tblPayment tbody").append(html).find("tr").eq(currentY).find("td").eq(1).find("");
+
+	initDatePicker("ppdate", today, true, "", true, false, true);
 }
 
 function updatePaymentList() {
@@ -21670,6 +21733,7 @@ function updatePaymentList() {
 		if (amt > 0) {
 			let chequeno: string = ($(e).find("td").eq(2).find(".chequeno").val() as string).trim();
 			PurchasePayments.find(x => x.Id == Id)!.Amount = amt;
+			//todo:updatePaymentList
 			//PurchasePayments.find(x => x.Id == Id)!.ppChequeNo = chequeno;
 		}
 	});
@@ -21682,3 +21746,84 @@ $(document).on("click", ".filelnk", function () {
 		h: "900"
 	});
 });
+
+function handleVoidPayment() {
+	if (NamesMatch) {
+		voidPaymentModal.find("span").addClass("hide");
+		if (forpurchase) {
+			//todo:handleVoidPayment
+			console.log("handleVoidPayment");
+		}
+	} else {
+		voidPaymentModal.find("span").removeClass("hide");
+	}
+
+}
+
+function populateDrpAccount(): string {
+	let selectedEQ = addMode ? "" : AcClfID && AcClfID == "EQ" ? "selected" : "";
+	let selectedEXP = addMode ? "" : AcClfID && AcClfID == "EXP" ? "selected" : "";
+	let selectedL = addMode ? "" : AcClfID && AcClfID == "L" ? "selected" : "";
+	let selectedOEXP = addMode ? "" : AcClfID && AcClfID == "OEXP" ? "selected" : "";
+	let selectedOI = addMode ? "" : AcClfID && AcClfID == "OI" ? "selected" : "";
+	let selectedCOS = addMode ? "" : AcClfID && AcClfID == "COS" ? "selected" : "";
+	let selectedI = addMode ? "" : AcClfID && AcClfID == "I" ? "selected" : "";
+	let selectedA = addMode ? "" : AcClfID && AcClfID == "A" ? "selected" : "";
+	return `<select class="drpAccount form-control flex">
+			<option value="">- ${selecttxt} -</option>
+			<option value="A" ${selectedA}>${assetaccount4inventorytxt}</option>
+			<option value="L" ${selectedL}>${liabilitytxt}</option>
+			<option value="EQ" ${selectedEQ}>${equitytxt}</option>
+			<option value="I" ${selectedI}>${incomeaccount4tstxt}</option>
+			<option value="COS" ${selectedCOS}>${cosaccounttxt}</option>
+			<option value="EXP" ${selectedEXP}>${expensetxt}</option>
+			<option value="OI" ${selectedOI}>${otherincometxt}</option>
+			<option value="OEXP" ${selectedOEXP}>${otherexpensetxt}</option>
+		</select>`;
+}
+$(document).on("change", ".drpAccount", function () {
+	currentY = $(this).parent("td").parent("tr").index();
+
+	if (forjournal) GetSetJournalLnPair();
+
+	AcClfID = $(this).val()!.toString();
+	if (AcClfID !== "") {
+		accountList = DicAcAccounts[AcClfID];
+		changeAccountPage(1);
+
+		if (forjournal) toggleJournalAmt(currentY, true);
+	}
+});
+$(document).on("change", "#txtUserName", function () {
+	UserName = $(this).val();
+	//console.log("name:", name);
+	if (UserName) {
+		if (forpurchase) {
+			NamesMatch = UserName == $(this).data("name")
+			if (NamesMatch) {
+				voidPaymentModal.find("span").addClass("hide");
+			} else {
+				voidPaymentModal.find("span").removeClass("hide");
+			}
+		}
+	} else {
+		voidPaymentModal.find("span").removeClass("hide");
+	}
+});
+
+function setAccName(tr: JQuery<Element>, acno: string, acname: string) {
+	let idx = forjournal ? 0 : 2;
+
+	if (forjournal) {
+		let $td = tr.find("td").eq(idx);
+		$td.find(".drpAccount").remove();
+		$td.html(`<input type="text" class="form-control acno" value="${acno}">`);
+	}
+
+	idx++;
+	//console.log("idx:" + idx);
+	//console.log("acname:", tr.find("td").eq(idx).find(".acname"));
+	if(forjournal)
+		tr.find("td").eq(idx).find(".acname").val(acname);
+	if (forpurchase) tr.find("td").eq(idx).find(".acname").text(acname);
+}

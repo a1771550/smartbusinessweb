@@ -271,8 +271,8 @@
 @Html.AntiForgeryToken()
 <div id="infoblk" data-phonelist="@phonelist" data-maillist="@maillist" data-customernamerequired="@Resources.Resource.CustomerNameRequired" data-customerphonerequired="@Resources.Resource.CustomerPhoneRequired" data-customerphoneduplicatederr="@Resources.Resource.CustomerPhoneDuplicatedErr" data-returnurl="Customer/Edit" data-edit="@edit" data-followupdaterequired="@Resources.Resource.FollowUpDateRequired" data-customerid="@Model.cusCustomerID" data-apid="@Model.AccountProfileId" data-maxconamelength="@ConfigurationManager.AppSettings["MaxCoNameLength"]" data-contactrequired="@Resources.Resource.ContactRequired" data-duplicatedemailalert="@Resources.Resource.DuplicatedEmailAlert" data-ipcountry="@Model.IpCountry" data-selectatleastoneitemtxt="@Resources.Resource.SelectAtLeastOneItemRequired" data-firstnamerequired="@Resources.Resource.FirstNameRequired" data-plsenteralldropdownattrvals="@plsentertxt" data-enablecrm="@Model.enableCRM" data-formaterrwarning="@Resources.Resource.FormatErrWarning" data-salecommentrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.SaleComment)"></div>
 
-<link href="~/Scripts/jquery_editable_select/dist/jquery-editable-select.min.css" rel="stylesheet">
-<script src="~/Scripts/jquery_editable_select/dist/jquery-editable-select.js"></script>
+@*<link href="~/Scripts/jquery_editable_select/dist/jquery-editable-select.min.css" rel="stylesheet">
+<script src="~/Scripts/jquery_editable_select/dist/jquery-editable-select.js"></script>*@
 <script src="~/Scripts/ts/js/customer/pgcustomeredit.js?v=@rand"></script>
 
 

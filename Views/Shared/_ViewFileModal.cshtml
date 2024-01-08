@@ -1,11 +1,11 @@
 ﻿@{
-    List<string> imglist = ViewData["imglist"] as List<string>;
+    List<string> imglist = ViewData["imglist"]==null?null: ViewData["imglist"] as List<string>;
     List<string> filelist = ViewData["filelist"] as List<string>;
 }
 
 <div id="viewFileModal">
     <div class="container">        
-        @if (imglist.Count > 0)
+        @if (imglist!=null && imglist.Count > 0)
         {          
 
         <ul class="nostylelist">
