@@ -5,7 +5,7 @@ $(document).on("dblclick", "#SalesPersonName", function () {
 });
 function _validenquiryform(): boolean {
 
-    let msg: string = '';   
+	let msg: string = '';
 
 	let $frm = $('#enFrom');
 	if ($frm.val() === '') {
@@ -21,7 +21,7 @@ function _validenquiryform(): boolean {
 	if ($email.val() === '') {
 		msg += `${requiredinputtxt.replace('{0}', emailtxt)} <br>`;
 		emailerr = true;
-	} else if(!validateEmail($email.val())){
+	} else if (!validateEmail($email.val())) {
 		msg += `${emailformaterr} <br>`;
 		emailerr = true;
 	}
@@ -39,7 +39,7 @@ function _validenquiryform(): boolean {
 		msg += `${requiredinputtxt.replace('{0}', contacttxt)} <br>`;
 	}
 
-    if (msg !== '') {
+	if (msg !== '') {
 		$.fancyConfirm({
 			title: '',
 			message: msg,
@@ -65,31 +65,31 @@ function _validenquiryform(): boolean {
 					}
 					else if ($contact.val() === '') {
 						$contact.trigger("focus");
-					}					
+					}
 				}
 			}
-		});	
-    }
-    return msg === '';
+		});
+	}
+	return msg === '';
 }
 
 $(document).on('click', '#btnSave', function () {
 	fillInEnquiry();
-    if (_validenquiryform()) {		
+	if (_validenquiryform()) {
 		//console.log('enquiry:', enquiry);
 		//return false;
 		$.ajax({
 			type: "POST",
 			url: '/Enquiry/Edit',
-			data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val(),model:enquiry },
+			data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val(), model: enquiry },
 			success: function (data) {
 				if (data) {
 					window.location.href = '/Enquiry/Index';
-                }
+				}
 			},
 			dataType: 'json'
-		});	
-    }
+		});
+	}
 });
 
 $(function () {
@@ -97,9 +97,16 @@ $(function () {
 	initModals();
 
 	uploadsizelimit = parseInt($infoblk.data("uploadsizelimit"));
-	uploadsizelimitmb = parseInt($infoblk.data("uploadsizelimitmb"));	
+	uploadsizelimitmb = parseInt($infoblk.data("uploadsizelimitmb"));
 
-	fillInEnquiry();	
+	fillInEnquiry();
+
+	if (enquiry.Id == "") {
+		$("#addRecord").off("click");
+	} else {
+		$("#addRecord").on("click", handleAddRecordClick);
+	}
+
 	assignEnqIdList.push($("#Id").val() as string);
 
 	$('#enFrom').trigger("focus");

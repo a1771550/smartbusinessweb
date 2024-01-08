@@ -9,11 +9,11 @@ let purchaseitems: IPurchaseItem[] = [];
 $(document).on("click", "#btnSave", function () {
 	updatePaymentList();
 	console.log("PurchasePayments:", PurchasePayments);
-	//return;
+	return;
 	$.ajax({
 		//contentType: 'application/json; charset=utf-8',
 		type: "POST",
-		url: "/Purchase/PurchasePayment",
+		url: "/Purchase/EditPayments",
 		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), PurchasePayments },
 		success: function (data) {
 			if (data) window.location.href = "/Purchase/PurchaseOrderList";
@@ -29,12 +29,13 @@ $(document).on("dblclick", ".pay", function () {
 	toggleDblDisabled.call(this);
 });
 $(document).on("change", ".pay", function () {
+	currentY = $(this).parent("td").parent("tr").index();
 	let $amt = $(this);
 	let amt: number = Number($amt.val());
 	let Id: number = Number($amt.data("id"));
 	let amterrtxt = $infoblk.data("amterrtxt");
 	let amtcls: string = "text-danger";
-	let accountno: string = "";//todo:
+	let accountno: string = "";	
 
 	if (amt > 0) {
 

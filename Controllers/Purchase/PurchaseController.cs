@@ -21,7 +21,19 @@ namespace SmartBusinessWeb.Controllers.Purchase
     [CustomAuthenticationFilter]
     public class PurchaseController : BaseController
     {
-        [HttpPost]
+		[HandleError]
+		[CustomAuthorize("purchase", "boss", "admin", "superadmin")]
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public JsonResult EditPayments(List<PurchasePaymentModel> PurchasePayments)
+		{
+			string msg = string.Format(Resources.Resource.SavedFormat, Resources.Resource.Payment);
+			PurchaseEditModel.EditPayments(PurchasePayments);
+			return Json(msg);
+		}
+
+
+		[HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult UploadFile(string filecode)
         {

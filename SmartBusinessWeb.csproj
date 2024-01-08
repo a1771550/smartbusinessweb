@@ -2746,6 +2746,7 @@
     <Content Include="Content\printreceipt.css" />
     <Content Include="Content\printthis\normalize.css" />
     <Content Include="Content\printthis\skeleton.css" />
+    <Content Include="Content\purchase\edit.css" />
     <Content Include="Content\Receipt.css" />
     <Content Include="Content\reports.css" />
     <Content Include="Content\pos\Sales.css" />

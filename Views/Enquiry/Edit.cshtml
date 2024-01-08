@@ -120,68 +120,81 @@
 		@Html.HiddenFor(model => model.FollowUpDateInfo.Id)
 	</div>
 
-
-	<div id="followupRecordBlk" class="form-group">
-		<label>@string.Format(Resources.Resource.RecordsFormat, Resources.Resource.FollowUp) <span id="addRecord" class="fa fa-plus small text-primary pointer"></span></label>
-		<div class="row">
-			@if (Model.FollowUpRecordList != null && Model.FollowUpRecordList.Count > 0)
-			{
-				foreach (var record in Model.FollowUpRecordList)
+	@if (!string.IsNullOrEmpty(Model.Id))
+	{
+		<div id="followupRecordBlk" class="form-group" data-count="@Model.FollowUpRecordList.Count">
+			<label>@string.Format(Resources.Resource.RecordsFormat, Resources.Resource.FollowUp) <span id="addRecord" class="fa fa-plus small text-primary pointer"></span></label>
+			<div class="row">
+				@if (Model.FollowUpRecordList != null && Model.FollowUpRecordList.Count > 0)
 				{
-					<div class="displayblk col-12 col-sm-4 mb-1" data-enid="@record.enId" data-id="@record.Id">
-						<div class="card">
-							<div class="text-right small"><span class="fa fa-edit text-info record pointer mr-2"></span><span class="fa fa-close text-danger record pointer"></span></div>
-							<div class="card-body">
-								<div class="txtarea" data-id="@record.Id">
-									<p class="recorddisplay">@record.followUpRecord</p>
-									<input type="text" class="form-control recordentry hide" data-record="@record.followUpRecord" onchange="handleRecordChange(this);" />
-									<span class="small d-inline-block lastedited">@string.Format(Resources.Resource.LastEditedByFormat, record.ModifiedBy, record.ModifyTimeDisplay)</span>
+					foreach (var record in Model.FollowUpRecordList)
+					{
+						<div class="displayblk col-12 col-sm-4 mb-1" data-enid="@record.enId" data-id="@record.Id">
+							<div class="card">
+								<div class="text-right small"><span class="fa fa-edit text-info record pointer mr-2"></span><span class="fa fa-close text-danger record pointer"></span></div>
+								<div class="card-body">
+									<div class="txtarea" data-id="@record.Id">
+										<p class="recorddisplay">@record.followUpRecord</p>
+										<input type="text" class="form-control recordentry hide" data-record="@record.followUpRecord" onchange="handleRecordChange(this);" />
+										<span class="small d-inline-block lastedited">@string.Format(Resources.Resource.LastEditedByFormat, record.ModifiedBy, record.ModifyTimeDisplay)</span>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
+					}
 				}
-			}
 
-			<div class="displayblk template col-12 col-sm-4 mb-1 hide">
-				<div class="card">
-					<div class="text-right small"><span class="fa fa-edit text-info record pointer mr-2"></span><span class="fa fa-close text-danger record pointer"></span></div>
-					<div class="card-body">
-						<div class="txtarea">
-							<p class="recorddisplay"></p>
-							<input type="text" class="form-control recordentry hide" data-record="" onchange="handleRecordChange(this);" />
-							<span class="small d-inline-block lastedited">@Resources.Resource.LastEditedByFormat</span>
+				<div class="displayblk template col-12 col-sm-4 mb-1 hide">
+					<div class="card">
+						<div class="text-right small"><span class="fa fa-edit text-info record pointer mr-2"></span><span class="fa fa-close text-danger record pointer"></span></div>
+						<div class="card-body">
+							<div class="txtarea">
+								<p class="recorddisplay"></p>
+								<input type="text" class="form-control recordentry hide" data-record="" onchange="handleRecordChange(this);" />
+								<span class="small d-inline-block lastedited">@Resources.Resource.LastEditedByFormat</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="recordblk col-12 col-sm-4 hide" data-enqid="@Model.Id">
+					<div class="card">
+						<div class="card-body">
+							<div class="txtarea">
+								<textarea class="form-control record" name="EnquiryInfo_followUpRecord" rows="5" cols="30"></textarea>
+							</div>
+							<div class="buttons my-2">
+								<button type="button" class="btn btn-secondary saverecord" data-id="@Model.Id"><span class="small">@Resources.Resource.Confirm</span></button>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 
-			<div class="recordblk col-12 col-sm-4 hide" data-enqid="@Model.Id">
-				<div class="card">
-					<div class="card-body">
-						<div class="txtarea">
-							<textarea class="form-control record" name="EnquiryInfo_followUpRecord" rows="5" cols="30"></textarea>
-						</div>
-						<div class="buttons">
-							<button type="button" class="btn btn-secondary saverecord" data-id="@Model.Id"><span class="small">@Resources.Resource.Confirm</span></button>
-						</div>
-					</div>
-				</div>
-			</div>
 		</div>
 
-	</div>
 
+		<div class="row mx-2">
+			<div class="form-group">
+				<button type="button" class="btn btn-warning" id="btnFile">@Resources.Resource.UploadFile</button>
+				@if (Model.FileList.Count > 0)
+				{
+					<ul class="my-3 horizontallist" style="border: 1px solid #b2adad; border-radius: .3rem; padding:.3rem;">
+						@foreach (var file in Model.FileList)
+						{
+							<li>@Html.Raw(file)</li>
+						}
+					</ul>
+				}
+			</div>
+		</div>
+		
 
+	}
 
-	<div class="form-group">
-		<button type="button" class="btn btn-warning" id="btnFile">@Resources.Resource.UploadFile</button>
-		<button type="button" class="btn btn-primary ml-2 @btnviewcls" id="btnViewFile">@Resources.Resource.ViewFile</button>
-	</div>
 	<div class="form-group">
 		<button id="btnSave" type="button" role="button" class="btn btn-success">@Resources.Resource.Save</button>
 	</div>
-
 
 </div>
 }
@@ -204,4 +217,3 @@
 <script src="~/Scripts/ts/js/crm/enquiry/enquiry_edit.js?v=@rand"></script>
 
 @Html.Partial("_UploadFileModal", null, new ViewDataDictionary { { "uploadUrl", "/Enquiry/UploadFile" } })
-@Html.Partial("_ViewFileModal", null, new ViewDataDictionary { { "imglist", Model.ImgList }, { "filelist", Model.FileList } })

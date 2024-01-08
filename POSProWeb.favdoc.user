@@ -431,6 +431,11 @@
           <path>Content\enquiry.css</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\enquiry.css</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>purchase_edit.css</name>
+          <path>Content\purchase\edit.css</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\purchase\edit.css</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
   </folders>

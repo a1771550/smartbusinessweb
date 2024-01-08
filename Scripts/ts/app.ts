@@ -6630,6 +6630,8 @@ function fillInEnquiry() {
 			.split(",");
 		$("#btnViewFile").removeClass("hide");
 	}
+
+	//if (enquiry.Id != "") $(".btnsaverecord").removeClass("disabled");
 }
 
 interface IEnquiry {
@@ -19771,7 +19773,7 @@ $(document).on("click", ".saverecord", function () {
 				followUpRecord: record,
 			} as ICustomerInfo;
 			data.model = customerInfo;
-			url = "/Customer/SaveRecord";
+			url = cusId>0? "/Customer/SaveRecord":"";
 		}
 		if (forenquiry) {
 			enquiryInfo = {
@@ -19779,7 +19781,7 @@ $(document).on("click", ".saverecord", function () {
 				followUpRecord: record,
 			} as IEnquiryInfo;
 			data.model = enquiryInfo;
-			url = "/Enquiry/SaveRecord";
+			url = enqId!=""? "/Enquiry/SaveRecord":"";
 		}
 		callback = infoCallBackOk;
 		$target = $target.parent(".row").parent("#followupRecordBlk");
@@ -19793,17 +19795,7 @@ $(document).on("click", ".saverecord", function () {
 		});
 	}
 });
-$(document).on("click", "#addRecord", function () {
-	$target = $(this).parent("label").parent("#followupRecordBlk");
-	$target
-		.find(".recordblk")
-		.first()
-		.clone()
-		.removeClass("hide")
-		.appendTo("#followupRecordBlk .row")
-		.find(".record")
-		.trigger("focus");
-});
+
 
 interface IInfoBase {
 	Id: any;
@@ -19892,6 +19884,18 @@ interface IeTrack {
 	statuscls: string | null;
 }
 let eTrackAdvSearchItem: IeTrackAdvSearchItem = {} as IeTrackAdvSearchItem;
+function handleAddRecordClick(this: any) {
+    $target = $(this).parent("label").parent("#followupRecordBlk");
+    $target
+        .find(".recordblk")
+        .first()
+        .clone()
+        .removeClass("hide")
+        .appendTo("#followupRecordBlk .row")
+        .find(".record")
+        .trigger("focus");
+}
+
 function confirmAdvancedSearch() {
 	if (advancedSearchModal.find(".attrval").val() !== "") {
 		closeAdvancedSearchModal();
@@ -21633,7 +21637,7 @@ interface IPurchasePayment {
 	ppDate: string;
 	JsCreateDate: string;
 	JsModifyDate: string;
-	//ppChequeNo: string;
+	ChequeNo: string;
 }
 
 function addPayRow() {
@@ -21643,6 +21647,7 @@ function addPayRow() {
 	//console.log("Id:", Id);
 	let strdate: string = formatDate();
 	let strdatetime: string = formatDateTime();
+	//todo:
 	let html = `<tr data-id="${Id}">
 	<td class="text-center">${lastseq}</td>
 	<td class="text-center"><input type="text" class="form-control text-center chequeno" /></td>
@@ -21653,7 +21658,7 @@ function addPayRow() {
 	<td class="text-center">${user.UserName}</td>
 	`;
 	html += `</tr>`;
-	$("#tblPayment tbody").append(html);
+	$("#tblPayment tbody").append(html).find("tr").eq(currentY).find("td").eq(1).find("");
 }
 
 function updatePaymentList() {
@@ -21669,3 +21674,11 @@ function updatePaymentList() {
 		}
 	});
 }
+$(document).on("click", ".filelnk", function () {
+	popupCenter({
+		url: $(this).data("lnk"),
+		title: `${$(this).data("name")}`,
+		w: "1080",
+		h: "900"
+	});
+});
