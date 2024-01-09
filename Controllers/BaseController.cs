@@ -38,7 +38,8 @@ namespace SmartBusinessWeb.Controllers
         protected string ReceiptLogoDir { get { return ComInfo == null ? ConfigurationManager.AppSettings["ReceiptLogoDir"]: ComInfo.ReceiptLogoDir; } }
         protected string UploadsWSDir { get { return ConfigurationManager.AppSettings["UploadsWSDir"]; } }
         protected string UploadsPODir { get { return ConfigurationManager.AppSettings["UploadsPODir"]; } }
-        protected string UploadsCusDir { get { return ConfigurationManager.AppSettings["UploadsCusDir"]; } }
+		protected string UploadsPoPaysDir { get { return ConfigurationManager.AppSettings["UploadsPoPaysDir"]; } }
+		protected string UploadsCusDir { get { return ConfigurationManager.AppSettings["UploadsCusDir"]; } }
         protected string UploadsSupDir { get { return ConfigurationManager.AppSettings["UploadsSupDir"]; } }
         protected string UploadsEnqDir { get { return ConfigurationManager.AppSettings["UploadsEnqDir"]; } }
         protected DateTime DateTime { get { return DateTime.Now; } }

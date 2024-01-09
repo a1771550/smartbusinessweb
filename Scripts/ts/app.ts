@@ -36,6 +36,8 @@ let UserName: string = "";
 let NamesMatch: boolean = false;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
+//const searchcustxt:string = $txtblk.data("searchcustxt");
+const paymentinfoerrtxt: string = $txtblk.data("paymentinfoerrtxt");
 const confirmvoidpaymenttxt: string = $txtblk.data("confirmvoidpaymenttxt");
 const void4paymenttxt: string = $txtblk.data("void4paymenttxt");
 const paginginfoformat: string = $txtblk.data("paginginfoformat");
@@ -109,6 +111,7 @@ const PriceIdx4PstBill: number = 9;
 
 let user: ISysUser;
 let lastppId: number = 1;
+let ppId: number = 1;
 let current_page = 1;
 let records_per_page = 5;
 let frmId: string = "";
@@ -706,6 +709,8 @@ let forsales: boolean = false;
 let forsimplesales: boolean = false;
 let fordeposit: boolean = false;
 let forpurchase: boolean = false;
+let forpayments: boolean = false;
+let validPayment: boolean = false;
 let fordayends: boolean = false;
 let forstockin: boolean = false;
 let forjournal: boolean = false;
@@ -2337,6 +2342,62 @@ const GetPaymentsInfo = () => {
 	return { couponamt: _couponamt, totalpay: _totalpay };
 };
 
+$(document).on("change", ".pay", function () {
+	currentY = $(this).parent("td").parent("tr").index();
+	let $amt = $(this);
+	let amt: number = Number($amt.val());
+	//let Id: number = Number($amt.data("id"));
+	let amterrtxt = $infoblk.data("amterrtxt");
+	let amtcls: string = "text-danger";
+	//let accountno: string = "";
+	//console.log("amt:" + amt);
+
+	if (forpurchase) {
+		if (amt > 0) {
+
+			if (amt > Purchase.pstAmount) {
+				amtErrWarning();
+				return;
+			}
+
+			let totalamt: number = 0;			
+			$(`#${gTblName} tbody tr`).each(function (i, e) {
+				$amt = $(e).find("td").eq(4).find(".pay");
+				let amt: number = Number($amt.val());
+				totalamt += amt;
+				$amt.val(formatnumber(amt));
+				//$(e).find("td").last().find(".owed").val(Number(Purchase.pstAmount - amt));
+			});
+			//console.log("totalamt:", totalamt);
+			if (totalamt > Purchase.pstAmount) {
+				amtErrWarning();
+				return;
+			}
+
+			purchasePayment.Amount = amt;		
+			//console.log("Purchase.pstAmount:" + Purchase.pstAmount + ";totalamt:" + totalamt);
+			let totalowed: number = Purchase.pstAmount - totalamt;
+			//console.log("totalowed:", totalowed);
+			if (totalowed <= 0) amtcls = "text-success";
+			$("#totalowed").removeClass("amtcls").addClass(amtcls).text(formatnumber(totalowed));
+		}
+	}
+	function amtErrWarning() {
+		$.fancyConfirm({
+			title: "",
+			message: amterrtxt,
+			shownobtn: false,
+			okButton: oktxt,
+			noButton: notxt,
+			callback: function (value) {
+				if (value) {
+					$amt.trigger("focus");
+				}
+			}
+		});
+	}
+});
+
 $(document).on("change", ".chkpayment", function () {
 	paymenttypechange = false;
 	chkchange = true;
@@ -3040,7 +3101,8 @@ function openUploadFileModal() {
 }
 function closeUploadFileModal() {
 	uploadFileModal.dialog("close");
-	window.location.reload();
+	if(!forpayments)
+		window.location.reload();
 }
 
 function openViewFileModal() {
@@ -21667,8 +21729,10 @@ interface ISimpleContact {
 	Message: string;
 }
 
+let purchasePayment: IPurchasePayment;
 let PurchasePayments: IPurchasePayment[] = [];
 interface IPurchasePayment {
+    JsOpTime: string;
 	Id: number;
 	pstCode: string;
 	supCode: string;
@@ -21678,8 +21742,10 @@ interface IPurchasePayment {
 	ChequeNo: string;
 	fileName: string | null;
 	ppDate: string;
+	ppStatus: string;
 	JsCreateDate: string;
 	JsModifyDate: string;
+	AcClfID: string;
 }
 
 $(document).on("click", ".btnVoid", function () {
@@ -21690,13 +21756,16 @@ $(document).on("click", ".btnVoid", function () {
 
 $(document).on("click", ".btnUpload", function () {
 	if (forpurchase) {
-
+		ppId = Number($(this).data("id"));
+		getPurchasePayment();
+		if(purchasePayment)
+			openUploadFileModal();
 	}
 });
 
 function addPayRow() {
-	let Id: number = lastppId++;
-	$tr = $("#tblPayment tbody tr").last();
+	let Id: number = lastppId+1;
+	$tr = $(`#${gTblName} tbody tr`).last();
 	let lastseq = ($tr.length) ? Number($tr.find("td").first().text()) + 1 : 1;
 	//console.log("Id:", Id);
 	let strdate: string = formatDate();
@@ -21714,29 +21783,57 @@ function addPayRow() {
 	<td class="text-right">${strdatetime}</td>
 	<td class="text-center">${user.UserName}</td>
 	<td>
-									<button type="button" class="btn btn-success btnsmall80 btnUpload mr-2" data-id="${Id}" title="${uploadfiletxt}"><i class="fa fa-upload"></i></button>
-									<button type="button" class="btn btn-danger btnsmall80 btnVoid mr-2" data-id="${Id}" title="${void4paymenttxt}"><i class="fa fa-trash"></i></button>
+	<button type="button" class="btn btn-success btnsmall80 btnSave mr-1" data-id="${Id}" title="${$infoblk.data("savepaymenttxt")}"><i class="fa fa-save"></i></button>
+									<button type="button" class="btn btn-warning btnsmall80 btnUpload mr-1 disabled" data-id="${Id}" title="${uploadfiletxt}"><i class="fa fa-upload"></i></button>
+									<button type="button" class="btn btn-danger btnsmall80 btnVoid mr-1 disabled" data-id="${Id}" title="${void4paymenttxt}"><i class="fa fa-trash"></i></button>
 								</td>
 	`;
 	html += `</tr>`;
-	$("#tblPayment tbody").append(html).find("tr").eq(currentY).find("td").eq(1).find("");
+
+	$(`#${gTblName} tbody`).append(html);
 
 	initDatePicker("ppdate", today, true, "", true, false, true);
+
+	ppId = Id;
+	purchasePayment = {Id} as IPurchasePayment;
 }
 
-function updatePaymentList() {
-	$("#tblPayment tbody tr").each(function (i, e) {
-		let Id: number = Number($(e).data("id"));
-		console.log("Id:" + Id);
-		let $amt = $(e).find("td").eq(1).find(".pay");
-		let amt: number = Number($amt.val());
-		if (amt > 0) {
-			let chequeno: string = ($(e).find("td").eq(2).find(".chequeno").val() as string).trim();
-			PurchasePayments.find(x => x.Id == Id)!.Amount = amt;
-			//todo:updatePaymentList
-			//PurchasePayments.find(x => x.Id == Id)!.ppChequeNo = chequeno;
-		}
-	});
+function updateSelectedPayment() {
+	if (forpurchase) {
+
+		getPurchasePayment(); 
+		
+		$(`#${gTblName} tbody tr`).each(function (i, e) {
+			let Id: number = Number($(e).data("id"));
+			//console.log("Id:" + Id);			
+			let idx = 1;
+			let chequeno: string = $(e).find("td").eq(idx).find(".chequeno").val() as string;
+			idx += 2;
+			let acno: string = $(e).find("td").eq(idx).find(".acname").data("acno") as string;
+			idx++;
+			let amt: number = Number($(e).find("td").eq(idx).find(".pay").val());
+			idx++;
+			let jsdate: string = $(e).find("td").eq(idx).find(".ppdate").val() as string;
+			idx += 2;
+			let jstime: string = $(e).find("td").eq(idx).text();
+			if (chequeno != "" && acno != "" && amt > 0 && purchasePayment.Id == Id)
+			{				
+				purchasePayment.pstCode = Purchase.pstCode;
+				purchasePayment.supCode = Purchase.supCode;
+				purchasePayment.ChequeNo = chequeno.trim();
+				purchasePayment.AccountNo = acno.trim();
+				purchasePayment.Amount = Number(amt);
+				purchasePayment.JsCreateDate = jsdate;
+				purchasePayment.JsOpTime = jstime;
+
+				$(e).find("td").last().find(".btnSave").removeClass("disabled");
+				validPayment = true;
+			} else {
+				$(e).find("td").last().find(".btnSave").addClass("disabled");
+				validPayment = false;
+			}
+		});
+	}	
 }
 $(document).on("click", ".filelnk", function () {
 	popupCenter({
@@ -21746,6 +21843,15 @@ $(document).on("click", ".filelnk", function () {
 		h: "900"
 	});
 });
+
+function getPurchasePayment() {
+    if (PurchasePayments.length > 0) {
+        purchasePayment = PurchasePayments.find(x => x.Id == ppId)!;
+    } else {
+        if (!purchasePayment)
+            purchasePayment = { Id: ppId } as IPurchasePayment;
+    }
+}
 
 function handleVoidPayment() {
 	if (NamesMatch) {
@@ -21825,5 +21931,33 @@ function setAccName(tr: JQuery<Element>, acno: string, acname: string) {
 	//console.log("acname:", tr.find("td").eq(idx).find(".acname"));
 	if(forjournal)
 		tr.find("td").eq(idx).find(".acname").val(acname);
-	if (forpurchase) tr.find("td").eq(idx).find(".acname").text(acname);
+	if (forpurchase) {
+	/*	let acnameno: string = acname.concat(` (${acno})`);*/
+		tr.find("td").eq(idx).find(".acname").text(acname.concat(` (${acno})`)).data("acno", acno);
+		purchasePayment.AccountNo = acno;
+	}
+}
+function handleUploadedFile(result:any) {
+	closeWaitingModal();
+	$("#uploadmsg").removeClass("hide").html(result.msg);
+	if (forpurchase) {
+		if (forpayments) {
+			let filelist: string[] = [];
+			if (purchasePayment.fileName === "") purchasePayment.fileName = result.filepath;
+			else {
+				filelist = purchasePayment.fileName!.split(",");
+				filelist.push(result.filepath);
+				purchasePayment.fileName = filelist.join();				
+			}
+
+			if (purchasePayment.fileName) {
+				$(`${gTblName} tbody tr`).each(function (i, e) {
+					if (Number($(e).data("id")) == purchasePayment.Id) {
+						//todo:
+						//$(e).find("td").eq("")
+					}
+				});
+			}
+		}
+	}
 }

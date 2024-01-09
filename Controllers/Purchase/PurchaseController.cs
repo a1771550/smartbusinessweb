@@ -25,13 +25,80 @@ namespace SmartBusinessWeb.Controllers.Purchase
 		[CustomAuthorize("purchase", "boss", "admin", "superadmin")]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public JsonResult EditPayments(List<PurchasePaymentModel> PurchasePayments)
+		public JsonResult EditPayment(PurchasePaymentModel purchasePayment)
 		{
 			string msg = string.Format(Resources.Resource.SavedFormat, Resources.Resource.Payment);
-			PurchaseEditModel.EditPayments(PurchasePayments);
+			PurchaseEditModel.EditPayment(purchasePayment);
 			return Json(msg);
 		}
 
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult UploadFile4Payment(long Id)
+		{
+			if (Request.Files.Count > 0)
+			{
+				try
+				{
+					List<string> filenamelist = new List<string>();
+					string filedir = string.Format(UploadsPoPaysDir, Id);//Uploads/PO/{0}
+					string dir = "";
+					
+					string filename = string.Empty;
+					HttpFileCollectionBase files = Request.Files;
+					for (int i = 0; i < files.Count; i++)
+					{
+						filename = Path.GetFileName(Request.Files[i].FileName);
+						HttpPostedFileBase _file = files[i];
+						FileInfo fi = new FileInfo(filename);
+						//ext = fi.Extension;
+						dir = string.Concat(@"~/", filedir);
+						var absdir = Server.MapPath(dir);
+						if (!Directory.Exists(absdir))
+						{
+							Directory.CreateDirectory(absdir);
+						}
+						//string fname = Path.Combine(absdir, string.Format(file, ext));
+						string fname = Path.Combine(absdir, filename);
+						_file.SaveAs(fname);
+						filenamelist.Add(filename);
+					}
+					using (var context = new PPWDbContext(Session["DBName"].ToString()))
+					{
+						PurchasePayment purchase = context.PurchasePayments.FirstOrDefault(x => x.Id==Id);
+						if (purchase != null)
+						{
+							if (string.IsNullOrEmpty(purchase.fileName))
+							{
+								purchase.fileName = filenamelist.FirstOrDefault();
+							}
+							else
+							{
+								if (!purchase.fileName.Split(',').Any(x => x == filenamelist.FirstOrDefault()))
+								{
+									filenamelist.Add(purchase.fileName);
+									purchase.fileName = string.Join(",", filenamelist);
+								}
+							}
+
+							context.SaveChanges();
+						}
+					}
+					dir = string.Concat(@"/", filedir);
+					//string filepath = Path.Combine(dir, string.Format(file, ext));
+					string filepath = Path.Combine(dir, filename);
+					return Json(new { msg = Resources.Resource.UploadOkMsg, filepath });
+				}
+				catch (Exception ex)
+				{
+					return Json(new { msg = "Error occurred. Error details: " + ex.Message });
+				}
+			}
+			else
+			{
+				return Json(new { msg = Resources.Resource.NoFileSelected });
+			}
+		}
 
 		[HttpPost]
         [ValidateAntiForgeryToken]

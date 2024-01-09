@@ -5,34 +5,61 @@ priceeditable = $infoblk.data("priceeditable") === "True";
 disceditable = $infoblk.data("disceditable") === "True";
 
 let purchaseitems: IPurchaseItem[] = [];
-$(document).on("click", "#btnSave", function () {
-	updatePaymentList();
-	console.log("PurchasePayments:", PurchasePayments);
-	return;
-	$.ajax({
-		//contentType: 'application/json; charset=utf-8',
-		type: "POST",
-		url: "/Purchase/EditPayments",
-		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), PurchasePayments },
-		success: function (data) {
-			if (data) window.location.href = "/Purchase/PurchaseOrderList";
-		},
-		dataType: "json"
-	});
+$(document).on("click", ".btnSave", function () {
+	ppId = Number($(this).data("id"));
+	updateSelectedPayment();	
+
+	if (validPayment) {
+		console.log("PurchasePayment:", purchasePayment);
+		//return;
+		$.ajax({
+			//contentType: 'application/json; charset=utf-8',
+			type: "POST",
+			url: "/Purchase/EditPayment",
+			data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), purchasePayment },
+			success: function (data) {
+				//if (data) window.location.href = "/Purchase/PurchaseOrderList";
+				$.fancyConfirm({
+					title: "",
+					message: data,
+					shownobtn: false,
+					okButton: oktxt,
+					noButton: notxt,
+					callback: function (value) {
+						if (value) {
+							addPayRow();
+							$(`#${gTblName} tbody tr`).last().find("td").eq(1).find(".chequeno").trigger("focus");
+						}
+					}
+				});	
+			},
+			dataType: "json"
+		});
+	} else {
+		$.fancyConfirm({
+			title: "",
+			message: paymentinfoerrtxt,
+			shownobtn: false,
+			okButton: oktxt,
+			noButton: notxt,
+			callback: function (value) {
+				if (value) {
+					$(`#${gTblName} tbody tr`).last().find("td").eq(1).find(".chequeno").trigger("focus");
+				}
+			}
+		});	
+	}
+
+	
 });
 
+$(document).on("click", "#btnAdd", function () {
+	addPayRow();
+});
 
 function populateAccount4Purchase(acno: string, acname: string) {
-	//console.log("acno:" + acno + ";acname:" + acname);
-	//console.log("currentY:" + currentY);
 	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
-	let Id = Number($tr.data("id"));
-
 	setAccName($tr, acno, acname);
-
-	PurchasePayments.forEach((x) => {
-		if (x.Id==Id) x.AccountNo = acno;
-	});
 }
 function toggleDblDisabled(this: any) {
 	$(this).prop("disabled", !$(this).prop("disabled"));
@@ -41,66 +68,7 @@ function toggleDblDisabled(this: any) {
 $(document).on("dblclick", ".pay", function () {
 	toggleDblDisabled.call(this);
 });
-$(document).on("change", ".pay", function () {
-	currentY = $(this).parent("td").parent("tr").index();
-	let $amt = $(this);
-	let amt: number = Number($amt.val());
-	let Id: number = Number($amt.data("id"));
-	let amterrtxt = $infoblk.data("amterrtxt");
-	let amtcls: string = "text-danger";
-	let accountno: string = "";
 
-	if (amt > 0) {
-
-		if (amt > Purchase.pstAmount) {
-			amtErrWarning();
-			return;
-		}
-
-		let totalamt: number = 0;
-		$("#tblPayment tbody tr").each(function (i, e) {
-			let $amt = $(e).find("td").eq(1).find(".pay");
-			let amt: number = Number($amt.val());
-			totalamt += amt;
-			$amt.val(formatnumber(amt));
-			//$(e).find("td").last().find(".owed").val(Number(Purchase.pstAmount - amt));
-		});
-		//console.log("totalamt:", totalamt);
-		if (totalamt > Purchase.pstAmount) {
-			amtErrWarning();
-			return;
-		}
-
-		let idx = PurchasePayments.findIndex(x => x.Id == Id);
-		if (idx >= 0) {
-			PurchasePayments[idx].Amount = amt;
-		} else {
-			PurchasePayments.push({ Id: Id, pstCode: Purchase.pstCode, supCode: Purchase.supCode, Amount: amt, JsCreateDate: formatDateTime(), JsModifyDate: formatDateTime(), AccountNo: accountno } as IPurchasePayment);
-		}
-		//console.log("Purchase.pstAmount:" + Purchase.pstAmount + ";totalamt:" + totalamt);
-		let totalowed: number = Purchase.pstAmount - totalamt;
-
-		if (totalowed <= 0) amtcls = "text-success";
-		$("#totalowed").removeClass("amtcls").addClass(amtcls).text(formatnumber(totalowed));
-
-		if (Number($("#tblPayment tbody tr").last().find("td").eq(1).find(".pay").val()) > 0) addPayRow();
-	}
-
-	function amtErrWarning() {
-		$.fancyConfirm({
-			title: "",
-			message: amterrtxt,
-			shownobtn: false,
-			okButton: oktxt,
-			noButton: notxt,
-			callback: function (value) {
-				if (value) {
-					$amt.trigger("focus");
-				}
-			}
-		});
-	}
-});
 $(document).on("click", "#btnReload", function () {
 	const Id = $("#Id").val();
 	let billpara = "";
@@ -574,20 +542,19 @@ $(function () {
 		$target.empty().html(html);
 		if (Purchase.pstStatus === "opened" || Purchase.pstStatus == "partialreceival") {
 
+			forpayments = true;
+
 			gTblName = "tblPayment";
 
 			$("input:not([type='file'],[id='txtUserName'])").prop("isadmin", true).prop("disabled", true);
 			$("select").prop("disabled", true);
 			$("textarea").not("#txtField").prop("isadmin", true).prop("disabled", true);
 
-			if (Purchase.pstStatus === "opened" && reviewmode) {
+			if (reviewmode) {
 				if (!isadmin) $("button").addClass("disabled");
 				$("#btnSave").addClass("disabled");
 				$("#btnBill").addClass("disabled");
 			}
-
-			$(".respond").data("code", receiptno);
-			setValidThruDatePicker();
 
 			DicAcAccounts = $infoblk.data("dicacaccounts");
 
@@ -596,6 +563,8 @@ $(function () {
 
 			if (editmode) {
 				user = $infoblk.data("user");
+				lastppId = Number($infoblk.data("lastppid"));
+				PurchasePayments = $infoblk.data("purchasepayments");
 				addPayRow();
 			}
 		}
@@ -604,6 +573,10 @@ $(function () {
 				$("#btnBill").hide();
 			addRow();
 		}
+
+		$(".respond").data("code", receiptno);
+		setValidThruDatePicker();
+
 		initDatePicker(
 			"purchaseDate",
 			convertCsharpDateStringToJsDate(Purchase.PurchaseDateDisplay)

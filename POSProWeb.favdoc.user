@@ -246,6 +246,11 @@
           <path>Views\AbssReport\Quotation.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\AbssReport\Quotation.cshtml</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>journal_Edit.cshtml</name>
+          <path>Views\Journal\Edit.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Journal\Edit.cshtml</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
