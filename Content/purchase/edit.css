@@ -1,0 +1,21 @@
+﻿#tblPayment tbody tr > td:not(:first-child) {
+	width: 290px !important;
+}
+#tblPayment tbody tr > td:nth-child(3){
+	width:230px!important;
+	min-width:230px!important;
+}
+#tblPayment tbody tr > td:nth-child(4) {
+	width: 300px !important;
+	min-width: 300px !important;
+}
+#tblPayment tbody tr > td:nth-child(6) {
+	width: 190px !important;
+	min-width: 190px !important;
+}
+
+#tblPayment tbody tr td:last-child{
+	width:150px;
+	max-width:150px;
+	min-width:150px;
+}

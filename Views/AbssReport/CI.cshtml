@@ -1,0 +1,303 @@
+﻿@model PPWLib.Models.CI.CIEditModel
+
+<link href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.js"></script>
+
+<div class="text-center">
+	<h2 class="d-none d-sm-block">@Resources.Resource.CustomerInvoices</h2>
+	<h3 class="d-block d-sm-none">@Resources.Resource.CustomerInvoices</h3>
+</div>
+
+<div class="d-none d-sm-block">
+	<div class="table-responsive my-3">
+		<table id="tblGrid" class="table table-striped table-bordered dt-responsive nowrap display" cellspacing="0">
+			<thead>
+				<tr>					
+					<th>@string.Format(Resources.Resource.NumberFormat, Resources.Resource.Invoice)</th>
+					<th>@string.Format(Resources.Resource.DateFormat, Resources.Resource.Invoice)</th>
+					<th>@Resources.Resource.Customer</th>
+					<th>@Resources.Resource.TotalPaid (@Model.Currency)</th>
+					<th>@Resources.Resource.OutstandingBalance (@Model.Currency)</th>
+					<th>@Resources.Resource.TaxInclusiveFreight (@Model.Currency)</th>
+					<th>@string.Format(Resources.Resource.TotalFormat, Resources.Resource.Tax) (@Model.Currency)</th>
+					<th>@string.Format(Resources.Resource.TotalFormat, Resources.Resource.Sales) (@Model.Currency)</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+</div>
+<div class="d-block d-sm-none">
+	<div class="row">
+		<div class="table-responsive">
+			<table id="tblGridm" class="table table-striped table-bordered table-hover dt-responsive" cellspacing="0">
+				<thead>
+					<tr>
+						<th>@string.Format(Resources.Resource.DateFormat, Resources.Resource.Invoice)</th>
+						<th>@Resources.Resource.Customer</th>
+						<th>@string.Format(Resources.Resource.TotalFormat, Resources.Resource.Sales) (@Model.Currency)</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+	</div>
+
+	<div id="itemdetail" title="Detail">
+
+	</div>
+</div>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script type="text/javascript" src="https://cdn.datatables.net/datetime/1.1.0/js/dataTables.dateTime.min.js"></script>
+<script>
+	var $window = $(window);
+	var datatable;
+	var datatableM;
+	var webbind = false;
+	var mobilebind = false;
+	pagesize = @Model.PageSize;
+	var minDateM, maxDateM;
+
+	$(function () {
+		setFullPage();
+		// Execute on load
+		checkWidth();
+		// Bind event listener
+		$(window).resize(checkWidth);
+
+		$("#itemdetail").dialog({
+			show: { effect: "blind", duration: 800 },
+			autoOpen: false,
+		});
+	});
+
+		function bindtable() {
+		datatable = $('#tblGrid').DataTable({
+			'autoWidth': false,
+			fixedHeader: {
+				header: true,
+			},
+			"bLengthChange": false,
+			'scrollY': '65vh',
+			"pageLength": pagesize,
+			'sAjaxSource': "/AbssReport/GetCustomersInvoicess",
+			"bServerSide": true,
+			"bProcessing": true,
+			"bSearchable": true,
+			"order": [[0, 'desc']],
+			"language": {
+				"emptyTable": "@Resources.Resource.NoDataFound",
+				"processing":
+					"<i class=\"fa fa-spinner fa-spin fa-3x fa-fw\" style=\"color:#2a2b2b;\"></i><span class=\"sr-only\">@Resources.Resource.Loading...</span>"
+			},
+			"columns": [
+				{
+					"data": "InvoiceNumber",
+					"searchable": true,
+					"orderable": true
+				},
+				{
+					"data": "InvoiceDateDisplay",
+					"searchable": true,
+					"orderable": true
+				},
+				{
+					"data": "CustomerName",
+					"searchable": true,
+					"orderable": true
+				},
+				{
+					"data": "TotalPaidDisplay",
+					"searchable": true,
+					"orderable": true
+				},
+				{
+					"data": "OutstandingBalanceDisplay",
+					"searchable": true,
+					"orderable": true
+				},
+				{
+					"data": "TaxInclusiveFreightDisplay",
+					"searchable": true,
+					"orderable": true
+				},				
+				{
+					"data": "TotalTaxDisplay",
+					"autoWidth": true,
+					"searchable": true
+				},
+				{
+					"data": "TotalSalesDisplay",
+					"searchable": true,
+					"orderable": true
+				},
+				{
+					"data": "InvoiceDateStart",
+					"visible": false,
+					"searchable": true,
+				},
+				{
+					"data": "InvoiceDateEnd",
+					"visible": false,
+					"searchable": true
+				}
+			],
+			"columnDefs": [
+				{
+					targets: [1,3, 4, 5, 6,7],
+					createdCell: function (td, cellData, rowData, row, col) {
+						$(td).css({ 'text-align': 'right', "width": "236px" });
+					},
+				},
+				{
+					targets: [0, 2],
+					createdCell: function (td, cellData, rowData, row, col) {
+						$(td).css('text-align', 'center');
+					},
+				},
+			],
+			"drawCallback": function (settings) {
+				webbind = true;
+				let $header = $(".dataTables_scrollHeadInner table thead");
+				$header.find("tr th").eq(0).addClass("text-center");
+				$header.find("tr th").eq(1).addClass("text-right");
+				$header.find("tr th").eq(2).addClass("text-center");
+				$header.find("tr th").eq(3).addClass("text-right");
+				$header.find("tr th").eq(4).addClass("text-right");
+				$header.find("tr th").eq(5).addClass("text-right");
+				$header.find("tr th").eq(6).addClass("text-right");
+				$header.find("tr th").eq(7).addClass("text-right");
+
+				setSearchBox4AbssReports()
+
+				localizePagingInfo();
+			},
+		});
+	}
+	function bindtableM() {
+		datatableM = $('#tblGridm').DataTable({
+			"pageLength": 10,
+			"bLengthChange": false,
+			'sAjaxSource': "/Report/GetCustomersInvoicessM",
+			"bServerSide": true,
+			"bProcessing": true,
+			"bSearchable": true,
+			"order": [[0, 'desc']],
+			"language": {
+				"emptyTable": "@Resources.Resource.NoDataFound",
+				"processing":
+					'<i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:#2a2b2b;"></i><span class="sr-only">@Resources.Resource.Loading...</span> '
+			},
+			//Invoice Number	Invoice Date	SalesPerson	Total Paid	Outstanding Balance	Tax Inclusive Freight	Total Tax	Total Sales
+			"columns": [
+				{
+					"data": "InvoiceDateDisplay",
+					"autoWidth": true,
+					"searchable": true
+				},
+				{
+					"data": "CustomerName",
+					"autoWidth": true,
+					"searchable": true
+				},
+				{
+					"data": "TotalSalesDisplay",
+					"autoWidth": true,
+					"searchable": true
+				},
+				{
+					"data": "InvoiceStatus",
+					"visible": false,
+					"searchable": true
+				},
+				{
+					"data": "InvoiceDateStart",
+					"visible": false,
+					"searchable": true,
+				},
+				{
+					"data": "InvoiceDateEnd",
+					"visible": false,
+					"searchable": true
+				},
+				{
+					"data": "TotalPaidDisplay",
+					"visible": false,
+					"searchable": true
+				}, {
+					"data": "OutstandingBalanceDisplay",
+					"visible": false,
+					"searchable": true
+				}, {
+					"data": "TaxInclusiveFreightDisplay",
+					"visible": false,
+					"searchable": false
+				},
+				{
+					"data": "TotalTaxDisplay",
+					"visible": false,
+					"searchable": false
+				},
+				{
+					"data": "InvoiceNumber",
+					"visible": false,
+					"searchable": true
+				}
+			],
+			"drawCallback": function (settings) {
+				mobilebind = true;
+				let $tfilter = $('#tblGridm_wrapper');
+				if ($tfilter.find('#btnReset').length === 0) {
+					let ele = '<div class="row mb-3 small"><div class="col-sm-12 col-md-6"></div><div class="col-sm-12 col-md-6 text-right"><button id="btnReset" type="button" class="btn btn-secondary" style="font-size:1.6em;">Reset</button></div></div>';
+					$(ele).insertBefore($tfilter.find('.row:eq(0)'));
+				}
+				$('#tblGridm tbody').on('click', 'tr', function () {
+					let rdata = datatableM.row(this).data();
+					@*console.log(rdata);*@
+					let html = "";
+					let $detail = $('#itemdetail');
+					html += "<p><strong>Invoice Number:</strong><br>" + rdata.InvoiceNumber + "</p>";
+					html += "<p><strong>Invoice Date:</strong><br>" + rdata.InvoiceDateDisplay + "</p>";
+					html += "<p><strong>Sales Person:</strong><br>" + rdata.SalesPersonName + "</p>";
+					html += "<p><strong>Outstanding Balance:</strong><br>" + rdata.OutstandingBalanceDisplay + "</p>";
+					@*html += "<p><strong>Sold Amount:</strong><br>" + rdata.SoldAmountDisplay + "</p>";*@
+					@*html += "<p><strong>Tax Inclusive Freight:</strong><br>" + rdata.TaxInclusiveFreightDisplay + "</p>";*@
+					html += "<p><strong>Total Paid:</strong><br>" + rdata.TotalPaidDisplay + "</p>";
+					@*html += "<p><strong>Total Tax:</strong><br>" + rdata.TotalTaxDisplay + "</p>";*@
+					html += "<p><strong>Total Sales:</strong><br>" + rdata.TotalSalesDisplay + "</p>";
+					html += "<p><strong>Invoice Status:</strong><br>" + rdata.InvoiceStatus + "</p>";
+					$detail.empty().append(html).dialog("open");
+				});
+				$('input[type=search]').css({ 'height': '22px' });
+				$('input[name="datetimesmin"]').daterangepicker({
+					singleDatePicker: true,
+					showDropdowns: true,
+					minYear: 1901,
+					maxYear: parseInt(moment().format('YYYY'), 10),
+					locale: {
+						format: 'MM/DD/YYYY'
+					}
+				}, function (start, end, label) {
+					minDateM = new Date(start).toDateString();
+					doFilterM();
+
+				});
+				$('input[name="datetimesmax"]').daterangepicker({
+					singleDatePicker: true,
+					showDropdowns: true,
+					minYear: 1901,
+					maxYear: parseInt(moment().format('YYYY'), 10),
+					locale: {
+						format: 'MM/DD/YYYY'
+					}
+				}, function (start, end, label) {
+					maxDateM = new Date(end).toDateString();
+					doFilterM();
+
+				});
+			},
+		});
+	}
+</script>
+
