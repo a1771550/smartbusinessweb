@@ -224,7 +224,8 @@
 					<td class="text-left text-wrap">
 						@if (!string.IsNullOrEmpty(payment.fileName))
 						{
-							@Html.Partial("_ViewFileModal", null, new ViewDataDictionary { { "filelist", payment.fileName.Split(',') } })
+							var filelist = payment.fileName.Split(',').ToList();
+							@Html.Partial("_ViewFileModal", null, new ViewDataDictionary { { "filelist", filelist } })
 						}
 
 					</td>

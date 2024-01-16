@@ -9,8 +9,7 @@ namespace SmartBusinessWeb.App_Start
         {
             bundles.Add(new StyleBundle("~/bundles/maincss").Include(
                 "~/Content/bs4/bootstrap.min.css",
-                "~/Content/bs4/bootstrap-theme.min.css",
-                //"~/Content/DataTables/css/dataTables.bootstrap.css",
+                "~/Content/bs4/bootstrap-theme.min.css",                
                 "~/Content/DataTables/css/responsive.bootstrap.min.css"
                 ));
 
