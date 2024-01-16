@@ -28,6 +28,7 @@ using Microsoft.Data.SqlClient;
 using PPWLib.Models.POS.Sales;
 using PPWLib.Models.Journal;
 using PPWLib.Models.Quotation;
+using CommonLib.Models.MYOB;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -323,7 +324,7 @@ namespace SmartBusinessWeb.Controllers
 
 			if (filename.StartsWith("Suppliers_"))
 			{
-				ModelHelper.SaveSuppliersFrmCentral(context, apId);
+				ModelHelper.SaveSuppliersFrmCentral(context, apId, ComInfo);
 			}
 
 			if (filename.StartsWith("Employees_"))
@@ -333,7 +334,7 @@ namespace SmartBusinessWeb.Controllers
 
 			if (filename.StartsWith("Customers_"))
 			{
-				ModelHelper.SaveCustomersFrmCentral(context, AbssConnectionString, apId);
+				ModelHelper.SaveCustomersFrmCentral(context, AbssConnectionString, apId, ComInfo);
 			}
 
 			if (filename.StartsWith("Items_"))
@@ -343,7 +344,8 @@ namespace SmartBusinessWeb.Controllers
 
 			if (filename.StartsWith("Tax_"))
 			{
-				List<CommonLib.Models.MYOB.TaxModel> taxlist = MYOBHelper.GetTaxList();
+				AbssConn abssConn = ModelHelper.GetAbssConn(ComInfo);
+				List<CommonLib.Models.MYOB.TaxModel> taxlist = MYOBHelper.GetTaxList(abssConn);
 				decimal taxrate = (decimal)taxlist.FirstOrDefault().TaxPercentageRate;
 				string taxcode = taxlist.FirstOrDefault().TaxCode;
 

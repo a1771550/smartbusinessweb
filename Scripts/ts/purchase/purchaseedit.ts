@@ -465,6 +465,7 @@ $(function () {
 	// console.log("receiptno:" + receiptno);
 	if (!editmode)
 		$("#pstExRate").val(1);
+
 	Purchase = fillInPurchase();
 
 	if (reviewmode || editmode) {

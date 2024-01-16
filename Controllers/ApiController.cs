@@ -43,6 +43,7 @@ using PPWCommonLib.BaseModels;
 using PPWLib.Models.Purchase;
 using ItemModel = PPWLib.Models.Item.ItemModel;
 using PPWLib.Models.User;
+using CommonLib.Models.MYOB;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -101,7 +102,7 @@ namespace SmartBusinessWeb.Controllers
             }
             ModelHelper.SaveSuppliersFrmCentral(context, apId, comInfo);
             //ModelHelper.SaveEmployeesFrmCentral(apId, context, ConnectionString, null, managerId);
-            ModelHelper.SaveCustomersFrmCentral(context, ConnectionString, apId);
+            ModelHelper.SaveCustomersFrmCentral(context, ConnectionString, apId, comInfo);
             ModelHelper.SaveItemsFrmCentral(apId, context, ConnectionString);
 
             msg = $"Hi {comInfo.contactName}, the ABSS data is successfully downloaded and saved to the SmartBusiness Database.";
@@ -1945,7 +1946,8 @@ namespace SmartBusinessWeb.Controllers
             }
             if (filename.StartsWith("Tax_"))
             {
-                List<CommonLib.Models.MYOB.TaxModel> taxlist = MYOBHelper.GetTaxList();
+                AbssConn abssConn = ModelHelper.GetAbssConn(ComInfo);
+                List<CommonLib.Models.MYOB.TaxModel> taxlist = MYOBHelper.GetTaxList(abssConn);
                 return Json(taxlist, JsonRequestBehavior.AllowGet);
             }
             if (filename.StartsWith("ItemLoc_"))

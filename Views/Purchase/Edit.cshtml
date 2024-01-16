@@ -42,7 +42,7 @@
 
 	<div class="row justify-content-end my-4 px-4">
 		<h5 id="status" class="">@Purchase.pstStatus.ToUpper()</h5>
-		<input id="pstStatus" name="pstStatus" type="hidden" value="opened" />
+		<input id="pstStatus" name="pstStatus" type="hidden" value="@Purchase.pstStatus" />
 	</div>
 
 	if (showrecur)
@@ -84,7 +84,7 @@
 
 				<select id="drpSupplier" name="supCode" class="form-control card" data-supcode="@Purchase.supCode">
 					<option value="">-- @Resources.Resource.Select --</option>
-					@foreach (var item in Purchase.SupplierList)
+					@foreach (var item in Model.SupplierList)
 					{
 						var selected = Purchase.supCode == item.Value ? "selected" : "";
 						<option value="@item.Value" @selected>@item.Text</option>
@@ -107,7 +107,7 @@
 
 				<select id="drpLocation" name="pstSalesLoc" class="form-control" data-modellocation="@Purchase.pstSalesLoc">
 					@* <option value="">-- @Resources.Resource.Select --</option>*@
-					@foreach (var item in Purchase.LocationList)
+					@foreach (var item in Model.LocationList)
 					{
 						string selected = Purchase.pstSalesLoc == item.Value ? "selected" : "";
 						<option value="@item.Value" @selected>@item.Text</option>

@@ -907,84 +907,84 @@ namespace SmartBusinessWeb.Controllers
             CommonHelper.GetSearchDates(strfrmdate, strtodate, ref SearchDates);
             Response.Write(SearchDates.DateFromTxt + ";" + SearchDates.DateToTxt);
         }
-        public void Debug58()
-        {
-            //var filename = "Items_";
-            //var url = string.Format(CentralApiUrl, filename, centralbaseUrl);
-            //var url = "http://localhost:8888//Api/GetMyobData?filename=Items_";
-            //HttpClient _client = new HttpClient();
-            //_client.MaxResponseContentBufferSize = int.MaxValue;
-            //var content = await _client.GetStringAsync(url);
-            //List<AccountModel> accountlist = MYOBHelper.GetAccountList(ConnectionString);
-            //DateTime dateTime = DateTime.Now;
-            using var context = new PPWDbContext(Session["DBName"].ToString());
-            //ComInfo ComInfo = context.ComInfoes.FirstOrDefault(x => x.Id == 1);
-            //string ConnectionString = string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ;", ComInfo.MYOBDriver, ComInfo.MYOBUID, ComInfo.MYOBPASS, ComInfo.MYOBDb, ComInfo.MYOBExe, ComInfo.MYOBKey);
-            //List<MyobSupplierModel> suplist = MYOBHelper.GetSupplierList(ConnectionString);
-            //using (var transaction = context.Database.BeginTransaction())
-            //{
-            //    try
-            //    {
-            //        /* remove current records first: */
-            //        List<Supplier> suppliers = context.Suppliers.Where(x => x.AccountProfileId == AccountProfileId && x.CompanyId == CompanyId).ToList();
-            //        context.Suppliers.RemoveRange(suppliers);
-            //        context.SaveChanges();
-            //        /*********************************/
+        //public void Debug58()
+        //{
+        //    //var filename = "Items_";
+        //    //var url = string.Format(CentralApiUrl, filename, centralbaseUrl);
+        //    //var url = "http://localhost:8888//Api/GetMyobData?filename=Items_";
+        //    //HttpClient _client = new HttpClient();
+        //    //_client.MaxResponseContentBufferSize = int.MaxValue;
+        //    //var content = await _client.GetStringAsync(url);
+        //    //List<AccountModel> accountlist = MYOBHelper.GetAccountList(ConnectionString);
+        //    //DateTime dateTime = DateTime.Now;
+        //    using var context = new PPWDbContext(Session["DBName"].ToString());
+        //    //ComInfo ComInfo = context.ComInfoes.FirstOrDefault(x => x.Id == 1);
+        //    //string ConnectionString = string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ;", ComInfo.MYOBDriver, ComInfo.MYOBUID, ComInfo.MYOBPASS, ComInfo.MYOBDb, ComInfo.MYOBExe, ComInfo.MYOBKey);
+        //    //List<MyobSupplierModel> suplist = MYOBHelper.GetSupplierList(ConnectionString);
+        //    //using (var transaction = context.Database.BeginTransaction())
+        //    //{
+        //    //    try
+        //    //    {
+        //    //        /* remove current records first: */
+        //    //        List<Supplier> suppliers = context.Suppliers.Where(x => x.AccountProfileId == AccountProfileId && x.CompanyId == CompanyId).ToList();
+        //    //        context.Suppliers.RemoveRange(suppliers);
+        //    //        context.SaveChanges();
+        //    //        /*********************************/
 
-            //        List<Supplier> newsuppliers = new List<Supplier>();
+        //    //        List<Supplier> newsuppliers = new List<Supplier>();
 
-            //        foreach (var supplier in suplist)
-            //        {
-            //            Supplier msupplier = new Supplier();
-            //            msupplier.supFirstName = supplier.supFirstName;
-            //            msupplier.supId = supplier.supId;
-            //            msupplier.supIsIndividual = supplier.supIsIndividual;
-            //            msupplier.supIsActive = supplier.supIsActive;
-            //            msupplier.supCode = supplier.supCode.StartsWith("*") ? supplier.supCardRecordID.ToString() : supplier.supCode;
-            //            msupplier.supName = supplier.supName;
-            //            msupplier.supFirstName = supplier.supFirstName;
-            //            msupplier.supLastName = supplier.supLastName;
-            //            msupplier.supIdentifierID = supplier.supIdentifierID;
-            //            msupplier.supCustomField1 = supplier.supCustomField1;
-            //            msupplier.supCustomField2 = supplier.supCustomField2;
-            //            msupplier.supCustomField3 = supplier.supCustomField3;
-            //            msupplier.CreateTime = dateTime;
-            //            msupplier.ModifyTime = dateTime;
-            //            msupplier.AccountProfileId = AccountProfileId;
-            //            msupplier.CompanyId = CompanyId;
-            //            msupplier.supAbss = true;
-            //            newsuppliers.AddPG(msupplier);
-            //        }
-            //        context.Suppliers.AddRange(newsuppliers);
-            //        Helpers.ModelHelper.WriteLog(context, "Import Supplier data from Central done", "ImportFrmCentral");
-            //        context.SaveChanges();
-            //        transaction.Commit();
-            //    }
-            //    catch (DbEntityValidationException e)
-            //    {
-            //        transaction.Rollback();
-            //        StringBuilder sb = new StringBuilder();
-            //        foreach (var eve in e.EntityValidationErrors)
-            //        {
-            //            sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-            //                eve.Entry.Entity.GetType().Name, eve.Entry.State);
-            //            foreach (var ve in eve.ValidationErrors)
-            //            {
-            //                sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-            //ve.PropertyName,
-            //eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-            //ve.ErrorMessage);
-            //            }
-            //        }
-            //        Helpers.ModelHelper.WriteLog(context, string.Format("Import Supplier data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
-            //        context.SaveChanges();
-            //    }
-            //}
-            //Response.Write(suplist.Count + ";Done!");
+        //    //        foreach (var supplier in suplist)
+        //    //        {
+        //    //            Supplier msupplier = new Supplier();
+        //    //            msupplier.supFirstName = supplier.supFirstName;
+        //    //            msupplier.supId = supplier.supId;
+        //    //            msupplier.supIsIndividual = supplier.supIsIndividual;
+        //    //            msupplier.supIsActive = supplier.supIsActive;
+        //    //            msupplier.supCode = supplier.supCode.StartsWith("*") ? supplier.supCardRecordID.ToString() : supplier.supCode;
+        //    //            msupplier.supName = supplier.supName;
+        //    //            msupplier.supFirstName = supplier.supFirstName;
+        //    //            msupplier.supLastName = supplier.supLastName;
+        //    //            msupplier.supIdentifierID = supplier.supIdentifierID;
+        //    //            msupplier.supCustomField1 = supplier.supCustomField1;
+        //    //            msupplier.supCustomField2 = supplier.supCustomField2;
+        //    //            msupplier.supCustomField3 = supplier.supCustomField3;
+        //    //            msupplier.CreateTime = dateTime;
+        //    //            msupplier.ModifyTime = dateTime;
+        //    //            msupplier.AccountProfileId = AccountProfileId;
+        //    //            msupplier.CompanyId = CompanyId;
+        //    //            msupplier.supAbss = true;
+        //    //            newsuppliers.AddPG(msupplier);
+        //    //        }
+        //    //        context.Suppliers.AddRange(newsuppliers);
+        //    //        Helpers.ModelHelper.WriteLog(context, "Import Supplier data from Central done", "ImportFrmCentral");
+        //    //        context.SaveChanges();
+        //    //        transaction.Commit();
+        //    //    }
+        //    //    catch (DbEntityValidationException e)
+        //    //    {
+        //    //        transaction.Rollback();
+        //    //        StringBuilder sb = new StringBuilder();
+        //    //        foreach (var eve in e.EntityValidationErrors)
+        //    //        {
+        //    //            sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+        //    //                eve.Entry.Entity.GetType().Name, eve.Entry.State);
+        //    //            foreach (var ve in eve.ValidationErrors)
+        //    //            {
+        //    //                sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+        //    //ve.PropertyName,
+        //    //eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+        //    //ve.ErrorMessage);
+        //    //            }
+        //    //        }
+        //    //        Helpers.ModelHelper.WriteLog(context, string.Format("Import Supplier data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
+        //    //        context.SaveChanges();
+        //    //    }
+        //    //}
+        //    //Response.Write(suplist.Count + ";Done!");
 
-            Helpers.ModelHelper.SaveSuppliersFrmCentral(context, AccountProfileId);
-            Response.Write("Done!");
-        }
+        //    Helpers.ModelHelper.SaveSuppliersFrmCentral(context, AccountProfileId, ComInfo);
+        //    Response.Write("Done!");
+        //}
 
         public void Debug57()
         {
