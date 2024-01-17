@@ -308,6 +308,8 @@ function enqTemplate(data: IEnquiry[]): string {
         }
 
         let trcls = converted ? "disabled" : "";
+
+        if (x.Id =="KxnihjS3rbNSPgqnSRJwasVn4SE5Nq7evbojjlhOaLCUNCw0t6Bp8AYRSydEUMe0TiVnq74giuMEf0PrVEBHeHWk2NGj7StDgC0ef88m1U6DmKlSYliGBNKCBjlTpJYG09XT0kBM5OFABJxhbnALjc1J")console.log("statuscls:" + x.statuscls);
         //let statuscls = (x.FollowUpStatus)&&x.FollowUpStatus!=="need"&&? x.FollowUpStatus!.concat("statusbg"):"";
         // string statuscls = string.Concat(customer.FollowUpStatus, "statusbg");
         html += `<tr class="enquiry ${trcls} ${x.statuscls}" role="button" data-Id="${Id}">`;

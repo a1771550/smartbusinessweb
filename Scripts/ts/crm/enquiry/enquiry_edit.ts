@@ -111,9 +111,9 @@ $(function () {
 
 	$('#enFrom').trigger("focus");
 
-	if ($("#EnquiryInfo_FollowUpDateDisplay").val() === "") {
+	if ($("#FollowUpDateInfo_FollowUpDateDisplay").val() === "") {
 		initDatePicker("followUpDate", new Date());
 	} else {
-		initDatePicker("followUpDate", convertCsharpDateStringToJsDate($("#EnquiryInfo_FollowUpDateDisplay").val() as string));
+		initDatePicker("followUpDate", convertCsharpDateStringToJsDate($("#FollowUpDateInfo_FollowUpDateDisplay").val() as string));
 	}
 });

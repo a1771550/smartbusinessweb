@@ -92,11 +92,11 @@
 	}
 
 	@{
-		var _needchecked = Model.FollowUpDateInfo == null ? "checked" : Model.FollowUpDateInfo.status == CusFollowUpStatus.need.ToString() ? "checked" : "";
+		var _needchecked = Model.FollowUpDateInfo == null ? "" : Model.FollowUpDateInfo.status == CusFollowUpStatus.need.ToString() ? "checked" : "";
 		var _noneedchecked = Model.FollowUpDateInfo == null ? "" : Model.FollowUpDateInfo.status == CusFollowUpStatus.noneed.ToString() ? "checked" : "";
 		var _completechecked = Model.FollowUpDateInfo == null ? "" : Model.FollowUpDateInfo.status == CusFollowUpStatus.completed.ToString() ? "checked" : "";
 	}
-	<div class="form-group">
+	<div class="form-group" data-infonull="@(Model.FollowUpDateInfo==null)">
 		<label class="mr-4">@string.Format(Resources.Resource.FollowUpFormat, Resources.Resource.Status)</label>
 		<div class="form-check form-check-inline small">
 			<input class="form-check-input followup" type="radio" name="followup" id="radNeed" value="@CusFollowUpStatus.need.ToString()" @_needchecked>
