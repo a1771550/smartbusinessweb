@@ -13,10 +13,16 @@
 	<meta http-equiv="refresh" content="28800">
 	<title>@pagetitle - @sitename</title>
 	<link rel="icon" type="image/png" href="~/Content/favicon_io/favicon-16x16.png">
-	<!-- "~/Content/bs4/bootstrap.min.css",
-	"~/Content/bs4/bootstrap-theme.min.css",
-	"~/Content/DataTables/css/responsive.bootstrap.min.css"-->
-	@Styles.Render("~/bundles/maincss")
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
+		  rel="stylesheet">
+
+	<link href="~/Content/bs4/bootstrap.min.css" rel="stylesheet" />
+	<link href="~/Content/bs4/bootstrap-theme.min.css" rel="stylesheet" />
+	<link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+	@*@Styles.Render("~/bundles/maincss")*@
 	<!-- The following files must not be bundled!!! -->
 
 	<link href="~/Content/DataTables/css/dataTables.bootstrap.css" rel="stylesheet" />
@@ -29,14 +35,21 @@
 	<link href="~/Content/fontawesome/css/brands.css" rel="stylesheet">
 	<link href="~/Content/fontawesome/css/solid.css" rel="stylesheet">
 	<link rel="stylesheet" href="~/Content/pos/bootstrap-datetimepicker.min.css">
-	@*<link href="~/Content/fontawesome/css/all.min.css" rel="stylesheet">*@
 
-	@Scripts.Render("~/bundles/mainjs")
-	<!-- "~/Scripts/jquery-{version}.js",
-	"~/Scripts/bs4/bootstrap.min.js",
-	"~/Scripts/moment.min.js",
-	"~/Scripts/respond.min.js",
-	"~/Scripts/modernizr-2.8.3.js"-->
+	<link href="~/Contents/mean/css/default.css" rel="stylesheet">
+	<link href="~/Contents/mean/css/nice-select.css" rel="stylesheet">
+	<link href="~/Contents/mean/css/style.css" rel="stylesheet">
+	<link href="~/Contents/mean/css/responsive.css" rel="stylesheet">
+
+	@*@Scripts.Render("~/bundles/mainjs")*@
+	<script src="~/Scripts/jquery-3.7.1.js"></script>
+	<script src="~/Content/mean/js/Popper.js"></script>
+	<script src="~/Scripts/bs4/bootstrap.min.js"></script>
+	<script src="~/Content/mean/js/jquery.nice-select.js"></script>
+	<script src="~/Content/mean/js/main.js"></script>
+	<script src="~/Scripts/moment.min.js"></script>
+	<script src="~/Scripts/respond.js"></script>
+	<script src="~/Scripts/modernizr-2.8.3.js"></script>
 
 	@Styles.Render("~/bundles/misccss")
 	@Scripts.Render("~/bundles/miscjs")
