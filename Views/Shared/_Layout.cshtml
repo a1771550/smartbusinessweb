@@ -1,6 +1,7 @@
 ﻿@{
 	string sitename = Resources.Resource.SiteName;
-	string lnkcls = "nav-link {0}";
+	string lnkcls = "";
+	string sublnkcls = "";
 	string reportlnktxt = string.Empty;
 	string reportlnkcls = "nav-link dropdown-toggle {0}";
 	System.Collections.Generic.List<ReportView> reports = null;
@@ -36,870 +37,387 @@
 	<div class="overlay"></div>
 
 	<!-- header-area-start -->
-	<header class="header">
+	<header class="header" data-lang="@CultureHelper.CurrentCulture">
 		<div class="header__flex">
 			<div class="header__left">
 				<div class="bar">
 					<a href="#"><i class="fas fa-bars fa-fw"></i></a>
 				</div>
 				<div class="site__logo">
-					<a href="#"><img src="~/Contents/mean/img/site-logo.png" alt=""></a>
+					<a href="#"><img src="~/Content/mean/img/site-logo.png" alt=""></a>
 				</div>
 			</div>
 			<div class="header__right">
 				<div class="header__user">
-					<a href="#"><img src="~/Contents/mean/User.png" alt="">@user.UserName</a>
+					<a href="#"><img src="~/Content/mean/img/User.png" alt="">@user.UserName</a>
 				</div>
 				@Html.Partial("_LoginPartial", null, new ViewDataDictionary { { "iscentral", false } })
+				<script src="~/Scripts/ts/js/lang.js?v=@CommonHelper.GetVersionRandomNo()"></script>
 			</div>
 		</div>
 	</header>
 	<!-- header-area-end -->
-
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" role="navigation" data-debug="@showDataTransfer">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<a class="navbar-brand" href="/" title="@sitename"><img src="~/Images/logo.jpg" alt="@sitename" title="@sitename" /></a>
-				<button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#sb-navbar">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-			</div>
-
-			<div id="sb-navbar" class="collapse navbar-collapse">
-				<ul class="navbar-nav nav">
-					<li class="dropdown">
-						@{
-							lnkcls = "nav-link {0}";
-							if (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "sales")
-							{
-								lnkcls = string.Format(lnkcls, "active");
-							}
-							else
-							{
-								lnkcls = string.Format(lnkcls, string.Empty);
-							}
-						}
-						<a class="@lnkcls dropdown-toggle" href="#" data-toggle="dropdown">@Resources.Resource.Retail</a>
-
-						<ul class="dropdown-menu" role="menu">
-							@if (!isadmin)
-							{
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "sales")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-								<li>
-									@Html.ActionLink(string.Format(Resources.Resource.OrderFormat, Resources.Resource.Retail), "Sales", "POSFunc", new { }, new { @class = lnkcls })
-								</li>
-
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "advsales")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-								<li>
-									@Html.ActionLink(string.Concat(string.Format(Resources.Resource.OrderFormat, Resources.Resource.Retail), "(", Resources.Resource.Advanced, ")"), "AdvSales", "POSFunc", new { }, new { @class = lnkcls })
-								</li>
-
-
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "refund")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-								<li>
-									@Html.ActionLink(string.Format(Resources.Resource.OrderFormat, Resources.Resource.Refunds), "Refund", "POSFunc", new { }, new { @class = lnkcls })
-								</li>
-
-								<li>
-									@{
-										lnkcls = "dropdown-item {0}";
-										if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "salesorderlist")
-										{
-											lnkcls = string.Format(lnkcls, "active");
-										}
-										else
-										{
-											lnkcls = string.Format(lnkcls, string.Empty);
-										}
-									}
-									@Html.ActionLink(string.Format(Resources.Resource.ListFormat, Resources.Resource.SalesOrder), "Index", "SalesOrder", new { }, new { @class = lnkcls })
-								</li>
-							}
-							@if (HttpContext.Current.Session["Reports"] == null)
-							{
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "dayends")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-
-								<li class="nav-item">
-									@Html.ActionLink(Resources.Resource.DayEnds, "DayEnds", "POSFunc", new { }, new { @class = lnkcls })
-								</li>
-
-							}
-							else
-							{
-								reportlnktxt = Resources.Resource.DayEnds;
-
-								reports = (List<ReportView>)System.Web.HttpContext.Current.Session["Reports"];
-								List<DayEndsItem> ExImViews = (List<DayEndsItem>)System.Web.HttpContext.Current.Session["ExImViews"];
-
-								foreach (ReportView report in reports)
-								{
-									lnkcls = "dropdown-item {0}";
-									if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == report.Code.ToLower()) { lnkcls = string.Format(lnkcls, "active"); } else { lnkcls = string.Format(lnkcls, string.Empty); }
-
-									<li class="nav-item">
-										@Html.ActionLink(report.Name, "Show" + report.Code, "Report", new { }, new { @class = lnkcls })
-									</li>
-								}
-							}
-						</ul>
-					</li>
-
-					<li class="dropdown">
-						@{lnkcls = "nav-link {0}";
-							if (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "customer")
-							{
-								lnkcls = string.Format(lnkcls, "active");
-							}
-							else
-							{
-								lnkcls = string.Format(lnkcls, string.Empty);
-							}
-						}
-						<a href="#" class="@lnkcls" data-toggle="dropdown">
-							<span class="dropdown-toggle">@Resources.Resource.Customer</span>
-						</a>
-						<div class="dropdown-menu">
-							@{
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "customer")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-							}
-							@Html.ActionLink(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.Customer), "Index", "Customer", new { }, new { @class = lnkcls })
-
-							@{
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "pricelevels")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-								@Html.ActionLink(Resources.Resource.PointLevel, "Index", "PriceLevels", new { }, new { @class = lnkcls })
-							}
-
-							@{
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "pgcustomer")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-							}
-							@Html.ActionLink(string.Format(Resources.Resource.AddFormat, Resources.Resource.Customer), "Index", "PGCustomer", new { }, new { @class = lnkcls })
-
-							@{
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "enquiry")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-							}
-							@Html.ActionLink(Resources.Resource.Enquiry, "Index", "Enquiry", new { }, new { @class = lnkcls })
-						</div>
-					</li>
-
-					<li class="dropdown">
-						@{lnkcls = "nav-link {0}";
-							if (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "item")
-							{
-								lnkcls = string.Format(lnkcls, "active");
-							}
-							else
-							{
-								lnkcls = string.Format(lnkcls, string.Empty);
-							}
-						}
-						<a href="#" class="@lnkcls" data-toggle="dropdown">
-							<span class="dropdown-toggle">@Resources.Resource.Item</span>
-						</a>
-
-						<ul class="dropdown-menu" data-portal="@defaultcheckoutportal">
-							@{
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "pglist")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-							}
-							<li>@Html.ActionLink(string.Format(Resources.Resource.NewFormat, Resources.Resource.Item), "Index", "PGItem", new { }, new { @class = lnkcls })</li>
-
-							@{
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "stock")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-							}
-							<li>@Html.ActionLink(Resources.Resource.Stock, "Stock", "Item", new { }, new { @class = lnkcls })</li>
-
-							<li>
-								@{
-									lnkcls = "dropdown-item {0}";
-									if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "transfer")
-									{
-										lnkcls = string.Format(lnkcls, "active");
-									}
-									else
-									{
-										lnkcls = string.Format(lnkcls, string.Empty);
-									}
-								}
-								<a class="@lnkcls" href="/Transfer/Index">@Resources.Resource.StockTransfer</a>
-							</li>
-							<li>
-								@{
-									lnkcls = "dropdown-item {0}";
-									if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "transferlist")
-									{
-										lnkcls = string.Format(lnkcls, "active");
-									}
-									else
-									{
-										lnkcls = string.Format(lnkcls, string.Empty);
-									}
-								}
-								<a class="@lnkcls" href="/Transfer/List">@Resources.Resource.StockTransferOrder</a>
-							</li>
-
-							<li>
-								@{
-									lnkcls = "dropdown-item {0}";
-									if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "category")
-									{
-										lnkcls = string.Format(lnkcls, "active");
-									}
-									else
-									{
-										lnkcls = string.Format(lnkcls, string.Empty);
-									}
-								}
-								<a class="@lnkcls" href="/ItemCategory/Index">@Resources.Resource.Category</a>
-							</li>
-
-
-							<li>
-								@{
-									lnkcls = "dropdown-item {0}";
-									if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "zerostocks")
-									{
-										lnkcls = string.Format(lnkcls, "active");
-									}
-									else
-									{
-										lnkcls = string.Format(lnkcls, string.Empty);
-									}
-									@Html.ActionLink(Resources.Resource.OutOfStockItems, "ZeroStocks", "Item", new { }, new { @class = lnkcls })
-								}
-							</li>
-						</ul>
-					</li>
-
-					<li class="dropdown">
-						@{lnkcls = "nav-link dropdown-toggle {0}";
-							if (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "promotion")
-							{
-								lnkcls = string.Format(lnkcls, "active");
-							}
-							else
-							{
-								lnkcls = string.Format(lnkcls, string.Empty);
-							}
-						}
-						<a href="#" class="@lnkcls" data-toggle="dropdown">
-							<span>@Resources.Resource.Promotion</span>
-						</a>
-						<ul class="dropdown-menu">
-							<li>
-								@{
-									lnkcls = "dropdown-item {0}";
-									if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "eblast")
-									{
-										lnkcls = string.Format(lnkcls, "active");
-									}
-									else
-									{
-										lnkcls = string.Format(lnkcls, string.Empty);
-									}
-								}
-								<a class="@lnkcls" href="/eBlast/Index">@Resources.Resource.eBlast</a>
-							</li>
-							<li>
-								@{
-									lnkcls = "dropdown-item {0}";
-									if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "etrack")
-									{
-										lnkcls = string.Format(lnkcls, "active");
-									}
-									else
-									{
-										lnkcls = string.Format(lnkcls, string.Empty);
-									}
-								}
-								<a class="@lnkcls" href="/eTrack/TrackResult?pass=@ConfigurationManager.AppSettings["eTrackToken"]">@Resources.Resource.TrackResult</a>
-							</li>
-							<li>
-								@{
-									lnkcls = "dropdown-item {0}";
-									if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "itemperiodpromotion")
-									{
-										lnkcls = string.Format(lnkcls, "active");
-									}
-									else
-									{
-										lnkcls = string.Format(lnkcls, string.Empty);
-									}
-								}
-								<a class="@lnkcls" href="/ItemPeriodPromotion/Index">@Resources.Resource.ItemPeriodPromotion</a>
-							</li>
-
-							<li>
-								@{
-									lnkcls = "dropdown-item {0}";
-									if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "itemqtypromotion")
-									{
-										lnkcls = string.Format(lnkcls, "active");
-									}
-									else
-									{
-										lnkcls = string.Format(lnkcls, string.Empty);
-									}
-								}
-								<a class="@lnkcls" href="/ItemQtyPromotion/Index">@Resources.Resource.ItemQtyPromotion</a>
-							</li>
-
-							<li>
-								@{
-									lnkcls = "dropdown-item {0}";
-									if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "promotion")
-									{
-										lnkcls = string.Format(lnkcls, "active");
-									}
-									else
-									{
-										lnkcls = string.Format(lnkcls, string.Empty);
-									}
-								}
-								<a class="@lnkcls" href="/Promotion/Index">@string.Format(Resources.Resource.ListFormat, Resources.Resource.Promotion)</a>
-							</li>
-						</ul>
-					</li>
-
-					<li class="dropdown">
-						@{lnkcls = "nav-link dropdown-toggle {0}";
-							if (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "wholesales")
-							{
-								lnkcls = string.Format(lnkcls, "active");
-							}
-							else
-							{
-								lnkcls = string.Format(lnkcls, string.Empty);
-							}
-						}
-						<a href="#" class="@lnkcls" data-toggle="dropdown">
-							<span>@Resources.Resource.WholeSales</span>
-						</a>
-						<div class="dropdown-menu">
-							@{
-								if (!isadmin)
-								{
-									lnkcls = "dropdown-item {0}";
-									if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "create")
-									{ lnkcls = string.Format(lnkcls, "active"); }
-									else
-									{
-										lnkcls = string.Format(lnkcls, string.Empty);
-									}
-									@Html.ActionLink(string.Format(Resources.Resource.AddFormat, Resources.Resource.Order), "Edit", "WholeSales", new { Id = 0, type = "order" }, new { @class = lnkcls })
-
-
-
-									lnkcls = "dropdown-item {0}";
-									if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "list")
-									{
-										lnkcls = string.Format(lnkcls, "active");
-									}
-									else
-									{
-										lnkcls = string.Format(lnkcls, string.Empty);
-									}
-									fordelivery = string.Concat("<span class='small'>(", fordelivery, ")</span>");
-									var wholesaleslist = Html.Raw(string.Concat(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.WholeSaleOrder), fordelivery));
-									<a class="@lnkcls" href="/WholeSales/Index">@wholesaleslist</a>
-								}
-
-								if (approvalmode && isadmin)
-								{
-									lnkcls = "dropdown-item {0}";
-									if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "salesorderlist")
-									{
-										lnkcls = string.Format(lnkcls, "active");
-									}
-									else
-									{
-										lnkcls = string.Format(lnkcls, string.Empty);
-									}
-
-									forapproval = string.Concat("<span class='small'>(", forapproval, ")</span>");
-									var wholesalesorderlist = Html.Raw(string.Concat(string.Format(Resources.Resource.ListFormat, Resources.Resource.WholeSaleOrder), forapproval));
-									<a class="@lnkcls" href="/WholeSales/SalesOrderList">@wholesalesorderlist</a>
-
-								}
-							}
-
-						</div>
-					</li>
-
-					<li class="dropdown">
-						@{lnkcls = "nav-link dropdown-toggle {0}";
-							if (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "purchase")
-							{
-								lnkcls = string.Format(lnkcls, "active");
-							}
-							else
-							{
-								lnkcls = string.Format(lnkcls, string.Empty);
-							}
-						}
-						<a href="#" class="@lnkcls" data-toggle="dropdown">
-							<span>@Resources.Resource.Purchase</span>
-						</a>
-						<ul class="dropdown-menu">
-							@if (!isadmin)
-							{
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "order")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-								<li>
-									@Html.ActionLink(string.Format(Resources.Resource.NewFormat, Resources.Resource.PurchaseOrder), "Edit", "Purchase", new { Id = 0, type = "order" }, new { @class = lnkcls })
-								</li>
-
-								<li>
-									@{
-										lnkcls = "dropdown-item {0}";
-										if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "purchase")
-										{
-											lnkcls = string.Format(lnkcls, "active");
-										}
-										else
-										{
-											lnkcls = string.Format(lnkcls, string.Empty);
-										}
-
-										forreceival = string.Concat("<span class='small'>(", forreceival, ")</span>");
-										var purchaselist = Html.Raw(string.Concat(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.PurchaseOrder), forreceival));
-									}
-									<a class="@lnkcls" href="/Purchase/Index">@purchaselist</a>
-
-								</li>
-							}
-
-							@if (approvalmode && isadmin)
-							{
-								<li>
-									@{lnkcls = "dropdown-item {0}";
-										if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "purchaseorderlist")
-										{
-											lnkcls = string.Format(lnkcls, "active");
-										}
-										else
-										{
-											lnkcls = string.Format(lnkcls, string.Empty);
-										}
-
-										var purchaseorderlist = Html.Raw(string.Concat(string.Format(Resources.Resource.ListFormat, Resources.Resource.PurchaseOrder), forapproval));
-									}
-									<a class="@lnkcls" href="/Purchase/PurchaseOrderList">@purchaseorderlist</a>
-								</li>
-							}
-
-
-							<li>
-								@{
-									lnkcls = "dropdown-item {0}";
-									if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "supplier")
-									{
-										lnkcls = string.Format(lnkcls, "active");
-									}
-									else
-									{
-										lnkcls = string.Format(lnkcls, string.Empty);
-									}
-								}
-								@Html.ActionLink(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.Supplier), "Index", "Supplier", null, new { @class = lnkcls })
-							</li>
-
-						</ul>
-					</li>
-
-
-					@if (showDataTransfer)
-					{
-						<li class="dropdown">
-							@{lnkcls = "nav-link {0}";
-								if (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "dayends")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-							}
-							<a href="#" class="@lnkcls" data-toggle="dropdown">
-								<span class="dropdown-toggle">@Resources.Resource.DataIntegration</span>
+	<!-- dashbord-area-start -->
+	<section class="dash">
+		<div class="dash__flex">
+			<div class="dash__left">
+				<div class="cross d-none">
+					<a href="#"><i class="far fa-times-circle"></i></a>
+				</div>
+				<div class="dash_menu_title">
+					<h3>@sitename</h3>
+				</div>
+				<div class="dash__menu">
+					<ul>
+						<li class="btn_expand">
+							@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "sales") ? "active_btn" : "expand_btn";}
+							<a class="@lnkcls" data-bs-toggle="collapse" href="#collapseRetail" role="button">
+								<span><img src="~/Content/mean/img/retail.svg" alt=""></span>
+								<p>@Resources.Resource.Retail</p>
 							</a>
-							<div class="dropdown-menu">
-								@{
-									lnkcls = "dropdown-item {0}";
-									if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "dayendsimportfrmcentral")
-									{ lnkcls = string.Format(lnkcls, "active"); }
-									else { lnkcls = string.Format(lnkcls, string.Empty); }
-									var pagetitle = HttpContext.Current.Session["ImportFrmCentralPageTitle"] ?? string.Format(Resources.Resource.DayendsImportFrmCentral, defaultcheckoutportal.ToUpper());
-									<a href="/DataTransfer/DayendsImportFrmCentral" class="@lnkcls">@pagetitle</a>
-
-
-									lnkcls = "dropdown-item {0}";
-									if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "dayendsexportfrmshop")
-									{
-										lnkcls = string.Format(lnkcls, "active");
-									}
-									else
-									{
-										lnkcls = string.Format(lnkcls, string.Empty);
-									}
-									pagetitle = HttpContext.Current.Session["ExportFrmShopPageTitle"] ?? string.Format(Resources.Resource.DayendsImportFrmShop, defaultcheckoutportal.ToUpper());
-									<a href="/DataTransfer/DayendsExportFrmShop" class="@lnkcls">@pagetitle</a>
+							<ul class="collapse" id="collapseRetail">
+								@if (!isadmin)
+								{
+									sublnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "sales") ? "active" : "";
+									<li><a href="/POSFunc/Sales" class="@sublnkcls">@string.Format(Resources.Resource.OrderFormat, Resources.Resource.Retail)</a></li>
+									sublnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "advsales") ? "active" : "";
+									<li><a href="/POSFunc/AdvSales" class="@sublnkcls">@string.Concat(string.Format(Resources.Resource.OrderFormat, Resources.Resource.Retail), "(", Resources.Resource.Advanced, ")")</a></li>
+									sublnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "refund") ? "active" : "";
+									<li><a href="/POSFunc/Refund" class="@sublnkcls">@string.Format(Resources.Resource.OrderFormat, Resources.Resource.Refund)</a></li>
+									sublnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "salesorderlist") ? "active" : "";
+									<li><a href="/SalesOrder/Index" class="@sublnkcls">@string.Format(Resources.Resource.ListFormat, Resources.Resource.SalesOrder)</a></li>
 								}
 
-							</div>
+								@if (HttpContext.Current.Session["Reports"] == null)
+								{
+									sublnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "dayends") ? "active" : "";
+									<li><a href="/POSFunc/DayEnds" class="@sublnkcls">@Resources.Resource.DayEnds</a></li>
+
+								}
+								else
+								{
+									reportlnktxt = Resources.Resource.DayEnds;
+
+									reports = (List<ReportView>)System.Web.HttpContext.Current.Session["Reports"];
+									List<DayEndsItem> ExImViews = (List<DayEndsItem>)System.Web.HttpContext.Current.Session["ExImViews"];
+
+									foreach (ReportView report in reports)
+									{
+										sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == report.Code.ToLower()) ? "active" : "";
+										<li>
+											@Html.ActionLink(report.Name, "Show" + report.Code, "Report", new { }, new { @class = sublnkcls })
+										</li>
+									}
+								}
+							</ul>
 						</li>
-					}
+						<li class="btn_expand">
+							@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "customer") ? "active_btn" : "expand_btn";}
+							<a class="@lnkcls" data-bs-toggle="collapse" href="#collapseCustomer" role="button">
+								<span><img src="~/Content/mean/img/custom.svg" alt=""></span>
+								<p>@Resources.Resource.Customer</p>
+							</a>
+							<ul class="collapse" id="collapseCustomer">
+								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "customer") ? "active" : ""; }
 
+								<li><a href="/Customer/Index" class="@sublnkcls">@string.Format(Resources.Resource.ManagementFormat, Resources.Resource.Customer)</a></li>
 
-					<li class="dropdown">
-						@{
-							reportlnktxt = Resources.Resource.Report;
-							reportlnkcls = "nav-link dropdown-toggle {0}";
-							if (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "generalreports")
-							{
-								reportlnkcls = string.Format(reportlnkcls, "active");
-							}
-							else
-							{
-								reportlnkcls = string.Format(reportlnkcls, string.Empty);
-							}
-						}
-						<a href="#" class="@reportlnkcls" data-toggle="dropdown">
-							@reportlnktxt  <span class="caret"></span>
-						</a>
-						<div class="dropdown-menu">
-							@{
-								reports = (List<ReportView>)System.Web.HttpContext.Current.Session["GeneralReports"];
-							}
+								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "pricelevels") ? "active" : ""; }
 
-							@if (reports != null && reports.Count > 0)
-							{
-								foreach (ReportView report in reports)
-								{
-									lnkcls = "dropdown-item {0}";
-									if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == report.Code.ToLower()) { lnkcls = string.Format(lnkcls, "active"); } else { lnkcls = string.Format(lnkcls, string.Empty); }
-									@Html.ActionLink(report.Name, "Show" + report.Code, "Report", new { }, new { @class = lnkcls });
-								}
-							}
-						</div>
-					</li>
+								<li><a href="/PriceLevels/Index" class="@sublnkcls">@Resources.Resource.PointLevel</a></li>
+								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "pgcustomer") ? "active" : ""; }
 
-					<li class="dropdown">
-						@{
-							reportlnktxt = Resources.Resource.Report;
-							reportlnkcls = "nav-link dropdown-toggle {0}";
-							if (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "abssreports")
-							{
-								reportlnkcls = string.Format(reportlnkcls, "active");
-							}
-							else
-							{
-								reportlnkcls = string.Format(reportlnkcls, string.Empty);
-							}
-						}
-						<a href="#" class="@reportlnkcls" data-toggle="dropdown">
-							@string.Format(Resources.Resource.ReportFormat, "ABSS") <span class="caret"></span>
-						</a>
-						<div class="dropdown-menu">
-							@{
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "quotation")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-							}
-							@Html.ActionLink(Resources.Resource.Quotation, "Quotation", "ABSSReport", null, new { @class = lnkcls })
-
-							@{
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "receivable")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-							}
-							@Html.ActionLink(Resources.Resource.AccountReceivable, "AccountReceivable", "ABSSReport", null, new { @class = lnkcls })
-
-							@{
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "spp")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-							}
-							@Html.ActionLink(Resources.Resource.SalesPersonPerformance, "SPP", "ABSSReport", null, new { @class = lnkcls })
-
-							@{
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "ci")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-							}
-							@Html.ActionLink(Resources.Resource.CustomerInvoices, "CI", "ABSSReport", null, new { @class = lnkcls })
-						</div>
-					</li>
-
-					<li class="dropdown">
-						@{
-							reportlnktxt = Resources.Resource.Record;
-							reportlnkcls = "nav-link dropdown-toggle {0}";
-							if (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "records")
-							{
-								reportlnkcls = string.Format(reportlnkcls, "active");
-							}
-							else
-							{
-								reportlnkcls = string.Format(reportlnkcls, string.Empty);
-							}
-						}
-						<a href="#" class="@reportlnkcls" data-toggle="dropdown">
-							@reportlnktxt  <span class="caret"></span>
-						</a>
-						<div class="dropdown-menu">
-							@{
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "attendance")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-							}
-							@Html.ActionLink(Resources.Resource.AttendanceRecords, "Index", "Attendance", null, new { @class = lnkcls })
-
-							@{
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "job")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-							}
-							@Html.ActionLink(Resources.Resource.JobRecords, "Index", "Job", null, new { @class = lnkcls })
-
-							@{
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "training")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-							}
-							@Html.ActionLink(Resources.Resource.TrainingRecords, "Index", "Training", null, new { @class = lnkcls })
-
-							@{
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "journal")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-							}
-							@Html.ActionLink(Resources.Resource.JournalRecords, "Index", "Journal", null, new { @class = lnkcls })
-						</div>
-					</li>
-
-					<li class="dropdown">
-						@{lnkcls = "nav-link {0}";
-							if (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "setup")
-							{
-								lnkcls = string.Format(lnkcls, "active");
-							}
-							else
-							{
-								lnkcls = string.Format(lnkcls, string.Empty);
-							}
-						}
-						<a href="#" class="@lnkcls" data-toggle="dropdown">
-							<span class="dropdown-toggle">@Resources.Resource.Setup</span>
-						</a>
-						@{ bool tmp = HttpContext.Current.Session["Menus"] == null;}
-						<div class="dropdown-menu" data-debug="@tmp">
-							@{
-								Dictionary<string, Menu> dicSetupMenus = (Dictionary<string, Menu>)HttpContext.Current.Session["Menus"];
-							}
-							@if (dicSetupMenus != null)
-							{
-								foreach (string key in dicSetupMenus.Keys)
-								{
-									lnkcls = "dropdown-item {0}";
-									Menu menu = dicSetupMenus[key];
-									if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == key.ToLower()) { lnkcls = string.Format(lnkcls, "active"); } else { lnkcls = string.Format(lnkcls, string.Empty); }
-									@Html.ActionLink(menu.DisplayText, menu.ActionName, menu.ControllerName, new { }, new { @class = lnkcls });
-								}
-							}
-
-							@{
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "accessrights")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-							}
-							@Html.ActionLink(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.User), "Index", "AccessRight", new { }, new { @class = lnkcls })
-
-							@{
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "exchangerate")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-								<a href="/Othersettings/ExchangeRate" class="@lnkcls">@string.Format(Resources.Resource.SetupFormat, Resources.Resource.ExchangeRate)</a>
-							}
-
-							@if (defaultcheckoutportal.ToLower() == "kingdee")
-							{
-								lnkcls = "dropdown-item {0}";
-								if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "kingdee")
-								{
-									lnkcls = string.Format(lnkcls, "active");
-								}
-								else
-								{
-									lnkcls = string.Format(lnkcls, string.Empty);
-								}
-								<a href="/Othersettings/KingdeeAccountInfo" class="@lnkcls">@Resources.Resource.KingdeeAccountInfo</a>
-							}
-						</div>
-					</li>
-
-
-
-
-				</ul>
-
+								<li><a href="/PGCustomer/Index" class="@sublnkcls">@string.Format(Resources.Resource.AddFormat, Resources.Resource.Customer)</a></li>
+								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "enquiry") ? "active" : ""; }
+								
+								<li><a href="/Enquiry/Index" class="@sublnkcls">@Resources.Resource.Enquiry</a></li>
+							</ul>
+						</li>
+						@*<li class="btn_expand">
+								<a class="expand_btn" data-bs-toggle="collapse" href="#collapseExample2" role="button">
+									<span><img src="~/Content/mean/img/Cube.svg" alt=""></span>
+									<p>Items</p>
+								</a>
+								<ul class="submenu collapse" id="collapseExample2">
+									<li><a href="#">New Item</a></li>
+									<li><a href="#">Stock</a></li>
+									<li><a href="#">Stock Transfer</a></li>
+									<li><a href="#">Stock Transfer Order</a></li>
+									<li><a href="#">Category</a></li>
+									<li><a href="#">Out-of-stock Items</a></li>
+								</ul>
+							</li>
+							<li class="btn_expand">
+								<a class="expand_btn" data-bs-toggle="collapse" href="#collapseExample3" role="button">
+									<span><img src="~/Content/mean/img/promo.svg" alt=""></span>
+									<p>Promotion</p>
+								</a>
+								<ul class="submenu collapse" id="collapseExample3">
+									<li><a href="#">eBlast</a></li>
+									<li><a href="#">Track Result</a></li>
+									<li><a href="#">Item Period Promotion</a></li>
+									<li><a href="#">Item Qty Promotion</a></li>
+									<li><a href="#">Promotion List</a></li>
+								</ul>
+							</li>
+							<li class="btn_expand">
+								<a class="expand_btn" data-bs-toggle="collapse" href="#collapseExample4" role="button">
+									<span><img src="~/Content/mean/img/whole.svg" alt=""></span>
+									<p>Wholesales</p>
+								</a>
+								<ul class="submenu collapse" id="collapseExample4">
+									<li><a href="#">Add Order</a></li>
+									<li><a href="#">Wholesale Order Management (for delivery)</a></li>
+								</ul>
+							</li>
+							<li class="btn_expand">
+								<a class="btn_expand" data-bs-toggle="collapse" href="#collapseExample10" role="button">
+									<span><img src="~/Content/mean/img/purchase.svg" alt=""></span>
+									<p>Purchase</p>
+								</a>
+								<ul class="submenu collapse" id="collapseExample10">
+									<li><a href="#">New Purchase Order</a></li>
+									<li><a href="#">Purchase Order Management (for receival)</a></li>
+									<li><a href="#">Supplier Management</a></li>
+								</ul>
+							</li>
+							<li class="btn_expand">
+								<a class="btn_expand" data-bs-toggle="collapse" href="#collapseExample5" role="button">
+									<span><img src="~/Content/mean/img/data exchange.svg" alt=""></span>
+									<p>Data Integration</p>
+								</a>
+								<ul class="submenu collapse" id="collapseExample5">
+									<li><a href="#">ABSS to SB</a></li>
+									<li><a href="#">SB to ABSS</a></li>
+								</ul>
+							</li>
+							<li class="btn_expand">
+								<a class="btn_expand" data-bs-toggle="collapse" href="#collapseExample11" role="button">
+									<span><img src="~/Content/mean/img/data.svg" alt=""></span>
+									<p>Report</p>
+								</a>
+								<ul class="submenu collapse" id="collapseExample11">
+									<li><a href="#">Transaction Details</a></li>
+									<li><a href="#">Payment Methods Details</a></li>
+									<li><a href="#">Item Sales Details</a></li>
+								</ul>
+							</li>
+							<li class="btn_expand">
+								<a class="btn_expand" data-bs-toggle="collapse" href="#collapseExample6" role="button">
+									<span><img src="~/Content/mean/img/report.svg" alt=""></span>
+									<p>ABBS Report</p>
+								</a>
+								<ul class="submenu collapse" id="collapseExample6">
+									<li><a href="#">Quotation</a></li>
+									<li><a href="#">Account Receivable</a></li>
+								</ul>
+							</li>
+							<li class="btn_expand">
+								<a class="btn_expand" data-bs-toggle="collapse" href="#collapseExample7" role="button">
+									<span><img src="~/Content/mean/img/rec.svg" alt=""></span>
+									<p>Record</p>
+								</a>
+								<ul class="submenu collapse" id="collapseExample7">
+									<li><a href="#">Attendance Records</a></li>
+									<li><a href="#">Job Records</a></li>
+									<li><a href="#">Training Records</a></li>
+									<li><a href="#">Journal Records</a></li>
+								</ul>
+							</li>
+							<li class="btn_expand">
+								<a class="btn_expand" data-bs-toggle="collapse" href="#collapseExample8" role="button">
+									<span><img src="~/Content/mean/img/setup.svg" alt=""></span>
+									<p>Setup</p>
+								</a>
+								<ul class="submenu collapse" id="collapseExample8">
+									<li><a href="#">Email Settings</a></li>
+									<li><a href="#">Other Settings</a></li>
+									<li><a href="#">Payment Types</a></li>
+									<li><a href="#">Receipt</a></li>
+									<li><a href="#">User Management</a></li>
+									<li><a href="#">Exchange Rate Setup</a></li>
+								</ul>
+							</li>*@
+					</ul>
+				</div>
 			</div>
-
-			<input type="hidden" id="checkoutportal" value="@defaultcheckoutportal.ToLower()" />
-			<input type="hidden" id="shop" value="@shop" />
-
-			@Html.Partial("_LoginPartial", null, new ViewDataDictionary { { "iscentral", false } })
-
-
-
+			<div class="dash__body">
+				<div class="dash__top">
+					<div class="dash__top--title">
+						<h3>Retail Order - Payment</h3>
+					</div>
+					<div class="dash__top--btn">
+						<a href="#">$ HKD</a>
+						<div class="dash__top--select">
+							<select>
+								<option value="" disabled selected>Select currency</option>
+								<option value="1">$ HKD (1.0000)</option>
+								<option value="2">£ GBP (9.9000)</option>
+								<option value="3">$ USD (7.8000)</option>
+								<option value="4"> ¥ CNY (1.1300)</option>
+								<option value="5"> € EUR (8.4300)</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="dash__mid">
+					<div class="dash_mid_left">
+						<div class="dash__price">
+							<div class="price__title">
+								<label for="#">Sales Amount:</label>
+								<p>$ 50,000.00</p>
+							</div>
+							<div class="price__add--wrap">
+								<label for="#">Pay with:</label>
+								<div class="price__add--btn">
+									<button class="btn1 toggle-button toggle" data-target="section1">
+										<span class="pluse">
+											<i class="fal fa-plus"></i>
+										</span><span class="checks">
+											<i class="fal fa-check"></i>
+										</span>Cash
+									</button>
+									<button class="btn2 toggle-button" data-target="section1">
+										<span class="pluse">
+											<i class="fal fa-plus"></i>
+										</span><span class="checks">
+											<i class="fal fa-check"></i>
+										</span>Coupon
+									</button>
+									<button class="btn3 toggle-button" data-target="section1">
+										<span class="pluse">
+											<i class="fal fa-plus"></i>
+										</span><span class="checks">
+											<i class="fal fa-check"></i>
+										</span>Visa
+									</button>
+									<button class="btn4 toggle-button" data-target="section1">
+										<span class="pluse">
+											<i class="fal fa-plus"></i>
+										</span><span class="checks">
+											<i class="fal fa-check"></i>
+										</span>Mastercard
+									</button>
+									<button class="btn5 toggle-button" data-target="section1">
+										<span class="pluse">
+											<i class="fal fa-plus"></i>
+										</span><span class="checks">
+											<i class="fal fa-check"></i>
+										</span>Alipay
+									</button>
+									<button class="btn6 toggle-button" data-target="section1">
+										<span class="pluse">
+											<i class="fal fa-plus"></i>
+										</span><span class="checks">
+											<i class="fal fa-check"></i>
+										</span>WeChat Pay
+									</button>
+								</div>
+							</div>
+						</div>
+						<div class="dash__box">
+							<div class="dash__price--app" id="section1">
+								<h2>
+									<span class="mul">Multiple</span><span class="sin">Single</span> payment method
+									applied
+								</h2>
+							</div>
+							<div class="dash__add">
+								<div class="single__add add1 active">
+									<span>Cash</span>
+									<input type="text" placeholder="0">
+									<a href="#">HKD</a>
+								</div>
+								<div class="single__add add2">
+									<span>Coupon</span>
+									<input type="text" placeholder="0">
+									<a href="#">HKD</a>
+								</div>
+								<div class="single__add add3">
+									<span>Visa</span>
+									<input type="text" placeholder="0">
+									<a href="#">HKD</a>
+								</div>
+								<div class="single__add add4">
+									<span>Mastercard</span>
+									<input type="text" placeholder="0">
+									<a href="#">HKD</a>
+								</div>
+								<div class="single__add add5">
+									<span>Alipay</span>
+									<input type="text" placeholder="0">
+									<a href="#">HKD</a>
+								</div>
+								<div class="single__add add6">
+									<span>WeChat Pay</span>
+									<input type="text" placeholder="0">
+									<a href="#">HKD</a>
+								</div>
+							</div>
+							<div class="dash__rem--btn">
+								<p>Remaining</p>
+								<span>50000</span>
+								<p>HKD</p>
+							</div>
+							<div class="dash__play--flex">
+								<a href="#">
+									<div class="single__play">
+										<h3>Monthly Pay</h3>
+										<p>Generate invoice</p>
+									</div>
+								</a>
+								<a href="#">
+									<div class="single__play">
+										<h3>Pay Now</h3>
+										<p>Confirm payment</p>
+									</div>
+								</a>
+							</div>
+						</div>
+					</div>
+					<div class="dash_mid_right">
+						<div class="dash__pay">
+							<div class="dash__pay--title">
+								<h3>ePayment</h3>
+							</div>
+							<div class="dash__pay--code">
+								<label for="#">Payer code</label>
+								<input type="text" placeholder="Payer code">
+							</div>
+							<div class="dash__btn">
+								<button type="submit" class="red">Reverse <br> Payment</button>
+								<button type="submit">Transaction <br> Result</button>
+							</div>
+						</div>
+						<div class="dash__table">
+							<div class="table__single fast">
+								<h3>Order Summary <span>#36686</span></h3>
+								<h3>Date <span>27 Dec 2023</span></h3>
+								<h3>Time <span>12:13 pm</span></h3>
+							</div>
+							<div class="table__single secend">
+								<h2>Items</h2>
+								<h3>Strawberry x 100 <span>$ 14,000</span></h3>
+								<h3>Apple x 50 <span>$ 7,000</span></h3>
+								<h3>Orange x 50 <span>$ 8,000</span></h3>
+								<h3>Pineapple x 100 <span>$ 20,000</span></h3>
+							</div>
+							<div class="table__single last">
+								<h3>Tax <span>$1000</span></h3>
+								<h3>Discount <span>$0</span></h3>
+								<h3>Total amount <span>$50,000</span></h3>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
-	</nav>
+	</section>
+	<!-- dashbord-area-end -->
+	<input type="hidden" id="checkoutportal" value="@defaultcheckoutportal.ToLower()" />
+	<input type="hidden" id="shop" value="@shop" />
+	<script src="~/Scripts/ts/js/menu.js?v=@rand"></script>
+
 
 	<div class="container">
 		<div>
@@ -918,7 +436,7 @@
 
 	<div id="appInfo" data-checkoutportal="@defaultcheckoutportal" data-enablewhatsapplnk="@ComInfo.enableWhatsappLink" data-whatsappapilnk="@ConfigurationManager.AppSettings["WhatsappLinkUrl"]" data-whatsappapidefaulttxt="@ConfigurationManager.AppSettings["WhatsappAPIDefaultText"]"></div>
 
-	<script src="~/Scripts/ts/js/app.js?v=@rand"></script>
+@*	<script src="~/Scripts/ts/js/app.js?v=@rand"></script>*@
 
 	<div class="container body-content">
 
@@ -940,7 +458,6 @@
 				}, 4000);
 			}
 		});
-
 	</script>
 </body>
 </html>

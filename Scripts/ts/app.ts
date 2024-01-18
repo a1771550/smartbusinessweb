@@ -6297,6 +6297,8 @@ interface ISerialNo {
 }
 
 interface JQuery {
+    switchClass(arg0: string, arg1: string, arg2: number, arg3: string): any;
+    niceSelect(): any;
 	ASPSnippets_Pager(arg0: {
 		ActiveCssClass: string;
 		PagerCssClass: string;

@@ -71,7 +71,7 @@ namespace SmartBusinessWeb.App_Start
             "~/Scripts/jquery-default-button.min.js"
                     ));
 
-            BundleTable.EnableOptimizations = true;
+            BundleTable.EnableOptimizations = false;
         }
     }
 

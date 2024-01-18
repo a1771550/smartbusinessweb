@@ -16,38 +16,32 @@
 	{
 		string deviceshop = $"{shop} {device}";
 
-		<div class="header__lun">
-			<select>
-				<option data-display="EN">EN</option>
-				<option value="1">简</option>
-				<option value="2">繁</option>
-			</select>
-		</div>
+		@Html.Partial("_LangPartial")
 		<div class="header__logout">
-			<a href="#"><img src="~/Contents/mean/Logout.png" alt=""></a>
+			<a href="#"><img src="~/Content/mean/img/Logout.png" alt=""></a>
 		</div>
 
 		<ul class="nav navbar-right" data-usershop="@user.shopCode" data-userdvc="@user.dvcCode">
 			<li class="nav-item" data-deviceshop="@deviceshop"><a class="nav-link" href="#">@deviceshop @user.UserName <span class="small">(@string.Join(",", user.Roles))</span></a></li>
 			@*<li class="nav-item mr-1"><a class="nav-link small" href="#"></a></li>*@
 			<li class="nav-item"><a class="nav-link" id="btnLogout" href="#">@Resources.Resource.Logout</a></li>
-			@Html.Partial("_LangPartial")
+
 		</ul>
 
 	}
 }
-else
+@*else
 {
 	<ul class="nav navbar-nav navbar-right">
 		<li>@Html.ActionLink(Resources.Resource.Login, "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink", @class = "nav-link" })</li>
 
 		@Html.Partial("_LangPartial")
 	</ul>
-}
+}*@
 
 <script>
-let unauthorized = '@unauthorized' === 'True';
-let enablecheckdayends = '@enabledcheckdayends' === 'True';
+unauthorized = '@unauthorized' === 'True';
+enablecheckdayends = '@enabledcheckdayends' === 'True';
 
 $(document).on('click', '#btnLogout', function() {
     if (unauthorized)

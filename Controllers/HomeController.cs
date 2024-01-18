@@ -18,6 +18,7 @@ namespace SmartBusinessWeb.Controllers
             return View();
 		}
 
+        [HttpPost]
 		public ActionResult ChangeCurrentCulture(int Id)
         {
             CultureHelper.CurrentCulture = Id;
@@ -50,8 +51,6 @@ namespace SmartBusinessWeb.Controllers
                 }
 
             }
-            
-
             //  
             // Redirect to the same page from where the request was made!   
             //  
