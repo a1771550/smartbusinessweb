@@ -16,19 +16,19 @@
 	float: left
 }
 
-.pass-group .toggle-password, .pass-group .toggle-passworda, .profile-set .profile-top .profileupload a, .productset .productsetimg, .productset.active .check-product, .order-list .actionproducts > ul > li .deletebg, .product-details, .header-menuset ul li a, .owl-product .owl-nav button, .productimg .productcontet h4, .increment-decrement .input-groups input[type=button], .setvaluecash ul li a, .select-split .btn-filters, .product-view .product-viewimg, .productviewset .productviewscontent a, .image-upload-new .productviewscontent a, .add-icon span, .add-icon a, .slider-product-details .owl-carousel .owl-nav button, .product-list ul li .productviews .productviewscontent a, .login-wrapper .login-content .form-sociallink ul li a, .login-wrapper .login-content .toggle-passwords, .login-wrapper .login-content .toggle-password, .dash-widget .dash-widgetimg span, .image-upload.image-upload-new .image-uploads, .search-set .btn-filter, .page-header .btn-filter, .modal .modal-footer .btn-print, .modal .close, .modal .btn-close, div#global-loader, .searchinputs .search-addon span, .error-page .main-wrapper, .error-page, .icons-items .icons-list li, .icons-list li, .input-group .scanner-set, .avatar .avatar-title {
+.pass-group .toggle-password, .pass-group .toggle-passworda, .profile-set .profile-top .profileupload a, .productset .productsetimg, .productset.active .check-product, .order-list .actionproducts > ul > li .deletebg, .product-details, .owl-product .owl-nav button, .productimg .productcontet h4, .increment-decrement .input-groups input[type=button], .setvaluecash ul li a, .select-split .btn-filters, .product-view .product-viewimg, .productviewset .productviewscontent a, .image-upload-new .productviewscontent a, .add-icon span, .add-icon a, .slider-product-details .owl-carousel .owl-nav button, .product-list ul li .productviews .productviewscontent a, .login-wrapper .login-content .form-sociallink ul li a, .login-wrapper .login-content .toggle-passwords, .login-wrapper .login-content .toggle-password, .dash-widget .dash-widgetimg span, .image-upload.image-upload-new .image-uploads, .search-set .btn-filter, .page-header .btn-filter, .modal .modal-footer .btn-print, .modal .close, .modal .btn-close, div#global-loader, .searchinputs .search-addon span, .error-page .main-wrapper, .error-page, .icons-items .icons-list li, .icons-list li, .input-group .scanner-set, .avatar .avatar-title {
 	justify-content: center;
 	-webkit-justify-content: center;
 	-ms-flex-pack: center
 }
 
-.pass-group .toggle-password, .pass-group .toggle-passworda, .profile-set .profile-top .profileupload a, .profile-set .profile-top .profile-contentimg, .profile-set .profile-top .profile-content, .profile-set .profile-top, .productset .productsetimg, .productset.active .check-product, .order-list .actionproducts > ul > li .deletebg, .order-list .actionproducts > ul, .order-list, .totalitem, .btn-scanner-set, .product-details, .invoice-load-btn .btn, .header-menuset ul li a, .header-menuset ul li, .header-menuset ul, .calculator-set ul, .btn-pos ul, .actionproduct ul, .owl-product .owl-nav button, .tab-set ul, .productimg .productlinkset, .productimg .productcontet h4, .productimg, .increment-decrement .input-groups input[type=button], .increment-decrement .input-groups, .product-lists, .setvalue ul li, .setvaluecash ul li a, .setvaluecash ul, .btn-totallabel, .select-split .btn-filters, .select-split, .product-view .product-viewimg, .productviewset .productviewscontent a, .image-upload-new .productviewscontent a, .image-upload-new .productviewscontent, .card-sales-split, .total-order ul li, .add-icon span, .add-icon a, .slider-product-details .owl-carousel .owl-nav button, .input-checkset ul, .bar-code-view, .product-list ul li .productviews .productviewscontent a, .product-list ul li .productviews .productviewscontent, .product-list ul li .productviews, .product-list ul, .login-wrapper .login-content .form-sociallink ul li a, .login-wrapper .login-content .form-sociallink ul, .login-wrapper .login-content .toggle-passwords, .login-wrapper .login-content .toggle-password, .graph-sets > ul, .graph-sets, .dash-count, .dash-widget .dash-widgetimg span, .dash-widget, .image-upload.image-upload-new .image-uploads, .wordset ul, .search-set .btn-filter, .search-set, .table-top, .page-header .btn-added, .page-header .btn-filter, .page-header, .chat-cont-right ul.list-unstyled .media.received .chat-msg-info, .chat-cont-right ul.list-unstyled .media.sent .media-body .chat-msg-info, .chat-search .input-group .input-group-prepend, .modal .modal-footer .btn-print, .modal .close, .modal .btn-close, .modal-barcode ul, .productimgname, .sidebar .sub-menu a, .sidebar .sidebar-menu > ul > li > a, div#global-loader, .searchinputs .search-addon span, .header-split .header-menu ul li a, .header-split .header-menu ul, .header-split, .header-pos.header .topnav-dropdown-footer, .header-pos.header .topnav-dropdown-header, .searchpart .searchhead, .header .menu-drop-user .dropdown-item, .header .userset, .header .header-left, .error-page, .icons-items .icons-list li, .icons-list li, .input-group .scanner-set, .btn-white, .avatar .avatar-title {
+.pass-group .toggle-password, .pass-group .toggle-passworda, .profile-set .profile-top .profileupload a, .profile-set .profile-top .profile-contentimg, .profile-set .profile-top .profile-content, .profile-set .profile-top, .productset .productsetimg, .productset.active .check-product, .order-list .actionproducts > ul > li .deletebg, .order-list .actionproducts > ul, .order-list, .totalitem, .btn-scanner-set, .product-details, .invoice-load-btn .btn, .calculator-set ul, .btn-pos ul, .actionproduct ul, .owl-product .owl-nav button, .tab-set ul, .productimg .productlinkset, .productimg .productcontet h4, .productimg, .increment-decrement .input-groups input[type=button], .increment-decrement .input-groups, .product-lists, .setvalue ul li, .setvaluecash ul li a, .setvaluecash ul, .btn-totallabel, .select-split .btn-filters, .select-split, .product-view .product-viewimg, .productviewset .productviewscontent a, .image-upload-new .productviewscontent a, .image-upload-new .productviewscontent, .card-sales-split, .total-order ul li, .add-icon span, .add-icon a, .slider-product-details .owl-carousel .owl-nav button, .input-checkset ul, .bar-code-view, .product-list ul li .productviews .productviewscontent a, .product-list ul li .productviews .productviewscontent, .product-list ul li .productviews, .product-list ul, .login-wrapper .login-content .form-sociallink ul li a, .login-wrapper .login-content .form-sociallink ul, .login-wrapper .login-content .toggle-passwords, .login-wrapper .login-content .toggle-password, .graph-sets > ul, .graph-sets, .dash-count, .dash-widget .dash-widgetimg span, .dash-widget, .image-upload.image-upload-new .image-uploads, .wordset ul, .search-set .btn-filter, .search-set, .table-top, .page-header .btn-added, .page-header .btn-filter, .page-header, .chat-cont-right ul.list-unstyled .media.received .chat-msg-info, .chat-cont-right ul.list-unstyled .media.sent .media-body .chat-msg-info, .chat-search .input-group .input-group-prepend, .modal .modal-footer .btn-print, .modal .close, .modal .btn-close, .modal-barcode ul, .productimgname, .sidebar .sub-menu a, .sidebar .sidebar-menu > ul > li > a, div#global-loader, .searchinputs .search-addon span, .error-page, .icons-items .icons-list li, .icons-list li, .input-group .scanner-set, .btn-white, .avatar .avatar-title {
 	align-items: center;
 	-webkit-box-align: center;
 	-ms-flex-align: center
 }
 
-	.profile-set .profile-top .profile-contentimg, .profile-set .profile-top, .order-list, .totalitem, .invoice-load-btn .btn, .header-menuset ul li, .btn-pos ul, .product-lists, .setvalue ul li, .btn-totallabel, .image-upload-new .productviewscontent, .card-sales-split, .bar-code-view, .product-list ul li .productviews .productviewscontent, .dash-count, .table-top, .page-header, .chat-cont-left .chat-scroll .media .media-body, .sidebar .sub-menu a, .header-split, .header-pos.header .topnav-dropdown-footer, .header-pos.header .topnav-dropdown-header, .searchpart .searchhead, .header .header-left, .btn-white {
+	.profile-set .profile-top .profile-contentimg, .profile-set .profile-top, .order-list, .totalitem, .invoice-load-btn .btn, .btn-pos ul, .product-lists, .setvalue ul li, .btn-totallabel, .image-upload-new .productviewscontent, .card-sales-split, .bar-code-view, .product-list ul li .productviews .productviewscontent, .dash-count, .table-top, .page-header, .chat-cont-left .chat-scroll .media .media-body, .sidebar .sub-menu a, .searchpart .searchhead, .btn-white {
 		justify-content: space-between;
 		-webkit-justify-content: space-between;
 		-ms-flex-pack: space-between
@@ -55,19 +55,19 @@
 	display: inline-flex
 }
 
-.pass-group .toggle-password, .pass-group .toggle-passworda, .profile-set .profile-top .profileupload a, .profile-set .profile-top .profile-contentimg, .profile-set .profile-top .profile-content, .profile-set .profile-top, .productset .productsetimg, .productset.active .check-product, .order-list .actionproducts > ul > li .deletebg, .order-list .actionproducts > ul, .order-list, .totalitem, .btn-scanner-set, .product-details, .header-menuset ul li a, .header-menuset ul li, .header-menuset ul, .calculator-set ul, .btn-pos ul li a.btn, .btn-pos ul, .actionproduct ul, .owl-product .owl-nav button, .tab-set ul, .productimg .productlinkset, .productimg .productcontet h4, .productimg, .increment-decrement .input-groups input[type=button], .increment-decrement .input-groups, .product-lists, .setvalue ul li, .setvaluecash ul li a, .setvaluecash ul, .btn-totallabel, .select-split .btn-filters, .select-split, .product-view .product-viewimg, .productviewset .productviewscontent a, .image-upload-new .productviewscontent a, .image-upload-new .productviewscontent, .card-sales-split ul, .card-sales-split, .total-order ul li, .add-icon span, .add-icon a, .slider-product-details .owl-carousel .owl-nav button, .productdetails > ul > li, .input-checkset ul, .bar-code-view, .product-list ul li .productviews .productviewscontent a, .product-list ul li .productviews .productviewscontent, .product-list ul li .productviews, .product-list ul, .login-wrapper .login-content .form-sociallink ul li a, .login-wrapper .login-content .form-sociallink ul, .login-wrapper .login-content .toggle-passwords, .login-wrapper .login-content .toggle-password, .login-wrapper, .graph-sets > ul, .graph-sets, .dash-count, .dash-widget .dash-widgetimg span, .dash-widget, .image-upload.image-upload-new .image-uploads, .wordset ul, .search-set .btn-filter, .search-set, .table-top, .page-header .btn-added, .page-header .btn-filter, .page-header, .chat-cont-right ul.list-unstyled .media.received .chat-msg-attachments, .chat-cont-right ul.list-unstyled .media.received .chat-msg-info, .chat-cont-right ul.list-unstyled .media.sent .media-body .chat-msg-info, .chat-cont-right ul.list-unstyled .media.sent .media-body .chat-msg-attachments, .chat-cont-right ul.list-unstyled .media.sent .media-body, .chat-cont-left .chat-scroll .media .media-body, .chat-search .input-group .input-group-prepend, .modal .modal-footer .btn-print, .modal .close, .modal .btn-close, .modal-barcode ul, .productimgname, .sidebar .sub-menu a, .sidebar .sidebar-menu > ul > li > a, .sidebar, div#global-loader, .searchinputs .search-addon span, .profilename .profileset, .header-split .header-menu ul li a, .header-split .header-menu ul, .header-split, .header-pos.header .topnav-dropdown-footer, .header-pos.header .topnav-dropdown-header, .searchpart .searchhead, .header .menu-drop-user .dropdown-item, .header .userset, .header .header-left, .error-page .main-wrapper, .error-page, .icons-items .icons-list li, .icons-items .icons-list, .icons-list li, .icons-list, .input-group, .input-group .scanner-set, .dropdown-menu .dropdown-item, .btn-white, .avatar .avatar-title {
+.pass-group .toggle-password, .pass-group .toggle-passworda, .profile-set .profile-top .profileupload a, .profile-set .profile-top .profile-contentimg, .profile-set .profile-top .profile-content, .profile-set .profile-top, .productset .productsetimg, .productset.active .check-product, .order-list .actionproducts > ul > li .deletebg, .order-list .actionproducts > ul, .order-list, .totalitem, .btn-scanner-set, .product-details, .calculator-set ul, .btn-pos ul li a.btn, .btn-pos ul, .actionproduct ul, .owl-product .owl-nav button, .tab-set ul, .productimg .productlinkset, .productimg .productcontet h4, .productimg, .increment-decrement .input-groups input[type=button], .increment-decrement .input-groups, .product-lists, .setvalue ul li, .setvaluecash ul li a, .setvaluecash ul, .btn-totallabel, .select-split .btn-filters, .select-split, .product-view .product-viewimg, .productviewset .productviewscontent a, .image-upload-new .productviewscontent a, .image-upload-new .productviewscontent, .card-sales-split ul, .card-sales-split, .total-order ul li, .add-icon span, .add-icon a, .slider-product-details .owl-carousel .owl-nav button, .productdetails > ul > li, .input-checkset ul, .bar-code-view, .product-list ul li .productviews .productviewscontent a, .product-list ul li .productviews .productviewscontent, .product-list ul li .productviews, .product-list ul, .login-wrapper .login-content .form-sociallink ul li a, .login-wrapper .login-content .form-sociallink ul, .login-wrapper .login-content .toggle-passwords, .login-wrapper .login-content .toggle-password, .login-wrapper, .graph-sets > ul, .graph-sets, .dash-count, .dash-widget .dash-widgetimg span, .dash-widget, .image-upload.image-upload-new .image-uploads, .wordset ul, .search-set .btn-filter, .search-set, .table-top, .page-header .btn-added, .page-header .btn-filter, .page-header, .chat-cont-right ul.list-unstyled .media.received .chat-msg-attachments, .chat-cont-right ul.list-unstyled .media.received .chat-msg-info, .chat-cont-right ul.list-unstyled .media.sent .media-body .chat-msg-info, .chat-cont-right ul.list-unstyled .media.sent .media-body .chat-msg-attachments, .chat-cont-right ul.list-unstyled .media.sent .media-body, .chat-cont-left .chat-scroll .media .media-body, .chat-search .input-group .input-group-prepend, .modal .modal-footer .btn-print, .modal .close, .modal .btn-close, .modal-barcode ul, .productimgname, .sidebar .sub-menu a, .sidebar .sidebar-menu > ul > li > a, .sidebar, div#global-loader, .searchinputs .search-addon span, .profilename .profileset, .error-page .main-wrapper, .error-page, .icons-items .icons-list li, .icons-items .icons-list, .icons-list li, .icons-list, .input-group, .input-group .scanner-set, .dropdown-menu .dropdown-item, .btn-white, .avatar .avatar-title {
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex
 }
 
-	.profile-set .profile-top .profile-contentimg, .profile-set .profile-top, .order-list, .totalitem, .invoice-load-btn .btn, .header-menuset ul li, .btn-pos ul, .product-lists, .setvalue ul li, .btn-totallabel, .image-upload-new .productviewscontent, .card-sales-split, .bar-code-view, .product-list ul li .productviews .productviewscontent, .dash-count, .table-top, .page-header, .chat-cont-left .chat-scroll .media .media-body, .sidebar .sub-menu a, .header-split, .header-pos.header .topnav-dropdown-footer, .header-pos.header .topnav-dropdown-header, .searchpart .searchhead, .header .header-left, .btn-white {
+	.profile-set .profile-top .profile-contentimg, .profile-set .profile-top, .order-list, .totalitem, .invoice-load-btn .btn, .btn-pos ul, .product-lists, .setvalue ul li, .btn-totallabel, .image-upload-new .productviewscontent, .card-sales-split, .bar-code-view, .product-list ul li .productviews .productviewscontent, .dash-count, .table-top, .page-header, .chat-cont-left .chat-scroll .media .media-body, .sidebar .sub-menu a, .btn-white {
 		justify-content: space-between;
 		-webkit-justify-content: space-between;
 		-ms-flex-pack: space-between
 	}
 
-	.header-menuset ul, .calculator-set ul, .btn-pos ul, .tab-set ul, .productdetails > ul > li, .input-checkset ul, .product-list ul, .login-wrapper .login-content .form-sociallink ul, .login-wrapper, .chat-cont-right ul.list-unstyled .media.received .chat-msg-info, .chat-cont-right ul.list-unstyled .media.sent .media-body .chat-msg-info, .modal-barcode ul, .error-page .main-wrapper, .icons-items .icons-list, .icons-list {
+	.calculator-set ul, .btn-pos ul, .tab-set ul, .productdetails > ul > li, .input-checkset ul, .product-list ul, .login-wrapper .login-content .form-sociallink ul, .login-wrapper, .chat-cont-right ul.list-unstyled .media.received .chat-msg-info, .chat-cont-right ul.list-unstyled .media.sent .media-body .chat-msg-info, .modal-barcode ul, .error-page .main-wrapper, .icons-items .icons-list, .icons-list {
 		-ms-flex-wrap: wrap;
 		flex-wrap: wrap
 	}
@@ -288,19 +288,19 @@ strong {
 	float: left
 }
 
-.pass-group .toggle-password, .pass-group .toggle-passworda, .profile-set .profile-top .profileupload a, .productset .productsetimg, .productset.active .check-product, .order-list .actionproducts > ul > li .deletebg, .product-details, .header-menuset ul li a, .owl-product .owl-nav button, .productimg .productcontet h4, .increment-decrement .input-groups input[type=button], .setvaluecash ul li a, .select-split .btn-filters, .product-view .product-viewimg, .productviewset .productviewscontent a, .image-upload-new .productviewscontent a, .add-icon span, .add-icon a, .slider-product-details .owl-carousel .owl-nav button, .product-list ul li .productviews .productviewscontent a, .login-wrapper .login-content .form-sociallink ul li a, .login-wrapper .login-content .toggle-passwords, .login-wrapper .login-content .toggle-password, .dash-widget .dash-widgetimg span, .image-upload.image-upload-new .image-uploads, .search-set .btn-filter, .page-header .btn-filter, .modal .modal-footer .btn-print, .modal .close, .modal .btn-close, div#global-loader, .searchinputs .search-addon span, .error-page .main-wrapper, .error-page, .icons-items .icons-list li, .icons-list li, .input-group .scanner-set, .avatar .avatar-title {
+.pass-group .toggle-password, .pass-group .toggle-passworda, .profile-set .profile-top .profileupload a, .productset .productsetimg, .productset.active .check-product, .order-list .actionproducts > ul > li .deletebg, .product-details, .owl-product .owl-nav button, .productimg .productcontet h4, .increment-decrement .input-groups input[type=button], .setvaluecash ul li a, .select-split .btn-filters, .product-view .product-viewimg, .productviewset .productviewscontent a, .image-upload-new .productviewscontent a, .add-icon span, .add-icon a, .slider-product-details .owl-carousel .owl-nav button, .product-list ul li .productviews .productviewscontent a, .login-wrapper .login-content .form-sociallink ul li a, .login-wrapper .login-content .toggle-passwords, .login-wrapper .login-content .toggle-password, .dash-widget .dash-widgetimg span, .image-upload.image-upload-new .image-uploads, .search-set .btn-filter, .page-header .btn-filter, .modal .modal-footer .btn-print, .modal .close, .modal .btn-close, div#global-loader, .searchinputs .search-addon span, .error-page .main-wrapper, .error-page, .icons-items .icons-list li, .icons-list li, .input-group .scanner-set, .avatar .avatar-title {
 	justify-content: center;
 	-webkit-justify-content: center;
 	-ms-flex-pack: center
 }
 
-.pass-group .toggle-password, .pass-group .toggle-passworda, .profile-set .profile-top .profileupload a, .profile-set .profile-top .profile-contentimg, .profile-set .profile-top .profile-content, .profile-set .profile-top, .productset .productsetimg, .productset.active .check-product, .order-list .actionproducts > ul > li .deletebg, .order-list .actionproducts > ul, .order-list, .totalitem, .btn-scanner-set, .product-details, .invoice-load-btn .btn, .header-menuset ul li a, .header-menuset ul li, .header-menuset ul, .calculator-set ul, .btn-pos ul, .actionproduct ul, .owl-product .owl-nav button, .tab-set ul, .productimg .productlinkset, .productimg .productcontet h4, .productimg, .increment-decrement .input-groups input[type=button], .increment-decrement .input-groups, .product-lists, .setvalue ul li, .setvaluecash ul li a, .setvaluecash ul, .btn-totallabel, .select-split .btn-filters, .select-split, .product-view .product-viewimg, .productviewset .productviewscontent a, .image-upload-new .productviewscontent a, .image-upload-new .productviewscontent, .card-sales-split, .total-order ul li, .add-icon span, .add-icon a, .slider-product-details .owl-carousel .owl-nav button, .input-checkset ul, .bar-code-view, .product-list ul li .productviews .productviewscontent a, .product-list ul li .productviews .productviewscontent, .product-list ul li .productviews, .product-list ul, .login-wrapper .login-content .form-sociallink ul li a, .login-wrapper .login-content .form-sociallink ul, .login-wrapper .login-content .toggle-passwords, .login-wrapper .login-content .toggle-password, .graph-sets > ul, .graph-sets, .dash-count, .dash-widget .dash-widgetimg span, .dash-widget, .image-upload.image-upload-new .image-uploads, .wordset ul, .search-set .btn-filter, .search-set, .table-top, .page-header .btn-added, .page-header .btn-filter, .page-header, .chat-cont-right ul.list-unstyled .media.received .chat-msg-info, .chat-cont-right ul.list-unstyled .media.sent .media-body .chat-msg-info, .chat-search .input-group .input-group-prepend, .modal .modal-footer .btn-print, .modal .close, .modal .btn-close, .modal-barcode ul, .productimgname, .sidebar .sub-menu a, .sidebar .sidebar-menu > ul > li > a, div#global-loader, .searchinputs .search-addon span, .header-split .header-menu ul li a, .header-split .header-menu ul, .header-split, .header-pos.header .topnav-dropdown-footer, .header-pos.header .topnav-dropdown-header, .searchpart .searchhead, .header .menu-drop-user .dropdown-item, .header .userset, .header .header-left, .error-page, .icons-items .icons-list li, .icons-list li, .input-group .scanner-set, .btn-white, .avatar .avatar-title {
+.pass-group .toggle-password, .pass-group .toggle-passworda, .profile-set .profile-top .profileupload a, .profile-set .profile-top .profile-contentimg, .profile-set .profile-top .profile-content, .profile-set .profile-top, .productset .productsetimg, .productset.active .check-product, .order-list .actionproducts > ul > li .deletebg, .order-list .actionproducts > ul, .order-list, .totalitem, .btn-scanner-set, .product-details, .invoice-load-btn .btn, .calculator-set ul, .btn-pos ul, .actionproduct ul, .owl-product .owl-nav button, .tab-set ul, .productimg .productlinkset, .productimg .productcontet h4, .productimg, .increment-decrement .input-groups input[type=button], .increment-decrement .input-groups, .product-lists, .setvalue ul li, .setvaluecash ul li a, .setvaluecash ul, .btn-totallabel, .select-split .btn-filters, .select-split, .product-view .product-viewimg, .productviewset .productviewscontent a, .image-upload-new .productviewscontent a, .image-upload-new .productviewscontent, .card-sales-split, .total-order ul li, .add-icon span, .add-icon a, .slider-product-details .owl-carousel .owl-nav button, .input-checkset ul, .bar-code-view, .product-list ul li .productviews .productviewscontent a, .product-list ul li .productviews .productviewscontent, .product-list ul li .productviews, .product-list ul, .login-wrapper .login-content .form-sociallink ul li a, .login-wrapper .login-content .form-sociallink ul, .login-wrapper .login-content .toggle-passwords, .login-wrapper .login-content .toggle-password, .graph-sets > ul, .graph-sets, .dash-count, .dash-widget .dash-widgetimg span, .dash-widget, .image-upload.image-upload-new .image-uploads, .wordset ul, .search-set .btn-filter, .search-set, .table-top, .page-header .btn-added, .page-header .btn-filter, .page-header, .chat-cont-right ul.list-unstyled .media.received .chat-msg-info, .chat-cont-right ul.list-unstyled .media.sent .media-body .chat-msg-info, .chat-search .input-group .input-group-prepend, .modal .modal-footer .btn-print, .modal .close, .modal .btn-close, .modal-barcode ul, .productimgname, .sidebar .sub-menu a, .sidebar .sidebar-menu > ul > li > a, div#global-loader, .searchinputs .search-addon span, .error-page, .icons-items .icons-list li, .icons-list li, .input-group .scanner-set, .btn-white, .avatar .avatar-title {
 	align-items: center;
 	-webkit-box-align: center;
 	-ms-flex-align: center
 }
 
-	.profile-set .profile-top .profile-contentimg, .profile-set .profile-top, .order-list, .totalitem, .invoice-load-btn .btn, .header-menuset ul li, .btn-pos ul, .product-lists, .setvalue ul li, .btn-totallabel, .image-upload-new .productviewscontent, .card-sales-split, .bar-code-view, .product-list ul li .productviews .productviewscontent, .dash-count, .table-top, .page-header, .chat-cont-left .chat-scroll .media .media-body, .sidebar .sub-menu a, .header-split, .header-pos.header .topnav-dropdown-footer, .header-pos.header .topnav-dropdown-header, .searchpart .searchhead, .header .header-left, .btn-white {
+	.profile-set .profile-top .profile-contentimg, .profile-set .profile-top, .order-list, .totalitem, .invoice-load-btn .btn, .btn-pos ul, .product-lists, .setvalue ul li, .btn-totallabel, .image-upload-new .productviewscontent, .card-sales-split, .bar-code-view, .product-list ul li .productviews .productviewscontent, .dash-count, .table-top, .page-header, .chat-cont-left .chat-scroll .media .media-body, .sidebar .sub-menu a, .searchpart .searchhead, .btn-white {
 		justify-content: space-between;
 		-webkit-justify-content: space-between;
 		-ms-flex-pack: space-between
@@ -327,19 +327,19 @@ strong {
 	display: inline-flex
 }
 
-.pass-group .toggle-password, .pass-group .toggle-passworda, .profile-set .profile-top .profileupload a, .profile-set .profile-top .profile-contentimg, .profile-set .profile-top .profile-content, .profile-set .profile-top, .productset .productsetimg, .productset.active .check-product, .order-list .actionproducts > ul > li .deletebg, .order-list .actionproducts > ul, .order-list, .totalitem, .btn-scanner-set, .product-details, .header-menuset ul li a, .header-menuset ul li, .header-menuset ul, .calculator-set ul, .btn-pos ul li a.btn, .btn-pos ul, .actionproduct ul, .owl-product .owl-nav button, .tab-set ul, .productimg .productlinkset, .productimg .productcontet h4, .productimg, .increment-decrement .input-groups input[type=button], .increment-decrement .input-groups, .product-lists, .setvalue ul li, .setvaluecash ul li a, .setvaluecash ul, .btn-totallabel, .select-split .btn-filters, .select-split, .product-view .product-viewimg, .productviewset .productviewscontent a, .image-upload-new .productviewscontent a, .image-upload-new .productviewscontent, .card-sales-split ul, .card-sales-split, .total-order ul li, .add-icon span, .add-icon a, .slider-product-details .owl-carousel .owl-nav button, .productdetails > ul > li, .input-checkset ul, .bar-code-view, .product-list ul li .productviews .productviewscontent a, .product-list ul li .productviews .productviewscontent, .product-list ul li .productviews, .product-list ul, .login-wrapper .login-content .form-sociallink ul li a, .login-wrapper .login-content .form-sociallink ul, .login-wrapper .login-content .toggle-passwords, .login-wrapper .login-content .toggle-password, .login-wrapper, .graph-sets > ul, .graph-sets, .dash-count, .dash-widget .dash-widgetimg span, .dash-widget, .image-upload.image-upload-new .image-uploads, .wordset ul, .search-set .btn-filter, .search-set, .table-top, .page-header .btn-added, .page-header .btn-filter, .page-header, .chat-cont-right ul.list-unstyled .media.received .chat-msg-attachments, .chat-cont-right ul.list-unstyled .media.received .chat-msg-info, .chat-cont-right ul.list-unstyled .media.sent .media-body .chat-msg-info, .chat-cont-right ul.list-unstyled .media.sent .media-body .chat-msg-attachments, .chat-cont-right ul.list-unstyled .media.sent .media-body, .chat-cont-left .chat-scroll .media .media-body, .chat-search .input-group .input-group-prepend, .modal .modal-footer .btn-print, .modal .close, .modal .btn-close, .modal-barcode ul, .productimgname, .sidebar .sub-menu a, .sidebar .sidebar-menu > ul > li > a, .sidebar, div#global-loader, .searchinputs .search-addon span, .profilename .profileset, .header-split .header-menu ul li a, .header-split .header-menu ul, .header-split, .header-pos.header .topnav-dropdown-footer, .header-pos.header .topnav-dropdown-header, .searchpart .searchhead, .header .menu-drop-user .dropdown-item, .header .userset, .header .header-left, .error-page .main-wrapper, .error-page, .icons-items .icons-list li, .icons-items .icons-list, .icons-list li, .icons-list, .input-group, .input-group .scanner-set, .dropdown-menu .dropdown-item, .btn-white, .avatar .avatar-title {
+.pass-group .toggle-password, .pass-group .toggle-passworda, .profile-set .profile-top .profileupload a, .profile-set .profile-top .profile-contentimg, .profile-set .profile-top .profile-content, .profile-set .profile-top, .productset .productsetimg, .productset.active .check-product, .order-list .actionproducts > ul > li .deletebg, .order-list .actionproducts > ul, .order-list, .totalitem, .btn-scanner-set, .product-details, .calculator-set ul, .btn-pos ul li a.btn, .btn-pos ul, .actionproduct ul, .owl-product .owl-nav button, .tab-set ul, .productimg .productlinkset, .productimg .productcontet h4, .productimg, .increment-decrement .input-groups input[type=button], .increment-decrement .input-groups, .product-lists, .setvalue ul li, .setvaluecash ul li a, .setvaluecash ul, .btn-totallabel, .select-split .btn-filters, .select-split, .product-view .product-viewimg, .productviewset .productviewscontent a, .image-upload-new .productviewscontent a, .image-upload-new .productviewscontent, .card-sales-split ul, .card-sales-split, .total-order ul li, .add-icon span, .add-icon a, .slider-product-details .owl-carousel .owl-nav button, .productdetails > ul > li, .input-checkset ul, .bar-code-view, .product-list ul li .productviews .productviewscontent a, .product-list ul li .productviews .productviewscontent, .product-list ul li .productviews, .product-list ul, .login-wrapper .login-content .form-sociallink ul li a, .login-wrapper .login-content .form-sociallink ul, .login-wrapper .login-content .toggle-passwords, .login-wrapper .login-content .toggle-password, .login-wrapper, .graph-sets > ul, .graph-sets, .dash-count, .dash-widget .dash-widgetimg span, .dash-widget, .image-upload.image-upload-new .image-uploads, .wordset ul, .search-set .btn-filter, .search-set, .table-top, .page-header .btn-added, .page-header .btn-filter, .page-header, .chat-cont-right ul.list-unstyled .media.received .chat-msg-attachments, .chat-cont-right ul.list-unstyled .media.received .chat-msg-info, .chat-cont-right ul.list-unstyled .media.sent .media-body .chat-msg-info, .chat-cont-right ul.list-unstyled .media.sent .media-body .chat-msg-attachments, .chat-cont-right ul.list-unstyled .media.sent .media-body, .chat-cont-left .chat-scroll .media .media-body, .chat-search .input-group .input-group-prepend, .modal .modal-footer .btn-print, .modal .close, .modal .btn-close, .modal-barcode ul, .productimgname, .sidebar .sub-menu a, .sidebar .sidebar-menu > ul > li > a, .sidebar, div#global-loader, .searchinputs .search-addon span, .profilename .profilesetr, .searchpart .searchhead, .error-page .main-wrapper, .error-page, .icons-items .icons-list li, .icons-items .icons-list, .icons-list li, .icons-list, .input-group, .input-group .scanner-set, .dropdown-menu .dropdown-item, .btn-white, .avatar .avatar-title {
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex
 }
 
-	.profile-set .profile-top .profile-contentimg, .profile-set .profile-top, .order-list, .totalitem, .invoice-load-btn .btn, .header-menuset ul li, .btn-pos ul, .product-lists, .setvalue ul li, .btn-totallabel, .image-upload-new .productviewscontent, .card-sales-split, .bar-code-view, .product-list ul li .productviews .productviewscontent, .dash-count, .table-top, .page-header, .chat-cont-left .chat-scroll .media .media-body, .sidebar .sub-menu a, .header-split, .header-pos.header .topnav-dropdown-footer, .header-pos.header .topnav-dropdown-header, .searchpart .searchhead, .header .header-left, .btn-white {
+	.profile-set .profile-top .profile-contentimg, .profile-set .profile-top, .order-list, .totalitem, .invoice-load-btn .btn, .btn-pos ul, .product-lists, .setvalue ul li, .btn-totallabel, .image-upload-new .productviewscontent, .card-sales-split, .bar-code-view, .product-list ul li .productviews .productviewscontent, .dash-count, .table-top, .page-header, .chat-cont-left .chat-scroll .media .media-body, .sidebar .sub-menu a, .searchpart .searchhead, .btn-white {
 		justify-content: space-between;
 		-webkit-justify-content: space-between;
 		-ms-flex-pack: space-between
 	}
 
-	.header-menuset ul, .calculator-set ul, .btn-pos ul, .tab-set ul, .productdetails > ul > li, .input-checkset ul, .product-list ul, .login-wrapper .login-content .form-sociallink ul, .login-wrapper, .chat-cont-right ul.list-unstyled .media.received .chat-msg-info, .chat-cont-right ul.list-unstyled .media.sent .media-body .chat-msg-info, .modal-barcode ul, .error-page .main-wrapper, .icons-items .icons-list, .icons-list {
+	.calculator-set ul, .btn-pos ul, .tab-set ul, .productdetails > ul > li, .input-checkset ul, .product-list ul, .login-wrapper .login-content .form-sociallink ul, .login-wrapper, .chat-cont-right ul.list-unstyled .media.received .chat-msg-info, .chat-cont-right ul.list-unstyled .media.sent .media-body .chat-msg-info, .modal-barcode ul, .error-page .main-wrapper, .icons-items .icons-list, .icons-list {
 		-ms-flex-wrap: wrap;
 		flex-wrap: wrap
 	}
@@ -1047,7 +1047,7 @@ strong {
 
 .page-wrapper {
 	/*margin: 0 0 0 260px;*/
-	padding: 60px 0 0;
+	/*padding: 60px 0 0;*/
 	position: relative;
 	left: 0;
 	-webkit-transition: all .2s ease;
@@ -1063,9 +1063,9 @@ strong {
 	}
 }
 
-.page-wrapper .content {
+/*.page-wrapper .content {
 	padding: 25px
-}
+}*/
 
 @media(max-width: 991px) {
 	.page-wrapper .content {
@@ -1404,9 +1404,7 @@ body[data-theme=dark] {
 	background: #141432
 }
 
-	body[data-theme=dark] .header {
-		background: #141432
-	}
+	
 
 	body[data-theme=dark] .sidebar .slimScrollDiv {
 		background: #141432
@@ -1420,9 +1418,7 @@ body[data-theme=dark] {
 		border: 2px solid #fff
 	}
 
-	body[data-theme=dark] .header-left.active #toggle_btn:after {
-		border: 2px solid #fff
-	}
+
 
 	body[data-theme=dark] .sidebar .sidebar-menu > ul > li.submenu ul {
 		background: #fafbfe;
@@ -2548,386 +2544,21 @@ div.dataTables_wrapper div.dataTables_info {
 	padding-top: 23px
 }
 
-.header {
-	background: #253da1;
-	background: #fff;
-	border-bottom: 1px solid transparent;
-	height: 60px;
-	z-index: 999;
-	position: fixed;
-	top: 0;
-	right: 0;
-	left: 0;
-	-webkit-box-shadow: 0 0 15px 0 rgba(0,0,0,.05);
-	-moz-box-shadow: 0 0 15px 0 rgba(0,0,0,.05);
-	box-shadow: 0 0 15px 0 rgba(0,0,0,.05)
-}
 
-	.header:hover .top-nav-search form .form-control {
-		border: 1px solid #f1f1f1
-	}
-
-	.header .searchinputs {
-		position: absolute;
-		top: -80px;
-		-webkit-transition: all .2s ease;
-		-ms-transition: all .2s ease;
-		transition: all .2s ease
-	}
-
-		.header .searchinputs.show {
-			position: absolute;
-			top: 0
-		}
-
-	.header .dropdown-menu {
-		-webkit-transition: all .5s ease;
-		-ms-transition: all .5s ease;
-		transition: all .5s ease;
-		transform: translate(0px,100px);
-		-webkit-transform: translate(0px,100px);
-		-ms-transform: translate(0px,100px);
-		box-shadow: 0 0 15px 0 rgba(0,0,0,.05);
-		border: 0
-	}
 
 @media(max-width: 991px) {
-	.header .dropdown-menu {
-		transition: none
-	}
+	
 }
 
-.header .header-left {
-	float: left;
-	height: 60px;
-	position: relative;
-	text-align: center;
-	width: 260px;
-	z-index: 1;
-	padding: 0 20px;
-	-webkit-transition: all .2s ease;
-	-ms-transition: all .2s ease;
-	transition: all .2s ease;
-	border-right: 1px solid #e8ebed
-}
 
-	.header .header-left .logo {
-		display: inline-block;
-		line-height: 0
-	}
 
-		.header .header-left .logo img {
-			width: 140px
-		}
-
-@media(max-width: 991px) {
-	.header .header-left .logo {
-		text-align: center;
-		width: 100%
-	}
-
-		.header .header-left .logo img {
-			width: 140px
-		}
-}
-
-.header .header-left .logo-small {
-	display: none
-}
-
-@media(max-width: 991px) {
-	.header .header-left {
-		position: absolute;
-		width: 100%
-	}
-}
-
-@media(max-width: 991px) {
-	.header #toggle_btn {
-		display: none
-	}
-}
-
-@media(min-width: 991px) {
-	.header #toggle_btn {
-		float: left;
-		font-size: 26px;
-		line-height: 50px
-	}
-
-		.header #toggle_btn .bar-icon {
-			display: inline-block;
-			width: 21px
-		}
-
-			.header #toggle_btn .bar-icon span {
-				background-color: #fff;
-				display: block;
-				float: left;
-				height: 2px;
-				width: 21px;
-				margin: 0 0 5px;
-				border-radius: 50px
-			}
-
-				.header #toggle_btn .bar-icon span:nth-child(2) {
-					width: 15px
-				}
-}
-
-.header .page-title-box {
-	float: left;
-	height: 60px;
-	margin-bottom: 0;
-	padding: 17px 20px;
-	border-radius: 0
-}
-
-@media(max-width: 991px) {
-	.header .page-title-box {
-		display: none
-	}
-}
-
-.header .page-title-box a {
-	color: #253da1;
-	font-size: 11px;
-	font-weight: 700;
-	border: 1px solid #253da1;
-	margin: 0;
-	padding: 5px;
-	border-radius: 5px
-}
-
-	.header .page-title-box a:hover {
-		background: #253da1;
-		color: #fff
-	}
-
-.header .mobile_btn {
-	display: none;
-	float: left
-}
-
-@media(max-width: 991px) {
-	.header .mobile_btn {
-		color: #253da1;
-		font-size: 24px;
-		height: 60px;
-		line-height: 60px;
-		width: 60px;
-		z-index: 10;
-		padding: 0 20px;
-		position: absolute;
-		top: 0;
-		left: 0;
-		display: block
-	}
-}
-
-.header .responsive-search {
-	display: none;
-	color: #fff;
-	font-size: 20px;
-	height: 60px;
-	line-height: 60px;
-	padding: 0 15px
-}
-
-@media(max-width: 991px) {
-	.header .responsive-search {
-		display: block
-	}
-}
-
-.header .top-nav-search form {
-	margin-top: 10px;
-	position: relative;
-	width: 230px
-}
-
-@media(max-width: 991px) {
-	.header .top-nav-search form {
-		display: none
-	}
-}
-
-.header .top-nav-search form .form-control {
-	background-color: rgba(255,255,255,.1);
-	border: 1px solid rgba(255,255,255,.15);
-	height: 40px;
-	padding: 10px 50px 10px 15px;
-	border-radius: 50px
-}
-
-	.header .top-nav-search form .form-control::-webkit-input-placeholder {
-		color: rgba(255,255,255,.7)
-	}
-
-.header .top-nav-search form .btn {
-	background-color: transparent;
-	border-color: transparent;
-	color: rgba(255,255,255,.7);
-	min-height: 40px;
-	position: absolute;
-	top: 0;
-	right: 0
-}
-
-@media(max-width: 991px) {
-	.header .top-nav-search.active form {
-		display: block;
-		position: absolute;
-		left: 0
-	}
-
-		.header .top-nav-search.active form .form-control {
-			background-color: #fff
-		}
-
-		.header .top-nav-search.active form .btn {
-			background-color: transparent;
-			border-color: transparent;
-			min-height: 40px;
-			position: absolute;
-			top: 0;
-			right: 0;
-			padding: 7px 15px
-		}
-}
-
-.header .userset .usernames {
-	line-height: initial;
-	text-align: right;
-	padding-right: 10px
-}
-
-	.header .userset .usernames span {
-		display: block;
-		line-height: initial
-	}
-
-.header .menu-drop-user .dropdown-item {
-	color: #637381;
-	padding: 7px 10px !important
-}
-
-	.header .menu-drop-user .dropdown-item svg {
-		stroke-width: 1px;
-		margin-right: 10px;
-		width: 18px
-	}
-
-.header .menu-drop-user .logout {
-	color: #f62d51
-}
-
-@media(max-width: 991px) {
-	.header .has-arrow .dropdown-toggle > span:nth-child(2) {
-		display: none
-	}
-
-	.header .has-arrow .dropdown-toggle:after {
-		display: none !important
-	}
-}
-
-.header .profilename .user-img .status {
-	bottom: 10px
-}
-
-.header .user-img {
-	display: inline-block;
-	position: relative
-}
-
-	.header .user-img img {
-		width: 38px;
-		border-radius: 50%;
-		margin-top: 25px
-	}
-
-	.header .user-img .status {
-		border: 2px solid #fff;
-		height: 10px;
-		width: 10px;
-		margin: 0;
-		position: absolute;
-		right: 0;
-		bottom: 30px;
-		border-radius: 50%;
-		display: inline-block;
-		background: #28c76f
-	}
-
-.header .mobile-user-menu {
-	color: #fff;
-	display: none;
-	float: right;
-	font-size: 24px;
-	height: 60px;
-	line-height: 60px;
-	text-align: right;
-	width: 60px;
-	z-index: 10;
-	padding: 0 20px;
-	position: absolute;
-	top: 0;
-	right: 0
-}
-
-@media(max-width: 575px) {
-	.header .mobile-user-menu {
-		display: block
-	}
-}
-
-.header .mobile-user-menu a {
-	color: #253da1;
-	padding: 0
-}
-
-	.header .mobile-user-menu a::after {
-		display: none
-	}
-
-.header .mobile-user-menu .dropdown-menu {
-	padding: 0
-}
-
-	.header .mobile-user-menu .dropdown-menu a {
-		color: #333;
-		line-height: 40px;
-		padding: 0 10px
-	}
 
 .logo-small img {
 	width: 30px
 }
 
 @media(min-width: 992px) {
-	.mini-sidebar.expand-menu .header-left {
-		flex-direction: row;
-		justify-content: space-between
-	}
 
-	.mini-sidebar .header-left {
-		width: 80px;
-		padding: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		flex-direction: column
-	}
-
-		.mini-sidebar .header-left .logo-small {
-			display: block;
-			padding: 20px 0 0
-		}
-
-		.mini-sidebar .header-left .logo {
-			display: none
-		}
 
 	.mini-sidebar .menu-arrow {
 		display: none !important
@@ -2969,19 +2600,13 @@ div.dataTables_wrapper div.dataTables_info {
 		opacity: 1
 	}
 
-	.mini-sidebar.expand-menu .header-left {
-		padding: 0 20px;
-		display: flex
-	}
+	
 
 	.mini-sidebar .noti-dot:before {
 		display: none
 	}
 }
 
-.header-pos.header {
-	position: relative
-}
 
 .searchpart {
 	position: fixed;
@@ -3067,145 +2692,6 @@ div.dataTables_wrapper div.dataTables_info {
 		font-size: 20px
 	}
 
-.header-pos {
-	padding: 10px;
-	background: #fff;
-	margin-bottom: 20px;
-	border-bottom: 1px solid #e8ebed;
-	height: 80px
-}
-
-@media(max-width: 991px) {
-	.header-pos {
-		padding: 10px;
-		height: auto
-	}
-}
-
-.header-pos #mobile_btn {
-	display: none;
-	float: left
-}
-
-@media(max-width: 991px) {
-	.header-pos #mobile_btn {
-		color: #253da1;
-		font-size: 24px;
-		height: 60px;
-		line-height: 60px;
-		width: 60px;
-		z-index: 10;
-		padding: 0 20px;
-		position: absolute;
-		top: 0;
-		left: 0;
-		display: block
-	}
-}
-
-.header-pos.header .topnav-dropdown-header {
-	height: 40px;
-	padding: 10px
-}
-
-	.header-pos.header .topnav-dropdown-header .clear-noti {
-		color: #ea5455 !important;
-		float: right;
-		font-size: 11px !important;
-		text-transform: uppercase
-	}
-
-.header-pos.header .topnav-dropdown-footer {
-	border-top: 1px solid #eee;
-	font-size: 12px;
-	height: 32px;
-	line-height: 32px
-}
-
-	.header-pos.header .topnav-dropdown-footer a {
-		display: block;
-		text-align: center;
-		color: #333;
-		padding: 5px 12px;
-		font-size: 12px !important
-	}
-
-
-
-.header-pos.header .user-img img {
-	margin-top: 0
-}
-
-.header-pos.header .user-img .status {
-	border: 2px solid #fff;
-	height: 10px;
-	width: 10px;
-	margin: 0;
-	border-radius: 50%;
-	display: inline-block;
-	background: #28c76f;
-	position: absolute;
-	bottom: 6px;
-	left: 0
-}
-
-@media(max-width: 991px) {
-	.header-pos.header .user-menu {
-		display: none
-	}
-}
-
-.header-pos.header .user-menu .noti-content .notification-list a {
-	line-height: normal;
-	height: auto;
-	padding: 8px
-}
-
-@media(max-width: 991px) {
-	.header-split {
-		justify-content: center
-	}
-}
-
-@media(max-width: 991px) {
-	.header-split .header-menu {
-		display: none
-	}
-}
-
-.header-split .header-menu ul li {
-	margin-right: 10px
-}
-
-	.header-split .header-menu ul li a {
-		border: 1px solid #e0e0e0;
-		color: #000;
-		border-radius: 5px;
-		padding: 5px 8px
-	}
-
-		.header-split .header-menu ul li a.links {
-			border: 0
-		}
-
-		.header-split .header-menu ul li a:hover {
-			background: #253da1;
-			color: #fff
-		}
-
-			.header-split .header-menu ul li a:hover img {
-				filter: brightness(0) invert(1)
-			}
-
-	.header-split .header-menu ul li.mobile-show {
-		display: block
-	}
-
-@media(max-width: 991px) {
-	.header-split .header-menu ul li.mobile-show {
-		display: block
-	}
-}
 
 .mobile-show {
 	display: none
@@ -3217,17 +2703,6 @@ div.dataTables_wrapper div.dataTables_info {
 	}
 }
 
-.header-menus {
-	position: absolute;
-	right: 30px;
-	display: none
-}
-
-@media(max-width: 991px) {
-	.header-menus {
-		display: block
-	}
-}
 
 .bar-icon {
 	display: inline-block;
@@ -3725,40 +3200,12 @@ div#global-loader {
 		stroke-width: 1px
 	}
 
-.header-left.active #toggle_btn {
-	position: relative;
-	opacity: 1
-}
-
-	.header-left.active #toggle_btn:after {
-		content: "";
-		width: 6px;
-		height: 6px;
-		background-color: #fff;
-		border: 2px solid #092c4c;
-		border-radius: 20px;
-		position: absolute;
-		top: 6px;
-		left: 6px
-	}
-
 @media(min-width: 991px) {
 	.mini-sidebar .page-wrapper {
 		margin-left: 80px
 	}
 
-	.mini-sidebar .header-left #toggle_btn {
-		opacity: 0
-	}
-
-		.mini-sidebar .header-left #toggle_btn:after {
-			border: 0
-		}
-
-	.mini-sidebar.expand-menu .header-left #toggle_btn {
-		opacity: 1
-	}
-
+	
 	.mini-sidebar .sidebar-right {
 		display: none
 	}
@@ -3794,9 +3241,7 @@ div#global-loader {
 				display: block
 			}
 
-	.expand-menu .header-left {
-		width: 260px
-	}
+
 
 	#toggle_btn {
 		display: flex;
@@ -6630,37 +6075,7 @@ div#global-loader {
 	padding: 10px
 }
 
-.header-menuset {
-	padding: 15px
-}
 
-	.header-menuset ul li {
-		width: 50%;
-		margin-bottom: 10px
-	}
-
-@media(max-width: 991px) {
-	.header-menuset ul li {
-		width: 100%
-	}
-}
-
-.header-menuset ul li .win-maximize {
-	display: none
-}
-
-.header-menuset ul li a {
-	border: 1px solid #253da1;
-	width: 95%;
-	text-align: center;
-	background: #253da1;
-	color: #fff;
-	padding: 10px
-}
-
-	.header-menuset ul li a img {
-		filter: brightness(0) invert(1)
-	}
 
 .invoice-load-btn {
 	text-align: center;

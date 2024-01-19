@@ -3026,6 +3026,7 @@
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\ts\js\itemtransfer\transfer.js" />
     <Content Include="Scripts\ts\js\lang.js" />
+    <Content Include="Scripts\ts\js\logout.js" />
     <Content Include="Scripts\ts\js\menu.js" />
     <Content Include="Scripts\ts\js\pos\advsales.js" />
     <Content Include="Scripts\ts\js\pos\preorderedit.js" />
@@ -3039,6 +3040,7 @@
     <Content Include="Scripts\ts\js\records\training.js" />
     <Content Include="Scripts\ts\js\simplecontact\edit.js" />
     <Content Include="Static\barcode.html" />
+    <Content Include="Static\collapse.html" />
     <Content Include="Static\datatables.html" />
     <Content Include="Static\POS\images\banana.png" />
     <Content Include="Static\POS\images\cherry.png" />
@@ -4630,6 +4632,10 @@
     <Content Include="Views\Shared\_LoginPartial - Copy.cshtml" />
     <Content Include="Scripts\ts\js\lang.js.map" />
     <Content Include="Scripts\ts\js\menu.js.map" />
+    <Content Include="Scripts\ts\js\logout.js.map" />
+    <Content Include="Views\Shared\_PayModal.cshtml" />
+    <Content Include="Views\Shared\_ExRateModal - Copy.cshtml" />
+    <Content Include="Views\Shared\_Payment.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4912,7 +4918,6 @@
     <Content Include="Views\Shared\_NormalSaveBlk4WholeSales.cshtml" />
     <Content Include="Views\Shared\_OneDriveDoc.cshtml" />
     <Content Include="Views\Shared\_Operator.cshtml" />
-    <Content Include="Views\Shared\_PayModal.cshtml" />
     <Content Include="Views\Shared\_PrintHead.cshtml" />
     <Content Include="Views\Shared\_PrintModal.cshtml" />
     <Content Include="Views\Shared\_PurchaseBatchModal.cshtml" />
@@ -5068,6 +5073,7 @@
     <TypeScriptCompile Include="Scripts\ts\ajaxpostlist.ts" />
     <TypeScriptCompile Include="Scripts\ts\app.ts" />
     <TypeScriptCompile Include="Scripts\ts\lang.ts" />
+    <TypeScriptCompile Include="Scripts\ts\logout.ts" />
     <TypeScriptCompile Include="Scripts\ts\menu.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\advsales.ts" />
     <TypeScriptCompile Include="Scripts\ts\records\attendance.ts" />

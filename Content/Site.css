@@ -295,7 +295,7 @@ select.required:after {
 }
 
 .select2-container--focus,
-.focus {
+.focus:not(.option.selected) {
   border: 1px solid #ff8989;
   border-radius: 0.25rem;
 }

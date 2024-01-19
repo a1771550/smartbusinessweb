@@ -12,71 +12,17 @@
 
 @if (user != null)
 {
-	using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
-	{
-		string deviceshop = $"{shop} {device}";
 
-		@Html.Partial("_LangPartial")
-		<div class="header__logout">
-			<a href="#"><img src="~/Content/mean/img/Logout.png" alt=""></a>
-		</div>
+	@Html.Partial("_LangPartial")
+	<div class="header__logout">
+		@using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+		{
+			<a id="btnLogout" role="button" href="#"><img src="~/Content/mean/img/Logout.png" alt=""></a>
+		}
 
-		<ul class="nav navbar-right" data-usershop="@user.shopCode" data-userdvc="@user.dvcCode">
-			<li class="nav-item" data-deviceshop="@deviceshop"><a class="nav-link" href="#">@deviceshop @user.UserName <span class="small">(@string.Join(",", user.Roles))</span></a></li>
-			@*<li class="nav-item mr-1"><a class="nav-link small" href="#"></a></li>*@
-			<li class="nav-item"><a class="nav-link" id="btnLogout" href="#">@Resources.Resource.Logout</a></li>
+	</div>
 
-		</ul>
-
-	}
-}
-@*else
-{
-	<ul class="nav navbar-nav navbar-right">
-		<li>@Html.ActionLink(Resources.Resource.Login, "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink", @class = "nav-link" })</li>
-
-		@Html.Partial("_LangPartial")
-	</ul>
-}*@
-
-<script>
-unauthorized = '@unauthorized' === 'True';
-enablecheckdayends = '@enabledcheckdayends' === 'True';
-
-$(document).on('click', '#btnLogout', function() {
-    if (unauthorized)
-    {
-        logout();
-    }
-    else
-    {
-        if (enablecheckdayends)
-        {
-            getRemoteData('/Api/CheckIfDayendsDone', { }, checkIfDayendsDoneOk, getRemoteDataFail);
-        }
-        else
-        {
-            logout();
-        }
-    }
-});
-
-function logout()
-{
-    document.getElementById('logoutForm').submit();
 }
 
-function checkIfDayendsDoneOk(data)
-{
-    //console.log('checkdayenddata:', data);
-    if (data.msg === 'done')
-    {
-        document.getElementById('logoutForm').submit();
-    }
-    else
-    {
-        window.location.href = '/POSFunc/Dayends';
-    }
-}
-
-</script>
+<div id="loginblk" data-unauthorized="@unauthorized" data-enabledcheckdayends="@enabledcheckdayends"></div>
+<script src="~/Scripts/ts/js/logout.js?v=@CommonHelper.GetVersionRandomNo()"></script>

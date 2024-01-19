@@ -1,14 +1,16 @@
-﻿@{	
+﻿@{
 	string enselected = CultureHelper.CurrentCulture == 2 ? "selected" : "";
 	string csselected = CultureHelper.CurrentCulture == 1 ? "selected" : "";
 	string ctselected = CultureHelper.CurrentCulture == 0 ? "selected" : "";
 }
 <div class="header__lun">
-	<select id="drpLang">
+
+	<select id="drpLang" data-culture="@CultureHelper.CurrentCulture">
 		<option data-display="EN" value="2" @enselected>EN</option>
 		<option data-display="简" value="1" @csselected>简</option>
 		<option data-display="繁" value="0" @ctselected>繁</option>
 	</select>
-</div>
 
+</div>
+<script src="~/Scripts/ts/js/lang.js?v=@CommonHelper.GetVersionRandomNo()"></script>
 

@@ -1,107 +1,107 @@
-﻿@{ 
-    bool forsales = ViewData["forsales"] == null ? false : (bool)ViewData["forsales"];
-    bool forpreorder = ViewData["forpreorder"] == null ? false : (bool)ViewData["forpreorder"];
-    bool forrefund = ViewData["forrefund"] == null ? false : (bool)ViewData["forrefund"];
-    bool fordeposit = ViewData["fordeposit"] == null ? false : (bool)ViewData["fordeposit"];
-    bool enableEpay = ViewData["enableEpay"] == null ? false : (bool)ViewData["enableEpay"];
-    string rtsCurrency = ViewData["rtsCurrency"] == null ? "HKD" : (string)ViewData["rtsCurrency"];
-    List<PaymentType> PaymentTypes = ViewData["PaymentTypes"] == null ? null : (List<PaymentType>)ViewData["PaymentTypes"];
-    List<PaymentTypeView> PaymentTypeList = ViewData["PaymentTypeList"] == null ? null : (List<PaymentTypeView>)ViewData["PaymentTypeList"];
-    Dictionary<string, string> DicPayTypes = (Dictionary<string, string>)ViewData["DicPayTypes"];  
+﻿@{
+	bool forsales = ViewData["forsales"] == null ? false : (bool)ViewData["forsales"];
+	bool forpreorder = ViewData["forpreorder"] == null ? false : (bool)ViewData["forpreorder"];
+	bool forrefund = ViewData["forrefund"] == null ? false : (bool)ViewData["forrefund"];
+	bool fordeposit = ViewData["fordeposit"] == null ? false : (bool)ViewData["fordeposit"];
+	bool enableEpay = ViewData["enableEpay"] == null ? false : (bool)ViewData["enableEpay"];
+	string rtsCurrency = ViewData["rtsCurrency"] == null ? "HKD" : (string)ViewData["rtsCurrency"];
+	List<PaymentType> PaymentTypes = ViewData["PaymentTypes"] == null ? null : (List<PaymentType>)ViewData["PaymentTypes"];
+	List<PaymentTypeView> PaymentTypeList = ViewData["PaymentTypeList"] == null ? null : (List<PaymentTypeView>)ViewData["PaymentTypeList"];
+	Dictionary<string, string> DicPayTypes = (Dictionary<string, string>)ViewData["DicPayTypes"];
 }
 
 <div id="payModal" data-debug="" data-null="">
 
-    @Html.Partial("_ExRateModal", null, new ViewDataDictionary { { "fieldname", "rtsCurrency" }, { "currency", rtsCurrency }, { "lblcls", "col-form-label mx-sm-2" }, { "exratecls", "d-block ml-2 hide" }, { "txtboxattr", "readonly" }, { "txtboxstyle", "width:60px;" }, { "txtboxcls", "disabled" }, { "usedropdown", true } })
-    <div class="row">
-        @if (forsales||forpreorder)
-        {
-            <div class="col-5">
-                <h2>@Resources.Resource.SalesAmount</h2>
-            </div>
-            <div class="col-7 text-right">
-                <h2><span id="salesamount">(@rtsCurrency)</span></h2>
+	@Html.Partial("_ExRateModal", null, new ViewDataDictionary { { "fieldname", "rtsCurrency" }, { "currency", rtsCurrency }, { "lblcls", "col-form-label mx-sm-2" }, { "exratecls", "d-block ml-2 hide" }, { "txtboxattr", "readonly" }, { "txtboxstyle", "width:60px;" }, { "txtboxcls", "disabled" }, { "usedropdown", true } })
+	<div class="row">
+		@if (forsales || forpreorder)
+		{
+			<div class="col-5">
+				<h2>@Resources.Resource.SalesAmount</h2>
+			</div>
+			<div class="col-7 text-right">
+				<h2><span id="salesamount">(@rtsCurrency)</span></h2>
 
-            </div>
-        }
-        @if (forrefund)
-        {
-            <div class="col-4">
-                <h2>@Resources.Resource.RefundAmt</h2>
-            </div>
-            <div class="col-8 text-right">
-                <h2><span id="refundamount"></span></h2>
-            </div>
-        }
-        @if (fordeposit)
-        {
-            <div class="col-5">
-                <h2>@Resources.Resource.Remainder</h2>
-            </div>
-            <div class="col-7 text-right">
-                <h2><span id="totalremainamt"></span></h2>
-            </div>
-        }
-    </div>
+			</div>
+		}
+		@if (forrefund)
+		{
+			<div class="col-4">
+				<h2>@Resources.Resource.RefundAmt</h2>
+			</div>
+			<div class="col-8 text-right">
+				<h2><span id="refundamount"></span></h2>
+			</div>
+		}
+		@if (fordeposit)
+		{
+			<div class="col-5">
+				<h2>@Resources.Resource.Remainder</h2>
+			</div>
+			<div class="col-7 text-right">
+				<h2><span id="totalremainamt"></span></h2>
+			</div>
+		}
+	</div>
 
-    <input type="hidden" id="epaytype" />
-    @if (forsales || fordeposit || forpreorder)
-    {
-        <div class="row justify-content-end mx-1 smaller">
-            <div id="remainblk" class="alert alert-success"><span id="remaintxt" class="font-weight-bold mx-2">@Resources.Resource.Remain: </span><span id="remainamt"></span></div>
-        </div>
-    }
+	<input type="hidden" id="epaytype" />
+	@if (forsales || fordeposit || forpreorder)
+	{
+		<div class="row justify-content-end mx-1 smaller">
+			<div id="remainblk" class="alert alert-success"><span id="remaintxt" class="font-weight-bold mx-2">@Resources.Resource.Remain: </span><span id="remainamt"></span></div>
+		</div>
+	}
 
 
-    @if (enableEpay)
-    {
-        <div class="fieldset">
-            <h3>@Resources.Resource.ePayment</h3>
-            <div class="row mx-1">
-                <div class="form-group">
-                    <label for="txtPayerCode">@Resources.Resource.PayerCode</label>
-                    <input class="form-control" type="text" id="txtPayerCode" />
-                </div>
-            </div>
+	@if (enableEpay)
+	{
+		<div class="fieldset">
+			<h3>@Resources.Resource.ePayment</h3>
+			<div class="row mx-1">
+				<div class="form-group">
+					<label for="txtPayerCode">@Resources.Resource.PayerCode</label>
+					<input class="form-control" type="text" id="txtPayerCode" />
+				</div>
+			</div>
 
-            <div class="row justify-content-around">
-                <div class="col-6">
-                    <div class="form-group">
-                        <a href="#" id="transactionEpay" class="btn btn-success isDisabled" role="button">@Resources.Resource.TransactionResult</a>
-                    </div>
-                </div>
-                <div class="col-6 text-right">
-                    <div class="form-group">
-                        <a href="#" id="reverseEpay" class="btn btn-danger isDisabled" role="button">@Resources.Resource.ReversePayment</a>
-                    </div>
-                </div>
+			<div class="row justify-content-around">
+				<div class="col-6">
+					<div class="form-group">
+						<a href="#" id="transactionEpay" class="btn btn-success isDisabled" role="button">@Resources.Resource.TransactionResult</a>
+					</div>
+				</div>
+				<div class="col-6 text-right">
+					<div class="form-group">
+						<a href="#" id="reverseEpay" class="btn btn-danger isDisabled" role="button">@Resources.Resource.ReversePayment</a>
+					</div>
+				</div>
 
-            </div>
-        </div>
-    }
+			</div>
+		</div>
+	}
 
-    <div id="normalPayblk" class="form-inline px-sm-1 my-4">
-        @if (forsales || fordeposit || forpreorder)
-        {
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="1" id="monthlypay">
-                <label class="form-check-label" for="monthlypay">@Resources.Resource.MonthlyPay</label>
-            </div>
-            if (forsales || forpreorder)
-            {
-                <div class="form-check ml-3">
-                    <input class="form-check-input" type="checkbox" value="1" id="deposit">
-                    <label class="form-check-label" for="deposit">@Resources.Resource.Deposit</label>
-                </div>
-            }
-        }
+	<div id="normalPayblk" class="form-inline px-sm-1 my-4">
+		@if (forsales || fordeposit || forpreorder)
+		{
+			<div class="form-check">
+				<input class="form-check-input" type="checkbox" value="1" id="monthlypay">
+				<label class="form-check-label" for="monthlypay">@Resources.Resource.MonthlyPay</label>
+			</div>
+			if (forsales || forpreorder)
+			{
+				<div class="form-check ml-3">
+					<input class="form-check-input" type="checkbox" value="1" id="deposit">
+					<label class="form-check-label" for="deposit">@Resources.Resource.Deposit</label>
+				</div>
+			}
+		}
 
-        <table id="tblPay" class="table table-bordered table-hover  table-condensed">
-            <thead class="gray-header">
-                <tr><th>@Resources.Resource.PaymentType</th><th class="text-right">@Resources.Resource.Amount</th></tr>
-            </thead>
+		<table id="tblPay" class="table table-bordered table-hover  table-condensed">
+			<thead class="gray-header">
+				<tr><th>@Resources.Resource.PaymentType</th><th class="text-right">@Resources.Resource.Amount</th></tr>
+			</thead>
 			<tbody>
-				@if ((forpreorder && PaymentTypeList != null)||(fordeposit && PaymentTypeList != null))
+				@if ((forpreorder && PaymentTypeList != null) || (fordeposit && PaymentTypeList != null))
 				{
 					int idx = 0;
 					foreach (var payment in PaymentTypeList)
@@ -125,7 +125,7 @@
 						idx++;
 					}
 				}
-              
+
 				@if (forsales && PaymentTypes != null)
 				{
 					int idx = 0;
@@ -157,14 +157,19 @@
 					{
 						if (payment.pmtCode != "Coupon")
 						{
-							<tr data-code="@payment.pmtCode"><td>@DicPayTypes[payment.pmtCode]</td><td class="text-right"><input type="number" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype" value="0" /></td></tr>
+							<tr data-code="@payment.pmtCode">
+								<td>@DicPayTypes[payment.pmtCode]</td>
+								<td class="text-right">
+									<input type="number" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype" value="0" />
+								</td>
+							</tr>
 						}
 					}
 				}
 			</tbody>
-        </table>
-    </div>
+		</table>
+	</div>
 
-    <p class="warning"></p>
+	<p class="warning"></p>
 
 </div>

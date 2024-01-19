@@ -1,6 +1,45 @@
 ﻿$infoblk = $("#infoblk");
 debug = $infoblk.data("debug") === "True";
 isLocal = $infoblk.data("islocal") === "True";
+
+$(function () {
+    localStorage.removeItem("sessionstartdata");
+    $(".noncentral").show();
+    initModals();
+
+    $("#RedirectUrl").val(getParameterByName("redirectUrl") as string);
+
+    var salesmanId = Number(getParameterByName("salesmanId") ?? 0);
+    var adminId = Number(getParameterByName("adminId") ?? 0);
+    var receiptno = getParameterByName("receiptno");
+
+    if ((salesmanId == 0 && adminId == 0) || receiptno == null) {
+        if (isLocal) {
+            //$("#Email").val("utservice_sb1@united.com.hk");
+            //$("#Email").val("sunnyy@united.com.hk");
+            $("#Email").val("utservice@united.com.hk");
+            //$("#Email").val("enquiry@united.com.hk");     
+            $("#Password").val("Pos123456");
+            $("#btnLogin").trigger("focus");
+        } else {
+            $("#Email").trigger("focus");
+        }
+    }
+
+    if (receiptno != null) {
+        $("#Email").val("enquiry@united.com.hk");
+        if (salesmanId != 0) {
+            $("#Email").val(
+                salesmanId === 6 ? "sunnyy@united.com.hk" : "utservice@united.com.hk"
+            );
+        }
+        if (debug) $("#Password").val("Pos123456");
+
+        $("#btnLogin").trigger("focus");
+    }
+
+    $("#loginblk").defaultButton("#btnLogin");
+});
 $(document).on("change", "input", function () {
     $("#msg").empty().addClass("hide");
 });
@@ -120,41 +159,7 @@ $("input").on("keydown", function (event) {
     }
 });
 
-$(function () {
-    localStorage.removeItem("sessionstartdata");
-    $(".noncentral").show();
-    initModals();
 
-    $("#RedirectUrl").val(getParameterByName("redirectUrl") as string);
 
-    var salesmanId = Number(getParameterByName("salesmanId") ?? 0);
-    var adminId = Number(getParameterByName("adminId") ?? 0);
-    var receiptno = getParameterByName("receiptno");
 
-    if ((salesmanId == 0 && adminId == 0) || receiptno == null) {
-        if (isLocal) {
-            //$("#Email").val("utservice_sb1@united.com.hk");
-            //$("#Email").val("sunnyy@united.com.hk");
-            $("#Email").val("utservice@united.com.hk");
-            //$("#Email").val("enquiry@united.com.hk");     
-            $("#Password").val("Pos123456");
-            $("#btnLogin").trigger("focus");
-        } else {
-            $("#Email").trigger("focus");           
-        }
-    }
 
-    if (receiptno != null) {
-        $("#Email").val("enquiry@united.com.hk");
-        if (salesmanId != 0) {
-            $("#Email").val(
-                salesmanId === 6 ? "sunnyy@united.com.hk" : "utservice@united.com.hk"
-            );
-        }
-        if (debug) $("#Password").val("Pos123456");
-
-        $("#btnLogin").trigger("focus");
-    }
- 
-    $("#loginblk").defaultButton("#btnLogin");
-});

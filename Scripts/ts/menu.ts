@@ -14,43 +14,41 @@ $(".overlay").on("click", function () {
 });
 
 $(document).on("click", ".btn_expand", function () {
+	console.log("this:", $(this));
 	let idx = $(this).index();
 	console.log("idx:" + idx);
 
-	//$(".btn_expand").each(function (i, e) {
-	//	if ($(e).index() !== idx) {
-	//		$(e).find(".active_btn").addClass("expand_btn").removeClass("active_btn");
-	//		$(e).find(".submenu").removeClass("show");
-	//	}
-	//});
-
-	//$(this).find(".expand_btn").addClass("active_btn").removeClass("expand_btn");
-
-	//$(".btn_expand").each(function (i, e) {
-	//	if ($(e).index() !== idx) {
-	//		$(e).find(".active_btn").switchClass("active_btn", "expand_btn", 3000, "easeInOutQuad");
-	//		$(e).find(".submenu").switchClass("show", "hide", 1000, "easeInOutQuad");
-	//	} else {
-	//		$(e).find(".submenu").switchClass("hide", "show", 1000, "easeInOutQuad");
-	//	}
-	//});
-
-	//$(this).find(".expand_btn").switchClass("expand_btn", "active_btn", 3000, "easeInOutQuad");
-
-	//$(".submenu li a").removeClass("active");
-	//$(this).find(".submenu li a").first().addClass("active");
-
-	if (window.innerWidth > 1439) {
-		if ($('.dash__left, .dash__body').hasClass('active') && $('.bar').hasClass('toggle')) {
-			$('.dash__left, .dash__body').removeClass('active');
-			$('.bar').removeClass('toggle');
+	$(".btn_expand").each(function (i, e) {
+		if ($(e).index() !== idx) {
+			$(e).find(".active_btn").addClass("expand_btn").removeClass("active_btn");
+			$(e).find(".submenu").removeClass("show");
 		}
-	}
+	});
+	$(this).find(".expand_btn").addClass("active_btn").removeClass("expand_btn");
+	
+	$(".submenu").each(function (i, e) {
+		$(e).find("li a").removeClass("active");		
+	});
+	//console.log("target a:", $(this).find(".collapse").find("li").first().find("a").first());
+	console.log("submenu:", $(this).find(".submenu"));
+	$(this).find(".submenu").find("li").first().find("a").first().addClass("active");
+
+	//if (window.innerWidth > 1439) {
+	//	if ($('.dash__left, .dash__body').hasClass('active') && $('.bar').hasClass('toggle')) {
+	//		$('.dash__left, .dash__body').removeClass('active');
+	//		$('.bar').removeClass('toggle');
+	//	}
+	//}
 });
 
 
 $(document).on("click", ".submenu li a", function () {
-	$(".submenu li a").removeClass("active");
+	let idx = $(this).index();
+	console.log("idx:" + idx);
+	$(".submenu li a").each(function (i, e) {
+		if ($(e).index() !== idx) $(e).removeClass("active");
+	});
+
 	$(this).addClass("active");
 });
 

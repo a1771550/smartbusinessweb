@@ -108,11 +108,33 @@ $(document).on("click", ".pos.btn-scanner-set", function () {
 	openBarCodeModal();
 	$("#txtItemCode").trigger("focus");
 });
+
+
 $(document).on("click", "#btnCheckout", function () {
 	let amt = Number($(this).find(".totalamt").text());
+	//console.log("amt:" + amt);
+	if (amt == 0) amt = 5000;
+	togglePaymentBlk("open", "salesBlk", amt); return false;
+
+
 	if (amt > 0) {
-		if (Sales.rtsCusID > 0) openPayModal(amt);
-		else $("#txtCustomerName").trigger("focus");
+	//	console.log("cusid:" + Sales.rtsCusID);
+		if (Sales.rtsCusID > 0) //openPayModal(amt);
+			togglePaymentBlk("open", "salesBlk",amt);
+		else {
+			$.fancyConfirm({
+				title: "",
+				message: customerrequiredtxt,
+				shownobtn: false,
+				okButton: oktxt,
+				noButton: notxt,
+				callback: function (value) {
+					if (value) {
+						$("#txtCustomerName").trigger("focus");
+					}
+				}
+			});
+		} 
 	}
 });
 $(document).on("change", ".sdiscpc", function () {
@@ -149,9 +171,6 @@ $(document).on("click", ".operator", function () {
 	//console.log("qty:", qty);
 	populateProductList();
 });
-
-
-
 function openTapContent(ele, tapName) {
 	// Declare all variables
 	var i, tab_content, tablinks;
@@ -172,7 +191,6 @@ function openTapContent(ele, tapName) {
 	document.getElementById(tapName)!.style.display = "block";
 	ele.className += " active";
 }
-
 
 function toggleProductCheck(ele: HTMLElement, show: boolean) {
 	$target = $(ele).find(".check-product");

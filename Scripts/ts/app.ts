@@ -10,6 +10,9 @@
 
 let $appInfo = $("#appInfo");
 let $txtblk = $("#txtblk");
+
+
+
 let salesman: ICrmUser;
 let checkoutportal: string =
 	$appInfo.length === 0
@@ -11872,6 +11875,7 @@ let $deliveryDateDisplay: JQuery;
 let $promisedDateDisplay: JQuery;
 let $purchaseDateDisplay: JQuery;
 let DicCurrencyExRate: { [Key: string]: number } = {};
+let DicCurrencySym: { [Key: string]: string } = { "HKD": "$", "GBP": "£", "USD": "$", "CNY": "¥", "EUR":"€"};
 let forwholesales: boolean = false;
 let fordelivery: boolean = false;
 function getExRate(currencyCode: string): number {
@@ -15343,7 +15347,35 @@ $(document).on("change", "#monthlypay", function () {
 		payModal.find(".paymenttype").prop("disabled", false);
 	}
 });
+function togglePaymentBlk(mode: string, toggleId: string, totalamt: number) {
+	if (mode == "open") {
+		$(`#${toggleId}`).hide();
+		$("#paymentBlk").removeClass("hide");
 
+		if (forpreorder) {
+			let $deposit: JQuery = $("#deposit");
+			$deposit.prop("checked", true);
+		}
+
+		/*if (!forsimplesales)*/
+		setExRateDropDown();
+
+		if (totalamt === 0)
+			totalamt = getTotalAmt4Order();
+
+		/*if (!forsimplesales)*/
+		setForexPayment(totalamt);
+
+		$("#salesamount").text(formatmoney(totalamt));
+		$("#remainamt").text(formatmoney(0));
+
+		initCashTxt(totalamt);
+
+	} else {
+		$(`#${toggleId}`).show();
+		$("#paymentBlk").addClass("hide");
+	}	
+}
 $(document).on("change", ".batch", function () {
 	currentY = getCurrentY(this);
 	updateRow();
@@ -16704,7 +16736,7 @@ function setExRateDropDown() {
 						//console.log("data:", data.data);
 						for (const [key, value] of Object.entries(data.data)) {
 							const exrate = Number(value);
-							console.log("exrate:", exrate);
+							//console.log("exrate:", exrate);
 							DicCurrencyExRate[key] = exrate;
 							_setExRateDropDown(value, key, exrate);
 							localStore.setItem(
@@ -16712,6 +16744,8 @@ function setExRateDropDown() {
 								JSON.stringify(DicCurrencyExRate)
 							);
 						}
+
+						$("#drpCurrency").niceSelect();
 						//currencyModal.find("#tblCurrency tbody").empty().html(html);
 					}
 				},
@@ -16725,11 +16759,12 @@ function setExRateDropDown() {
 				const exrate = value;
 				_setExRateDropDown(value, key, exrate);
 			}
+			$("#drpCurrency").niceSelect();
 		}
 	} else {
 		//console.log("DicCurrencyExRate:", DicCurrencyExRate);
 		for (const [key, value] of Object.entries(DicCurrencyExRate)) {
-			const displaytxt = key + ` (${formatexrate(value.toString())})`;
+			const displaytxt =  getCurrencyDisplayTxt(key, value);
 			$("#drpCurrency").append(
 				$("<option>", {
 					value: value,
@@ -16737,6 +16772,7 @@ function setExRateDropDown() {
 				})
 			);
 		}
+		$("#drpCurrency").niceSelect();
 	}
 }
 
@@ -16799,18 +16835,24 @@ let DicItemGroupedVariations: { [Key: string]: typeof DicItemVariations } = {};
 
 let DicItemVari: { [Key: string]: IItemVariation } = {};
 
+function getCurrencyDisplayTxt(key: string, value: number) {
+    return `${DicCurrencySym[key]} ${key} (${formatexrate(value.toString())})`;
+}
+
 function _setExRateDropDown(value: any, key: string, exrate: number) {
 	let selected = false;
 	selected = exRate == value;
-	const displaytxt = key + ` (${formatexrate(exrate.toString())})`;
+	const displaytxt = getCurrencyDisplayTxt(key, value);
 	$("#drpCurrency").append(
 		$("<option>", {
 			value: exrate,
 			text: displaytxt,
 			selected: selected,
 		})
-	);
+	);	
 }
+
+
 
 function fillInItemModal() {
 	$tr

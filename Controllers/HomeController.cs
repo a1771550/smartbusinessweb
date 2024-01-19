@@ -18,7 +18,7 @@ namespace SmartBusinessWeb.Controllers
             return View();
 		}
 
-        [HttpPost]
+       
 		public ActionResult ChangeCurrentCulture(int Id)
         {
             CultureHelper.CurrentCulture = Id;

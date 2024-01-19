@@ -8,8 +8,7 @@
 
 <div class="page-wrapper ms-0">
 	<div class="content">
-
-		<div class="row">
+		<div id="salesBlk" class="row">
 			<div class="col-lg-8 col-sm-12 tabs_wrapper">
 
 				<!-- Tab links -->
@@ -17,7 +16,7 @@
 					@foreach (var category in Model.CategoryList)
 					{
 						<button class="tablinks" onclick="openTapContent(this, '@category.NameDisplay')">@category.NameDisplay</button>
-					}				
+					}
 				</div>
 
 				@foreach (var category in Model.CategoryList)
@@ -161,6 +160,8 @@
 				</div>
 			</div>
 		</div>
+
+		@Html.Partial("_Payment", null, new ViewDataDictionary { { "forsales", true }, { "enableEpay", true }, { "PaymentTypes", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes } })
 	</div>
 </div>
 <input type="hidden" id="lang" value="@CultureHelper.CurrentCulture" />
@@ -176,11 +177,9 @@
 
 @Html.Partial("_WaitingModal")
 
-@Html.Partial("_PayModal", null, new ViewDataDictionary { { "forsales", true }, { "enableEpay", true }, { "PaymentTypes", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes } })
-
 @Html.Partial("_BarcodeModal")
 
 <div id="infoblk" data-defaultcatname="@Model.CategoryList.First().NameDisplay" data-currency="@Model.Currency" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicpaytypes="@JsonSerializer.Serialize(Model.DicPayTypes)" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
-@*<script src="~/Scripts/ts/js/pos/sales.js?v=@rand"></script>*@
+<script src="~/Scripts/ts/js/pos/sales.js?v=@rand"></script>

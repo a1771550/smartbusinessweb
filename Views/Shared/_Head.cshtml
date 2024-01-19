@@ -1,11 +1,11 @@
 ﻿@{
-    string dateformat = ConfigurationManager.AppSettings["DateFormat"];
-    string sitename = Resources.Resource.SiteName;
-    int rand = CommonHelper.GetVersionRandomNo();
-    //string cssbsfile = ViewData["cssbsfile"] == null ? @"Content/bs4" : ViewData["CssBSFile"].ToString();
-    //string scriptbsfile = ViewData["scriptbsfile"] == null ? @"Scripts/bs4" : ViewData["ScriptBSFile"].ToString();
-    string pagetitle = ViewData["PageTitle"] == null ? @"" : ViewData["PageTitle"].ToString();
-    //string printcss = ViewData["printcss"] == null ? "" : ViewData["printcss"].ToString();
+	string dateformat = ConfigurationManager.AppSettings["DateFormat"];
+	string sitename = Resources.Resource.SiteName;
+	int rand = CommonHelper.GetVersionRandomNo();
+	//string cssbsfile = ViewData["cssbsfile"] == null ? @"Content/bs4" : ViewData["CssBSFile"].ToString();
+	//string scriptbsfile = ViewData["scriptbsfile"] == null ? @"Scripts/bs4" : ViewData["ScriptBSFile"].ToString();
+	string pagetitle = ViewData["PageTitle"] == null ? @"" : ViewData["PageTitle"].ToString();
+	//string printcss = ViewData["printcss"] == null ? "" : ViewData["printcss"].ToString();
 }
 <head>
 	<meta charset="utf-8" />
@@ -14,33 +14,31 @@
 	<title>@pagetitle - @sitename</title>
 	<link rel="icon" type="image/png" href="~/Content/favicon_io/favicon-16x16.png">
 
-	@*<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
-		  rel="stylesheet">*@
+		  rel="stylesheet">
 
 	<link type="text/css" href="~/Content/bs4/bootstrap.min.css" rel="stylesheet" />
-	@*<link type="text/css" href="~/Content/bootstrap-theme.min.css" rel="stylesheet" />*@
-	@*<link type="text/css" href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />*@
-	@*@Styles.Render("~/bundles/maincss")*@
-	<!-- The following files must not be bundled!!! -->
-	@*<link type="text/css" href="~/Content/DataTables/css/dataTables.bootstrap.css" rel="stylesheet" />*@
-
-	@*<link type="text/css" rel="stylesheet" href="~/Content/pos/animate.css">
-	<link type="text/css" rel="stylesheet" href="~/Content/pos/select2/css/select2.min.css">*@
-
-	@*<link type="text/css" href="~/Content/fontawesome/css/fontawesome.css" rel="stylesheet" />
-
-	<link type="text/css" rel="stylesheet" href="~/Content/pos/fontawesome/css/all.min.css">
-
-	<link type="text/css" href="~/Content/fontawesome/css/brands.css" rel="stylesheet">
-	<link type="text/css" href="~/Content/fontawesome/css/solid.css" rel="stylesheet">*@
-	@*<link type="text/css" rel="stylesheet" href="~/Content/pos/bootstrap-datetimepicker.min.css">*@
-
+	<link type="text/css" href="~/Content/bootstrap-theme.min.css" rel="stylesheet" />
+	<link type="text/css" rel="stylesheet" href="~/Content/mean/css/all.min.css" />
+	<link type="text/css" rel="stylesheet" href="~/Content/mean/css/fontawesome.css" />
 	<link type="text/css" href="~/Content/mean/css/default.css" rel="stylesheet">
 	<link type="text/css" href="~/Content/mean/css/nice-select.css" rel="stylesheet">
-	<link type="text/css" href="~/Content/mean/css/style.css" rel="stylesheet">
+	<link type="text/css" href="~/Content/mean/css/style.css?v=@rand" rel="stylesheet">
 	<link type="text/css" href="~/Content/mean/css/responsive.css" rel="stylesheet">
+
+	<link type="text/css" href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+	<link type="text/css" href="~/Content/DataTables/css/dataTables.bootstrap.css" rel="stylesheet" />
+		<link type="text/css" rel="stylesheet" href="~/Content/pos/animate.css">
+		<link type="text/css" rel="stylesheet" href="~/Content/pos/select2/css/select2.min.css">
+
+		@*<link type="text/css" href="~/Content/fontawesome/css/fontawesome.css" rel="stylesheet" />*@
+	@*<link type="text/css" rel="stylesheet" href="~/Content/pos/fontawesome/css/all.min.css">*@
+	@*<link type="text/css" href="~/Content/fontawesome/css/brands.css" rel="stylesheet">
+		<link type="text/css" href="~/Content/fontawesome/css/solid.css" rel="stylesheet">*@
+
+	<link type="text/css" rel="stylesheet" href="~/Content/pos/bootstrap-datetimepicker.min.css">
 
 	@*@Scripts.Render("~/bundles/mainjs")*@
 	<script src="~/Scripts/jquery-3.7.1.js"></script>
@@ -49,33 +47,31 @@
 	<script src="~/Content/mean/js/jquery.nice-select.js"></script>
 	<script src="~/Content/mean/js/main.js"></script>
 
-	@*<script src="~/Scripts/moment.min.js"></script>
+	<script src="~/Scripts/moment.min.js"></script>
 	<script src="~/Scripts/respond.js"></script>
-	<script src="~/Scripts/modernizr-2.8.3.js"></script>*@
+	<script src="~/Scripts/modernizr-2.8.3.js"></script>
 
 	@*@Styles.Render("~/bundles/misccss")*@
 
-	@*<link type="text/css" href="~/Scripts/jquery-ui/jquery-ui.min.css" rel="stylesheet">*@
+	<link type="text/css" href="~/Scripts/jquery-ui/jquery-ui.min.css" rel="stylesheet">
 
-	@*<link type="text/css" href="~/Scripts/node_modules/jquery-powertip/dist/css/jquery.powertip.min.css" rel="stylesheet">
-		<link type="text/css" href="~/Scripts/fancybox/jquery.fancybox.css" rel="stylesheet">*@
+	<link type="text/css" href="~/Scripts/node_modules/jquery-powertip/dist/css/jquery.powertip.min.css" rel="stylesheet">
+	<link type="text/css" href="~/Scripts/fancybox/jquery.fancybox.css" rel="stylesheet">
 
 	@*@Scripts.Render("~/bundles/miscjs")*@
 
-	@*<script src="~/Scripts/jquery-ui/jquery-ui.min.js"></script>*@
+	<script src="~/Scripts/jquery-ui/jquery-ui.min.js"></script>
 
-	@*	<script src="~/Scripts/node_modules/jquery-powertip/dist/jquery.powertip.min.js"></script>
-		<script src="~/Scripts/jquery-default-button.min.js"></script>*@
+	<script src="~/Scripts/node_modules/jquery-powertip/dist/jquery.powertip.min.js"></script>
+	<script src="~/Scripts/jquery-default-button.min.js"></script>
 
 	@*@Scripts.Render("~/bundles/fancyjpower")*@
-	@*<script src="~/Scripts/fancybox/jquery.fancybox.min.js"></script>
-		<script src="~/Scripts/fancybox/fancybox-plugin.js"></script>
-		<script src="~/Scripts/node_modules/jquery-powertip/dist/jquery.powertip.min.js"></script>*@
+	<script src="~/Scripts/fancybox/jquery.fancybox.min.js"></script>
+	<script src="~/Scripts/fancybox/fancybox-plugin.js"></script>
+	<script src="~/Scripts/node_modules/jquery-powertip/dist/jquery.powertip.min.js"></script>
 
-	@*<script id="commonfunc" src="~/Scripts/commonfunc.js?v=@rand" data-dateformat="@dateformat"></script>
-	<link href="~/Content/Site.css?v=@rand" rel="stylesheet" type="text/css" />*@
+	<script id="commonfunc" src="~/Scripts/commonfunc.js?v=@rand" data-dateformat="@dateformat"></script>
+	<link href="~/Content/Site.css?v=@rand" rel="stylesheet" type="text/css" />
 
-	@*<link rel="stylesheet" href="~/Content/pos/style.css?v=@rand">*@
-
-	@*<script src="https://kit.fontawesome.com/1dc29bcabd.js" crossorigin="anonymous"></script>*@
+	<link rel="stylesheet" href="~/Content/pos/style.css?v=@rand">
 </head>

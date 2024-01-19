@@ -24,7 +24,7 @@ h4,
 h5,
 h6 {
   margin: 0 0 15px;
-  color: #1B1B21;
+  /*color: #1B1B21;*/
  font-family: 'Open Sans', sans-serif;
 }
 body {
@@ -192,12 +192,13 @@ a {
   /*! left: -100%; */
 }
 .dash__body {
-  width: 84%;
-  padding: 33px 40px;
-  padding-bottom: 70px;
-  margin-left: 15.6%;
-  transition: .3s;
+	width: 84%;
+	padding: 33px 40px;
+	padding-bottom: 70px;
+	margin-left: 15.6%;
+	transition: .3s;
 }
+
 .dash__body.activee {
 	margin-left: 5%;
 	width: 95%;
@@ -271,7 +272,7 @@ a {
   flex-wrap: wrap;
 }
 .single__play {
-  width: 49.1%;
+  width: 33%;
   border-radius: 15px;
   background: #02055A;
   padding: 20px;
@@ -329,7 +330,7 @@ a {
 	border-radius: 0;
 }
 .dash__menu li a span {
-  width: 24px;
+  /*width: 24px;*/
   margin-right: 14px;
 }
 .dash__top {
@@ -347,6 +348,15 @@ a {
   margin: 0;
   color: #253DA1;
 }
+.dash__top--title h5 {
+	font-size: 24px;
+	font-style: normal;
+	font-weight: 700;
+	line-height: 55px;
+	margin: 0 1rem;
+	color: #666;
+	cursor:pointer;
+}
 .dash__top--btn {
   display: flex;
   align-items: center;
@@ -357,7 +367,7 @@ a {
   font-weight: 800;
   line-height: 20px;
   color: #2B55B1;
-  margin-right: 25px;
+  margin-right: 15px;
 }
 .dash__top--select .nice-select .list {
   border-radius: 12px;
@@ -795,7 +805,9 @@ a {
 .submenu {
   padding-left: 40px;
   max-width: 300px;
-}.submenu li a.active {
+}
+
+.submenu li a.active {
 	border-left: 3px solid #253DA1;
 	border-radius: 0 !important;
 	background: transparent !important;

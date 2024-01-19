@@ -251,6 +251,11 @@
           <path>Views\Journal\Edit.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Journal\Edit.cshtml</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>_PayModal.cshtml</name>
+          <path>Views\Shared\_PayModal.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Shared\_PayModal.cshtml</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -440,6 +445,11 @@
           <name>purchase_edit.css</name>
           <path>Content\purchase\edit.css</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\purchase\edit.css</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>mean_style.css</name>
+          <path>Content\mean\css\style.css</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\mean\css\style.css</absolutePath>
         </Favorite>
       </favorites>
     </Folder>
