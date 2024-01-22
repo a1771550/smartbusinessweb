@@ -1,0 +1,224 @@
+﻿@{
+	bool forsales = ViewData["forsales"] == null ? false : (bool)ViewData["forsales"];
+	bool forpreorder = ViewData["forpreorder"] == null ? false : (bool)ViewData["forpreorder"];
+	bool forrefund = ViewData["forrefund"] == null ? false : (bool)ViewData["forrefund"];
+	bool fordeposit = ViewData["fordeposit"] == null ? false : (bool)ViewData["fordeposit"];
+	bool enableEpay = ViewData["enableEpay"] == null ? false : (bool)ViewData["enableEpay"];
+	string rtsCurrency = ViewData["rtsCurrency"] == null ? "HKD" : (string)ViewData["rtsCurrency"];
+	List<PaymentType> PaymentTypes = ViewData["PaymentTypes"] == null ? null : (List<PaymentType>)ViewData["PaymentTypes"];
+	List<PaymentTypeView> PaymentTypeList = ViewData["PaymentTypeList"] == null ? null : (List<PaymentTypeView>)ViewData["PaymentTypeList"];
+	Dictionary<string, string> DicPayTypes = (Dictionary<string, string>)ViewData["DicPayTypes"];
+	string activecls = "";
+
+	string title = "";
+	string amtId = "";
+	string pagename = "";
+	if (forsales || forpreorder)
+	{
+		title = Resources.Resource.SalesAmount;
+		amtId = "salesamount";
+		pagename = Resources.Resource.Retail;
+	}
+	if (forrefund)
+	{
+		title = Resources.Resource.RefundAmt;
+		amtId = "refundamount";
+		pagename = Resources.Resource.Refund;
+	}
+	if (fordeposit)
+	{
+		title = Resources.Resource.Remainder;
+		amtId = "totalremainamt";
+		pagename = Resources.Resource.Deposit;
+	}
+}
+
+
+<div id="paymentBlk" class="hide">
+	<input type="hidden" id="epaytype" />
+
+	<div class="dash__top">
+		<div class="dash__top--title">
+			<h3>@Resources.Resource.RetailOrder - @Resources.Resource.Payment</h3>
+		</div>
+
+		<div class="dash__top--btn">
+			@Html.Partial("_ExRateModal", null, new ViewDataDictionary { { "fieldname", "rtsCurrency" }, { "currency", rtsCurrency }, { "lblcls", "col-form-label mx-sm-2" }, { "exratecls", "d-block ml-2 hide" }, { "txtboxattr", "readonly" }, { "txtboxstyle", "width:60px;" }, { "txtboxcls", "disabled" }, { "usedropdown", true } })
+
+			<div class="dash__top--title ml-4" onclick="togglePaymentBlk('close','salesBlk',0);">
+				<h5>
+					@Resources.Resource.Cancel
+				</h5>
+			</div>
+		</div>
+
+		
+	</div>
+	<div class="dash__mid">
+		<div class="dash_mid_left">
+			<div class="dash__price">
+				<div class="price__title">
+					<label for="@amtId">@title:</label>
+					<p id="@amtId"><span class="currencySym">$</span><span class="totalamt mx-1">50,000.00</span></p>
+				</div>
+				<div class="price__add--wrap">
+					<label for="#">@Resources.Resource.Paywith:</label>
+					<div class="price__add--btn">
+						@if (forsales && PaymentTypes != null)
+						{
+							int idx = 0;
+							foreach (PaymentType payment in PaymentTypes)
+							{
+								string btnName = string.Concat("chk" + payment.pmtCode);
+								activecls = idx == 0 ? "toggle" : "";
+
+								<button id="@btnName" class="chkpayment toggle-button @activecls" data-target="payMode" data-type="@payment.pmtCode">
+									<span class="pluse">
+										<i class="fal fa-plus"></i>
+									</span><span class="checks">
+										<i class="fal fa-check"></i>
+									</span>@DicPayTypes[payment.pmtCode]
+								</button>
+
+								idx++;
+							}
+						}
+
+						@if (forrefund && PaymentTypes != null)
+						{
+							int idx = 0;
+							foreach (PaymentType payment in PaymentTypes)
+							{
+								if (payment.pmtCode != "Coupon")
+								{
+									string btnName = string.Concat("chk" + payment.pmtCode);
+									activecls = idx == 0 ? "toggle" : "";
+
+									<button id="@btnName" class="chkpayment toggle-button @activecls" data-target="payMode" data-type="@payment.pmtCode">
+										<span class="pluse">
+											<i class="fal fa-plus"></i>
+										</span><span class="checks">
+											<i class="fal fa-check"></i>
+										</span>@DicPayTypes[payment.pmtCode]
+									</button>
+								}
+								idx++;
+							}
+						}
+
+						@if ((forpreorder && PaymentTypeList != null) || (fordeposit && PaymentTypeList != null))
+						{
+							int idx = 0;
+							foreach (var payment in PaymentTypeList)
+							{
+								string btnName = string.Concat("chk" + payment.pmtCode);
+								activecls = idx == 0 ? "toggle" : "";
+
+								<button id="@btnName" class="chkpayment toggle-button @activecls" data-target="payMode" data-type="@payment.pmtCode">
+									<span class="pluse">
+										<i class="fal fa-plus"></i>
+									</span><span class="checks">
+										<i class="fal fa-check"></i>
+									</span>@DicPayTypes[payment.pmtCode]
+								</button>
+
+								idx++;
+							}
+						}
+					</div>
+				</div>
+			</div>
+			<div class="dash__box">
+				<div class="dash__price--app" id="payMode">
+					<h2 id="paymodeTxt">
+						<span id="singlePayMode" class="sin">@Resources.Resource.SinglePayModeApplied</span>
+						<span id="multiplePayMode" class="mul hide">@Resources.Resource.MultiplePayModeApplied</span>
+					</h2>
+				</div>
+				<div class="dash__add">
+					@if (forsales && PaymentTypes != null)
+					{
+						int idx = 0;
+						foreach (PaymentType payment in PaymentTypes)
+						{
+							activecls = idx == 0 ? "active" : "";
+							<div class="single__add @payment.pmtCode" @activecls>
+								<span>@DicPayTypes[payment.pmtCode]</span>
+								<input type="text" placeholder="0">
+								<a href="#" class="currencyCode">HKD</a>
+							</div>
+							idx++;
+						}
+					}
+				</div>
+				@if (forsales || fordeposit || forpreorder)
+				{
+					<div id="remainblk" class="dash__rem--btn">
+						<p id="remaintxt">@Resources.Resource.Remain</p>
+						<p class="currencyCode">HKD</p>
+						<span id="remainamt">50000</span>
+					</div>
+				}
+
+				<div class="dash__play--flex">
+					<a href="#">
+						<div id="monthlypay" class="single__play">
+							<h3>@Resources.Resource.MonthlyPay</h3>
+							<p>@Resources.Resource.GenerateInvoice</p>
+						</div>
+					</a>
+					<a href="#">
+						<div class="single__play">
+							<h3>@Resources.Resource.Deposit</h3>
+							<p>@Resources.Resource.GenerateInvoice</p>
+						</div>
+					</a>
+					<a href="#">
+						<div class="single__play">
+							<h3>@Resources.Resource.PayNow</h3>
+							<p>@Resources.Resource.ConfirmPayment</p>
+						</div>
+					</a>
+				</div>
+
+				
+			</div>
+		</div>
+		<div class="dash_mid_right">
+			<div class="dash__pay">
+				<div class="dash__pay--title">
+					<h3>@Resources.Resource.ePayment</h3>
+				</div>
+				<div class="dash__pay--code">
+					<label for="#">@Resources.Resource.PayerCode</label>
+					<input type="text" placeholder="@Resources.Resource.PayerCode">
+				</div>
+				<div class="dash__btn">
+					<button type="submit" class="red">@Html.Raw(Resources.Resource.ReversePaymentHTML)</button>
+					<button type="submit">@Html.Raw(Resources.Resource.TransactionResultHTML)</button>
+				</div>
+			</div>
+			<div class="dash__table">
+				<div class="table__single fast">
+					<h3>@Resources.Resource.OrderSummary <span>#36686</span></h3>
+					<h3>@Resources.Resource.Date <span>27 Dec 2023</span></h3>
+					<h3>@Resources.Resource.Time <span>12:13 pm</span></h3>
+				</div>
+				<div class="table__single secend">
+					<h2>@Resources.Resource.Items</h2>
+					<h3>Strawberry x 100 <span>$ 14,000</span></h3>
+					<h3>Apple x 50 <span>$ 7,000</span></h3>
+					<h3>Orange x 50 <span>$ 8,000</span></h3>
+					<h3>Pineapple x 100 <span>$ 20,000</span></h3>
+				</div>
+				<div class="table__single last">
+					<h3>@Resources.Resource.Tax <span>$1000</span></h3>
+					<h3>@Resources.Resource.Discount <span>$0</span></h3>
+					<h3>@Resources.Resource.TotalAmount <span>$50,000</span></h3>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<p class="warning"></p>
+</div>

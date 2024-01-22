@@ -1,0 +1,19 @@
+﻿@{
+	var record = (CustomerInfoModel)ViewData["record"];
+	var displayclss = (string)ViewData["displayclss"];
+}
+
+<div class="displayblk @displayclss" data-cusid="@record.cusId" data-id="@record.Id">
+	<div class="card">
+		<div class="text-right small"><span class="fa fa-edit text-info record pointer mr-2"></span><span class="fa fa-close text-danger record pointer"></span></div>
+		<div class="card-body">
+			<div class="txtarea" data-id="@record.Id">
+				<p class="recorddisplay">@record.followUpRecord</p>
+				<input type="text" class="form-control recordentry hide" data-record="@record.followUpRecord" onchange="handleRecordChange(this);" />
+				<span class="small d-inline-block lastedited">@string.Format(Resources.Resource.LastEditedByFormat, record.ModifiedBy, record.ModifyTimeDisplay)</span>
+			</div>
+		</div>
+	</div>
+</div>
+
+
