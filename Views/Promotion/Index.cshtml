@@ -62,11 +62,11 @@
 
         </table>
 
-        <div id="pagingblk" class="mx-3">
-            <div class="row">
+        <div id="pagingblk" class="my-3">
+          
                 @Html.PagedListPager(Model.PagingPromotionList, PageNo => Url.Action("Index",
     new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
-            </div>
+           
         </div>
 
 

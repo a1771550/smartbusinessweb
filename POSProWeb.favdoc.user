@@ -155,6 +155,11 @@
           <path>Scripts\commonfunc.js</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\commonfunc.js</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>customer.ts</name>
+          <path>Scripts\ts\customer\customer.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\customer\customer.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

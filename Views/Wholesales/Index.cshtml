@@ -133,11 +133,11 @@
 
 	</table>
 
-	<div id="pagingblk" class="mx-3">
-		<div class="row">
+	<div id="pagingblk" class="my-3">
+		
 			@Html.PagedListPager(Model.PagingWSList, PageNo => Url.Action("Index",
 	new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
-		</div>
+		
 		<input type="hidden" id="sortorder" name="SortOrder" value="@Model.SortOrder" />
 		<input type="hidden" id="sortcol" value="@Model.SortCol" />
 	</div>

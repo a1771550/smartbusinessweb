@@ -92,8 +92,8 @@
         }
     </table>
 
-    <div id="pagingblk" class="mx-3">
-        <div class="row">
+    <div id="pagingblk" class="my-3">
+       
             @if (Model.CheckoutPortal == "abss" || Model.CheckoutPortal.ToLower() == "nonabss")
             {
                 @Html.PagedListPager(Model.PGCustomerList, PageNo => Url.Action("Index",
@@ -105,7 +105,7 @@ new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
 new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
             }
 
-        </div>
+       
     </div>
 
 

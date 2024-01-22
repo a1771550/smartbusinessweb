@@ -1,8 +1,4 @@
-﻿body {
-  padding-top: 90px;
-  padding-bottom: 20px;
-}
-label:not(.form-check-label){
+﻿label:not(.form-check-label){
     font-weight:bold;
 }
 /* Set padding to keep content from hitting the edges */

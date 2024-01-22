@@ -50,12 +50,12 @@
 	</tbody>
 </table>
 
-<div id="pagingblk" class="mx-3">
+<div id="pagingblk" class="my-3">
 
-	<div class="row">
+	
 		@Html.PagedListPager(Model.PendingList, PageNo => Url.Action("PendingInvoices",
 			new { PageNo}))
-	</div>
+	
 </div>
 
 <script>

@@ -56,31 +56,36 @@
                 }
             </tr>
         </thead>
+		<tbody>
+			@foreach (var customer in customerList)
+			{
+				var email = string.IsNullOrEmpty(customer.cusEmail) ? "N/A" : customer.cusEmail;
+				string cname = customer.cusIsOrganization ? customer.cusName : string.Concat(customer.cusFirstName, " ", customer.cusName);
+				<tr class="@customer.statuscls pointer" data-id="@customer.cusCustomerID">
+					<td style="width:110px;max-width:110px;" class="text-center">@cname</td>
+					<td style="width:100px;max-width:100px;" class="text-center">@customer.cusContact</td>
+					<td style="width:110px;max-width:110px;" class="text-center">@email</td>
+					<td style="width:110px;max-width:110px;" class="text-center customattrs">
+						@if (!string.IsNullOrWhiteSpace(customer.CustomAttributes))
+						{
+							@Html.Raw(customer.CustomAttributes.Trim())
+						}
+					</td>
+					<td style="width:110px;max-width:110px;" class="text-center">@customer.CreateTimeDisplay</td>
+					<td style="width:70px;max-width:70px;" class="text-center">@customer.FollowUpStatusDisplay</td>
+					<td style="width:110px;max-width:110px;" class="text-center">@customer.FollowUpDateDisplay</td>
 
-            @foreach (var customer in customerList)
-            {
-                var email = string.IsNullOrEmpty(customer.cusEmail) ? "N/A" : customer.cusEmail;
-                string cname = customer.cusIsOrganization ? customer.cusName : string.Concat(customer.cusFirstName, " ", customer.cusName);
-                <tr class="@customer.statuscls pointer" data-id="@customer.cusCustomerID">
-                    <td style="width:110px;max-width:110px;" class="text-center">@cname</td>
-                    <td style="width:100px;max-width:100px;" class="text-center">@customer.cusContact</td>
-                    <td style="width:110px;max-width:110px;" class="text-center">@email</td>
-                    <td style="width:110px;max-width:110px;" class="text-center">@Html.Raw(customer.CustomAttributes)</td>
-                    <td style="width:110px;max-width:110px;" class="text-center">@customer.CreateTimeDisplay</td>
-                    <td style="width:70px;max-width:70px;" class="text-center">@customer.FollowUpStatusDisplay</td>
-                    <td style="width:110px;max-width:110px;" class="text-center">@customer.FollowUpDateDisplay</td>
-
-                    <td style="width:120px;max-width:120px;">
-                        <a class="btn btn-info btnsmall" role="button" href="/Customer/Edit?customerId=@customer.cusCustomerID">@Resources.Resource.Edit</a>
-                        <a class="btn btn-danger btnsmall remove" role="button" href="#" data-id="@customer.cusCustomerID" data-apid="@customer.AccountProfileId">@Resources.Resource.Remove</a>
-                    </td>
-                </tr>
-            }
-       
+					<td style="width:120px;max-width:120px;">
+						<a class="btn btn-info btnsmall" role="button" href="/Customer/Edit?customerId=@customer.cusCustomerID">@Resources.Resource.Edit</a>
+						<a class="btn btn-danger btnsmall remove" role="button" href="#" data-id="@customer.cusCustomerID" data-apid="@customer.AccountProfileId">@Resources.Resource.Remove</a>
+					</td>
+				</tr>
+			}
+		</tbody>
     </table>
 
-    <div id="pagingblk" class="mx-3">
-        <div class="row">
+    <div id="pagingblk" class="my-3">
+      
             @if (Model.CheckoutPortal == "abss" || Model.CheckoutPortal.ToLower() == "nonabss")
             {
                 @Html.PagedListPager(customerList, PageNo => Url.Action("Index",
@@ -92,9 +97,8 @@ new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
 new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
             }
 
-        </div>
+      
     </div>
-
 
     <input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
     <input type="hidden" id="sortcol" value="@Model.SortCol" />
@@ -136,7 +140,10 @@ new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
         <input type="hidden" name="SortOrder_a" id="sortorder_a" value="@Model.SortOrder_a" />
         <input type="hidden" id="sortcol_a" value="@Model.SortCol_a" />
     </div>
+
+   
 }
+@Html.Partial("_DescModal")
 
 @Html.Partial("_AdvancedSearchModal",Model.GlobalAttrList)
 

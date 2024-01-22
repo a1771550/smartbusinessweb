@@ -2920,9 +2920,18 @@ function closePurchaseCodeModal() {
 function closeDescModal() {
 	descModal.dialog("close");
 }
-function openDescModal() {
-	descModal.dialog("option", { width: 400, title: description });
+function openDescModal(params:any=null, _title:string=description, _width:number=400) {
+	descModal.dialog("option", { width: _width, title: _title });
 	descModal.dialog("open");
+
+	if (forcustomer) {
+		$("#descModal")
+			.empty()
+			.append(
+				params
+			);
+	}
+
 	if (forsales && selectedSalesLn) {
 		$("#descModal")
 			.empty()

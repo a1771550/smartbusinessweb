@@ -4636,6 +4636,7 @@
     <Content Include="Views\Shared\_PayModal.cshtml" />
     <Content Include="Views\Shared\_ExRateModal - Copy.cshtml" />
     <Content Include="Views\Shared\_Payment.cshtml" />
+    <Content Include="Views\Shared\_FollowUpBlk.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">

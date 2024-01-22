@@ -73,11 +73,11 @@
 
 @Html.AntiForgeryToken()
 
-    <div id="pagingblk" class="mx-3">
-        <div class="row">
+    <div id="pagingblk" class="my-3">
+      
             @Html.PagedListPager(Model.PagingCallHistoryList, PageNo => Url.Action("Index",
     new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
-        </div>
+        
     </div>
 
     <input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />

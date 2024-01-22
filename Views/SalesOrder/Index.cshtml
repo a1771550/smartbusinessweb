@@ -167,11 +167,11 @@ else
 				}
 			</tbody>
 		</table>
-		<div id="pagingblk" class="mx-3">
-			<div class="row">
+		<div id="pagingblk" class="my-3">
+			
 				@Html.PagedListPager(Model.PagingOrderList, PageNo => Url.Action("Index",
 		new { PageNo, SortOrder = Model.SortOrder, SortName = Model.SortName, Keyword = Model.Keyword, strfrmdate = Model.DateFromTxt, strtodate = Model.DateToTxt }))
-			</div>
+			
 		</div>
 	</div>
 	@Html.AntiForgeryToken()

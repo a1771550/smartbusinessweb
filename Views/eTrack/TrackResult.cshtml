@@ -147,15 +147,15 @@
 
 
 
-	<div id="pagingblk" class="mx-3">
+	<div id="pagingblk" class="my-3">
 
-		<div class="row">
+	
 			@if (Model.PagingEtrackList != null)
 			{
 				@*@Html.PagedListPager(Model.PagingEtrackList, PageNo => Url.Action("TrackResult",
 					new { Pass = Model.CurrentToken??"", PageNo, SortOrder = Model.CurrentSortOrder??"desc", Keyword = Model.Keyword??"", strfrmdate = Model.DateFromTxt??"", strtodate = Model.DateToTxt??"", blastid = Model.CurrentBlastId, contactname = Model.CurrentContactName??"", organization = Model.CurrentOrganization??"", viewdate = Model.CurrentViewDate??"", CustomAttribute = Model.CurrentAttribute??"", PageSize =  Model.PagingInfo== null?10:Model.PagingInfo.ItemsPerPage }))*@
 			}
-		</div>
+	
 	</div>
 
 	if (Model.PagingEtrackList != null)

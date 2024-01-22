@@ -101,7 +101,7 @@
         }
 
     </table>*@
-    @*<div id="pagingblk" class="mx-3">
+    @*<div id="pagingblk" class="my-3">
         <div class="row">
             @Html.PagedListPager(Model.CustomerList, PageNo => Url.Action("Index",
 new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
