@@ -1,6 +1,12 @@
 ﻿$infoblk = $("#infoblk");
 const formatzero = formatnumber(0);
 
+
+$(document).on("click", ".btnpayment", function () {
+	let Id = $(this).attr("id") as string;
+	togglePlusCheck(Id);
+	togglePayModeTxt();
+});
 $(document).on("change", "#txtItemCode", function () {	
 	/*console.log("here");*/
 	handleProductCheck(null, 0, true);
@@ -111,8 +117,9 @@ $(document).on("click", ".pos.btn-scanner-set", function () {
 
 
 $(document).on("click", "#btnCheckout", function () {
-	let amt = Number($(this).find(".totalamt").text());
+	let amt = Number($(this).find("#totalamt").text());
 	//console.log("amt:" + amt);
+	//return false;
 	if (amt == 0) amt = 5000;
 	togglePaymentBlk("open", "salesBlk", amt); return false;
 

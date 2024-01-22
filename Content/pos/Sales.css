@@ -134,3 +134,9 @@ i.fa-plus, i.fa-minus {
 	font: inherit;
 	vertical-align: baseline;
 }
+.btnpayment{
+	cursor:pointer;
+}
+#multiplePayMode{
+	display:none;
+}

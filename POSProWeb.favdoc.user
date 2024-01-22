@@ -261,6 +261,11 @@
           <path>Views\Shared\_PayModal.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Shared\_PayModal.cshtml</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>_Payment.cshtml</name>
+          <path>Views\Shared\_Payment.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Shared\_Payment.cshtml</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

@@ -2363,7 +2363,7 @@ $(document).on("change", ".pay", function () {
 				return;
 			}
 
-			let totalamt: number = 0;			
+			let totalamt: number = 0;
 			$(`#${gTblName} tbody tr`).each(function (i, e) {
 				$amt = $(e).find("td").eq(4).find(".pay");
 				let amt: number = Number($amt.val());
@@ -2377,7 +2377,7 @@ $(document).on("change", ".pay", function () {
 				return;
 			}
 
-			purchasePayment.Amount = amt;		
+			purchasePayment.Amount = amt;
 			//console.log("Purchase.pstAmount:" + Purchase.pstAmount + ";totalamt:" + totalamt);
 			let totalowed: number = Purchase.pstAmount - totalamt;
 			//console.log("totalowed:", totalowed);
@@ -2607,6 +2607,15 @@ function openPayModal(totalamt: number = 0) {
 	initCashTxt(totalamt);
 }
 
+function togglePayModeTxt() {
+	if ($(".checks:visible").length > 1) {
+		$("#singlePayMode").hide();
+		$("#multiplePayMode").show();
+	} else {
+		$("#singlePayMode").show();
+		$("#multiplePayMode").hide();
+	}
+}
 function initCashTxt(totalamt: number | null) {
 	let cashtxt = "";
 	if (!totalamt) {
@@ -2614,9 +2623,23 @@ function initCashTxt(totalamt: number | null) {
 	}
 	cashtxt = totalamt.toFixed(2);
 	//console.log("cashtxt:" + cashtxt);
+
+	togglePlusCheck("btnCash");
 	$("#Cash").val(cashtxt);
 }
+function togglePlusCheck(Id: string) {
+	//if (showCheck) {
+	//	$(`#${Id}`).find(".pluse").hide();
+	//	$(`#${Id}`).find(".checks").show();
+	//} else {
+	//	$(`#${Id}`).find(".pluse").show();
+	//	$(`#${Id}`).find(".checks").hide();
+	//}
+	$(`#${Id}`).find(".pluse").toggle();
+	$(`#${Id}`).find(".checks").toggle();
 
+	//togglePayModeTxt();
+}
 function setForexPayment(totalamt: number | null) {
 	if (!totalamt) totalamt = getTotalAmt4Order();
 	$("#forexPayment").html(formatnumber(totalamt));
@@ -2920,7 +2943,7 @@ function closePurchaseCodeModal() {
 function closeDescModal() {
 	descModal.dialog("close");
 }
-function openDescModal(params:any=null, _title:string=description, _width:number=400) {
+function openDescModal(params: any = null, _title: string = description, _width: number = 400) {
 	descModal.dialog("option", { width: _width, title: _title });
 	descModal.dialog("open");
 
@@ -3113,7 +3136,7 @@ function openUploadFileModal() {
 }
 function closeUploadFileModal() {
 	uploadFileModal.dialog("close");
-	if(!forpayments)
+	if (!forpayments)
 		window.location.reload();
 }
 
@@ -6309,8 +6332,8 @@ interface ISerialNo {
 }
 
 interface JQuery {
-    switchClass(arg0: string, arg1: string, arg2: number, arg3: string): any;
-    niceSelect(): any;
+	switchClass(arg0: string, arg1: string, arg2: number, arg3: string): any;
+	niceSelect(): any;
 	ASPSnippets_Pager(arg0: {
 		ActiveCssClass: string;
 		PagerCssClass: string;
@@ -11884,7 +11907,7 @@ let $deliveryDateDisplay: JQuery;
 let $promisedDateDisplay: JQuery;
 let $purchaseDateDisplay: JQuery;
 let DicCurrencyExRate: { [Key: string]: number } = {};
-let DicCurrencySym: { [Key: string]: string } = { "HKD": "$", "GBP": "£", "USD": "$", "CNY": "¥", "EUR":"€"};
+let DicCurrencySym: { [Key: string]: string } = { "HKD": "$", "GBP": "£", "USD": "$", "CNY": "¥", "EUR": "€" };
 let forwholesales: boolean = false;
 let fordelivery: boolean = false;
 function getExRate(currencyCode: string): number {
@@ -15383,7 +15406,7 @@ function togglePaymentBlk(mode: string, toggleId: string, totalamt: number) {
 	} else {
 		$(`#${toggleId}`).show();
 		$("#paymentBlk").addClass("hide");
-	}	
+	}
 }
 $(document).on("change", ".batch", function () {
 	currentY = getCurrentY(this);
@@ -16773,7 +16796,7 @@ function setExRateDropDown() {
 	} else {
 		//console.log("DicCurrencyExRate:", DicCurrencyExRate);
 		for (const [key, value] of Object.entries(DicCurrencyExRate)) {
-			const displaytxt =  getCurrencyDisplayTxt(key, value);
+			const displaytxt = getCurrencyDisplayTxt(key, value);
 			$("#drpCurrency").append(
 				$("<option>", {
 					value: value,
@@ -16845,7 +16868,7 @@ let DicItemGroupedVariations: { [Key: string]: typeof DicItemVariations } = {};
 let DicItemVari: { [Key: string]: IItemVariation } = {};
 
 function getCurrencyDisplayTxt(key: string, value: number) {
-    return `${DicCurrencySym[key]} ${key} (${formatexrate(value.toString())})`;
+	return `${DicCurrencySym[key]} ${key} (${formatexrate(value.toString())})`;
 }
 
 function _setExRateDropDown(value: any, key: string, exrate: number) {
@@ -16858,7 +16881,7 @@ function _setExRateDropDown(value: any, key: string, exrate: number) {
 			text: displaytxt,
 			selected: selected,
 		})
-	);	
+	);
 }
 
 
@@ -21785,7 +21808,7 @@ interface ISimpleContact {
 let purchasePayment: IPurchasePayment;
 let PurchasePayments: IPurchasePayment[] = [];
 interface IPurchasePayment {
-    JsOpTime: string;
+	JsOpTime: string;
 	Id: number;
 	pstCode: string;
 	supCode: string;
@@ -21811,13 +21834,13 @@ $(document).on("click", ".btnUpload", function () {
 	if (forpurchase) {
 		ppId = Number($(this).data("id"));
 		getPurchasePayment();
-		if(purchasePayment)
+		if (purchasePayment)
 			openUploadFileModal();
 	}
 });
 
 function addPayRow() {
-	let Id: number = lastppId+1;
+	let Id: number = lastppId + 1;
 	$tr = $(`#${gTblName} tbody tr`).last();
 	let lastseq = ($tr.length) ? Number($tr.find("td").first().text()) + 1 : 1;
 	//console.log("Id:", Id);
@@ -21829,7 +21852,7 @@ function addPayRow() {
 	<td class="text-center"><input type="text" class="form-control text-center chequeno" maxlength="8" /></td>
 	<td class="text-center">${populateDrpAccount()}</td>`;
 	//<span class="accountno acname" data-accno="@payment.AccountNo">@payment.AccountName</span>
-	html +=`<td class="text-center"><span class="accountno acname"></span></td>
+	html += `<td class="text-center"><span class="accountno acname"></span></td>
 	<td class="text-right"><input type="number" class="form-control pay text-right" data-id="${Id}" value="${formatnumber(0)}" /></td>
 	<td class="text-right"><input type="datetime" class="form-control datepicker ppdate" name="ppDate" value="${strdate}" /></td>
 	<td class="text-left text-wrap"></td>
@@ -21848,14 +21871,14 @@ function addPayRow() {
 	initDatePicker("ppdate", today, true, "", true, false, true);
 
 	ppId = Id;
-	purchasePayment = {Id} as IPurchasePayment;
+	purchasePayment = { Id } as IPurchasePayment;
 }
 
 function updateSelectedPayment() {
 	if (forpurchase) {
 
-		getPurchasePayment(); 
-		
+		getPurchasePayment();
+
 		$(`#${gTblName} tbody tr`).each(function (i, e) {
 			let Id: number = Number($(e).data("id"));
 			//console.log("Id:" + Id);			
@@ -21869,8 +21892,7 @@ function updateSelectedPayment() {
 			let jsdate: string = $(e).find("td").eq(idx).find(".ppdate").val() as string;
 			idx += 2;
 			let jstime: string = $(e).find("td").eq(idx).text();
-			if (chequeno != "" && acno != "" && amt > 0 && purchasePayment.Id == Id)
-			{				
+			if (chequeno != "" && acno != "" && amt > 0 && purchasePayment.Id == Id) {
 				purchasePayment.pstCode = Purchase.pstCode;
 				purchasePayment.supCode = Purchase.supCode;
 				purchasePayment.ChequeNo = chequeno.trim();
@@ -21886,7 +21908,7 @@ function updateSelectedPayment() {
 				validPayment = false;
 			}
 		});
-	}	
+	}
 }
 $(document).on("click", ".filelnk", function () {
 	popupCenter({
@@ -21898,12 +21920,12 @@ $(document).on("click", ".filelnk", function () {
 });
 
 function getPurchasePayment() {
-    if (PurchasePayments.length > 0) {
-        purchasePayment = PurchasePayments.find(x => x.Id == ppId)!;
-    } else {
-        if (!purchasePayment)
-            purchasePayment = { Id: ppId } as IPurchasePayment;
-    }
+	if (PurchasePayments.length > 0) {
+		purchasePayment = PurchasePayments.find(x => x.Id == ppId)!;
+	} else {
+		if (!purchasePayment)
+			purchasePayment = { Id: ppId } as IPurchasePayment;
+	}
 }
 
 function handleVoidPayment() {
@@ -21982,15 +22004,15 @@ function setAccName(tr: JQuery<Element>, acno: string, acname: string) {
 	idx++;
 	//console.log("idx:" + idx);
 	//console.log("acname:", tr.find("td").eq(idx).find(".acname"));
-	if(forjournal)
+	if (forjournal)
 		tr.find("td").eq(idx).find(".acname").val(acname);
 	if (forpurchase) {
-	/*	let acnameno: string = acname.concat(` (${acno})`);*/
+		/*	let acnameno: string = acname.concat(` (${acno})`);*/
 		tr.find("td").eq(idx).find(".acname").text(acname.concat(` (${acno})`)).data("acno", acno);
 		purchasePayment.AccountNo = acno;
 	}
 }
-function handleUploadedFile(result:any) {
+function handleUploadedFile(result: any) {
 	closeWaitingModal();
 	$("#uploadmsg").removeClass("hide").html(result.msg);
 	if (forpurchase) {
@@ -22000,7 +22022,7 @@ function handleUploadedFile(result:any) {
 			else {
 				filelist = purchasePayment.fileName!.split(",");
 				filelist.push(result.filepath);
-				purchasePayment.fileName = filelist.join();				
+				purchasePayment.fileName = filelist.join();
 			}
 
 			if (purchasePayment.fileName) {

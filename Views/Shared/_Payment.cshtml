@@ -69,10 +69,10 @@
 							int idx = 0;
 							foreach (PaymentType payment in PaymentTypes)
 							{
-								string btnName = string.Concat("chk" + payment.pmtCode);
+								string btnName = string.Concat("btn" + payment.pmtCode);
 								activecls = idx == 0 ? "toggle" : "";
 
-								<button id="@btnName" class="chkpayment toggle-button @activecls" data-target="payMode" data-type="@payment.pmtCode">
+								<button id="@btnName" class="btnpayment toggle-button @activecls" data-target="payMode" data-type="@payment.pmtCode">
 									<span class="pluse">
 										<i class="fal fa-plus"></i>
 									</span><span class="checks">
@@ -91,10 +91,10 @@
 							{
 								if (payment.pmtCode != "Coupon")
 								{
-									string btnName = string.Concat("chk" + payment.pmtCode);
+									string btnName = string.Concat("btn" + payment.pmtCode);
 									activecls = idx == 0 ? "toggle" : "";
 
-									<button id="@btnName" class="chkpayment toggle-button @activecls" data-target="payMode" data-type="@payment.pmtCode">
+									<button id="@btnName" class="btnpayment toggle-button @activecls" data-target="payMode" data-type="@payment.pmtCode">
 										<span class="pluse">
 											<i class="fal fa-plus"></i>
 										</span><span class="checks">
@@ -111,10 +111,10 @@
 							int idx = 0;
 							foreach (var payment in PaymentTypeList)
 							{
-								string btnName = string.Concat("chk" + payment.pmtCode);
+								string btnName = string.Concat("btn" + payment.pmtCode);
 								activecls = idx == 0 ? "toggle" : "";
 
-								<button id="@btnName" class="chkpayment toggle-button @activecls" data-target="payMode" data-type="@payment.pmtCode">
+								<button id="@btnName" class="btnpayment toggle-button @activecls" data-target="payMode" data-type="@payment.pmtCode">
 									<span class="pluse">
 										<i class="fal fa-plus"></i>
 									</span><span class="checks">
@@ -131,8 +131,8 @@
 			<div class="dash__box">
 				<div class="dash__price--app" id="payMode">
 					<h2 id="paymodeTxt">
-						<span id="singlePayMode" class="sin">@Resources.Resource.SinglePayModeApplied</span>
-						<span id="multiplePayMode" class="mul hide">@Resources.Resource.MultiplePayModeApplied</span>
+						<span id="singlePayMode" class="paymode">@Resources.Resource.SinglePayModeApplied</span>
+						<span id="multiplePayMode" class="paymode">@Resources.Resource.MultiplePayModeApplied</span>
 					</h2>
 				</div>
 				<div class="dash__add">
@@ -141,8 +141,8 @@
 						int idx = 0;
 						foreach (PaymentType payment in PaymentTypes)
 						{
-							activecls = idx == 0 ? "active" : "";
-							<div class="single__add @payment.pmtCode" @activecls>
+							activecls = idx == 0 ? "activee" : "";
+							<div class="single__add @payment.pmtCode @activecls">
 								<span>@DicPayTypes[payment.pmtCode]</span>
 								<input type="text" placeholder="0">
 								<a href="#" class="currencyCode">HKD</a>
