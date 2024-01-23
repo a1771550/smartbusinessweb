@@ -31,6 +31,8 @@
 		amtId = "totalremainamt";
 		pagename = Resources.Resource.Deposit;
 	}
+
+	string currencySym = (string)ViewData["CurrencySym"];
 }
 
 
@@ -113,7 +115,7 @@
 							{
 								string btnName = string.Concat("btn" + payment.pmtCode);
 								activecls = idx == 0 ? "toggle" : "";
-
+								//string showval = idx == 0 ? "1" : "0";
 								<button id="@btnName" class="btnpayment toggle-button @activecls" data-target="payMode" data-type="@payment.pmtCode">
 									<span class="pluse">
 										<i class="fal fa-plus"></i>
@@ -142,9 +144,9 @@
 						foreach (PaymentType payment in PaymentTypes)
 						{
 							activecls = idx == 0 ? "activee" : "";
-							<div class="single__add @payment.pmtCode @activecls">
+							<div class="single__add @activecls" data-code="@payment.pmtCode">
 								<span>@DicPayTypes[payment.pmtCode]</span>
-								<input type="text" placeholder="0">
+								<input type="text" id="@payment.pmtCode" class="paymenttype" placeholder="0">
 								<a href="#" class="currencyCode">HKD</a>
 							</div>
 							idx++;
@@ -173,7 +175,7 @@
 							<p>@Resources.Resource.GenerateInvoice</p>
 						</div>
 					</a>
-					<a href="#">
+					<a id="btnConfirmPay" href="#">
 						<div class="single__play">
 							<h3>@Resources.Resource.PayNow</h3>
 							<p>@Resources.Resource.ConfirmPayment</p>
@@ -191,30 +193,30 @@
 				</div>
 				<div class="dash__pay--code">
 					<label for="#">@Resources.Resource.PayerCode</label>
-					<input type="text" placeholder="@Resources.Resource.PayerCode">
+					<input id="txtPayerCode" type="text" placeholder="@Resources.Resource.PayerCode">
 				</div>
 				<div class="dash__btn">
-					<button type="submit" class="red">@Html.Raw(Resources.Resource.ReversePaymentHTML)</button>
-					<button type="submit">@Html.Raw(Resources.Resource.TransactionResultHTML)</button>
+					<button id="reverseEpay" type="button" class="red isDisabled" >@Html.Raw(Resources.Resource.ReversePaymentHTML)</button>
+					<button id="transactionEpay" type="button" class="isDisabled">@Html.Raw(Resources.Resource.TransactionResultHTML)</button>
 				</div>
 			</div>
 			<div class="dash__table">
 				<div class="table__single fast">
-					<h3>@Resources.Resource.OrderSummary <span>#36686</span></h3>
-					<h3>@Resources.Resource.Date <span>27 Dec 2023</span></h3>
-					<h3>@Resources.Resource.Time <span>12:13 pm</span></h3>
+					<h3>@Resources.Resource.OrderSummary <span id="receiptno"></span></h3>
+					<h3>@Resources.Resource.Date <span id="salesdate"></span></h3>
+					<h3>@Resources.Resource.Time <span id="salestime"></span></h3>
 				</div>
-				<div class="table__single secend">
+				<div class="table__single items">
 					<h2>@Resources.Resource.Items</h2>
-					<h3>Strawberry x 100 <span>$ 14,000</span></h3>
+					@*<h3>Strawberry x 100 <span>$ 14,000</span></h3>
 					<h3>Apple x 50 <span>$ 7,000</span></h3>
 					<h3>Orange x 50 <span>$ 8,000</span></h3>
-					<h3>Pineapple x 100 <span>$ 20,000</span></h3>
+					<h3>Pineapple x 100 <span>$ 20,000</span></h3>*@
 				</div>
 				<div class="table__single last">
-					<h3>@Resources.Resource.Tax <span>$1000</span></h3>
-					<h3>@Resources.Resource.Discount <span>$0</span></h3>
-					<h3>@Resources.Resource.TotalAmount <span>$50,000</span></h3>
+					<h3>@Resources.Resource.Tax <span class="taxamt"></span></h3>
+					<h3>@Resources.Resource.Discount <span class="discamt"></span></h3>
+					<h3>@Resources.Resource.TotalAmount <span class="totalamt"></span></h3>
 				</div>
 			</div>
 		</div>

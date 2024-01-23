@@ -40,6 +40,8 @@ let NamesMatch: boolean = false;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
+const confirmdeposittxt: string = $txtblk.data("confirmdeposittxt");
+const numberonlytxt: string = $txtblk.data("numberonlytxt");
 const paymentinfoerrtxt: string = $txtblk.data("paymentinfoerrtxt");
 const confirmvoidpaymenttxt: string = $txtblk.data("confirmvoidpaymenttxt");
 const void4paymenttxt: string = $txtblk.data("void4paymenttxt");
@@ -650,7 +652,6 @@ let pageindex = 1;
 let inclusivetax = false,
 	inclusivetaxrate = 0;
 let chkIdx = -1,
-	payIdx = -1,
 	activeChkIdx = -1,
 	activePayIdx = -1,
 	paymenttypechange = false,
@@ -2159,9 +2160,9 @@ const getPaymentRemain = (): number => {
 };
 
 function setRemain($e: JQuery, amt: number, forsales: boolean = true) {
-	let type: string = <string>$e.attr("Id")?.toString();
+	let type: string = <string>$e.attr("id")?.toString();
 	//console.log('type:' + type);
-	//console.log('dicpaytypes:', dicPayTypes);
+	//console.log('DicPayTypes:', DicPayTypes);
 	let iscash = false;
 	for (const [key, value] of Object.entries(DicPayTypes)) {
 		//console.log(`${key}: ${value}`);
@@ -2171,9 +2172,11 @@ function setRemain($e: JQuery, amt: number, forsales: boolean = true) {
 		}
 	}
 	//console.log('iscash:' + iscash);
-
-	let _totalpay = getTotalPayments();
-	let _totalamt = getTotalAmt4Order();
+	let _totalpay: number = 0, _totalamt: number = 0;
+	if (!forsimplesales) {
+		_totalpay = getTotalPayments();
+		_totalamt = getTotalAmt4Order();
+	}
 
 	if (forsales) {
 		_setRemain(amt, _totalamt, _totalpay, iscash, type, $e);
@@ -2207,9 +2210,11 @@ function _setRemain(
 					}
 				},
 			});
-		} else {
+		}
+		else {
 			let _remain = _totalamt - _totalpay;
 			_setremain(_remain, amt);
+
 		}
 	} else {
 		let _remain = _totalamt - _totalpay;
@@ -2218,54 +2223,78 @@ function _setRemain(
 }
 
 function _setremain(_remain: number, _amt: number) {
-	if (chkIdx >= 0) {
-		$tr = $("#tblPay tbody tr").eq(chkIdx);
-		if ($tr != null) {
-			if (chkchange && !paymenttypechange) {
-				if (_amt < 0) {
-					$tr.find("td:eq(1)").find(".paymenttype").val(formatnumber(0));
+	if (forsimplesales) {
+		let totalpay = 0;
+		$(".paymenttype").each(function (i, e) {
+			totalpay += Number($(e).val());
+		});
+		console.log("totalpay:", totalpay);
+		_remain = Sales.rtsFinalTotal! - totalpay;
+
+	} else {
+		if (chkIdx >= 0) {
+			$tr = $("#tblPay tbody tr").eq(chkIdx);
+			if ($tr != null) {
+				if (chkchange && !paymenttypechange) {
+					if (_amt < 0) {
+						$tr.find("td:eq(1)").find(".paymenttype").val(formatnumber(0));
+					} else {
+						$tr.find("td:eq(1)").find(".paymenttype").val(_amt.toFixed(2));
+					}
+				}
+
+				if (_amt == _remain) {
+					_remain = 0;
+				} else if (_amt < 0) {
+					_remain += -1 * _amt;
+				}
+
+				$("#remainamt").text(formatmoney(_remain));
+				if (_remain <= 0) {
+					$("#remainblk").removeClass("alert-danger").addClass("alert-success");
+					if (_remain < 0) {
+						$("#remaintxt").text(changetxt);
+						_remain *= -1;
+						//console.log('_remain:' + _remain);
+						$("#remainamt").text(formatmoney(_remain));
+					}
 				} else {
-					$tr.find("td:eq(1)").find(".paymenttype").val(_amt.toFixed(2));
+					$("#remaintxt").text(remaintxt);
+					$("#remainblk").removeClass("alert-success").addClass("alert-danger");
 				}
+				return;
 			}
+		}
+		if (_remain > 0) {
+			$("#remainblk").removeClass("alert-success").addClass("alert-danger");
+		} else if (_remain <= 0) {
+			if (forsimplesales) {
 
-			if (_amt == _remain) {
-				_remain = 0;
-			} else if (_amt < 0) {
-				_remain += -1 * _amt;
 			}
-
-			$("#remainamt").text(formatmoney(_remain));
-			if (_remain <= 0) {
-				$("#remainblk").removeClass("alert-danger").addClass("alert-success");
-				if (_remain < 0) {
-					$("#remaintxt").text(changetxt);
-					_remain *= -1;
-					//console.log('_remain:' + _remain);
-					$("#remainamt").text(formatmoney(_remain));
-				}
-			} else {
-				$("#remaintxt").text(remaintxt);
-				$("#remainblk").removeClass("alert-success").addClass("alert-danger");
-			}
-			return;
+			$("#remainblk").removeClass("alert-danger").addClass("alert-success");
+		}
+		//console.log('iremain:' + iremain);
+		if (_remain < 0) {
+			_remain *= -1;
+			$("#remaintxt").text(changetxt);
 		}
 	}
 
-	if (_remain > 0) {
-		$("#remainblk").removeClass("alert-success").addClass("alert-danger");
-	} else if (_remain <= 0) {
-		$("#remainblk").removeClass("alert-danger").addClass("alert-success");
-	}
-	//console.log('iremain:' + iremain);
-	if (_remain < 0) {
-		_remain *= -1;
-		$("#remaintxt").text(changetxt);
-	}
 	$("#remainamt").text(formatmoney(_remain));
-}
 
+	console.log("remainlt0:", _remain <= 0);
+	if (forsimplesales) setRemainDisplay(_remain <= 0);
+}
+function setRemainDisplay(remainLt0: boolean) {
+	console.log("remainLt0#display:", remainLt0);
+	if (remainLt0) {
+		$("#remainblk").removeClass("bg-danger").addClass("bg-success");
+	} else {
+		$("#remainblk").removeClass("bg-success").addClass("bg-danger");
+	}
+}
 function resetPay(partial: boolean = false) {
+
 	payModal.dialog("close");
 
 	if (!partial) {
@@ -2301,7 +2330,6 @@ function resetPay(partial: boolean = false) {
 
 	//reset the idxs:
 	chkIdx = -1;
-	payIdx = -1;
 	activeChkIdx = -1;
 	activePayIdx = -1;
 
@@ -2321,18 +2349,30 @@ function resetPay(partial: boolean = false) {
 	}
 }
 
-const GetPaymentsInfo = () => {
+function GetPaymentsInfo() {
 	let _couponamt: number = 0;
 	let _totalpay: number = 0;
-	$("#tblPay .form-control").each(function (i, e) {
+
+	if (forsimplesales) {
+		$(".paymenttype").each(function (i, e) {
+			getPaymentInfo(e);
+		});
+	} else {
+		$("#tblPay .form-control").each(function (i, e) {
+			getPaymentInfo(e);
+		});
+	}
+	function getPaymentInfo(e) {
 		if ($(e).val() !== "") {
-			let typecode: string = <string>$(e).attr("Id");
+			let typecode: string = <string>$(e).attr("id");
 			let amt: number = parseFloat(<string>$(e).val());
+			//console.log("typecode:", typecode);
+			//console.log("amt:", amt);
 			let paytype: IPaymentType = {
 				payId: 0,
 				pmtCode: typecode,
 				Amount: amt,
-				pmtIsCash: DicPayTypes[typecode].pmtIsCash,
+				pmtIsCash: typecode.toLowerCase() == "cash",
 				TotalAmt: 0,
 			};
 			Payments.push(paytype);
@@ -2341,7 +2381,7 @@ const GetPaymentsInfo = () => {
 			}
 			_totalpay += amt;
 		}
-	});
+	}
 	return { couponamt: _couponamt, totalpay: _totalpay };
 };
 
@@ -2429,19 +2469,20 @@ $(document).on("change", ".chkpayment", function () {
 
 $(document).on("change", ".paymenttype", function () {
 	if (!fordayends) {
-		let payamt: any = $(this).val();
+		let payamt: number = Number($(this).val());
+		//console.log("payamt:" + payamt);
+
 		paymenttypechange = true;
 		chkchange = false;
-		payIdx = parseInt($(this).parent("td").parent("tr").data("idx"));
-		// console.log("payIdx#paymenttypechange:" + payIdx);
-		if (payamt == "") {
+
+		if (payamt == 0) {
 			$(this).val(formatnumber(0));
 			if (Sales.Deposit == 0) {
 				setRemain($(this), 0);
 			}
 		} else {
 			$(this).val(formatnumber(payamt));
-			let amt = parseFloat(payamt) / exRate;
+			let amt = payamt / exRate;
 			//console.log("amt:" + amt);
 			if (amt >= 0) {
 				if (Sales && Sales.Deposit == 0) {
@@ -2461,7 +2502,9 @@ function confirmPay() {
 	let _totalamt: number = 0;
 	switch (salesType) {
 		case SalesType.simplesales:
-			_totalamt = Number($(".totalamt").first().text());
+			//for debug only:
+			_totalamt = Sales.rtsFinalTotal!;
+			//_totalamt = Number($(".totalamt").first().text());
 			break;
 		case SalesType.deposit:
 			_totalamt = itotalremainamt;
@@ -2477,17 +2520,19 @@ function confirmPay() {
 	}
 
 	let paymentsInfo = GetPaymentsInfo();
+	//console.log("paymentsInfo:", paymentsInfo);
 	let _couponamt: number = paymentsInfo.couponamt;
 	let _totalpay: number = paymentsInfo.totalpay;
 
 	_totalpay = round(_totalpay, 2);
 	_totalamt = round(_totalamt, 2);
 
-	console.log('totalpay:' + itotalpay + ';totalamt:' + _totalamt);
+	//console.log('totalpay:' + _totalpay + ';totalamt:' + _totalamt);
 	if (isNaN(_totalpay)) {
 		falert(paymentrequiredtxt, oktxt);
 	} else if (_totalpay < _totalamt) {
-		resetPay(true);
+		if (!forsimplesales)
+			resetPay(true);
 		//console.log("retailType:",retailType);
 		switch (salesType) {
 			//case SalesType.simplesales:
@@ -2548,7 +2593,8 @@ function confirmPay() {
 			}
 		}
 	} else if (_totalpay == _totalamt) {
-		resetPay(true);
+		if (!forsimplesales)
+			resetPay(true);
 		switch (salesType) {
 			case SalesType.deposit:
 				submitRemaining();
@@ -2598,15 +2644,28 @@ function openPayModal(totalamt: number = 0) {
 	if (totalamt === 0)
 		totalamt = getTotalAmt4Order();
 
+	//console.log("totalamt:" + totalamt);
 	/*if (!forsimplesales)*/
 	setForexPayment(totalamt);
 
-	$("#salesamount").text(formatmoney(totalamt));
-	$("#remainamt").text(formatmoney(0));
+	initAmtDisplay(totalamt);
 
 	initCashTxt(totalamt);
 }
-
+function initAmtDisplay(totalamt: number) {
+	$("#salesamount").text(formatmoney(totalamt));
+	$("#remainamt").text(formatmoney(0));
+}
+function initCashTxt(totalamt: number | null) {
+	let cashtxt = "";
+	if (!totalamt) {
+		totalamt = getTotalAmt4Order();
+	}
+	cashtxt = totalamt.toFixed(2);
+	//console.log("cashtxt:" + cashtxt);
+	togglePlusCheck("btnCash");
+	$("#Cash").val(cashtxt);
+}
 function togglePayModeTxt() {
 	if ($(".checks:visible").length > 1) {
 		$("#singlePayMode").hide();
@@ -2616,29 +2675,11 @@ function togglePayModeTxt() {
 		$("#multiplePayMode").hide();
 	}
 }
-function initCashTxt(totalamt: number | null) {
-	let cashtxt = "";
-	if (!totalamt) {
-		totalamt = getTotalAmt4Order();
-	}
-	cashtxt = totalamt.toFixed(2);
-	//console.log("cashtxt:" + cashtxt);
 
-	togglePlusCheck("btnCash");
-	$("#Cash").val(cashtxt);
-}
-function togglePlusCheck(Id: string) {
-	//if (showCheck) {
-	//	$(`#${Id}`).find(".pluse").hide();
-	//	$(`#${Id}`).find(".checks").show();
-	//} else {
-	//	$(`#${Id}`).find(".pluse").show();
-	//	$(`#${Id}`).find(".checks").hide();
-	//}
+function togglePlusCheck(Id: string): boolean {
 	$(`#${Id}`).find(".pluse").toggle();
-	$(`#${Id}`).find(".checks").toggle();
-
-	//togglePayModeTxt();
+	let $return = $(`#${Id}`).find(".checks").toggle();
+	return $return.is(":visible");
 }
 function setForexPayment(totalamt: number | null) {
 	if (!totalamt) totalamt = getTotalAmt4Order();
@@ -4489,7 +4530,7 @@ function initModals() {
 					class: "savebtn",
 					click: function () {
 						let $ele = dropdownModal.find(".dropdown");
-						let _id: string = <string>$ele.attr("Id");
+						let _id: string = <string>$ele.attr("id");
 						console.log("_id:" + _id);
 						let _val: string = <string>$ele.val();
 						if (_val !== "") {
@@ -10061,7 +10102,7 @@ function confirmSNs() {
 	if (forwholesales || forsales || forpreorder) {
 		$("#tblSerial tbody tr").each(function (i, e) {
 			$target = $(e).find("td:eq(3)").find(".chksnvt");
-			let snvtId = $target.attr("Id");
+			let snvtId = $target.attr("id");
 			let pocode = $target.data("pocode");
 			let _snvt = {
 				pocode: pocode,
@@ -13573,7 +13614,7 @@ function confirmIvQty() {
 							.first()
 							.find(".ivdelqty")
 							.each(function (k, v) {
-								let dlCode = $(v).attr("Id") as string;
+								let dlCode = $(v).attr("id") as string;
 								let idx = -1;
 								$.each(DeliveryItems, function (index, ele: IDeliveryItem) {
 									if (ele.dlCode == dlCode) {
@@ -13763,7 +13804,7 @@ function confirmVtQty() {
 					}
 					deliveryItem.pstCode = $(v).data("pocode") as string;
 					deliveryItem!.dlQty = deliveryItem!.newvtqty;
-					deliveryItem.dlCode = $(v).attr("Id") as string;
+					deliveryItem.dlCode = $(v).attr("id") as string;
 					deliveryItem.JsVt = $(v).data("vt").toString().trim();
 					deliveryItem.itmCode = $(v).data("itemcode") as string;
 
@@ -13831,7 +13872,7 @@ function confirmVtQty() {
 							.first()
 							.find(".vtdelqty")
 							.each(function (k, v) {
-								let dlCode = $(v).attr("Id") as string;
+								let dlCode = $(v).attr("id") as string;
 								let idx = -1;
 								$.each(DeliveryItems, function (index, ele: IDeliveryItem) {
 									if (ele.dlCode == dlCode) {
@@ -13897,7 +13938,7 @@ function confirmBatchSnQty() {
 						deliveryItem!.dlQty = deliveryItem!.newbdq;
 
 						deliveryItem.pstCode = $(v).data("pocode") as string;
-						deliveryItem.dlCode = $(v).attr("Id") as string;
+						deliveryItem.dlCode = $(v).attr("id") as string;
 						deliveryItem.dlBatch = $(v).data("batch") as string;
 						deliveryItem.JsVt = $(v).data("batvt").toString().trim();
 						deliveryItem.itmCode = selectedItemCode.toString();
@@ -13934,7 +13975,7 @@ function confirmBatchSnQty() {
 				.each(function (k, v) {
 					$target = $(v);
 					let sn: string = $target.val() as string;
-					let batId: string = $target.attr("Id") as string;
+					let batId: string = $target.attr("id") as string;
 					let batcode: string = $target.data("batcode") as string;
 					let vt: string = $target.data("snvt").toString().trim();
 					let pocode: string = $target.data("pocode") as string;
@@ -14028,7 +14069,7 @@ function confirmBatchSnQty() {
 								.eq(1)
 								.find(".batdelqty")
 								.each(function (k, v) {
-									let dlCode = $(v).attr("Id") as string;
+									let dlCode = $(v).attr("id") as string;
 									let idx = -1;
 									$.each(DeliveryItems, function (index, ele: IDeliveryItem) {
 										if (ele.dlCode == dlCode) {
@@ -14047,7 +14088,7 @@ function confirmBatchSnQty() {
 									$target = $(v);
 									$target.prop("checked", false);
 									let sn: string = $target.val() as string;
-									let batId: string = $target.attr("Id") as string;
+									let batId: string = $target.attr("id") as string;
 									let batcode: string = $target.data("batcode") as string;
 
 									//todo: snvtlist
@@ -14309,7 +14350,7 @@ const populateSelectedItem = () => {
 		let itemcode = $("#itmCode").val() as string;
 		$(".drpItemAttr").each(function (i, e) {
 			let attr: IItemAttribute = initItemAttr(itemcode);
-			attr.Id = Number($(e).attr("Id"));
+			attr.Id = Number($(e).attr("id"));
 			attr.iaName = $(e).data("name");
 			attr.iaValue = $(e).val() as string;
 			attr.iaUsed4Variation = true;
@@ -14377,7 +14418,7 @@ const populateItemVari = () => {
 		let itemcode = $("#itmCode").val() as string;
 		$(".drpItemAttr").each(function (i, e) {
 			let attr: IItemAttribute = initItemAttr(itemcode);
-			attr.Id = Number($(e).attr("Id"));
+			attr.Id = Number($(e).attr("id"));
 			attr.iaName = $(e).data("name");
 			attr.iaValue = $(e).val() as string;
 			attr.iaUsed4Variation = true;
@@ -14722,13 +14763,13 @@ function changeAccountPage(page) {
 $(document).on("change", ".chkitemac", function () {
 	let ischecked = $(this).is(":checked");
 
-	if (!NonABSS && !ischecked && $(this).attr("Id") == "inventory") {
+	if (!NonABSS && !ischecked && $(this).attr("id") == "inventory") {
 		$("#drpInventory").prop("selectedIndex", 0);
 		$(".accountno").eq(2).val("");
 		selectedItem!.InventoryAccountID = 0;
 	}
 
-	itemaccountmode = getItemAccountMode(<string>$(this).attr("Id"));
+	itemaccountmode = getItemAccountMode(<string>$(this).attr("id"));
 
 	if (itemaccountmode === ItemAccountMode.Buy) {
 		selectedItem!.itmIsBought = ischecked;
@@ -15352,7 +15393,41 @@ $(document).on("change", "#deposit", function () {
 		Sales.Deposit = 0;
 	}
 });
+$(document).on("click", "#deposit", function () {
+	$.fancyConfirm({
+		title: confirmsubmit,
+		message: confirmdeposittxt,
+		shownobtn: true,
+		okButton: oktxt,
+		noButton: canceltxt,
+		callback: function (value) {
+			if (value) {
+				Sales.Deposit = 1;
+				submitSimpleSales();
+			} else {
+				Sales.Deposit = 0;
+			}
+		},
+	});
+});
+$(document).on("click", "#monthlypay", function () {
+	$.fancyConfirm({
+		title: confirmsubmit,
+		message: confirmmonthlypay,
+		shownobtn: true,
+		okButton: oktxt,
+		noButton: canceltxt,
+		callback: function (value) {
+			if (value) {
+				Sales.MonthlyPay = 1;
+				submitSimpleSales();
+			} else {
+				Sales.MonthlyPay = 0;
 
+			}
+		},
+	});
+});
 $(document).on("change", "#monthlypay", function () {
 	if ($(this).is(":checked")) {
 		$.fancyConfirm({
@@ -15389,24 +15464,55 @@ function togglePaymentBlk(mode: string, toggleId: string, totalamt: number) {
 			$deposit.prop("checked", true);
 		}
 
-		/*if (!forsimplesales)*/
 		setExRateDropDown();
 
 		if (totalamt === 0)
 			totalamt = getTotalAmt4Order();
 
-		/*if (!forsimplesales)*/
+		//console.log("totalamt:" + totalamt);
 		setForexPayment(totalamt);
 
-		$("#salesamount").text(formatmoney(totalamt));
-		$("#remainamt").text(formatmoney(0));
+		initAmtDisplay(totalamt);
+
+		setRemainDisplay(true);
 
 		initCashTxt(totalamt);
+
+		setInputs4NumberOnly("paymenttype");
+
+		populateOrderSummary();
 
 	} else {
 		$(`#${toggleId}`).show();
 		$("#paymentBlk").addClass("hide");
 	}
+}
+function populateOrderSummary() {
+	$("#receiptno").text(Sales.rtsCode);
+	//console.log($("#receiptno").text());
+	$("#salesdate").text(formatDate());
+	$("#salestime").text(formatTime());
+
+	let currencySym = $infoblk.data("currency");
+
+	let subtotal: number = 0, total: number = 0, disc: number = 0;
+	let html = "";
+
+	SelectedSimpleItemList.forEach((x: ISimpleItem) => {
+		let _subtotal: number = x.Qty * (x.itmBaseSellingPrice ?? 0);
+		let _disc: number = _subtotal * x.discpc / 100;
+		subtotal += _subtotal;
+		disc += _disc;
+		html += `<h3>${x.NameDesc} x ${x.Qty} <span>${currencySym}${formatnumber(_subtotal)}</span></h3>`;
+	});
+
+	$(".table__single.items").empty().html(html);
+
+	total = subtotal - disc;
+
+	$(".taxamt").text(currencySym + formatnumber(0));
+	$(".discamt").text(currencySym + formatnumber(disc));
+	$(".totalamt").text(currencySym + formatnumber(total));
 }
 $(document).on("change", ".batch", function () {
 	currentY = getCurrentY(this);
@@ -15903,6 +16009,12 @@ $(document).on("change", ".nonitemoptions", function () {
 		if (idx === -1) DeliveryItems.push(deliveryItem);
 	}
 });
+
+function setInputs4NumberOnly(clsname: string) {
+	setInputsFilter(document.getElementsByClassName(clsname)!, function (value) {
+		return /^-?[\d,\/.]*$/.test(value);
+	}, numberonlytxt);
+}
 
 function getTotalAmt4Order(): number {
 	let totalamt = 0;
@@ -16667,7 +16779,7 @@ $(document).on("change", ".positive", function () {
 	if (!selectedItem) {
 		return;
 	}
-	let pl: string = <string>$(this).attr("Id")?.toLowerCase();
+	let pl: string = <string>$(this).attr("id")?.toLowerCase();
 	let plp: number = <number>$(this).val();
 	switch (pl) {
 		case "plb":
@@ -16955,7 +17067,7 @@ function getKeyByValue(object, value) {
 let currencyReferrer: string;
 $(document).on("dblclick", ".exrate", function () {
 	if (!$(this).hasClass("disabled")) {
-		currencyReferrer = $(this).attr("Id") as string;
+		currencyReferrer = $(this).attr("id") as string;
 		fillInCurrencyModal();
 		openCurrencyModal();
 	}
@@ -18754,11 +18866,9 @@ function _submitSimpleSales() {
 	let url = "";
 	url = "/POSFunc/ProcessSales";
 
-	console.log("Sales:", Sales);
-	console.log("SimpleSalesLns:", SimpleSalesLns);
-	console.log("Payments:", Payments);
-	//return false;
 	let data = { Sales, SimpleSalesLns, Payments };
+	//console.log("data:", data);
+	//return false;
 	openWaitingModal();
 	$.ajax({
 		type: "POST",
@@ -18772,7 +18882,7 @@ function _submitSimpleSales() {
 			if (typeof data.epaystatus === "undefined") {
 				if (data.msg === "") {
 					window.open(printurl);
-					if (forsales)
+					if (forsimplesales)
 						window.location.reload();
 					if (forpreorder)
 						window.location.href = "/Preorder/Index";
@@ -18797,7 +18907,8 @@ function _submitSimpleSales() {
 							}
 						},
 					});
-				} else {
+				}
+				else {
 					if (data.epaystatus == -1) {
 						//needquery_userpaying
 						openPayModal();
@@ -19123,7 +19234,11 @@ function formatDateTime(d: Date = new Date(), delimeter: string = "-"): string {
 	//var _h = d.getHours();
 	//var _m = d.getMinutes();
 	//var _s = d.getSeconds();
-	return strftime(`%Y${delimeter}%m${delimeter}%d %H:%M:%S`, d);
+	return strftime(`%Y${delimeter}%m${delimeter}%d ${formatTime(d)}`, d);
+}
+
+function formatTime(d: Date = new Date()) {
+	return strftime(`%H:%M:%S`, d);
 }
 
 let editapproved: boolean = false;
@@ -22035,4 +22150,52 @@ function handleUploadedFile(result: any) {
 			}
 		}
 	}
+}
+
+function setInputFilter(textbox: Element, inputFilter: (value: string) => boolean, errMsg: string): void {
+	["input", "keydown", "keyup", "mousedown", "mouseup", "select", "contextmenu", "drop", "focusout"].forEach(function (event) {
+		textbox.addEventListener(event, function (this: (HTMLInputElement | HTMLTextAreaElement) & { oldValue: string; oldSelectionStart: number | null, oldSelectionEnd: number | null }) {
+			if (inputFilter(this.value)) {
+				this.oldValue = this.value;
+				this.oldSelectionStart = this.selectionStart;
+				this.oldSelectionEnd = this.selectionEnd;
+			}
+			else if (Object.prototype.hasOwnProperty.call(this, "oldValue")) {
+				this.value = this.oldValue;
+
+				if (this.oldSelectionStart !== null &&
+					this.oldSelectionEnd !== null) {
+					this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+				}
+			}
+			else {
+				this.value = "";
+			}
+		});
+	});
+}
+
+function setInputsFilter(textboxes: any, inputFilter: (value: string) => boolean, errMsg: string): void {
+	["input", "keydown", "keyup", "mousedown", "mouseup", "select", "contextmenu", "drop", "focusout"].forEach(function (event) {
+		for (let textbox of textboxes) {
+			textbox.addEventListener(event, function (this: (HTMLInputElement | HTMLTextAreaElement) & { oldValue: string; oldSelectionStart: number | null, oldSelectionEnd: number | null }) {
+				if (inputFilter(this.value)) {
+					this.oldValue = this.value;
+					this.oldSelectionStart = this.selectionStart;
+					this.oldSelectionEnd = this.selectionEnd;
+				}
+				else if (Object.prototype.hasOwnProperty.call(this, "oldValue")) {
+					this.value = this.oldValue;
+
+					if (this.oldSelectionStart !== null &&
+						this.oldSelectionEnd !== null) {
+						this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+					}
+				}
+				else {
+					this.value = "";
+				}
+			});
+		}
+	});
 }

@@ -161,7 +161,7 @@
 			</div>
 		</div>
 
-		@Html.Partial("_Payment", null, new ViewDataDictionary { { "forsales", true }, { "enableEpay", true }, { "PaymentTypes", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes } })
+		@Html.Partial("_Payment", null, new ViewDataDictionary { { "forsales", true }, { "enableEpay", true }, { "PaymentTypes", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes },{"CurrencySym",Model.Currency } })
 	</div>
 </div>
 <input type="hidden" id="lang" value="@CultureHelper.CurrentCulture" />

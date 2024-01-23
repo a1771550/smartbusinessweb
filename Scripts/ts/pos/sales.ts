@@ -1,11 +1,26 @@
 ﻿$infoblk = $("#infoblk");
 const formatzero = formatnumber(0);
 
+function togglePayment(code: string, show:boolean) {
+	//console.log("code:" + code);	
+	$(".single__add").each(function (i, e) {		
+		if ($(e).data("code") == code) {
+			if (show) $(e).addClass("activee");
+			else $(e).removeClass("activee");
+		}	
+	});
+}
 
 $(document).on("click", ".btnpayment", function () {
 	let Id = $(this).attr("id") as string;
-	togglePlusCheck(Id);
+	let code = $(this).data("type") as string;
+	let checked = togglePlusCheck(Id);
+	//console.log("checked:", checked);
 	togglePayModeTxt();
+	togglePayment(code, checked);
+
+	if (checked) $(this).addClass("toggle");
+	else $(this).removeClass("toggle");
 });
 $(document).on("change", "#txtItemCode", function () {	
 	/*console.log("here");*/
@@ -96,7 +111,7 @@ function populateProductList() {
 											</div>
 										</div>
 									</li>
-									<li><span class="subtotal">${formatnumber(_amt)}</span></li>
+									<li><span class="subtotal">${$infoblk.data("currency")} ${formatnumber(_amt)}</span></li>
 									<li><a role="button" class="pos confirm-text removeitem" href="javascript:void(0);" data-id="${x.itmItemID}"><img src="/images/pos/icons/delete-2.svg" alt="img"></a></li>
 								</ul>`;
 	});
@@ -115,19 +130,23 @@ $(document).on("click", ".pos.btn-scanner-set", function () {
 	$("#txtItemCode").trigger("focus");
 });
 
-
+$(document).on("click", "#btnConfirmPay", function () {
+	confirmPay();
+});
 $(document).on("click", "#btnCheckout", function () {
-	let amt = Number($(this).find("#totalamt").text());
+	//Sales.rtsFinalTotal = 5000;
+	//togglePaymentBlk("open", "salesBlk", Sales.rtsFinalTotal); return false;
+
+	Sales.rtsFinalTotal = Number($(this).find(".totalamt").text());
+	//console.log("Sales.rtsFinalTotal:", Sales.rtsFinalTotal);
 	//console.log("amt:" + amt);
+	//console.log("Sales:", Sales);
 	//return false;
-	if (amt == 0) amt = 5000;
-	togglePaymentBlk("open", "salesBlk", amt); return false;
-
-
-	if (amt > 0) {
-	//	console.log("cusid:" + Sales.rtsCusID);
-		if (Sales.rtsCusID > 0) //openPayModal(amt);
-			togglePaymentBlk("open", "salesBlk",amt);
+	if (Sales.rtsFinalTotal > 0) {
+		//console.log("cusid:" + Sales.rtsCusID);
+		if (Sales.rtsCusID > 0) {
+			togglePaymentBlk("open", "salesBlk", Sales.rtsFinalTotal);
+		}			
 		else {
 			$.fancyConfirm({
 				title: "",
@@ -249,4 +268,7 @@ $(function () {
 	$(".check-product").addClass("hide");
 
 	Sales = initSimpleSales();
+
+	/* for debug only */
+	//$("#btnCheckout").trigger("click");
 });

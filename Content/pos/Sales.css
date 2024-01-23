@@ -140,3 +140,7 @@ i.fa-plus, i.fa-minus {
 #multiplePayMode{
 	display:none;
 }
+
+.product-lists li:nth-child(2){
+	min-width:20%!important;
+}

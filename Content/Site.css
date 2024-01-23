@@ -26,7 +26,7 @@ a {
 
 /* Set width on the form input elements since they're 100% wide by default */
 /*.reMode_hover:not(.reMode_selected):hover*/
-input:not(.flex),
+input:not(.flex):not(.paymenttype),
 select:not(.flex),
 textarea:not(.flex) {
   max-width: 280px;
