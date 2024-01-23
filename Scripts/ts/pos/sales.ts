@@ -254,6 +254,7 @@ $(function () {
 	comInfo = $infoblk.data("cominfo");
 	DicPayTypes = $infoblk.data("dicpaytypes");
 	DicCurrencyExRate = $infoblk.data("diccurrencyexrate");
+	defaultcustomer = $infoblk.data("defaultcustomer");
 
 	$("#rtsExRate").val(1);
 	displayExRate(1);
@@ -268,7 +269,7 @@ $(function () {
 	$(".check-product").addClass("hide");
 
 	Sales = initSimpleSales();
-
+	$("#txtCustomerName").val(defaultcustomer.cusName);
 	/* for debug only */
 	//$("#btnCheckout").trigger("click");
 });

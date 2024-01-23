@@ -845,7 +845,7 @@ namespace SmartBusinessWeb.Controllers
                     {
                         try
                         {
-                            ModelHelper.WriteLog(context, string.Format("Export PreSalesModel data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
+                            ModelHelper.WriteLog(context, string.Format("Export SalesModel data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
                             List<RtlSale> saleslist = context.RtlSales.Where(x => x.AccountProfileId==apId && dmodel.RetailCheckOutIds.Any(y => x.rtsUID == y)).ToList();
                             foreach (var sales in saleslist)
                             {

@@ -15042,7 +15042,7 @@ function initSimpleSales(): ISales {
 		rtsStatus: "",
 		rtsDate: "",
 		rtsTime: "",
-		rtsCusID: 0,
+		rtsCusID: defaultcustomer.cusCustomerID,
 		rtsCusMbr: "",
 		rtsLineTotal: 0,
 		rtsLineTotalPlusTax: 0,
@@ -17506,7 +17506,7 @@ function setFullPage() {
 	$("body")
 		.find(".body-content")
 		.removeClass("container")
-		.addClass("fluid-container");
+		.addClass("container-fluid");
 }
 
 let promotion: IPromotion;
@@ -18017,7 +18017,7 @@ function updatePreSales() {
 }
 
 function updateSimpleSales() {
-	Sales.rtsCusID = Number($("#rtsCusID").val());
+	//Sales.rtsCusID = Number($("#rtsCusID").val());
 	Sales.authcode = authcode;
 	Sales.rtsCurrency = $("#rtsCurrency").val() as string;
 	Sales.rtsExRate = exRate;
