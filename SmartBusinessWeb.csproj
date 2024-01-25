@@ -4550,7 +4550,6 @@
     <Content Include="Scripts\ts\js\simplecontact\edit.js.map" />
     <Content Include="Views\Shared\_SimpleLayout.cshtml" />
     <Content Include="Views\Default\PrivacyPolicy.cshtml" />
-    <Content Include="Views\Shared\_Layout_bak.cshtml" />
     <Content Include="Static\POS_draft\.vs\POS\config\applicationhost.config" />
     <Content Include="Static\POS_draft\.vs\POS\FileContentIndex\18143147-ec35-4a8d-adb4-82997a3c75a8.vsidx" />
     <Content Include="Static\POS_draft\.vs\POS\FileContentIndex\18cb5467-5b33-4873-8dac-c068fd9050c5.vsidx" />

@@ -298,11 +298,11 @@
 								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "attendance") ? "active" : ""; }
 								<li>@Html.ActionLink(Resources.Resource.AttendanceRecords, "Index", "Attendance", null, new { @class = sublnkcls })</li>
 								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "job") ? "active" : ""; }
-								<li>@Html.ActionLink(Resources.Resource.AttendanceRecords, "Index", "Job", null, new { @class = sublnkcls })</li>
+								<li>@Html.ActionLink(Resources.Resource.JobRecords, "Index", "Job", null, new { @class = sublnkcls })</li>
 								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "training") ? "active" : ""; }
-								<li>@Html.ActionLink(Resources.Resource.AttendanceRecords, "Index", "Training", null, new { @class = sublnkcls })</li>
+								<li>@Html.ActionLink(Resources.Resource.TrainingRecords, "Index", "Training", null, new { @class = sublnkcls })</li>
 								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "journal") ? "active" : ""; }
-								<li>@Html.ActionLink(Resources.Resource.AttendanceRecords, "Index", "Journal", null, new { @class = sublnkcls })</li>
+								<li>@Html.ActionLink(Resources.Resource.JournalRecords, "Index", "Journal", null, new { @class = sublnkcls })</li>
 							</ul>
 						</li>
 						<li class="btn_expand">

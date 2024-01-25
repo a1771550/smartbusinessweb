@@ -45,11 +45,8 @@ namespace SmartBusinessWeb.Controllers
                 hash = HashHelper.ComputeHash(model.Password);
                 int lang = CultureHelper.CurrentCulture;
                 _user = context.GetUserByEmail3(model.Email).FirstOrDefault();
-                if (_user == null)
-                {
-                    msg = Resources.Resource.InvalidLogin;
-                    return Json(new { msg });
-                }
+                if (_user == null) return RedirectToAction("Login", new { err = "2" });
+               
                 apId = _user.AccountProfileId;
                 Session["DBName"] = _user.dbName;
             }

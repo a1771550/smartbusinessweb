@@ -85,36 +85,14 @@ function validform() {
     }
 }
 
-$(document).on("click", "#btnLogin", function (e) {
-    //e.preventDefault();
-    let redirecturl: string =
-        getParameterByName("redirectUrl") ?? $infoblk.data("redirecturl");
-
-    if (redirecturl !== "")
-        redirecturl = redirecturl
-            .concat("&ireadonly=")
-            .concat(getParameterByName("ireadonly") ?? "0");
-    $("#RedirectUrl").val(redirecturl);
-    const url = "/Account/Login";
-    //console.log("url:" + url);
-    //console.log("redirecturl:" + redirecturl);
-    //return false;
+$(document).on("click", "#btnLogin", function () {   
+    const url = "/Account/Login";   
     let valid = validform();
     if (valid) {
-        //openWaitingModal();
-        //return false
         $.ajax({
             type: "POST",
             url: url,
             data: $("#frmLogin").serialize(),
-            //success: function (data) {
-            //    //closeWaitingModal();
-            //    //console.log("data:", data);
-            //    //return false;
-            //    if (data.msg !== "ok") {
-            //        $("#msg").removeClass("hide").empty().text(data.msg);
-            //    }
-            //},
             dataType: "json",
         });
     }
