@@ -189,7 +189,7 @@ new { controller = "Json", action = "PostTest" },
 new {apId=@"\d+"}
    );
 
-			routes.MapRoute(
+            routes.MapRoute(
 		  null,
 		  "POS",
 		  new { controller = "Test", action = "POS" }

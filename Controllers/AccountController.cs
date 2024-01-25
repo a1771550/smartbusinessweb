@@ -10,24 +10,22 @@ using CommonLib.Helpers;
 using System.Configuration;
 using System.Web.Security;
 using Helpers = PPWLib.Helpers;
-using PPWLib.Models.User;
-using System.Collections.Generic;
 
 namespace SmartBusinessWeb.Controllers
 {
     public class AccountController : BaseController
     {
         [HttpGet]
-        public ActionResult Login(string redirectUrl = "")
+        public ActionResult Login(string redirectUrl = "", string err = "0")
         {
             Session["CssBSFile"] = @"Content/bs4"; //Content/bootstrap.min.css
             Session["ScriptBSFile"] = @"Scripts/bs4"; //Content/bootstrap.min.css           
             ViewBag.Title = Resources.Resource.Login;
+            ViewBag.Err = err;
+
             LoginUserModel loginUserModel = new LoginUserModel();
-            if (!string.IsNullOrEmpty(redirectUrl))
-            {
-                loginUserModel.RedirectUrl = redirectUrl;
-            }
+            if (!string.IsNullOrEmpty(redirectUrl)) return Redirect(redirectUrl);
+
             return View(loginUserModel);
         }
 
@@ -40,6 +38,7 @@ namespace SmartBusinessWeb.Controllers
             int apId = 0;
             string hash = string.Empty;
             GetUserByEmail3_Result _user = null;
+
 
             using (var context = new PPWDbContext("SmartBusinessWeb_db"))
             {
@@ -55,7 +54,7 @@ namespace SmartBusinessWeb.Controllers
                 Session["DBName"] = _user.dbName;
             }
 
-            using(var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 model.UserCode = _user.UserCode;
                 model.CompanyCode = _user.CompanyCode;
@@ -66,77 +65,73 @@ namespace SmartBusinessWeb.Controllers
 
                 ComInfo comInfo = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == apId);
 
-               
-
                 var _roleuser = context.LoginPCUser8(model.Email, hash, model.SelectedDevice, model.SelectedShop).ToList();//because of multi-roles!
                 var roles = _roleuser.Select(x => x.rlCode).Distinct().ToList();
                 if (_roleuser != null && _roleuser.Count >= 1)
-				{
-					var __user = _roleuser.FirstOrDefault();
-					user = new SysUser
-					{
-						surUID = __user.surUID,
-						surIsActive = __user.surIsActive,
-						UserCode = __user.UserCode,
-						UserName = __user.UserName,
-						UserRole = string.Join(",", roles),
-						DisplayName = __user.DisplayName,
-						Email = __user.Email,
-						dvcCode = model.SelectedDevice,
-						shopCode = model.SelectedShop,
-						dvcIP = __user.dvcIP,
-						surNetworkName = __user.surNetworkName,
-						ManagerId = __user.ManagerId,
-						surDesc = __user.surDesc,
-						surNotes = __user.surNotes,
-						AccountProfileId = __user.AccountProfileId,
-						surCreateTime = __user.surCreateTime,
-						surModifyTime = __user.surModifyTime,
-					};
-					Session["ComInfo"] = comInfo;
-					msg = "ok";
-
-					var Roles = UserHelper.GetUserRoles(user);
-					bool isadmin = UserHelper.CheckIfAdmin(Roles);
-					if (isadmin)
-					{
-						_login(user, isadmin, context, model, null);
-
-						model.RedirectUrl = ApprovalMode ? "/WholeSales/SalesOrderList" : ComInfo.comLandingPage;
-						return Json(new { msg, iscentral = model.IsCentral, redirecturi = model.RedirectUrl });
-					}
-					else
-					{
-						DeviceModel device = Helpers.ModelHelper.GetDevice(user.surUID, context);//don't move to below
-						if (device != null)
-						{
-							_login(user, isadmin, context, model, device);
-
-							if (string.IsNullOrEmpty(model.RedirectUrl))
-							{
-								model.RedirectUrl = ComInfo.comLandingPage;
-							}
-
-							return Json(new { msg, iscentral = model.IsCentral, redirecturi = model.RedirectUrl });
-						}
-						else
-						{
-							msg = Resources.Resource.SalesDeviceNotFound;
-							return Json(new { msg });
-						}
-					}
-				}
-				else
                 {
-                    msg = Resources.Resource.InvalidLogin;
-                    return Json(new { msg });
+                    var __user = _roleuser.FirstOrDefault();
+                    user = new SysUser
+                    {
+                        surUID = __user.surUID,
+                        surIsActive = __user.surIsActive,
+                        UserCode = __user.UserCode,
+                        UserName = __user.UserName,
+                        UserRole = string.Join(",", roles),
+                        DisplayName = __user.DisplayName,
+                        Email = __user.Email,
+                        dvcCode = model.SelectedDevice,
+                        shopCode = model.SelectedShop,
+                        dvcIP = __user.dvcIP,
+                        surNetworkName = __user.surNetworkName,
+                        ManagerId = __user.ManagerId,
+                        surDesc = __user.surDesc,
+                        surNotes = __user.surNotes,
+                        AccountProfileId = __user.AccountProfileId,
+                        surCreateTime = __user.surCreateTime,
+                        surModifyTime = __user.surModifyTime,
+                    };
+                    Session["ComInfo"] = comInfo;
+
+                    var Roles = UserHelper.GetUserRoles(user);
+                    bool isadmin = UserHelper.CheckIfAdmin(Roles);
+                    if (isadmin)
+                    {
+                        _login(user, isadmin, context, model, null);
+
+                        model.RedirectUrl = ApprovalMode ? "/WholeSales/SalesOrderList" : ComInfo.comLandingPage;
+
+                        return Redirect(model.RedirectUrl);
+                    }
+                    else
+                    {
+                        DeviceModel device = Helpers.ModelHelper.GetDevice(user.surUID, context);//don't move to below
+                        if (device != null)
+                        {
+                            _login(user, isadmin, context, model, device);
+
+                            if (string.IsNullOrEmpty(model.RedirectUrl))
+                            {
+                                model.RedirectUrl = ComInfo.comLandingPage;
+                            }
+
+                            return Redirect(model.RedirectUrl);
+                        }
+                        else
+                        {
+                            return RedirectToAction("Login", new { err = "1" });
+                        }
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Login", new { err = "2" });
                 }
             }
         }
 
-		
 
-		private void _login(SysUser user,bool isadmin, PPWDbContext context, LoginUserModel model, DeviceModel device = null)
+
+        private void _login(SysUser user, bool isadmin, PPWDbContext context, LoginUserModel model, DeviceModel device = null)
         {
             string token = CommonHelper.GenSessionToken();
             DateTime currDate = DateTime.Now.Date;
@@ -224,7 +219,7 @@ namespace SmartBusinessWeb.Controllers
                 Roles = UserHelper.GetUserRoles(user),
                 AccountProfileId = accountProfileId,
                 ManagerId = user.ManagerId,
-                Device = device,                
+                Device = device,
                 Email = user.Email,
                 shopCode = user.shopCode,
                 dvcCode = user.dvcCode,
@@ -268,7 +263,7 @@ namespace SmartBusinessWeb.Controllers
             //var dev = context.Devices.FirstOrDefault(x => x.dvcIsActive);
             device.dvcUID = dev.dvcUID;
             device.dvcName = dev.dvcName;
-            device.AccountNo = (int)dev.AccountNo;          
+            device.AccountNo = (int)dev.AccountNo;
             device.AccountProfileId = dev.AccountProfileId;
             device.dvcStockLoc = dev.dvcStockLoc;
 
@@ -324,7 +319,7 @@ namespace SmartBusinessWeb.Controllers
                 Session["CheckedCashDrawer"] = null;
                 Session["PendingInvoices"] = null;
                 Session["IsCentral"] = null;
-                Session["eBlastId"] = null;              
+                Session["eBlastId"] = null;
                 Session["ExportFrmShopPageTitle"] = null;
                 Session["ImportFrmCentralPageTitle"] = null;
                 Session["CssBSFile"] = null;

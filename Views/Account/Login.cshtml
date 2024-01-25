@@ -1,7 +1,6 @@
 ﻿@{
     ViewBag.Title = Resources.Resource.Login;
-    Layout = null;
-    string sitename = Resources.Resource.SiteName;
+    Layout = null;    
     int rand = new Random().Next(1000, 10000);
     string cssbsfile = HttpContext.Current.Session["CssBSFile"].ToString();
     string scriptbsfile = HttpContext.Current.Session["ScriptBSFile"].ToString();
@@ -12,19 +11,19 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>@ViewBag.Title - @sitename</title>
+	<title>@ViewBag.Title - @Resources.Resource.SiteName</title>
 	<link rel="icon" type="image/png" href="~/Content/favicon_io/favicon-16x16.png">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="~/Content/login.css?v=@rand">
-	@*@Styles.Render("~/bundles/logincss")*@
-	@Scripts.Render("~/bundles/loginjs")
+	<link rel="stylesheet" type="text/css" href="~/Content/login.css?v=@rand">
+	<link rel="stylesheet" type="text/css" href="~/Content/bs4/bootstrap.min.css">
+	<link href="/Scripts/jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css" />
 
-	<link href="/Scripts/jquery-ui/jquery-ui.min.css" rel="stylesheet" />
+	<script src="/Scripts/jquery-3.6.0.js"></script>
+	<script src="/Scripts/bs4/bootstrap.min.js"></script>
 	<script src="/Scripts/jquery-ui/jquery-ui.min.js"></script>
 	<script src="/Scripts/jquery-default-button.min.js"></script>
-	@*<link href="/Content/Site.css?v=31474" rel="stylesheet" />*@
 </head>
 <body>
 	<!-- header part start -->

@@ -1,6 +1,5 @@
 ﻿@model LoginUserModel
-@{
-	string sitename = ViewBag.SiteName ?? Resources.Resource.SiteName;
+@{	
 	int currentculture = HttpContext.Current.Session["CurrentCulture"] == null ? int.Parse(ConfigurationManager.AppSettings["CultureOnLogin"]) : (int)HttpContext.Current.Session["CurrentCulture"];
 	string usercode = Resources.Resource.UserName;
 	string password = Resources.Resource.Password;
@@ -10,6 +9,23 @@
 	string shop = Model.SelectedShop;
 	string device = Model.SelectedDevice;
 	bool enableCRM = Model.enableCRM;
+
+	string errmsg;
+
+	switch (ViewBag.Err)
+	{
+		case "2":
+			errmsg = Resources.Resource.InvalidLogin;
+			break;
+		case "1":
+			errmsg = Resources.Resource.SalesDeviceNotFound;
+			break;
+		default:
+		case "0":
+			errmsg = "";
+			break;
+	}
+	string alertcls = string.IsNullOrEmpty(errmsg) ? "" : "alert alert-danger";
 }
 
 @using (Html.BeginForm("", "", FormMethod.Post, new { @id = "frmLogin", @redirectUrl = Model.RedirectUrl }))
@@ -19,7 +35,6 @@
 	@Html.HiddenFor(model => model.SelectedShop)
 	@Html.HiddenFor(model => model.SelectedDevice)
 	@Html.HiddenFor(model => model.RedirectUrl)
-
 
 	<main>
 		<section class="login">
@@ -55,13 +70,12 @@
 							<button type="submit" id="btnLogin" class="login-btn">@Resources.Resource.Login</button>
 						</div>
 					</form>
+
+					<div class="text-center my-3 @alertcls">@errmsg</div>
 				</div>
 			</div>
 		</section>
-
-
 	</main>
-
 }
 
 

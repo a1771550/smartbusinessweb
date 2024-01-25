@@ -107,16 +107,14 @@ $(document).on("click", "#btnLogin", function (e) {
             type: "POST",
             url: url,
             data: $("#frmLogin").serialize(),
-            success: function (data) {
-                //closeWaitingModal();
-                //console.log("data:", data);
-                //return false;
-                if (data.msg === "ok") {
-                    window.location.href = data.redirecturi;
-                } else {
-                    $("#msg").removeClass("hide").empty().text(data.msg);
-                }
-            },
+            //success: function (data) {
+            //    //closeWaitingModal();
+            //    //console.log("data:", data);
+            //    //return false;
+            //    if (data.msg !== "ok") {
+            //        $("#msg").removeClass("hide").empty().text(data.msg);
+            //    }
+            //},
             dataType: "json",
         });
     }

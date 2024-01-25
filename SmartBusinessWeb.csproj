@@ -4621,7 +4621,6 @@
     <Content Include="Static\ui_enhancement\assets\webfonts\fa-solid-900.woff" />
     <Content Include="Static\ui_enhancement\assets\webfonts\fa-solid-900.woff2" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Shared\_LoginPartial - Copy.cshtml" />
     <Content Include="Scripts\ts\js\lang.js.map" />
     <Content Include="Scripts\ts\js\menu.js.map" />
     <Content Include="Scripts\ts\js\logout.js.map" />
