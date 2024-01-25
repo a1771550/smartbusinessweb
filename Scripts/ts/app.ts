@@ -40,6 +40,9 @@ let NamesMatch: boolean = false;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
+const costxt:string = $txtblk.data("costxt");
+const assettxt:string = $txtblk.data("assettxt");
+const incometxt:string = $txtblk.data("incometxt");
 const confirmdeposittxt: string = $txtblk.data("confirmdeposittxt");
 const numberonlytxt: string = $txtblk.data("numberonlytxt");
 const paymentinfoerrtxt: string = $txtblk.data("paymentinfoerrtxt");
@@ -22067,11 +22070,11 @@ function populateDrpAccount(): string {
 	let selectedA = addMode ? "" : AcClfID && AcClfID == "A" ? "selected" : "";
 	return `<select class="drpAccount form-control flex">
 			<option value="">- ${selecttxt} -</option>
-			<option value="A" ${selectedA}>${assetaccount4inventorytxt}</option>
+			<option value="A" ${selectedA}>${assettxt}</option>
 			<option value="L" ${selectedL}>${liabilitytxt}</option>
 			<option value="EQ" ${selectedEQ}>${equitytxt}</option>
-			<option value="I" ${selectedI}>${incomeaccount4tstxt}</option>
-			<option value="COS" ${selectedCOS}>${cosaccounttxt}</option>
+			<option value="I" ${selectedI}>${incometxt}</option>
+			<option value="COS" ${selectedCOS}>${costxt}</option>
 			<option value="EXP" ${selectedEXP}>${expensetxt}</option>
 			<option value="OI" ${selectedOI}>${otherincometxt}</option>
 			<option value="OEXP" ${selectedOEXP}>${otherexpensetxt}</option>
