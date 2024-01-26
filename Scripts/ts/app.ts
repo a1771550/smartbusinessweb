@@ -2519,6 +2519,7 @@ function confirmPay() {
 		case SalesType.retail:
 		case SalesType.preorder:
 			_totalamt = getTotalAmt4Order();
+			//console.log("_totalamt:" + _totalamt);
 			break;
 	}
 
@@ -4667,6 +4668,7 @@ function initModals() {
 			buttons: [
 				{
 					text: oktxt,
+					class: "savebtn",
 					click: function () {
 						if (
 							(forsales && !Sales.MonthlyPay) ||
@@ -4682,6 +4684,7 @@ function initModals() {
 				},
 				{
 					text: canceltxt,
+					class: "secondarybtn",
 					click: function () {
 						resetPay();
 					},
@@ -8021,54 +8024,63 @@ interface IPreSales {
 interface IPreSalesLn {
 	rtlUID: number;
 	rtlSalesLoc: string;
-	rtlDvc: string;
 	rtlCode: string;
-	rtlDate: string | null;
 	rtlSeq: number | null;
-	rtlRefSales: string;
 	rtlItemCode: string;
 	rtlDesc: string;
 	rtlStockLoc: string;
-	rtlBatch: string;
-	rtlHasSn: boolean | null;
-	rtlChkSn: boolean | null;
-	rtlTaxCode: string;
+	rtlHasSn: boolean;
 	rtlTaxPc: number | null;
-	rtlLineDiscAmt: number | null;
 	rtlLineDiscPc: number | null;
 	rtlQty: number | null;
-	rtlTaxAmt: number | null;
 	rtlSalesAmt: number | null;
-	rtlType: string;
 	rtlSellingPrice: number | null;
-	rtlSellingPriceMinusInclTax: number | null;
-	rtlValidThru: string | null;
-	rtlSn: string | null;
-
-	Item: ISimpleItem;
-	DelItems: IDeliveryItem[];
-	SalesDateDisplay: string;
-	JsValidThru: string | null;
-	ivIdList: string | null;
 	JobID: number | null;
-
-	batchList: IBatch[];
-	rtpPayAmt: number | null;
-	DepositAmtDisplay: string | null;
-	rtpPayType: string | null;
-	rtpExRate: number | null;
+	rtsUID: number;
+	rtsSalesLoc: string;
+	rtsDvc: string;
+	rtsCode: string;
+	rtsRefCode: string;
+	rtsType: string;
+	rtsStatus: string;
+	rtsDate: string;
+	rtsCusID: number;
+	rtsLineTotalPlusTax: number | null;
+	rtsFinalDisc: number | null;
+	rtsFinalDiscAmt: number | null;
+	rtsFinalTotal: number | null;
+	rtsUpldBy: string;
+	rtsUpldTime: string | null;
+	rtsMonthBase: boolean;
+	rtsEpay: boolean;
+	rtsReviewUrl: string;
+	rtsSendNotification: boolean;
+	rtsCheckout: boolean;
+	rtsCheckoutPortal: string;
+	rtsTime: string;
+	rtsRmks: string;
+	rtsInternalRmks: string;
+	JsValidThru: string;
+	cusCode: string;
+	ItemVariList: IItemVariation[];
 	itmName: string;
 	itmDesc: string;
-	itmUseDesc: boolean | null;
 	itmNameDesc: string;
-	itmCode: string;
+	itmItemID: number;
+	itmUseDesc: boolean;
 	itmTaxPc: number | null;
-	itmBaseUnit: string | null;
-	itmSellUnit: string | null;
-	itmBaseSellingPrice: number | null;
+	itmBaseUnit: string;
+	itmSellUnit: string;
 	itmLastSellingPrice: number | null;
-	SalesPersonName: string | null;
+	itmBaseSellingPrice: number;
+	rtpPayAmt: number | null;
+	rtpPayType: string;
+	rtpExRate: number | null;	
+	cusName: string;
+	SalesPersonName: string;
+	Item: ISimpleItem;
 	itmIsTaxedWhenSold: boolean;
+	lstQuantityAvailable: number;
 }
 function initSalesLn(_seq: number | undefined = 0): ISalesLn {
 	//console.log("Sales@initsalseln:", Sales);
@@ -8742,7 +8754,7 @@ function populateItemRow(proId: number | null = 0) {
 	let qty: number = 1,
 		qtysellable: number = 0,
 		price: number = 0,
-		discount: number = 0,
+		discpc: number = 0,
 		taxrate: number = 0;
 
 	let amount: number = 0;
@@ -8752,6 +8764,7 @@ function populateItemRow(proId: number | null = 0) {
 	selectedProId = proId ?? 0;
 	//console.log("selectedSalesLn!.Item:", selectedSalesLn!.Item);
 	if (forsales) {
+		discpc = selectedSalesLn!.rtlLineDiscPc ?? 0;
 		if (reviewmode) { //salesorderlist
 			selectedSaleLn!.rtlSeq = seq;
 			selectedSaleLn!.Item.singleProId = proId;
@@ -8774,6 +8787,7 @@ function populateItemRow(proId: number | null = 0) {
 
 	}
 	if (forpreorder) {
+		discpc = selectedPreSalesLn!.rtlLineDiscPc ?? 0;
 		selectedPreSalesLn!.rtlSeq = seq;
 		selectedPreSalesLn!.Item.singleProId = proId;
 		taxrate =
@@ -8784,6 +8798,7 @@ function populateItemRow(proId: number | null = 0) {
 		qtysellable = selectedPreSalesLn!.Item.QtySellable;
 	}
 	if (forwholesales) {
+		discpc = selectedWholesalesLn!.wslLineDiscPc ?? 0;
 		selectedWholesalesLn!.wslSeq = seq;
 		selectedWholesalesLn!.Item.singleProId = proId;
 		taxrate =
@@ -8796,6 +8811,7 @@ function populateItemRow(proId: number | null = 0) {
 		qtysellable = selectedWholesalesLn!.Item.QtySellable;
 	}
 	if (forpurchase) {
+		discpc = selectedPurchaseItem!.piDiscPc ?? 0;
 		selectedPurchaseItem!.piSeq = seq;
 		taxrate =
 			enableTax &&
@@ -9169,14 +9185,14 @@ function populateItemRow(proId: number | null = 0) {
 			//if (forpreorder)
 			//	getItemPromotion4SimpleItem(selectedPreSalesLn!.Item, proId);
 			if (itemPromotion && itemPromotion.pro4Period) {
-				discount = itemPromotion.proDiscPc!;
+				discpc = itemPromotion.proDiscPc!;
 			}
 		}
 
 		let $discpc = $target.find("td").eq(idx).find(".discpc");
 		$discpc.off("change");
-		//console.log("formated discpc:" + formatnumber(discount));
-		$discpc.data("discpc", discount).val(formatnumber(discount));
+		//console.log("formated discpc:" + formatnumber(discpc));
+		$discpc.data("discpc", discpc).val(formatnumber(discpc));
 		$discpc.on("change", handleDiscChange);
 		//console.log("$discpc val:" + $discpc.val());
 		if (!enableTax) $discpc.trigger("change");
@@ -9199,7 +9215,7 @@ function populateItemRow(proId: number | null = 0) {
 		}
 
 		if (forsales || forpurchase || forwholesales || forpreorder) {
-			amount = calAmountPlusTax(qty, price, taxrate, discount);
+			amount = calAmountPlusTax(qty, price, taxrate, discpc);
 			//console.log("amount:" + amount);
 		}
 
@@ -18858,6 +18874,7 @@ function submitSales() {
 	if (forpreorder) {
 		updatePreSales();
 		if (validSalesForm()) {
+			//console.log("here");
 			_submitSales();
 		}
 	}
@@ -18962,17 +18979,13 @@ function _submitSales() {
 		PreSales.rtsDvc = $("#drpDevice").val() as string;
 		PreSales.rtsAllLoc = $("#chkAllLoc").is(":checked");
 	}
-
-	//console.log("Sales:", Sales);
-	//console.log("SalesLnList:", SalesLnList);
-	console.log("PreSales:", PreSales);
-	console.log("PreSalesLnList:", PreSalesLnList);
-	console.log("deliveryitems:", DeliveryItems);
-	console.log("Payments:", Payments);
-	return false;
+	
 	let data = forpreorder
 		? { PreSales, PreSalesLnList, Payments, DeliveryItems }
 		: { Sales, SalesLnList, Payments, DeliveryItems };
+	console.log("data:", data);
+	return false;
+
 	openWaitingModal();
 	$.ajax({
 		type: "POST",

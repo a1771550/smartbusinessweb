@@ -143,7 +143,7 @@ ul{
   color: var(--Dark-2, #323232);
   text-align: center;
   font-family: Open Sans;
-  font-size: 14px;
+  font-size: 18px;
   font-style: normal;
   font-weight: 400;
   line-height: 21px;
@@ -178,8 +178,8 @@ a {
 .dash__left {
   background: #FFF;
   box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.10);
-  /*width: 15.6%;*/
-  width:12%;
+  width: 15.6%;
+ /* width:13.3%;*/
   padding: 45px 25px;
   left: 0;
   position: absolute;
@@ -193,8 +193,8 @@ a {
 	width: 84%;
 	padding: 33px 40px;
 	padding-bottom: 70px;
-	/*margin-left: 15.6%;*/
-	margin-left:12%;
+	margin-left: 15.6%;
+	/*margin-left:13.3%;*/
 	transition: .3s;
 }
 
@@ -328,7 +328,7 @@ a {
 	border-left: 3px solid #2B55B1;
 	border-radius: 0;
 }
-.dash__menu li a span {
+.dash__menu li a span:not(.small) {
   /*width: 24px;*/
   margin-right: 14px;
 }

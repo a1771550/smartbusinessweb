@@ -9,20 +9,25 @@
 	string txtboxstyle = ViewData["txtboxstyle"] == null ? "" : ViewData["txtboxstyle"].ToString();
 	string txtboxcls = ViewData["txtboxcls"] == null ? "" : ViewData["txtboxcls"].ToString();
 	bool usedropdown = ViewData["usedropdown"] == null ? false : (bool)ViewData["usedropdown"];
+	bool showSymBlk = ViewData["showsymblk"] == null ? true : (bool)ViewData["showsymblk"];
 }
 <input type="hidden" id="usedropdown" value="@usedropdown" />
 
 @if (usedropdown)
 {
-	<a href="#"><span class="currencySym" data-sym="$">$</span><span class="currencyCode mx-1" data-code="HKD">HKD</span></a>
+	if (showSymBlk)
+	{
+		<a href="#"><span class="currencySym" data-sym="$">$</span><span class="currencyCode mx-1" data-code="HKD">HKD</span></a>
+	}
+
 	<div class="dash__top--select">
 		<select id="drpCurrency" class="exrate">
 			@*<option value="0">@string.Format(Resources.Resource.SelectFormat, Resources.Resource.Currency)</option>
-			<option value="1" selected>$ HKD (1.0000)</option>
-			<option value="2">£ GBP (9.9000)</option>
-			<option value="3">$ USD (7.8000)</option>
-			<option value="4"> ¥ CNY (1.1300)</option>
-			<option value="5"> € EUR (8.4300)</option>*@
+				<option value="1" selected>$ HKD (1.0000)</option>
+				<option value="2">£ GBP (9.9000)</option>
+				<option value="3">$ USD (7.8000)</option>
+				<option value="4"> ¥ CNY (1.1300)</option>
+				<option value="5"> € EUR (8.4300)</option>*@
 		</select>
 		<span id="forexPayment" class="d-inline-block text-info font-weight-bold mx-2 hide"></span>
 	</div>

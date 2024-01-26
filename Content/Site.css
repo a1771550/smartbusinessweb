@@ -1,4 +1,7 @@
-﻿label:not(.form-check-label){
+﻿h3{
+    font-weight:800;
+}
+label:not(.form-check-label){
     font-weight:bold;
 }
 /* Set padding to keep content from hitting the edges */
@@ -770,9 +773,11 @@ input[type=checkbox]:focus {
     text-decoration: none;
     background-color: transparent;
 }
+.depositsettlingstatusbg,
 .presettlingstatusbg{
     background-color:#efd58d;
 }
+.depositsettledstatusbg,
 .presettledstatusbg{
     background-color:#dcfcc3;
 }

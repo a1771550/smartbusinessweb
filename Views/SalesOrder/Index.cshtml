@@ -133,9 +133,11 @@ else
 					string salescode = item.rtsStatus.ToLower() == SalesStatus.presettled.ToString() ? string.Concat(item.rtsCode, $" (Ref: {item.rtsRefCode})") : item.rtsCode;
 					switch (item.rtsStatus.ToLower())
 					{
+						case "depositsettling":
 						case "presettling":
 							statustxt = Resources.Resource.Ordering;
 							break;
+						case "depositsettled":
 						case "presettled":
 							statustxt = Resources.Resource.Settled;
 							break;

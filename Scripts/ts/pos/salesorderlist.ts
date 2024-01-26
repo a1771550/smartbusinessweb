@@ -82,8 +82,8 @@ $(document).on("click", ".detail", function () {
     let status:string = $(this).data("status").toString();
   //  console.log(status);
     let url = "";
-    if (status.toLowerCase() == SalesStatus.presettling.toString()) url = `/Preorder/Edit?Id=${Id}`;
-    if (status.toLowerCase() == SalesStatus.presettled.toString() || status.toLowerCase() == SalesStatus.created.toString()) url = `/SalesOrder/Get?Id=${Id}`;  
+    if (status.toLowerCase() == SalesStatus.presettling.toString() || status.toLowerCase() == SalesStatus.depositsettling.toString()) url = `/Preorder/Edit?Id=${Id}`;
+    if (status.toLowerCase() == SalesStatus.presettled.toString() || status.toLowerCase() == SalesStatus.depositsettled.toString() || status.toLowerCase() == SalesStatus.created.toString()) url = `/SalesOrder/Get?Id=${Id}`;  
    // return false;
     window.open(url,
         "_self"

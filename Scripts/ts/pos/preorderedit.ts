@@ -1,5 +1,5 @@
 ﻿$infoblk = $("#infoblk");
-PreSalesLnList = [];
+
 $(function () {
 	forpreorder = true;
 	setFullPage();
@@ -12,6 +12,8 @@ $(function () {
 
 	PreSales = $infoblk.data("sales");
 	//console.log("PreSales:", PreSales);
+	PreSalesLnList = [];
+	
 	gTblName = "tblSales";
 
 	cpplList = $infoblk.data("customerpointpricelevels");
@@ -43,7 +45,7 @@ $(function () {
 		selectCus();
 
 		PreSalesLnList = $infoblk.data("saleslnlist");
-		//console.log("PreSalesLnList:", PreSalesLnList);
+		console.log("PreSalesLnList:", PreSalesLnList);
 		DicItemSNs = $infoblk.data("dicitemsns");
 
 		DicItemOptions = $infoblk.data("dicitemoptions");
@@ -66,7 +68,7 @@ $(function () {
 		$.each(PreSalesLnList, function (i, e) {
 			currentY = i;
 			//console.log(e.Item);
-			selectedItemCode = e.itmCode;
+			selectedItemCode = e.rtlItemCode;
 			//console.log("selectedItemCode:" + selectedItemCode);
 			selectedPreSalesLn = structuredClone(e);
 			populateItemRow();
@@ -77,11 +79,11 @@ $(function () {
 
 		//console.log("finaltotal:" + PreSales.rtsFinalTotal + ";payamt:" + PreSales.PayAmt);
 		let depositamt = 0;
-		if (PreSales.rtsStatus.toLowerCase() == SalesStatus.presettling.toString()) {
+		if (PreSales.rtsStatus.toLowerCase() == SalesStatus.presettling.toString() || PreSales.rtsStatus.toLowerCase() == SalesStatus.depositsettling.toString()) {
 			depositamt = PreSales.PayAmt;			
 			itotalremainamt = PreSales.rtsFinalTotal! - PreSales.PayAmt;			
 		}
-		if (PreSales.rtsStatus.toLowerCase() == SalesStatus.presettled.toString()) {
+		if (PreSales.rtsStatus.toLowerCase() == SalesStatus.presettled.toString() || PreSales.rtsStatus.toLowerCase() == SalesStatus.depositsettled.toString()) {
 			depositamt = PreSales.rtsFinalTotal! - PreSales.PayAmt;			
 			itotalremainamt = PreSales.PayAmt!;
 
