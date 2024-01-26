@@ -807,3 +807,14 @@ table.dataTable thead > tr > th.sorting_asc.text-right:before, table.dataTable t
 .btnsmall60 {
     font-size: 60%!important;
 }
+.btnsmall50 {
+    font-size: 50% !important;
+}
+.btnsmall40 {
+    font-size: 40% !important;
+}
+.viewfileblk{
+    padding:.5rem;
+    border:4px solid #eacc59;
+    border-radius:.5rem;
+}

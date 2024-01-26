@@ -7,7 +7,7 @@
     var shop = user.shopCode ?? (HttpContext.Current.Session["ComInfo"] as ComInfo).Shop;
     var device = user.dvcCode ?? (HttpContext.Current.Session["ComInfo"] as ComInfo).Device;
 }
-<link rel="stylesheet" href="~/Content/Sales.css?v=@rand" />
+<link rel="stylesheet" href="~/Content/pos/Sales.css?v=@rand" />
 <h2>@ViewBag.Title</h2>
 
 @using (Html.BeginForm("Stock", "Item", FormMethod.Get, new { @Id = "frmStock" }))

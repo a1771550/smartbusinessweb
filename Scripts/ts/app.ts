@@ -3630,7 +3630,7 @@ function initModals() {
 		],
 	});
 
-	viewFileModal = $("#viewFileModal").dialog({
+	viewFileModal = $(".viewFileModal").dialog({
 		width: 350,
 		title: viewfiletxt,
 		autoOpen: false,
@@ -15406,7 +15406,7 @@ $(document).on("click", "#deposit", function () {
 		callback: function (value) {
 			if (value) {
 				Sales.Deposit = 1;
-				submitSimpleSales();
+				confirmPay();
 			} else {
 				Sales.Deposit = 0;
 			}

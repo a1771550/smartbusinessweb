@@ -38,7 +38,7 @@
 	<input id="pstSalesLoc" name="pstSalesLoc" type="hidden" value="@Purchase.pstSalesLoc" />
 	<input id="pstAllLoc" name="pstAllLoc" type="hidden" value="@Purchase.pstAllLoc" />
 	<input id="pstExRate" name="pstExRate" type="hidden" value="@Purchase.pstExRate" />
-	<input id="pstAmount" name="pstAmount" type="hidden" value="@Purchase.pstAmount"/>
+	<input id="pstAmount" name="pstAmount" type="hidden" value="@Purchase.pstAmount" />
 
 	<div class="row justify-content-end my-4 px-4">
 		<h5 id="status" class="">@Purchase.pstStatus.ToUpper()</h5>
@@ -159,110 +159,118 @@
 
 	if (Purchase.pstStatus == "opened")
 	{
-<div class="my-4">
+		<div class="my-5">
 
-	<h4 class="font-weight-bold">@Resources.Resource.Payment</h4>
+			<h3 class="font-weight-bold clearfix">
+			@Resources.Resource.Payment
+				<button type="button" id="btnAdd" class="btn btn-primary float-right btnsmall50" title="@string.Format(Resources.Resource.AddFormat, Resources.Resource.Payment)"><i class="fa fa-plus"></i></button>
+			</h3>
 
-	<div class="row justify-content-end my-2 mx-2 small">
-		<button type="button" id="btnAdd" class="btn btn-primary float-right" title="@string.Format(Resources.Resource.AddFormat, Resources.Resource.Payment)"><i class="fa fa-plus"></i></button>
-	</div>
+			@*<div class="my-2 mx-2 small clearfix">
+				
+			</div>*@
 
-	<table id="tblPayment" class="table table-condensed table-hover table-bordered">
-		<thead class="gray-header">
-			<tr>
-				<th style="width:50px;max-width:50px;"></th>
-				<th class="text-center">@Resources.Resource.ReceiptNo</th>
-				<th class="text-center">@Resources.Resource.AccountClassification</th>
-				<th class="text-center">@Resources.Resource.CollectionAccount (@Resources.Resource.AccountNo)</th>
-				<th class="text-right" style="width:120px;max-width:120px;">@Resources.Resource.Amount (@Purchase.Currency)</th>
-				<th class="text-right" style="width:120px;max-width:120px;">@string.Format(Resources.Resource.DateFormat, Resources.Resource.Payment)</th>
-				<th class="text-center">@Resources.Resource.File</th>
-				<th class="text-right">@Resources.Resource.OperationTime</th>
-				<th class="text-center">@Resources.Resource.PersonInCharge</th>
-				<th></th>
-			</tr>
-		</thead>
+			<table id="tblPayment" class="table table-condensed table-hover table-bordered">
+				<thead class="gray-header">
+					<tr>
+						<th style="width:50px;max-width:50px;"></th>
+						<th class="text-center">@Resources.Resource.ReceiptNo</th>
+						<th class="text-center">@Resources.Resource.AccountClassification</th>
+						<th class="text-center">@Resources.Resource.CollectionAccount (@Resources.Resource.AccountNo)</th>
+						<th class="text-right" style="width:120px;max-width:120px;">@Resources.Resource.Amount (@Purchase.Currency)</th>
+						<th class="text-right" style="width:120px;max-width:120px;">@string.Format(Resources.Resource.DateFormat, Resources.Resource.Payment)</th>
+						<th class="text-center">@Resources.Resource.File</th>
+						<th class="text-right">@Resources.Resource.OperationTime</th>
+						<th class="text-center">@Resources.Resource.PersonInCharge</th>
+						<th></th>
+					</tr>
+				</thead>
 
-		<tbody>			
-			@{int idx = 0; lastppId = Model.PurchasePayments.Count > 0 ? Model.PurchasePayments.Max(x=>x.Id): 0;}
-			@foreach (var payment in Model.PurchasePayments)
-			{
-				idx++;
+				<tbody>
+					@{int idx = 0; lastppId = Model.PurchasePayments.Count > 0 ? Model.PurchasePayments.Max(x => x.Id) : 0;}
+					@foreach (var payment in Model.PurchasePayments)
+					{
+						idx++;
 
-				string selectedA = payment.AcClfID == "A" ? "selected" : "";
-				string selectedL = payment.AcClfID == "L" ? "selected" : "";
-				string selectedEQ = payment.AcClfID == "EQ" ? "selected" : "";
-				string selectedI = payment.AcClfID == "I" ? "selected" : "";
-				string selectedCOS = payment.AcClfID == "COS" ? "selected" : "";
-				string selectedEXP = payment.AcClfID == "EXP" ? "selected" : "";
-				string selectedOI = payment.AcClfID == "OI" ? "selected" : "";
-				string selectedOEXP = payment.AcClfID == "OEXP" ? "selected" : "";
+						string selectedA = payment.AcClfID == "A" ? "selected" : "";
+						string selectedL = payment.AcClfID == "L" ? "selected" : "";
+						string selectedEQ = payment.AcClfID == "EQ" ? "selected" : "";
+						string selectedI = payment.AcClfID == "I" ? "selected" : "";
+						string selectedCOS = payment.AcClfID == "COS" ? "selected" : "";
+						string selectedEXP = payment.AcClfID == "EXP" ? "selected" : "";
+						string selectedOI = payment.AcClfID == "OI" ? "selected" : "";
+						string selectedOEXP = payment.AcClfID == "OEXP" ? "selected" : "";
 
-				<tr data-id="@payment.Id">
-					<td class="text-center">@idx</td>
-					<td class="text-center"><input type="text" class="form-control chequeno text-center" maxlength="8" value="@payment.ChequeNo" /></td>
-					<td class="text-center" data-acclfid="@payment.AcClfID">
+						<tr data-id="@payment.Id">
+							<td class="text-center">@idx</td>
+							<td class="text-center"><input type="text" class="form-control chequeno text-center" maxlength="8" value="@payment.ChequeNo" /></td>
+							<td class="text-center" data-acclfid="@payment.AcClfID">
 
-						<select class="drpAccount form-control flex">
-							<option value="">- @Resources.Resource.Select -</option>
-							<option value="A" @selectedA>@Resources.Resource.AssetAccountForItemInventory</option>
-							<option value="L" @selectedL>@Resources.Resource.Liability</option>
-							<option value="EQ" @selectedEQ>@Resources.Resource.Equity</option>
-							<option value="I" @selectedI>@Resources.Resource.IncomeAccountForTrackingSales</option>
-							<option value="COS" @selectedCOS>@Resources.Resource.CostOfSalesAccount</option>
-							<option value="EXP" @selectedEXP>@Resources.Resource.Expense</option>
-							<option value="OI" @selectedOI>@Resources.Resource.OtherIncome</option>
-							<option value="OEXP" @selectedOEXP>@Resources.Resource.OtherExpense</option>
-						</select>
-					</td>
-					<td class="text-center"><span class="accountno acname" data-acno="@payment.AccountNo" data-acname="@payment.AccountName">@payment.AccountName (@payment.AccountNo)</span></td>
-					<td class="text-right"><input type="number" class="form-control pay text-right" data-id="@payment.Id" value="@CommonHelper.FormatNumber(payment.Amount)" /></td>
-					<td class="text-right">
-						<input type="datetime" class="form-control datepicker ppdate" name="ppDate" value="@payment.ppDate" />
-						<input type="hidden" class="datedisplay" value="@payment.DateDisplay" />
-					</td>
-					<td class="text-left text-wrap">
-						@if (!string.IsNullOrEmpty(payment.fileName))
-						{
-							var filelist = payment.fileName.Split(',').ToList();
-							@Html.Partial("_ViewFileModal", null, new ViewDataDictionary { { "filelist", filelist } })
-						}
+								<select class="drpAccount form-control flex">
+									<option value="">- @Resources.Resource.Select -</option>
+									<option value="A" @selectedA>@Resources.Resource.AssetAccountForItemInventory</option>
+									<option value="L" @selectedL>@Resources.Resource.Liability</option>
+									<option value="EQ" @selectedEQ>@Resources.Resource.Equity</option>
+									<option value="I" @selectedI>@Resources.Resource.IncomeAccountForTrackingSales</option>
+									<option value="COS" @selectedCOS>@Resources.Resource.CostOfSalesAccount</option>
+									<option value="EXP" @selectedEXP>@Resources.Resource.Expense</option>
+									<option value="OI" @selectedOI>@Resources.Resource.OtherIncome</option>
+									<option value="OEXP" @selectedOEXP>@Resources.Resource.OtherExpense</option>
+								</select>
+							</td>
+							<td class="text-center"><span class="accountno acname" data-acno="@payment.AccountNo" data-acname="@payment.AccountName">@payment.AccountName (@payment.AccountNo)</span></td>
+							<td class="text-right"><input type="number" class="form-control pay text-right" data-id="@payment.Id" value="@CommonHelper.FormatNumber(payment.Amount)" /></td>
+							<td class="text-right">
+								<input type="datetime" class="form-control datepicker ppdate" name="ppDate" value="@payment.ppDate" />
+								<input type="hidden" class="datedisplay" value="@payment.DateDisplay" />
+							</td>
+							<td class="text-left text-wrap">
+								@if (!string.IsNullOrEmpty(payment.fileName))
+								{
+									var filelist = payment.fileName.Split(',').ToList();
+									@Html.Partial("_ViewFileModal", null, new ViewDataDictionary { { "filelist", filelist } })
+								}
 
-					</td>
-					<td class="text-right">@payment.CreateTimeDisplay</td>
-					<td class="text-center">@payment.CreateByDisplay</td>
-					<td>
-						<button type="button" class="btn btn-success btnsmall80 btnSave mr-1" data-id="@payment.Id" title="@string.Format(Resources.Resource.SaveFormat, Resources.Resource.Payment)"><i class="fa fa-save"></i></button>
-						<button type="button" class="btn btn-warning btnsmall80 btnUpload mr-1" data-id="@payment.Id" title="@Resources.Resource.UploadFile"><i class="fa fa-upload"></i></button>
-						<button type="button" class="btn btn-danger btnsmall80 btnVoid mr-1" data-id="@payment.Id" title="@Resources.Resource.UploadFile"><i class="fa fa-trash"></i></button>
-					</td>
-				</tr>
-			}
-
-		</tbody>
-		<tfoot style="background:#eee;">
-			<tr>
-				<td colspan="10" class="text-right">
-					@{
-						decimal totalowed = (decimal)Purchase.pstAmount - Model.PurchasePayments.Sum(x => x.Amount);
-						string totalowedtxt = CommonHelper.FormatNumber(totalowed);
-						string amtcls = totalowed > 0 ? "text-danger" : "text-success";
+							</td>
+							<td class="text-right">@payment.CreateTimeDisplay</td>
+							<td class="text-center">@payment.CreateByDisplay</td>
+							<td>
+								<button type="button" class="btn btn-success btnsmall80 btnSave mr-1" data-id="@payment.Id" title="@string.Format(Resources.Resource.SaveFormat, Resources.Resource.Payment)"><i class="fa fa-save"></i></button>
+								<button type="button" class="btn btn-warning btnsmall80 btnUpload mr-1" data-id="@payment.Id" title="@Resources.Resource.UploadFile"><i class="fa fa-upload"></i></button>
+								<button type="button" class="btn btn-danger btnsmall80 btnVoid mr-1" data-id="@payment.Id" title="@Resources.Resource.UploadFile"><i class="fa fa-trash"></i></button>
+							</td>
+						</tr>
 					}
-					<form class="form-inline" style="font-size:1.15em;">
-						<label for="totalowed" class="mx-2">@string.Format(Resources.Resource.TotalFormat, Resources.Resource.Owed):</label>
-						<span class="font-weight-bold">@Purchase.Currency<span class="@amtcls" id="totalowed" data-num="@totalowed">@totalowedtxt</span></span>
 
-					</form>
-				</td>
-			</tr>
-		</tfoot>
-	</table>
+				</tbody>
+				<tfoot style="background:#eee;">
+					<tr>
+						<td colspan="10" class="text-right">
+							@{
+								decimal totalowed = (decimal)Purchase.pstAmount - Model.PurchasePayments.Sum(x => x.Amount);
+								string totalowedtxt = CommonHelper.FormatNumber(totalowed);
+								string amtcls = totalowed > 0 ? "text-danger" : "text-success";
+							}
+							<form class="form-inline" style="font-size:1.15em;">
+								<label for="totalowed" class="mx-2">@string.Format(Resources.Resource.TotalFormat, Resources.Resource.Owed):</label>
+								<span class="font-weight-bold">@Purchase.Currency<span class="@amtcls" id="totalowed" data-num="@totalowed">@totalowedtxt</span></span>
+
+							</form>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
 
 
 
-</div>
+		</div>
 
-		<div class="row justify-content-end">
+		<div class="row justify-content-between">
+			<div class="col-12 col-md-10">
+				<div class="viewfileblk">
+					@Html.Partial("_ViewFileModal", null, new ViewDataDictionary { { "imglist", Purchase.ImgList }, { "filelist", Purchase.FileList } })
+				</div>				
+			</div>
 			<div class="col-12 col-md-2">
 				<div class="clearfix">
 					<div class="float-right">
@@ -424,6 +432,6 @@
 
 
 @Html.Partial("_UploadFileModal", null, new ViewDataDictionary { { "uploadUrl", "/Purchase/UploadFile" } })
-@Html.Partial("_ViewFileModal", null, new ViewDataDictionary { { "imglist", Purchase.ImgList }, { "filelist", Purchase.FileList } })
+
 
 
