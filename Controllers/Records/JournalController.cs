@@ -14,7 +14,7 @@ namespace SmartBusinessWeb.Controllers.Records
 		public ActionResult Index(int sortCol = 5, string SortOrder = "desc", string Keyword = null, int? PageNo = 1)
 		{
 			ViewBag.Title = Resources.Resource.Journal;
-			ViewBag.ParentPage = "reports";
+			//ViewBag.ParentPage = "reports";
 			ViewBag.PageName = "journal";
 			JournalEditModel model = new JournalEditModel
 			{
@@ -33,7 +33,7 @@ namespace SmartBusinessWeb.Controllers.Records
 		[HttpGet]
 		public ActionResult Edit(string Id = "")
 		{
-			ViewBag.ParentPage = "reports";
+			//ViewBag.ParentPage = "reports";
 			ViewBag.PageName = "journal";
 			ViewBag.Title = string.IsNullOrEmpty(Id) ? string.Format(Resources.Resource.AddFormat, Resources.Resource.Journal) : string.Format(Resources.Resource.EditFormat, Resources.Resource.Journal);
 			JournalEditModel model = new JournalEditModel(Id);

@@ -14,9 +14,9 @@ $(".overlay").on("click", function () {
 });
 
 $(document).on("click", ".btn_expand", function () {
-	console.log("this:", $(this));
+	//console.log("this:", $(this));
 	let idx = $(this).index();
-	console.log("idx:" + idx);
+	//console.log("idx:" + idx);
 
 	$(".btn_expand").each(function (i, e) {
 		if ($(e).index() !== idx) {
@@ -30,15 +30,9 @@ $(document).on("click", ".btn_expand", function () {
 		$(e).find("li a").removeClass("active");		
 	});
 	//console.log("target a:", $(this).find(".collapse").find("li").first().find("a").first());
-	console.log("submenu:", $(this).find(".submenu"));
+	//console.log("submenu:", $(this).find(".submenu"));
 	$(this).find(".submenu").find("li").first().find("a").first().addClass("active");
-
-	//if (window.innerWidth > 1439) {
-	//	if ($('.dash__left, .dash__body').hasClass('active') && $('.bar').hasClass('toggle')) {
-	//		$('.dash__left, .dash__body').removeClass('active');
-	//		$('.bar').removeClass('toggle');
-	//	}
-	//}
+	
 });
 
 

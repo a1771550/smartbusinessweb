@@ -4,60 +4,29 @@ const journalno = $("#journal_JournalNumber").val()!.toString();
 const strdate = $("#strDate").val()!.toString();
 const dcaccerrtxt: string = $infoblk.data("dcaccerrtxt");
 
-$(document).on("change", ".memo", function () {
-	let memo = $(this).val() as string;
-	currentY = $(this).parent("td").parent("tr").index();
-	JournalLns.forEach((x) => {
-		if (x!.Seq == (currentY + 1)) x!.AllocationMemo = memo;
-	});
-});
-$(document).on("change", ".job", function () {
-	let Id: number = Number($(this).val());
-	currentY = $(this).parent("td").parent("tr").index();
-	JournalLns.forEach((x) => {
-		if (x!.Seq == (currentY + 1)) x!.JobID = Id;
-	});
-});
 $(document).on("change", ".amt", function () {
-	currentY = $(this).parent("td").parent("tr").index();
+	getRowCurrentY.call(this);
 	//console.log("currentY#amtchange:" + currentY);
 	let amt = Number($(this).val());
 	//console.log("amt:" + amt);
 
 	let isDebit = $(this).hasClass("debit");
-	//console.log("isDebit:", isDebit);
-	//console.log("selectedJournalLn1#1:", selectedJournalLn1);
-	//console.log("selectedJournalLn2#1:", selectedJournalLn2);
 
 	if (isDebit) {
 		JournalLns.forEach((x) => {
-			if (currentY % 2 == 0 && x!.Seq == currentY + 1) {
+			if (x!.Seq == currentY + 1) {
 				//console.log("isdebit 1");
 				if (editmode) x.DebitExTaxAmount = amt;
 				else if (x.DebitExTaxAmount == 0) x.DebitExTaxAmount = amt;
 			}
-			if (currentY % 2 == 1 && x!.Seq == currentY + 1) {
-				//console.log("isdebit 2");
-				if (editmode) x.DebitExTaxAmount = amt;
-				else if (x.DebitExTaxAmount == 0) x.DebitExTaxAmount = amt;
-			}
-			//console.log("x:", x);
 		});
 	} else {
 		JournalLns.forEach((x) => {
-			if (currentY % 2 == 0 && x!.Seq == currentY + 1) {
-				console.log("iscredit 1");
+			if (x!.Seq == currentY + 1) {
+				//console.log("iscredit 1");
 				if (editmode) x.CreditExTaxAmount = amt;
 				else if (x.CreditExTaxAmount == 0) x.CreditExTaxAmount = amt;
-				console.log("x:", x);
 			}
-			if (currentY % 2 == 1 && x!.Seq == currentY + 1) {
-				console.log("iscredit 2");
-				if (editmode) x.CreditExTaxAmount = amt;
-				else if (x.CreditExTaxAmount == 0) x.CreditExTaxAmount = amt;
-				console.log("x:", x);
-			}
-
 		});
 	}
 	//console.log("JournalLns#amtchange:", JournalLns);
@@ -73,10 +42,28 @@ $(document).on("change", ".amt", function () {
 		//console.log("totaldebit:" + totalDebit + ";totalcredit:" + totalCredit);
 	});
 
-	setAmts(totalDebit, totalCredit);
+	//console.log("totaldebit:" + totalDebit + ";totalcredit:" + totalCredit);
 
-	toggleJournalAmt(currentY, false);
+	setAmts(totalDebit, totalCredit);
+	//toggleJournalAmt(currentY, false);
+
+	$("#btnSave").prop("disabled", totalDebit != totalCredit);
 });
+$(document).on("change", ".memo", function () {
+	let memo = $(this).val() as string;
+	currentY = $(this).parent("td").parent("tr").index();
+	JournalLns.forEach((x) => {
+		if (x!.Seq == (currentY + 1)) x!.AllocationMemo = memo;
+	});
+});
+$(document).on("change", ".job", function () {
+	let Id: number = Number($(this).val());
+	currentY = $(this).parent("td").parent("tr").index();
+	JournalLns.forEach((x) => {
+		if (x!.Seq == (currentY + 1)) x!.JobID = Id;
+	});
+});
+
 function setAmts(totalDebit: number, totalCredit: number) {
 	$("#debitAmt").val(formatnumber(totalDebit));
 	$("#creditAmt").val(formatnumber(totalCredit));
@@ -96,6 +83,23 @@ function fillInJournal() {
 	Journal.JournalNumber = journalno;
 	Journal.strDate = $("#strDate").val() as string;
 	Journal.Memo = $("#memo").val() as string;
+
+	if (!editmode) {
+		JournalLns = [];
+		$("#tblJournal tbody tr").each(function (i, e) {
+			/*
+			 Seq = item.Seq,
+                                    AccountNumber = item.AccountNumber,
+                                    DebitExTaxAmount = item.DebitExTaxAmount,
+                                    CreditExTaxAmount = item.CreditExTaxAmount,
+                                    JobID = item.JobID,
+                                    AllocationMemo = item.AllocationMemo,
+			*/
+			if ($(e).find(".acno").length) {
+				JournalLns.push({ Seq: $(e).index() + 1, AccountNumber: $(e).find(".acno").val(), DebitExTaxAmount: Number($(e).find(".debit").val()), CreditExTaxAmount: Number($(e).find(".credit").val()), JobID: Number($(e).find(".job").val()), AllocationMemo:$(e).find(".memo").val() } as IJournalLn);
+			}			
+		});
+	}	
 }
 
 $(document).on("click", "#btnSave", function () {
@@ -131,35 +135,11 @@ function populateAccount4Journal(acno: string, acname: string) {
 	//console.log("currentY:" + currentY);
 	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
 
-	let sameAcc = false;
+	setAccName($tr, acno, acname);
+
 	JournalLns.forEach((x) => {
-		if (currentY % 2 == 0 && x!.Seq == currentY + 2) // seq*1 compare to seq*2
-			sameAcc = (x!.Seq == currentY + 2 && x!.AccountNumber == acno);
-		//if (currentY % 2 == 1 && x!.Seq == currentY) console.log("x.seq:" + x!.Seq + ";x.accno:" + x!.AccountNumber);
-		if (currentY % 2 == 1 && x!.Seq == currentY) // seq*2 compare to seq*1
-			sameAcc = (x!.Seq == currentY && x!.AccountNumber == acno);
+		if (x!.Seq == currentY + 1) x.AccountNumber = acno;
 	});
-
-	if (sameAcc) $.fancyConfirm({
-		title: "",
-		message: dcaccerrtxt,
-		shownobtn: false,
-		okButton: oktxt,
-		noButton: notxt,
-		callback: function (value) {
-			if (value) {
-				$tr.find("td").first().find(".drpAccount option:first-child").attr("selected", "selected").trigger("focus");
-			}
-		}
-	});
-	else {
-		setAccName($tr, acno, acname);
-
-		JournalLns.forEach((x) => {
-			if (currentY % 2 == 0 && x!.Seq == currentY + 1) x.AccountNumber = acno;
-			if (currentY % 2 == 1 && x!.Seq == currentY + 1) x.AccountNumber = acno;
-		});
-	}
 }
 
 function toggleJournalAmt(idx: number, enabled: boolean) {

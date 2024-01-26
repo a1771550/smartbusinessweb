@@ -6,6 +6,7 @@
 	bool edit = journalLns.Count > 0;
 	int rand = CommonHelper.GetVersionRandomNo();
 	string Currency = Model.Currency;
+	string disabled = edit ? "" : "disabled";
 }
 <h2>@ViewBag.Title</h2>
 @using (Html.BeginForm("Edit", "Journal", FormMethod.Get, new { @Id = "frmJournal", @class = "my-4" }))
@@ -81,9 +82,8 @@
 			</div>
 		</div>
 	</div>
-
-
-	<button type="button" id="btnSave" class="btn btn-success float-right">@Resources.Resource.Save</button>
+	
+	<button type="button" id="btnSave" class="btn btn-success float-right" @disabled title="@Resources.Resource.JournalMayNotSaveIfDebitNeCredit">@Resources.Resource.Save</button>
 }
 <div>
 	@Html.ActionLink(Resources.Resource.BackToList, "Index")

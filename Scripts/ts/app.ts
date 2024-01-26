@@ -22202,3 +22202,8 @@ function setInputsFilter(textboxes: any, inputFilter: (value: string) => boolean
 		}
 	});
 }
+
+function getRowCurrentY(this: any, forTd: boolean = false) {
+	$tr = forTd ? $(this).parent("tr") : $(this).parent("td").parent("tr");
+	currentY = $tr.index();
+}

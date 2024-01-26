@@ -160,6 +160,11 @@
           <path>Scripts\ts\customer\customer.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\customer\customer.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>menu.ts</name>
+          <path>Scripts\ts\menu.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\menu.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
