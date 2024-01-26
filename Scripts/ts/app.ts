@@ -2534,13 +2534,10 @@ function confirmPay() {
 	if (isNaN(_totalpay)) {
 		falert(paymentrequiredtxt, oktxt);
 	} else if (_totalpay < _totalamt) {
-		if (!forsimplesales)
-			resetPay(true);
-		//console.log("retailType:",retailType);
 		switch (salesType) {
-			//case SalesType.simplesales:
-			//	submitSimpleSales();
-			//	break;
+			case SalesType.simplesales:
+				submitSimpleSales();
+				break;
 			case SalesType.deposit:
 				break;
 			case SalesType.refund:
@@ -2595,10 +2592,11 @@ function confirmPay() {
 				}
 			}
 		}
-	} else if (_totalpay == _totalamt) {
-		if (!forsimplesales)
-			resetPay(true);
+	} else if (_totalpay == _totalamt) {		
 		switch (salesType) {
+			case SalesType.simplesales:
+				submitSimpleSales();
+				break;
 			case SalesType.deposit:
 				submitRemaining();
 				break;

@@ -178,7 +178,8 @@ a {
 .dash__left {
   background: #FFF;
   box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.10);
-  width: 15.6%;
+  /*width: 15.6%;*/
+  width:12%;
   padding: 45px 25px;
   left: 0;
   position: absolute;
@@ -192,7 +193,8 @@ a {
 	width: 84%;
 	padding: 33px 40px;
 	padding-bottom: 70px;
-	margin-left: 15.6%;
+	/*margin-left: 15.6%;*/
+	margin-left:12%;
 	transition: .3s;
 }
 
