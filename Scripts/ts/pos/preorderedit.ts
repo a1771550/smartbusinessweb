@@ -1,5 +1,4 @@
 ﻿$infoblk = $("#infoblk");
-
 $(function () {
 	forpreorder = true;
 	setFullPage();
@@ -10,9 +9,12 @@ $(function () {
 	snidx = batchidx + 1;
 	vtidx = snidx + 1;
 
+
+	PreSalesLnList = [];	
+
 	PreSales = $infoblk.data("sales");
 	//console.log("PreSales:", PreSales);
-	PreSalesLnList = [];
+	editmode = PreSales.rtsUID > 0;
 	
 	gTblName = "tblSales";
 
@@ -35,17 +37,18 @@ $(function () {
 	$("#drpLocation").val(shop);
 	$("#drpDevice").val(device);
 
-	editmode = PreSales.rtsUID > 0;
+	
 	if (editmode) {
+		PreSalesLnList = $infoblk.data("presaleslns");
+		console.log("PreSalesLnList:", PreSalesLnList);
+
 		$("#txtNotes").val(PreSales.rtsRmks);
 		$("#txtInternalNotes").val(PreSales.rtsInternalRmks);
 	
 		selectedCus = $infoblk.data("customer");
 		//console.log("selectedCus:", selectedCus);
 		selectCus();
-
-		PreSalesLnList = $infoblk.data("saleslnlist");
-		console.log("PreSalesLnList:", PreSalesLnList);
+		
 		DicItemSNs = $infoblk.data("dicitemsns");
 
 		DicItemOptions = $infoblk.data("dicitemoptions");
@@ -71,7 +74,7 @@ $(function () {
 			selectedItemCode = e.rtlItemCode;
 			//console.log("selectedItemCode:" + selectedItemCode);
 			selectedPreSalesLn = structuredClone(e);
-			populateItemRow();
+			populateItemRow(null,false);
 		});
 
 		//remove empty row:

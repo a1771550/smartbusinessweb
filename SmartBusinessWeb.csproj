@@ -3031,6 +3031,7 @@
     <Content Include="Scripts\ts\js\records\journallist.js" />
     <Content Include="Scripts\ts\js\records\training.js" />
     <Content Include="Scripts\ts\js\simplecontact\edit.js" />
+    <Content Include="Scripts\ts\js\test\presaleslns.js" />
     <Content Include="Static\barcode.html" />
     <Content Include="Static\collapse.html" />
     <Content Include="Static\datatables.html" />
@@ -4626,6 +4627,8 @@
     <Content Include="Views\Shared\_PayModal.cshtml" />
     <Content Include="Views\Shared\_Payment.cshtml" />
     <Content Include="Views\Shared\_FollowUpBlk.cshtml" />
+    <Content Include="Views\Test\PreSalesLns.cshtml" />
+    <Content Include="Scripts\ts\js\test\presaleslns.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -5152,6 +5155,7 @@
     <TypeScriptCompile Include="Scripts\ts\records\training.ts" />
     <TypeScriptCompile Include="Scripts\ts\simplecontact\edit.ts" />
     <TypeScriptCompile Include="Scripts\ts\test.ts" />
+    <TypeScriptCompile Include="Scripts\ts\test\presaleslns.ts" />
     <TypeScriptCompile Include="Scripts\ts\wholesales\delivery.ts" />
     <TypeScriptCompile Include="Scripts\ts\wholesales\salesorderlist.ts" />
     <TypeScriptCompile Include="Scripts\ts\wholesales\wholesales.ts" />

@@ -1,0 +1,9 @@
+﻿
+@{
+    ViewBag.Title = "PreSalesLns";
+}
+
+<h2>PreSalesLns</h2>
+
+<div id="infoblk" data-saleslns="@JsonSerializer.Serialize(ViewData["PreSalesLns"])"></div>
+<script src="~/Scripts/ts/js/test/presaleslns.js?v=@CommonHelper.GetVersionRandomNo()"></script>

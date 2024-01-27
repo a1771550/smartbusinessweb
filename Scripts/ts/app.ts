@@ -2502,6 +2502,7 @@ $(document).on("change", ".paymenttype", function () {
 });
 
 function confirmPay() {
+	//console.log("here");
 	let _totalamt: number = 0;
 	switch (salesType) {
 		case SalesType.simplesales:
@@ -7820,17 +7821,6 @@ enum RespondType {
 	PassToManager = 3,
 }
 
-//let salesOrderInfo: ISalesOrderInfo;
-//interface ISalesOrderInfo {
-//	SalesOrder: ISaleOrder;
-//	SalesLnViews: Array<ISalesLn>;
-//	RefundLnViews: Array<ISalesLn>;
-//	SerialNoList: Array<ISerialNo>;
-//	DicItemSNs: { [Key: string]: Array<ISerialNo> };
-//	Items: Array<IItem>;
-//	Customer: ICustomer;
-//	KSalesmanCode: string;
-//}
 
 interface ISimpleSales {
 	Currency: string;
@@ -8021,6 +8011,66 @@ interface IPreSales {
 	rtsRefCode: string | null;
 }
 
+//for debug use only
+interface IPreSalesLn1 {
+	rtlUID: number;
+	rtlSalesLoc: string;
+	rtlCode: string;
+	rtlSeq: number | null;
+	rtlItemCode: string;
+	rtlDesc: string;
+	rtlStockLoc: string;
+	rtlHasSn: boolean;
+	rtlTaxPc: number | null;
+	rtlLineDiscPc: number | null;
+	rtlQty: number | null;
+	rtlSalesAmt: number | null;
+	rtlSellingPrice: number | null;
+	JobID: number | null;
+	rtsUID: number;
+	rtsSalesLoc: string;
+	rtsDvc: string;
+	rtsCode: string;
+	rtsRefCode: string;
+	rtsType: string;
+	rtsStatus: string;
+	rtsDate: string;
+	rtsCusID: number;
+	rtsLineTotalPlusTax: number | null;
+	rtsFinalDisc: number | null;
+	rtsFinalDiscAmt: number | null;
+	rtsFinalTotal: number | null;
+	rtsUpldBy: string;
+	rtsUpldTime: string | null;
+	rtsMonthBase: boolean;
+	rtsEpay: boolean;
+	rtsReviewUrl: string;
+	rtsSendNotification: boolean;
+	rtsCheckout: boolean;
+	rtsCheckoutPortal: string;
+	rtsTime: string;
+	rtsRmks: string;
+	rtsInternalRmks: string;
+	JsValidThru: string;
+	cusCode: string;
+	itmName: string;
+	itmDesc: string;
+	itmNameDesc: string;
+	itmItemID: number;
+	itmUseDesc: boolean;
+	itmTaxPc: number | null;
+	itmBaseUnit: string;
+	itmSellUnit: string;
+	itmLastSellingPrice: number | null;
+	itmBaseSellingPrice: number;
+	rtpPayAmt: number | null;
+	rtpPayType: string;
+	rtpExRate: number | null;
+	cusName: string;
+	SalesPersonName: string;	
+	itmIsTaxedWhenSold: boolean;
+	lstQuantityAvailable: number;
+}
 interface IPreSalesLn {
 	rtlUID: number;
 	rtlSalesLoc: string;
@@ -8559,11 +8609,13 @@ $(document).on("change", ".discpc", function (e) {
 });
 
 $(document).on("change", ".taxpc", function () {
+	//console.log("here");
 	handleTaxChange.call(this);
 });
 
 function handleTaxChange(this: any) {
 	currentY = getCurrentY(this);
+	//console.log("here");
 	updateRow(getRowPrice(), getRowDiscPc());
 }
 
@@ -8743,7 +8795,8 @@ function GetSetSelectedLns(proId: any) {
 	toggleItemCodeChange(proId);
 }
 
-function populateItemRow(proId: number | null = 0) {
+function populateItemRow(proId: number | null = 0, triggerChange:boolean=true) {
+	//console.log("selectedItemCode:" + selectedItemCode);
 	if (!selectedItemCode) return false;
 
 	let $rows = $(`#${gTblName} tbody tr`);
@@ -8892,7 +8945,7 @@ function populateItemRow(proId: number | null = 0) {
 		prodiscpc: prodiscpc,
 		qtysellable: qtysellable,
 	});
-	$qty.on("change", handleQtyChange);
+	$qty.on("change", handleQtyChange);	
 
 	let batmsg: string = "";
 	let snmsg: string = "";
@@ -8904,6 +8957,7 @@ function populateItemRow(proId: number | null = 0) {
 	let pointercls = "";
 
 	itemOptions = DicItemOptions[selectedItemCode];
+
 	//console.log(itemOptions);
 	idx++;
 	const $bat = $target.find("td").eq(idx).find(".batch");
@@ -9195,7 +9249,9 @@ function populateItemRow(proId: number | null = 0) {
 		$discpc.data("discpc", discpc).val(formatnumber(discpc));
 		$discpc.on("change", handleDiscChange);
 		//console.log("$discpc val:" + $discpc.val());
-		if (!enableTax) $discpc.trigger("change");
+
+		//console.log("enableTax:", enableTax);
+		if (!enableTax && triggerChange) $discpc.trigger("change");
 
 		idx++;
 		if (enableTax && !inclusivetax) {
@@ -9210,8 +9266,7 @@ function populateItemRow(proId: number | null = 0) {
 				.val(formatnumber(taxrate));
 			$tax.on("change", handleTaxChange);
 
-			$tax.trigger("change");
-			//idx++;
+			if (triggerChange)$tax.trigger("change");
 		}
 
 		if (forsales || forpurchase || forwholesales || forpreorder) {
@@ -18013,6 +18068,7 @@ function updatePreSales() {
 				presalesln.rtlSalesAmt = amt;
 				totalamt += amt;
 			}
+
 			if (PreSalesLnList.length > 0) {
 				let idx = PreSalesLnList.findIndex((x) => x.rtlSeq == _seq);
 				if (idx >= 0) {
@@ -18872,7 +18928,7 @@ function submitSales() {
 		}
 	}
 	if (forpreorder) {
-		updatePreSales();
+		if(!editmode)updatePreSales();
 		if (validSalesForm()) {
 			//console.log("here");
 			_submitSales();
@@ -18880,9 +18936,8 @@ function submitSales() {
 	}
 }
 
-function _submitSimpleSales() {
-	let url = "";
-	url = "/POSFunc/ProcessSales";
+function _submitSimpleSales() {	
+	let url = "/POSFunc/ProcessSales";
 
 	let data = { Sales, SimpleSalesLns, Payments };
 	//console.log("data:", data);
@@ -18984,7 +19039,7 @@ function _submitSales() {
 		? { PreSales, PreSalesLnList, Payments, DeliveryItems }
 		: { Sales, SalesLnList, Payments, DeliveryItems };
 	console.log("data:", data);
-	return false;
+	//return false;
 
 	openWaitingModal();
 	$.ajax({
