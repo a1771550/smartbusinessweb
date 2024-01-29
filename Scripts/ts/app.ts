@@ -1457,7 +1457,7 @@ function _writeItems(itemList: IItem[]) {
 		// $("td", row).eq(0).html(itemcode);
 
 		var namedesc = handleItemDesc(item.NameDesc);
-		html += `<td style="max-width:250px;">${namedesc}</td>`;
+		html += `<td style="max-width:250px;" title="${item.NameDesc}">${namedesc}</td>`;
 		let outofstock: boolean = _qty <= 0;
 		if (!forpurchase && !forpreorder) {
 			let tdcls = !outofstock ? "" : "outofstock";
@@ -11701,7 +11701,7 @@ function OnGetStocksOK(response) {
 					? `<span class="outofstock">${item.OnHandStock}</span>`
 					: item.OnHandStock.toString();
 			html += `<td class="itemdesc" data-desc="${item.NameDesc
-				}">${handleItemDesc(item.NameDesc)}</td>`;
+				}" title="${item.NameDesc}">${handleItemDesc(item.NameDesc)}</td>`;
 			html += `<td class="text-right">${onhandstock}<span class="text-info">(${item.AbssQty})</td>`;
 
 			//console.log("shops:", shops);
