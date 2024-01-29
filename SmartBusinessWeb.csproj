@@ -2834,6 +2834,7 @@
     <Content Include="Images\logo.png" />
     <Content Include="Images\logo.svg" />
     <Content Include="Images\ms-symbollockup_signin_light.png" />
+    <Content Include="Images\pdf.jpg" />
     <Content Include="Images\plus.png" />
     <Content Include="Images\png_cool.jpg" />
     <Content Include="Images\pos\icons\delete-2.svg" />
@@ -4629,6 +4630,7 @@
     <Content Include="Views\Shared\_FollowUpBlk.cshtml" />
     <Content Include="Views\Test\PreSalesLns.cshtml" />
     <Content Include="Scripts\ts\js\test\presaleslns.js.map" />
+    <Content Include="Views\Shared\_ViewFileBlk.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">

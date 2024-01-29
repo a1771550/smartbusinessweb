@@ -1639,7 +1639,7 @@ function closeCusModal() {
 }
 
 function updateRows() {
-	if (selectedCus || selectedSupplier) {
+	if (selectedCus || SelectedSupplier) {
 		//console.log("here");
 		$(`#${gTblName} tbody tr`).each(function (i, e) {
 			if ($(e).find("td").eq(1).find(".itemcode").val() !== "") {
@@ -1647,7 +1647,7 @@ function updateRows() {
 				const taxidx = forpurchase && Purchase.pstStatus !== "order" ? -5 : -4;
 				//console.log("selectedCus.TaxPercentageRate:" + selectedCus.TaxPercentageRate);
 				const taxpc = forpurchase
-					? selectedSupplier.TaxPercentageRate ?? 0
+					? SelectedSupplier.TaxPercentageRate ?? 0
 					: selectedCus.TaxPercentageRate ?? 0;
 				//console.log("taxpc:" + taxpc);
 				$(e)
@@ -3180,8 +3180,8 @@ function openUploadFileModal() {
 }
 function closeUploadFileModal() {
 	uploadFileModal.dialog("close");
-	if (!forpayments)
-		window.location.reload();
+	//if (!forpayments)
+	//	window.location.reload();
 }
 
 function openViewFileModal() {
@@ -8329,8 +8329,7 @@ interface IPurchase {
 	Id: number;
 	pstCode: string;
 	supCode: string;
-	pstSupplierInvoice: string;
-	// pstLocStock: string;
+	pstSupplierInvoice: string;	
 	pstSalesLoc: string;
 	pstRemark: string;
 	pstPurchaseDate: Date;
@@ -8345,9 +8344,9 @@ interface IPurchase {
 	JsPromisedDate: string;
 	pstCurrency: string;
 	pstExRate: number;
-	UseForexAPI: boolean;
+	//UseForexAPI: boolean;
 	pstAllLoc: boolean;
-	UploadFileList: string[];
+	FileList: string[];
 	DicItemOptions: { [Key: string]: IItemOptions };
 	ItemVariationList: IItemVariation[];
 	pstAmount: number;
@@ -8868,9 +8867,9 @@ function populateItemRow(proId: number | null = 0, triggerChange:boolean=true) {
 		selectedPurchaseItem!.piSeq = seq;
 		taxrate =
 			enableTax &&
-				selectedSupplier &&
+				SelectedSupplier &&
 				selectedPurchaseItem!.Item.itmIsTaxedWhenBought
-				? selectedSupplier.TaxPercentageRate!
+				? SelectedSupplier.TaxPercentageRate!
 				: 0;
 		namedesc = selectedPurchaseItem!.Item.NameDesc;
 	}
@@ -11343,7 +11342,7 @@ $(document).on("dblclick", ".itemdesc", function () {
 	openDescModal();
 });
 
-let selectedSupplier: ISupplier;
+let SelectedSupplier: ISupplier;
 function initSupplier(): ISupplier {
 	return {
 		supId: 0,
@@ -14334,8 +14333,8 @@ function fillInPurchase(
 		pstPromisedDate: null,
 		PromisedDateDisplay: <string>$("#PromisedDateDisplay").val(),
 		JsPromisedDate: <string>$promisedDateDisplay.val(),
-		UseForexAPI: $("#UseForexAPI").val() === "True",
-		UploadFileList: [],
+		
+		FileList: [],
 		DicItemOptions: Object.assign({}, dicItemOptions),
 		ItemVariationList: $infoblk.data("jsonitemvarilist"),
 		pstAmount: Number($("#pstAmount").val())
@@ -18861,7 +18860,7 @@ function respondReview(type) {
 			success: function (data) {
 				closeWaitingModal();
 				if (data) {
-					selectedSupplier = data.supplier;
+					SelectedSupplier = data.supplier;
 					if (type == "approve") {
 						forapprovedpo = true;
 						$(".btnApprove").prop("disabled", true).off("click");
@@ -18896,7 +18895,7 @@ function respondReview(type) {
 						msg = msg
 							.replace("{0}", receiptno)
 							.replace("{1}", data.url)
-							.replace("{2}", encodeURIComponent(selectedSupplier.supName));
+							.replace("{2}", encodeURIComponent(SelectedSupplier.supName));
 
 						if (forrejectedinvoice)
 							msg = msg.replace("{3}", encodeURIComponent(rejectreason));
@@ -22200,6 +22199,9 @@ function handleUploadedFile(result: any) {
 	closeWaitingModal();
 	$("#uploadmsg").removeClass("hide").html(result.msg);
 	if (forpurchase) {
+		closeUploadFileModal();
+		window.location.reload();
+
 		if (forpayments) {
 			let filelist: string[] = [];
 			if (purchasePayment.fileName === "") purchasePayment.fileName = result.filepath;
@@ -22272,4 +22274,55 @@ function setInputsFilter(textboxes: any, inputFilter: (value: string) => boolean
 function getRowCurrentY(this: any, forTd: boolean = false) {
 	$tr = forTd ? $(this).parent("tr") : $(this).parent("td").parent("tr");
 	currentY = $tr.index();
+}
+
+function getPdfThumbnail(cls:string=""):string {
+	return `<img src="/images/pdf.jpg" class="${cls} thumbnail">`;
+}
+
+function getRemoveFileLnk(file: string): string {	
+	return `<i class="fa fa-trash removefile" data-file="${file}" data-code="${Purchase.pstCode}"></i>`;
+}
+
+$(document).on("click", ".filelnk", function () {
+	//let url = ($(this).data("lnk") as string).replace("{0}", $(this).data("supcode"));
+	popupCenter({
+		url: $(this).data("lnk"),
+		title: `${$(this).data("name")}`,
+		w: "1080",
+		h: "900"
+	});
+});
+
+$(document).on("click", ".removefile", function () {
+	
+	if (forpurchase) {
+		let file = $(this).data("file");
+		let idx = Purchase.FileList.findIndex(x => x == file);
+		if (idx >= 0) Purchase.FileList.splice(idx, 1);		
+		populateFileList4Po(Purchase.FileList);
+		handleRemoveFile($(this).data("code"), file);
+
+		if (forpayments) {
+
+		}
+	}
+	
+	
+});
+
+function handleRemoveFile(code: string, filename: string) {
+	openWaitingModal();
+	$.ajax({
+		//contentType: 'application/json; charset=utf-8',
+		type: "POST",
+		url: "/Purchase/RemoveFile",
+		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), pstCode:code,filename },
+		success: function (data) {
+			if (data) {
+				closeWaitingModal();
+			}
+		},
+		dataType: "json"
+	});
 }

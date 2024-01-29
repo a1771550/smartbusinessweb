@@ -1,0 +1,30 @@
+﻿@{
+	List<string> imglist = ViewData["imglist"] == null ? null : ViewData["imglist"] as List<string>;
+	List<string> filelist = ViewData["filelist"] as List<string>;
+}
+
+<div class="viewfileblk">
+	<h4 class="clearfix">
+		@Resources.Resource.PoFileList
+		<button type="button" class="btn btn-warning btnPoUpload btnsmall50 float-right" title="@Resources.Resource.UploadFile"><i class="fa fa-upload"></i></button>
+	</h4>
+	<ul class="horizontallist img">
+		@if (imglist != null && imglist.Count > 0)
+		{
+			foreach (var img in imglist)
+			{
+				<li>@Html.Raw(img)</li>
+			}
+
+		}
+	</ul>
+	<ul class="horizontallist file">
+		@if (filelist.Count > 0)
+		{
+			foreach (var file in filelist)
+			{
+				<li>@Html.Raw(file)</li>
+			}
+		}
+	</ul>
+</div>

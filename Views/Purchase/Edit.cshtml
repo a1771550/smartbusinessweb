@@ -2,7 +2,7 @@
 
 @{
 	PurchaseModel Purchase = Model.Purchase;
-	bool editmode = Purchase.Id > 0;
+	bool editmode = Purchase.pstStatus != PurchaseStatus.draft.ToString();
 	string edittxt = editmode ? Resources.Resource.Edit : Resources.Resource.Add;
 	ViewBag.Title = edittxt + " " + Resources.Resource.Purchase;
 	int rand = CommonHelper.GetVersionRandomNo();
@@ -26,7 +26,7 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <link rel="stylesheet" type="text/css" href="~/Content/purchase/edit.css?v=@rand" />
 
-<h2 class="mb-4" data-editmode="@editmode" data-exrate="@Purchase.pstExRate" data-isadmin="@isadmin">@ViewBag.Title</h2>
+<h2 class="mb-4" data-status="@Purchase.pstStatus" data-editmode="@editmode" data-exrate="@Purchase.pstExRate" data-isadmin="@isadmin">@ViewBag.Title</h2>
 
 @using (Html.BeginForm("Edit", "Purchase", null, FormMethod.Post, new { @Id = "frmPurchase" }))
 {
@@ -34,7 +34,7 @@
 	<input id="Id" name="Id" type="hidden" value="@Purchase.Id" />
 	<input id="pstCode" name="pstCode" type="hidden" value="@Purchase.pstCode" />
 	<input id="pstType" name="pstType" type="hidden" value="@Purchase.pstType" />
-	<input id="UseForexAPI" name="UseForexAPI" type="hidden" value="@Purchase.UseForexAPI" />
+	<input id="UseForexAPI" name="UseForexAPI" type="hidden" value="@Model.UseForexAPI" />
 	<input id="pstSalesLoc" name="pstSalesLoc" type="hidden" value="@Purchase.pstSalesLoc" />
 	<input id="pstAllLoc" name="pstAllLoc" type="hidden" value="@Purchase.pstAllLoc" />
 	<input id="pstExRate" name="pstExRate" type="hidden" value="@Purchase.pstExRate" />
@@ -120,7 +120,8 @@
 		</div>
 	</div>
 
-	<div class="d-flex justify-content-center my-4" data-status="@Purchase.pstStatus" data-enabletax="@Purchase.EnableTax" data-inclusivetax="@(Purchase.InclusiveTax)">
+	<div class="d-flex justify-content-center my-4" data-status="@Purchase.pstStatus" data-enabletax="@Model.EnableTax" data-inclusivetax="@(Model.InclusiveTax)">
+		@{ string tbodycls = Purchase.pstStatus == PurchaseStatus.opened.ToString() ? "small" : "";}
 		<table id="tblPSI" class="jexcel" cellpadding="0" cellspacing="0" style="width:100%;">
 			<thead class="resizable">
 				<tr class="">
@@ -138,7 +139,7 @@
 					}
 					<td style="text-align: right; width: 100px;">@Resources.Resource.UnitPrice (@Purchase.Currency)</td>
 					<td title="@Resources.Resource.DiscPc" style="text-align: right; width: 100px;">@Resources.Resource.DiscPc</td>
-					@if (Purchase.EnableTax && !Purchase.InclusiveTax)
+					@if (Model.EnableTax && !Model.InclusiveTax)
 					{
 						<td title="@Resources.Resource.Tax" style="text-align: right; width: 100px;">@Resources.Resource.TaxItemHeader</td>
 					}
@@ -151,7 +152,7 @@
 					}
 				</tr>
 			</thead>
-			<tbody></tbody>
+			<tbody class="@tbodycls"></tbody>
 		</table>
 	</div>
 
@@ -162,13 +163,9 @@
 		<div class="my-5">
 
 			<h3 class="font-weight-bold clearfix">
-			@Resources.Resource.Payment
+				@Resources.Resource.Payment
 				<button type="button" id="btnAdd" class="btn btn-primary float-right btnsmall50" title="@string.Format(Resources.Resource.AddFormat, Resources.Resource.Payment)"><i class="fa fa-plus"></i></button>
 			</h3>
-
-			@*<div class="my-2 mx-2 small clearfix">
-				
-			</div>*@
 
 			<table id="tblPayment" class="table table-condensed table-hover table-bordered">
 				<thead class="gray-header">
@@ -260,74 +257,35 @@
 					</tr>
 				</tfoot>
 			</table>
-
-
-
 		</div>
+	}
 
-		<div class="row justify-content-between">
-			<div class="col-12 col-md-10">
-				<div class="viewfileblk">
-					<h4>@Resources.Resource.PoFileList</h4>
-					@Html.Partial("_ViewFileModal", null, new ViewDataDictionary { { "imglist", Purchase.ImgList }, { "filelist", Purchase.FileList } })
-				</div>				
-			</div>
-			<div class="col-12 col-md-2">
-				<div class="clearfix">
-					<div class="float-right">
-						<div class="form-group text-left">
-							<label for="txtTotal" class="">@Resources.Resource.TotalAmount (@Purchase.Currency)</label>
-							<input type="number" class="form-control text-left" id="txtTotal" readonly name="TotalAmount" value="@decimaltotal" />
-						</div>
-						<div class="form-group text-left">
-							<label class="">@Resources.Resource.PromisedDate</label>
-							<input type="datetime" class="form-control datepicker" id="promisedDate" />
-							<input data-val="true" id="pstPromisedDate" name="pstPromisedDate" type="hidden" value="@Purchase.pstPromisedDate" />
-							<input id="PromisedDateDisplay" name="PromisedDateDisplay" type="hidden" value="@Purchase.PromisedDateDisplay" />
-						</div>
+	<div class="row justify-content-between">
+		<div class="col-12 col-md-10">
+			@Html.Partial("_ViewFileBlk", null, new ViewDataDictionary { { "imglist", Purchase.ImgList }, { "filelist", Purchase.FileList } })
+		</div>
+		<div class="col-12 col-md-2">
+			<div class="clearfix">
+				<div class="float-right">
+					<div class="form-group text-left">
+						<label for="txtTotal" class="">@Resources.Resource.TotalAmount (@Purchase.Currency)</label>
+						<input type="number" class="form-control text-left" id="txtTotal" readonly name="TotalAmount" value="@decimaltotal" />
+					</div>
+					<div class="form-group text-left">
+						<label class="">@Resources.Resource.PromisedDate</label>
+						<input type="datetime" class="form-control datepicker" id="promisedDate" />
+						<input data-val="true" id="pstPromisedDate" name="pstPromisedDate" type="hidden" value="@Purchase.pstPromisedDate" />
+						<input id="PromisedDateDisplay" name="PromisedDateDisplay" type="hidden" value="@Purchase.PromisedDateDisplay" />
+					</div>
 
-						<div class="form-group text-left">
-							<label class="control-label" for="pstRemark">@Resources.Resource.Remark</label>
-							<textarea class="form-control" id="pstRemark" name="pstRemark" rows="5">@Purchase.pstRemark</textarea>
-						</div>
+					<div class="form-group text-left">
+						<label class="control-label" for="pstRemark">@Resources.Resource.Remark</label>
+						<textarea class="form-control" id="pstRemark" name="pstRemark" rows="5">@Purchase.pstRemark</textarea>
 					</div>
 				</div>
 			</div>
 		</div>
-
-	}
-	else
-	{
-		<div class="row my-4">
-			<div class="col-12 col-md-4">
-				<div class="form-group">
-					<label class="control-label">@Resources.Resource.PromisedDate</label>
-
-					<input type="datetime" class="form-control datepicker" id="promisedDate" />
-					<input data-val="true" id="pstPromisedDate" name="pstPromisedDate" type="hidden" value="@Purchase.pstPromisedDate" />
-					<input id="PromisedDateDisplay" name="PromisedDateDisplay" type="hidden" value="@Purchase.PromisedDateDisplay" />
-				</div>
-			</div>
-			<div class="col-12 col-md-4">
-				<div class="form-group">
-					<label class="control-label" for="pstRemark">@Resources.Resource.Remark</label>
-
-					<textarea class="form-control" id="pstRemark" name="pstRemark" rows="5">@Purchase.pstRemark</textarea>
-
-				</div>
-			</div>
-			<div class="col-12 col-md-4 text-right">
-				<div class="form-inline mb-2 float-right">
-					<div class="form-group">
-						<label for="txtTotal" class="col-form-label mx-sm-3 font-weight-bold">@Resources.Resource.TotalAmount (@Purchase.Currency)</label>
-						<input type="number" class="form-control" id="txtTotal" readonly name="TotalAmount" value="@decimaltotal" />
-					</div>
-				</div>
-			</div>
-		</div>
-	}
-
-
+	</div>
 
 	<div id="btnblk" class="row justify-content-end px-4" data-approvalmode="@approvalmode" data-isapprover="@isapprover" data-editmode="@editmode" data-status="@Purchase.pstStatus" data-ismanager="@ismanager">
 
@@ -371,7 +329,12 @@
 						{
 							<button id="" type="button" class="btn btn-info ml-3 my-2 btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
 						}
-						<button id="" type="button" class="btn btn-success ml-3 my-2 btnNewPurchase">@string.Format(Resources.Resource.NewFormat, Resources.Resource.Purchase)</button>
+
+						@if (Purchase.pstStatus != PurchaseStatus.draft.ToString())
+						{
+							<button id="" type="button" class="btn btn-success ml-3 my-2 btnNewPurchase">@string.Format(Resources.Resource.NewFormat, Resources.Resource.Purchase)</button>
+						}
+
 					</div>
 
 					<div class="d-block d-sm-block d-md-none text-right">
@@ -380,7 +343,12 @@
 						{
 							<button id="" type="button" class="btn btn-info d-flex my-2 btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
 						}
-						<button id="" type="button" class="btn btn-success d-flex my-2 btnNewPurchase">@string.Format(Resources.Resource.NewFormat, Resources.Resource.Purchase)</button>
+
+						@if (Purchase.pstStatus != PurchaseStatus.draft.ToString())
+						{
+							<button id="" type="button" class="btn btn-success d-flex my-2 btnNewPurchase">@string.Format(Resources.Resource.NewFormat, Resources.Resource.Purchase)</button>
+						}
+
 					</div>
 				}
 			}
@@ -424,7 +392,7 @@
 	string UploadSizeLimitMB = ConfigurationManager.AppSettings["MaxUploadSize"];
 	string exceeduploadfilelimittxt = string.Format(Resources.Resource.ExceedUploadSizeLimitWarning, UploadSizeLimitMB);
 }
-<div id="infoblk" data-isadmin="@isadmin" data-jsonpurchaseitems="@Purchase.JsonPurchaseItems" data-supplierrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Supplier)" data-locationrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Location)" data-emptyitemwarning="@string.Format(Resources.Resource.EnterAtLeastOneFormat,Resources.Resource.ItemStock)" data-subtotal="@Purchase.SubTotal" data-disctotal="@Purchase.DiscTotal" data-total="@Purchase.Total" data-currencyrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Currency)" data-priceeditable="@Purchase.PriceEditable" data-disceditable="@Purchase.DiscEditable" data-enabletax="@Purchase.EnableTax" data-enablesn="@Purchase.EnableSerialNo" data-jsondiccurrencyexrate="@Purchase.JsonDicCurrencyExRate" data-batchtxt="@Resources.Resource.Batch" data-sntxt="@Resources.Resource.SerialNoItemHeader" data-validthrutxt="@Resources.Resource.ValidThru" data-itemsrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Item)" data-approvalmode="@approvalmode" data-whatsapplinkurl="@ConfigurationManager.AppSettings["WhatsappLinkUrl"]" data-isapprover="@isapprover" data-jsondiclocation="@Purchase.JsonDicLocation" data-shop="@Purchase.ComInfo.Shop" data-jsonjoblist="@Purchase.JsonJobList" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-filecode="@Purchase.pstCode" data-uploadurl="/Purchase/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@Purchase.UploadFileName" data-jsonpurchasedicitemoptions="@Purchase.JsonDicItemOptions" data-dicitemgroupedvariations="@Purchase.JsonDicItemGroupedVariations" data-user="@JsonSerializer.Serialize(Model.User)" data-dicacaccounts="@JsonSerializer.Serialize(Model.DicAcAccounts)" data-savepaymenttxt="@string.Format(Resources.Resource.SaveFormat, Resources.Resource.Payment)" data-lastppid="@lastppId" data-purchasepayments="@JsonSerializer.Serialize(Model.PurchasePayments)"></div>
+<div id="infoblk" data-isadmin="@isadmin" data-jsonpurchaseitems="@Purchase.JsonPurchaseItems" data-supplierrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Supplier)" data-locationrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Location)" data-emptyitemwarning="@string.Format(Resources.Resource.EnterAtLeastOneFormat,Resources.Resource.ItemStock)" data-subtotal="@Purchase.SubTotal" data-disctotal="@Purchase.DiscTotal" data-total="@Purchase.Total" data-currencyrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Currency)" data-priceeditable="@Model.PriceEditable" data-disceditable="@Model.DiscEditable" data-enabletax="@Model.EnableTax" data-enablesn="@Model.EnableSerialNo" data-jsondiccurrencyexrate="@Model.JsonDicCurrencyExRate" data-batchtxt="@Resources.Resource.Batch" data-sntxt="@Resources.Resource.SerialNoItemHeader" data-validthrutxt="@Resources.Resource.ValidThru" data-itemsrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Item)" data-approvalmode="@approvalmode" data-whatsapplinkurl="@ConfigurationManager.AppSettings["WhatsappLinkUrl"]" data-isapprover="@isapprover" data-jsondiclocation="@Model.JsonDicLocation" data-shop="@Purchase.ComInfo.Shop" data-jsonjoblist="@Model.JsonJobList" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-filecode="@Purchase.pstCode" data-uploadurl="/Purchase/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@Purchase.UploadFileName" data-jsonpurchasedicitemoptions="@Purchase.JsonDicItemOptions" data-dicitemgroupedvariations="@Purchase.JsonDicItemGroupedVariations" data-user="@JsonSerializer.Serialize(Model.User)" data-dicacaccounts="@JsonSerializer.Serialize(Model.DicAcAccounts)" data-savepaymenttxt="@string.Format(Resources.Resource.SaveFormat, Resources.Resource.Payment)" data-lastppid="@lastppId" data-purchasepayments="@JsonSerializer.Serialize(Model.PurchasePayments)" data-apid="@Model.AccountProfileId"></div>
 
 
 

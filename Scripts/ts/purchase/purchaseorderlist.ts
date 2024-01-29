@@ -123,10 +123,10 @@ $(document).on("click", ".copy", function () {
   recurOrder = initRecurOrder();
   recurOrder.Mode = "savefrmposted";
   recurOrder.pstUID = $(this).data("id") as number;
-  selectedSupplier = initSupplier();
+  SelectedSupplier = initSupplier();
   $target = $(this).parent("td").parent("tr").find("td.supplier");
-  selectedSupplier.supCode = $target.data("code");
-  selectedSupplier.supName = $target.data("name");
+  SelectedSupplier.supCode = $target.data("code");
+  SelectedSupplier.supName = $target.data("name");
   openRecurOrderModal();
 });
 

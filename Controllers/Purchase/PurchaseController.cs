@@ -1,13 +1,9 @@
 ﻿using CommonLib.Helpers;
-using CommonLib.Models;
 using PagedList;
 using SmartBusinessWeb.Infrastructure;
 using PPWDAL;
 using PPWLib.Models;
-using PPWLib.Models.POS;
-using PPWLib.Models.POS.Sales;
 using PPWLib.Models.Purchase;
-using PPWLib.Models.WholeSales;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,92 +11,103 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
+using PPWCommonLib.Helpers;
 
 namespace SmartBusinessWeb.Controllers.Purchase
 {
     [CustomAuthenticationFilter]
     public class PurchaseController : BaseController
     {
-		[HandleError]
-		[CustomAuthorize("purchase", "boss", "admin", "superadmin")]
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public JsonResult EditPayment(PurchasePaymentModel purchasePayment)
-		{
-			string msg = string.Format(Resources.Resource.SavedFormat, Resources.Resource.Payment);
-			PurchaseEditModel.EditPayment(purchasePayment);
-			return Json(msg);
-		}
+        [HandleError]
+        [CustomAuthorize("purchase", "boss", "admin", "superadmin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult EditPayment(PurchasePaymentModel purchasePayment)
+        {
+            string msg = string.Format(Resources.Resource.SavedFormat, Resources.Resource.Payment);
+            PurchaseEditModel.EditPayment(purchasePayment);
+            return Json(msg);
+        }
 
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public ActionResult UploadFile4Payment(long Id)
-		{
-			if (Request.Files.Count > 0)
-			{
-				try
-				{
-					List<string> filenamelist = new List<string>();
-					string filedir = string.Format(UploadsPoPaysDir, Id);//Uploads/PO/{0}
-					string dir = "";
-					
-					string filename = string.Empty;
-					HttpFileCollectionBase files = Request.Files;
-					for (int i = 0; i < files.Count; i++)
-					{
-						filename = Path.GetFileName(Request.Files[i].FileName);
-						HttpPostedFileBase _file = files[i];
-						FileInfo fi = new FileInfo(filename);
-						//ext = fi.Extension;
-						dir = string.Concat(@"~/", filedir);
-						var absdir = Server.MapPath(dir);
-						if (!Directory.Exists(absdir))
-						{
-							Directory.CreateDirectory(absdir);
-						}
-						//string fname = Path.Combine(absdir, string.Format(file, ext));
-						string fname = Path.Combine(absdir, filename);
-						_file.SaveAs(fname);
-						filenamelist.Add(filename);
-					}
-					using (var context = new PPWDbContext(Session["DBName"].ToString()))
-					{
-						PurchasePayment purchase = context.PurchasePayments.FirstOrDefault(x => x.Id==Id);
-						if (purchase != null)
-						{
-							if (string.IsNullOrEmpty(purchase.fileName))
-							{
-								purchase.fileName = filenamelist.FirstOrDefault();
-							}
-							else
-							{
-								if (!purchase.fileName.Split(',').Any(x => x == filenamelist.FirstOrDefault()))
-								{
-									filenamelist.Add(purchase.fileName);
-									purchase.fileName = string.Join(",", filenamelist);
-								}
-							}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UploadFile4Payment(long Id)
+        {
+            if (Request.Files.Count > 0)
+            {
+                try
+                {
+                    List<string> filenamelist = new List<string>();
+                    string filedir = string.Format(UploadsPoPaysDir, Id);//Uploads/PO/{0}
+                    string dir = "";
 
-							context.SaveChanges();
-						}
-					}
-					dir = string.Concat(@"/", filedir);
-					//string filepath = Path.Combine(dir, string.Format(file, ext));
-					string filepath = Path.Combine(dir, filename);
-					return Json(new { msg = Resources.Resource.UploadOkMsg, filepath });
-				}
-				catch (Exception ex)
-				{
-					return Json(new { msg = "Error occurred. Error details: " + ex.Message });
-				}
-			}
-			else
-			{
-				return Json(new { msg = Resources.Resource.NoFileSelected });
-			}
-		}
+                    string filename = string.Empty;
+                    HttpFileCollectionBase files = Request.Files;
+                    for (int i = 0; i < files.Count; i++)
+                    {
+                        filename = Path.GetFileName(Request.Files[i].FileName);
+                        HttpPostedFileBase _file = files[i];
+                        FileInfo fi = new FileInfo(filename);
+                        //ext = fi.Extension;
+                        dir = string.Concat(@"~/", filedir);
+                        var absdir = Server.MapPath(dir);
+                        if (!Directory.Exists(absdir))
+                        {
+                            Directory.CreateDirectory(absdir);
+                        }
+                        //string fname = Path.Combine(absdir, string.Format(file, ext));
+                        string fname = Path.Combine(absdir, filename);
+                        _file.SaveAs(fname);
+                        filenamelist.Add(filename);
+                    }
+                    using (var context = new PPWDbContext(Session["DBName"].ToString()))
+                    {
+                        PurchasePayment purchase = context.PurchasePayments.FirstOrDefault(x => x.Id == Id);
+                        if (purchase != null)
+                        {
+                            if (string.IsNullOrEmpty(purchase.fileName))
+                            {
+                                purchase.fileName = filenamelist.FirstOrDefault();
+                            }
+                            else
+                            {
+                                if (!purchase.fileName.Split(',').Any(x => x == filenamelist.FirstOrDefault()))
+                                {
+                                    filenamelist.Add(purchase.fileName);
+                                    purchase.fileName = string.Join(",", filenamelist);
+                                }
+                            }
 
-		[HttpPost]
+                            purchase.ModifyTime = DateTime.Now;
+                            context.SaveChanges();
+                        }
+                    }
+                    dir = string.Concat(@"/", filedir);
+                    //string filepath = Path.Combine(dir, string.Format(file, ext));
+                    string filepath = Path.Combine(dir, filename);
+                    return Json(new { msg = Resources.Resource.UploadOkMsg, filepath });
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { msg = "Error occurred. Error details: " + ex.Message });
+                }
+            }
+            else
+            {
+                return Json(new { msg = Resources.Resource.NoFileSelected });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult RemoveFile(string pstCode, string filename)
+        {
+            string msg = string.Format(Resources.Resource.FileFormat, Resources.Resource.Removed);
+            PPWCommonLib.Helpers.FileHelper.Remove(pstCode, filename, FileType.PurchaseOrder);
+            return Json(msg);
+        }
+
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult UploadFile(string filecode)
         {
@@ -150,7 +157,8 @@ namespace SmartBusinessWeb.Controllers.Purchase
                                     purchase.UploadFileName = string.Join(",", filenamelist);
                                 }
                             }
-                            
+
+                            purchase.ModifyTime = DateTime.Now;
                             context.SaveChanges();
                         }
                     }
@@ -216,7 +224,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
             {
                 Keyword = Keyword == "" ? null : Keyword
             };
-            model.PSList = model.GetList(user,strfrmdate, strtodate, model.Keyword);
+            model.PSList = model.GetList(user, strfrmdate, strtodate, model.Keyword);
             DoList(SortCol, SortOrder, PageNo, model);
             ViewBag.Title = Resources.Resource.Purchase;
             return View(model);
@@ -237,7 +245,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
         [CustomAuthorize("purchase", "boss", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult Edit(PurchaseModel model, List<PurchaseItemModel> PurchaseItems, RecurOrder recurOrder=null)
+        public JsonResult Edit(PurchaseModel model, List<PurchaseItemModel> PurchaseItems, RecurOrder recurOrder = null)
         {
             ViewBag.ParentPage = "purchaseedit";
             ViewBag.PageName = "purchase";

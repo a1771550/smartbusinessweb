@@ -824,3 +824,10 @@ table.dataTable thead > tr > th.sorting_asc.text-right:before, table.dataTable t
     border-radius:.2rem;
     background-color:white;
 }
+.thumbnail {
+    width: 20px !important;
+    height: auto !important;
+}
+.removefile{
+    cursor:pointer;
+}

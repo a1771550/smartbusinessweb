@@ -7,11 +7,11 @@ disceditable = $infoblk.data("disceditable") === "True";
 let purchaseitems: IPurchaseItem[] = [];
 $(document).on("click", ".btnSave", function () {
 	ppId = Number($(this).data("id"));
-	updateSelectedPayment();	
+	updateSelectedPayment();
 
 	if (validPayment) {
 		console.log("PurchasePayment:", purchasePayment);
-		//return;
+		return;
 		$.ajax({
 			//contentType: 'application/json; charset=utf-8',
 			type: "POST",
@@ -31,7 +31,7 @@ $(document).on("click", ".btnSave", function () {
 							$(`#${gTblName} tbody tr`).last().find("td").eq(1).find(".chequeno").trigger("focus");
 						}
 					}
-				});	
+				});
 			},
 			dataType: "json"
 		});
@@ -47,12 +47,16 @@ $(document).on("click", ".btnSave", function () {
 					$(`#${gTblName} tbody tr`).last().find("td").eq(1).find(".chequeno").trigger("focus");
 				}
 			}
-		});	
+		});
 	}
 
-	
+
 });
 
+$(document).on("click", ".btnPoUpload", function () {
+	forpayments = false;
+	openUploadFileModal();
+});
 $(document).on("click", "#btnAdd", function () {
 	addPayRow();
 });
@@ -390,7 +394,7 @@ $(document).on("change", "#drpSupplier", function () {
 		data: { supCode: Purchase.supCode },
 		success: function (data) {
 			//console.log(data);
-			selectedSupplier = structuredClone(data) as ISupplier;
+			SelectedSupplier = structuredClone(data) as ISupplier;
 			//also trigger here:   $(document).on("change", ".form-control.card", function ()
 
 			if (!useForexAPI) {
@@ -400,7 +404,7 @@ $(document).on("change", "#drpSupplier", function () {
 					//console.log("here");
 					$("#pstCurrency").val(currcode).prop("isadmin", true);
 					fillInCurrencyModal(currcode);
-					exRate = selectedSupplier.ExchangeRate!;
+					exRate = SelectedSupplier.ExchangeRate!;
 					displayExRate(exRate);
 				}
 			}
@@ -422,9 +426,25 @@ $(document).on("change", "#pstRemark", function () {
 	Purchase.pstRemark = <string>$(this).val();
 });
 
+function populateFileList4Po(files:string[]) {
+	//F:\SmartPOSPro\Uploads\PO\1\KP100003
+	//https://localhost:7777/Purchase/1/KP100003/sample.pdf
+	if (files.length > 0) {
+		let html = "";
+		const pdfthumbnail = getPdfThumbnail();		
+		files.forEach((x) => {
+			let removefilelnk = getRemoveFileLnk(x);
+			let filelnk = `<a href="#" class="filelnk" data-lnk="/Purchase/${apId}/${Purchase.pstCode}/${x}">${pdfthumbnail}${x}</a> ${removefilelnk}`;
+			html += `<li>${filelnk}</li>`;
+		});	
+		$(".viewfileblk").find(".file").empty().append(html);
+	}
+
+}
 $(function () {
 	approvalmode = $infoblk.data("approvalmode") == "True";
 	setFullPage();
+	apId = Number($infoblk.data("apid"));
 	forpurchase = true;
 	DicLocation = $infoblk.data("jsondiclocation");
 	MyobJobList = $infoblk.data("jsonjoblist");
@@ -449,7 +469,16 @@ $(function () {
 			: ($("#pstStatus").val() as string);
 	let bgcls: string = status.toLowerCase().concat("statusbg");
 	$("body").addClass(bgcls);
-	editmode = Number($("#Id").val()) > 0;
+
+	Purchase = fillInPurchase();
+	if ($infoblk.data("uploadfilelist") !== "") {
+		Purchase.FileList = $infoblk.data("uploadfilelist").split(",");
+		//console.log("Purchase.FileList:", Purchase.FileList);	
+		populateFileList4Po(Purchase.FileList);
+	}
+	//console.log("Purchase:", Purchase);
+	editmode = Purchase.pstStatus != "draft";
+
 	editapproved =
 		getParameterByName("mode") != null &&
 		getParameterByName("mode") == "editapproved";
@@ -466,13 +495,8 @@ $(function () {
 	if (!editmode)
 		$("#pstExRate").val(1);
 
-	Purchase = fillInPurchase();
-
 	if (reviewmode || editmode) {
-		if ($infoblk.data("uploadfilelist") !== "") {
-			Purchase.UploadFileList = $infoblk.data("uploadfilelist").split(",");
-			$("#btnViewFile").removeClass("hide");
-		}
+		
 		//console.log("uploadfilelist length:", Purchase.UploadFileList.length);
 		purchaseitems = $infoblk.data("jsonpurchaseitems");
 		//console.log("purchaseitems:", purchaseitems);
@@ -619,7 +643,8 @@ $(function () {
 
 	Purchase.JsPurchaseDate = $purchaseDateDisplay.val() as string;
 	Purchase.JsPromisedDate = $promisedDateDisplay.val() as string;
-	useForexAPI = Purchase.UseForexAPI;
+
+	useForexAPI = $("#UseForexAPI").val() === "True";
 	if (useForexAPI) {
 		//console.log("here");
 		$.ajax({
