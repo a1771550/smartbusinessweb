@@ -40,9 +40,9 @@ let NamesMatch: boolean = false;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
-const costxt:string = $txtblk.data("costxt");
-const assettxt:string = $txtblk.data("assettxt");
-const incometxt:string = $txtblk.data("incometxt");
+const costxt: string = $txtblk.data("costxt");
+const assettxt: string = $txtblk.data("assettxt");
+const incometxt: string = $txtblk.data("incometxt");
 const confirmdeposittxt: string = $txtblk.data("confirmdeposittxt");
 const numberonlytxt: string = $txtblk.data("numberonlytxt");
 const paymentinfoerrtxt: string = $txtblk.data("paymentinfoerrtxt");
@@ -2594,7 +2594,7 @@ function confirmPay() {
 				}
 			}
 		}
-	} else if (_totalpay == _totalamt) {		
+	} else if (_totalpay == _totalamt) {
 		switch (salesType) {
 			case SalesType.simplesales:
 				submitSimpleSales();
@@ -3310,39 +3310,46 @@ $(document).on("change", ".chkvari", function () {
 function addPoItemVariRow(hasFocusCls: boolean) {
 	//console.log("hasfocuscls:", hasFocusCls);
 
-	if (DicItemGroupedVariations != null) {
+	if (!$.isEmptyObject(DicItemGroupedVariations)) {
 		var itemcode = selectedItemCode;
 		var purchaseItem = Purchase.PurchaseItems.find((x) => x.piSeq == seq);
-		let batcode: string | null = $(`#${gTblName} tbody tr`)
+
+		//console.log("purchaseItem:", purchaseItem);
+		//console.log("purchaseItem.poItemVariList:", purchaseItem!.poItemVariList);
+
+		let batcode: string = $(`#${gTblName} tbody tr`)
 			.eq(currentY)
-			.find("td")
-			.eq(5)
 			.find(".pobatch")
 			.data("batcode");
 		//console.log("batcode:" + batcode);
 		//console.log("undefined:", batcode === "undefined");
 		let disabled = hasFocusCls ? "" : "disabled";
-		//console.log("purchaseItem:", purchaseItem);
-		//console.log("purchaseItem.poItemVariList:", purchaseItem!.poItemVariList);
+		
 		let html = "";
 		for (const [key, value] of Object.entries(DicItemGroupedVariations)) {
 			if (itemcode.toString() === key.toString()) {
 				for (const [k, v] of Object.entries(value)) {
+					//console.log("v:", v);
+
 					html += `<div class="form-group">`;
 					let itemvar: IItemVariation = v[0];
+					//console.log("itemvar:", itemvar);
+
 					html += `<label class="my-auto">${itemvar.iaName}</label><select class="drpItemAttr form-control" data-name=${itemvar.iaName} ${disabled}>`;
 					$.each(v, function (i, e: IItemVariation) {
 						//console.log("here");
 						let found: boolean = false;
 						if (purchaseItem && purchaseItem.poItemVariList.length > 0) {
-							//console.log("here");
+							//console.log("hasFocusCls:",hasFocusCls);
 							if (hasFocusCls) {
 								found = purchaseItem.poItemVariList.some((x) => {
 									return x.JsIvIdList && x.JsIvIdList.includes(e.Id);
 								});
 							} else {
 								//console.log("here");
-								if (batcode !== "undefined") {
+								//console.log("batcode:", batcode);
+								//console.log("!undefined?", batcode !== "undefined");
+								if (batcode) {
 									//console.log("x");
 									found = purchaseItem.poItemVariList.some((x) => {
 										return (
@@ -3351,7 +3358,7 @@ function addPoItemVariRow(hasFocusCls: boolean) {
 										);
 									});
 								} else {
-									//console.log("y");
+									console.log("here");
 									found = purchaseItem.poItemVariList.some((x) => {
 										return x.ivIdList?.split(",").includes(e.Id.toString());
 									});
@@ -3372,8 +3379,7 @@ function addPoItemVariRow(hasFocusCls: boolean) {
 	}
 }
 function openPoItemVariModal(hasFocusCls: boolean = false) {
-	//poItemVariModal.find("#batcode").val(selectedPurchaseItem!.ivBatCode);
-
+	//console.log("itemOptions:", itemOptions);
 	if (
 		!itemOptions?.ChkBatch &&
 		!itemOptions?.ChkSN &&
@@ -3398,6 +3404,7 @@ function openPoItemVariModal(hasFocusCls: boolean = false) {
 		poItemVariModal.find("#batcode").prop("disabled", true);
 	}
 
+	//console.log("hasFocusCls:", hasFocusCls);
 	addPoItemVariRow(hasFocusCls);
 
 	poItemVariModal.dialog("open");
@@ -8067,7 +8074,7 @@ interface IPreSalesLn1 {
 	rtpPayType: string;
 	rtpExRate: number | null;
 	cusName: string;
-	SalesPersonName: string;	
+	SalesPersonName: string;
 	itmIsTaxedWhenSold: boolean;
 	lstQuantityAvailable: number;
 }
@@ -8125,7 +8132,7 @@ interface IPreSalesLn {
 	itmBaseSellingPrice: number;
 	rtpPayAmt: number | null;
 	rtpPayType: string;
-	rtpExRate: number | null;	
+	rtpExRate: number | null;
 	cusName: string;
 	SalesPersonName: string;
 	Item: ISimpleItem;
@@ -8329,7 +8336,7 @@ interface IPurchase {
 	Id: number;
 	pstCode: string;
 	supCode: string;
-	pstSupplierInvoice: string;	
+	pstSupplierInvoice: string;
 	pstSalesLoc: string;
 	pstRemark: string;
 	pstPurchaseDate: Date;
@@ -8347,8 +8354,8 @@ interface IPurchase {
 	//UseForexAPI: boolean;
 	pstAllLoc: boolean;
 	FileList: string[];
-	DicItemOptions: { [Key: string]: IItemOptions };
-	ItemVariationList: IItemVariation[];
+	//DicItemOptions: { [Key: string]: IItemOptions };
+	//ItemVariationList: IItemVariation[];
 	pstAmount: number;
 }
 function initPurchaseItem(): IPurchaseItem {
@@ -8457,7 +8464,8 @@ function getCurrentY(ele) {
 let ReturnableItemList: Array<IPurchaseItem> = [];
 
 function handleQtyChange(this: any) {
-	currentY = getCurrentY(this);
+	/*console.log("here");*/
+	getRowCurrentY.call(this);
 	let _qty: number = Number($(this).val());
 	// console.log("_qty:" + _qty);
 	if (forsales) {
@@ -8468,26 +8476,18 @@ function handleQtyChange(this: any) {
 			$(this).val(_qty);
 		}
 	}
-	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
+	/*$tr = $(`#${gTblName} tbody tr`).eq(currentY);*/
 
-	let idx = 0;
-	if (forsales || forpreorder) idx = PriceIdx4Sales;
-
-	if (forpurchase && Purchase)
-		idx = Purchase.pstStatus == "order" ? PriceIdx4PstOrder : PriceIdx4PstBill;
-
-	if (forwholesales && Wholesales)
-		idx =
-			Wholesales.wsStatus == "order" ? PriceIdx4WsOrder : PriceIdx4WsInvoice;
-
-	let _price: number = Number($tr.find("td").eq(idx).find(".price").val());
-	idx++;
-	let _discpc: number = Number($tr.find("td").eq(idx).find(".discpc").val());
+	let _price: number = Number($tr.find(".price").val());
+	
+	let _discpc: number = Number($tr.find(".discpc").val());
 	// console.log("price#qty change:" + _price + ";_discpc:" + _discpc);
 
 	if (forpurchase) {
-		if (Purchase.pstStatus !== "order")
-			$tr.find("td").last().find(".received").attr("max", _qty).val(_qty);
+		/*	if (Purchase.pstStatus !== "order"&&Purchase.pstStatus!=="created"&&Purchase.pstStatus!=="draft")*/
+		let $received = $tr.find(".received");
+		if ($received.length) $received.attr("max", _qty).val(_qty);
+		
 
 		updateRow(_price, _discpc);
 		seq = currentY + 1;
@@ -8615,6 +8615,8 @@ $(document).on("change", ".taxpc", function () {
 function handleTaxChange(this: any) {
 	currentY = getCurrentY(this);
 	//console.log("here");
+	//console.log("price:" + getRowPrice());
+	//console.log("discpc:" + getRowDiscPc());
 	updateRow(getRowPrice(), getRowDiscPc());
 }
 
@@ -8794,7 +8796,8 @@ function GetSetSelectedLns(proId: any) {
 	toggleItemCodeChange(proId);
 }
 
-function populateItemRow(proId: number | null = 0, triggerChange:boolean=true) {
+function populateItemRow(proId: number | null = 0, triggerChange: boolean = true) {
+	//console.log("here");
 	//console.log("selectedItemCode:" + selectedItemCode);
 	if (!selectedItemCode) return false;
 
@@ -8944,7 +8947,7 @@ function populateItemRow(proId: number | null = 0, triggerChange:boolean=true) {
 		prodiscpc: prodiscpc,
 		qtysellable: qtysellable,
 	});
-	$qty.on("change", handleQtyChange);	
+	$qty.on("change", handleQtyChange);
 
 	let batmsg: string = "";
 	let snmsg: string = "";
@@ -9265,7 +9268,8 @@ function populateItemRow(proId: number | null = 0, triggerChange:boolean=true) {
 				.val(formatnumber(taxrate));
 			$tax.on("change", handleTaxChange);
 
-			if (triggerChange)$tax.trigger("change");
+			//console.log("triggerChange:", triggerChange);
+			if (triggerChange) $tax.trigger("change");
 		}
 
 		if (forsales || forpurchase || forwholesales || forpreorder) {
@@ -10972,55 +10976,12 @@ function handleLocationChange(event: any) {
 }
 
 function getRowDiscPc(): number {
-	let _idx = 0;
-	if (forsales || forpreorder) {
-		_idx = PriceIdx4Sales + 1;
-	}
-	if (forwholesales) {
-		if (Wholesales.wsStatus == "order" || Wholesales.wsStatus == "created") {
-			_idx = PriceIdx4WsOrder + 1;
-		} else {
-			_idx = PriceIdx4WsInvoice + 1;
-		}
-	}
-	if (forpurchase) {
-		if (Purchase.pstStatus == "order" || Purchase.pstStatus == "created") {
-			_idx = PriceIdx4PstOrder + 1;
-		} else {
-			_idx = PriceIdx4PstBill + 1;
-		}
-	}
-
-	return Number(
-		$(`#${gTblName} tbody tr`)
-			.eq(currentY)
-			.find("td")
-			.eq(_idx)
-			.find(".discpc")
-			.val()
-	);
+	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
+	return Number($tr.find(".discpc").val());
 }
 function getRowPrice(): number {
-	let _price: number;
-	let _idx: number = 0;
-	if (forsales || forpreorder) {
-		_idx = PriceIdx4Sales;
-	}
-	if (forwholesales) {
-		if (Wholesales.wsStatus == "order" || Wholesales.wsStatus == "created")
-			_idx = PriceIdx4WsOrder;
-		if (Wholesales.wsStatus == "invoice") _idx = PriceIdx4WsInvoice;
-	}
-	if (forpurchase) {
-		if (Purchase.pstStatus !== "order") _idx = PriceIdx4PstBill
-		if (Purchase.pstStatus == "order" || Purchase.pstStatus == "created")
-			_idx = PriceIdx4PstOrder;
-	}
-
 	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
-	_price = Number($tr.find("td").eq(_idx).find(".price").val());
-
-	return _price;
+	return Number($tr.find(".price").val());
 }
 
 function handlePriceChange(event: any) {
@@ -11036,32 +10997,9 @@ function handlePriceChange(event: any) {
 		$(event.target).val(price * -1);
 	}
 	currentY = getCurrentY(event.target);
-	let _discpc: number;
-	let _idx: number = 0;
-	if (forsales || forpreorder) {
-		_idx = PriceIdx4Sales + 1;
-	}
-	if (forpurchase && Purchase) {
-		_idx =
-			Purchase.pstStatus == "order"
-				? PriceIdx4PstOrder + 1
-				: PriceIdx4PstBill + 1;
-	}
-	if (forwholesales && Wholesales) {
-		_idx =
-			Wholesales.wsStatus == "order"
-				? PriceIdx4WsOrder + 1
-				: PriceIdx4WsInvoice + 1;
-	}
+	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
 
-	_discpc = Number(
-		$(`#${gTblName} tbody tr`)
-			.eq(currentY)
-			.find("td")
-			.eq(_idx)
-			.find(".discpc")
-			.val()
-	);
+	let _discpc: number = Number($tr.find(".discpc").val());
 	//console.log("price#p change:" + price + ";discpc#p change:" + _discpc);
 	updateRow(price, _discpc);
 }
@@ -11070,16 +11008,7 @@ function handleDiscChange(event: any) {
 	let _discpc: number = Number($(event.target).val());
 	//console.log("_discpc#change:" + _discpc);
 	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
-	let _price: number;
-	let _idx: number = 0;
-	if (forsales || forpreorder) _idx = PriceIdx4Sales;
-
-	if (forwholesales)
-		_idx =
-			Wholesales.wsStatus == "order" ? PriceIdx4WsOrder : PriceIdx4WsInvoice;
-
-	if (forpurchase)
-		_idx = Purchase.pstStatus == "order" ? PriceIdx4PstOrder : PriceIdx4PstBill;
+	let _price: number = 0;
 
 	if (_discpc < 0) {
 		$.fancyConfirm({
@@ -11090,7 +11019,7 @@ function handleDiscChange(event: any) {
 			noButton: canceltxt,
 			callback: function (value) {
 				if (value) {
-					_price = Number($tr.find("td").eq(_idx).find(".price").val());
+					_price = Number($tr.find(".price").val());
 					updateRow(_price, _discpc);
 				} else {
 					updateRow(_price, 0);
@@ -11098,7 +11027,7 @@ function handleDiscChange(event: any) {
 			},
 		});
 	} else {
-		_price = Number($tr.find("td").eq(_idx).find(".price").val());
+		_price = Number($tr.find(".price").val());
 		updateRow(_price, _discpc);
 	}
 }
@@ -11108,37 +11037,15 @@ function updateRow(_price: number = 0, _discount: number = 0) {
 	$target = $(`#${gTblName} tbody tr`).eq(currentY);
 	seq = currentY + 1;
 
-	let itemcode: any = $target.find("td:eq(1)").find(".itemcode").val();
-
 	let qty: number = 0;
-	qty = Number($target.find("td:eq(4)").find(".qty").val());
+	qty = Number($target.find(".qty").val());
 
 	if (forwholesales && Wholesales && Wholesales.wsStatus == "invoice") {
-		qty = Number($target.find("td:eq(5)").find(".delqty").val());
+		qty = Number($target.find(".delqty").val());
 	}
 
 	let taxrate: number = 0;
-	let pidx = 0,
-		didx = 0,
-		tidx = 0; //price & discpc & taxpc index;
-
-	if (forsales || forpreorder) pidx = PriceIdx4Sales;
-	if (forpurchase)
-		pidx =
-			Purchase && Purchase.pstStatus !== "order"
-				? PriceIdx4PstBill
-				: PriceIdx4PstOrder;
-	if (forwholesales)
-		pidx =
-			Wholesales && Wholesales.wsStatus == "invoice"
-				? PriceIdx4WsInvoice
-				: PriceIdx4WsOrder;
-
-	//console.log("pidx:" + pidx);
-	didx = pidx + 1;
-	//console.log("didx:" + didx);
-	tidx = didx + 1;
-
+	
 	seq = currentY + 1;
 	if (_price > 0) {
 		// _price = _price * exRate;
@@ -11198,7 +11105,7 @@ function updateRow(_price: number = 0, _discount: number = 0) {
 			}
 		}
 	}
-	let $price = $target.find("td").eq(pidx).find(".price");
+	let $price = $target.find(".price");
 	$price.off("change");
 	//console.log("_price:"+_price);
 	$price.val(formatnumber(_price));
@@ -11208,21 +11115,22 @@ function updateRow(_price: number = 0, _discount: number = 0) {
 	if ((forsales || forpreorder) && isPromotion && itemPromotion?.pro4Period) {
 		_discount = itemPromotion.proDiscPc!;
 	}
+
 	//console.log("_discount#0:" + _discount);
 	if (_discount !== 0) {
-		let $discount = $target.find("td").eq(didx).find(".discpc");
+		let $discount = $target.find(".discpc");
 		$discount.off("change");
 		$discount.val(formatnumber(_discount));
 		$discount.on("change", handleDiscChange);
 	} else {
 		// console.log("discpc:" + $target.find("td").eq(idx).find(".discpc").val());
-		_discount = Number($target.find("td").eq(didx).find(".discpc").val());
+		_discount = Number($target.find(".discpc").val());
 	}
 	//console.log("_discount#1:" + _discount);
 
 	//tidx=didx+1;
 	if (enableTax && !inclusivetax) {
-		taxrate = Number($target.find("td").eq(tidx).find(".taxpc").val());
+		taxrate = Number($target.find(".taxpc").val());
 	} else {
 		taxrate = 0;
 	}
@@ -11230,8 +11138,8 @@ function updateRow(_price: number = 0, _discount: number = 0) {
 	let newamtplustax: number = 0;
 	let newamt: number = 0;
 
-	if (forpurchase && Purchase.pstStatus !== "order")
-		qty = Number($target.find("td").last().find(".received").val());
+	if (forpurchase && (Purchase.pstStatus !== "order" && Purchase.pstStatus !== "created" && Purchase.pstStatus !== "draft"))
+		qty = Number($target.find(".received").val());
 
 	//console.log(
 	//  "qty:" + qty + ";price:" + _price + ";tax:" + taxrate + ";disc:" + _discount
@@ -11246,14 +11154,14 @@ function updateRow(_price: number = 0, _discount: number = 0) {
 	$target.data("amt", newamt);
 	$target.data("amtplustax", newamtplustax);
 
-	if (!(itemcode as string).startsWith("/") && newamtplustax == 0) {
-	} else {
-		//console.log('saleslist#updaterow:', SalesList);
-		if (forsales || forpreorder || forpurchase || forwholesales) {
-			// console.log("newamtplustax#updaterow:" + newamtplustax);
-			_updaterow($target, newamtplustax);
-		}
+
+	//console.log('saleslist#updaterow:', SalesList);
+	if (forsales || forpreorder || forpurchase || forwholesales) {
+		// console.log("newamtplustax#updaterow:" + newamtplustax);
+		//console.log("here");
+		_updaterow($target, newamtplustax);
 	}
+
 	isPromotion = false;
 	itemPromotion = null;
 }
@@ -11273,36 +11181,29 @@ function _updaterow($target: JQuery, _amtplustax: number) {
 	}
 
 	if (forpurchase) {
-		if (
-			editmode &&
-			typeof Purchase !== "undefined" &&
-			Purchase.pstStatus !== "order"
-		) {
-			// console.log("ere1");
-			$target.find("td").eq(-2).find(".amount").val(formatnumber(_amtplustax));
-		} else {
-			// console.log("here2");
-			$target.find("td").last().find(".amount").val(formatnumber(_amtplustax));
-		}
+		//console.log("here");
+		let $amt = $target.find(".amount");
+		$amt.off("change");
+		$amt.val(formatnumber(_amtplustax));
+		$amt.on("change", handleQtyChange);
+		updatePurchase();
 	}
 	//return;
 	if (forsales && !reviewmode) {//not for salesorderlist here
 		updateSales();
 	}
 	if (forpreorder) updatePreSales();
-	if (forpurchase) {
-		// console.log("here");
-		updatePurchase();
-	}
+
 	if (forwholesales) {
 		//console.log("WholeSalesLns#_updaterow:", WholeSalesLns);
 		updateWholesales();
 	}
 }
 
-$(document).on("dblclick", ".itemdesc", function () {
-	// console.log("here#0");
-	// // return;
+let SelectedSupplier: ISupplier;
+function handleItemDescDblClick(this: any) {
+	getRowCurrentY.call(this);
+
 	if (forrefund) {
 		seq = Number(
 			$(this)
@@ -11318,7 +11219,8 @@ $(document).on("dblclick", ".itemdesc", function () {
 			return e.rtlSeq == seq;
 		})[0];
 	}
-	seq = parseInt($(this).parent("td").parent("tr").find("td:eq(0)").text());
+	seq = currentY + 1;
+	//console.log("seq:" + seq);
 	if (forsales) {
 		selectedSalesLn = $.grep(SalesLnList, function (e, i) {
 			return e.rtlSeq == seq;
@@ -11340,9 +11242,8 @@ $(document).on("dblclick", ".itemdesc", function () {
 		selectedItem.NameDesc = $(this).data("desc") as string;
 	}
 	openDescModal();
-});
+}
 
-let SelectedSupplier: ISupplier;
 function initSupplier(): ISupplier {
 	return {
 		supId: 0,
@@ -14297,10 +14198,12 @@ function toggleBatSn() {
 }
 function fillInPurchase(
 	currentStatus: string = "",
-	dicItemOptions = {} as typeof DicItemOptions
 ): IPurchase {
 	$purchaseDateDisplay = $("#purchaseDate");
 	$promisedDateDisplay = $("#promisedDate");
+
+	//console.log("Purchase.JsPurchaseDate:" + $purchaseDateDisplay.val() + ";Purchase.JsPromisedDate:" + $promisedDateDisplay.val());
+
 	const exrate =
 		$("#pstExRate").val() == null ? 1 : Number($("#pstExRate").val());
 	//console.log("exrate#fillinpurchase:" + exrate);
@@ -14333,10 +14236,8 @@ function fillInPurchase(
 		pstPromisedDate: null,
 		PromisedDateDisplay: <string>$("#PromisedDateDisplay").val(),
 		JsPromisedDate: <string>$promisedDateDisplay.val(),
-		
+
 		FileList: [],
-		DicItemOptions: Object.assign({}, dicItemOptions),
-		ItemVariationList: $infoblk.data("jsonitemvarilist"),
 		pstAmount: Number($("#pstAmount").val())
 	};
 }
@@ -18927,7 +18828,7 @@ function submitSales() {
 		}
 	}
 	if (forpreorder) {
-		if(!editmode)updatePreSales();
+		if (!editmode) updatePreSales();
 		if (validSalesForm()) {
 			//console.log("here");
 			_submitSales();
@@ -18935,7 +18836,7 @@ function submitSales() {
 	}
 }
 
-function _submitSimpleSales() {	
+function _submitSimpleSales() {
 	let url = "/POSFunc/ProcessSales";
 
 	let data = { Sales, SimpleSalesLns, Payments };
@@ -19033,7 +18934,7 @@ function _submitSales() {
 		PreSales.rtsDvc = $("#drpDevice").val() as string;
 		PreSales.rtsAllLoc = $("#chkAllLoc").is(":checked");
 	}
-	
+
 	let data = forpreorder
 		? { PreSales, PreSalesLnList, Payments, DeliveryItems }
 		: { Sales, SalesLnList, Payments, DeliveryItems };
@@ -19274,7 +19175,6 @@ function handleApprovalMode4Purchase(data: IPurchaseReturnMsg) {
 			.replace("{1}", msg);
 		window.open(whatsapplnk, "_blank");
 	}
-
 	window.location.href = "/Purchase/Edit/0?type=order";
 }
 //A function for formatting a date to yyMMdd
@@ -20481,11 +20381,11 @@ interface IDepositItem extends ISalesLn {
 	SellingPriceDisplay: string;
 }
 $(document).on("dblclick", ".povari.pointer", function () {
-	$tr = $(this).parent("td").parent("tr");
+	getRowCurrentY.call(this);
 	selectedItemCode = (
-		$tr.find("td:eq(1)").find(".itemcode").val() as string
+		$tr.find(".itemcode").val() as string
 	).trim();
-	const $bat = $tr.find("td").eq(5).find(".pobatch.pointer");
+	const $bat = $tr.find(".pobatch.pointer");
 	if ($bat.hasClass("focus")) {
 		$.fancyConfirm({
 			title: "",
@@ -20500,7 +20400,7 @@ $(document).on("dblclick", ".povari.pointer", function () {
 			},
 		});
 	} else {
-		currentY = $tr.data("idx") as number;
+		currentY = $tr.index();
 		seq = currentY + 1;
 		$.each(Purchase.PurchaseItems, function (i, e) {
 			if (e.piSeq == seq) {
@@ -20508,6 +20408,7 @@ $(document).on("dblclick", ".povari.pointer", function () {
 				return false;
 			}
 		});
+		console.log("selectedPurchaseItem:", selectedPurchaseItem);
 		openPoItemVariModal($(this).hasClass("focus"));
 	}
 });
@@ -22276,11 +22177,11 @@ function getRowCurrentY(this: any, forTd: boolean = false) {
 	currentY = $tr.index();
 }
 
-function getPdfThumbnail(cls:string=""):string {
+function getPdfThumbnail(cls: string = ""): string {
 	return `<img src="/images/pdf.jpg" class="${cls} thumbnail">`;
 }
 
-function getRemoveFileLnk(file: string): string {	
+function getRemoveFileLnk(file: string): string {
 	return `<i class="fa fa-trash removefile" data-file="${file}" data-code="${Purchase.pstCode}"></i>`;
 }
 
@@ -22295,11 +22196,11 @@ $(document).on("click", ".filelnk", function () {
 });
 
 $(document).on("click", ".removefile", function () {
-	
+
 	if (forpurchase) {
 		let file = $(this).data("file");
 		let idx = Purchase.FileList.findIndex(x => x == file);
-		if (idx >= 0) Purchase.FileList.splice(idx, 1);		
+		if (idx >= 0) Purchase.FileList.splice(idx, 1);
 		populateFileList4Po(Purchase.FileList);
 		handleRemoveFile($(this).data("code"), file);
 
@@ -22307,8 +22208,8 @@ $(document).on("click", ".removefile", function () {
 
 		}
 	}
-	
-	
+
+
 });
 
 function handleRemoveFile(code: string, filename: string) {
@@ -22317,7 +22218,7 @@ function handleRemoveFile(code: string, filename: string) {
 		//contentType: 'application/json; charset=utf-8',
 		type: "POST",
 		url: "/Purchase/RemoveFile",
-		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), pstCode:code,filename },
+		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), pstCode: code, filename },
 		success: function (data) {
 			if (data) {
 				closeWaitingModal();
