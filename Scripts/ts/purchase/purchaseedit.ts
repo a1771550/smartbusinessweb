@@ -6,19 +6,18 @@ disceditable = $infoblk.data("disceditable") === "True";
 
 let purchaseitems: IPurchaseItem[] = [];
 $(document).on("click", ".btnSave", function () {
+	getRowCurrentY.call(this);
 	ppId = Number($(this).data("id"));
 	updateSelectedPayment();
 
 	if (validPayment) {
-		console.log("PurchasePayment:", purchasePayment);
-		return;
-		$.ajax({
-			//contentType: 'application/json; charset=utf-8',
+		//console.log("PurchasePayment:", purchasePayment);
+		//return;
+		$.ajax({			
 			type: "POST",
 			url: "/Purchase/EditPayment",
 			data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), purchasePayment },
 			success: function (data) {
-				//if (data) window.location.href = "/Purchase/PurchaseOrderList";
 				$.fancyConfirm({
 					title: "",
 					message: data,
@@ -27,8 +26,9 @@ $(document).on("click", ".btnSave", function () {
 					noButton: notxt,
 					callback: function (value) {
 						if (value) {
-							addPayRow();
-							$(`#${gTblName} tbody tr`).last().find("td").eq(1).find(".chequeno").trigger("focus");
+							$tr.find(".disabled").removeClass("disabled");
+							addPayRow();							
+							$(`#${gTblName} tbody tr`).last().find(".chequeno").trigger("focus");
 						}
 					}
 				});
@@ -44,7 +44,7 @@ $(document).on("click", ".btnSave", function () {
 			noButton: notxt,
 			callback: function (value) {
 				if (value) {
-					$(`#${gTblName} tbody tr`).last().find("td").eq(1).find(".chequeno").trigger("focus");
+					$(`#${gTblName} tbody tr`).last().find(".chequeno").trigger("focus");
 				}
 			}
 		});
@@ -53,6 +53,9 @@ $(document).on("click", ".btnSave", function () {
 
 });
 
+$(document).on("dblclick", ".viewfile", function () {
+	openViewFileModal();
+});
 $(document).on("click", ".btnPoUpload", function () {
 	forpayments = false;
 	openUploadFileModal();
@@ -324,7 +327,7 @@ $(document).on("click", "#btnBill", function () {
 				.val() as string;
 			itemcodelist.push(selectedItemCode);
 		}
-		$(e).find("td").eq(4).find(".qty").prop("isadmin", true);
+		$(e).find("td").find(".qty").prop("isadmin", true).prop("disabled",true);
 	});
 
 	getDicItemOptionsVariByCodes(itemcodelist, $rows, currentItemCount);
@@ -514,11 +517,7 @@ function initPurchaseForm() {
 
     $("#drpSupplier").select2();
     backUpCardDrpOptions();
-
- //   Purchase.JsPurchaseDate = $purchaseDateDisplay.val() as string;
-	//Purchase.JsPromisedDate = $promisedDateDisplay.val() as string;
-
-	//console.log("#1 Purchase.JsPurchaseDate:" + Purchase.JsPurchaseDate + ";Purchase.JsPromisedDate:" + Purchase.JsPromisedDate);
+	
 	return isadmin;
 }
 
@@ -625,21 +624,11 @@ function initForEx() {
 		DicCurrencyExRate = $infoblk.data("jsondiccurrencyexrate");
 	}
 }
-
 $(function () {
 	let isadmin: boolean = initPurchaseForm();
 
-	if (reviewmode || editmode) {
-		//console.log("uploadfilelist length:", Purchase.UploadFileList.length);
-		//console.log("here");
-
-		initPurchaseFormWModes();
-	}
-	else {
-		
-		//console.log("here#0");
-		addRow();
-	}
+	if (reviewmode || editmode) initPurchaseFormWModes();
+	else addRow();
 
 	initForEx();
     function initPurchaseFormWModes() {
@@ -689,14 +678,14 @@ $(function () {
             }
 
             DicAcAccounts = $infoblk.data("dicacaccounts");
-
-            //console.log("here");
+           
             if (!reviewmode && (Purchase.pstStatus.toLowerCase() == "order" || Purchase.pstStatus.toLowerCase() == "created")) addRow();
 
             if (editmode) {
                 user = $infoblk.data("user");
                 lastppId = Number($infoblk.data("lastppid"));
-                PurchasePayments = $infoblk.data("purchasepayments");
+				PurchasePayments = $infoblk.data("purchasepayments");
+
                 addPayRow();
             }
         }
@@ -708,14 +697,5 @@ $(function () {
 
 			if (reviewmode) disableEntries();
         }
-		//console.log("Purchase:", Purchase);
     }
 });
-
-
-
-function disableEntries() {
-    $("input:not([type='file'],[id='txtUserName'],[name='itemdesc'],.ip,.povari)").prop("isadmin", true).prop("disabled", true);
-    $("select").prop("disabled", true);
-    $("textarea").not("#txtField").prop("isadmin", true).prop("disabled", true);
-}

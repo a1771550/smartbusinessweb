@@ -8351,11 +8351,8 @@ interface IPurchase {
 	JsPromisedDate: string;
 	pstCurrency: string;
 	pstExRate: number;
-	//UseForexAPI: boolean;
 	pstAllLoc: boolean;
 	FileList: string[];
-	//DicItemOptions: { [Key: string]: IItemOptions };
-	//ItemVariationList: IItemVariation[];
 	pstAmount: number;
 }
 function initPurchaseItem(): IPurchaseItem {
@@ -21918,6 +21915,7 @@ $(document).on("click", ".btnUpload", function () {
 	if (forpurchase) {
 		ppId = Number($(this).data("id"));
 		getPurchasePayment();
+
 		if (purchasePayment)
 			openUploadFileModal();
 	}
@@ -22101,7 +22099,8 @@ function handleUploadedFile(result: any) {
 	$("#uploadmsg").removeClass("hide").html(result.msg);
 	if (forpurchase) {
 		closeUploadFileModal();
-		window.location.reload();
+		populateFileList4Po(result.FileList);
+		//window.location.reload();
 
 		if (forpayments) {
 			let filelist: string[] = [];
@@ -22226,4 +22225,10 @@ function handleRemoveFile(code: string, filename: string) {
 		},
 		dataType: "json"
 	});
+}
+
+function disableEntries() {
+	$("input:not([type='file'],[id='txtUserName'],[name='itemdesc'],.ip,.povari)").prop("isadmin", true).prop("disabled", true);
+	$("select").prop("disabled", true);
+	$("textarea").not("#txtField").prop("isadmin", true).prop("disabled", true);
 }

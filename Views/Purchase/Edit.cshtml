@@ -164,7 +164,7 @@
 
 			<h3 class="font-weight-bold clearfix">
 				@Resources.Resource.Payment
-				<button type="button" id="btnAdd" class="btn btn-primary float-right btnsmall50" title="@string.Format(Resources.Resource.AddFormat, Resources.Resource.Payment)"><i class="fa fa-plus"></i></button>
+				<button type="button" id="btnAdd" class="btn btn-primary float-right btnsmall40" title="@string.Format(Resources.Resource.AddFormat, Resources.Resource.Payment)"><i class="fa fa-plus"></i></button>
 			</h3>
 
 			<table id="tblPayment" class="table table-condensed table-hover table-bordered">
@@ -221,11 +221,19 @@
 								<input type="datetime" class="form-control datepicker ppdate" name="ppDate" value="@payment.ppDate" />
 								<input type="hidden" class="datedisplay" value="@payment.DateDisplay" />
 							</td>
-							<td class="text-left text-wrap">
+							<td class="text-center text-wrap">
 								@if (!string.IsNullOrEmpty(payment.fileName))
 								{
+									string pdfthumbnail = "<img src=\"/images/pdf.jpg\" class=\"thumbnail\">";
 									var filelist = payment.fileName.Split(',').ToList();
-									@Html.Partial("_ViewFileModal", null, new ViewDataDictionary { { "filelist", filelist } })
+
+									string removefilelnk = $"<i class=\"fa fa-trash removefile\" data-file=\"{0}\" data-payid=\"{payment.Id}\"></i>";
+
+									string filelnk = $"<a href=\"#\" class=\"filelnk\" data-lnk=\"/Purchase/{payment.Id}/{0}\">{pdfthumbnail}{0}</a> {removefilelnk}";
+
+									@Html.Partial("_ViewFileModal", null, new ViewDataDictionary { {"FuncType", FuncType.Purchase }, { "filelist", filelist }, {"filelnk",filelnk } })
+
+									<span class="viewfile pointer">...</span>
 								}
 
 							</td>
@@ -262,7 +270,7 @@
 
 	<div class="row justify-content-between">
 		<div class="col-12 col-md-10">
-			@Html.Partial("_ViewFileBlk", null, new ViewDataDictionary { { "imglist", Purchase.ImgList }, { "filelist", Purchase.FileList } })
+			@Html.Partial("_ViewFileBlk")
 		</div>
 		<div class="col-12 col-md-2">
 			<div class="clearfix">
@@ -309,7 +317,7 @@
 
 				if (ismanager && Purchase.pstStatus.ToLower() == PurchaseStatus.order.ToString() || Purchase.pstStatus.ToLower() == PurchaseStatus.created.ToString() || Purchase.pstStatus.ToLower() == PurchaseStatus.opened.ToString())
 				{
-					@Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "showViewBtn", Purchase.FileList.Count > 0 }, { "status", Purchase.pstStatus }, { "approvalmode", approvalmode } })
+					@Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "showViewBtn", false }, { "status", Purchase.pstStatus }, { "approvalmode", approvalmode } })
 				}
 
 			}
@@ -318,7 +326,7 @@
 				if (editmode && (Purchase.pstStatus.ToLower() == PurchaseStatus.order.ToString() || Purchase.pstStatus.ToLower() == PurchaseStatus.created.ToString() || Purchase.pstStatus.ToLower() == PurchaseStatus.rejected.ToString()))
 				{
 					<div class="text-right">
-						@Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "showViewBtn", Purchase.FileList.Count > 0 }, { "status", Purchase.pstStatus }, { "approvalmode", approvalmode } })
+						@Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "showViewBtn", false}, { "status", Purchase.pstStatus }, { "approvalmode", approvalmode } })
 					</div>
 				}
 				else if (!editmode)
@@ -356,7 +364,7 @@
 		else if (Purchase.pstStatus.ToLower() == PurchaseStatus.order.ToString())
 		{
 
-			@Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "showViewBtn", Purchase.FileList.Count > 0 }, { "status", Purchase.pstStatus }, { "approvalmode", approvalmode }, { "showViewBtn", Purchase.FileList.Count > 0 } })
+			@Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "status", Purchase.pstStatus }, { "approvalmode", approvalmode }, { "showViewBtn", false } })
 		}
 	</div>
 }

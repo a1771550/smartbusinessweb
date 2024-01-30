@@ -37,7 +37,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
             {
                 try
                 {
-                    List<string> filenamelist = new List<string>();
+                    List<string> FileList = new List<string>();
                     string filedir = string.Format(UploadsPoPaysDir, Id);//Uploads/PO/{0}
                     string dir = "";
 
@@ -58,23 +58,22 @@ namespace SmartBusinessWeb.Controllers.Purchase
                         //string fname = Path.Combine(absdir, string.Format(file, ext));
                         string fname = Path.Combine(absdir, filename);
                         _file.SaveAs(fname);
-                        filenamelist.Add(filename);
+                        FileList.Add(filename);
                     }
                     using (var context = new PPWDbContext(Session["DBName"].ToString()))
                     {
                         PurchasePayment purchase = context.PurchasePayments.FirstOrDefault(x => x.Id == Id);
                         if (purchase != null)
                         {
-                            if (string.IsNullOrEmpty(purchase.fileName))
-                            {
-                                purchase.fileName = filenamelist.FirstOrDefault();
-                            }
+                            if (string.IsNullOrEmpty(purchase.fileName)) purchase.fileName = FileList.FirstOrDefault();                            
                             else
                             {
-                                if (!purchase.fileName.Split(',').Any(x => x == filenamelist.FirstOrDefault()))
+                                var fileList = purchase.fileName.Split(',').ToList();
+                                if (!fileList.Any(x => x == FileList.FirstOrDefault()))
                                 {
-                                    filenamelist.Add(purchase.fileName);
-                                    purchase.fileName = string.Join(",", filenamelist);
+                                    fileList.Add(FileList.FirstOrDefault());
+                                    purchase.fileName = string.Join(",", fileList);
+                                    FileList = fileList;
                                 }
                             }
 
@@ -85,7 +84,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
                     dir = string.Concat(@"/", filedir);
                     //string filepath = Path.Combine(dir, string.Format(file, ext));
                     string filepath = Path.Combine(dir, filename);
-                    return Json(new { msg = Resources.Resource.UploadOkMsg, filepath });
+                    return Json(new { msg = Resources.Resource.UploadOkMsg, filepath, FileList });
                 }
                 catch (Exception ex)
                 {
@@ -115,12 +114,9 @@ namespace SmartBusinessWeb.Controllers.Purchase
             {
                 try
                 {
-                    List<string> filenamelist = new List<string>();
+                    List<string> FileList = new List<string>();                 
                     string filedir = string.Format(UploadsPODir, apId, filecode);//Uploads/PO/{0}/{1}
-                    string dir = "";
-                    //string ext = "";
-                    //string rand = CommonHelper.GenerateNonce(10);
-                    //string file = string.Format("{0}",rand);
+                    string dir = "";                    
                     string filename = string.Empty;
                     HttpFileCollectionBase files = Request.Files;
                     for (int i = 0; i < files.Count; i++)
@@ -138,26 +134,24 @@ namespace SmartBusinessWeb.Controllers.Purchase
                         //string fname = Path.Combine(absdir, string.Format(file, ext));
                         string fname = Path.Combine(absdir, filename);
                         _file.SaveAs(fname);
-                        filenamelist.Add(filename);
+                        FileList.Add(filename);
                     }
                     using (var context = new PPWDbContext(Session["DBName"].ToString()))
                     {
                         PPWDAL.Purchase purchase = context.Purchases.FirstOrDefault(x => x.pstCode == filecode && x.AccountProfileId == apId);
                         if (purchase != null)
                         {
-                            if (string.IsNullOrEmpty(purchase.UploadFileName))
-                            {
-                                purchase.UploadFileName = filenamelist.FirstOrDefault();
-                            }
+                            if (string.IsNullOrEmpty(purchase.UploadFileName)) purchase.UploadFileName = FileList.FirstOrDefault();                          
                             else
                             {
-                                if (!purchase.UploadFileName.Split(',').Any(x => x == filenamelist.FirstOrDefault()))
+                                var fileList = purchase.UploadFileName.Split(',').ToList();
+                                if (!fileList.Any(x => x == FileList.FirstOrDefault()))
                                 {
-                                    filenamelist.Add(purchase.UploadFileName);
-                                    purchase.UploadFileName = string.Join(",", filenamelist);
+                                    fileList.Add(FileList.FirstOrDefault());                                   
+                                    purchase.UploadFileName = string.Join(",", fileList);
+                                    FileList = fileList;
                                 }
                             }
-
                             purchase.ModifyTime = DateTime.Now;
                             context.SaveChanges();
                         }
@@ -165,7 +159,8 @@ namespace SmartBusinessWeb.Controllers.Purchase
                     dir = string.Concat(@"/", filedir);
                     //string filepath = Path.Combine(dir, string.Format(file, ext));
                     string filepath = Path.Combine(dir, filename);
-                    return Json(new { msg = Resources.Resource.UploadOkMsg, filepath });
+                   
+                    return Json(new { msg = Resources.Resource.UploadOkMsg, filepath, FileList });
                 }
                 catch (Exception ex)
                 {

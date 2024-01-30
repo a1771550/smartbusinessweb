@@ -1,31 +1,41 @@
 ﻿@{
-    List<string> imglist = ViewData["imglist"]==null?null: ViewData["imglist"] as List<string>;
-    List<string> filelist = ViewData["filelist"] as List<string>;
+
+	List<string> imglist = ViewData["imglist"] == null ? null : ViewData["imglist"] as List<string>;
+	List<string> filelist = ViewData["filelist"] as List<string>;
+
+	string filelnk = ViewData["filelnk"] == null ? string.Empty : ViewData["filelnk"] as string;
+
 }
 
 <div class="viewFileModal">
-   
-        @if (imglist!=null && imglist.Count > 0)
-        {          
 
-        <ul class="nostylelist">
-            @foreach (var img in imglist)
-            {
-                <li>@Html.Raw(img)</li>
-            }
-        </ul>
-                
-             
-        }
+	@if (imglist != null && imglist.Count > 0)
+	{
 
-        @if (filelist.Count > 0)
-        {
-            <ul>
-                @foreach (var file in filelist)
-                {
-                    <li>@Html.Raw(file)</li>
-                }
-            </ul>
-        }
-    
+		<ul class="nostylelist">
+			@foreach (var img in imglist)
+			{
+				<li>@Html.Raw(img)</li>
+			}
+		</ul>
+
+
+	}
+
+	@if (filelist.Count > 0)
+	{
+
+		<ul>
+			@foreach (var file in filelist)
+			{
+				string htmlfile = file;
+				if (!string.IsNullOrEmpty(filelnk))
+				{
+					htmlfile = string.Format(filelnk, file);
+				}
+				<li>@Html.Raw(htmlfile)</li>
+			}
+		</ul>
+	}
+
 </div>
