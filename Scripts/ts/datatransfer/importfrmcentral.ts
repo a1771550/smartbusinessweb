@@ -182,11 +182,11 @@ function bindtable() {
 $(document).on("change", ".chkfile", function () {
     const file = <string>$(this).val();
     if ($(this).is(":checked")) {
-        filelist.push(file);
+        fileList.push(file);
     } else {
-        const index = filelist.indexOf(file);
+        const index = fileList.indexOf(file);
         if (index > -1) {
-            filelist.splice(index, 1);
+            fileList.splice(index, 1);
         }
     }
 });

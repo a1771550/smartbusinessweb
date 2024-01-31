@@ -13,7 +13,7 @@ $(document).on("click", ".btnSave", function () {
 	if (validPayment) {
 		//console.log("PurchasePayment:", purchasePayment);
 		//return;
-		$.ajax({			
+		$.ajax({
 			type: "POST",
 			url: "/Purchase/EditPayment",
 			data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), purchasePayment },
@@ -27,8 +27,11 @@ $(document).on("click", ".btnSave", function () {
 					callback: function (value) {
 						if (value) {
 							$tr.find(".disabled").removeClass("disabled");
-							addPayRow();							
-							$(`#${gTblName} tbody tr`).last().find(".chequeno").trigger("focus");
+							let totalowed: number = Number($("#totalowed").text());
+							if (totalowed > 0) {
+								addPayRow();
+								$(`#${gTblName} tbody tr`).last().find(".chequeno").trigger("focus");
+							}
 						}
 					}
 				});
@@ -57,7 +60,7 @@ $(document).on("dblclick", ".viewfile", function () {
 	openViewFileModal();
 });
 $(document).on("click", ".btnPoUpload", function () {
-	forpayments = false;
+	forpurchasepayments = false;
 	openUploadFileModal();
 });
 $(document).on("click", "#btnAdd", function () {
@@ -184,27 +187,27 @@ function updatePurchase() {
 				stockitem.piQty = Number(
 					$(e).find(".qty").val()
 				);
-			
+
 				stockitem.piUnitPrice = Number(
 					$(e).find(".price").val()
 				);
-				
+
 				stockitem.piDiscPc = Number(
 					$(e).find(".discpc").val()
 				);
-				
+
 				if (enableTax && !inclusivetax) {
 					stockitem.piTaxPc = Number($(e).find(".taxpc").val());
 					stockitem.piTaxAmt = (stockitem.piQty * stockitem.piUnitPrice) * (stockitem.piTaxPc / 100);
-					
+
 				}
 				stockitem.piStockLoc = $(e).find(".location").val() as string;
-			
 
-				stockitem.JobID = Number($(e)					
+
+				stockitem.JobID = Number($(e)
 					.find(".job")
 					.val());
-				
+
 				stockitem.piAmtPlusTax = Number(
 					$(e).find(".amount").val()
 				);
@@ -222,7 +225,7 @@ function updatePurchase() {
 		_totalamtplustax += e.piAmtPlusTax;
 	});
 	itotalamt = _totalamtplustax;
-	 //console.log("itotalamt after sum up:" + itotalamt);
+	//console.log("itotalamt after sum up:" + itotalamt);
 	$("#txtTotal").val(formatnumber(itotalamt));
 	$("#pstAmount").val(itotalamt);
 
@@ -327,7 +330,7 @@ $(document).on("click", "#btnBill", function () {
 				.val() as string;
 			itemcodelist.push(selectedItemCode);
 		}
-		$(e).find("td").find(".qty").prop("isadmin", true).prop("disabled",true);
+		$(e).find("td").find(".qty").prop("isadmin", true).prop("disabled", true);
 	});
 
 	getDicItemOptionsVariByCodes(itemcodelist, $rows, currentItemCount);
@@ -432,43 +435,43 @@ $(document).on("change", "#pstRemark", function () {
 	Purchase.pstRemark = <string>$(this).val();
 });
 
-function populateFileList4Po(files:string[]) {
+function populateFileList4Po(files: string[]) {
 	//F:\SmartPOSPro\Uploads\PO\1\KP100003
 	//https://localhost:7777/Purchase/1/KP100003/sample.pdf
 	if (files.length > 0) {
 		let html = "";
-		const pdfthumbnail = getPdfThumbnail();		
+		const pdfthumbnail = getPdfThumbnail();
 		files.forEach((x) => {
 			let removefilelnk = getRemoveFileLnk(x);
 			let filelnk = `<a href="#" class="filelnk" data-lnk="/Purchase/${apId}/${Purchase.pstCode}/${x}">${pdfthumbnail}${x}</a> ${removefilelnk}`;
 			html += `<li>${filelnk}</li>`;
-		});	
+		});
 		$(".viewfileblk").find(".file").empty().append(html);
 	}
 }
 
 function initPurchaseForm() {
-    approvalmode = $infoblk.data("approvalmode") == "True";
-    setFullPage();
-    apId = Number($infoblk.data("apid"));
-    forpurchase = true;
+	approvalmode = $infoblk.data("approvalmode") == "True";
+	setFullPage();
+	apId = Number($infoblk.data("apid"));
+	forpurchase = true;
 	DicLocation = $infoblk.data("jsondiclocation");
-    MyobJobList = $infoblk.data("jsonjoblist");
-    uploadsizelimit = parseInt($infoblk.data("uploadsizelimit"));
-    uploadsizelimitmb = parseInt($infoblk.data("uploadsizelimitmb"));
-    shop = $infoblk.data("shop") as string;
-    initModals();
+	MyobJobList = $infoblk.data("jsonjoblist");
+	uploadsizelimit = parseInt($infoblk.data("uploadsizelimit"));
+	uploadsizelimitmb = parseInt($infoblk.data("uploadsizelimitmb"));
+	shop = $infoblk.data("shop") as string;
+	initModals();
 
-    gTblName = "tblPSI";
+	gTblName = "tblPSI";
 	itotalamt = 0;
 
-    $(".datepicker").datepicker({
-        dateFormat: jsdateformat,
-        beforeShow: function() {
-            setTimeout(function() {
-                $(".ui-datepicker").css("z-index", 99999999999999);
-            }, 0);
-        },
+	$(".datepicker").datepicker({
+		dateFormat: jsdateformat,
+		beforeShow: function () {
+			setTimeout(function () {
+				$(".ui-datepicker").css("z-index", 99999999999999);
+			}, 0);
+		},
 	});
 
 	initDatePicker("promisedDate", tomorrow);
@@ -476,121 +479,121 @@ function initPurchaseForm() {
 
 	$("#drpLocation").val(shop);
 
-    const status: string = ($("#pstStatus").val() as string).toLowerCase() === "passed"
-        ? "requesting"
-        : ($("#pstStatus").val() as string);
-    let bgcls: string = status.toLowerCase().concat("statusbg");
-    $("body").addClass(bgcls);
+	const status: string = ($("#pstStatus").val() as string).toLowerCase() === "passed"
+		? "requesting"
+		: ($("#pstStatus").val() as string);
+	let bgcls: string = status.toLowerCase().concat("statusbg");
+	$("body").addClass(bgcls);
 
-    Purchase = fillInPurchase();
-    if ($infoblk.data("uploadfilelist") !== "") {
-        Purchase.FileList = $infoblk.data("uploadfilelist").split(",");
-        //console.log("Purchase.FileList:", Purchase.FileList);	
-        populateFileList4Po(Purchase.FileList);
-    }
+	Purchase = fillInPurchase();
+	if ($infoblk.data("uploadfilelist") !== "") {
+		Purchase.FileList = $infoblk.data("uploadfilelist").split(",");
+		//console.log("Purchase.FileList:", Purchase.FileList);	
+		populateFileList4Po(Purchase.FileList);
+	}
 	//console.log("#0 Purchase.JsPurchaseDate:" + Purchase.JsPurchaseDate + ";Purchase.JsPromisedDate:" + Purchase.JsPromisedDate);
 
-    editapproved =
-        getParameterByName("mode") != null &&
-        getParameterByName("mode") == "editapproved";
+	editapproved =
+		getParameterByName("mode") != null &&
+		getParameterByName("mode") == "editapproved";
 
-    let _receiptno = getParameterByName("receiptno");
-    let isadmin: boolean = $infoblk.data("isadmin") === "True";
-    //console.log("isadmin:", isadmin);
-    if (_receiptno !== null) {
-        receiptno = _receiptno as string;
-        reviewmode = _receiptno !== null && isadmin;
+	let _receiptno = getParameterByName("receiptno");
+	let isadmin: boolean = $infoblk.data("isadmin") === "True";
+	//console.log("isadmin:", isadmin);
+	if (_receiptno !== null) {
+		receiptno = _receiptno as string;
+		reviewmode = _receiptno !== null && isadmin;
 	}
 
 	//console.log("Purchase:", Purchase);
 	editmode = Purchase.pstStatus != "draft" && !reviewmode;
-    // console.log("receiptno:" + receiptno);
-    if (!editmode)
-        $("#pstExRate").val(1);
+	// console.log("receiptno:" + receiptno);
+	if (!editmode)
+		$("#pstExRate").val(1);
 
-    //console.log("SupplierOptionList:", SupplierOptionList);
-    if (SupplierOptionList.length > 0) {
-        $("#drpSupplier > option").each(function(i, e) {
-            SupplierOptionList.push(`<option value="${$(e).val()}">${$(e).text()}</option>`);
-        });
-    }
+	//console.log("SupplierOptionList:", SupplierOptionList);
+	if (SupplierOptionList.length > 0) {
+		$("#drpSupplier > option").each(function (i, e) {
+			SupplierOptionList.push(`<option value="${$(e).val()}">${$(e).text()}</option>`);
+		});
+	}
 
-    $("#drpSupplier").select2();
-    backUpCardDrpOptions();
-	
+	$("#drpSupplier").select2();
+	backUpCardDrpOptions();
+
 	return isadmin;
 }
 
 function populatePurchaseItems() {
-    let html = "";
+	let html = "";
 	let idx = 0;
 
 	$(".price").off("change");
 	$(".discpc").off("change");
 	$(".taxpc").off("change");
 
-    $.each(purchaseitems, function(i, purchaseitem: IPurchaseItem) {
-        itemOptions = DicItemOptions[purchaseitem.itmCode];
-        const sntxt = purchaseitem.piHasSN ? "..." : "";
-        //console.log("purchaseitem.batchlist:", purchaseitem.batchList);
-		const batcode = purchaseitem.batchList.length===0?"":purchaseitem.batchList.find((x) => x.batStockInCode == Purchase.pstCode)?.batCode;
-        const batch = purchaseitem.batchList.length > 0 ? "..." : "";
-        //console.log(purchaseitem);
-        let vt: string | null = "";
+	$.each(purchaseitems, function (i, purchaseitem: IPurchaseItem) {
+		itemOptions = DicItemOptions[purchaseitem.itmCode];
+		const sntxt = purchaseitem.piHasSN ? "..." : "";
+		//console.log("purchaseitem.batchlist:", purchaseitem.batchList);
+		const batcode = purchaseitem.batchList.length === 0 ? "" : purchaseitem.batchList.find((x) => x.batStockInCode == Purchase.pstCode)?.batCode;
+		const batch = purchaseitem.batchList.length > 0 ? "..." : "";
+		//console.log(purchaseitem);
+		let vt: string | null = "";
 
-        if (itemOptions && itemOptions.WillExpire) {
-            if (!itemOptions.ChkBatch && !itemOptions.ChkSN) {
-                vt = purchaseitem.ValidThruDisplay;
-            } else {
-                vt = "...";
-            }
-        }
-        const formattedprice: string = formatnumber(purchaseitem.piUnitPrice);
-        const formatteddiscpc: string = formatnumber(<number>purchaseitem.piDiscPc);
-        const formattedamt: string = formatnumber(<number>purchaseitem.piAmtPlusTax);
-        const formattedtaxpc: string = formatnumber(<number>purchaseitem.piTaxPc);
+		if (itemOptions && itemOptions.WillExpire) {
+			if (!itemOptions.ChkBatch && !itemOptions.ChkSN) {
+				vt = purchaseitem.ValidThruDisplay;
+			} else {
+				vt = "...";
+			}
+		}
+		const formattedprice: string = formatnumber(purchaseitem.piUnitPrice);
+		const formatteddiscpc: string = formatnumber(<number>purchaseitem.piDiscPc);
+		const formattedamt: string = formatnumber(<number>purchaseitem.piAmtPlusTax);
+		const formattedtaxpc: string = formatnumber(<number>purchaseitem.piTaxPc);
 
-        var baseunit: string = purchaseitem.piBaseUnit ?? "N/A";
+		var baseunit: string = purchaseitem.piBaseUnit ?? "N/A";
 		html += `<tr data-idx="${idx}" data-qty="${purchaseitem.piQty}" class=""><td><span>${purchaseitem.piSeq}</span></td><td><input type="text" name="itemcode" class="itemcode text-left" value="${purchaseitem.itmCode}"></td><td><input type="text" name="itemdesc" class="itemdesc text-left small" value="${purchaseitem.itmNameDesc}" title="${purchaseitem.itmNameDesc}"></td><td class="text-right"><input type="text" name="baseunit" class="baseunit text-right" value="${baseunit}"></td><td class="text-right"><input type="number" name="qty" class="qty text-right" value="${purchaseitem.piQty}"></td>`;
-        var sncls = (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") ? "posn pointer" : "serialno";
-        var vtcls = (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") ? "vt pointer" : "validthru datepicker";
+		var sncls = (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") ? "posn pointer" : "serialno";
+		var vtcls = (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") ? "vt pointer" : "validthru datepicker";
 
-        if (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") {
+		if (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") {
 			html += `<td><input type="text" name="batch" class="pobatch text-center pointer ip" data-batcode="${batcode}" value="${batch}" isadmin /></td><td><input type="text" name="serailno" isadmin class="${sncls} text-center ip" value="${sntxt}" /></td><td><input type="datetime" name="validthru" class="${vtcls} datepicker text-center ip" value="${vt}" /></td>`;
 
-            //itemvari
+			//itemvari
 			/*let vari: string = ((purchaseitem.itmCode in DicItemGroupedVariations) || (!itemOptions.ChkBatch && !itemOptions.ChkSN && !itemOptions.WillExpire)) ? "..." : "";*/
-			let vari: string = (purchaseitem.itmCode in DicItemGroupedVariations)? "..." : "";
-            html += `<td><input type="text" name="vari" class="povari text-center pointer" value="${vari}" /></td>`;
-        }
-        html += `<td class="text-right"><input type="number" name="price" class="price text-right" data-price="${purchaseitem.piUnitPrice}" value="${formattedprice}"></td><td class="text-right"><input type="number" name="discpc" class="discpc text-right" data-discpc="${purchaseitem.piDiscPc}" value="${formatteddiscpc}"></td>`;
-        if (enableTax && !inclusivetax) {
-            html += `<td class="text-right"><input type="number" name="taxpc" class="taxpc text-right" value="${formattedtaxpc}"></td>`;
-        }
+			let vari: string = (purchaseitem.itmCode in DicItemGroupedVariations) ? "..." : "";
+			html += `<td><input type="text" name="vari" class="povari text-center pointer" value="${vari}" /></td>`;
+		}
+		html += `<td class="text-right"><input type="number" name="price" class="price text-right" data-price="${purchaseitem.piUnitPrice}" value="${formattedprice}"></td><td class="text-right"><input type="number" name="discpc" class="discpc text-right" data-discpc="${purchaseitem.piDiscPc}" value="${formatteddiscpc}"></td>`;
+		if (enableTax && !inclusivetax) {
+			html += `<td class="text-right"><input type="number" name="taxpc" class="taxpc text-right" value="${formattedtaxpc}"></td>`;
+		}
 
-        let locations: string = "";
-        for (const [key, value] of Object.entries(DicLocation)) {
-            //default primary location:
-            let selected: string = key == purchaseitem.piStockLoc ? "selected" : "";
-            locations += `<option value='${key}' ${selected}>${value}</option>`;
-        }
-        html += `<td><select class="location flex text-center">${locations}</td>`;
-        html += `<td><select class="job flex text-center">${setJobListOptions(purchaseitem.JobID ?? 0)}</select></td>`;
-        html += `<td class="text-right"><input type="number" name="amount" class="amount text-right" data-amt="${purchaseitem.piAmtPlusTax}" value="${formattedamt}"></td>`;
-        if (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") {
-            html += `<td class="text-right"><input type="number" name="received" class="received text-right" min="0" style="width:90px!important;" data-received="${purchaseitem.piReceivedQty}" value="${purchaseitem.piReceivedQty}"></td>`;
-        }
-        html += "</tr>";
-        idx++;
-    });
-    $target = $("#tblPSI tbody");
+		let locations: string = "";
+		for (const [key, value] of Object.entries(DicLocation)) {
+			//default primary location:
+			let selected: string = key == purchaseitem.piStockLoc ? "selected" : "";
+			locations += `<option value='${key}' ${selected}>${value}</option>`;
+		}
+		html += `<td><select class="location flex text-center">${locations}</td>`;
+		html += `<td><select class="job flex text-center">${setJobListOptions(purchaseitem.JobID ?? 0)}</select></td>`;
+		html += `<td class="text-right"><input type="number" name="amount" class="amount text-right" data-amt="${purchaseitem.piAmtPlusTax}" value="${formattedamt}"></td>`;
+		if (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") {
+			html += `<td class="text-right"><input type="number" name="received" class="received text-right" min="0" style="width:90px!important;" data-received="${purchaseitem.piReceivedQty}" value="${purchaseitem.piReceivedQty}"></td>`;
+		}
+		html += "</tr>";
+		idx++;
+	});
+	$target = $("#tblPSI tbody");
 	$target.empty().html(html);
 
 	$(".itemdesc").on("dblclick", handleItemDescDblClick);
 
 	$(".price").on("change", handlePriceChange);
 	$(".discpc").on("change", handleDiscChange);
-	$(".taxpc").on("change", handleTaxChange);	
+	$(".taxpc").on("change", handleTaxChange);
 }
 
 function initForEx() {
@@ -631,15 +634,15 @@ $(function () {
 	else addRow();
 
 	initForEx();
-    function initPurchaseFormWModes() {
-        purchaseitems = $infoblk.data("jsonpurchaseitems");
-        //console.log("purchaseitems:", purchaseitems);
-        DicItemOptions = $infoblk.data("dicitemoptions");
-        //console.log("dicitemoptions:", DicItemOptions);
-        DicItemGroupedVariations = $infoblk.data("dicitemgroupedvariations");
+	function initPurchaseFormWModes() {
+		purchaseitems = $infoblk.data("jsonpurchaseitems");
+		//console.log("purchaseitems:", purchaseitems);
+		DicItemOptions = $infoblk.data("dicitemoptions");
+		//console.log("dicitemoptions:", DicItemOptions);
+		DicItemGroupedVariations = $infoblk.data("dicitemgroupedvariations");
 		//console.log("DicItemGroupedVariations:", DicItemGroupedVariations);   
 
-        populatePurchaseItems();
+		populatePurchaseItems();
 
 		$(".respond").data("code", receiptno);
 		setValidThruDatePicker();
@@ -663,39 +666,40 @@ $(function () {
 		if (getParameterByName("status") && getParameterByName("status") == "bill")
 			$("#btnBill").trigger("click");
 
-        if (Purchase.pstStatus === "opened" || Purchase.pstStatus == "partialreceival") {
+		if (Purchase.pstStatus === "opened" || Purchase.pstStatus == "partialreceival") {
 
-            forpayments = true;
+			forpurchasepayments = true;
 
-            gTblName = "tblPayment";
+			gTblName = "tblPayment";
 
-            disableEntries();
+			disableEntries();
 
-            if (reviewmode) {
-                if (!isadmin) $("button").addClass("disabled");
-                $("#btnSave").addClass("disabled");
-                $("#btnBill").addClass("disabled");
-            }
+			if (reviewmode) {
+				if (!isadmin) $("button").addClass("disabled");
+				$("#btnSave").addClass("disabled");
+				$("#btnBill").addClass("disabled");
+			}
 
-            DicAcAccounts = $infoblk.data("dicacaccounts");
-           
-            if (!reviewmode && (Purchase.pstStatus.toLowerCase() == "order" || Purchase.pstStatus.toLowerCase() == "created")) addRow();
+			DicAcAccounts = $infoblk.data("dicacaccounts");
 
-            if (editmode) {
-                user = $infoblk.data("user");
-                lastppId = Number($infoblk.data("lastppid"));
+			if (!reviewmode && (Purchase.pstStatus.toLowerCase() == "order" || Purchase.pstStatus.toLowerCase() == "created")) addRow();
+
+			if (editmode) {
+				user = $infoblk.data("user");
+				lastppId = Number($infoblk.data("lastppid"));
 				PurchasePayments = $infoblk.data("purchasepayments");
 
-                addPayRow();
-            }
-        }
-        else {
-            if (Purchase.pstStatus.toLowerCase() == "requesting")
+				let totalowed = Number($("#totalowed").text());
+				if (totalowed > 0) addPayRow();
+			}
+		}
+		else {
+			if (Purchase.pstStatus.toLowerCase() == "requesting")
 				$("#btnBill").hide();
 
 			if (editmode) addRow();
 
 			if (reviewmode) disableEntries();
-        }
-    }
+		}
+	}
 });

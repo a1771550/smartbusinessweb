@@ -8,6 +8,12 @@
 	abstract submitform();
 }
 
+enum TriggerReferrer {
+	Row,
+	Modal
+}
+let triggerReferrer: TriggerReferrer;
+
 let $appInfo = $("#appInfo");
 let $txtblk = $("#txtblk");
 
@@ -588,7 +594,7 @@ let customerlist: Array<ICustomer> = [];
 let staff: ICrmUser;
 let payurl = "https://pay.wepayez.com/pay/qrcode?uuid={0}&s={1}";
 let authcode: string = "";
-let filelist: string[] = [];
+let fileList: string[] = [];
 let $target: JQuery;
 
 let $tr: JQuery;
@@ -716,7 +722,7 @@ let forsales: boolean = false;
 let forsimplesales: boolean = false;
 let fordeposit: boolean = false;
 let forpurchase: boolean = false;
-let forpayments: boolean = false;
+let forpurchasepayments: boolean = false;
 let validPayment: boolean = false;
 let fordayends: boolean = false;
 let forstockin: boolean = false;
@@ -2425,7 +2431,7 @@ $(document).on("change", ".pay", function () {
 			let totalowed: number = Purchase.pstAmount - totalamt;
 			//console.log("totalowed:", totalowed);
 			if (totalowed <= 0) amtcls = "text-success";
-			$("#totalowed").removeClass("amtcls").addClass(amtcls).text(formatnumber(totalowed));
+			$("#totalowed").removeClass("text-danger").addClass(amtcls).text(formatnumber(totalowed));
 		}
 	}
 	function amtErrWarning() {
@@ -3176,6 +3182,7 @@ function closeWhatsappLinkModal() {
 }
 
 function openUploadFileModal() {
+	$("#uploadmsg").hide();
 	uploadFileModal.dialog("open");
 }
 function closeUploadFileModal() {
@@ -3324,7 +3331,7 @@ function addPoItemVariRow(hasFocusCls: boolean) {
 		//console.log("batcode:" + batcode);
 		//console.log("undefined:", batcode === "undefined");
 		let disabled = hasFocusCls ? "" : "disabled";
-		
+
 		let html = "";
 		for (const [key, value] of Object.entries(DicItemGroupedVariations)) {
 			if (itemcode.toString() === key.toString()) {
@@ -3638,7 +3645,7 @@ function initModals() {
 	});
 
 	viewFileModal = $(".viewFileModal").dialog({
-		width: 350,
+		width: 650,
 		title: viewfiletxt,
 		autoOpen: false,
 		modal: true,
@@ -6809,9 +6816,9 @@ function fillInEnquiry() {
 	enquiry.FollowUpDateInfo.JsFollowUpDate = $("#followUpDate").val() as string;
 	//FollowUpDateInfo_Id
 	enquiry.FollowUpDateInfo.Id = $("#FollowUpDateInfo_Id").val() as string;
-	if ($infoblk.data("uploadfilelist") !== "") {
+	if ($infoblk.data("uploadfileList") !== "") {
 		enquiry.UploadFileList = $infoblk
-			.data("uploadfilelist")
+			.data("uploadfileList")
 			.toString()
 			.split(",");
 		$("#btnViewFile").removeClass("hide");
@@ -8354,6 +8361,7 @@ interface IPurchase {
 	pstAllLoc: boolean;
 	FileList: string[];
 	pstAmount: number;
+	pstPartialAmt: number | null;
 }
 function initPurchaseItem(): IPurchaseItem {
 	return {
@@ -8476,7 +8484,7 @@ function handleQtyChange(this: any) {
 	/*$tr = $(`#${gTblName} tbody tr`).eq(currentY);*/
 
 	let _price: number = Number($tr.find(".price").val());
-	
+
 	let _discpc: number = Number($tr.find(".discpc").val());
 	// console.log("price#qty change:" + _price + ";_discpc:" + _discpc);
 
@@ -8484,7 +8492,7 @@ function handleQtyChange(this: any) {
 		/*	if (Purchase.pstStatus !== "order"&&Purchase.pstStatus!=="created"&&Purchase.pstStatus!=="draft")*/
 		let $received = $tr.find(".received");
 		if ($received.length) $received.attr("max", _qty).val(_qty);
-		
+
 
 		updateRow(_price, _discpc);
 		seq = currentY + 1;
@@ -11042,7 +11050,7 @@ function updateRow(_price: number = 0, _discount: number = 0) {
 	}
 
 	let taxrate: number = 0;
-	
+
 	seq = currentY + 1;
 	if (_price > 0) {
 		// _price = _price * exRate;
@@ -14235,7 +14243,8 @@ function fillInPurchase(
 		JsPromisedDate: <string>$promisedDateDisplay.val(),
 
 		FileList: [],
-		pstAmount: Number($("#pstAmount").val())
+		pstAmount: Number($("#pstAmount").val()),
+		pstPartialAmt: Number($("#pstPartialAmt").val())
 	};
 }
 
@@ -21916,8 +21925,11 @@ $(document).on("click", ".btnUpload", function () {
 		ppId = Number($(this).data("id"));
 		getPurchasePayment();
 
-		if (purchasePayment)
+		if (purchasePayment) {
+			triggerReferrer = ($(this).parent("td").length) ? TriggerReferrer.Row : TriggerReferrer.Modal;
 			openUploadFileModal();
+		}
+
 	}
 });
 
@@ -21957,23 +21969,21 @@ function addPayRow() {
 }
 
 function updateSelectedPayment() {
-	if (forpurchase) {
-
+	if (forpurchasepayments) {
 		getPurchasePayment();
-
+		//console.log("!purchasePayment:", !purchasePayment);
+		if (!purchasePayment) {
+			validPayment = false; return;
+		}
 		$(`#${gTblName} tbody tr`).each(function (i, e) {
 			let Id: number = Number($(e).data("id"));
-			//console.log("Id:" + Id);			
-			let idx = 1;
-			let chequeno: string = $(e).find("td").eq(idx).find(".chequeno").val() as string;
-			idx += 2;
-			let acno: string = $(e).find("td").eq(idx).find(".acname").data("acno") as string;
-			idx++;
-			let amt: number = Number($(e).find("td").eq(idx).find(".pay").val());
-			idx++;
-			let jsdate: string = $(e).find("td").eq(idx).find(".ppdate").val() as string;
-			idx += 2;
-			let jstime: string = $(e).find("td").eq(idx).text();
+			//console.log("Id:" + Id);
+			let chequeno: string = $(e).find(".chequeno").val() as string;
+			let acno: string = $(e).find(".acname").data("acno") as string;
+			let amt: number = Number($(e).find(".pay").val());
+			let jsdate: string = $(e).find(".ppdate").val() as string;
+			let jstime: string = $(e).find("td").eq(-3).text();
+
 			if (chequeno != "" && acno != "" && amt > 0 && purchasePayment.Id == Id) {
 				purchasePayment.pstCode = Purchase.pstCode;
 				purchasePayment.supCode = Purchase.supCode;
@@ -22004,9 +22014,10 @@ $(document).on("click", ".filelnk", function () {
 function getPurchasePayment() {
 	if (PurchasePayments.length > 0) {
 		purchasePayment = PurchasePayments.find(x => x.Id == ppId)!;
-	} else {
 		if (!purchasePayment)
 			purchasePayment = { Id: ppId } as IPurchasePayment;
+	} else {
+		purchasePayment = { Id: ppId } as IPurchasePayment;
 	}
 }
 
@@ -22096,29 +22107,26 @@ function setAccName(tr: JQuery<Element>, acno: string, acname: string) {
 }
 function handleUploadedFile(result: any) {
 	closeWaitingModal();
-	$("#uploadmsg").removeClass("hide").html(result.msg);
+
 	if (forpurchase) {
-		closeUploadFileModal();
 		populateFileList4Po(result.FileList);
-		//window.location.reload();
+		closeUploadFileModal();
+	}
+	if (forpurchase && forpurchasepayments) {
+		let fileList: string[] = result.FileList;
 
-		if (forpayments) {
-			let filelist: string[] = [];
-			if (purchasePayment.fileName === "") purchasePayment.fileName = result.filepath;
-			else {
-				filelist = purchasePayment.fileName!.split(",");
-				filelist.push(result.filepath);
-				purchasePayment.fileName = filelist.join();
-			}
+		if (fileList.length > 0) {
 
-			if (purchasePayment.fileName) {
-				$(`${gTblName} tbody tr`).each(function (i, e) {
-					if (Number($(e).data("id")) == purchasePayment.Id) {
-						//todo:
-						//$(e).find("td").eq("")
-					}
-				});
-			}
+			$("#uploadmsg").fadeIn("slow");
+
+			let paymentId = purchasePayment.Id;
+			purchasePayment.fileName = fileList.join();
+			//<li class="p-2" data-file="Project_Requirements.pdf"><a href="#" class="filelnk" data-lnk="/Purchase/1/Project_Requirements.pdf"><img src="/images/pdf.jpg" class="thumbnail">Project_Requirements.pdf</a> <i class="fa fa-trash removefile" data-file="Project_Requirements.pdf" data-payid="1"></i></li>
+			let html = "";
+			fileList.forEach((x) => {
+				html += `<li class="p-2" data-file="${x}"><a href="#" class="filelnk" data-lnk="/Purchase/${paymentId}/${x}"><img src="/images/pdf.jpg" class="thumbnail">${x}</a> <i class="fa fa-trash removefile" data-file="${x}" data-payid="${paymentId}"></i></li>`;
+			});
+			viewFileModal.find(".filelist").empty().append(html);
 		}
 	}
 }
@@ -22195,29 +22203,34 @@ $(document).on("click", ".filelnk", function () {
 });
 
 $(document).on("click", ".removefile", function () {
-
+	let url = "", data = {};
+	let file = $(this).data("file");
 	if (forpurchase) {
-		let file = $(this).data("file");
-		let idx = Purchase.FileList.findIndex(x => x == file);
-		if (idx >= 0) Purchase.FileList.splice(idx, 1);
-		populateFileList4Po(Purchase.FileList);
-		handleRemoveFile($(this).data("code"), file);
-
-		if (forpayments) {
-
+		if ($(this).hasClass("ppay")) {
+			url = "/Purchase/RemoveFile4Payment";
+			let Id = Number($(this).data("payid"));
+			$(this).parent("li").remove();
+			data = { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), Id, filename: file };
+		} else {
+			url = "/Purchase/RemoveFile";
+			let idx = Purchase.FileList.findIndex(x => x == file);
+			if (idx >= 0) Purchase.FileList.splice(idx, 1);
+			populateFileList4Po(Purchase.FileList);
+			let pstCode = $(this).data("code");
+			data = { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), pstCode, filename: file };
 		}
 	}
 
-
+	handleRemoveFile(url, data);
 });
 
-function handleRemoveFile(code: string, filename: string) {
+function handleRemoveFile(url: string, data: any) {
 	openWaitingModal();
 	$.ajax({
 		//contentType: 'application/json; charset=utf-8',
 		type: "POST",
-		url: "/Purchase/RemoveFile",
-		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), pstCode: code, filename },
+		url: url,
+		data: data,
 		success: function (data) {
 			if (data) {
 				closeWaitingModal();

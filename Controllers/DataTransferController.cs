@@ -971,8 +971,7 @@ namespace SmartBusinessWeb.Controllers
             if (filename == "Purchase_")
 			{
 				List<string> sqllist = PurchaseEditModel.GetUploadPurchaseSqlList(accountprofileId, ref dmodel, strfrmdate, strtodate, comInfo, context);
-				//Response.Write(string.Join(",",sqllist));
-				//return;
+				
 				using (localhost.Dayends dayends = new localhost.Dayends())
 				{
 					dayends.Url = comInfo.WebServiceUrl;
@@ -980,13 +979,24 @@ namespace SmartBusinessWeb.Controllers
 				}
 
 				ModelHelper.WriteLog(context, string.Join(",", sqllist), "ExportFrmShop#Purchase");
-				List<PPWDAL.Purchase> pslist = context.Purchases.Where(x => x.AccountProfileId==apId && dmodel.PoCheckOutIds.Any(y => x.Id == y)).ToList();
+				List<PPWDAL.Purchase> pslist = [.. context.Purchases.Where(x => x.AccountProfileId==apId && dmodel.PoCheckOutIds.Any(y => x.Id == y))];
 				foreach (var ps in pslist)
 				{
 					ps.pstCheckout = true;
+					ps.ModifyTime = DateTime.Now;
 				}
-				context.SaveChanges();
 
+				if(dmodel.CheckOutIds_PoPayLn.Count>0)
+				{
+					List<PurchasePayment> pplist = [.. context.PurchasePayments.Where(x=>dmodel.CheckOutIds_PoPayLn.Any(y=>x.Id==y))];
+					foreach (var pp in pplist)
+					{
+						pp.ppCheckout = true;
+						pp.ModifyTime = DateTime.Now;
+					}
+				}
+
+				context.SaveChanges();
 			}
 
 			if (filename.StartsWith("Items_"))

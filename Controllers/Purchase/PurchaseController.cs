@@ -65,7 +65,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
                         PurchasePayment purchase = context.PurchasePayments.FirstOrDefault(x => x.Id == Id);
                         if (purchase != null)
                         {
-                            if (string.IsNullOrEmpty(purchase.fileName)) purchase.fileName = FileList.FirstOrDefault();                            
+                            if (string.IsNullOrEmpty(purchase.fileName)) purchase.fileName = FileList.FirstOrDefault();
                             else
                             {
                                 var fileList = purchase.fileName.Split(',').ToList();
@@ -99,10 +99,20 @@ namespace SmartBusinessWeb.Controllers.Purchase
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public ActionResult RemoveFile4Payment(long Id, string filename)
+        {
+            string msg = string.Format(Resources.Resource.FileFormat, Resources.Resource.Removed);
+            PPWCommonLib.Helpers.FileHelper.Remove(Id, filename);
+            return Json(msg);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult RemoveFile(string pstCode, string filename)
         {
             string msg = string.Format(Resources.Resource.FileFormat, Resources.Resource.Removed);
-            PPWCommonLib.Helpers.FileHelper.Remove(pstCode, filename, FileType.PurchaseOrder);
+            PPWCommonLib.Helpers.FileHelper.Remove(pstCode, filename);
             return Json(msg);
         }
 
@@ -114,9 +124,9 @@ namespace SmartBusinessWeb.Controllers.Purchase
             {
                 try
                 {
-                    List<string> FileList = new List<string>();                 
+                    List<string> FileList = new List<string>();
                     string filedir = string.Format(UploadsPODir, apId, filecode);//Uploads/PO/{0}/{1}
-                    string dir = "";                    
+                    string dir = "";
                     string filename = string.Empty;
                     HttpFileCollectionBase files = Request.Files;
                     for (int i = 0; i < files.Count; i++)
@@ -141,13 +151,13 @@ namespace SmartBusinessWeb.Controllers.Purchase
                         PPWDAL.Purchase purchase = context.Purchases.FirstOrDefault(x => x.pstCode == filecode && x.AccountProfileId == apId);
                         if (purchase != null)
                         {
-                            if (string.IsNullOrEmpty(purchase.UploadFileName)) purchase.UploadFileName = FileList.FirstOrDefault();                          
+                            if (string.IsNullOrEmpty(purchase.UploadFileName)) purchase.UploadFileName = FileList.FirstOrDefault();
                             else
                             {
                                 var fileList = purchase.UploadFileName.Split(',').ToList();
                                 if (!fileList.Any(x => x == FileList.FirstOrDefault()))
                                 {
-                                    fileList.Add(FileList.FirstOrDefault());                                   
+                                    fileList.Add(FileList.FirstOrDefault());
                                     purchase.UploadFileName = string.Join(",", fileList);
                                     FileList = fileList;
                                 }
@@ -159,7 +169,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
                     dir = string.Concat(@"/", filedir);
                     //string filepath = Path.Combine(dir, string.Format(file, ext));
                     string filepath = Path.Combine(dir, filename);
-                   
+
                     return Json(new { msg = Resources.Resource.UploadOkMsg, filepath, FileList });
                 }
                 catch (Exception ex)
@@ -274,33 +284,25 @@ namespace SmartBusinessWeb.Controllers.Purchase
             }
             else if (sortColumnIndex == 1)
             {
-                model.PSList = sortDirection == "asc" ? model.PSList.OrderBy(c => c.supCode).ThenBy(c => c.pstPromisedDate).ThenBy(c => c.CreateTime).ToList() : model.PSList.OrderByDescending(c => c.supCode).ThenByDescending(c => c.pstPromisedDate).ThenByDescending(c => c.CreateTime).ToList();
+                model.PSList = sortDirection == "asc" ? model.PSList.OrderBy(c => c.supCode).ThenBy(x => x.pstCode).ThenBy(c => c.pstPromisedDate).ThenBy(c => c.CreateTime).ToList() : model.PSList.OrderByDescending(c => c.supCode).ThenByDescending(x => x.pstCode).ThenByDescending(c => c.pstPromisedDate).ThenByDescending(c => c.CreateTime).ToList();
             }
             else if (sortColumnIndex == 2)
             {
-                model.PSList = sortDirection == "asc" ? model.PSList.OrderBy(c => c.pstLocStock).ThenBy(c => c.pstPromisedDate).ThenBy(c => c.CreateTime).ToList() : model.PSList.OrderByDescending(c => c.pstLocStock).ThenByDescending(c => c.pstPromisedDate).ThenByDescending(c => c.CreateTime).ToList();
+                model.PSList = sortDirection == "asc" ? model.PSList.OrderBy(c => c.pstLocStock).ThenBy(x => x.pstCode).ThenBy(c => c.pstPromisedDate).ThenBy(c => c.CreateTime).ToList() : model.PSList.OrderByDescending(c => c.pstLocStock).ThenByDescending(x => x.pstCode).ThenByDescending(c => c.pstPromisedDate).ThenByDescending(c => c.CreateTime).ToList();
             }
             else if (sortColumnIndex == 3)
             {
-                model.PSList = sortDirection == "asc" ? model.PSList.OrderBy(c => c.pstStatus).ThenBy(c => c.pstPromisedDate).ThenBy(c => c.CreateTime).ToList() : model.PSList.OrderByDescending(c => c.pstStatus).ThenByDescending(c => c.pstPromisedDate).ThenByDescending(c => c.CreateTime).ToList();
+                model.PSList = sortDirection == "asc" ? model.PSList.OrderBy(c => c.pstStatus).ThenBy(x => x.pstCode).ThenBy(c => c.pstPromisedDate).ThenBy(c => c.CreateTime).ToList() : model.PSList.OrderByDescending(c => c.pstStatus).ThenByDescending(x => x.pstCode).ThenByDescending(c => c.pstPromisedDate).ThenByDescending(c => c.CreateTime).ToList();
             }
             else if (sortColumnIndex == 4)
             {
-                model.PSList = sortDirection == "asc" ? model.PSList.OrderBy(c => c.pstPurchaseDate).ThenBy(c => c.pstPromisedDate).ThenBy(c => c.CreateTime).ToList() : model.PSList.OrderByDescending(c => c.pstPurchaseDate).ThenByDescending(c => c.pstPromisedDate).ThenByDescending(c => c.CreateTime).ToList();
+                model.PSList = sortDirection == "asc" ? model.PSList.OrderBy(c => c.pstPurchaseDate).ThenBy(x => x.pstCode).ThenBy(c => c.pstPromisedDate).ThenBy(c => c.CreateTime).ToList() : model.PSList.OrderByDescending(c => c.pstPurchaseDate).ThenByDescending(x => x.pstCode).ThenByDescending(c => c.pstPromisedDate).ThenByDescending(c => c.CreateTime).ToList();
             }
             else if (sortColumnIndex == 5)
             {
-                model.PSList = sortDirection == "asc" ? model.PSList.OrderBy(c => c.pstPromisedDate).ThenBy(c => c.pstPromisedDate).ThenBy(c => c.CreateTime).ToList() : model.PSList.OrderByDescending(c => c.pstPromisedDate).ThenByDescending(c => c.pstPromisedDate).ThenByDescending(c => c.CreateTime).ToList();
+                model.PSList = sortDirection == "asc" ? model.PSList.OrderBy(c => c.pstPromisedDate).ThenBy(x => x.pstCode).ThenBy(c => c.pstPromisedDate).ThenBy(c => c.CreateTime).ToList() : model.PSList.OrderByDescending(c => c.pstPromisedDate).ThenByDescending(x => x.pstCode).ThenByDescending(c => c.pstPromisedDate).ThenByDescending(c => c.CreateTime).ToList();
             }
-
-            if (SortOrder == "desc")
-            {
-                model.SortOrder = "asc";
-            }
-            else
-            {
-                model.SortOrder = "desc";
-            }
+            model.SortOrder = SortOrder == "desc" ? "asc" : "desc";
             model.PagingPSList = model.PSList.ToPagedList(No_Of_Page, Size_Of_Page);
         }
     }

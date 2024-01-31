@@ -831,3 +831,8 @@ table.dataTable thead > tr > th.sorting_asc.text-right:before, table.dataTable t
 .removefile{
     cursor:pointer;
 }
+.filelnk {
+    color: #007bff!important;
+    text-decoration: none!important;
+    background-color: transparent!important;
+}

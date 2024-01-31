@@ -276,6 +276,11 @@
           <path>Views\Shared\_ViewFileModal.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Shared\_ViewFileModal.cshtml</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>_ViewFileBlk.cshtml</name>
+          <path>Views\Shared\_ViewFileBlk.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Shared\_ViewFileBlk.cshtml</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

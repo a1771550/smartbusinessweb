@@ -3036,6 +3036,7 @@
     <Content Include="Static\barcode.html" />
     <Content Include="Static\collapse.html" />
     <Content Include="Static\datatables.html" />
+    <Content Include="Static\fadeToggle.html" />
     <Content Include="Static\POS\images\banana.png" />
     <Content Include="Static\POS\images\cherry.png" />
     <Content Include="Static\POS\images\icon-512.png" />

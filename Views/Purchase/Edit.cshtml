@@ -39,6 +39,7 @@
 	<input id="pstAllLoc" name="pstAllLoc" type="hidden" value="@Purchase.pstAllLoc" />
 	<input id="pstExRate" name="pstExRate" type="hidden" value="@Purchase.pstExRate" />
 	<input id="pstAmount" name="pstAmount" type="hidden" value="@Purchase.pstAmount" />
+	<input id="pstPartialAmt" name="pstPartialAmt" type="hidden" value="@Purchase.pstPartialAmt" />
 
 	<div class="row justify-content-end my-4 px-4">
 		<h5 id="status" class="">@Purchase.pstStatus.ToUpper()</h5>
@@ -158,7 +159,7 @@
 
 	var decimaltotal = CommonHelper.FormatNumber(Purchase.Total);
 
-	if (Purchase.pstStatus == "opened")
+	if (Purchase.pstStatus == PurchaseStatus.opened.ToString() || Purchase.pstStatus == PurchaseStatus.partialreceival.ToString())
 	{
 		<div class="my-5">
 
@@ -218,22 +219,26 @@
 							<td class="text-center"><span class="accountno acname" data-acno="@payment.AccountNo" data-acname="@payment.AccountName">@payment.AccountName (@payment.AccountNo)</span></td>
 							<td class="text-right"><input type="number" class="form-control pay text-right" data-id="@payment.Id" value="@CommonHelper.FormatNumber(payment.Amount)" /></td>
 							<td class="text-right">
-								<input type="datetime" class="form-control datepicker ppdate" name="ppDate" value="@payment.ppDate" />
+								<input type="datetime" class="form-control datepicker ppdate" name="ppDate" value="@payment.DateDisplay" />
 								<input type="hidden" class="datedisplay" value="@payment.DateDisplay" />
 							</td>
-							<td class="text-center text-wrap">
+							<td class="text-center text-wrap viewfile pointer">
 								@if (!string.IsNullOrEmpty(payment.fileName))
 								{
+									/*
+									<a href="#" class="filelnk" data-lnk="/Purchase/1/KP100001/sample3.pdf"><img src="/images/pdf.jpg" class=" thumbnail">sample3.pdf</a> <i class="fa fa-trash removefile" data-file="sample3.pdf" data-code="KP100001"></i>
+									*/
+
 									string pdfthumbnail = "<img src=\"/images/pdf.jpg\" class=\"thumbnail\">";
 									var filelist = payment.fileName.Split(',').ToList();
 
-									string removefilelnk = $"<i class=\"fa fa-trash removefile\" data-file=\"{0}\" data-payid=\"{payment.Id}\"></i>";
+									string removefilelnk = $"<i class=\"fa fa-trash removefile ppay\" data-file=\"FILE\" data-payid=\"{payment.Id}\"></i>";
 
-									string filelnk = $"<a href=\"#\" class=\"filelnk\" data-lnk=\"/Purchase/{payment.Id}/{0}\">{pdfthumbnail}{0}</a> {removefilelnk}";
+									string filelnk = $"<a href=\"#\" class=\"filelnk\" data-lnk=\"/Purchase/{payment.Id}/FILE\">{pdfthumbnail}FILE</a> {removefilelnk}";
 
-									@Html.Partial("_ViewFileModal", null, new ViewDataDictionary { {"FuncType", FuncType.Purchase }, { "filelist", filelist }, {"filelnk",filelnk } })
+									@Html.Partial("_ViewFileModal", null, new ViewDataDictionary { { "FuncType", FuncType.PurchasePayment }, { "filelist", filelist }, { "filelnk", filelnk }, { "paymentId", payment.Id } })
 
-									<span class="viewfile pointer">...</span>
+									<span>...</span>
 								}
 
 							</td>
@@ -248,11 +253,13 @@
 					}
 
 				</tbody>
-				<tfoot style="background:#eee;">
+				<tfoot style="background:#eee;" data-pstamount="@Purchase.pstAmount" data-payamt="@(Model.PurchasePayments.Sum(x => x.Amount))">
 					<tr>
 						<td colspan="10" class="text-right">
 							@{
-								decimal totalowed = (decimal)Purchase.pstAmount - Model.PurchasePayments.Sum(x => x.Amount);
+								bool ispartial = Purchase.pstStatus == PurchaseStatus.partialreceival.ToString();
+								decimal amount = ispartial ? (decimal)Purchase.pstPartialAmt : (decimal)Purchase.pstAmount;
+								decimal totalowed = amount - Model.PurchasePayments.Sum(x => x.Amount);
 								string totalowedtxt = CommonHelper.FormatNumber(totalowed);
 								string amtcls = totalowed > 0 ? "text-danger" : "text-success";
 							}
@@ -326,7 +333,7 @@
 				if (editmode && (Purchase.pstStatus.ToLower() == PurchaseStatus.order.ToString() || Purchase.pstStatus.ToLower() == PurchaseStatus.created.ToString() || Purchase.pstStatus.ToLower() == PurchaseStatus.rejected.ToString()))
 				{
 					<div class="text-right">
-						@Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "showViewBtn", false}, { "status", Purchase.pstStatus }, { "approvalmode", approvalmode } })
+						@Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "showViewBtn", false }, { "status", Purchase.pstStatus }, { "approvalmode", approvalmode } })
 					</div>
 				}
 				else if (!editmode)

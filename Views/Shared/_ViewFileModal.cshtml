@@ -2,12 +2,32 @@
 
 	List<string> imglist = ViewData["imglist"] == null ? null : ViewData["imglist"] as List<string>;
 	List<string> filelist = ViewData["filelist"] as List<string>;
-
+	FuncType type = ViewData["FuncType"] == null ? FuncType.PurchasePayment : (FuncType)ViewData["FuncType"];
 	string filelnk = ViewData["filelnk"] == null ? string.Empty : ViewData["filelnk"] as string;
-
+	long paymentId = ViewData["paymentId"] == null ? 0 : Convert.ToInt64(ViewData["paymentId"]);	
 }
 
 <div class="viewFileModal">
+
+	<div class="clearfix">
+		<button type="button" class="btn btn-warning btnsmall80 btnUpload float-right" data-id="@paymentId" title="@Resources.Resource.UploadFile"><i class="fa fa-upload"></i></button>
+	</div>
+
+	@if (filelist.Count > 0)
+	{
+		<ul class="filelist horizontallist">
+			@foreach (var file in filelist)
+			{
+				string htmlfile = file;
+				if (!string.IsNullOrEmpty(filelnk))
+				{
+					htmlfile = filelnk.Replace("FILE", file);
+				}
+				<li class="p-2" data-file="@file" data-payid="@paymentId">@Html.Raw(htmlfile)</li>
+			}
+		</ul>
+	}
+
 
 	@if (imglist != null && imglist.Count > 0)
 	{
@@ -15,27 +35,11 @@
 		<ul class="nostylelist">
 			@foreach (var img in imglist)
 			{
-				<li>@Html.Raw(img)</li>
+				<li class="border-bottom-dotted">@Html.Raw(img)</li>
 			}
 		</ul>
 
 
 	}
-
-	@if (filelist.Count > 0)
-	{
-
-		<ul>
-			@foreach (var file in filelist)
-			{
-				string htmlfile = file;
-				if (!string.IsNullOrEmpty(filelnk))
-				{
-					htmlfile = string.Format(filelnk, file);
-				}
-				<li>@Html.Raw(htmlfile)</li>
-			}
-		</ul>
-	}
-
+	
 </div>
