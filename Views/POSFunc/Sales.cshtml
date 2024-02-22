@@ -2,11 +2,13 @@
 @{
 	ViewBag.Title = Resources.Resource.Sales;
 	int rand = new Random().Next(10000, 100000);
+	var defaultCat = Model.CategoryList.FirstOrDefault();
+	List<SimpleItem> FilteredItemList = Model.SimpleItemList.Where(x=>x.catId==defaultCat.Id).ToList();
 }
 <link rel="stylesheet" href="~/Content/pos/pos.css?v=@rand">
 <link rel="stylesheet" href="~/Content/pos/Sales.css?v=@rand">
 
-<div class="page-wrapper ms-0">
+<div class="page-wrapper ms-0" data-defaultcatid="@defaultCat.Id">
 	<div class="content">
 		<div id="salesBlk" class="row">
 			<div class="col-lg-8 col-sm-12 tabs_wrapper">
@@ -15,32 +17,36 @@
 				<div class="tab small">
 					@foreach (var category in Model.CategoryList)
 					{
-						<button class="tablinks" onclick="openTapContent(this, '@category.NameDisplay')">@category.NameDisplay</button>
+						<button class="tablinks" data-id="@category.Id"  onclick="openTapContent(this, '@category.NameDisplay', @category.Id)">@category.NameDisplay</button>
 					}
 				</div>
 
 				@foreach (var category in Model.CategoryList)
 				{
-					<div id="@category.NameDisplay" class="tab_content" data-tab="@category.NameDisplay">
+					<div id="@category.NameDisplay" class="tab_content" data-id="@category.Id" data-tab="@category.NameDisplay">
 
 						<div class="page-header ">
 							<div class="page-title">
 								<h4>@category.NameDisplay</h4>
 								<span class="small">@Resources.Resource.ManageYourPurchases</span>
 							</div>
+							<div class="clearfix">
+								<input type="text" class="form-control float-right" id="searchItem" placeholder="@Resources.Resource.Search" />
+							</div>
 						</div>
 
-						<div class="row">
+						<div class="row productblk">
+						@Html.Partial("_NoRecordFound")
 
 							@foreach (var item in Model.SimpleItemList)
 							{
 								<div class="col-lg-3 col-sm-6 d-flex ">
-									<div class="productset flex-fill pointer" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode" data-price="@item.itmBaseSellingPrice" data-file="@item.itmPicFile">
+									<div class="productset flex-fill pointer" id="@item.itmCode" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode" data-price="@item.itmBaseSellingPrice" data-file="@item.itmPicFile">
 										<div class="productsetimg">
 											<img src="~/images/items/@item.itmPicFile" alt="@item.NameDesc">
 											<h6>@Resources.Resource.Qty: @item.QtySellable</h6>
 
-											<div class="check-product" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode" data-price="@item.itmBaseSellingPrice" data-file="@item.itmPicFile">
+											<div class="check-product hide" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode" data-price="@item.itmBaseSellingPrice" data-file="@item.itmPicFile">
 												<i class="fa fa-check"></i>
 											</div>
 										</div>
@@ -179,7 +185,7 @@
 
 @Html.Partial("_BarcodeModal")
 
-<div id="infoblk" data-defaultcatname="@Model.CategoryList.First().NameDisplay" data-currency="@Model.Currency" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicpaytypes="@JsonSerializer.Serialize(Model.DicPayTypes)" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)" data-defaultcustomer="@JsonSerializer.Serialize(Model.DefaultCustomer)"></div>
+<div id="infoblk" data-defaultcatname="@Model.CategoryList.First().NameDisplay" data-currency="@Model.Currency" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicpaytypes="@JsonSerializer.Serialize(Model.DicPayTypes)" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)" data-defaultcustomer="@JsonSerializer.Serialize(Model.DefaultCustomer)" data-itemlist="@JsonSerializer.Serialize(Model.SimpleItemList)" data-filteredlist="@JsonSerializer.Serialize(FilteredItemList)"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script src="~/Scripts/ts/js/pos/sales.js?v=@rand"></script>

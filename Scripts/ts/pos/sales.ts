@@ -1,6 +1,8 @@
 ﻿$infoblk = $("#infoblk");
 const formatzero = formatnumber(0);
-
+let selectedCatId: number = 3;
+let filteredItemList: ISimpleItem[] = [];
+let $norecordfound;
 function togglePayment(code: string, show:boolean) {
 	//console.log("code:" + code);	
 	$(".single__add").each(function (i, e) {		
@@ -197,7 +199,7 @@ $(document).on("click", ".operator", function () {
 	//console.log("qty:", qty);
 	populateProductList();
 });
-function openTapContent(ele, tapName) {
+function openTapContent(ele, tapName, Id) {
 	// Declare all variables
 	var i, tab_content, tablinks;
 
@@ -216,6 +218,18 @@ function openTapContent(ele, tapName) {
 	// Show the current tab, and add an "active" class to the button that opened the tab
 	document.getElementById(tapName)!.style.display = "block";
 	ele.className += " active";
+
+	selectedCatId = Id;
+	//console.log("selectedCatId:" + selectedCatId + ";Id:" + Id);
+	filteredItemList = [];
+	if (SimpleItemList) {
+		SimpleItemList.forEach((x) => {
+			//console.log("x.catId:" + x.catId);
+			if (x.catId == Id) filteredItemList.push(x);
+		});
+		//console.log("filteredItemList:", filteredItemList);
+		$(".productblk").empty().append(populateProductBlk(filteredItemList));
+	}
 }
 
 function toggleProductCheck(ele: HTMLElement, show: boolean) {
@@ -245,6 +259,70 @@ $(document).on("click", ".productset.pointer", function () {
 	populateProductList();
 });
 
+
+function populateProductBlk(itemList: ISimpleItem[]): string {
+	let html = "";
+	itemList.forEach((item) => {
+		html += `<div class="col-lg-3 col-sm-6 d-flex ">
+									<div class="productset flex-fill pointer" id="${item.itmCode}" data-id="${item.itmItemID}" data-namedesc="${item.NameDesc}" data-code="${item.itmCode}" data-price="${item.itmBaseSellingPrice}" data-file="${item.itmPicFile}">
+										<div class="productsetimg">
+											<img src="/images/items/${item.itmPicFile}" alt="${item.NameDesc}">
+											<h6>${qtytxt}: ${item.QtySellable}</h6>
+
+											<div class="check-product hide" data-id="${item.itmItemID}" data-namedesc="${item.NameDesc}" data-code="${item.itmCode}" data-price="${item.itmBaseSellingPrice}" data-file="${item.itmPicFile}">
+												<i class="fa fa-check"></i>
+											</div>
+										</div>
+										<div class="productsetcontent">
+											<h5>${item.CategoryName}</h5>
+											<h4><span class="itmnamedesc">${item.NameDesc}</span></h4>
+											<h6><span class="itmprice">$${item.SellingPriceDisplay}</span></h6>
+											<div class="discount-box">
+
+												<label class="small" for="discount">${discpctxt}:</label>
+
+												<input type="number" class="sdiscpc small flex" name="discpc" min="0" data-id="${item.itmItemID}" data-namedesc="${item.NameDesc}" data-code="${item.itmCode}" data-price="${item.itmBaseSellingPrice}" data-file="${item.itmPicFile}">
+
+											</div>
+										</div>
+									</div>
+								</div>`;
+	});
+
+	return html;
+}
+$(document).on("change", "#searchItem", function () {
+	keyword = $(this).val() as string;
+	console.log("keyword:", keyword);
+	filteredItemList = [];
+	if (keyword != "") {
+		keyword = keyword.toLowerCase();
+		console.log("SimpleItemList:", SimpleItemList);
+		SimpleItemList.forEach((x) => {
+			console.log("x.catId:" + x.catId);
+			if (x.catId == selectedCatId) {
+				console.log("x.itmcode:" + x.itmCode + ";x.namedesc:" + x.NameDesc + ";x.itmCode.indexOf(keyword):" + x.itmCode.indexOf(keyword) + ";x.NameDesc.indexOf(keyword):" + x.NameDesc.indexOf(keyword));
+				if (x.itmCode.toLowerCase().indexOf(keyword) >= 0 || x.NameDesc.toLowerCase().indexOf(keyword) >= 0) filteredItemList.push(x);
+			}
+		});
+		//console.log("filteredItemList#keyword:", filteredItemList);		
+		if (filteredItemList.length === 0) {
+			console.log("ready to show norecord");
+			$norecordfound.removeClass("hide");
+			console.log("filteredItemList:", filteredItemList);
+		}
+	} else {
+		if (filteredItemList.length === 0) {
+			filteredItemList = $infoblk.data("filteredlist");
+			//console.log("filteredItemList:", filteredItemList);
+		}
+	}
+
+	
+
+	$(".productblk").empty().append(populateProductBlk(filteredItemList));
+
+});
 $(function () {
 	forsimplesales = true;
 	salesType = SalesType.simplesales;
@@ -263,13 +341,23 @@ $(function () {
 	lang = Number($("#lang").val());
 	if (lang != 2) $(".btn-scanner-set").css({ "letter-spacing": ".7rem" });
 
-	openTapContent(this, $infoblk.data("defaultcatname"));
+	openTapContent(this, $infoblk.data("defaultcatname"), selectedCatId);
 	$(".tab").find("button").first().addClass("active");
 
-	$(".check-product").addClass("hide");
+	//$(".check-product").addClass("hide");
 
 	Sales = initSimpleSales();
+
+	SimpleItemList = $infoblk.data("itemlist");
+	filteredItemList = $infoblk.data("filteredlist");
+	$norecordfound = $("#norecordfound");
+
+	if (SimpleItemList.length == 0)
+		$norecordfound.removeClass("hide");
+
 	$("#txtCustomerName").val(defaultcustomer.cusName);
+
+	$("#searchItem").trigger("focus");
 	/* for debug only */
 	//$("#btnCheckout").trigger("click");
 });

@@ -46,6 +46,8 @@ let NamesMatch: boolean = false;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
+//const searchcustxt:string = $txtblk.data("searchcustxt");
+const discpctxt: string = $txtblk.data("discpctxt");
 const costxt: string = $txtblk.data("costxt");
 const assettxt: string = $txtblk.data("assettxt");
 const incometxt: string = $txtblk.data("incometxt");
@@ -5956,6 +5958,8 @@ interface ISimpleItem {
 	itmLastSellingPrice: number;
 	singleProId: number | null;
 	ItemPromotions: IItemPromotion[];
+	catId: number;
+	SellingPriceDisplay: string;
 }
 interface IItem extends ISimpleItem {
 	itmIsActive: boolean;
