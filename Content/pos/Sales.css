@@ -144,3 +144,10 @@ i.fa-plus, i.fa-minus {
 .product-lists li:nth-child(2){
 	min-width:20%!important;
 }
+
+.form-control {
+	padding: 0 .75rem !important;
+	font-size: 80% !important;
+	/* height: 170%!important; */
+	height: calc(1.5rem + 2px) !important;
+}

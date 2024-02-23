@@ -165,6 +165,11 @@
           <path>Scripts\ts\menu.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\menu.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>categoryedit.ts</name>
+          <path>Scripts\ts\item\categoryedit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\item\categoryedit.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

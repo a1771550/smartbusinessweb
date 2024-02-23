@@ -38,7 +38,7 @@
 						<div class="row productblk">
 						@Html.Partial("_NoRecordFound")
 
-							@foreach (var item in Model.SimpleItemList)
+							@foreach (var item in FilteredItemList)
 							{
 								<div class="col-lg-3 col-sm-6 d-flex ">
 									<div class="productset flex-fill pointer" id="@item.itmCode" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode" data-price="@item.itmBaseSellingPrice" data-file="@item.itmPicFile">

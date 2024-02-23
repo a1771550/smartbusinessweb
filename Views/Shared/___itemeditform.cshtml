@@ -47,8 +47,8 @@
         <select id="drpCategory" class="form-control" name="itmCatId" @_disabled>
             @foreach (var category in CategoryList)
             {
-                // set 'selected' by javascript
-                <option value="@category.Id">@category.NameDisplay</option>
+                var selected = editmode && Item.catId == category.Id ? "selected" : "";
+                <option value="@category.Id" @selected>@category.NameDisplay</option>
             }
         </select>
     </div>

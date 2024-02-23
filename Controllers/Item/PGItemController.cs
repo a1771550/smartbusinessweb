@@ -29,14 +29,10 @@ namespace SmartBusinessWeb.Controllers.Item
         {
             ViewBag.ParentPage = "item";
             ViewBag.PageName = "pgitem";
-            if (model.itmItemID == 0)
-            {
-                PGItemEditModel.Add(model);
-            }
-            else
-            {
-                PGItemEditModel.Edit(model);
-            }
+
+            if (model.itmItemID == 0) PGItemEditModel.Add(model);          
+            else PGItemEditModel.Edit(model);
+            
             string msg = Resources.Resource.ItemSaved;
             return Json(msg);
         }
