@@ -1219,8 +1219,9 @@ function GetItems(pageIndex) {
 		: $infoblk.data("location")
 			? ($infoblk.data("location") as string)
 			: ($infoblk.data("shop") as string);
-
-	let data = `pageIndex=${pageIndex}&keyword=${keyword}&location=${shop}&forsales=${forsales}&forwholesales=${forwholesales}&forpurchase=${forpurchase}&forstock=${forstock}&fortransfer=${fortransfer}&forpreorder=${forpreorder}&type=${type}`;
+	
+	let data = { pageIndex:pageIndex,keyword:keyword,location:shop, forsales:forsales,forwholesales:forwholesales,forpurchase:forpurchase,forstock:forstock,fortransfer:fortransfer,forpreorder:forpreorder,type:type};
+		
 
 	openWaitingModal();
 	$.ajax({
@@ -1567,6 +1568,8 @@ $(document).on("click", ".Pager .page", function () {
 	if (fortraining) GetTrainings(pageindex);
 	if (forsales || forpreorder || forwholesales || forpurchase)
 		GetItems(pageindex);
+
+	if (forstock) GetStocks(pageindex);
 });
 $(document).on("click", "#tblItem th a", function () {
 	sortName = $(this).data("category");
@@ -11521,7 +11524,7 @@ function GetStocks(pageIndex: number) {
 		stocklocation = "";
 	}
 	//
-	let data = `{pageIndex:${pageIndex},includeStockInfo:1,location:"${stocklocation}",keyword:"${keyword}",includenonstock:${includenonstock},forstock:${forstock},fortransfer:${fortransfer}}`;
+	let data = { pageIndex: pageIndex, includeStockInfo: 1, location: stocklocation, keyword: keyword, includenonstock: includenonstock, forstock: forstock, fortransfer: fortransfer };
 	//console.log('data:', data);
 	/*return false;*/
 	openWaitingModal();
@@ -11716,7 +11719,7 @@ function OnGetStocksOK(response) {
 
 		$(`#tbl${gTblName} tbody`).empty().html(html);
 
-		let $pager = forstock ? $(".StockPager") : $(".TransferPager");
+		let $pager = $(".Pager");
 		$pager.ASPSnippets_Pager({
 			ActiveCssClass: "current",
 			PagerCssClass: "pager",

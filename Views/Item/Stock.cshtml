@@ -66,13 +66,13 @@
 
     </table>
 
-    <div class="StockPager my-3"></div>
+    <div class="Pager my-3"></div>
 }
 
 @Html.Partial("_WaitingModal")
 @Html.Partial("_DescModal")
 @Html.AntiForgeryToken()
-<div id="infoblk" class="hide" data-shop="@user.shopCode" data-shops="@string.Join(",",Model.Shops)" data-enablebuysellunits="@Model.EnableBuySellUnits" data-idlist="@string.Join(",",Model.ItemIdList)" data-jsondiciditemoptions="@Model.JsonDicIDItemOptions"></div>
+<div id="infoblk" data-shop="@user.shopCode" data-shops="@string.Join(",",Model.Shops)" data-enablebuysellunits="@Model.EnableBuySellUnits" data-idlist="@string.Join(",",Model.ItemIdList)" data-jsondiciditemoptions="@Model.JsonDicIDItemOptions"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script>
