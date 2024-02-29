@@ -18884,12 +18884,12 @@ function _submitSimpleSales() {
 						noButton: notxt,
 						callback: function (value) {
 							if (value) {
-								if (data.zerostockItemcodes !== "") {
-									handleOutOfStocks(data.zerostockItemcodes);
-								} else {
+								//if (data.zerostockItemcodes !== "") {
+								//	handleOutOfStocks(data.zerostockItemcodes);
+								//} else {
 									window.open(printurl);
 									window.location.reload();
-								}
+								//}
 							}
 						},
 					});
@@ -18983,12 +18983,12 @@ function _submitSales() {
 						noButton: notxt,
 						callback: function (value) {
 							if (value) {
-								if (data.zerostockItemcodes !== "") {
-									handleOutOfStocks(data.zerostockItemcodes);
-								} else {
+								//if (data.zerostockItemcodes !== "") {
+								//	handleOutOfStocks(data.zerostockItemcodes);
+								//} else {
 									window.open(printurl);
 									window.location.reload();
-								}
+								//}
 							}
 						},
 					});
