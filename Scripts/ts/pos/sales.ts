@@ -3,13 +3,13 @@ const formatzero = formatnumber(0);
 let selectedCatId: number = 3;
 let filteredItemList: ISimpleItem[] = [];
 let $norecordfound;
-function togglePayment(code: string, show:boolean) {
+function togglePayment(code: string, show: boolean) {
 	//console.log("code:" + code);	
-	$(".single__add").each(function (i, e) {		
+	$(".single__add").each(function (i, e) {
 		if ($(e).data("code") == code) {
 			if (show) $(e).addClass("activee");
 			else $(e).removeClass("activee");
-		}	
+		}
 	});
 }
 
@@ -23,8 +23,14 @@ $(document).on("click", ".btnpayment", function () {
 
 	if (checked) $(this).addClass("toggle");
 	else $(this).removeClass("toggle");
+
+	let isEpay = (code.toLowerCase() == "alipay" || code.toLowerCase() == "wechat");
+
+	if (isEpay) $("#txtPayerCode").prop("readonly", false).trigger("focus");
+	else $("#txtPayerCode").prop("readonly", true);
+
 });
-$(document).on("change", "#txtItemCode", function () {	
+$(document).on("change", "#txtItemCode", function () {
 	/*console.log("here");*/
 	handleProductCheck(null, 0, true);
 	populateProductList();
@@ -148,7 +154,7 @@ $(document).on("click", "#btnCheckout", function () {
 		//console.log("cusid:" + Sales.rtsCusID);
 		if (Sales.rtsCusID > 0) {
 			togglePaymentBlk("open", "salesBlk", Sales.rtsFinalTotal);
-		}			
+		}
 		else {
 			$.fancyConfirm({
 				title: "",
@@ -162,7 +168,7 @@ $(document).on("click", "#btnCheckout", function () {
 					}
 				}
 			});
-		} 
+		}
 	}
 });
 $(document).on("change", ".sdiscpc", function () {
@@ -318,7 +324,7 @@ $(document).on("change", "#searchItem", function () {
 		}
 	}
 
-	
+
 
 	$(".productblk").empty().append(populateProductBlk(filteredItemList));
 

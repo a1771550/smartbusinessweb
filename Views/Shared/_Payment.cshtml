@@ -61,7 +61,7 @@
 			<div class="dash__price">
 				<div class="price__title">
 					<label for="@amtId">@title:</label>
-					<p id="@amtId"><span class="currencySym">$</span><span class="totalamt mx-1">50,000.00</span></p>
+					<p id="@amtId"><span class="currencySym">$</span><span class="totalamt mx-1"></span></p>
 				</div>
 				<div class="price__add--wrap">
 					<label for="#">@Resources.Resource.Paywith:</label>
@@ -115,7 +115,6 @@
 							{
 								string btnName = string.Concat("btn" + payment.pmtCode);
 								activecls = idx == 0 ? "toggle" : "";
-								//string showval = idx == 0 ? "1" : "0";
 								<button id="@btnName" class="btnpayment toggle-button @activecls" data-target="payMode" data-type="@payment.pmtCode">
 									<span class="pluse">
 										<i class="fal fa-plus"></i>
@@ -141,6 +140,7 @@
 					@if (forsales && PaymentTypes != null)
 					{
 						int idx = 0;
+						//.Where(x=>x.pmtCode.ToLower()!="wechat"&&x.pmtCode.ToLower()!="alipay").ToList()
 						foreach (PaymentType payment in PaymentTypes)
 						{
 							activecls = idx == 0 ? "activee" : "";
@@ -185,14 +185,14 @@
 				
 			</div>
 		</div>
-		<div class="dash_mid_right">
+		<div id="epayblk" class="dash_mid_right">
 			<div class="dash__pay">
 				<div class="dash__pay--title">
 					<h3>@Resources.Resource.ePayment</h3>
 				</div>
 				<div class="dash__pay--code">
 					<label for="#">@Resources.Resource.PayerCode</label>
-					<input id="txtPayerCode" type="text" placeholder="@Resources.Resource.PayerCode">
+					<input id="txtPayerCode" type="text" placeholder="@Resources.Resource.PayerCode" readonly>
 				</div>
 				<div class="dash__btn">
 					<button id="reverseEpay" type="button" class="red isDisabled" >@Html.Raw(Resources.Resource.ReversePaymentHTML)</button>
@@ -206,11 +206,7 @@
 					<h3>@Resources.Resource.Time <span id="salestime"></span></h3>
 				</div>
 				<div class="table__single items">
-					<h2>@Resources.Resource.Items</h2>
-					@*<h3>Strawberry x 100 <span>$ 14,000</span></h3>
-					<h3>Apple x 50 <span>$ 7,000</span></h3>
-					<h3>Orange x 50 <span>$ 8,000</span></h3>
-					<h3>Pineapple x 100 <span>$ 20,000</span></h3>*@
+					<h2>@Resources.Resource.Items</h2>					
 				</div>
 				<div class="table__single last">
 					<h3>@Resources.Resource.Tax <span class="taxamt"></span></h3>
