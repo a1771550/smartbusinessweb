@@ -3018,6 +3018,7 @@
     <Content Include="Content\mean\js\Popper.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\ts\js\itemtransfer\transfer.js" />
+    <Content Include="Scripts\ts\js\item\index.js" />
     <Content Include="Scripts\ts\js\lang.js" />
     <Content Include="Scripts\ts\js\logout.js" />
     <Content Include="Scripts\ts\js\menu.js" />
@@ -4632,6 +4633,8 @@
     <Content Include="Views\Test\PreSalesLns.cshtml" />
     <Content Include="Scripts\ts\js\test\presaleslns.js.map" />
     <Content Include="Views\Shared\_ViewFileBlk.cshtml" />
+    <Content Include="Views\Item\Index.cshtml" />
+    <Content Include="Scripts\ts\js\item\index.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -5118,7 +5121,7 @@
     <TypeScriptCompile Include="Scripts\ts\item\category.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\categoryedit.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\itemedit.ts" />
-    <TypeScriptCompile Include="Scripts\ts\item\pgitem.ts" />
+    <TypeScriptCompile Include="Scripts\ts\item\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\pgitemedit.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\stock.ts" />
     <TypeScriptCompile Include="Scripts\ts\records\job.ts" />

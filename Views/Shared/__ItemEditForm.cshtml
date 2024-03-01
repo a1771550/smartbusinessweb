@@ -1,5 +1,5 @@
 ﻿@{    
-    ItemView Item = ViewData["Item"] == null ? null : ViewData["Item"] as ItemView;
+    ItemModel Item = ViewData["Item"] == null ? null : ViewData["Item"] as ItemModel;
     List<ItemAttribute> ItemAttrList = ViewData["ItemAttrList"] == null ? null : ViewData["ItemAttrList"] as List<ItemAttribute>;
 
     bool editmode = Convert.ToBoolean(ViewData["editmode"]);
@@ -9,21 +9,16 @@
     int MaxCodeLength = Convert.ToInt32(ViewData["maxcodelength"]);
     int MaxNameLength = Convert.ToInt32(ViewData["maxnamelength"]);
     string Currency = ViewData["currency"].ToString();
-    bool pgitemnull = Convert.ToBoolean(ViewData["PGItemNull"]);
+    
     int lang = Convert.ToInt32(ViewData["lang"]);
     List<PPWLib.Models.MYOB.AccountModel> ACList = ViewData["ACList"] as List<PPWLib.Models.MYOB.AccountModel>;
     bool EnableBuySellUnits = Convert.ToBoolean(ViewData["EnableBuySellUnits"]);
-    //Response.Write(ItemVari == null);
-    //Response.Write(Item == null);
-    //return;
     string disabled = editmode && Item.HasSalesRecords ? "disabled" : "";
     string _checked = editmode && !Item.itmIsNonStock ? "checked" : "";
     List<string> Shops = ViewData["Shops"] != null ? (List<string>)ViewData["Shops"] : new List<string>();
     bool isItemABSS = Item==null?false: Item.itmCheckout == null ? true : (bool)Item.itmCheckout;
     HashSet<ItemCategoryModel> CategoryList = ViewData["CategoryList"] as HashSet<ItemCategoryModel>;
     bool EditItem = Convert.ToBoolean(ViewData["EditItem"]);
-    //Response.Write(isItemABSS);
-    //Response.Write(EditItem);
 }
 
 @if (editmode)
@@ -35,7 +30,7 @@
 {
     
 <div class="container">
-    @Html.Partial("___itemeditform", null, new ViewDataDictionary { { "ItemAttrList", ItemAttrList }, { "Item", Item }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList }, { "PGItemNull", pgitemnull }, { "EditItem", EditItem } })
+    @Html.Partial("___itemeditform", null, new ViewDataDictionary { { "ItemAttrList", ItemAttrList }, { "Item", Item }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList }, { "EditItem", EditItem } })
 </div>
         @*</div>
     </div>*@
@@ -43,5 +38,5 @@
 else
 {
     <span class="small alert alert-info d-inline-block">@Resources.Resource.ItemVariationsOnly4AbssItemsWAttributes</span>
-    @Html.Partial("___itemeditform", null, new ViewDataDictionary { { "ItemAttrList", ItemAttrList }, { "Item", Item }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList }, { "PGItemNull", pgitemnull }, { "EditItem", EditItem } })
+    @Html.Partial("___itemeditform", null, new ViewDataDictionary { { "ItemAttrList", ItemAttrList }, { "Item", Item }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList }, { "EditItem", EditItem } })
 }

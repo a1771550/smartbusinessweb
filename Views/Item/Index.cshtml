@@ -1,0 +1,74 @@
+﻿@model PPWLib.Models.Item.ItemEditModel
+@using PagedList.Mvc;
+@{
+	ViewBag.Title = string.Format(Resources.Resource.NewFormat, Resources.Resource.Item);
+	int rand = CommonHelper.GetVersionRandomNo();
+}
+
+<h2>@ViewBag.Title</h2>
+<p class="my-3">
+	@Html.ActionLink(Resources.Resource.Add, "Edit", new { itemId = 0 }, new { @class = "btn btn-info" })
+</p>
+
+@using (Html.BeginForm("Index", "Item", FormMethod.Get, new { @Id = "frmItem" }))
+{
+	@Html.AntiForgeryToken()
+	<div class="form-inline mb-2 my-4">
+		<div class="form-group">
+			<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" />
+			<button id="btnSearch" type="submit" class="btn btn-success ml-4">@Resources.Resource.Search</button>
+
+			<button id="btnReload" type="button" class="btn btn-warning ml-4">@Resources.Resource.Reload</button>
+		</div>
+	</div>
+
+	<div id="norecord" class="alert alert-warning hide">@Resources.Resource.NoDataFound</div>
+	<table id="tblItem" class="table table-bordered  table-hover table-condensed">
+		<thead class="gray-header">
+			<tr>
+				<th scope="col" class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">@Resources.Resource.ItemCode</th>
+				<th scope="col" class="text-center colheader" data-col="1" data-keyword="@Model.Keyword"><span class="font-weight-bold small">@Resources.Resource.Name/@Resources.Resource.Description</span></th>
+				<th scope="col" class="text-center colheader" data-col="2" data-keyword="@Model.Keyword">@Resources.Resource.CreateTime</th>
+				<th scope="col" class="text-center colheader" data-col="3" data-keyword="@Model.Keyword">@Resources.Resource.ModifyTime</th>
+
+				<th scope="col"></th>
+
+			</tr>
+		</thead>
+
+
+		@foreach (var item in Model.PagingItemList)
+		{
+			var namedesctxt = item.NameDesc.Length > 40 ? item.NameDesc.Substring(0, 40) + "..." : item.NameDesc;
+			<tr>
+
+				<td class="text-center">@item.itmCode</td>
+				<td class="text-center itemdesc" data-desc="@item.NameDesc">@namedesctxt</td>
+
+				<td class="text-center">@item.CreateTimeDisplay</td>
+				<td class="text-center">@item.ModifyTimeDisplay</td>
+
+				<td>
+					<a class="btn btn-info" role="button" href="/Item/Edit?itemId=@item.itmItemID&referrer=Index">@Resources.Resource.Edit</a>
+					<a class="btn btn-outline-danger itemremove" role="button" href="#" data-id="@item.itmItemID">@Resources.Resource.Remove</a>
+				</td>
+			</tr>
+		}
+
+	</table>
+	<div id="pagingblk" class="my-3">
+		@Html.PagedListPager(Model.PagingItemList, PageNo => Url.Action("Index",
+new { PageNo, SortCol = Model.SortCol, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
+	</div>
+
+	<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+	<input type="hidden" id="sortcol" value="@Model.SortCol" />
+}
+
+@Html.Partial("_WaitingModal")
+
+@Html.Partial("_DescModal")
+
+<div id="infoblk" data-referrer="index"></div>
+
+<script src="~/Scripts/ts/js/item/index.js?v=@rand"></script>

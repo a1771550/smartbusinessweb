@@ -17,6 +17,50 @@ namespace SmartBusinessWeb.Controllers.Item
     [CustomAuthenticationFilter]
     public class ItemController : BaseController
     {
+        public ActionResult Index(int SortCol = 2, string SortOrder = "desc", string Keyword = "", int? PageNo = 1)
+        {
+            ViewBag.ParentPage = "Item";
+            ViewBag.PageName = "list";
+            if (string.IsNullOrEmpty(Keyword))
+                Keyword = null;
+
+            ItemEditModel model = new ItemEditModel
+            {
+                SortCol = SortCol,
+                Keyword = Keyword
+            };
+
+            model.SortOrder = (SortOrder == "desc") ? "asc" : "desc";
+
+            var itemlist = model.GetList(Keyword);
+
+            int Size_Of_Page = PageSize;
+            int No_Of_Page = (PageNo ?? 1);
+            var sortColumnIndex = SortCol;
+            var sortDirection = SortOrder;
+
+            if (sortColumnIndex == 0)
+            {
+                itemlist = sortDirection == "asc" ? itemlist.OrderBy(c => c.itmCode).ToList() : itemlist.OrderByDescending(c => c.itmCode).ToList();
+            }
+            else if (sortColumnIndex == 1)
+            {
+                itemlist = sortDirection == "asc" ? itemlist.OrderBy(c => c.NameDesc).ToList() : itemlist.OrderByDescending(c => c.NameDesc).ToList();
+            }
+            else if (sortColumnIndex == 2)
+            {
+                itemlist = sortDirection == "asc" ? itemlist.OrderBy(c => c.itmCreateTime).ToList() : itemlist.OrderByDescending(c => c.itmCreateTime).ToList();
+            }
+            else if (sortColumnIndex == 3)
+            {
+                itemlist = sortDirection == "asc" ? itemlist.OrderBy(c => c.itmModifyTime).ToList() : itemlist.OrderByDescending(c => c.itmModifyTime).ToList();
+            }
+
+            model.PagingItemList = itemlist.ToPagedList(No_Of_Page, Size_Of_Page);
+            return View(model);
+        }
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult SaveItemOptions(List<ItemOptionsModel> model)
@@ -43,31 +87,23 @@ namespace SmartBusinessWeb.Controllers.Item
         {
             ViewBag.ParentPage = "item";
             ViewBag.PageName = "stock";
-
-            //int Size_Of_Page = (int)ComInfo.PageLength;
-
-            if (CheckoutPortal.ToLower() == "kingdee") //modelhelper.getitemlist will tell the difference.
-            {
-                ItemStockEditModel model = new ItemStockEditModel();
-                return View("KStock", model);
-            }
-            else
-            {
-                StockModel model = new StockModel();
-                return View(model);
-            }
+            StockModel model = new StockModel();
+            return View(model);
         }
 
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
         [HttpGet]
-        public ActionResult Edit(int itemId)
+        public ActionResult Edit(int itemId, string referrer)
         {
             ViewBag.ParentPage = ViewBag.PageName = "item";
-            ItemEditModel model = new ItemEditModel(itemId, true);
+            //ItemEditModel model = new ItemEditModel(itemId, true);
+            ItemEditModel model = new ItemEditModel();
+            model.Get(itemId);
+            model.Referrer = referrer;
             return View(model);
         }
-        
+
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
         [HttpPost]
@@ -82,15 +118,6 @@ namespace SmartBusinessWeb.Controllers.Item
             return Json(msg);
         }
 
-        //[HandleError]
-        //[CustomAuthorize("item", "boss", "admin", "superadmin")]
-        //[HttpGet]
-        //public ActionResult EditIV(int itemId)
-        //{
-        //    ViewBag.ParentPage = ViewBag.PageName = "item";
-        //    ItemEditModel model = new ItemEditModel(itemId, true);
-        //    return View("Edit", model);
-        //}
 
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]

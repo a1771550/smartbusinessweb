@@ -32,11 +32,13 @@ else
     @Html.Partial("_ItemBuySellUnitsModal", null, new ViewDataDictionary { { "Item", Model.Item } })
 }
 
+<div>
+	@Html.ActionLink(Resources.Resource.BackToList, Model.Referrer)
+</div>
+
 @Html.Partial("_AccountModal")
 
 @Html.Partial("_WaitingModal")
-
-
 
 <div id="infoblk" data-shop="@Model.ComInfo.Shop" data-codelist="@codelist" data-supcodelist="@supcodelist" data-jsondicacaccounts="@Model.JsonDicAcAccounts" data-accountprofileid="@Model.AccountProfileId" data-jsonitem="@Model.JsonItem" data-stockqtyerr="@Resources.Resource.StockQtyLTZeroErr" data-jsonattrlist="@Model.JsonItemAttrList" data-jsondiclocqty="@Model.Item.JsonDicLocQty" data-jsonitemvariations="@Model.JsonItemVariations" data-jsonselectedivlist="@Model.JsonSelectedIVList" data-jsonitemvari="@Model.JsonItemVari" data-edititem="@Model.EditItem"></div>
 

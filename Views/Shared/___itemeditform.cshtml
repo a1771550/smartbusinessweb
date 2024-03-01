@@ -1,485 +1,480 @@
-﻿@{   
-    ItemView Item = ViewData["Item"] == null ? null : ViewData["Item"] as ItemView;
-    List<ItemAttribute> ItemAttrList = ViewData["ItemAttrList"] == null ? null : ViewData["ItemAttrList"] as List<ItemAttribute>;
+﻿@{
+	ItemModel Item = ViewData["Item"] == null ? null : ViewData["Item"] as ItemModel;
+	List<ItemAttribute> ItemAttrList = ViewData["ItemAttrList"] == null ? null : ViewData["ItemAttrList"] as List<ItemAttribute>;
 
-    bool editmode = Convert.ToBoolean(ViewData["editmode"]);
-    string _readonly = ViewData["readonly"].ToString();
-    bool nonabss = Convert.ToBoolean(ViewData["nonabss"]);
-    int AccountProfileId = Convert.ToInt32(ViewData["apId"]);
-    int MaxCodeLength = Convert.ToInt32(ViewData["maxcodelength"]);
-    int MaxNameLength = Convert.ToInt32(ViewData["maxnamelength"]);
-    string Currency = ViewData["currency"].ToString();
-    bool pgitemnull = Convert.ToBoolean(ViewData["PGItemNull"]);
-    int lang = Convert.ToInt32(ViewData["lang"]);
-    List<PPWLib.Models.MYOB.AccountModel> ACList = ViewData["ACList"] as List<PPWLib.Models.MYOB.AccountModel>;
-    bool EnableBuySellUnits = Convert.ToBoolean(ViewData["EnableBuySellUnits"]);
+	bool editmode = Convert.ToBoolean(ViewData["editmode"]);
+	string _readonly = ViewData["readonly"].ToString();
+	bool nonabss = Convert.ToBoolean(ViewData["nonabss"]);
+	int AccountProfileId = Convert.ToInt32(ViewData["apId"]);
+	int MaxCodeLength = Convert.ToInt32(ViewData["maxcodelength"]);
+	int MaxNameLength = Convert.ToInt32(ViewData["maxnamelength"]);
+	string Currency = ViewData["currency"].ToString();
 
-    string disabled = editmode && Item.HasSalesRecords ? "disabled" : "";
-    string _checked = editmode && !Item.itmIsNonStock ? "checked" : "";
-    bool itemnull = Item == null;
-    List<string> Shops = ViewData["Shops"] != null ? (List<string>)ViewData["Shops"] : new List<string>();
-    bool isItemABSS = Item==null?false: Item.itmCheckout == null ? true : (bool)Item.itmCheckout;
-    HashSet<ItemCategoryModel> CategoryList = ViewData["CategoryList"] as HashSet<ItemCategoryModel>;
-    bool EditItem = Convert.ToBoolean(ViewData["EditItem"]);
-    int itemId = editmode ? (int)Item.itmItemID : 0;
-    string itemCode = editmode ? Item.itmCode : "";
+	int lang = Convert.ToInt32(ViewData["lang"]);
+	List<PPWLib.Models.MYOB.AccountModel> ACList = ViewData["ACList"] as List<PPWLib.Models.MYOB.AccountModel>;
+	bool EnableBuySellUnits = Convert.ToBoolean(ViewData["EnableBuySellUnits"]);
+
+	string disabled = editmode && Item.HasSalesRecords ? "disabled" : "";
+	string _checked = editmode && !Item.itmIsNonStock ? "checked" : "";
+	bool itemnull = Item == null;
+	List<string> Shops = ViewData["Shops"] != null ? (List<string>)ViewData["Shops"] : new List<string>();
+	bool isItemABSS = Item == null ? false : Item.itmCheckout == null ? true : (bool)Item.itmCheckout;
+	HashSet<ItemCategoryModel> CategoryList = ViewData["CategoryList"] as HashSet<ItemCategoryModel>;
+	bool EditItem = Convert.ToBoolean(ViewData["EditItem"]);
+	int itemId = editmode ? (int)Item.itmItemID : 0;
+	string itemCode = editmode ? Item.itmCode : "";
 }
-<input type="hidden" id="itemId" value="@itemId" />
-<input type="hidden" id="itemCode" value="@itemCode" />
+<input type="hidden" id="itmItemID" value="@itemId" />
+
 
 <div class="form-horizontal my-4">
-    @{ var itemcode = ""; var itemname = ""; var itemsupcode = ""; decimal weight = 0; decimal height = 0; decimal width = 0; decimal length = 0;
-        string lblwidth = lang == 0 ? "38%" : "46%"; var _disabled = ""; }
+	@{ var itemcode = ""; var itemname = ""; var itemsupcode = ""; decimal weight = 0; decimal height = 0; decimal width = 0; decimal length = 0;
+		string lblwidth = lang == 0 ? "38%" : "46%"; var _disabled = ""; }
 
-    @if (editmode)
-    {
-        itemcode = Item.itmCode;
-        itemsupcode = Item.itmSupCode;
-        itemname = Item.itmName;
-        weight = (Item.itmWeight == null ? 0 : (decimal)Item.itmWeight);
-        width = (Item.itmWidth == null ? 0 : (decimal)Item.itmWidth);
-        height = (Item.itmHeight == null ? 0 : (decimal)Item.itmHeight);
-        length = (Item.itmLength == null ? 0 : (decimal)Item.itmLength);
-    }
+	@if (editmode)
+	{
+		itemcode = Item.itmCode;
+		itemsupcode = Item.itmSupCode;
+		itemname = Item.itmName;
+		weight = (Item.itmWeight == null ? 0 : (decimal)Item.itmWeight);
+		width = (Item.itmWidth == null ? 0 : (decimal)Item.itmWidth);
+		height = (Item.itmHeight == null ? 0 : (decimal)Item.itmHeight);
+		length = (Item.itmLength == null ? 0 : (decimal)Item.itmLength);
+	}
 
-    <div class="form-group">
-        <label for="drpCategory">@Resources.Resource.Category</label>
-        <select id="drpCategory" class="form-control" name="itmCatId" @_disabled>
-            @foreach (var category in CategoryList)
-            {
-                var selected = editmode && Item.catId == category.Id ? "selected" : "";
-                <option value="@category.Id" @selected>@category.NameDisplay</option>
-            }
-        </select>
-    </div>
+	<div class="form-group">
+		<label for="drpCategory">@Resources.Resource.Category</label>
+		<select id="drpCategory" class="form-control" name="itmCatId" @_disabled>
+			@foreach (var category in CategoryList)
+			{
+				var selected = editmode && Item.catId == category.Id ? "selected" : "";
+				<option value="@category.Id" @selected>@category.NameDisplay</option>
+			}
+		</select>
+	</div>
 
-    <div class="row">
-        <div class="col-12 col-md-3">
-            <div class="form-group">
-                <label class="control-label" for="itmCode">@Resources.Resource.ItemCode (SKU)</label>
-                <input type="text" class="form-control" maxlength="@MaxCodeLength" id="itmCode" name="itmCode" value="@itemcode" placeholder="@Resources.Resource.ItemCode (SKU)" @_readonly />
-                <span class="small alert font-weight-bold">(@string.Format(Resources.Resource.MaxChar, MaxCodeLength))</span>
-            </div>
-        </div>
-        <div class="col-12 col-md-3">
-            <div class="form-group">
-                <label class="control-label" for="itmSupCode">@Resources.Resource.ItemExternalCode</label>
-                <input type="text" class="form-control" maxlength="@MaxCodeLength" id="itmSupCode" name="itmSupCode" placeholder="@Resources.Resource.ItemExternalCode" value="@itemsupcode" />
-                <span class="small alert font-weight-bold">(@string.Format(Resources.Resource.MaxChar, MaxCodeLength))</span>
-            </div>
-        </div>
-        <div class="col-12 col-md-3">
-            <div class="form-group">
-                <label class="control-label" for="itmName">@Resources.Resource.ItemName</label>
-                <input type="text" class="form-control" id="itmName" name="itmName" maxlength="@MaxNameLength" placeholder="@Resources.Resource.ItemName" value="@itemname" />
-                <span class="small alert font-weight-bold">(@string.Format(Resources.Resource.MaxChar, MaxNameLength))</span>
-            </div>
-        </div>
-        <div class="col-12 col-md-3">
-            @{
-                decimal sellingprice = editmode ? Item.itmBaseSellingPrice : 0;
-                decimal pl;
-                decimal buyingcost = editmode ? Item.itmBuyStdCost == null ? 0 : (decimal)Item.itmBuyStdCost : 0;
-            }
-            <div class="row">
-                <div class="col-6 col-md-6">
-                    <div class="form-group required">
-                        <label class="control-label small" for="BaseSellingPrice">@Resources.Resource.BaseSellingPrice (@Currency)</label>
-                        <input type="number" class="form-control positive" id="BaseSellingPrice" name="itmBaseSellingPrice" min="0" data-val="@sellingprice" placeholder="@Resources.Resource.BaseSellingPrice (@Currency)" value="@sellingprice" />
-                    </div>
-                </div>
-                <div class="col-6 col-md-6">
-                    <div class="form-group required">
-                        <label class="control-label small" for="BuyStdCost">@Resources.Resource.Cost4Purchase (@Currency)</label>
-                        <input type="number" class="form-control positive" id="BuyStdCost" name="itmBuyStdCost" min="0" data-val="@buyingcost" placeholder="@Resources.Resource.Cost4Purchase (@Currency)" value="@buyingcost" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="row">
+		<div class="col-12 col-md-3">
+			<div class="form-group">
+				<label class="control-label" for="itmCode">@Resources.Resource.ItemCode (SKU)</label>
+				<input type="text" class="form-control" maxlength="@MaxCodeLength" id="itmCode" name="itmCode" value="@itemcode" placeholder="@Resources.Resource.ItemCode (SKU)" @_readonly />
+				<span class="small alert font-weight-bold">(@string.Format(Resources.Resource.MaxChar, MaxCodeLength))</span>
+			</div>
+		</div>
+		<div class="col-12 col-md-3">
+			<div class="form-group">
+				<label class="control-label" for="itmSupCode">@Resources.Resource.ItemExternalCode</label>
+				<input type="text" class="form-control" maxlength="@MaxCodeLength" id="itmSupCode" name="itmSupCode" placeholder="@Resources.Resource.ItemExternalCode" value="@itemsupcode" />
+				<span class="small alert font-weight-bold">(@string.Format(Resources.Resource.MaxChar, MaxCodeLength))</span>
+			</div>
+		</div>
+		<div class="col-12 col-md-3">
+			<div class="form-group">
+				<label class="control-label" for="itmName">@Resources.Resource.ItemName</label>
+				<input type="text" class="form-control" id="itmName" name="itmName" maxlength="@MaxNameLength" placeholder="@Resources.Resource.ItemName" value="@itemname" />
+				<span class="small alert font-weight-bold">(@string.Format(Resources.Resource.MaxChar, MaxNameLength))</span>
+			</div>
+		</div>
+		<div class="col-12 col-md-3">
+			@{
+				decimal sellingprice = editmode ? Item.itmBaseSellingPrice : 0;
+				decimal pl;
+				decimal buyingcost = editmode ? Item.itmBuyStdCost == null ? 0 : (decimal)Item.itmBuyStdCost : 0;
+			}
+			<div class="row">
+				<div class="col-6 col-md-6">
+					<div class="form-group required">
+						<label class="control-label small" for="BaseSellingPrice">@Resources.Resource.BaseSellingPrice (@Currency)</label>
+						<input type="number" class="form-control positive" id="BaseSellingPrice" name="itmBaseSellingPrice" min="0" data-val="@sellingprice" placeholder="@Resources.Resource.BaseSellingPrice (@Currency)" value="@sellingprice" />
+					</div>
+				</div>
+				<div class="col-6 col-md-6">
+					<div class="form-group required">
+						<label class="control-label small" for="BuyStdCost">@Resources.Resource.Cost4Purchase (@Currency)</label>
+						<input type="number" class="form-control positive" id="BuyStdCost" name="itmBuyStdCost" min="0" data-val="@buyingcost" placeholder="@Resources.Resource.Cost4Purchase (@Currency)" value="@buyingcost" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-    <div class="row">
-        <div class="col-12 col-md-9">
-            <fieldset class="item-border">
-                <legend class="item-border">@Resources.Resource.Item @Resources.Resource.PriceLevel</legend>
-                <div class="clearfix mb-3" style="margin-top:-1em;">
-                    <button type="button" class="btn btn-danger my-1 float-right" value="" id="btnClone"><span class="small">@Resources.Resource.CloneBaseSellingPrice</span></button>
-                </div>
+	<div class="row">
+		<div class="col-12 col-md-9">
+			<fieldset class="item-border">
+				<legend class="item-border">@Resources.Resource.Item @Resources.Resource.PriceLevel</legend>
+				<div class="clearfix mb-3" style="margin-top:-1em;">
+					<button type="button" class="btn btn-danger my-1 float-right" value="" id="btnClone"><span class="small">@Resources.Resource.CloneBaseSellingPrice</span></button>
+				</div>
 
-                <div class="row">
-                    <div class="col-12 col-md-4">
-                        <div class="form-group">
-                            <label class="control-label">@Resources.Resource.PriceLevel A @Resources.Resource.SellingPrice (@Currency)</label>
-                            @{ pl = 0;
-                                if (editmode)
-                                {
-                                    pl = Item.PLA ?? 0;
-                                }
-                            }
-                            <input type="number" class="form-control itemprice positive" name="PLA" id="PLA" value="@pl" />
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <div class="form-group">
-                            <label class="control-label">@Resources.Resource.PriceLevel B @Resources.Resource.SellingPrice (@Currency)</label>
-                            @{ pl = 0;
-                                if (editmode)
-                                {
-                                    pl = Item.PLB ?? 0;
-                                }
-                            }
-                            <input type="number" class="form-control itemprice positive" name="PLB" id="PLB" value="@pl" />
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <div class="form-group">
-                            <label class="control-label">@Resources.Resource.PriceLevel C @Resources.Resource.SellingPrice (@Currency)</label>
-                            @{ pl = 0;
-                                if (editmode)
-                                {
-                                    pl = Item.PLC ?? 0;
-                                }
-                            }
-                            <input type="number" class="form-control itemprice positive" name="PLC" id="PLC" value="@pl" />
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12 col-md-4">
-                        <div class="form-group">
-                            <label class="control-label">@Resources.Resource.PriceLevel D @Resources.Resource.SellingPrice (@Currency)</label>
-                            @{ pl = 0;
-                                if (editmode)
-                                {
-                                    pl = Item.PLD ?? 0;
-                                }
-                            }
-                            <input type="number" class="form-control itemprice positive" name="PLD" id="PLD" value="@pl" />
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <div class="form-group">
-                            <label class="control-label">@Resources.Resource.PriceLevel E @Resources.Resource.SellingPrice (@Currency)</label>
-                            @{ pl = 0;
-                                if (editmode)
-                                {
-                                    pl = Item.PLE ?? 0;
-                                }
-                            }
-                            <input type="number" class="form-control itemprice positive" name="PLE" id="PLE" value="@pl" />
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <div class="form-group">
-                            <label class="control-label">@Resources.Resource.PriceLevel F @Resources.Resource.SellingPrice (@Currency)</label>
-                            @{ pl = 0;
-                                if (editmode)
-                                {
-                                    pl = Item.PLF ?? 0;
-                                }
-                            }
-                            <input type="number" class="form-control itemprice positive" name="PLF" id="PLF" value="@pl" />
-                        </div>
-                    </div>
-                </div>
-            </fieldset>
-        </div>
+				<div class="row">
+					<div class="col-12 col-md-4">
+						<div class="form-group">
+							<label class="control-label">@Resources.Resource.PriceLevel A @Resources.Resource.SellingPrice (@Currency)</label>
+							@{ pl = 0;
+								if (editmode)
+								{
+									pl = Item.PLA ?? 0;
+								}
+							}
+							<input type="number" class="form-control itemprice positive" name="PLA" id="PLA" value="@pl" />
+						</div>
+					</div>
+					<div class="col-12 col-md-4">
+						<div class="form-group">
+							<label class="control-label">@Resources.Resource.PriceLevel B @Resources.Resource.SellingPrice (@Currency)</label>
+							@{ pl = 0;
+								if (editmode)
+								{
+									pl = Item.PLB ?? 0;
+								}
+							}
+							<input type="number" class="form-control itemprice positive" name="PLB" id="PLB" value="@pl" />
+						</div>
+					</div>
+					<div class="col-12 col-md-4">
+						<div class="form-group">
+							<label class="control-label">@Resources.Resource.PriceLevel C @Resources.Resource.SellingPrice (@Currency)</label>
+							@{ pl = 0;
+								if (editmode)
+								{
+									pl = Item.PLC ?? 0;
+								}
+							}
+							<input type="number" class="form-control itemprice positive" name="PLC" id="PLC" value="@pl" />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-12 col-md-4">
+						<div class="form-group">
+							<label class="control-label">@Resources.Resource.PriceLevel D @Resources.Resource.SellingPrice (@Currency)</label>
+							@{ pl = 0;
+								if (editmode)
+								{
+									pl = Item.PLD ?? 0;
+								}
+							}
+							<input type="number" class="form-control itemprice positive" name="PLD" id="PLD" value="@pl" />
+						</div>
+					</div>
+					<div class="col-12 col-md-4">
+						<div class="form-group">
+							<label class="control-label">@Resources.Resource.PriceLevel E @Resources.Resource.SellingPrice (@Currency)</label>
+							@{ pl = 0;
+								if (editmode)
+								{
+									pl = Item.PLE ?? 0;
+								}
+							}
+							<input type="number" class="form-control itemprice positive" name="PLE" id="PLE" value="@pl" />
+						</div>
+					</div>
+					<div class="col-12 col-md-4">
+						<div class="form-group">
+							<label class="control-label">@Resources.Resource.PriceLevel F @Resources.Resource.SellingPrice (@Currency)</label>
+							@{ pl = 0;
+								if (editmode)
+								{
+									pl = Item.PLF ?? 0;
+								}
+							}
+							<input type="number" class="form-control itemprice positive" name="PLF" id="PLF" value="@pl" />
+						</div>
+					</div>
+				</div>
+			</fieldset>
+		</div>
 
-        @{ var desc = "";
-            if (editmode)
-            {
-                desc = Item.itmDesc;
-            } }
-        <div class="col-12 col-md-3">
-            <div class="form-group" style="height:82%;">
-                <label class="control-label" for="ItemDesc">@Resources.Resource.Description<span class="small alert font-weight-bold">(@string.Format(Resources.Resource.MaxChar, 255))</span></label>
-                <textarea id="itmDesc" name="itmDesc" cols="70" maxlength="255" style="height:91%;" class="form-control" placeholder="@Resources.Resource.Description">@desc</textarea>
-                <span class="small font-weight-bold">@Resources.Resource.CurrentCharCount: <span id="charcount"></span></span>
-                @{
-                    _checked = editmode && (bool)Item.itmUseDesc ? "checked" : "";
-                }
-                <div class="form-check mx-3">
-                    <input class="form-check-input" type="checkbox" value="1" id="replacing" @_checked>
-                    <label class="form-check-label font-weight-bold small" for="replacing">
-                        @Resources.Resource.ReplacingItemNameOnReceipt
-                    </label>
-                </div>
-            </div>
-        </div>
-    </div>
+		@{ var desc = "";
+			if (editmode)
+			{
+				desc = Item.itmDesc;
+			} }
+		<div class="col-12 col-md-3">
+			<div class="form-group" style="height:82%;">
+				<label class="control-label" for="ItemDesc">@Resources.Resource.Description<span class="small alert font-weight-bold">(@string.Format(Resources.Resource.MaxChar, 255))</span></label>
+				<textarea id="itmDesc" name="itmDesc" cols="70" maxlength="255" style="height:91%;" class="form-control" placeholder="@Resources.Resource.Description">@desc</textarea>
+				<span class="small font-weight-bold">@Resources.Resource.CurrentCharCount: <span id="charcount"></span></span>
+				@{
+					_checked = editmode && (bool)Item.itmUseDesc ? "checked" : "";
+				}
+				<div class="form-check mx-3">
+					<input class="form-check-input" type="checkbox" value="1" id="replacing" @_checked>
+					<label class="form-check-label font-weight-bold small" for="replacing">
+						@Resources.Resource.ReplacingItemNameOnReceipt
+					</label>
+				</div>
+			</div>
+		</div>
+	</div>
 
-    <div class="row my-4">
-        <div class="col-12 col-md-3">
-            <div class="form-group">
-                <label class="control-label">@Resources.Resource.Weight <span class="small">(@Resources.Resource.kg)</span></label>
-                <input type="number" class="form-control positive" name="itmWeight" min="0" id="itmWeight" placeholder="@Resources.Resource.Weight" value="@weight" />
-            </div>
-        </div>
-        <div class="col-12 col-md-3">
-            <div class="form-group">
-                <label class="control-label">@Resources.Resource.Width <span class="small">(@Resources.Resource.m)</span></label>
-                <input type="number" class="form-control positive" name="itmWidth" min="0" id="itmWidth" placeholder="@Resources.Resource.Width" value="@width" />
-            </div>
-        </div>
-        <div class="col-12 col-md-3">
-            <div class="form-group">
-                <label class="control-label">@Resources.Resource.Height <span class="small">(@Resources.Resource.m)</span></label>
-                <input type="number" class="form-control positive" name="itmHeight" min="0" id="itmHeight" placeholder="@Resources.Resource.Height" value="@height" />
-            </div>
-        </div>
-        <div class="col-12 col-md-3">
-            <div class="form-group">
-                <label class="control-label">@Resources.Resource.Length <span class="small">(@Resources.Resource.m)</span></label>
-                <input type="number" class="form-control positive" name="itmLength" id="itmLength" placeholder="@Resources.Resource.Length" value="@length" />
-            </div>
-        </div>
-    </div>
-
-
-    @if (EnableBuySellUnits)
-    {
-        <div class="form-group my-4">
-            <button type="button" id="btnBuySellUnits" class="btn btn-primary">@Resources.Resource.BuySellBaseUnits</button>
-        </div>
-    }
-
-    <fieldset class="item-border my-4">
-        <legend class="item-border">@Resources.Resource.ItemAccount</legend>
-
-        <div class="container my-4">
-            @{
-                bool isbought = true; int? expenseId = 0; _checked = ""; string expenseClsId = "5-1000";
-                if (editmode)
-                {
-                    isbought = Item.itmIsBought;
-                    _checked = isbought ? "checked" : "";
-                    expenseId = Item.ExpenseAccountID;
-                }
-                else
-                {
-                    isbought = true;
-                    _checked = "checked";
-                    expenseId = 116; //default
-                }
-            }
-            <div class="row mb-3" style="border-bottom:1px dotted;">
-                <div class="col-3">
-                    <div class="form-check">
-                        <input class="form-check-input chkitemac" type="checkbox" value="" id="buy" @_checked>
-                        <input type="hidden" id="itmIsBought" name="itmIsBought" value="@isbought" />
-                        <label class="form-check-label" for="buy">
-                            @Resources.Resource.IBuyThisItem
-                        </label>
-                    </div>
-                </div>
-                @if (!nonabss)
-                {
-                    <div class="col-6">
-                        <div class="form-group">
-                            <label class="d-inline-block" for="drpCOS" style="width:@lblwidth;">@Resources.Resource.CostOfSalesAccount</label>
-                            <select id="drpCOS" class="form-control form-control-sm d-inline-block itemaccount" data-itemaccountmode="Buy">
-                                <option value="">---</option>
-                                @foreach (var item in ACList)
-                                {
-                                    string selected = "";
-                                    if (!editmode)
-                                    {
-                                        selected = item.AccountClassificationID == "COS" ? "selected" : "";
-                                    }
-                                    <option value="@item.AccountClassificationID" @selected>@item.ACDescription</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-3">
-                        <div class="form-group">
-                            <label class="d-inline-block mx-1" for="accountno">
-                                @Resources.Resource.AccountNo
-                            </label>
-                            <input type="text" readonly data-itemaccountmode="Buy" id="ExpenseAccountID" name="accountno" class="form-control d-inline-block accountno" value="@expenseClsId" data-id="@expenseId" />
-                        </div>
-                    </div>
-                }
-
-            </div>
-
-            @{
-                bool issold = true; int? incomeId = 0; _checked = ""; string incomeClsId = "4-1000";
-                if (editmode)
-                {
-                    issold = Item.itmIsSold;
-                    _checked = issold ? "checked" : "";
-                    incomeId = Item.IncomeAccountID;
-                }
-                else
-                {
-                    issold = true;
-                    _checked = "checked";
-                    incomeId = 69;
-                }
-            }
-            <div class="row mb-3" style="border-bottom:1px dotted;" data-issold="@issold">
-                <div class="col-3">
-                    <div class="form-check">
-                        <input class="form-check-input chkitemac" type="checkbox" value="" id="sell" @_checked>
-                        <input type="hidden" id="itmIsSold" name="itmIsSold" value="@issold" />
-                        <label class="form-check-label" for="sell">
-                            @Resources.Resource.ISellThisItem
-                        </label>
-                    </div>
-                </div>
-                @if (!nonabss)
-                {
-                    <div class="col-6">
-                        <div class="form-group">
-                            <label class="d-inline-block" for="drpIncome" style="width:@lblwidth;">@Resources.Resource.IncomeAccountForTrackingSales</label>
-                            <select id="drpIncome" class="form-control form-control-sm d-inline-block itemaccount" data-itemaccountmode="Sell">
-                                <option value="">---</option>
-                                @foreach (var item in ACList)
-                                {
-
-                                    string selected = "";
-                                    if (!editmode)
-                                    {
-                                        selected = item.AccountClassificationID == "I" ? "selected" : "";
-                                    }
-                                    <option value="@item.AccountClassificationID" @selected>@item.ACDescription</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-3">
-                        <div class="form-group">
-                            <label class="d-inline-block mx-1" for="accountno">
-                                @Resources.Resource.AccountNo
-                            </label>
-                            <input type="text" readonly data-itemaccountmode="Sell" id="IncomeAccountID" name="accountno" class="form-control d-inline-block accountno" data-id="@incomeId" value="@incomeClsId" />
-                        </div>
-                    </div>
-                }
-
-            </div>
-
-            @{bool isstock = true; int? inventoryId = 0; bool isnonstock = false; _checked = "checked"; string inventoryClsId = "1-3000";
-                if (editmode)
-                {
-                    isstock = !Item.itmIsNonStock;
-                    _checked = isstock ? "checked" : "checked";
-                    isnonstock = !isstock;
-                    inventoryId = Item.InventoryAccountID;
-                }
-                else
-                {
-                    isstock = true;
-                    _checked = "checked";
-                    inventoryId = 117;
-                }
-            }
-            <div class="row mb-3" style="">
-                <div class="col-3">
-                    <div class="form-check">
-                        <input class="form-check-input chkitemac" type="checkbox" value="" id="inventory" @_checked>
-                        <input type="hidden" id="itmNonStock" name="itmNonStock" value="@isnonstock" />
-                        <label class="form-check-label" for="inventory">
-                            @Resources.Resource.IInventoryThisItem
-                        </label>
-                    </div>
-                </div>
-
-                @if (!nonabss)
-                {
-                    <div class="col-6">
-                        <div class="form-group">
-                            <label class="d-inline-block" for="drpInventory" style="width:@lblwidth;">@Resources.Resource.AssetAccountForItemInventory</label>
-                            <select id="drpInventory" class="form-control form-control-sm d-inline-block itemaccount" data-itemaccountmode="Inventory">
-                                <option value="">---</option>
-                                @foreach (var item in ACList)
-                                {
-                                    string selected = "";
-                                    if (!editmode)
-                                    {
-                                        selected = item.AccountClassificationID == "A" ? "selected" : "";
-                                    }
-                                    <option value="@item.AccountClassificationID">@item.ACDescription</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-3">
-                        <div class="form-group">
-                            <label class="d-inline-block mx-1" for="accountno">
-                                @Resources.Resource.AccountNo
-                            </label>
-                            <input type="text" readonly data-itemaccountmode="Inventory" id="InventoryAccountID" name="accountno" class="form-control d-inline-block accountno" data-id="@inventoryId" value="@inventoryClsId" />
-                        </div>
-                    </div>
-                }
-
-            </div>
-        </div>
-
-        @if (!nonabss)
-        {
-            <div class="form-group mx-3">
-                <button type="button" class="btn btn-warning" id="btnCopyFrm">@Resources.Resource.CopyFrom...</button>
-            </div>
-        }
+	<div class="row my-4">
+		<div class="col-12 col-md-3">
+			<div class="form-group">
+				<label class="control-label">@Resources.Resource.Weight <span class="small">(@Resources.Resource.kg)</span></label>
+				<input type="number" class="form-control positive" name="itmWeight" min="0" id="itmWeight" placeholder="@Resources.Resource.Weight" value="@weight" />
+			</div>
+		</div>
+		<div class="col-12 col-md-3">
+			<div class="form-group">
+				<label class="control-label">@Resources.Resource.Width <span class="small">(@Resources.Resource.m)</span></label>
+				<input type="number" class="form-control positive" name="itmWidth" min="0" id="itmWidth" placeholder="@Resources.Resource.Width" value="@width" />
+			</div>
+		</div>
+		<div class="col-12 col-md-3">
+			<div class="form-group">
+				<label class="control-label">@Resources.Resource.Height <span class="small">(@Resources.Resource.m)</span></label>
+				<input type="number" class="form-control positive" name="itmHeight" min="0" id="itmHeight" placeholder="@Resources.Resource.Height" value="@height" />
+			</div>
+		</div>
+		<div class="col-12 col-md-3">
+			<div class="form-group">
+				<label class="control-label">@Resources.Resource.Length <span class="small">(@Resources.Resource.m)</span></label>
+				<input type="number" class="form-control positive" name="itmLength" id="itmLength" placeholder="@Resources.Resource.Length" value="@length" />
+			</div>
+		</div>
+	</div>
 
 
-        <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
-        @Html.Partial("_ItemModal", null, new ViewDataDictionary { { "currency", Currency } })
-    </fieldset>
+	@if (EnableBuySellUnits)
+	{
+		<div class="form-group my-4">
+			<button type="button" id="btnBuySellUnits" class="btn btn-primary">@Resources.Resource.BuySellBaseUnits</button>
+		</div>
+	}
 
-    <div id="debugblk"></div>
-    @if (editmode)
-    {
-        if (pgitemnull)
-        {
-            disabled = (Item.TransactionCount != null) && ((long)Item.TransactionCount > 0) ? "disabled" : "";
-            @Html.Partial("_ItemOptionsBlk", null, new ViewDataDictionary { { "editmode", editmode }, { "disabled", disabled }, { "Item", Item } })
-        }
-    }
+	<fieldset class="item-border my-4">
+		<legend class="item-border">@Resources.Resource.ItemAccount</legend>
 
-    @if (editmode && ItemAttrList != null)
-    {
-        <button type="button" id="btnEditItemAttr" class="btn btn-outline-primary">@string.Format(Resources.Resource.EditFormat, Resources.Resource.Attribute)</button>
-    }
+		<div class="container my-4">
+			@{
+				bool isbought = true; int? expenseId = 0; _checked = ""; string expenseClsId = "5-1000";
+				if (editmode)
+				{
+					isbought = Item.itmIsBought;
+					_checked = isbought ? "checked" : "";
+					expenseId = Item.ExpenseAccountID;
+				}
+				else
+				{
+					isbought = true;
+					_checked = "checked";
+					expenseId = 116; //default
+				}
+			}
+			<div class="row mb-3" style="border-bottom:1px dotted;">
+				<div class="col-3">
+					<div class="form-check">
+						<input class="form-check-input chkitemac" type="checkbox" value="" id="buy" @_checked>
+						<input type="hidden" id="itmIsBought" name="itmIsBought" value="@isbought" />
+						<label class="form-check-label" for="buy">
+							@Resources.Resource.IBuyThisItem
+						</label>
+					</div>
+				</div>
+				@if (!nonabss)
+				{
+					<div class="col-6">
+						<div class="form-group">
+							<label class="d-inline-block" for="drpCOS" style="width:@lblwidth;">@Resources.Resource.CostOfSalesAccount</label>
+							<select id="drpCOS" class="form-control form-control-sm d-inline-block itemaccount" data-itemaccountmode="Buy">
+								<option value="">---</option>
+								@foreach (var item in ACList)
+								{
+									string selected = "";
+									if (!editmode)
+									{
+										selected = item.AccountClassificationID == "COS" ? "selected" : "";
+									}
+									<option value="@item.AccountClassificationID" @selected>@item.ACDescription</option>
+								}
+							</select>
+						</div>
+					</div>
+					<div class="col-3">
+						<div class="form-group">
+							<label class="d-inline-block mx-1" for="accountno">
+								@Resources.Resource.AccountNo
+							</label>
+							<input type="text" readonly data-itemaccountmode="Buy" id="ExpenseAccountID" name="accountno" class="form-control d-inline-block accountno" value="@expenseClsId" data-id="@expenseId" />
+						</div>
+					</div>
+				}
 
-    <div id="itemattrblk">
-        <h5>@Resources.Resource.CustomAttributes</h5> <i class="btn btn-primary small fa fa-plus open"></i>
-        <div style="overflow-y:auto;">
-            <div id="itemAttr" class="my-2"></div>
+			</div>
 
-            @{ string hidecls = editmode && ItemAttrList == null ? "hide" : "hide";}
-            <button type="button" id="btnSaveItemAttr" class="btn btn-outline-primary @hidecls">@string.Format(Resources.Resource.SaveFormat, Resources.Resource.Attribute)</button>
-        </div>
+			@{
+				bool issold = true; int? incomeId = 0; _checked = ""; string incomeClsId = "4-1000";
+				if (editmode)
+				{
+					issold = Item.itmIsSold;
+					_checked = issold ? "checked" : "";
+					incomeId = Item.IncomeAccountID;
+				}
+				else
+				{
+					issold = true;
+					_checked = "checked";
+					incomeId = 69;
+				}
+			}
+			<div class="row mb-3" style="border-bottom:1px dotted;" data-issold="@issold">
+				<div class="col-3">
+					<div class="form-check">
+						<input class="form-check-input chkitemac" type="checkbox" value="" id="sell" @_checked>
+						<input type="hidden" id="itmIsSold" name="itmIsSold" value="@issold" />
+						<label class="form-check-label" for="sell">
+							@Resources.Resource.ISellThisItem
+						</label>
+					</div>
+				</div>
+				@if (!nonabss)
+				{
+					<div class="col-6">
+						<div class="form-group">
+							<label class="d-inline-block" for="drpIncome" style="width:@lblwidth;">@Resources.Resource.IncomeAccountForTrackingSales</label>
+							<select id="drpIncome" class="form-control form-control-sm d-inline-block itemaccount" data-itemaccountmode="Sell">
+								<option value="">---</option>
+								@foreach (var item in ACList)
+								{
 
-        @Html.Partial("_ItemAttrModal")
-    </div>
+									string selected = "";
+									if (!editmode)
+									{
+										selected = item.AccountClassificationID == "I" ? "selected" : "";
+									}
+									<option value="@item.AccountClassificationID" @selected>@item.ACDescription</option>
+								}
+							</select>
+						</div>
+					</div>
+					<div class="col-3">
+						<div class="form-group">
+							<label class="d-inline-block mx-1" for="accountno">
+								@Resources.Resource.AccountNo
+							</label>
+							<input type="text" readonly data-itemaccountmode="Sell" id="IncomeAccountID" name="accountno" class="form-control d-inline-block accountno" data-id="@incomeId" value="@incomeClsId" />
+						</div>
+					</div>
+				}
+
+			</div>
+
+			@{bool isstock = true; int? inventoryId = 0; bool isnonstock = false; _checked = "checked"; string inventoryClsId = "1-3000";
+				if (editmode)
+				{
+					isstock = !Item.itmIsNonStock;
+					_checked = isstock ? "checked" : "checked";
+					isnonstock = !isstock;
+					inventoryId = Item.InventoryAccountID;
+				}
+				else
+				{
+					isstock = true;
+					_checked = "checked";
+					inventoryId = 117;
+				}
+			}
+			<div class="row mb-3" style="">
+				<div class="col-3">
+					<div class="form-check">
+						<input class="form-check-input chkitemac" type="checkbox" value="" id="inventory" @_checked>
+						<input type="hidden" id="itmNonStock" name="itmNonStock" value="@isnonstock" />
+						<label class="form-check-label" for="inventory">
+							@Resources.Resource.IInventoryThisItem
+						</label>
+					</div>
+				</div>
+
+				@if (!nonabss)
+				{
+					<div class="col-6">
+						<div class="form-group">
+							<label class="d-inline-block" for="drpInventory" style="width:@lblwidth;">@Resources.Resource.AssetAccountForItemInventory</label>
+							<select id="drpInventory" class="form-control form-control-sm d-inline-block itemaccount" data-itemaccountmode="Inventory">
+								<option value="">---</option>
+								@foreach (var item in ACList)
+								{
+									string selected = "";
+									if (!editmode)
+									{
+										selected = item.AccountClassificationID == "A" ? "selected" : "";
+									}
+									<option value="@item.AccountClassificationID">@item.ACDescription</option>
+								}
+							</select>
+						</div>
+					</div>
+					<div class="col-3">
+						<div class="form-group">
+							<label class="d-inline-block mx-1" for="accountno">
+								@Resources.Resource.AccountNo
+							</label>
+							<input type="text" readonly data-itemaccountmode="Inventory" id="InventoryAccountID" name="accountno" class="form-control d-inline-block accountno" data-id="@inventoryId" value="@inventoryClsId" />
+						</div>
+					</div>
+				}
+
+			</div>
+		</div>
+
+		@if (!nonabss)
+		{
+			<div class="form-group mx-3">
+				<button type="button" class="btn btn-warning" id="btnCopyFrm">@Resources.Resource.CopyFrom...</button>
+			</div>
+		}
+
+
+		<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+		@Html.Partial("_ItemModal", null, new ViewDataDictionary { { "currency", Currency } })
+	</fieldset>
+
+	<div id="debugblk"></div>
+	@if (editmode)
+	{
+
+		disabled = (Item.TransactionCount != null) && ((long)Item.TransactionCount > 0) ? "disabled" : "";
+		@Html.Partial("_ItemOptionsBlk", null, new ViewDataDictionary { { "editmode", editmode }, { "disabled", disabled }, { "Item", Item } })
+
+	}
+
+	@if (editmode && ItemAttrList != null)
+	{
+		<button type="button" id="btnEditItemAttr" class="btn btn-outline-primary">@string.Format(Resources.Resource.EditFormat, Resources.Resource.Attribute)</button>
+	}
+
+	<div id="itemattrblk">
+		<h5>@Resources.Resource.CustomAttributes</h5> <i class="btn btn-primary small fa fa-plus open"></i>
+		<div style="overflow-y:auto;">
+			<div id="itemAttr" class="my-2"></div>
+
+			@{ string hidecls = editmode && ItemAttrList == null ? "hide" : "hide";}
+			<button type="button" id="btnSaveItemAttr" class="btn btn-outline-primary @hidecls">@string.Format(Resources.Resource.SaveFormat, Resources.Resource.Attribute)</button>
+		</div>
+
+		@Html.Partial("_ItemAttrModal")
+	</div>
 
 
 
-    <div class="form-check my-3">
-        <input class="form-check-input" type="checkbox" value="1" id="isActive" name="isActive" checked disabled>
-        <label class="form-check-label" for="isActive">
-            @Resources.Resource.Active
-        </label>
-    </div>
+	<div class="form-check my-3">
+		<input class="form-check-input" type="checkbox" value="1" id="isActive" name="isActive" checked disabled>
+		<label class="form-check-label" for="isActive">
+			@Resources.Resource.Active
+		</label>
+	</div>
 
-    <div class="form-group my-4">
-        <a role="button" href="#" id="btnSaveItem" class="btn btn-success">@Resources.Resource.Save</a>
-    </div>
+	<div class="form-group my-4">
+		<a role="button" href="#" id="btnSaveItem" class="btn btn-success">@Resources.Resource.Save</a>
+	</div>
 
-    <input type="hidden" id="ChkSN" name="ChkSN" value="" />
-    <input type="hidden" id="ChkBatch" name="ChkBatch" value="" />
-    <input type="hidden" id="ChkExpiry" name="ChkExpiry" value="" />
-    <input type="hidden" id="codeinuse" value="" />
-    <input type="hidden" id="scodeinuse" value="" />
-    <input type="hidden" id="ReplacingItemNameOnReceipt" name="ReplacingItemNameOnReceipt" value="" />
+	<input type="hidden" id="ChkSN" name="ChkSN" value="" />
+	<input type="hidden" id="ChkBatch" name="ChkBatch" value="" />
+	<input type="hidden" id="ChkExpiry" name="ChkExpiry" value="" />
+	<input type="hidden" id="codeinuse" value="" />
+	<input type="hidden" id="scodeinuse" value="" />
+	<input type="hidden" id="ReplacingItemNameOnReceipt" name="ReplacingItemNameOnReceipt" value="" />
 </div>
 
-<div>
-    @*@{ var linkurl=pgitemnull?"Stock":"Index"}
-        <a href="">@Resources.Resource.BackToList</a>*@
-    @Html.ActionLink(Resources.Resource.BackToList, pgitemnull ? "Stock" : "Index")
-</div>
+

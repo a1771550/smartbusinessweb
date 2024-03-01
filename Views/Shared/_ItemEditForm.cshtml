@@ -2,18 +2,15 @@
     List<string> Shops = ViewData["Shops"] != null ? (List<string>)ViewData["Shops"] : new List<string>();   
     List<ItemAttribute> ItemAttrList = ViewData["ItemAttrList"] == null ? null : ViewData["ItemAttrList"] as List<ItemAttribute>;
 
-    PPWLib.Models.Item.PGItemModel PGItem = ViewData["PGItem"] == null ? null : ViewData["PGItem"] as PGItemModel;
-    PPWLib.Models.Item.ItemModel MyobItem = ViewData["Item"] == null ? null : ViewData["Item"] as ItemModel;
-
-    //Response.Write(MyobItem == null);//false
-    //return;
+   
+    PPWLib.Models.Item.ItemModel Item = ViewData["Item"] == null ? null : ViewData["Item"] as ItemModel;
 
     string Currency = ViewData["Currency"] as string;
 
     bool editmode = Convert.ToBoolean(ViewData["editmode"]);
 
-    string frmname = (PGItem != null) ? "PGItem" : "Item";
-    string frmId = (PGItem != null) ? "frmPGItem" : "frmItem";
+    string frmname =  "Item";
+    string frmId =  "frmItem";
     int lang = Convert.ToInt32(ViewData["lang"]);
     bool EnableBuySellUnits = Convert.ToBoolean(ViewData["EnableBuySellUnits"]);
     List<PPWLib.Models.MYOB.AccountModel> ACList = ViewData["ACList"] as List<PPWLib.Models.MYOB.AccountModel>;
@@ -25,88 +22,7 @@
     HashSet<ItemCategoryModel> CategoryList = ViewData["CategoryList"] as HashSet<ItemCategoryModel>;
     bool EditItem = Convert.ToBoolean(ViewData["EditItem"]);
 
-    ItemView Item = new ItemView();
-
-    if (editmode)
-    {
-        //Response.Write(PGItem != null);return;
-        if (PGItem != null)
-        {
-            Item = new ItemView
-            {
-                itmItemID = PGItem.itmItemID,
-                HasSalesRecords = PGItem.HasSalesRecords,
-                itmCode = PGItem.itmCode,
-                itmSupCode = PGItem.itmSupCode,
-                itmName = PGItem.itmName,
-                itmDesc = PGItem.itmDesc,
-                itmUseDesc = PGItem.itmUseDesc,
-                itmBaseSellingPrice = PGItem.itmBaseSellingPrice,
-                PLA = PGItem.PLA,
-                PLB = PGItem.PLB,
-                PLC = PGItem.PLC,
-                PLD = PGItem.PLD,
-                PLE = PGItem.PLE,
-                PLF = PGItem.PLF,
-                itmIsBought = PGItem.itmIsBought,
-                itmIsSold = PGItem.itmIsSold,
-                itmIsNonStock = PGItem.itmIsNonStock,
-                chkBat = PGItem.chkBat,
-                chkSN = PGItem.chkSN,
-                chkVT = PGItem.chkVT,
-                itmIsActive = PGItem.itmIsActive,
-                DicLocQty = PGItem.DicLocQty,
-                IncomeAccountID = PGItem.IncomeAccountID,
-                ExpenseAccountID = PGItem.ExpenseAccountID,
-                InventoryAccountID = PGItem.InventoryAccountID,
-                itmCheckout = PGItem.itmCheckout,
-                itmBuyStdCost = PGItem.itmBuyStdCost,
-                catId = PGItem.catId,
-            };
-            Item.AttrList = PGItem.AttrList;
-        }
-        if (MyobItem != null)
-        {
-            Item = new ItemView
-            {
-                itmItemID = MyobItem.itmItemID,
-                HasSalesRecords = MyobItem.HasSalesRecords,
-                itmCode = MyobItem.itmCode,
-                itmSupCode = MyobItem.itmSupCode,
-                itmName = MyobItem.itmName,
-                itmDesc = MyobItem.itmDesc,
-                itmUseDesc = MyobItem.itmUseDesc,
-                itmBaseSellingPrice = MyobItem.itmBaseSellingPrice,
-                PLA = MyobItem.PLA,
-                PLB = MyobItem.PLB,
-                PLC = MyobItem.PLC,
-                PLD = MyobItem.PLD,
-                PLE = MyobItem.PLE,
-                PLF = MyobItem.PLF,
-                itmIsBought = MyobItem.itmIsBought,
-                itmIsSold = MyobItem.itmIsSold,
-                itmIsNonStock = MyobItem.itmIsNonStock,
-                chkBat = MyobItem.chkBat,
-                chkSN = MyobItem.chkSN,
-                chkVT = MyobItem.chkVT,
-                itmIsActive = MyobItem.itmIsActive,
-                DicLocQty = MyobItem.DicLocQty,
-                IncomeAccountID = MyobItem.IncomeAccountID,
-                ExpenseAccountID = MyobItem.ExpenseAccountID,
-                InventoryAccountID = MyobItem.InventoryAccountID,
-                itmCheckout = MyobItem.itmCheckout == null ? true : (bool)MyobItem.itmCheckout,
-                itmBuyStdCost = MyobItem.itmBuyStdCost,
-                catId = MyobItem.catId,
-            };
-            Item.AttrList = MyobItem.AttrList;
-            Item.TransactionCount = MyobItem.TransactionCount;
-        }
-    }
-    //Response.Write(Item == null);return;
-    //string _readonly = editmode && MyobItem != null ? "readonly" : "";
-
     string _readonly = editmode ? "readonly" : "";
-    //Response.Write(CategoryList.Count); return;
 }
 
 @using (Html.BeginForm("Edit", frmname, FormMethod.Post, new { @Id = frmId }))
@@ -117,17 +33,17 @@
     {
         if (ItemAttrList != null)
         {           
-            @Html.Partial("__ItemEditForm", null, new ViewDataDictionary { { "ItemAttrList", ItemAttrList }, { "Item", Item }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "PGItemNull", PGItem == null }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList }, { "EditItem", EditItem } })
+            @Html.Partial("__ItemEditForm", null, new ViewDataDictionary { { "ItemAttrList", ItemAttrList }, { "Item", Item }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList }, { "EditItem", EditItem } })
 
 
         }
         else
         {            
-            @Html.Partial("__ItemEditForm", null, new ViewDataDictionary { { "Item", Item }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "PGItemNull", PGItem == null }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList }, { "EditItem", EditItem } })
+            @Html.Partial("__ItemEditForm", null, new ViewDataDictionary { { "Item", Item }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList }, { "EditItem", EditItem } })
         }
     }
     else
     {
-        @Html.Partial("__ItemEditForm", null, new ViewDataDictionary { { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "PGItemNull", PGItem == null }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "Shops", Shops }, { "CategoryList", CategoryList }, { "EditItem", EditItem } })
+        @Html.Partial("__ItemEditForm", null, new ViewDataDictionary { { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "Shops", Shops }, { "CategoryList", CategoryList }, { "EditItem", EditItem } })
     }
 }

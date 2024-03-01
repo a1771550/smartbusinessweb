@@ -11711,7 +11711,6 @@ function OnGetStocksOK(response) {
 			}
 			if (forstock) {
 				let _html = `<button class="btn btn-info mr-2 edit btnsmall" type="button" data-Id="${item.itmItemID}" onclick="editItem(${item.itmItemID});"><span class="">${edittxt}</span></button>`;
-				/* _html += `<button class="btn btn-danger editiv btnsmall" type="button" data-id="${item.itmItemID}" onclick="editItem(${item.itmItemID});"><span class="">${itemvariationtxt}</span></button>`;*/
 				html += `<td>${_html}</td>`;
 			}
 			html += "</tr>";
@@ -11754,7 +11753,7 @@ let EditItem: boolean = false;
 
 function editItem(itemId: number) {
 	openWaitingModal();
-	window.location.href = `/Item/Edit?itemId=${itemId}`;
+	window.location.href = `/Item/Edit?itemId=${itemId}&referrer=stock`;
 }
 function removeItem(itemId: number) {
 	$.fancyConfirm({
@@ -14270,6 +14269,8 @@ const populateSelectedItem = () => {
 	selectedItem!.itmIsActive = $("#isActive").is(":checked");
 	selectedItem!.itmItemID = Number($("#itmItemID").val());
 	selectedItem!.itmCode = $("#itmCode").val() as string;
+	//console.log("itmCode.val:", $("#itmCode").val());
+	//console.log("selectedItem.itmcode:" + selectedItem!.itmCode);
 	selectedItem!.itmSupCode = $("#itmSupCode").val() as string;
 	selectedItem!.itmName = $("#itmName").val() as string;
 	selectedItem!.itmDesc = $("#itmDesc").val() as string;
@@ -14413,24 +14414,32 @@ const populateItemVari = () => {
 	}
 };
 
-class ItemEditFrm extends SimpleForm {
-	forPGItem: boolean;
-	constructor(edit, forPGItem) {
+class ItemEditFrm extends SimpleForm {	
+	constructor(edit) {
 		super(edit);
-		this.edit = edit;
-		this.forPGItem = forPGItem;
+		this.edit = edit;		
 	}
+
+	
+
 	validform(): boolean {
 		let msg = "";
 
+		if (ItemVari) {
+			populateItemVari();
+		} else {
+			populateSelectedItem();
+			console.log("selectedItem:", selectedItem);
+		}
+
 		let $itemcode = $("#itmCode");
-		let itemcode = <string>$itemcode.val();
-		if (itemcode === "") {
+		//let itemcode = <string>$itemcode.val();
+		if (selectedItem!.itmCode === "") {
 			msg += itemcoderequired + "<br>";
 			$itemcode.addClass("focus");
 		} else {
 			if (!editmode) {
-				if (phonelist.includes(itemcode)) {
+				if (phonelist.includes(selectedItem!.itmCode)) {
 					msg += itemcodeduplicatederr + "<br>";
 					$itemcode.addClass("focus");
 				}
@@ -14438,24 +14447,24 @@ class ItemEditFrm extends SimpleForm {
 		}
 
 		let $itemname = $("#itmName");
-		if ($itemname.val() === "") {
+		if (selectedItem!.itmName === "") {
 			msg += itemnamerequired + "<br>";
 			$itemname.addClass("focus");
 		}
 
 		let $sellingprice = $("#BaseSellingPrice");
-		if ($sellingprice.val() === "") {
+		if (selectedItem!.itmBaseSellingPrice == 0) {
 			msg += sellingpricerequired + "<br>";
 			$sellingprice.addClass("focus");
 		}
 		const $buyingcost = $("#BuyStdCost");
-		if ($buyingcost.val() === "") {
+		if (selectedItem!.itmBuyStdCost == 0) {
 			msg += buyingcostrequiredtxt + "<br>";
 			$buyingcost.addClass("focus");
 		}
 		let $desc = $("#itmDesc");
 		if (isreplacing) {
-			if ($desc.val() === "") {
+			if (selectedItem!.itmDesc=="") {
 				msg += descriptionrequired + "<br>";
 				$desc.addClass("focus");
 			}
@@ -14494,16 +14503,14 @@ class ItemEditFrm extends SimpleForm {
 	}
 
 	submitform() {
-		let url = this.forPGItem
-			? "/PGItem/Edit"
-			: !EditItem && ItemVariations.length > 0
+		let url = !EditItem && ItemVariations.length > 0
 				? "/Item/EditIV"
 				: "/Item/Edit";
 		let data = {};
 
-		let returnurl = this.forPGItem ? "/PGItem/Index" : "/Item/Stock";
+		let returnurl = `/Item/${$infoblk.data("referrer")}`;
 		if (ItemVari) {
-			populateItemVari();
+			
 			//console.log('ItemVari:', ItemVari);
 			data = ItemAttrList
 				? {
@@ -14522,11 +14529,9 @@ class ItemEditFrm extends SimpleForm {
 					).val(),
 				};
 		} else {
-			//console.log("here");
-			populateSelectedItem();
-			//console.log("selecteditem:", selectedItem);
-			//return;
-
+			
+			
+		
 			if (!EditItem && ItemVariations.length > 0) {
 				//console.log("here");
 				data = ItemAttrList
@@ -16396,7 +16401,7 @@ const removeItemAttr = (ele) => {
 };
 
 $(document).on("click", "#btnSaveItem", function () {
-	let itemeditfrm: ItemEditFrm = new ItemEditFrm(editmode, forPGItem);
+	let itemeditfrm: ItemEditFrm = new ItemEditFrm(editmode);
 	if (itemeditfrm.validform()) {
 		itemeditfrm.submitform();
 	}

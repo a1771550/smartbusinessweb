@@ -7,11 +7,6 @@ $(document).on("change", "#drpLocation", function () {
     GetStocks(1);
 });
 
-$(document).on("click", ".StockPager .page", function () {
-    pageindex = parseInt(<string>$(this).attr("page"));
-    GetStocks(pageindex);
-});
-
 $(document).on("click", "#btnReload", function () {
     window.location.href = "/Item/Stock";
 });
