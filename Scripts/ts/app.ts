@@ -5192,6 +5192,7 @@ interface ISalesBase extends IRtlSale {
 	batchcode: string;
 	//Item: IItem;
 	isZeroStockItem: boolean;
+	rtlUID: number;
 	rtlItemCode: string | number;
 	rtlSellingPrice: number;
 	rtlTaxPc: number;
@@ -5211,6 +5212,7 @@ interface ISalesBase extends IRtlSale {
 }
 function initRefundItem(): IRefundBase {
 	return {
+		rtlUID:0,
 		itemcode: selectedItemCode,
 		price: 0,
 		refundedQty: 0,
@@ -5239,6 +5241,7 @@ function initRefundItem(): IRefundBase {
 	};
 }
 interface IRefundBase {
+	rtlUID: number;
 	itemcode: string | number;
 	price: number;
 	refundedQty: number;
@@ -5312,6 +5315,7 @@ function initReturnItem(): IReturnBase {
 }
 function initRefundSales(): IRefundSales {
 	return {
+		rtlUID:0,
 		rtsCode: "",
 		rtsRmks: "",
 		rtlItemCode: "",
@@ -5351,6 +5355,7 @@ function initRefundSales(): IRefundSales {
 	};
 }
 interface IRefundSales {
+    rtlUID: number;
 	rtlValidThru: string | null;
 	rtsCode: string;
 	rtsRmks: string;
@@ -6286,6 +6291,7 @@ interface ISales extends ISalesBase {
 }
 
 interface ISalesRefundBase {
+	rtlUID: number;
 	salescode: string;
 	itemcode: string | number;
 	seq: number;

@@ -417,12 +417,7 @@ namespace SmartBusinessWeb.Controllers
 			Session session = ModelHelper.GetCurrentSession(context);
 			int apId = session.AccountProfileId;
 
-			if (string.IsNullOrEmpty(refundcode))
-			{
-				refundcode = ModelHelper.GetNewRefundCode(devicecode, device, context);
-			}
-
-
+			if (string.IsNullOrEmpty(refundcode)) refundcode = ModelHelper.GetNewRefundCode(devicecode, device, context);
 
 			TaxModel taxModel = ModelHelper.GetTaxInfo(context);
 			var taxableitems = ModelHelper.GetTaxableItemList(context, CheckoutPortal);
