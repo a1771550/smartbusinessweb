@@ -46,7 +46,7 @@ $(function () {
 		selectCus();
 
 		SimpleSalesLns = $infoblk.data("saleslnlist");
-		//console.log("SalesLns:", SalesLns);
+		console.log("SimpleSalesLns:", SimpleSalesLns);
 
 		DicItemSNs = $infoblk.data("dicitemsns");
 		DicItemOptions = $infoblk.data("dicitemoptions");
@@ -68,13 +68,13 @@ $(function () {
 		) as typeof DicSeqDeliveryItems;
 
 		itemsnlist = [];
-		$.each(SimpleSalesLns, function (i, e) {
+		$.each(SimpleSalesLns, function (i, e:ISimpleSalesLn) {
 			currentY = i;
 			//console.log(e.Item);
 			selectedItemCode = e.itmCode;
 			//console.log("selectedItemCode:" + selectedItemCode);
-			selectedSaleLn = structuredClone(e);
-			populateItemRow();
+			selectedSimpleSalesLn = structuredClone(e);			
+			populateItemRow();		
 		});
 
 		//remove empty row:
@@ -99,7 +99,8 @@ $(function () {
 		$("#txtDepositAmt").val(formatnumber(depositamt));
 		$("#txtTotalRemain").val(formatnumber(itotalremainamt));
 
-	} else {
+	}
+	else {
 		if (defaultcustomer !== null) {
 			selectedCus = defaultcustomer;
 			selectedCusCodeName = defaultcustomer.cusCode;

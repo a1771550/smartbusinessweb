@@ -619,7 +619,7 @@ let selectedItemCode: string | number,
 	selectedCusCodeName: string = "";
 let selectedSalesLn: ISalesLn | null;
 let selectedPreSalesLn: IPreSalesLn | null;
-let selectedSaleLn: ISimpleSalesLn | null;
+let selectedSimpleSalesLn: ISimpleSalesLn | null;
 let selectedCus: ICustomer;
 let selectedStockInItem: IStockInItem;
 let selectedPurchaseItem: IPurchaseItem | null;
@@ -8831,16 +8831,17 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 	selectedProId = proId ?? 0;
 	//console.log("selectedSalesLn!.Item:", selectedSalesLn!.Item);
 	if (forsales) {
-		discpc = selectedSalesLn!.rtlLineDiscPc ?? 0;
+		console.log("selectedSalesLn#popu:", selectedSalesLn);
+		discpc = (selectedSalesLn && selectedSalesLn!.rtlLineDiscPc) ?? 0;
 		if (reviewmode) { //salesorderlist
-			selectedSaleLn!.rtlSeq = seq;
-			selectedSaleLn!.Item.singleProId = proId;
+			selectedSimpleSalesLn!.rtlSeq = seq;
+			selectedSimpleSalesLn!.Item.singleProId = proId;
 			taxrate =
-				enableTax && selectedCus && selectedSaleLn!.Item.itmIsTaxedWhenSold
+				enableTax && selectedCus && selectedSimpleSalesLn!.Item.itmIsTaxedWhenSold
 					? selectedCus.TaxPercentageRate!
 					: 0;
-			namedesc = selectedSaleLn!.Item.NameDesc;
-			qtysellable = selectedSaleLn!.Item.QtySellable;
+			namedesc = selectedSimpleSalesLn!.Item.NameDesc;
+			qtysellable = selectedSimpleSalesLn!.Item.QtySellable;
 		} else {
 			selectedSalesLn!.rtlSeq = seq;
 			selectedSalesLn!.Item.singleProId = proId;
@@ -8853,7 +8854,7 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 		}
 
 	}
-	if (forpreorder) {
+	if (forpreorder && selectedPreSalesLn) {
 		discpc = selectedPreSalesLn!.rtlLineDiscPc ?? 0;
 		selectedPreSalesLn!.rtlSeq = seq;
 		selectedPreSalesLn!.Item.singleProId = proId;
@@ -8864,7 +8865,7 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 		namedesc = selectedPreSalesLn!.Item.NameDesc;
 		qtysellable = selectedPreSalesLn!.Item.QtySellable;
 	}
-	if (forwholesales) {
+	if (forwholesales && selectedWholesalesLn) {
 		discpc = selectedWholesalesLn!.wslLineDiscPc ?? 0;
 		selectedWholesalesLn!.wslSeq = seq;
 		selectedWholesalesLn!.Item.singleProId = proId;
@@ -8877,7 +8878,7 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 		namedesc = selectedWholesalesLn!.Item.NameDesc;
 		qtysellable = selectedWholesalesLn!.Item.QtySellable;
 	}
-	if (forpurchase) {
+	if (forpurchase && selectedPurchaseItem) {
 		discpc = selectedPurchaseItem!.piDiscPc ?? 0;
 		selectedPurchaseItem!.piSeq = seq;
 		taxrate =
@@ -8917,7 +8918,7 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 		sellunit = selectedWholesalesLn!.Item.itmSellUnit;
 	}
 	if (forsales) {
-		sellunit = reviewmode ? selectedSaleLn!.Item.itmSellUnit : selectedSalesLn!.Item.itmSellUnit;
+		sellunit = reviewmode ? selectedSimpleSalesLn!.Item.itmSellUnit : selectedSalesLn!.Item.itmSellUnit;
 	}
 	if (forpreorder) {
 		sellunit = selectedPreSalesLn!.Item.itmSellUnit;
@@ -8936,7 +8937,7 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 	if (isPromotion) {
 		//console.log("proId:" + proId);
 		if (forsales) {
-			if (reviewmode) getItemPromotion(selectedSaleLn!.Item, proId!);
+			if (reviewmode) getItemPromotion(selectedSimpleSalesLn!.Item, proId!);
 			else getItemPromotion(selectedSalesLn!.Item, proId!);
 		}
 		if (forpreorder) {
@@ -9167,7 +9168,7 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 		$iv.addClass(ivcls);
 	}
 	if (forsales && reviewmode) {
-		const vari = selectedSaleLn!.ivIdList ? "..." : "";
+		const vari = selectedSimpleSalesLn!.ivIdList ? "..." : "";
 		$iv.addClass("pointer").val(vari);
 	}
 
@@ -9209,20 +9210,20 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 					} else {
 						//console.log(selectedPreSalesLn!.Item.itmBaseSellingPrice);
 						price = forsales
-							? reviewmode ? getActualPrice(selectedSaleLn!.Item) : getActualPrice(selectedSalesLn!.Item)
+							? reviewmode ? getActualPrice(selectedSimpleSalesLn!.Item) : getActualPrice(selectedSalesLn!.Item)
 							: getActualPrice(selectedPreSalesLn!.Item);
 						$target.find("td").first().removeClass("lastsellingprice");
 					}
 				} else {
 					price = forsales
-						? reviewmode ? getActualPrice(selectedSaleLn!.Item) : getActualPrice(selectedSalesLn!.Item)
+						? reviewmode ? getActualPrice(selectedSimpleSalesLn!.Item) : getActualPrice(selectedSalesLn!.Item)
 						: getActualPrice(selectedPreSalesLn!.Item);
 					$target.find("td").first().removeClass("lastsellingprice");
 				}
 			}
 			//price = price * exRate;
 			//console.log("price:" + price);
-			if (forsales) reviewmode ? selectedSaleLn!.rtlSellingPrice = price : selectedSalesLn!.rtlSellingPrice = price;
+			if (forsales) reviewmode ? selectedSimpleSalesLn!.rtlSellingPrice = price : selectedSalesLn!.rtlSellingPrice = price;
 			if (forpreorder) selectedPreSalesLn!.rtlSellingPrice = price;
 		}
 
@@ -9639,7 +9640,7 @@ $(document).on("dblclick", ".serialno.pointer", function () {
 			if (forsales || forrefund) {
 				if (reviewmode) {
 					DeliveryItems = DicSeqDeliveryItems[seq];
-					selectedSaleLn = SimpleSalesLns.find((x) => x.rtlSeq == seq) as ISimpleSalesLn;
+					selectedSimpleSalesLn = SimpleSalesLns.find((x) => x.rtlSeq == seq) as ISimpleSalesLn;
 
 					DeliveryItems.forEach((x) => {
 						if (x.seq == seq) {
@@ -9855,7 +9856,7 @@ function openSerialModal(hasFocusCls: boolean) {
 		//console.log("selectedWholesalesLn:", selectedWholesalesLn);
 		if (forwholesales)
 			$("#txtStaticItemName").val(selectedWholesalesLn!.itmNameDesc);
-		if (forsales) reviewmode ? $("#txtStaticItemName").val(selectedSaleLn!.Item.NameDesc) : $("#txtStaticItemName").val(selectedSalesLn!.Item.NameDesc);
+		if (forsales) reviewmode ? $("#txtStaticItemName").val(selectedSimpleSalesLn!.Item.NameDesc) : $("#txtStaticItemName").val(selectedSalesLn!.Item.NameDesc);
 		if (forpreorder)
 			$("#txtStaticItemName").val(selectedPreSalesLn!.itmNameDesc);
 
