@@ -5352,9 +5352,11 @@ function initRefundSales(): IRefundSales {
 		rfSeq: 0,
 		rtlStockLoc: "",
 		rtlValidThru: null,
+		itmNameDesc:"",
 	};
 }
 interface IRefundSales {
+    itmNameDesc: string;
     rtlUID: number;
 	rtlValidThru: string | null;
 	rtsCode: string;

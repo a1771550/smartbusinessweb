@@ -54,7 +54,7 @@ function updateRefund() {
 	$rows.each(function (i, e) {
 		const $seq = $(e).find("td").last().find(".rtlSeq");
 		if ($seq.is(":checked")) {
-			const itemcode: string = $(e).find("td:first").find(".itemcode").val() as string;
+			const itemcode: string = $(e).find(".itemcode").val() as string;
 
 			if ($seq.hasClass("bsv")) {
 				refundsalesln.rtlItemCode = itemcode;
@@ -84,7 +84,8 @@ function updateRefund() {
 				}
 
 
-			} else {
+			}
+			else {
 				refundsalesln.rtlItemCode = itemcode;
 				popuRefundLn(e, i, null, null, null);
 			}
@@ -104,7 +105,7 @@ function updateRefund() {
 		console.log("e.amt:", e.amt);
 		_totalamt += e.amt;
 	});
-	//console.log("_totalamt:" + _totalamt);
+	console.log("_totalamt:" + _totalamt);
 	$("#txtTotal").val(formatnumber(_totalamt));
 	focusRefItemCode();
 }
@@ -656,8 +657,8 @@ function addRefRow(
 		}" >`;
 
 	html += `<td class="text-center"><input type="text" name="itemcode" class="itemcode flex" value="${itemcode}" /></td>`;
-	const itemdesc: string = handleItemDesc(refundsalesln?.rtlDesc as string);
-	html += `<td><input type="text" class="itemdesc flex text-left" data-itemname="${itemdesc}" title="${refundsalesln?.rtlDesc}" value="${itemdesc}" /></td>`;
+	const itemdesc: string = handleItemDesc(refundsalesln!.itmNameDesc);
+	html += `<td><input type="text" class="itemdesc flex text-left" data-itemname="${itemdesc}" title="${refundsalesln!.itmNameDesc}" value="${itemdesc}" /></td>`;
 	html += `<td class="text-right"><input type="number" name="refundedqty" class="refundedqty text-right" value="${refundsalesln?.refundedQty}" readonly /></td>`;
 
 
@@ -724,7 +725,9 @@ function addRefRow(
 
 	let clsDel: string = "";
 
-	if (batdelId !== null || vt != null || sn !== "") {
+	//console.log(`batdelId:${batdelId};vt:${vt};sn:${sn}`);
+	//console.log(`(batdelId!=null || vt!="" || sn!=""):`, (batdelId!=null || vt!="" || sn!=""));
+	if (batdelId != null || vt != "" || sn != "") {
 		clsDel = "bsv ";
 		if (itemOptions.ChkBatch) {
 			clsDel += "bat";
@@ -761,6 +764,7 @@ function addRefRow(
 }
 
 $(document).on("change", ".rtlSeq", function () {
+	//console.log("here");
 	updateRefund();
 });
 

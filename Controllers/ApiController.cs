@@ -44,10 +44,11 @@ using PPWLib.Models.Purchase;
 using ItemModel = PPWLib.Models.Item.ItemModel;
 using PPWLib.Models.User;
 using CommonLib.Models.MYOB;
+using PPWLib.Models.Customer;
 
 namespace SmartBusinessWeb.Controllers
 {
-	[AllowAnonymous]
+    [AllowAnonymous]
     public class ApiController : Controller
     {
         private ComInfo ComInfo { get { return Session["ComInfo"] as ComInfo; } }
@@ -56,9 +57,9 @@ namespace SmartBusinessWeb.Controllers
         private string CentralBaseUrl { get { return UriHelper.GetAppUrl(); } }
         private string CentralApiUrl { get { return ConfigurationManager.AppSettings["CentralApiUrl"]; } }
         private string CentralApiUrl4Receipt { get { return ConfigurationManager.AppSettings["CentralApiUrl4Receipt"]; } }
-        private int PageSize { get { return ComInfo == null ? int.Parse(ConfigurationManager.AppSettings["PageLength"]) : (int)ComInfo.PageLength; } }     
+        private int PageSize { get { return ComInfo == null ? int.Parse(ConfigurationManager.AppSettings["PageLength"]) : (int)ComInfo.PageLength; } }
         private int AccountProfileId { get { return ComInfo == null ? int.Parse(ConfigurationManager.AppSettings["AccountProfileId"]) : (int)Session["AccountProfileId"]; } }
-        private int apId { get { return AccountProfileId; } }       
+        private int apId { get { return AccountProfileId; } }
         private string DbName { get { return Session["DBName"].ToString(); } }
         private string CheckoutPortal { get { return ComInfo.DefaultCheckoutPortal; } }
         private string DefaultConnection { get { return Session["DBName"] == null ? ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", "SmartBusinessWeb_db") : ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", Session["DBName"].ToString()); } }
@@ -78,7 +79,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HttpGet]
-        public void DownloadABSSData(int apId=1)
+        public void DownloadABSSData(int apId = 1)
         {
             using var context = new PPWDbContext(Session["DBName"].ToString());
             var comInfo = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == apId);
@@ -116,20 +117,20 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HttpGet]
-        public void UploadSBData(int apId=1)
+        public void UploadSBData(int apId = 1)
         {
             string msg = "";
             using var context = new PPWDbContext(Session["DBName"].ToString());
             var comInfo = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == apId);
             string ConnectionString = string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ_WRITE;", comInfo.MYOBDriver, comInfo.MYOBUID, comInfo.MYOBPASS, comInfo.MYOBDb, comInfo.MYOBExe, comInfo.MYOBKey);
-           
+
             using var connection = new SqlConnection(DefaultConnection);
             connection.Open();
             var JobList = connection.Query<MyobJobModel>(@"EXEC dbo.GetJobList @apId=@apId", new { apId }).ToList();
-            var autoStockReport = connection.QueryFirstOrDefault<OtherSettingsView>(@"CheckEnableAutoStockReport @apId=@apId", new {apId});
+            var autoStockReport = connection.QueryFirstOrDefault<OtherSettingsView>(@"CheckEnableAutoStockReport @apId=@apId", new { apId });
 
             List<string> sqllist = new List<string>();
-           
+
 
             #region Retail
             var checkoutIds4rt = new HashSet<long>();
@@ -203,7 +204,7 @@ namespace SmartBusinessWeb.Controllers
                     msg = $"Hi {comInfo.contactName}, <p>Here is the report for those items with stock quantity lower than 5:</p> <div>{stocklist}</div>.";
                     SendSimpleEmail(comInfo.contactEmail, comInfo.contactName, msg, "Low-Qty Stock Report", context, apId);
                 }
-            }            
+            }
             #endregion
 
             #region Dispose Connections
@@ -224,7 +225,7 @@ namespace SmartBusinessWeb.Controllers
                     switch (type)
                     {
                         case PosUploadType.WholeSales:
-                            List<WholeSale> wslist = context.WholeSales.Where(x => x.AccountProfileId==apId && checkoutIds.Any(y => x.wsUID == y)).ToList();
+                            List<WholeSale> wslist = context.WholeSales.Where(x => x.AccountProfileId == apId && checkoutIds.Any(y => x.wsUID == y)).ToList();
                             foreach (var sales in wslist)
                             {
                                 sales.wsCheckout = true;
@@ -329,7 +330,7 @@ namespace SmartBusinessWeb.Controllers
 
         [HttpGet]
         public JsonResult GetSalesInfo()
-        {            
+        {
             using var connection = new SqlConnection(DefaultConnection);
             connection.Open();
             List<SalesmanModel> salesmanlist = connection.Query<SalesmanModel>(@"EXEC dbo.GetSalesmanList @apId=@apId", new { apId }).ToList();
@@ -685,7 +686,7 @@ namespace SmartBusinessWeb.Controllers
 
             return Json(new { msg, salesman, url, supplier, AdminList });
         }
-        
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -1328,7 +1329,7 @@ namespace SmartBusinessWeb.Controllers
             return Json(msg);
         }
 
-        
+
 
         [HttpGet]
         public JsonResult GetContactNamesByIds(string contactIds)
@@ -1600,12 +1601,12 @@ namespace SmartBusinessWeb.Controllers
 
 
         [HttpGet]
-        public JsonResult GetCentralPosData(string shop, string device, string receiptno, string phoneno, int lang, int refund)
+        public JsonResult GetCentralPosData(string receiptno, string phoneno, int lang)
         {
             //using (var context = new G3CentralDbContext())
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
-                CentralDataModel model = getReceiptData(context, receiptno, phoneno, lang, refund);
+                CentralDataModel model = getReceiptData(context, receiptno, phoneno, lang);
                 if (model.hassales)
                 {
                     if (model.toBeRefunded <= 0)
@@ -1639,7 +1640,7 @@ namespace SmartBusinessWeb.Controllers
 
         [HttpGet]
         public JsonResult GetShopData(string device, string shop, string filename, string strfrmdate, string strtodate, int lang, int accountProfileId)
-        {            
+        {
             if (filename.StartsWith("ItemSales_"))
             {
                 device = device.ToLower();
@@ -1708,7 +1709,7 @@ namespace SmartBusinessWeb.Controllers
                                      rtsRmksOnDoc = s.rtsRmksOnDoc,
                                      rtsMonthBase = s.rtsMonthBase,
                                      rtsCheckout = s.rtsCheckout,
-                                     rtsLineTaxAmt = s.rtsLineTaxAmt,                                   
+                                     rtsLineTaxAmt = s.rtsLineTaxAmt,
                                      Lang = lang,
                                  }
                                 ).ToList();
@@ -1867,7 +1868,7 @@ namespace SmartBusinessWeb.Controllers
             {
                 List<ItemModel> items = new List<ItemModel>();
                 using (var context = new PPWDbContext(Session["DBName"].ToString()))
-                {                    
+                {
                     items = ModelHelper.GetPGItemList(context, accountProfileId, true);
                 }
 
@@ -1879,7 +1880,7 @@ namespace SmartBusinessWeb.Controllers
                 List<DeviceModel> devices = new List<DeviceModel>();
 
                 using (var context = new PPWDbContext(Session["DBName"].ToString()))
-                {                    
+                {
                     devices = (from d in context.Devices
                                where d.AccountProfileId == accountProfileId
                                select new DeviceModel
@@ -2668,7 +2669,7 @@ namespace SmartBusinessWeb.Controllers
             }
         }
 
-        public CentralDataModel getReceiptData(PPWDbContext context = null, string receiptno = "", string phoneno = "", int lang = -1, int refund = 1)
+        public CentralDataModel getReceiptData(PPWDbContext context = null, string receiptno = "", string phoneno = "", int lang = -1)
         {
             string checkoutportal = CheckoutPortal;
             var currsess = ModelHelper.GetCurrentSession(context);
@@ -2715,123 +2716,67 @@ namespace SmartBusinessWeb.Controllers
             {
                 salescusId = _sales.rtsCusID;
 
-                if (checkoutportal == "abss")
+                var _customer = context.SearchCustomer1(apId, salescusId, "").FirstOrDefault();
+                model.hascustomer = _customer != null;
+                if (model.hascustomer)
                 {
-                    var _customer = context.SearchCustomer1(apId, salescusId, "").FirstOrDefault();
-                    model.hascustomer = _customer != null;
-                    if (model.hascustomer)
+                    model.customer = new CustomerModel
                     {
-                        model.customer = new PGCustomerModel
-                        {
-                            cusCustomerID = _customer.cusCustomerID,
-                            cusCode = _customer.cusCode,
-                            cusName = _customer.cusName,
-                            cusPointsSoFar = _customer.cusPointsSoFar,
-                            cusPointsUsed = _customer.cusPointsUsed,
-                            cusPhone = _customer.cusPhone,
-                        };
+                        cusCustomerID = _customer.cusCustomerID,
+                        cusCode = _customer.cusCode,
+                        cusName = _customer.cusName,
+                        cusPointsSoFar = _customer.cusPointsSoFar,
+                        cusPointsUsed = _customer.cusPointsUsed,
+                        cusPhone = _customer.cusPhone,
+                    };
 
-                        ModelHelper.getReceiptData1(context, receiptno, refund, shop, devicecode, ref model);
+                    ModelHelper.getReceiptData1(context, receiptno, shop, devicecode, ref model);
 
-                        var itemcodes = model.salesLns.Select(x => x.rtlItemCode).ToList();
-                        var itemoptions = context.GetItemOptionsByItemCodes6(apId, string.Join(",", itemcodes)).ToList();
+                    var itemcodes = model.salesLns.Select(x => x.rtlItemCode).ToList();
+                    var itemoptions = context.GetItemOptionsByItemCodes6(apId, string.Join(",", itemcodes)).ToList();
 
-                        var items = (from i in context.MyobItems
-                                         //join ip in context.ItemOptions
-                                         //on i.itmItemID equals ip.itemId
-                                     where itemcodes.Any(y => y == i.itmCode)
-                                     select new ItemModel
-                                     {
-                                         itmCode = i.itmCode,
-                                         itmName = i.itmName,
-                                         itmDesc = i.itmDesc,
-                                         itmUseDesc = i.itmUseDesc,
-                                         itmTaxPc = i.itmTaxPc,
-                                         itmBaseSellingPrice = i.itmBaseSellingPrice,
-                                         itmIsNonStock = i.itmIsNonStock,
-                                     }
-                                                  ).ToList();
-                        foreach (var item in items)
-                        {
-                            foreach (var itemoption in itemoptions)
-                            {
-                                if (item.lstItemCode == itemoption.itmCode)
-                                {
-                                    item.chkBat = itemoption.chkBat;
-                                    item.chkSN = itemoption.chkSN;
-                                    item.chkVT = itemoption.chkVT;
-                                    break;
-                                }
-                            }
-                        }
-
-
-                        foreach (var salesln in model.salesLns)
-                        {
-                            foreach (var i in items)
-                            {
-                                if (salesln.rtlItemCode == i.itmCode)
-                                {
-                                    model.items.Add(i);
-                                }
-                            }
-                        }
-
-                        ModelHelper.getReceiptData2(context, lang, shop, device, devicecode, model, receiptno);
-                    }
-                }
-                else
-                {
-                    var _customer = context.SearchKCustomer(salescusId).FirstOrDefault();
-                    model.hascustomer = _customer != null;
-                    if (model.hascustomer)
+                    var items = (from i in context.MyobItems
+                                     //join ip in context.ItemOptions
+                                     //on i.itmItemID equals ip.itemId
+                                 where itemcodes.Any(y => y == i.itmCode)
+                                 select new ItemModel
+                                 {
+                                     itmCode = i.itmCode,
+                                     itmName = i.itmName,
+                                     itmDesc = i.itmDesc,
+                                     itmUseDesc = i.itmUseDesc,
+                                     itmTaxPc = i.itmTaxPc,
+                                     itmBaseSellingPrice = i.itmBaseSellingPrice,
+                                     itmIsNonStock = i.itmIsNonStock,
+                                 }
+                                              ).ToList();
+                    foreach (var item in items)
                     {
-                        model.kcustomer = new SalesCustomerModel
+                        foreach (var itemoption in itemoptions)
                         {
-                            CustId = _customer.CustId,
-                            CustCode = _customer.CustCode,
-                            CustName = _customer.CustName,
-                            CustPointsSoFar = _customer.CustPointsSoFar,
-                            CustPointsUsed = _customer.CustPointsUsed,
-                            CustPhone = _customer.CustPhone,
-                        };
-
-                        ModelHelper.getReceiptData1(context, receiptno, refund, shop, devicecode, ref model);
-
-                        var itemcodes = model.salesLns.Select(x => x.rtlItemCode).ToList();
-                        var _items = context.GetKItemsByCodes3(string.Join(",", itemcodes)).ToList();
-
-                        List<ItemModel> items = new List<ItemModel>();
-                        if (_items != null)
-                        {
-                            foreach (var i in _items)
+                            if (item.lstItemCode == itemoption.itmCode)
                             {
-                                ItemModel item = new ItemModel
-                                {
-                                    itmCode = i.ItCode,
-                                    itmName = i.ItName,
-                                    itmDesc = i.ItDesc,
-                                    itmTaxPc = i.txRate,
-                                    itmBaseSellingPrice = i.ItPrice ?? 0,
-                                    itmIsNonStock = !i.ForInventory
-                                };
-                                items.Add(item);
+                                item.chkBat = itemoption.chkBat;
+                                item.chkSN = itemoption.chkSN;
+                                item.chkVT = itemoption.chkVT;
+                                break;
                             }
                         }
-
-                        foreach (var salesln in model.salesLns)
-                        {
-                            foreach (var i in items)
-                            {
-                                if (salesln.rtlItemCode == i.itmCode)
-                                {
-                                    model.items.Add(i);
-                                }
-                            }
-                        }
-
-                        ModelHelper.getReceiptData2(context, lang, shop, device, devicecode, model, receiptno);
                     }
+
+
+                    foreach (var salesln in model.salesLns)
+                    {
+                        foreach (var i in items)
+                        {
+                            if (salesln.rtlItemCode == i.itmCode)
+                            {
+                                model.items.Add(i);
+                            }
+                        }
+                    }
+
+                    ModelHelper.getReceiptData2(context, lang, shop, device, devicecode, model, receiptno);
                 }
 
                 model.taxModel = ModelHelper.GetTaxInfo(context);
@@ -2907,7 +2852,7 @@ namespace SmartBusinessWeb.Controllers
                 }
                 else
                 {
-                    CentralDataModel model = getReceiptData(context, receiptno, phoneno, lang, refund);
+                    CentralDataModel model = getReceiptData(context, receiptno, phoneno, lang);
 
                     if (model.noreceiptFound == 0)
                     {
@@ -2941,7 +2886,7 @@ namespace SmartBusinessWeb.Controllers
 
         //[HttpPost]
         [HttpGet]
-        public JsonResult GetItemsAjax(int pageIndex=1, string keyword = "", string location = "", bool forsales = false, bool forwholesales = false, bool forpurchase = false, bool forstock = false, bool fortransfer = false, bool forpreorder=false, string type="")
+        public JsonResult GetItemsAjax(int pageIndex = 1, string keyword = "", string location = "", bool forsales = false, bool forwholesales = false, bool forpurchase = false, bool forstock = false, bool fortransfer = false, bool forpreorder = false, string type = "")
         {
             ItemViewModel model = new ItemViewModel();
 
@@ -2952,7 +2897,7 @@ namespace SmartBusinessWeb.Controllers
             int startIndex = CommonHelper.GetStartIndex(pageIndex, PageSize);
             if (keyword == "") keyword = null;
             if (location == "") location = null;
-          
+
             using var connection = new SqlConnection(DefaultConnection);
             connection.Open();
 
@@ -3012,7 +2957,7 @@ namespace SmartBusinessWeb.Controllers
             {
                 model.DicIvInfo[itemcode] = new List<PoItemVariModel>();
             }
-                
+
             //GetPoItemVariInfo
             model.PoIvInfo = connection.Query<PoItemVariModel>(@"EXEC dbo.GetPoItemVariInfo @apId=@apId,@itemcodes=@itemcodes", new { apId, itemcodes }).ToList();
             ModelHelper.GetDicIvInfo(context, model.PoIvInfo, ref model.DicIvInfo);
@@ -3161,7 +3106,7 @@ namespace SmartBusinessWeb.Controllers
 
         [HttpGet]
         public JsonResult GetCustomerByCode(string cusCode)
-        {            
+        {
             using var connection = new SqlConnection(DefaultConnection);
             connection.Open();
             MyobCustomerModel customer = connection.QueryFirstOrDefault<MyobCustomerModel>(@"EXEC dbo.GetCustomerByCode5 @apId=@apId,@cusCode=@cusCode", new { apId, cusCode });
@@ -3207,13 +3152,13 @@ namespace SmartBusinessWeb.Controllers
                     customer.IsLastSellingPrice = _customer.IsLastSellingPrice;
                     customer.unsubscribe = _customer.unsubscribe;
                     GetCustomerAddressList(context, ref customer);
-					customer.AccountProfileName = _customer.AccountProfileName;
-					ModelHelper.GetCustomerPriceLevelDesc(context, ref customer);
-				}
+                    customer.AccountProfileName = _customer.AccountProfileName;
+                    ModelHelper.GetCustomerPriceLevelDesc(context, ref customer);
+                }
                 return Json(customer, JsonRequestBehavior.AllowGet);
             }
         }
-      
+
         public void GetCustomerAddressList(PPWDbContext context, ref MyobCustomerModel customer)
         {
             var _addresslist = context.GetCustomerAddressList1(AccountProfileId, customer.cusCode).ToList();
@@ -3248,8 +3193,8 @@ namespace SmartBusinessWeb.Controllers
                 }
             }
         }
-		
-		[HttpGet]
+
+        [HttpGet]
         public ActionResult GetSessionStartData()
         {
             int lang = (int)Session["CurrentCulture"];
@@ -3297,7 +3242,7 @@ namespace SmartBusinessWeb.Controllers
             }
         }
 
-    
+
         [HttpGet]
         public JsonResult CheckIfFileLocked(string file = "")
         {
