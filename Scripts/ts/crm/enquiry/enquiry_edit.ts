@@ -93,6 +93,7 @@ $(document).on('click', '#btnSave', function () {
 });
 
 $(function () {
+	setFullPage();
 	forenquiry = true;
 	initModals();
 

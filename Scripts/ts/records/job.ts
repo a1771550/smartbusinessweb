@@ -6,7 +6,7 @@ currentoldestdate = $infoblk.data("currentoldestdate");
 
 pagesize = Number($infoblk.data("pagesize"));
 //from/emailAddress/address ne 'noreply@abssasia.com.hk'
-resource = `/users/{2}/mailFolders/Inbox/messages?$filter=receivedDateTime ge {0}T00:00:00Z and receivedDateTime lt {1}T23:59:59Z and startswith(subject, 'UT Service Report')&$count=true&$ConsistencyLevel=eventual&$orderby=receivedDateTime desc`;
+resource = `/users/{0}/mailFolders/Inbox/messages?$filter=startswith(subject, 'UT Service Report')&$count=true&$ConsistencyLevel=eventual&$orderby=receivedDateTime desc`;
 jobIdList = $infoblk.data("jobidlist") as string[];
 
 $(document).on("click", "#btnSearch", function () {
@@ -39,11 +39,8 @@ $(document).on("change", "#iPageSize", function () {
 });
 
 $(document).on("click", "#btnFilter", function (e) {
-    e.preventDefault();
-    frmdate = $("#datetimesmin").val() as string;
-    todate = $("#datetimesmax").val() as string;
-    //window.location.href = `/Job/Index?strfrmdate=${frmdate}&strtodate=${todate}`;
-    handleMGTmails(frmdate, todate);
+    e.preventDefault();   
+    handleMGTmails();
 });
 
 $(document).on("click", "#btnReload", function () {
@@ -58,7 +55,7 @@ function saveJobs(joblist: IJob[]) {
         //contentType: 'application/json; charset=utf-8',
         type: "POST",
         url: '/Job/Save',
-        data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val(), model: joblist, frmdate, todate },
+        data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val(), model: joblist },
         //success: function (data) {
         //},
         dataType: 'json'
@@ -104,20 +101,7 @@ $(function () {
 
     $('#txtKeyword').trigger("focus");
 
-    let strfrmdate = getParameterByName("strfrmdate");
-    //openWaitingModal();
-    if (strfrmdate) {
-        frmdate = strfrmdate;
-        //console.log("frmdate:" + frmdate);
-        if (frmdate < currentoldestdate) {
-            //todate = currentoldestdate;
-            handleMGTmails(frmdate, currentoldestdate);
-        }
-        if (frmdate == currentoldestdate) {
-            handleMGTmails(frmdate, todate);
-        }
-    } else {
-        handleMGTmails(frmdate, todate);
-    }
+   
+        handleMGTmails();
 
 });

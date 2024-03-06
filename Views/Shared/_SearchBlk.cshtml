@@ -1,0 +1,14 @@
+﻿@{ 
+	string keyword = ViewData["Keyword"] as string;
+}
+<div class="input-group">
+	<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@keyword">
+	<div class="input-group-append">
+		<button id="btnSearch" class="btn btn-secondary mx-1" type="button" title="@Resources.Resource.Search">
+			<i class="fa fa-search"></i>
+		</button>
+		<button id="btnReload" class="btn btn-warning mx-1" type="button" title="@Resources.Resource.Reload">
+			<i class="fa fa-refresh"></i>
+		</button>
+	</div>
+</div>

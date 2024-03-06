@@ -43,7 +43,7 @@ $(document).on("click", "#btnFilter", function (e) {
     frmdate = $("#datetimesmin").val() as string;
     todate = $("#datetimesmax").val() as string;
     //window.location.href = `/Training/Index?strfrmdate=${frmdate}&strtodate=${todate}`;
-    handleMGTmails(frmdate, todate);
+    handleMGTmails();
 });
 
 $(document).on("click", "#btnReload", function () {
@@ -101,20 +101,8 @@ $(function () {
 
     $('#txtKeyword').trigger("focus");
 
-    let strfrmdate = getParameterByName("strfrmdate");
-    //openWaitingModal();
-    if (strfrmdate) {
-        frmdate = strfrmdate;
-        //console.log("frmdate:" + frmdate);
-        if (frmdate < currentoldestdate) {
-            //todate = currentoldestdate;
-            handleMGTmails(frmdate, currentoldestdate);
-        }
-        if (frmdate == currentoldestdate) {
-            handleMGTmails(frmdate, todate);
-        }
-    } else {
-        handleMGTmails(frmdate, todate);
-    }
+   
+        handleMGTmails();
+  
 
 });

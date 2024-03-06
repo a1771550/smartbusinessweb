@@ -26,28 +26,7 @@
 <div id="norecordfound" class="container hide">@Resources.Resource.NoDataFound</div>
 @using (Html.BeginForm("Index", "Job", FormMethod.Post, new { @id = "frmjob" }))
 {
-
-	<div class="row justify-content-center my-3">
-		@Html.Partial("_DatesRange", null, new ViewDataDictionary { { "DateFromTxt", DateFrmTxt }, { "DateToTxt", DateToTxt } })
-		<button id="btnFilter" type="button" class="btn btn-success mx-4">@Resources.Resource.Submit</button>
-
-		<button id="btnReload" type="button" class="btn btn-warning">@Resources.Resource.Reload</button>
-	</div>
-
-	<div class="row justify-content-center">
-		<div class="form-inline mb-2 my-4">
-			<div class="form-group">
-				<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Model.Keyword" />
-				<button id="btnSearch" type="button" class="btn btn-success ml-3">@Resources.Resource.Search</button>
-			</div>
-		</div>
-	</div>
-
-
-	<div class="row justify-content-end mx-2">
-		<div class=""><span id="datetxt">@Html.Raw(daterange)</span></div>
-
-	</div>
+	@Html.Partial("_SearchBlk", null, new ViewDataDictionary { { "keyword", Model.Keyword } })
 	<div class="row justify-content-end my-1 mx-2">
 
 		<div class="text-right"><span>@totaltxt: <span id="totalcount" class="font-weight-bold"></span></span></div>

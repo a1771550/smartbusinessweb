@@ -113,9 +113,9 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]   
-        public ActionResult AddToContact(string enqId, int overwrite=0)
-        {                    
+        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        public ActionResult AddToContact(string enqId, int overwrite = 0)
+        {
             ContactEditModel model = new ContactEditModel();
             model.ConvertFrmEnquiry(apId, enqId, overwrite == 1);
             return RedirectToAction("Index", "Customer");
@@ -127,8 +127,8 @@ namespace SmartBusinessWeb.Controllers
         [ValidateAntiForgeryToken]
         public JsonResult Assign(List<string> assignEnqIdList, int salesmanId, int notification)
         {
-            var msg = Resource.EnquiryAssigned;      
-            if((bool)ComInfo.enableEmail4Assignment&&notification==1)
+            var msg = Resource.EnquiryAssigned;
+            if ((bool)ComInfo.enableEmail4Assignment && notification == 1)
                 msg += "<p>" + Resource.NotificationEmailWillBeSentToSalesperson + "</p>";
 
             string salesmanname = EnquiryEditModel.AssignEnquiriesToSalesman(assignEnqIdList, salesmanId, apId, notification);
@@ -137,55 +137,18 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HttpGet]
-        public JsonResult GetEnquiries(string frmdate, string todate, int pageIndex=1, int sortCol=8, string sortDirection="desc", string keyword = "")
-        {            
+        public JsonResult GetEnquiries(int pageIndex = 1, int sortCol = 8, string sortDirection = "desc", string keyword = "")
+        {
             using var connection = new Microsoft.Data.SqlClient.SqlConnection(DefaultConnection);
             connection.Open();
             if (string.IsNullOrEmpty(keyword)) keyword = null;
-            //todate = CommonHelper.FormatDate(CommonHelper.GetDateFrmString4SQL(todate).AddDays(-1), DateFormat.YYYYMMDD);
-            List<EnquiryModel> enquirylist = connection.Query<EnquiryModel>(@"EXEC dbo.GetEnquiries1 @apId=@apId,@frmdate=@frmdate,@todate=@todate,@keyword=@keyword", new { apId, frmdate, todate, keyword }).ToList();
-            int pagesize= int.Parse(ConfigurationManager.AppSettings["EnquiryPageSize"]);
-            int skip = (pageIndex - 1) * pagesize;   
-            List<EnquiryModel> pagingEnqList = new List<EnquiryModel>();
 
-            #region Sorting
-            switch (sortCol)
-            {
-                case 0:
-                    pagingEnqList = sortDirection.ToLower() == "desc" ? enquirylist.OrderByDescending(x => x.enReceivedDateTime).Skip(skip).Take(pagesize).ToList() : enquirylist.OrderBy(x => x.enReceivedDateTime).Skip(skip).Take(pagesize).ToList();
-                    break;
-                case 1:
-                    pagingEnqList = sortDirection.ToLower() == "desc" ? enquirylist.OrderByDescending(x => x.enSubject).ThenByDescending(x=>x.enReceivedDateTime).Skip(skip).Take(pagesize).ToList() : enquirylist.OrderBy(x => x.enSubject).ThenBy(x => x.enReceivedDateTime).Skip(skip).Take(pagesize).ToList();
-                    break;
-                case 2:
-                    pagingEnqList = sortDirection.ToLower() == "desc" ? enquirylist.OrderByDescending(x => x.enFrom).ThenByDescending(x => x.enReceivedDateTime).Skip(skip).Take(pagesize).ToList() : enquirylist.OrderBy(x => x.enFrom).ThenBy(x => x.enReceivedDateTime).Skip(skip).Take(pagesize).ToList();
-                    break;
-                case 3:
-                    pagingEnqList = sortDirection.ToLower() == "desc" ? enquirylist.OrderByDescending(x => x.enEmail).ThenByDescending(x => x.enReceivedDateTime).Skip(skip).Take(pagesize).ToList() : enquirylist.OrderBy(x => x.enEmail).ThenBy(x => x.enReceivedDateTime).Skip(skip).Take(pagesize).ToList();
-                    break;
-                case 4:
-                    pagingEnqList = sortDirection.ToLower() == "desc" ? enquirylist.OrderByDescending(x => x.enPhone).ThenByDescending(x => x.enReceivedDateTime).Skip(skip).Take(pagesize).ToList() : enquirylist.OrderBy(x => x.enPhone).ThenBy(x => x.enReceivedDateTime).Skip(skip).Take(pagesize).ToList();
-                    break;
-                case 5:
-                    pagingEnqList = sortDirection.ToLower() == "desc" ? enquirylist.OrderByDescending(x => x.enOrganization).ThenByDescending(x => x.enReceivedDateTime).Skip(skip).Take(pagesize).ToList() : enquirylist.OrderBy(x => x.enOrganization).ThenBy(x => x.enReceivedDateTime).Skip(skip).Take(pagesize).ToList();
-                    break;
-                case 6:
-                    pagingEnqList = sortDirection.ToLower() == "desc" ? enquirylist.OrderByDescending(x => x.enContact).ThenByDescending(x => x.enReceivedDateTime).Skip(skip).Take(pagesize).ToList() : enquirylist.OrderBy(x => x.enContact).ThenBy(x => x.enReceivedDateTime).Skip(skip).Take(pagesize).ToList();
-                    break;
-                case 7:
-                    pagingEnqList = sortDirection.ToLower() == "desc" ? enquirylist.OrderByDescending(x => x.FollowUpDate).ThenByDescending(x => x.enReceivedDateTime).Skip(skip).Take(pagesize).ToList() : enquirylist.OrderBy(x => x.FollowUpDate).ThenBy(x => x.enReceivedDateTime).Skip(skip).Take(pagesize).ToList();
-                    break;                           
-                case 9:
-                    pagingEnqList = sortDirection.ToLower() == "desc" ? enquirylist.OrderByDescending(x => x.SalesPersonName).ThenByDescending(x => x.enReceivedDateTime).Skip(skip).Take(pagesize).ToList() : enquirylist.OrderBy(x => x.SalesPersonName).ThenBy(x => x.enReceivedDateTime).Skip(skip).Take(pagesize).ToList();
-                    break;
-                default:
-                case 8:
-                    pagingEnqList = sortDirection.ToLower() == "desc" ? enquirylist.OrderByDescending(x => x.FollowUpDate).ThenByDescending(x => x.enReceivedDateTime).Skip(skip).Take(pagesize).ToList(): enquirylist.OrderBy(x => x.FollowUpDate).ThenBy(x => x.enReceivedDateTime).Skip(skip).Take(pagesize).ToList();
-                    break;
-            }
-            #endregion
+            int pageSize = int.Parse(ConfigurationManager.AppSettings["EnquiryPageSize"]);
+            int startIndex = CommonHelper.GetStartIndex(pageIndex, pageSize);          
 
-            return Json(new { pagingEnqList, totalRecord=enquirylist.Count }, JsonRequestBehavior.AllowGet);
+            List<EnquiryModel> pagingEnqList = connection.Query<EnquiryModel>(@"EXEC dbo.GetEnquiries1 @apId=@apId,@sortCol=@sortCol,@sortOrder=@sortOrder,@startIndex=@startIndex,@pageSize=@pageSize,@keyword=@keyword", new { apId, sortCol, sortOrder = sortDirection, startIndex, pageSize, keyword }).ToList();
+
+            return Json(new { pagingEnqList }, JsonRequestBehavior.AllowGet);
         }
 
         [HandleError]
@@ -193,8 +156,8 @@ namespace SmartBusinessWeb.Controllers
         public ActionResult Index(string Keyword = "", string strfrmdate = "", string strtodate = "")
         {
             ViewBag.ParentPage = "customer";
-            ViewBag.PageName = "enquiry";            
-            EnquiryEditModel model = new EnquiryEditModel(strfrmdate, strtodate, Keyword);            
+            ViewBag.PageName = "enquiry";
+            EnquiryEditModel model = new EnquiryEditModel(strfrmdate, strtodate, Keyword);
             return View(model);
         }
 

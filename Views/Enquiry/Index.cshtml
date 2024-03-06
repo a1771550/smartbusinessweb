@@ -1,21 +1,21 @@
 ﻿@model EnquiryEditModel
 @{
-    ViewBag.Title = Resources.Resource.Enquiry;
-    var rand = CommonHelper.GetVersionRandomNo();
-    var totaltxt = CultureHelper.CurrentCulture == 2 ? string.Concat(Resources.Resource.Total, " ", Resources.Resource.Record, "s") : String.Concat(Resources.Resource.Total, "", Resources.Resource.Record);
-    //string editedemaillist = string.Join(",", Model.EditedEnqEmail);
-    string addtocontacttxt = string.Format(Resources.Resource.AddTo, Resources.Resource.Contact);
+	ViewBag.Title = Resources.Resource.Enquiry;
+	var rand = CommonHelper.GetVersionRandomNo();
+	var totaltxt = CultureHelper.CurrentCulture == 2 ? string.Concat(Resources.Resource.Total, " ", Resources.Resource.Record, "s") : String.Concat(Resources.Resource.Total, "", Resources.Resource.Record);
+	//string editedemaillist = string.Join(",", Model.EditedEnqEmail);
+	string addtocontacttxt = string.Format(Resources.Resource.AddTo, Resources.Resource.Contact);
 
-    //var idlist = string.Join(",", Model.IdList);
-    var user = HttpContext.Current.Session["User"] as SessUser;
-    bool isassignor = user.Roles.Any(x => x == RoleType.Admin || x == RoleType.SalesManager);
-    const string mgturl = @"https://unpkg.com/@microsoft/mgt@2/dist/bundle/mgt-loader.js";
-    //const string datacount = @"@odata.count";
-    //const string nextlink = @"@odata.nextLink";
-    string DateFrmTxt = Request["strfrmdate"] ?? CommonHelper.FormatDate(DateTime.Now.AddDays(int.Parse(ConfigurationManager.AppSettings["DaysFrm4Enquiry"])));
-    string DateToTxt = Request["strtodate"] ?? CommonHelper.FormatDate(DateTime.Today.Date);
-    string enquiryacc = ConfigurationManager.AppSettings["EnquiryEmail"];
-    var daterange = string.Concat("<strong>", DateFrmTxt, "</strong>", $" {Resources.Resource.To} ", "<strong>", DateToTxt, "</strong>");
+	//var idlist = string.Join(",", Model.IdList);
+	var user = HttpContext.Current.Session["User"] as SessUser;
+	bool isassignor = user.Roles.Any(x => x == RoleType.Admin || x == RoleType.SalesManager);
+	const string mgturl = @"https://unpkg.com/@microsoft/mgt@2/dist/bundle/mgt-loader.js";
+	//const string datacount = @"@odata.count";
+	//const string nextlink = @"@odata.nextLink";
+	string DateFrmTxt = Request["strfrmdate"] ?? CommonHelper.FormatDate(DateTime.Now.AddDays(int.Parse(ConfigurationManager.AppSettings["DaysFrm4Enquiry"])));
+	string DateToTxt = Request["strtodate"] ?? CommonHelper.FormatDate(DateTime.Today.Date);
+	string enquiryacc = ConfigurationManager.AppSettings["EnquiryEmail"];
+	var daterange = string.Concat("<strong>", DateFrmTxt, "</strong>", $" {Resources.Resource.To} ", "<strong>", DateToTxt, "</strong>");
 
 }
 <link href="~/Scripts/paginationjs/pagination.css" rel="stylesheet" type="text/css" />
@@ -27,43 +27,26 @@
 <div id="norecordfound" class="container hide">@Resources.Resource.NoDataFound</div>
 @using (Html.BeginForm("Index", "Enquiry", FormMethod.Post, new { @id = "frmenquiry" }))
 {
-	@*<div id="searchblk" class="small">*@
-		<div class="row justify-content-center my-3">
-			@Html.Partial("_DatesRange", null, new ViewDataDictionary { { "DateFromTxt", DateFrmTxt }, { "DateToTxt", DateToTxt } })
-			<button id="btnFilter" type="button" class="btn btn-success mx-4">@Resources.Resource.Submit</button>
+	@Html.Partial("_SearchBlk",null,new ViewDataDictionary { { "keyword", Model.Keyword} })
 
-			<button id="btnReload" type="button" class="btn btn-warning">@Resources.Resource.Reload</button>
+	<div class="row justify-content-between my-2 mx-2 small">
+		<div class="col-12 col-sm-6">
+			@if (isassignor)
+			{
+				<button id="btnAssign" type="button" class="btn btn-info"><span class="fa fa-user"></span> @Resources.Resource.AssignEnquiriesToSales</button>
+			}
 		</div>
-
-		<div class="row justify-content-center">
-			<div class="form-inline mb-2 my-4">
-				<div class="form-group">
-					<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Model.Keyword" />
-					<button id="btnSearch" type="button" class="btn btn-success ml-3">@Resources.Resource.Search</button>
-				</div>
+		<div class="col-12 col-sm-6">
+			<div class="float-right">
+				<div class=""><span id="datetxt">@Html.Raw(daterange)</span></div>
+				<div class="text-right"><span>@totaltxt: <span id="totalcount" class="font-weight-bold"></span></span></div>
 			</div>
 		</div>
-	@*</div>*@
-   
-
-    <div class="row justify-content-between my-2 mx-2 small">
-        <div class="col-12 col-sm-6">
-            @if (isassignor)
-            {
-                <button id="btnAssign" type="button" class="btn btn-info"><span class="fa fa-user"></span> @Resources.Resource.AssignEnquiriesToSales</button>
-            }
-        </div>
-        <div class="col-12 col-sm-6">
-            <div class="float-right">
-                <div class=""><span id="datetxt">@Html.Raw(daterange)</span></div>
-                <div class="text-right"><span>@totaltxt: <span id="totalcount" class="font-weight-bold"></span></span></div>
-            </div>
-        </div>
-    </div>
+	</div>
 }
 <hr />
 <div class="my-2">
-    <div class="float-right"><span id="addenq" class="btn btn-primary fa fa-plus" title="@string.Format(Resources.Resource.AddFormat, Resources.Resource.Enquiry)"></span></div>
+	<div class="float-right"><span id="addenq" class="btn btn-primary fa fa-plus" title="@string.Format(Resources.Resource.AddFormat, Resources.Resource.Enquiry)"></span></div>
 </div>
 
 
@@ -72,35 +55,29 @@
 <mgt-get id="mgt-email" resource="" scopes="Mail.Read" max-pages="0">
 </mgt-get>
 
-@*<div class="row d-block">
-    <div class="overflow-auto">*@
 <table id="tblmails" class="table table-bordered table-hover table-condensed">
-    <thead class="gray-header font-weight-bold">
-        <tr>
-            @if (isassignor)
-            {
-                <th scope="col"><input id="chkenqall" type="checkbox" class="form-check" /></th>
-            }
+	<thead class="gray-header font-weight-bold">
+		<tr>
+			@if (isassignor)
+			{
+				<th scope="col"><input id="chkenqall" type="checkbox" class="form-check" /></th>
+			}
 
-            <th scope="col" class="colheader" data-col="0" data-category="enReceivedDateTime">@Resources.Resource.DateTime</th>
-            <th scope="col" class="colheader" data-col="1" data-category="enSubject">@Resources.Resource.Subject</th>
-            <th scope="col" class="colheader" data-col="2" data-category="enFrom">@Resources.Resource.From4Enquiry</th>
-            <th scope="col" class="colheader" data-col="3" data-category="enEmail">@Resources.Resource.Email</th>
-            <th scope="col" class="colheader" data-col="4" data-category="enPhone">@Resources.Resource.Phone</th>
-            <th scope="col" class="colheader" data-col="5" data-category="enOrganization">@Resources.Resource.Organization</th>
-            <th scope="col" class="colheader" data-col="6" data-category="enContact">@Resources.Resource.Contact</th>
-            <th scope="col" class="colheader" data-col="7" data-category="followupstatus">@string.Format(Resources.Resource.FollowUpFormat, Resources.Resource.Status)</th>
-            <th scope="col" class="colheader" data-col="8" data-category="followupdate">@Resources.Resource.FollowUpDate</th>
-            <th scope="col" class="colheader" data-col="9" data-category="salesperson">@Resources.Resource.SalesPerson</th>
-            @*  <th scope="col">@Resources.Resource.ConvertedToCustomer</th>*@
-            @*@if (isassignor)
-        {*@
-            <th scope="col"></th>
-            @*  }*@
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
+			<th scope="col" class="colheader" data-col="0" data-category="enReceivedDateTime">@Resources.Resource.DateTime</th>
+			<th scope="col" class="colheader" data-col="1" data-category="enSubject">@Resources.Resource.Subject</th>
+			<th scope="col" class="colheader" data-col="2" data-category="enFrom">@Resources.Resource.From4Enquiry</th>
+			<th scope="col" class="colheader" data-col="3" data-category="enEmail">@Resources.Resource.Email</th>
+			<th scope="col" class="colheader" data-col="4" data-category="enPhone">@Resources.Resource.Phone</th>
+			<th scope="col" class="colheader" data-col="5" data-category="enOrganization">@Resources.Resource.Organization</th>
+			<th scope="col" class="colheader" data-col="6" data-category="enContact">@Resources.Resource.Contact</th>
+			<th scope="col" class="colheader" data-col="7" data-category="followupstatus">@string.Format(Resources.Resource.FollowUpFormat, Resources.Resource.Status)</th>
+			<th scope="col" class="colheader" data-col="8" data-category="followupdate">@Resources.Resource.FollowUpDate</th>
+			<th scope="col" class="colheader" data-col="9" data-category="salesperson">@Resources.Resource.SalesPerson</th>
+			<th scope="col"></th>
+		</tr>
+	</thead>
+	<tbody>
+	</tbody>
 </table>
 <br />
 <div class="Pager"></div>
@@ -120,9 +97,9 @@
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script>
-    $(function () {
-        initDatePickers(StartDayEnum.LastMonth, "YYYY-MM-DD");
-    });
+	$(function () {
+		initDatePickers(StartDayEnum.LastMonth, "YYYY-MM-DD");
+	});
 </script>
 
 <script src="~/Scripts/ts/js/crm/enquiry/enquiry.js?v=@rand"></script>

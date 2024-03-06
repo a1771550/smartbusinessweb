@@ -1052,13 +1052,15 @@ function GetTrainings(pageIndex) {
 	$.ajax({
 		type: "GET",
 		url: "/Training/GetTrainings",
-		data: { frmdate, todate, pageIndex, sortCol, sortDirection, keyword },
+		data: { pageIndex, sortCol, sortDirection, keyword },
 		success: function (data) {
 			//console.log("data:", data);
 			if (data && data.pagingTrainingList) {
 				TrainingList = data.pagingTrainingList.slice(0);
 				if (TrainingList && TrainingList.length > 0) {
-					//console.log("sortcol#1:", sortCol);
+
+					const totalRecord: number = Math.min(...TrainingList.map(x => x.TotalRecord));
+
 					$target = $("#tblmails .colheader");
 					$target.removeClass("fa fa-sort-up fa-sort-down");
 					$target = $target.eq(sortCol);
@@ -1078,9 +1080,9 @@ function GetTrainings(pageIndex) {
 						PagerCssClass: "pager",
 						PageIndex: pageIndex,
 						PageSize: pagesize,
-						RecordCount: data.totalRecord,
+						RecordCount: totalRecord,
 					});
-					$("#totalcount").text(data.totalRecord);
+					$("#totalcount").text(totalRecord);
 				}
 			}
 		},
@@ -1092,13 +1094,14 @@ function GetJobs(pageIndex) {
 	$.ajax({
 		type: "GET",
 		url: "/Job/GetJobs",
-		data: { frmdate, todate, pageIndex, sortCol, sortDirection, keyword },
+		data: { pageIndex, sortCol, sortDirection, keyword },
 		success: function (data) {
 			//console.log("data:", data);
 			if (data && data.pagingJobList) {
 				JobList = data.pagingJobList.slice(0);
 				if (JobList && JobList.length > 0) {
-					//console.log("sortcol#1:", sortCol);
+					const totalRecord: number = Math.min(...JobList.map(x => x.TotalRecord));
+
 					$target = $("#tblmails .colheader");
 					$target.removeClass("fa fa-sort-up fa-sort-down");
 					$target = $target.eq(sortCol);
@@ -1118,9 +1121,9 @@ function GetJobs(pageIndex) {
 						PagerCssClass: "pager",
 						PageIndex: pageIndex,
 						PageSize: pagesize,
-						RecordCount: data.totalRecord,
+						RecordCount: totalRecord,
 					});
-					$("#totalcount").text(data.totalRecord);
+					$("#totalcount").text(totalRecord);
 				}
 			}
 		},
@@ -1132,13 +1135,14 @@ function GetAttendances(pageIndex) {
 	$.ajax({
 		type: "GET",
 		url: "/Attendance/GetAttendances",
-		data: { frmdate, todate, pageIndex, sortCol, sortDirection, keyword },
+		data: { pageIndex, sortCol, sortDirection, keyword },
 		success: function (data) {
 			//console.log("data:", data);
 			if (data) {
 				AttendanceList = data.pagingAttdList.slice(0);
 				if (AttendanceList && AttendanceList.length > 0) {
-					//console.log("sortcol#1:", sortCol);
+					const totalRecord: number = Math.min(...AttendanceList.map(x => x.TotalRecord));
+
 					$target = $("#tblmails .colheader");
 					$target.removeClass("fa fa-sort-up fa-sort-down");
 					$target = $target.eq(sortCol);
@@ -1158,9 +1162,9 @@ function GetAttendances(pageIndex) {
 						PagerCssClass: "pager",
 						PageIndex: pageIndex,
 						PageSize: pagesize,
-						RecordCount: data.totalRecord,
+						RecordCount: totalRecord,
 					});
-					$("#totalcount").text(data.totalRecord);
+					$("#totalcount").text(totalRecord);
 				}
 			}
 		},
@@ -1168,20 +1172,19 @@ function GetAttendances(pageIndex) {
 		error: onAjaxFailure,
 	});
 }
-function GetEnquiries(pageIndex) {
-	//console.log("sortcol#0:", sortCol);
-	//console.log("sortdirection:", sortDirection);
-	//return;
+function GetEnquiries(pageIndex) {	
 	$.ajax({
 		type: "GET",
 		url: "/Enquiry/GetEnquiries",
-		data: { frmdate, todate, pageIndex, sortCol, sortDirection, keyword },
+		data: { pageIndex, sortCol, sortDirection, keyword },
 		success: function (data) {
 			//console.log("data:", data);
 			if (data) {
 				EnquiryList = data.pagingEnqList.slice(0);
 				if (EnquiryList && EnquiryList.length > 0) {
-					//console.log("sortcol#1:", sortCol);
+					//const min = Math.min(...myArray.map(item => item.cost))
+					const totalRecord: number = Math.min(...EnquiryList.map(x=>x.TotalRecord));
+
 					$target = $("#tblmails .colheader");
 					$target.removeClass("fa fa-sort-up fa-sort-down");
 					$target = $target.eq(sortCol);
@@ -1201,9 +1204,9 @@ function GetEnquiries(pageIndex) {
 						PagerCssClass: "pager",
 						PageIndex: pageIndex,
 						PageSize: pagesize,
-						RecordCount: data.totalRecord,
+						RecordCount: totalRecord,
 					});
-					$("#totalcount").text(data.totalRecord);
+					$("#totalcount").text(totalRecord);
 				}
 			}
 		},
@@ -6825,24 +6828,24 @@ function fillInEnquiry() {
 		FollowUpDateInfo: {} as IEnquiryInfo,
 		statuscls: null,
 		UploadFileList: [],
+		TotalRecord:0,
 	};
 	enquiry.FollowUpDateInfo.type = "date";
 	enquiry.FollowUpDateInfo.status = $(".followup:checked").val() as string;
 	enquiry.FollowUpDateInfo.JsFollowUpDate = $("#followUpDate").val() as string;
 	//FollowUpDateInfo_Id
 	enquiry.FollowUpDateInfo.Id = $("#FollowUpDateInfo_Id").val() as string;
-	if ($infoblk.data("uploadfileList") !== "") {
+	if ($infoblk.data("uploadfilelist") !== "") {
 		enquiry.UploadFileList = $infoblk
-			.data("uploadfileList")
+			.data("uploadfilelist")
 			.toString()
 			.split(",");
 		$("#btnViewFile").removeClass("hide");
 	}
-
-	//if (enquiry.Id != "") $(".btnsaverecord").removeClass("disabled");
 }
 
 interface IEnquiry {
+	TotalRecord: number;
 	UploadFileList: string[];
 	id: string;
 	Id: string | null;
@@ -18195,15 +18198,16 @@ let currentoldestdate: any;
 let pagesize: number;
 let resource: string;
 
-function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) {
+function handleMGTmails(pageIndex: number = 1) {
 	if (forenquiry) {
 		const enquiryacc: string = $infoblk.data("enquiryacc") as string;
 		EnquiryList = [];
 
-		let mgtEmail = document.getElementById("mgt-email");
-		//console.log("msgEmail:", mgtEmail);
-		let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", `${enquiryacc}`);
-		//console.log("resource:" + _resource);
+		let mgtEmail = document.getElementById("mgt-email");		
+		/*let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", `${enquiryacc}`);*/
+		let _resource = resource.replace("{0}", `${enquiryacc}`);
+		//console.log("_resource:", _resource);
+
 		$("#mgt-email").attr("resource", _resource);
 
 		if (mgtEmail) {
@@ -18241,9 +18245,10 @@ function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) 
 		const attendanceacc: string = $infoblk.data("attendanceacc") as string;
 		//console.log("attendanceacc:", attendanceacc);
 		let mgtEmail = document.getElementById("mgt-email");
-		//console.log("msgEmail:", mgtEmail);
-		let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", attendanceacc);
-		//console.log("resource:" + _resource);
+		
+		//let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", attendanceacc);
+		let _resource = resource.replace("{0}", `${attendanceacc}`);
+
 		$("#mgt-email").attr("resource", _resource);
 
 		if (mgtEmail) {
@@ -18261,6 +18266,7 @@ function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) 
 						saCheckOutTime: "",
 						saDate: null,
 						DateDisplay: "",
+						TotalRecord:0,
 					};
 
 					let idx = AttendanceList.findIndex(a => a.saId == x.id);
@@ -18300,10 +18306,10 @@ function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) 
 		JobList = [];
 		const jobacc: string = $infoblk.data("jobacc") as string;
 		//console.log("jobacc:", jobacc);
-		let mgtEmail = document.getElementById("mgt-email");
-		//console.log("msgEmail:", mgtEmail);
-		let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", jobacc);
-		//console.log("resource:" + _resource);
+		let mgtEmail = document.getElementById("mgt-email");	
+		//let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", jobacc);
+		let _resource = resource.replace("{0}", `${jobacc}`);
+
 		$("#mgt-email").attr("resource", _resource);
 
 		if (mgtEmail) {
@@ -18324,7 +18330,8 @@ function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) 
 						joReceivedDateTime: "",
 						joAttachements: "",
 						joDate: null,
-						DateDisplay: ""
+						DateDisplay: "",
+						TotalRecord:0,
 					};
 					//console.log("receivedDateTime:", x.receivedDateTime);
 					let idx = JobList.findIndex(a => a.joId == x.id);
@@ -18366,9 +18373,10 @@ function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) 
 		const trainingacc: string = $infoblk.data("trainingacc") as string;
 		//console.log("trainingacc:", trainingacc);
 		let mgtEmail = document.getElementById("mgt-email");
-		//console.log("msgEmail:", mgtEmail);
-		let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", trainingacc);
-		console.log("resource:" + _resource);
+		
+		//let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", trainingacc);
+		let _resource = resource.replace("{0}", `${trainingacc}`);
+
 		$("#mgt-email").attr("resource", _resource);
 
 		if (mgtEmail) {
@@ -18392,7 +18400,8 @@ function handleMGTmails(strfrmdate: any, strtodate: any, pageIndex: number = 1) 
 						trPhone: "",
 						strDate: "",
 						trDate: null,
-						DateDisplay: ""
+						DateDisplay: "",
+						TotalRecord:0,
 					};
 					//console.log("receivedDateTime:", x.receivedDateTime);
 					let idx = TrainingList.findIndex(a => a.trId == x.id);
@@ -19366,6 +19375,7 @@ let AttendanceList: IAttendance[] = [];
 let JobList: IJob[] = [];
 let TrainingList: ITraining[] = [];
 interface IAttendance {
+	TotalRecord: number;
 	saId: string;
 	receiveddate: string;
 	receivedDateTime: string;
@@ -19399,6 +19409,7 @@ interface IJournal {
 	DateDisplay: string;
 	IsCheckOut: boolean;
 	Inclusive: boolean;
+	TotalRecord: number;
 }
 interface IJournalLn {
 	mainId: string;
@@ -19420,6 +19431,7 @@ interface IJournalLn {
 	Inclusive: boolean;
 }
 interface IJob {
+	TotalRecord: number;
 	joStaffName: string;
 	joStaffEmail: string;
 	joClient: string;
@@ -19435,6 +19447,7 @@ interface IJob {
 	DateDisplay: string;
 }
 interface ITraining {
+	TotalRecord: number;
 	trId: string;
 	trApplicant: string;
 	trCompany: string;

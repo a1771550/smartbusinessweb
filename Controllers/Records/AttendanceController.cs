@@ -1,4 +1,5 @@
 ﻿using CommonLib.App_GlobalResources;
+using CommonLib.Helpers;
 using Dapper;
 using PPWLib.Models;
 using PPWLib.Models.Attendance;
@@ -16,34 +17,18 @@ namespace SmartBusinessWeb.Controllers.Records
 	public class AttendanceController : BaseController
     {
 		[HttpGet]
-		public JsonResult GetAttendances(string frmdate, string todate, int pageIndex = 1, int sortCol = 0, string sortDirection = "desc", string keyword = "")
+		public JsonResult GetAttendances(int pageIndex = 1, int sortCol = 0, string sortDirection = "desc", string keyword = "")
 		{
 			using var connection = new Microsoft.Data.SqlClient.SqlConnection(DefaultConnection);
 			connection.Open();
 			if (string.IsNullOrEmpty(keyword)) keyword = null;
-			//todate = CommonHelper.FormatDate(CommonHelper.GetDateFrmString4SQL(todate).AddDays(-1), DateFormat.YYYYMMDD);
-			List<AttendanceModel> attendancelist = connection.Query<AttendanceModel>(@"EXEC dbo.GetAttendances @apId=@apId,@frmdate=@frmdate,@todate=@todate,@keyword=@keyword", new { apId, frmdate, todate, keyword }).ToList();
-			int pagesize = int.Parse(ConfigurationManager.AppSettings["AttendancePageSize"]);
-			int skip = (pageIndex - 1) * pagesize;
-			List<AttendanceModel> pagingAttdList = new List<AttendanceModel>();
 
-			#region Sorting
-			switch (sortCol)
-			{				
-				case 2:
-					pagingAttdList = sortDirection.ToLower() == "desc" ? attendancelist.OrderByDescending(x => x.saName).ThenByDescending(x => x.saReceivedDateTime).Skip(skip).Take(pagesize).ToList() : attendancelist.OrderBy(x => x.saName).ThenBy(x => x.saReceivedDateTime).Skip(skip).Take(pagesize).ToList();
-					break;
-				case 1:
-					pagingAttdList = sortDirection.ToLower() == "desc" ? attendancelist.OrderByDescending(x => x.saCheckInTime).ThenByDescending(x => x.saReceivedDateTime).Skip(skip).Take(pagesize).ToList() : attendancelist.OrderBy(x => x.saCheckInTime).ThenBy(x => x.saReceivedDateTime).Skip(skip).Take(pagesize).ToList();
-					break;
-				default:
-				case 0:
-					pagingAttdList = sortDirection.ToLower() == "desc" ? attendancelist.OrderByDescending(x => x.saDate).Skip(skip).Take(pagesize).ToList() : attendancelist.OrderBy(x => x.saDate).Skip(skip).Take(pagesize).ToList();
-					break;
-			}
-			#endregion
+            int pageSize = int.Parse(ConfigurationManager.AppSettings["AttendencePageSize"]);
+            int startIndex = CommonHelper.GetStartIndex(pageIndex, pageSize);
 
-			return Json(new { pagingAttdList, totalRecord = attendancelist.Count }, JsonRequestBehavior.AllowGet);
+            List<AttendanceModel> pagingAttdList = connection.Query<AttendanceModel>(@"EXEC dbo.GetAttendances @apId=@apId,@sortCol=@sortCol,@sortOrder=@sortOrder,@startIndex=@startIndex,@pageSize=@pageSize,@keyword=@keyword", new { apId, sortCol, sortOrder = sortDirection, startIndex, pageSize, keyword }).ToList();
+
+			return Json(new { pagingAttdList }, JsonRequestBehavior.AllowGet);
 		}
 		
 		[HttpPost]
