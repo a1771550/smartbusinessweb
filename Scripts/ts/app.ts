@@ -1470,7 +1470,7 @@ function _writeItems(itemList: IItem[]) {
 
 		var namedesc = handleItemDesc(item.NameDesc);
 		html += `<td style="max-width:250px;" title="${item.NameDesc}">${namedesc}</td>`;
-		let outofstock: boolean = _qty <= 0;
+		let outofstock: boolean = forsales||forsimplesales||forpreorder ? false : itemcode.startsWith("/") ? false : _qty <= 0;
 		if (!forpurchase && !forpreorder) {
 			let tdcls = !outofstock ? "" : "outofstock";
 			html += `<td style="text-align:right;width:90px;max-width:90px;" class="${tdcls}">${_qty}</td>`;
