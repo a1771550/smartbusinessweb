@@ -1284,7 +1284,7 @@ function OnSuccess(response) {
 		//console.log("dicitemvtdelqtylist:", DicItemVtDelQtyList);
 
 		if (PoItemBatVQList) {
-			const newpolist = model.PoItemBatVQList.slice(0);
+			const newpolist = model.PoItemBatVQList? model.PoItemBatVQList.slice(0):[];
 			const currentpolist = PoItemBatVQList.slice(0);
 			const tmplist = [...newpolist, ...currentpolist];
 			const filteredpolist = tmplist.filter(
