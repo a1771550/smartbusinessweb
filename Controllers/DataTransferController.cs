@@ -27,12 +27,11 @@ using PPWLib.Models.Customer;
 using Microsoft.Data.SqlClient;
 using PPWLib.Models.POS.Sales;
 using PPWLib.Models.Journal;
-using PPWLib.Models.Quotation;
 using CommonLib.Models.MYOB;
 
 namespace SmartBusinessWeb.Controllers
 {
-	[CustomAuthenticationFilter]
+    [CustomAuthenticationFilter]
 	public class DataTransferController : BaseController
 	{
 		private string sqlfields4Journal { get { return ModelHelper.sqlfields4Journal; } }
@@ -1239,14 +1238,7 @@ namespace SmartBusinessWeb.Controllers
 						{
 							customer.cusCheckout = true;
 						}
-						break;
-					//case CheckOutType.PGLocStocks:
-					//    List<PGLocStock> stocks = context.PGLocStocks.Where(x => checkoutIds.Any(y => x.lstItemLocationID == y) && x.AccountProfileId == accountProfileId).ToList();
-					//    foreach (var item in stocks)
-					//    {
-					//        item.lstCheckout = true;
-					//    }
-					//    break;
+						break;					
 					case CheckOutType.Items:
 						List<PGItem> pitems = context.PGItems.Where(x => checkoutIds.Any(y => x.itmItemID == y) && x.AccountProfileId == accountProfileId).ToList();
 						List<MyobItem> mitems = context.MyobItems.Where(x => checkoutIds.Any(y => x.itmItemID == y) && x.AccountProfileId == accountProfileId).ToList();

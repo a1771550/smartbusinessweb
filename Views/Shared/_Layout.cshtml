@@ -148,6 +148,10 @@
 								<li><a href="/Transfer/Index" class="@sublnkcls">@Resources.Resource.StockTransfer</a></li>
 								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "transferlist") ? "active" : ""; }
 								<li><a href="/Transfer/List" class="@sublnkcls">@Resources.Resource.StockTransferOrder</a></li>
+								
+								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "InventoryAdjustment") ? "active" : ""; }
+								<li><a href="/InventoryAdjustment/Index" class="@sublnkcls">@Resources.Resource.InventoryAdjustment</a></li>
+
 								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "category") ? "active" : ""; }
 								<li><a class="@sublnkcls" href="/ItemCategory/Index">@Resources.Resource.Category</a></li>
 								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "zerostocks") ? "active" : ""; }

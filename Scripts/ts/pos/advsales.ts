@@ -18,9 +18,7 @@ checkedcashdrawer = $infoblk.data("checkedcashdrawer")
 
 DicBatTotalQty = $infoblk.data("jsondicbattotalqty");
 
-$(document).on("click", ".btnNewSales", function () {
-    window.location.reload();
-});
+
 $(document).on("click", ".btnRequestApproval", function () {
     if (validSalesForm()) {
         // $("#txtConvertDate").val("");
@@ -28,7 +26,7 @@ $(document).on("click", ".btnRequestApproval", function () {
     }
 });
 
-$(document).on("click", "#btnNewSales", function () {
+$(document).on("click", ".btnNewSales", function () {
     if (SalesLnList.length > 0) {
         $.fancyConfirm({
             title: "",
@@ -39,38 +37,15 @@ $(document).on("click", "#btnNewSales", function () {
             callback: function (value) {
                 console.log("value:", value);
                 if (value) {
-                    window.location.href = "/PosFunc/Sales";
+                    window.location.href = "/PosFunc/AdvSales";
                 }
             },
         });
     } else {
-        window.location.href = "/PosFunc/Sales";
+        window.location.href = "/PosFunc/AdvSales";
     }
 });
 
-$(document).on("change", "#txtCashDrawerAmt", function () {
-    let _amt = $(this).val();
-    let _token = cashdrawerModal
-        .find('input[name="__RequestVerificationToken"]')
-        .val();
-    /* console.log(_amt + ';' + _token); return false;*/
-    if (_amt !== "") {
-        $.ajax({
-            type: "POST",
-            url: "/POSFunc/CashDrawer",
-            data: { cashdraweramt: _amt, __RequestVerificationToken: _token },
-            success: function (data) {
-                checkedcashdrawer = true;
-                closeCashDrawerModal();
-                getSessionStartDataOk(data);
-            },
-            dataType: "json",
-        });
-    } else {
-        falert(cashdraweramtprompt, oktxt);
-        $("#txtCashDrawerAmt").trigger("focus");
-    }
-});
 
 
 let sessionstartdata: Array<any> = [];

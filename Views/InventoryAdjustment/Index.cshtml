@@ -1,0 +1,76 @@
+﻿@model PPWLib.Models.Item.InventoryAdjustmentEditModel
+@using PagedList.Mvc;
+@{
+	ViewBag.Title = Resources.Resource.InventoryAdjustment;
+	int rand = CommonHelper.GetVersionRandomNo();
+}
+
+<h2>@ViewBag.Title</h2>
+<p class="my-3">
+	@Html.ActionLink(Resources.Resource.Add, "Edit", new { Id = 0 }, new { @class = "btn btn-info" })
+</p>
+
+@if (Model.PagingIAList.Count == 0)
+{
+	<div id="norecord" class="alert alert-warning">@Resources.Resource.NoDataFound</div>
+
+	return;
+}
+
+@using (Html.BeginForm("Index", "InventoryAdjustment", FormMethod.Get, new { @Id = "frmInventoryAdjustment" }))
+{
+	@Html.AntiForgeryToken()
+
+
+
+	@Html.Partial("_SearchBlk", null, new ViewDataDictionary { { "Keyword", Model.Keyword } })
+
+
+
+	<table id="tblInventoryAdjustment" class="table table-bordered table-hover table-condensed my-4">
+		<thead class="gray-header">
+			<tr>
+				<th scope="col" class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">@string.Format(Resources.Resource.NumberFormat, Resources.Resource.Journal)</th>
+				<th scope="col" class="text-center" data-col="1" data-keyword="@Model.Keyword">@Resources.Resource.Memo</th>
+				<th scope="col" class="text-center colheader" data-col="2" data-keyword="@Model.Keyword">@Resources.Resource.CreateTime</th>
+				<th scope="col" class="text-center colheader" data-col="3" data-keyword="@Model.Keyword">@Resources.Resource.ModifyTime</th>
+
+				<th scope="col"></th>
+
+			</tr>
+		</thead>
+
+
+		@foreach (var item in Model.PagingIAList)
+		{
+			<tr>
+
+				<td class="text-center">@item.JournalNumber</td>
+				<td class="text-center itemdesc" data-desc="@item.Memo">@item.MemoDisplay</td>
+
+				<td class="text-center">@item.CreateTimeDisplay</td>
+				<td class="text-center">@item.ModifyTimeDisplay</td>
+
+				<td>
+					<a class="btn btn-info" role="button" href="/InventoryAdjustment/Edit?Id=@item.Id">@Resources.Resource.Detail</a>
+				</td>
+			</tr>
+		}
+
+	</table>
+	<div id="pagingblk" class="my-3">
+		@Html.PagedListPager(Model.PagingIAList, PageNo => Url.Action("Index",
+new { PageNo, SortCol = Model.SortCol, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
+	</div>
+
+	<input type="hidden" id="sortorder" name="SortOrder" value="@Model.SortOrder" />
+	<input type="hidden" id="sortcol" value="@Model.SortCol" />
+}
+
+@Html.Partial("_WaitingModal")
+
+@Html.Partial("_DescModal")
+
+<div id="infoblk"></div>
+
+<script src="~/Scripts/ts/js/inventoryadjustment/index.js?v=@rand"></script>

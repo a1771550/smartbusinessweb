@@ -170,6 +170,11 @@
           <path>Scripts\ts\item\categoryedit.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\item\categoryedit.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>inventory_adjustment-index.ts</name>
+          <path>Scripts\ts\inventoryadjustment\index.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\inventoryadjustment\index.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

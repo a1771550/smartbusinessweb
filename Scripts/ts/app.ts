@@ -1471,7 +1471,7 @@ function _writeItems(itemList: IItem[]) {
 		var namedesc = handleItemDesc(item.NameDesc);
 		html += `<td style="max-width:250px;" title="${item.NameDesc}">${namedesc}</td>`;
 		let outofstock: boolean = forsales||forsimplesales||forpreorder ? false : itemcode.startsWith("/") ? false : _qty <= 0;
-		if (!forpurchase && !forpreorder) {
+		if (!forpurchase) {
 			let tdcls = !outofstock ? "" : "outofstock";
 			html += `<td style="text-align:right;width:90px;max-width:90px;" class="${tdcls}">${_qty}</td>`;
 		}
@@ -22278,4 +22278,27 @@ function disableEntries() {
 	$("input:not([type='file'],[id='txtUserName'],[name='itemdesc'],.ip,.povari)").prop("isadmin", true).prop("disabled", true);
 	$("select").prop("disabled", true);
 	$("textarea").not("#txtField").prop("isadmin", true).prop("disabled", true);
+}
+
+interface IInventoryAdjustment {
+	Id: number;
+	JournalNumber: string;
+	Memo: string;
+	IALs: IIAL[];
+	iaMemo: string;
+	iaId: number;
+	CreateTimeDisplay: string;
+}
+interface IIAL {
+	Id: number;
+	iaId: number;
+	itmCode: string;
+	itemID: number | null;
+	lstStockLoc: string;
+	Qty: number;
+	UnitCost: number;
+	Amt: number;
+	AccountID: number;
+	JobID: number | null;
+	Memo: string;
 }

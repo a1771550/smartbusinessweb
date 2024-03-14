@@ -360,6 +360,7 @@
     <Compile Include="Controllers\ApiController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
+    <Compile Include="Controllers\Item\InventoryAdjustmentController.cs" />
     <Compile Include="Controllers\SimpleContactController.cs" />
     <Compile Include="Controllers\CRM\eBlastController.cs" />
     <Compile Include="Controllers\CRM\EnquiryController.cs" />
@@ -3017,6 +3018,7 @@
     <Content Include="Content\mean\js\owl.carousel.min.js" />
     <Content Include="Content\mean\js\Popper.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\ts\js\inventoryadjustment\index.js" />
     <Content Include="Scripts\ts\js\itemtransfer\transfer.js" />
     <Content Include="Scripts\ts\js\item\index.js" />
     <Content Include="Scripts\ts\js\lang.js" />
@@ -4636,6 +4638,8 @@
     <Content Include="Views\Item\Index.cshtml" />
     <Content Include="Scripts\ts\js\item\index.js.map" />
     <Content Include="Views\Shared\_SearchBlk.cshtml" />
+    <Content Include="Views\InventoryAdjustment\Index.cshtml" />
+    <Content Include="Scripts\ts\js\inventoryadjustment\index.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -5072,6 +5076,7 @@
     <TypeScriptCompile Include="Scripts\tinymce\tinymce.d.ts" />
     <TypeScriptCompile Include="Scripts\ts\ajaxpostlist.ts" />
     <TypeScriptCompile Include="Scripts\ts\app.ts" />
+    <TypeScriptCompile Include="Scripts\ts\inventoryadjustment\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\lang.ts" />
     <TypeScriptCompile Include="Scripts\ts\logout.ts" />
     <TypeScriptCompile Include="Scripts\ts\menu.ts" />
