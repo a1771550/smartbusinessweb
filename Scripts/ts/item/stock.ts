@@ -27,7 +27,7 @@ $(function () {
     $target.addClass(sortcls);
 
     initModals();
-
+    triggerMenu(2, 1);
     keyword = "";
     $("#drpWarehouse").val($infoblk.data("shop"));
     stocklocation = <string>$("#drpLocation").val();

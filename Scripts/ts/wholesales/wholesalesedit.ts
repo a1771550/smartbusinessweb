@@ -950,6 +950,7 @@ $(function () {
 	uploadsizelimitmb = Number($infoblk.data("uploadsizelimitmb"));
 	shop = $infoblk.data("shop") as string;
 	initModals();
+	triggerMenu(4, 0);
 
 	gTblName = "tblWSI";
 	itotalamt = 0;

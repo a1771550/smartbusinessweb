@@ -90,6 +90,7 @@ $(function () {
 	daterangechange = false;
 	setFullPage();
 	initModals();
+	triggerMenu(9, 0);
 
 	let keyword = getParameterByName('Keyword');
 	if (keyword !== null) {

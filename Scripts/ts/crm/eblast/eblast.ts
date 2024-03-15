@@ -25,20 +25,6 @@ $(document).on('click', '.test', function () {
 	openTestEblastModal();
 });
 
-//$(document).on('click', '.track', function () {
-//	let Id = $(this).data('id');
-//	openWaitingModal();
-//	$.ajax({
-//		type: "POST",
-//		url: '/eBlast/Track',
-//		data: { Id: Id },
-//		success: function (data) {
-//			closeWaitingModal();
-//			console.log('data:', data);		
-//		},
-//		dataType: 'json'
-//	});
-//});
 
 $(document).on('click', '.log', function () {
 	let Id = $(this).data('id');
@@ -176,7 +162,7 @@ $(function () {
 	setFullPage();
 	let $sortorder = $('#sortorder');
 	let $sortcol = $('#sortcol');
-	console.log('sortorder:' + $sortorder.val() + ';sortcol:' + $sortcol.val());
+	//console.log('sortorder:' + $sortorder.val() + ';sortcol:' + $sortcol.val());
 	$target = $('.colheader').eq(<number>$sortcol.val());
 	let sortcls = $sortorder.val() === 'desc' ? 'fa fa-sort-up' : 'fa fa-sort-down';
 	$target.addClass(sortcls);
@@ -185,6 +171,8 @@ $(function () {
 	$('.pagination li').addClass('page-item');
 
 	initModals();	
+	triggerMenu(3, 0);
+
 	let keyword = getParameterByName('Keyword');
 	if (keyword !== null) {
 		$('#txtKeyword').val(keyword);

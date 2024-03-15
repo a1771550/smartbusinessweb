@@ -26,7 +26,7 @@ function AssignContactsToGroup(sgId: number) {
                     noButton: notxt,
                     callback: function (value) {
                         if (value) {
-                            $('#txtKeyword').focus();
+                            $('#txtKeyword').trigger("focus");
                         }
                     }
                 });
@@ -47,7 +47,7 @@ $(document).on('click', '#btnAssign', function () {
             noButton: notxt,
             callback: function (value) {
                 if (value) {
-                    $('#txtKeyword').focus();
+                    $('#txtKeyword').trigger("focus");
                 }
             }
         });
@@ -199,7 +199,7 @@ $(document).on('change', '#iPageSize', function () {
             noButton: notxt,
             callback: function (value) {
                 if (value) {
-                    $('#iPageSize').focus();
+                    $('#iPageSize').trigger("focus");
                 }
             }
         });
@@ -304,7 +304,7 @@ function handleHotListContact(id) {
                         callback: function (value) {
                             if (value) {
                                 closeWaitingModal();
-                                $('#txtKeyword').focus();
+                                $('#txtKeyword').trigger("focus");
                             }
                         }
                     });
@@ -417,7 +417,7 @@ $(document).on('click', '#btnHotList', function () {
             noButton: notxt,
             callback: function (value) {
                 if (value) {
-                    $('#txtKeyword').focus();
+                    $('#txtKeyword').trigger("focus");
                 }
             }
         });
@@ -440,7 +440,7 @@ $('#btnBlast').on('click', function (e) {
             noButton: notxt,
             callback: function (value) {
                 if (value) {
-                    $('#txtKeyword').focus();
+                    $('#txtKeyword').trigger("focus");
                 }
             }
         });
@@ -543,7 +543,7 @@ $(document).on('click', '.detail', function () {
                 noButton: canceltxt,
                 callback: function (value) {
                     if (value) {
-                        $('#txtKeyword').focus();
+                        $('#txtKeyword').trigger("focus");
                     }
                 }
             });
@@ -581,7 +581,7 @@ $(document).on('click', '.remove', function () {
 $(document).on('click', '#btnSearchAttr', function () {
     $('#txtKeyword').attr('name', 'CustomerAttribute');
     openWaitingModal();
-    $('#frmContact').submit();
+    $('#frmContact').trigger("submit");
 });
 
 $('#btnReload').on('click', function (e) {
@@ -596,20 +596,20 @@ $(document).on('click', '.colheader', function () {
     let $sortcol_a = $('<input>').attr({ type: 'hidden', name: 'SortCol_a', value: $(this).data('col') });
     let $keyword_a = $('<input>').attr({ type: 'hidden', name: 'Keyword_a', value: $(this).data('keyword') });
 
-    $('#frmContact').append($sortcol).append($keyword).append($sortcol_a).append($keyword_a).submit();
+    $('#frmContact').append($sortcol).append($keyword).append($sortcol_a).append($keyword_a).trigger("submit");
 });
 
-$(document).ready(function () {
+$(function () {
     let $sortorder = $('#sortorder');
     let $sortcol = $('#sortcol');
-    console.log('sortorder:' + $sortorder.val() + ';sortcol:' + $sortcol.val());
+    //console.log('sortorder:' + $sortorder.val() + ';sortcol:' + $sortcol.val());
     $target = $('.colheader').eq(<number>$sortcol.val());
     let sortcls = $sortorder.val() === 'asc' ? 'fa fa-sort-up' : 'fa fa-sort-down';
     $target.addClass(sortcls);
 
     initModals();
     closeWaitingModal();
-    $('#txtKeyword').focus();
+    $('#txtKeyword').trigger("focus");
 
     $target = $('.pagination');
     $target.wrap('<nav aria-label="Page navigation"></nav>').find('li').addClass('page-item').find('a').addClass('page-link');
@@ -649,7 +649,7 @@ $(document).ready(function () {
             noButton: notxt,
             callback: function (value) {
                 if (value) {
-                    $('#txtKeyword').focus();
+                    $('#txtKeyword').trigger("focus");
                 }
             }
         });

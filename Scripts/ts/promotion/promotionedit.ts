@@ -96,7 +96,10 @@ $(document).on("change", ".desc", function () {
 
 
 $(function () {
+    setFullPage();
     initModals();
+    triggerMenu(3, 4);
+
     initDatePicker(
         "proDateFrm",
         editmode ? new Date($("#DateFrmDisplay").val() as string) : new Date(),

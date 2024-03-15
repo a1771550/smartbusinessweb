@@ -1,0 +1,28 @@
+﻿#tblIAL{
+	width:100%;
+}
+#tblIAL .form-control {
+	height: calc(2rem + 2px)!important;
+}
+#tblIAL .form-control {
+	font-size:.9rem!important;
+}
+	#tblIAL th:nth-child(1), #tblIAL th:nth-child(2) {
+		width: 180px;
+	}
+	#tblIAL th:nth-child(3) {
+		width: 100px;
+	}
+	#tblIAL th:nth-child(4), #tblIAL th:nth-child(5) {
+		width: 140px;
+	}
+	#tblIAL th:nth-child(6), #tblIAL th:nth-child(7) {
+		width: 160px;
+	}
+
+	#tblIAL th:nth-child(8){
+		width:140px;
+	}
+	#tblIAL th:last-child {
+		width: 130px;
+	}

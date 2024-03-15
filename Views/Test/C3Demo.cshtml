@@ -40,7 +40,7 @@
             var populations = jsondata.Populations.slice(0);
             console.log('pop:', populations);
             var data = {};
-            var countryNames = [];
+            var countryNames = new();
             countries.forEach(function (e) {
                 countryNames.push(e.CountryName);
                 data[e.CountryName] = e.CountryPopulation;

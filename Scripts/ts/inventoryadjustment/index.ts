@@ -21,6 +21,7 @@ $(document).on("click", ".colheader", function () {
 $(function () {
 	forItem = true;
 	setFullPage();
+	
 	let $sortorder = $("#sortorder");
 	let $sortcol = $("#sortcol");
 	//console.log("sortorder:" + $sortorder.val() + ";sortcol:" + $sortcol.val());
@@ -30,6 +31,8 @@ $(function () {
 	$target.addClass(sortcls);
 
 	initModals();
+	
+
 	$("#txtKeyword").trigger("focus");
 
 	$target = $(".pagination");
@@ -45,4 +48,6 @@ $(function () {
 		$("#txtKeyword").val(keyword);
 	}
 	$(".pagination li").addClass("page-item");
+
+	triggerMenu(2, 4);
 });

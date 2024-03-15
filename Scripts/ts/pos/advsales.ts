@@ -113,6 +113,7 @@ $(function () {
     forsales = true;
     salesType = SalesType.retail;
     setFullPage();
+    triggerMenu(0, 1);
 
     DicLocation = $infoblk.data("jsondiclocation");
 

@@ -86,7 +86,7 @@
 
         function drawAxisTickColors() {
             var statlist = $infoblk.data('jsonenqstat');
-            var statarr = [];
+            var statarr = new();
             var data = new google.visualization.DataTable();
 
             data.addColumn('string', 'Subject');
@@ -112,7 +112,7 @@
             chart.draw(data, options);
 
             statlist = $infoblk.data('jsoncontactindustrystat');
-            statarr = [];
+            statarr = new();
             data = new google.visualization.DataTable();
 
             data.addColumn('string', 'Name');
@@ -138,7 +138,7 @@
 
             //sales contact:
             statlist = $infoblk.data('jsonsalescontactstatlist');
-            statarr = [];
+            statarr = new();
             data = new google.visualization.DataTable();
             data.addColumn('string', 'SalesName');
             data.addColumn('number', 'ContactCount');
@@ -170,7 +170,7 @@
 
             //sales enquiry:
             statlist = $infoblk.data('jsonsalesenquirystatlist');
-            statarr = [];
+            statarr = new();
             data = new google.visualization.DataTable();
             data.addColumn('string', 'SalesName');
             data.addColumn('number', 'EnquiryCount');

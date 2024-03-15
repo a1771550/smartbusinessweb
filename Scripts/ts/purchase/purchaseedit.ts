@@ -461,6 +461,7 @@ function initPurchaseForm() {
 	uploadsizelimitmb = parseInt($infoblk.data("uploadsizelimitmb"));
 	shop = $infoblk.data("shop") as string;
 	initModals();
+	triggerMenu(5, 0);
 
 	gTblName = "tblPSI";
 	itotalamt = 0;
@@ -627,7 +628,7 @@ function initForEx() {
 		DicCurrencyExRate = $infoblk.data("jsondiccurrencyexrate");
 	}
 }
-$(function () {
+$(function () {	
 	let isadmin: boolean = initPurchaseForm();
 
 	if (reviewmode || editmode) initPurchaseFormWModes();

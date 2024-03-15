@@ -49,7 +49,7 @@ namespace SmartBusinessWeb.Controllers.Item
         {
             ViewBag.ParentPage = "item";
             ViewBag.PageName = "transferlist";
-            ViewBag.Title = string.Format(Resources.Resource.ListFormat, Resources.Resource.StockTransfer);
+            //ViewBag.Title = string.Format(Resources.Resource.ListFormat, Resources.Resource.StockTransfer);
             int Size_Of_Page = (int)ComInfo.PageLength;
             TransferEditModel model = new TransferEditModel();
             model.GetTransferList(strfrmdate, strtodate, (int)PageNo, Size_Of_Page, SortCol, SortOrder, Keyword);

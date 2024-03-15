@@ -13,9 +13,7 @@ $(function () {
   setFullPage();
   fortransfer = true;
   gTblName = gFrmName = "TransferList";
-  console.log(
-    "sortorder:" + $("#sortorder").val() + ";sortcol:" + $("#sortcol").val()
-  );
+    triggerMenu(2, 3);
 
   $target = $(".colheader").eq(parseInt(<string>$("#sortcol").val()));
   let sortcls =

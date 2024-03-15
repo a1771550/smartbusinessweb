@@ -387,7 +387,7 @@
     <Compile Include="Controllers\POS\POSFuncController.cs" />
     <Compile Include="Controllers\Report\AbssReportController.cs" />
     <Compile Include="Controllers\Sales\PreorderController.cs" />
-    <Compile Include="Controllers\POS\PriceLevelsController.cs" />
+    <Compile Include="Controllers\Customer\PriceLevelsController.cs" />
     <Compile Include="Controllers\POS\PrintController.cs" />
     <Compile Include="Controllers\POS\ReceiptController.cs" />
     <Compile Include="Controllers\Report\ReportController.cs" />
@@ -2710,6 +2710,7 @@
     <Content Include="Content\images\calendar.svg" />
     <Content Include="Content\images\X-office-calendar.svg" />
     <Content Include="Content\Item.css" />
+    <Content Include="Content\item\iaedit.css" />
     <Content Include="Content\job.css" />
     <Content Include="Content\jquery-ui.css" />
     <Content Include="Content\login.css" />
@@ -3018,7 +3019,9 @@
     <Content Include="Content\mean\js\owl.carousel.min.js" />
     <Content Include="Content\mean\js\Popper.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\ts\js\inventoryadjustment\edit.js" />
     <Content Include="Scripts\ts\js\inventoryadjustment\index.js" />
+    <Content Include="Scripts\ts\js\itemtransfer\index.js" />
     <Content Include="Scripts\ts\js\itemtransfer\transfer.js" />
     <Content Include="Scripts\ts\js\item\index.js" />
     <Content Include="Scripts\ts\js\lang.js" />
@@ -4309,7 +4312,6 @@
     <Content Include="Scripts\ts\js\emailsetting.js" />
     <Content Include="Scripts\ts\js\exchangerate.js" />
     <Content Include="Scripts\ts\js\home.js" />
-    <Content Include="Scripts\ts\js\itemtransfer\inventorytransfer.js" />
     <Content Include="Scripts\ts\js\itemtransfer\transferedit.js" />
     <Content Include="Scripts\ts\js\itemtransfer\transferlist.js" />
     <Content Include="Scripts\ts\js\item\category.js" />
@@ -4640,6 +4642,9 @@
     <Content Include="Views\Shared\_SearchBlk.cshtml" />
     <Content Include="Views\InventoryAdjustment\Index.cshtml" />
     <Content Include="Scripts\ts\js\inventoryadjustment\index.js.map" />
+    <Content Include="Views\InventoryAdjustment\Edit.cshtml" />
+    <Content Include="Scripts\ts\js\inventoryadjustment\edit.js.map" />
+    <Content Include="Scripts\ts\js\itemtransfer\index.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4702,7 +4707,6 @@
     <Content Include="Scripts\ts\js\item\pgitem.js.map" />
     <Content Include="Scripts\ts\js\item\pgitemedit.js.map" />
     <Content Include="Scripts\ts\js\item\stock.js.map" />
-    <Content Include="Scripts\ts\js\itemtransfer\inventorytransfer.js.map" />
     <Content Include="Scripts\ts\js\itemtransfer\transferedit.js.map" />
     <Content Include="Scripts\ts\js\itemtransfer\transferlist.js.map" />
     <Content Include="Scripts\ts\js\login.js.map" />
@@ -5076,6 +5080,7 @@
     <TypeScriptCompile Include="Scripts\tinymce\tinymce.d.ts" />
     <TypeScriptCompile Include="Scripts\ts\ajaxpostlist.ts" />
     <TypeScriptCompile Include="Scripts\ts\app.ts" />
+    <TypeScriptCompile Include="Scripts\ts\inventoryadjustment\edit.ts" />
     <TypeScriptCompile Include="Scripts\ts\inventoryadjustment\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\lang.ts" />
     <TypeScriptCompile Include="Scripts\ts\logout.ts" />
@@ -5120,7 +5125,7 @@
     <TypeScriptCompile Include="Scripts\ts\emailsetting.ts" />
     <TypeScriptCompile Include="Scripts\ts\exchangerate.ts" />
     <TypeScriptCompile Include="Scripts\ts\home.ts" />
-    <TypeScriptCompile Include="Scripts\ts\itemtransfer\inventorytransfer.ts" />
+    <TypeScriptCompile Include="Scripts\ts\itemtransfer\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\itemtransfer\transfer.ts" />
     <TypeScriptCompile Include="Scripts\ts\itemtransfer\transferedit.ts" />
     <TypeScriptCompile Include="Scripts\ts\itemtransfer\transferlist.ts" />

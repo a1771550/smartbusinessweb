@@ -30,6 +30,8 @@ $(function () {
 	$target.addClass(sortcls);
 
 	initModals();
+	triggerMenu(2, 0);
+
 	$("#txtKeyword").trigger("focus");
 
 	$target = $(".pagination");

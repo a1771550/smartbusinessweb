@@ -978,7 +978,7 @@ namespace SmartBusinessWeb.Controllers
 				}
 
 				ModelHelper.WriteLog(context, string.Join(",", sqllist), "ExportFrmShop#Purchase");
-				List<PPWDAL.Purchase> pslist = [.. context.Purchases.Where(x => x.AccountProfileId==apId && dmodel.PoCheckOutIds.Any(y => x.Id == y))];
+				List<PPWDAL.Purchase> pslist = context.Purchases.Where(x => x.AccountProfileId==apId && dmodel.PoCheckOutIds.Any(y => x.Id == y)).ToList();
 				foreach (var ps in pslist)
 				{
 					ps.pstCheckout = true;
@@ -987,7 +987,7 @@ namespace SmartBusinessWeb.Controllers
 
 				if(dmodel.CheckOutIds_PoPayLn.Count>0)
 				{
-					List<PurchasePayment> pplist = [.. context.PurchasePayments.Where(x=>dmodel.CheckOutIds_PoPayLn.Any(y=>x.Id==y))];
+					List<PurchasePayment> pplist = context.PurchasePayments.Where(x=>dmodel.CheckOutIds_PoPayLn.Any(y=>x.Id==y)).ToList();
 					foreach (var pp in pplist)
 					{
 						pp.ppCheckout = true;

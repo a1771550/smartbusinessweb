@@ -32,13 +32,6 @@ $(document).on("click", "#btnReload", function () {
   window.location.href = "/ItemPeriodPromotion/Index";
 });
 
-// $(document).on('click', '#btnSearch', function () {
-// 	keyword = <string>$('#txtKeyword').val();
-// 	if (keyword !== '') {
-// 		getItemPeriodPromotions();
-// 	}
-// });
-
 $(document).on("click", ".colheader", function () {
   let $sortcol = $("<input>").attr({
     type: "hidden",
@@ -64,7 +57,9 @@ $(function () {
     $sortorder.val() === "desc" ? "fa fa-sort-up" : "fa fa-sort-down";
   $target.addClass(sortcls);
 
-  initModals();
+    initModals();
+    triggerMenu(3, 2);
+
   $("#txtKeyword").trigger("focus");
 
   $target = $(".pagination");

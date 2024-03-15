@@ -130,6 +130,7 @@ $(document).on("click", "#btnSave", function () {
 
 });
 
+
 function populateAccount4Journal(acno: string, acname: string) {
 	//console.log("acno:" + acno + ";acname:" + acname);
 	//console.log("currentY:" + currentY);
@@ -165,7 +166,8 @@ function toggleJournalAmt(idx: number, enabled: boolean) {
 }
 
 $(document).on("dblclick", ".memo", function () {
-	openTextAreaModal();
+	getRowCurrentY.call(this);
+	openTextAreaModal(allocationmemotxt);
 });
 
 function GetSetJournalLnPair() {
@@ -255,6 +257,8 @@ $(function () {
 	setFullPage();
 	gTblName = "tblJournal";
 	initModals();
+	triggerMenu(10, 0);
+
 	initDatePicker("strDate");
 
 	records_per_page = 10;

@@ -3,6 +3,9 @@
 editmode = <number>$("#UserID").val() > 0; 
 
 $(document).ready(function () {
+    setFullPage();
+    initModals();
+    triggerMenu(11, 4);
   if (!editmode) {
     $("#chkpassblk").hide();
     $("#passblk").removeClass("hide");

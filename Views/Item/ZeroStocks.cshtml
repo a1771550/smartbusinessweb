@@ -57,12 +57,13 @@ else
             @Html.PagedListPager(Model.PagingGroupedZeroStockList, PageNo => Url.Action("ZeroStocks",
                 new { Model.wscode, PageNo }))        
     </div>
-
-    <script>
-        $(function () {
-            $target = $('.pagination');
-            $target.wrap('<nav aria-label="Page navigation"></nav>').find('li').addClass('page-item').find('a').addClass('page-link');
-        });
-    </script>
 }
-
+<script>
+	$(function () {
+		setFullPage();
+		initModals();
+		triggerMenu(2, 6);
+		$target = $('.pagination');
+		$target.wrap('<nav aria-label="Page navigation"></nav>').find('li').addClass('page-item').find('a').addClass('page-link');
+	});
+</script>

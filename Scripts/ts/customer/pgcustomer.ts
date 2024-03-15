@@ -98,7 +98,9 @@ $(function () {
     $sortorder.val() === "desc" ? "fa fa-sort-up" : "fa fa-sort-down";
   $target.addClass(sortcls);
 
-  initModals();
+    initModals();
+    triggerMenu(1, 2);
+
   $("#txtKeyword").trigger("focus");
 
   $target = $(".pagination");

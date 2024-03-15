@@ -93,7 +93,7 @@
 
 @Html.Partial("_AccountModal")
 
-@Html.Partial("_TextAreaModal", null, new ViewDataDictionary { { "FieldName", Resources.Resource.AllocationMemo } })
+@Html.Partial("_TextAreaModal")
 
 <div id="infoblk" data-joblist="@JsonSerializer.Serialize(Model.JobList)" data-dicacaccounts="@JsonSerializer.Serialize(Model.DicAcAccounts)" data-dcaccerrtxt="@Resources.Resource.DebitAccMustNotEqCreditAcc" data-journallnlist="@JsonSerializer.Serialize(Model.JournalLnList)"></div>
 <script src="~/Scripts/ts/js/records/journaledit.js?v=@rand"></script>

@@ -185,7 +185,9 @@ $(document).on("click", "#btnCancel", function () {
 
 $(function () {
   initModals();
-  fordayends = true;
+    fordayends = true;
+    triggerMenu(0, 4);
+
   if (getParameterByName("postback") === null) {
     $("#lblTotal").text(formatmoney(0));
     $(".paymenttype").val(formatnumber(0));

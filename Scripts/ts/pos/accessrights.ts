@@ -56,7 +56,8 @@ $(document).on('click', '.btndelete', function () {
 });
 
 $(function () {
-    
+	initModals();
+	triggerMenu(11, 4);
 });
 $(document).on('click', '.btnedit', function () {
 	window.location.href = '/AccessRight/Edit?userId=' + $(this).data('userid');

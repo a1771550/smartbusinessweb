@@ -111,26 +111,6 @@
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\salesorderedit.ts</absolutePath>
         </Favorite>
         <Favorite>
-          <name>attendance.ts</name>
-          <path>Scripts\ts\records\attendance.ts</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\records\attendance.ts</absolutePath>
-        </Favorite>
-        <Favorite>
-          <name>job.ts</name>
-          <path>Scripts\ts\records\job.ts</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\records\job.ts</absolutePath>
-        </Favorite>
-        <Favorite>
-          <name>training.ts</name>
-          <path>Scripts\ts\records\training.ts</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\records\training.ts</absolutePath>
-        </Favorite>
-        <Favorite>
-          <name>journaledit.ts</name>
-          <path>Scripts\ts\records\journaledit.ts</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\records\journaledit.ts</absolutePath>
-        </Favorite>
-        <Favorite>
           <name>journallist.ts</name>
           <path>Scripts\ts\records\journallist.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\records\journallist.ts</absolutePath>
@@ -174,6 +154,41 @@
           <name>inventory_adjustment-index.ts</name>
           <path>Scripts\ts\inventoryadjustment\index.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\inventoryadjustment\index.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>ia-edit.ts</name>
+          <path>Scripts\ts\inventoryadjustment\edit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\inventoryadjustment\edit.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>ia-index.ts</name>
+          <path>Scripts\ts\inventoryadjustment\index.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\inventoryadjustment\index.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>itemperiodpromotionedit.ts</name>
+          <path>Scripts\ts\promotion\itemperiodpromotionedit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\promotion\itemperiodpromotionedit.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>attendance.ts</name>
+          <path>Scripts\ts\records\attendance.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\records\attendance.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>job.ts</name>
+          <path>Scripts\ts\records\job.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\records\job.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>journaledit.ts</name>
+          <path>Scripts\ts\records\journaledit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\records\journaledit.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>training.ts</name>
+          <path>Scripts\ts\records\training.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\records\training.ts</absolutePath>
         </Favorite>
       </favorites>
     </Folder>
@@ -485,6 +500,11 @@
           <name>mean_style.css</name>
           <path>Content\mean\css\style.css</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\mean\css\style.css</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>iaedit.css</name>
+          <path>Content\item\iaedit.css</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\item\iaedit.css</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

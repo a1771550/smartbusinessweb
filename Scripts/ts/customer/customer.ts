@@ -184,6 +184,8 @@ $(function () {
 	forcustomer = true;
 	setFullPage();
 	gTblName = "tblCustomer";
+	triggerMenu(1, 0);
+
 	let $sortorder = $("#sortorder");
 	let $sortcol = $("#sortcol");
 	//console.log('sortorder:' + $sortorder.val() + ';sortcol:' + $sortcol.val());

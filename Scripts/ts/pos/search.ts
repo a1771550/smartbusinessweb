@@ -503,16 +503,16 @@ function resetForm(partial = false) {
     $(".form-control").val("");
     $("#tblsearch tbody").empty();
     $(".searchresult").hide();
-    $("#txtSearch").focus();
+    $("#txtSearch").trigger("focus");
   }
   $("#txtSearch").val("");
 }
 
-$(document).ready(function () {
+$(function () {
   $(".searchresult").hide();
   initModals();
   let $txtsearch = $("#txtSearch");
-  $txtsearch.focus();
+  $txtsearch.trigger("focus");
   $target.find("tr").each(function (i, e) {
     $(e)
       .find("td")

@@ -38,8 +38,8 @@
 
     <script>
         let itemAttrModal;
-        let cusattrlist = [];
-        let Ids = [];
+        let cusattrlist = new();
+        let Ids = new();
 
         $(document).on('click', '.fa-plus.attr', function () {
             addAttrRow();
@@ -97,7 +97,7 @@
 
         const populateAccordion = () => {
             //console.log(cusattrlist);
-            let html = [];
+            let html = new();
             html = cusattrlist.map((c) => {
                 return `
 <h3>${c.name}</h3>

@@ -46,7 +46,7 @@ let NamesMatch: boolean = false;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
-//const searchcustxt:string = $txtblk.data("searchcustxt");
+const allocationmemotxt: string = $txtblk.data("allocationmemotxt");
 const discpctxt: string = $txtblk.data("discpctxt");
 const costxt: string = $txtblk.data("costxt");
 const assettxt: string = $txtblk.data("assettxt");
@@ -612,7 +612,7 @@ let pagelength: number = 0;
 let itotalamt: number = 0,
 	itotalpay: number = 0;
 //ichange: number = 0;
-let currentY: number = -1;
+let currentY: number = 0;
 let zeroprice: boolean = false;
 let zerocost: boolean = false;
 let selectedItemCode: string | number,
@@ -729,6 +729,7 @@ let validPayment: boolean = false;
 let fordayends: boolean = false;
 let forstockin: boolean = false;
 let forjournal: boolean = false;
+let forIA: boolean = false;
 let itemaccountmode: ItemAccountMode;
 let AccountProfileId: number;
 let accountList: Array<IAccount> = [];
@@ -1172,7 +1173,7 @@ function GetAttendances(pageIndex) {
 		error: onAjaxFailure,
 	});
 }
-function GetEnquiries(pageIndex) {	
+function GetEnquiries(pageIndex) {
 	$.ajax({
 		type: "GET",
 		url: "/Enquiry/GetEnquiries",
@@ -1183,7 +1184,7 @@ function GetEnquiries(pageIndex) {
 				EnquiryList = data.pagingEnqList.slice(0);
 				if (EnquiryList && EnquiryList.length > 0) {
 					//const min = Math.min(...myArray.map(item => item.cost))
-					const totalRecord: number = Math.min(...EnquiryList.map(x=>x.TotalRecord));
+					const totalRecord: number = Math.min(...EnquiryList.map(x => x.TotalRecord));
 
 					$target = $("#tblmails .colheader");
 					$target.removeClass("fa fa-sort-up fa-sort-down");
@@ -1222,9 +1223,9 @@ function GetItems(pageIndex) {
 		: $infoblk.data("location")
 			? ($infoblk.data("location") as string)
 			: ($infoblk.data("shop") as string);
-	
-	let data = { pageIndex:pageIndex,keyword:keyword,location:shop, forsales:forsales,forwholesales:forwholesales,forpurchase:forpurchase,forstock:forstock,fortransfer:fortransfer,forpreorder:forpreorder,type:type};
-		
+
+	let data = { pageIndex: pageIndex, keyword: keyword, location: shop, forsales: forsales, forwholesales: forwholesales, forpurchase: forpurchase, forstock: forstock, fortransfer: fortransfer, forpreorder: forpreorder, type: type };
+
 
 	openWaitingModal();
 	$.ajax({
@@ -1284,7 +1285,7 @@ function OnSuccess(response) {
 		//console.log("dicitemvtdelqtylist:", DicItemVtDelQtyList);
 
 		if (PoItemBatVQList) {
-			const newpolist = model.PoItemBatVQList? model.PoItemBatVQList.slice(0):[];
+			const newpolist = model.PoItemBatVQList ? model.PoItemBatVQList.slice(0) : [];
 			const currentpolist = PoItemBatVQList.slice(0);
 			const tmplist = [...newpolist, ...currentpolist];
 			const filteredpolist = tmplist.filter(
@@ -1470,9 +1471,9 @@ function _writeItems(itemList: IItem[]) {
 
 		var namedesc = handleItemDesc(item.NameDesc);
 		html += `<td style="max-width:250px;" title="${item.NameDesc}">${namedesc}</td>`;
-		let outofstock: boolean = forsales||forsimplesales||forpreorder ? false : itemcode.startsWith("/") ? false : _qty <= 0;
+		let outofstock: boolean = forsales || forsimplesales || forpreorder || forIA ? false : itemcode.startsWith("/") ? false : _qty <= 0;
 		if (!forpurchase) {
-			let tdcls = !outofstock ? "" : "outofstock";
+			let tdcls = outofstock ? "outofstock" : "";
 			html += `<td style="text-align:right;width:90px;max-width:90px;" class="${tdcls}">${_qty}</td>`;
 		}
 
@@ -1483,6 +1484,7 @@ function _writeItems(itemList: IItem[]) {
 		if (forpurchase) {
 			price = item.itmBuyStdCost!;
 		}
+		if (forIA) price = item.itmUnitCost??0;//todo:
 
 		html += `<td style="text-align:rigth;width:100px;max-width:100px;">${formatnumber(
 			price
@@ -2954,10 +2956,22 @@ function closeGroupSalesmenModal() {
 	groupSalesmenModal.dialog("close");
 	$("#txtKeyword").trigger("focus");
 }
-function openTextAreaModal() {
+function openTextAreaModal(title: string = "") {
+	let $txtfield = textareaModal.find("#txtField");
+	$txtfield.val("");
+
 	textareaModal.dialog("open");
 	if (stockTransferEditMode) {
 		textareaModal.dialog({ title: remarktxt });
+	} else {
+		textareaModal.dialog({ title: title });
+	}
+	if (forjournal && selectedJournalLn1) {
+		$txtfield.val(selectedJournalLn1.AllocationMemo);
+	}
+	if (forIA && IALs.length > 0) {
+		let idx = IALs.findIndex(x => x.Seq == (currentY + 1));
+		if (IALs[idx]) $txtfield.val(IALs[idx].Memo);
 	}
 }
 function closeTextAreaModal() {
@@ -3482,6 +3496,68 @@ function closeVoidPaymentModal() {
 	NamesMatch = false;
 }
 function initModals() {
+	if ($("#textareaModal").length) {
+		textareaModal = $("#textareaModal").dialog({
+			width: 700,
+			title: "",
+			autoOpen: false,
+			modal: true,
+			buttons: [
+				{
+					class: "savebtn",
+					text: oktxt,
+					click: function () {
+						closeTextAreaModal();
+						var remark = <string>$("#textareaModal").find("#txtField").val();
+
+						if (approvalmode && (forsales || forpreorder || forpurchase || forwholesales)) {
+							//reject reason:
+							rejectreason = remark;
+							respondReview("reject");
+						}
+						if (stockTransferEditMode) {
+
+							$target = $(`#tbl${gTblName} tbody tr`)
+								.eq(currentY)
+								.find(".remark");
+							$target.data("remark", remark);
+							if (remark !== "") {
+								$target.val("...");
+							}
+						}
+						if (forjournal) {
+							if (selectedJournalLn1) {
+								if (remark !== "") {
+									selectedJournalLn1.AllocationMemo = remark;
+									$tr.find(".memo").data("remark", remark).val("...");
+								}
+
+							}
+						}
+						if (forIA) {
+							if (remark !== "") {
+								if (IALs.length > 0) {
+									let idx = IALs.findIndex(x => x.Seq == (currentY + 1));
+									console.log("idx:" + idx);
+									if (IALs[idx]) {
+										IALs[idx].Memo = remark;			
+										console.log("$tr:", $tr);
+										$tr.find(".memo").data("remark", remark).val("...");
+									}
+								}
+							}
+							
+						}
+					},
+				},
+				{
+					text: canceltxt,
+					click: closeTextAreaModal,
+				},
+			],
+		});
+	}
+
 	voidPaymentModal = $("#voidPaymentModal").dialog({
 		width: 500,
 		title: void4paymenttxt,
@@ -4155,53 +4231,7 @@ function initModals() {
 		});
 	}
 
-	if ($("#textareaModal").length) {
-		textareaModal = $("#textareaModal").dialog({
-			width: 700,
-			title: "",
-			autoOpen: false,
-			modal: true,
-			buttons: [
-				{
-					class: "savebtn",
-					text: oktxt,
-					click: function () {
-						closeTextAreaModal();
-						if (approvalmode && (forsales || forpreorder || forpurchase || forwholesales)) {
-							//reject reason:
-							rejectreason = <string>(
-								$("#textareaModal").find("#txtField").val()
-							);
-							respondReview("reject");
-						}
-						if (stockTransferEditMode) {
-							var remark = <string>$("#textareaModal").find("#txtField").val();
-							$target = $(`#tbl${gTblName} tbody tr`)
-								.eq(currentY)
-								.find("td")
-								.eq(9)
-								.find(".remark");
-							$target.data("remark", remark);
-							if (remark !== "") {
-								$target.val("...");
-							}
-						}
-						if (forjournal) {
-							if (selectedJournalLn1) {
-								selectedJournalLn1.AllocationMemo = <string>(
-									$("#textareaModal").find("#txtField").val()
-								);
-							}
-						}
-					},
-				},
-				{
-					text: canceltxt,
-					click: closeTextAreaModal,
-				},
-			],
-		});
-	}
+
 	if ($("#groupSalesmenModal").length) {
 		groupSalesmenModal = $("#groupSalesmenModal").dialog({
 			width: 700,
@@ -5215,7 +5245,7 @@ interface ISalesBase extends IRtlSale {
 }
 function initRefundItem(): IRefundBase {
 	return {
-		rtlUID:0,
+		rtlUID: 0,
 		itemcode: selectedItemCode,
 		price: 0,
 		refundedQty: 0,
@@ -5318,7 +5348,7 @@ function initReturnItem(): IReturnBase {
 }
 function initRefundSales(): IRefundSales {
 	return {
-		rtlUID:0,
+		rtlUID: 0,
 		rtsCode: "",
 		rtsRmks: "",
 		rtlItemCode: "",
@@ -5355,12 +5385,12 @@ function initRefundSales(): IRefundSales {
 		rfSeq: 0,
 		rtlStockLoc: "",
 		rtlValidThru: null,
-		itmNameDesc:"",
+		itmNameDesc: "",
 	};
 }
 interface IRefundSales {
-    itmNameDesc: string;
-    rtlUID: number;
+	itmNameDesc: string;
+	rtlUID: number;
 	rtlValidThru: string | null;
 	rtsCode: string;
 	rtsRmks: string;
@@ -6828,7 +6858,7 @@ function fillInEnquiry() {
 		FollowUpDateInfo: {} as IEnquiryInfo,
 		statuscls: null,
 		UploadFileList: [],
-		TotalRecord:0,
+		TotalRecord: 0,
 	};
 	enquiry.FollowUpDateInfo.type = "date";
 	enquiry.FollowUpDateInfo.status = $(".followup:checked").val() as string;
@@ -14426,13 +14456,13 @@ const populateItemVari = () => {
 	}
 };
 
-class ItemEditFrm extends SimpleForm {	
+class ItemEditFrm extends SimpleForm {
 	constructor(edit) {
 		super(edit);
-		this.edit = edit;		
+		this.edit = edit;
 	}
 
-	
+
 
 	validform(): boolean {
 		let msg = "";
@@ -14476,7 +14506,7 @@ class ItemEditFrm extends SimpleForm {
 		}
 		let $desc = $("#itmDesc");
 		if (isreplacing) {
-			if (selectedItem!.itmDesc=="") {
+			if (selectedItem!.itmDesc == "") {
 				msg += descriptionrequired + "<br>";
 				$desc.addClass("focus");
 			}
@@ -14516,13 +14546,13 @@ class ItemEditFrm extends SimpleForm {
 
 	submitform() {
 		let url = !EditItem && ItemVariations.length > 0
-				? "/Item/EditIV"
-				: "/Item/Edit";
+			? "/Item/EditIV"
+			: "/Item/Edit";
 		let data = {};
 
 		let returnurl = `/Item/${$infoblk.data("referrer")}`;
 		if (ItemVari) {
-			
+
 			//console.log('ItemVari:', ItemVari);
 			data = ItemAttrList
 				? {
@@ -14541,9 +14571,9 @@ class ItemEditFrm extends SimpleForm {
 					).val(),
 				};
 		} else {
-			
-			
-		
+
+
+
 			if (!EditItem && ItemVariations.length > 0) {
 				//console.log("here");
 				data = ItemAttrList
@@ -14700,6 +14730,8 @@ $(document).on("change", ".itemaccount", function () {
 $(document).on("change", ".radaccount", function () {
 	closeAccountModal();
 	//console.log("here");
+	if (forIA)
+		populateAccount4IA($(this).data("acno"), $(this).data("acname"));
 	if (forjournal)
 		populateAccount4Journal($(this).data("acno"), $(this).data("acname"));
 	if (forpurchase)
@@ -18203,7 +18235,7 @@ function handleMGTmails(pageIndex: number = 1) {
 		const enquiryacc: string = $infoblk.data("enquiryacc") as string;
 		EnquiryList = [];
 
-		let mgtEmail = document.getElementById("mgt-email");		
+		let mgtEmail = document.getElementById("mgt-email");
 		/*let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", `${enquiryacc}`);*/
 		let _resource = resource.replace("{0}", `${enquiryacc}`);
 		//console.log("_resource:", _resource);
@@ -18245,7 +18277,7 @@ function handleMGTmails(pageIndex: number = 1) {
 		const attendanceacc: string = $infoblk.data("attendanceacc") as string;
 		//console.log("attendanceacc:", attendanceacc);
 		let mgtEmail = document.getElementById("mgt-email");
-		
+
 		//let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", attendanceacc);
 		let _resource = resource.replace("{0}", `${attendanceacc}`);
 
@@ -18266,7 +18298,7 @@ function handleMGTmails(pageIndex: number = 1) {
 						saCheckOutTime: "",
 						saDate: null,
 						DateDisplay: "",
-						TotalRecord:0,
+						TotalRecord: 0,
 					};
 
 					let idx = AttendanceList.findIndex(a => a.saId == x.id);
@@ -18306,7 +18338,7 @@ function handleMGTmails(pageIndex: number = 1) {
 		JobList = [];
 		const jobacc: string = $infoblk.data("jobacc") as string;
 		//console.log("jobacc:", jobacc);
-		let mgtEmail = document.getElementById("mgt-email");	
+		let mgtEmail = document.getElementById("mgt-email");
 		//let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", jobacc);
 		let _resource = resource.replace("{0}", `${jobacc}`);
 
@@ -18331,7 +18363,7 @@ function handleMGTmails(pageIndex: number = 1) {
 						joAttachements: "",
 						joDate: null,
 						DateDisplay: "",
-						TotalRecord:0,
+						TotalRecord: 0,
 					};
 					//console.log("receivedDateTime:", x.receivedDateTime);
 					let idx = JobList.findIndex(a => a.joId == x.id);
@@ -18373,7 +18405,7 @@ function handleMGTmails(pageIndex: number = 1) {
 		const trainingacc: string = $infoblk.data("trainingacc") as string;
 		//console.log("trainingacc:", trainingacc);
 		let mgtEmail = document.getElementById("mgt-email");
-		
+
 		//let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", trainingacc);
 		let _resource = resource.replace("{0}", `${trainingacc}`);
 
@@ -18401,7 +18433,7 @@ function handleMGTmails(pageIndex: number = 1) {
 						strDate: "",
 						trDate: null,
 						DateDisplay: "",
-						TotalRecord:0,
+						TotalRecord: 0,
 					};
 					//console.log("receivedDateTime:", x.receivedDateTime);
 					let idx = TrainingList.findIndex(a => a.trId == x.id);
@@ -18910,8 +18942,8 @@ function _submitSimpleSales() {
 								//if (data.zerostockItemcodes !== "") {
 								//	handleOutOfStocks(data.zerostockItemcodes);
 								//} else {
-									window.open(printurl);
-									window.location.reload();
+								window.open(printurl);
+								window.location.reload();
 								//}
 							}
 						},
@@ -19009,8 +19041,8 @@ function _submitSales() {
 								//if (data.zerostockItemcodes !== "") {
 								//	handleOutOfStocks(data.zerostockItemcodes);
 								//} else {
-									window.open(printurl);
-									window.location.reload();
+								window.open(printurl);
+								window.location.reload();
 								//}
 							}
 						},
@@ -21088,7 +21120,7 @@ $(document).on("dblclick", ".batch", function () {
 			//const iseq: number = x.seq??0;
 			//console.log("iseq:" + iseq);
 
-			html += `<tr data-seq="${seq}"><td><label>${batcode}</label></td>`;
+			html += `<tr data-Seq="${seq}"><td><label>${batcode}</label></td>`;
 			/**
 			 * Display
 			 */
@@ -22120,22 +22152,19 @@ $(document).on("change", "#txtUserName", function () {
 });
 
 function setAccName(tr: JQuery<Element>, acno: string, acname: string) {
-	let idx = forjournal ? 0 : 2;
-
-	if (forjournal) {
+	let idx = 0;
+	if (forIA) idx = 5;
+	if (forjournal || forIA) {
 		let $td = tr.find("td").eq(idx);
 		$td.find(".drpAccount").remove();
-		$td.html(`<input type="text" class="form-control acno" value="${acno}">`);
+		$td.html(`<input type="text" readonly class="form-control acno" value="${acno}">`);
 	}
 
-	idx++;
-	//console.log("idx:" + idx);
-	//console.log("acname:", tr.find("td").eq(idx).find(".acname"));
-	if (forjournal)
-		tr.find("td").eq(idx).find(".acname").val(acname);
+
+	if (forjournal || forIA)
+		tr.find(".acname").attr("title", acname).val(acname);
 	if (forpurchase) {
-		/*	let acnameno: string = acname.concat(` (${acno})`);*/
-		tr.find("td").eq(idx).find(".acname").text(acname.concat(` (${acno})`)).data("acno", acno);
+		tr.find(".acname").attr("title", acname).text(acname.concat(` (${acno})`)).data("acno", acno);
 		purchasePayment.AccountNo = acno;
 	}
 }
@@ -22280,7 +22309,8 @@ function disableEntries() {
 	$("textarea").not("#txtField").prop("isadmin", true).prop("disabled", true);
 }
 
-interface IInventoryAdjustment {
+//Inventory Adjustment
+interface IIA {
 	Id: number;
 	JournalNumber: string;
 	Memo: string;
@@ -22289,16 +22319,27 @@ interface IInventoryAdjustment {
 	iaId: number;
 	CreateTimeDisplay: string;
 }
+
+//Inventory Adjustment Line
 interface IIAL {
 	Id: number;
 	iaId: number;
 	itmCode: string;
+	Seq: number | null;
 	itemID: number | null;
 	lstStockLoc: string;
 	Qty: number;
 	UnitCost: number;
 	Amt: number;
-	AccountID: number;
+	AccountNumber: string;
+	AccountID: number | null;
 	JobID: number | null;
 	Memo: string;
+}
+let IA: IIA;
+let IALs: IIAL[] = [];
+let SelectedIAL: IIAL;
+
+function triggerMenu(dashmenuIdx, submenuIdx) {
+	$(".dash__menu").find("ul").find(".btn_expand").eq(dashmenuIdx).trigger("click").find(".submenu").first().addClass("show").find("a").removeClass("active").parent("li").parent(".submenu").find("li").eq(submenuIdx).find("a").addClass("active");
 }

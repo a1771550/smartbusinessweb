@@ -80,6 +80,9 @@ $(function () {
     gTblName = "tblTrack";
     eTrackToken = $infoblk.data("token");
     initModals();   
+
+    triggerMenu(3, 1);
+
     $('.select2multiple').select2({
         allowClear: true,
         width: 'resolve',

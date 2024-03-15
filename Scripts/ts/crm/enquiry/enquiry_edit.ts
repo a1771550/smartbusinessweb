@@ -96,6 +96,7 @@ $(function () {
 	setFullPage();
 	forenquiry = true;
 	initModals();
+	triggerMenu(1, 3);
 
 	uploadsizelimit = parseInt($infoblk.data("uploadsizelimit"));
 	uploadsizelimitmb = parseInt($infoblk.data("uploadsizelimitmb"));

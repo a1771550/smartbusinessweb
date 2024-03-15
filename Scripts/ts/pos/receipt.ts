@@ -1,6 +1,9 @@
 ﻿$infoblk = $('#infoblk');
 
 $(document).ready(function () {
+    setFullPage();
+    initModals();
+    triggerMenu(11, 1);
     $('#CompanyName').focus();
 });
 

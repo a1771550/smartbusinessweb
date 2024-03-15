@@ -183,8 +183,10 @@ $(document).on('click', '#btnSave', function () {
     }
 });
 
-$(document).ready(function () {
+$(function () {
+    setFullPage();
     initModals();
+    triggerMenu(11, 3);
     emailsetting = initEmailSetting();
     $('#enableSSL').prop('checked', emailsetting.emSMTP_EnableSSL);
     $('#chk365').prop('checked', emailsetting.emOffice365);

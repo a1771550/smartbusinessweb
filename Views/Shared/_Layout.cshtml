@@ -141,7 +141,7 @@
 							</a>
 							<ul class="submenu collapse" id="collapseItem">
 								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "pglist") ? "active" : ""; }
-								<li><a href="/Item/Index" class="@sublnkcls">@string.Format(Resources.Resource.NewFormat, Resources.Resource.Item)</a></li>
+								<li><a href="/Item/Index" class="@sublnkcls">@string.Format(Resources.Resource.ListFormat, Resources.Resource.Item)</a></li>
 								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "stock") ? "active" : ""; }
 								<li><a href="/Item/Stock" class="@sublnkcls">@Resources.Resource.Stock</a></li>
 								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "transfer") ? "active" : ""; }

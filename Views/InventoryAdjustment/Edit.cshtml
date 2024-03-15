@@ -1,0 +1,83 @@
+﻿@model PPWLib.Models.Item.InventoryAdjustmentEditModel
+
+@{
+	InventoryAdjustmentModel IA = Model.InventoryAdjustment;
+	bool editmode = IA.Id > 0;
+	string edittxt = editmode ? Resources.Resource.Edit : Resources.Resource.Add;
+	ViewBag.Title = edittxt + " " + Resources.Resource.InventoryAdjustment;
+	string Currency = Model.Currency;
+	string disabled = editmode ? "" : "disabled";
+	int rand = CommonHelper.GetVersionRandomNo();
+}
+<link href="~/Content/item/iaedit.css?v=@rand" rel="stylesheet" type="text/css" />
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("Edit", "InventoryAdjustment", FormMethod.Get, new { @Id = "frmIA", @class = "my-4" }))
+{
+	@Html.AntiForgeryToken()
+
+	@Html.HiddenFor(model => IA.Id)
+
+	<div class="row">
+		<div class="col-12 col-md-3">
+			<div class="form-group">
+				<label>@(string.Format(Resources.Resource.NumberFormat, Resources.Resource.Journal))</label>
+				@Html.EditorFor(model => IA.JournalNumber, new { htmlAttributes = new { @class = "form-control", @readonly = true } })
+			</div>
+		</div>
+		<div class="col-12 col-md-3">
+			@Html.Partial("_Date")
+		</div>
+
+		<div class="col-12 col-md-3">
+			<div class="form-group">
+				<label>@Resources.Resource.Memo</label>
+				<textarea id="memo" name="Memo" rows="3" class="form-control flex">@IA.Memo</textarea>
+			</div>
+		</div>
+	</div>
+	<hr />
+
+	<div class="row justify-content-end my-2 mx-2 small">
+		<button type="button" id="btnAdd" class="btn btn-primary float-right" title="@string.Format(Resources.Resource.AddFormat, Resources.Resource.Record)"><i class="fa fa-plus"></i></button>
+	</div>
+
+	<div class="justify-content-center">
+		<div class="overflow-auto">
+			<table id="tblIAL" class="table table-condensed table-hover table-bordered">
+				<thead class="gray-header">
+					<tr>
+						<th>@Resources.Resource.ItemNumber</th>
+						<th>@Resources.Resource.ItemName</th>
+						<th class="text-right">@Resources.Resource.Qty</th>
+						<th class="text-right">@Resources.Resource.UnitCost</th>
+						<th class="text-right">@Resources.Resource.Amount</th>
+						<th>@Resources.Resource.AccountClassification</th>
+						<th>@string.Format(Resources.Resource.NameFormat, Resources.Resource.Account4Journal)</th>
+						<th>@Resources.Resource.Job4Myob</th>
+						<th>@Resources.Resource.AllocationMemo</th>
+					</tr>
+				</thead>
+
+				<tbody>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<div class="clearfix">
+		<button type="button" id="btnSave" class="btn btn-success float-right" @disabled title="@Resources.Resource.Save">@Resources.Resource.Save</button>
+	</div>
+
+}
+
+@Html.Partial("_WaitingModal")
+@Html.Partial("_AccountModal")
+@Html.Partial("_TextAreaModal")
+@Html.Partial("_ItemModal", null, new ViewDataDictionary { { "Currency", Model.Currency } })
+
+<div id="infoblk" data-edit="@editmode" data-ia="@JsonSerializer.Serialize(IA)" data-joblist="@JsonSerializer.Serialize(Model.JobList)" data-dicacaccounts="@JsonSerializer.Serialize(Model.DicAcAccounts)"></div>
+
+<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+<script src="~/Scripts/ts/js/inventoryadjustment/edit.js?v=@rand"></script>

@@ -360,6 +360,7 @@ $(function () {
 
 	setFullPage();
 	initModals();
+	triggerMenu(1, 3);
 
 	let keyword = getParameterByName('Keyword');
 	if (keyword !== null) {

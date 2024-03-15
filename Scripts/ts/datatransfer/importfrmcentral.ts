@@ -194,4 +194,5 @@ $(document).on("change", ".chkfile", function () {
 $(function () {
     setFullPage();
     initModals();
+    triggerMenu(6, 0);
 });

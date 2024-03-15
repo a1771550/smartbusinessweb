@@ -334,6 +334,7 @@ $(function () {
 	salesType = SalesType.simplesales;
 	setFullPage();
 	initModals();
+	triggerMenu(0, 0);
 
 	comInfo = $infoblk.data("cominfo");
 	DicPayTypes = $infoblk.data("dicpaytypes");
