@@ -90,6 +90,6 @@ function fillInGraphSettings() {
     graphsettings.gsAuthority = <string>$('#gsAuthority').val();
     graphsettings.gsRedirectUri = <string>$('#gsRedirectUri').val();
     graphsettings.gsClientSecretVal = <string>$('#gsClientSecretVal').val();
-    graphsettings.CreateTimeDisplay = <string>$('#CreateTimeDisplay').val();
+    graphsettings.CreateTimeDisplay = <string>$('#JsCreateDate').val();
     graphsettings.ModifyTimeDisplay = <string>$('#ModifyTimeDisplay').val();
 }

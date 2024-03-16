@@ -17,6 +17,9 @@ namespace SmartBusinessWeb.Controllers.Item
     [CustomAuthenticationFilter]
     public class InventoryAdjustmentController : BaseController
     {
+        [HandleError]
+        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [HttpGet]
         public ActionResult Index(int SortCol = 0, string SortOrder = "desc", string Keyword = "", int? PageNo = 1)
         {
             ViewBag.ParentPage = "item";
@@ -24,7 +27,7 @@ namespace SmartBusinessWeb.Controllers.Item
             if (string.IsNullOrEmpty(Keyword))
                 Keyword = null;
 
-            InventoryAdjustmentEditModel model = new InventoryAdjustmentEditModel
+            IAEditModel model = new IAEditModel
             {
                 SortCol = SortCol,
                 SortOrder = (SortOrder == "desc") ? "asc" : "desc",
@@ -36,11 +39,29 @@ namespace SmartBusinessWeb.Controllers.Item
             return View(model);
         }
 
+        [HandleError]
+        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [HttpGet]
         public ActionResult Edit(int Id)
         {
-            InventoryAdjustmentEditModel model = new InventoryAdjustmentEditModel();
+            IAEditModel model = new IAEditModel();
             model.Get(Id);
             return View(model);
         }
+
+        [HandleError]
+        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult Edit(IAModel IA)
+        {
+            ViewBag.ParentPage = "item";
+            ViewBag.PageName = "InventoryAdjustment";
+
+            IAEditModel.Edit(IA);
+
+            return Json(Resources.Resource.Saved);
+        }
+
     }
 }

@@ -17,6 +17,9 @@ namespace SmartBusinessWeb.Controllers.Item
     [CustomAuthenticationFilter]
     public class ItemController : BaseController
     {
+        [HandleError]
+        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [HttpGet]
         public ActionResult Index(int SortCol = 2, string SortOrder = "desc", string Keyword = "", int? PageNo = 1)
         {
             ViewBag.ParentPage = "Item";

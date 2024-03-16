@@ -1,12 +1,11 @@
-﻿@model PPWLib.Models.Item.InventoryAdjustmentEditModel
+﻿@model PPWLib.Models.Item.IAEditModel
 
 @{
-	InventoryAdjustmentModel IA = Model.InventoryAdjustment;
+	IAModel IA = Model.InventoryAdjustment;
 	bool editmode = IA.Id > 0;
 	string edittxt = editmode ? Resources.Resource.Edit : Resources.Resource.Add;
 	ViewBag.Title = edittxt + " " + Resources.Resource.InventoryAdjustment;
 	string Currency = Model.Currency;
-	string disabled = editmode ? "" : "disabled";
 	int rand = CommonHelper.GetVersionRandomNo();
 }
 <link href="~/Content/item/iaedit.css?v=@rand" rel="stylesheet" type="text/css" />
@@ -28,6 +27,7 @@
 		</div>
 		<div class="col-12 col-md-3">
 			@Html.Partial("_Date")
+			@Html.HiddenFor(model=>IA.JournalDate)
 		</div>
 
 		<div class="col-12 col-md-3">
@@ -50,11 +50,11 @@
 					<tr>
 						<th>@Resources.Resource.ItemNumber</th>
 						<th>@Resources.Resource.ItemName</th>
+						<th>@Resources.Resource.Location</th>
 						<th class="text-right">@Resources.Resource.Qty</th>
-						<th class="text-right">@Resources.Resource.UnitCost</th>
-						<th class="text-right">@Resources.Resource.Amount</th>
-						<th>@Resources.Resource.AccountClassification</th>
-						<th>@string.Format(Resources.Resource.NameFormat, Resources.Resource.Account4Journal)</th>
+						<th class="text-right">@Resources.Resource.UnitCost (@Model.Currency)</th>
+						<th class="text-right">@Resources.Resource.Amount (@Model.Currency)</th>
+						<th>@Resources.Resource.AccountNo</th>
 						<th>@Resources.Resource.Job4Myob</th>
 						<th>@Resources.Resource.AllocationMemo</th>
 					</tr>
@@ -67,7 +67,7 @@
 	</div>
 
 	<div class="clearfix">
-		<button type="button" id="btnSave" class="btn btn-success float-right" @disabled title="@Resources.Resource.Save">@Resources.Resource.Save</button>
+		<button type="button" id="btnSave" class="btn btn-success float-right" title="@Resources.Resource.Save">@Resources.Resource.Save</button>
 	</div>
 
 }
@@ -75,9 +75,9 @@
 @Html.Partial("_WaitingModal")
 @Html.Partial("_AccountModal")
 @Html.Partial("_TextAreaModal")
-@Html.Partial("_ItemModal", null, new ViewDataDictionary { { "Currency", Model.Currency } })
+@Html.Partial("_ItemModal", null, new ViewDataDictionary { { "Currency", Model.Currency },{"forIA",true },{"priceheader",Resources.Resource.UnitCost } })
 
-<div id="infoblk" data-edit="@editmode" data-ia="@JsonSerializer.Serialize(IA)" data-joblist="@JsonSerializer.Serialize(Model.JobList)" data-dicacaccounts="@JsonSerializer.Serialize(Model.DicAcAccounts)"></div>
+<div id="infoblk" data-edit="@editmode" data-ia="@JsonSerializer.Serialize(IA)" data-joblist="@JsonSerializer.Serialize(Model.JobList)" data-dicacaccounts="@JsonSerializer.Serialize(Model.DicAcAccounts)" data-diclocation="@JsonSerializer.Serialize(Model.DicLocation)"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script src="~/Scripts/ts/js/inventoryadjustment/edit.js?v=@rand"></script>

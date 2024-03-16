@@ -45,7 +45,7 @@ let UserName: string = "";
 let NamesMatch: boolean = false;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
-//const searchcustxt:string = $txtblk.data("searchcustxt");
+const datanotenough4submittxt: string = $txtblk.data("datanotenough4submittxt");
 const allocationmemotxt: string = $txtblk.data("allocationmemotxt");
 const discpctxt: string = $txtblk.data("discpctxt");
 const costxt: string = $txtblk.data("costxt");
@@ -615,7 +615,7 @@ let itotalamt: number = 0,
 let currentY: number = 0;
 let zeroprice: boolean = false;
 let zerocost: boolean = false;
-let selectedItemCode: string | number,
+let selectedItemCode: string,
 	selectedCusCodeName: string = "";
 let selectedSalesLn: ISalesLn | null;
 let selectedPreSalesLn: IPreSalesLn | null;
@@ -1350,7 +1350,7 @@ function OnSuccess(response) {
 				selectedPurchaseItem!.Item = structuredClone(ItemList[0]);
 			}
 
-			if (forsales || forpurchase || forwholesales || forpreorder) {
+			if (forsales || forpurchase || forwholesales || forpreorder || forIA) {
 				$(".itemcode").off("change");
 				populateItemRow();
 				$(".itemcode").on("change", handleItemCodeChange);
@@ -1478,17 +1478,15 @@ function _writeItems(itemList: IItem[]) {
 		}
 
 		let price: number = 0;
+		
 		if (forsales || forwholesales || forstock || forpreorder) {
 			price = item.itmBaseSellingPrice!;
 		}
-		if (forpurchase) {
-			price = item.itmBuyStdCost!;
-		}
-		if (forIA) price = item.itmUnitCost??0;//todo:
 
-		html += `<td style="text-align:rigth;width:100px;max-width:100px;">${formatnumber(
-			price
-		)}</td>`;
+		if (forpurchase) price = item.itmBuyStdCost!;
+		if (forIA) price = item.itmSellUnitAvgCost ??0;
+
+		html += `<td style="text-align:rigth;width:100px;max-width:100px;">${formatnumber(price)}</td>`;
 
 		let _chkbated = "",
 			_chksned = "",
@@ -7212,7 +7210,7 @@ function initHotList(ele: JQuery | null): IHotList {
 			hoName: <string>$("#hoName").val(),
 			hoSalesmanResponsible: <number>$("#drpSalesmen").val(),
 			hoDescription: <string>$("#hoDescription").val(),
-			CreateTimeDisplay: <string>$("#CreateTimeDisplay").val(),
+			CreateTimeDisplay: <string>$("#JsJournalDate").val(),
 			ModifyTimeDisplay: <string>$("#ModifyTimeDisplay").val(),
 			SalesPersonName: "",
 			SalesmanList: [],
@@ -8520,7 +8518,7 @@ function handleQtyChange(this: any) {
 	/*console.log("here");*/
 	getRowCurrentY.call(this);
 	let _qty: number = Number($(this).val());
-	// console.log("_qty:" + _qty);
+
 	if (forsales) {
 		const qtysellable: number = Number($(this).data("qtysellable"));
 		// console.log("qtysellable:" + qtysellable);
@@ -8529,7 +8527,6 @@ function handleQtyChange(this: any) {
 			$(this).val(_qty);
 		}
 	}
-	/*$tr = $(`#${gTblName} tbody tr`).eq(currentY);*/
 
 	let _price: number = Number($tr.find(".price").val());
 
@@ -8641,7 +8638,22 @@ function handleQtyChange(this: any) {
 			}
 		}
 	}
+
+	if (forIA) {
+		let _cost = Number($tr.find(".unitcost").val());
+		let _amt = _qty * _cost;
+		$tr.find(".amt").data("amt", _amt).val(formatnumber(_amt));
+	}
 }
+$(document).on("change", ".unitcost", function () {
+	getRowCurrentY.call(this);
+	let _cost = Number($(this).val());
+	if (forIA) {
+		let _qty = Number($tr.find(".qty").val());
+		let _amt = _qty * _cost;
+		$tr.find(".amt").data("amt", _amt).val(formatnumber(_amt));
+	}
+});
 $(document).on("change", ".qty", function () {
 	handleQtyChange.call(this);
 });
@@ -8762,12 +8774,14 @@ function handleItmCodeSelected(
 ) {
 	//let comboIvId: string = "";
 	//let selectedIvList: IItemVariation[] = [];
-	$tr = $(el);
-	selectedItemCode = $tr.data("code");
+	if (!selectedItemCode) {
+		$tr = $(el);
+		selectedItemCode = $tr.data("code");
+	}	
 	//console.log("selectedItemCode:" + selectedItemCode); return false;	
 	closeItemModal();
 	seq = currentY + 1;
-	if (forsales || forpreorder || forwholesales || forpurchase) {
+	if (forsales || forpreorder || forwholesales || forpurchase || forIA) {
 		GetSetSelectedLns(null);
 	}
 	else {
@@ -8787,6 +8801,7 @@ function handleItmCodeSelected(
 }
 $(document).on("dblclick", ".itmcode", function () {
 	selectedItemCode = $(this).data("code").toString();
+	//console.log("selectedItemCode:", selectedItemCode);
 	handleItmCodeSelected(this);
 });
 
@@ -8845,17 +8860,35 @@ function GetSetSelectedLns(proId: any) {
 			(x) => x.itmCode == selectedItemCode
 		)!;
 	}
-
+	if (forIA) {
+		SelectedIAL = GetSetSelectedIAL();		
+	}
 	toggleItemCodeChange(proId);
 }
-
+function GetSetSelectedIAL(): IIAL|null {
+	if (IALs && IALs.length > 0) {
+		var IAL = IALs.find(x => x.Seq == (currentY + 1));
+		if (IAL) {
+			var item = ItemList.find(
+				(x) => x.itmCode == selectedItemCode
+			)!;
+			IAL.itmCode = selectedItemCode;
+			IAL.NameDesc = item.NameDesc;
+			IAL.UnitCost = item.itmSellUnitAvgCost ?? 0;
+			IAL.AccountID = item.ExpenseAccountID;
+		}
+		return IAL??null;
+	}
+	return null;
+}
 function populateItemRow(proId: number | null = 0, triggerChange: boolean = true) {
 	//console.log("here");
-	//console.log("selectedItemCode:" + selectedItemCode);
+	//console.log("selectedItemCode#popu:" + selectedItemCode);
 	if (!selectedItemCode) return false;
 
-	let $rows = $(`#${gTblName} tbody tr`);
+	let $rows = $(`#${gTblName} tbody tr`);	
 	let $target = $rows.eq(currentY);
+	//console.log($target);
 	seq = currentY + 1;
 	$target.data("qty", 1);
 
@@ -8872,7 +8905,7 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 	selectedProId = proId ?? 0;
 	//console.log("selectedSalesLn!.Item:", selectedSalesLn!.Item);
 	if (forsales) {
-		console.log("selectedSalesLn#popu:", selectedSalesLn);
+		//console.log("selectedSalesLn#popu:", selectedSalesLn);
 		discpc = (selectedSalesLn && selectedSalesLn!.rtlLineDiscPc) ?? 0;
 		if (reviewmode) { //salesorderlist
 			selectedSimpleSalesLn!.rtlSeq = seq;
@@ -8930,25 +8963,23 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 				: 0;
 		namedesc = selectedPurchaseItem!.Item.NameDesc;
 	}
+	if (forIA && SelectedIAL) namedesc = SelectedIAL.NameDesc;
 
 	const rowcls: string = isPromotion ? "promotion" : "";
 	$target.find("td").first().addClass(rowcls);
 
 	namedesctxt = handleItemDesc(namedesc);
-
-	let idx = 1;
-	$target.find(`td:eq(${idx})`).find(".itemcode").val(selectedItemCode);
-	idx++;
-	$target
-		.find(`td:eq(${idx})`)
+	
+	$target.find(".itemcode").val(selectedItemCode);
+	
+	$target		
 		.find(".itemdesc")
 		.data("itemname", namedesctxt)
 		.attr("title", namedesc)
 		.val(namedesctxt);
-	idx++;
+	
 	if (forpurchase) {
-		$target
-			.find(`td:eq(${idx})`)
+		$target			
 			.find(".baseunit")
 			.data("baseunit", selectedPurchaseItem!.Item.itmBuyUnit)
 			.val(selectedPurchaseItem!.Item.itmBuyUnit);
@@ -8965,8 +8996,7 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 		sellunit = selectedPreSalesLn!.Item.itmSellUnit;
 	}
 
-	$target
-		.find(`td:eq(${idx})`)
+	$target		
 		.find(".sellunit")
 		.data("sellunit", sellunit)
 		.val(sellunit);
@@ -8992,8 +9022,8 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 		prodiscpc = itemPromotion!.proDiscPc! > 0 ? itemPromotion!.proDiscPc : 0;
 	}
 
-	idx++;
-	let $qty = $target.find(`td:eq(${idx})`).find(".qty");
+	
+	let $qty = $target.find(".qty");
 	$qty.off("change");
 	$qty.val(qty).data({
 		proqty: proqty,
@@ -9015,14 +9045,14 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 	itemOptions = DicItemOptions[selectedItemCode];
 
 	//console.log(itemOptions);
-	idx++;
-	const $bat = $target.find("td").eq(idx).find(".batch");
-	idx++;
-	const $sn = $target.find("td").eq(idx).find(".serialno");
-	idx++;
-	const $vt = $target.find("td").eq(idx).find(".validthru");
-	idx++;
-	const $iv = $target.find("td").eq(idx).find(".vari");
+	
+	const $bat = $target.find(".batch");
+	
+	const $sn = $target.find(".serialno");
+	
+	const $vt = $target.find(".validthru");
+	
+	const $iv = $target.find(".vari");
 
 	const readonly =
 		!itemOptions.ChkBatch && !itemOptions.ChkSN && !itemOptions.WillExpire
@@ -9191,7 +9221,6 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 		}
 	}
 
-	idx++;
 	if ((forsales && !reviewmode) || (forpreorder && PreSales.rtsStatus == SalesStatus.prestart) || forwholesales) {
 		let itemcode = selectedItemCode;
 		let ivpointer =
@@ -9213,20 +9242,10 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 		$iv.addClass("pointer").val(vari);
 	}
 
-	if (forsales || forpreorder || forpurchase || forwholesales) {
-		if (forpurchase)
-			idx =
-				editmode && Purchase.pstStatus !== "order"
-					? PriceIdx4PstBill
-					: PriceIdx4PstOrder;
-		if (forwholesales)
-			idx =
-				editmode && Wholesales.wsStatus == "invoice"
-					? PriceIdx4WsInvoice
-					: PriceIdx4WsOrder;
+	if (forsales || forpreorder || forpurchase || forwholesales) {		
 
 		if (forsales || forpreorder) {
-			idx = PriceIdx4Sales;
+			//idx = PriceIdx4Sales;
 			if (selectedItemCode.toString().startsWith("/")) {
 				price = 0;
 			} else {
@@ -9280,26 +9299,21 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 		}
 
 		price = price / exRate;
-		let $price = $target
-			.find("td")
-			.eq(idx)
+		let $price = $target			
 			.find(".price");
 		$price.off("change");
 		$price.data("price", price)
 			.val(formatnumber(price));
 		$price.on("change", handlePriceChange);
 
-		idx++;
-		if (isPromotion && proId) {
-			//if (forsales) getItemPromotion(selectedSalesLn!.Item, proId);
-			//if (forpreorder)
-			//	getItemPromotion4SimpleItem(selectedPreSalesLn!.Item, proId);
+		
+		if (isPromotion && proId) {		
 			if (itemPromotion && itemPromotion.pro4Period) {
 				discpc = itemPromotion.proDiscPc!;
 			}
 		}
 
-		let $discpc = $target.find("td").eq(idx).find(".discpc");
+		let $discpc = $target.find(".discpc");
 		$discpc.off("change");
 		//console.log("formated discpc:" + formatnumber(discpc));
 		$discpc.data("discpc", discpc).val(formatnumber(discpc));
@@ -9309,11 +9323,9 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 		//console.log("enableTax:", enableTax);
 		if (!enableTax && triggerChange) $discpc.trigger("change");
 
-		idx++;
+		
 		if (enableTax && !inclusivetax) {
-			let $tax = $target
-				.find("td")
-				.eq(idx)
+			let $tax = $target				
 				.find(".taxpc");
 
 			$tax.off("change");
@@ -9346,34 +9358,46 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 			.val(formatnumber(amount));
 	}
 
-	// updateRow();
-	// isPromotion = false;
+	if (forIA && SelectedIAL) {
+		$target.find(".unitcost").data("unitcost", SelectedIAL!.UnitCost).val(formatnumber(SelectedIAL!.UnitCost));
+		let acno:string|undefined = DicAcAccounts["COS"].find(x => x.AccountID == SelectedIAL!.AccountID)?.AccountNumber;
+		$target.find(".acno").val(acno ?? "");
+
+		$target.find(".amt").data("amt", SelectedIAL.UnitCost).val(formatnumber(SelectedIAL.UnitCost));
+	}
 
 	selectedItemCode = "";
 	selectedSalesLn = null;
 	selectedWholesalesLn = null;
 	selectedPurchaseItem = null;
 	selectedPreSalesLn = null;
+	SelectedIAL = null;
 
-	if ($rows.eq($rows.length).length) {
-		focusItemCode($rows.length);
-	} else if ($rows.eq(currentY + 1).length) {
-		if (
-			$rows
-				.eq(currentY + 1)
-				.find("td:eq(1)")
-				.find(".itemcode")
-				.val() !== ""
-		) {
-			if (!$rows.eq($rows.length - 1).length) {
-				addRow();
+	if (forIA) {
+		addIALRow();
+	} else {
+		if ($rows.eq($rows.length).length) {
+			focusItemCode($rows.length);
+		}
+		else if ($rows.eq(currentY + 1).length) {
+			if (
+				$rows
+					.eq(currentY + 1)
+					.find("td:eq(1)")
+					.find(".itemcode")
+					.val() !== ""
+			) {
+				if (!$rows.eq($rows.length - 1).length) {
+					addRow();
+				}
+			} else {
+				focusItemCode(currentY + 1);
 			}
 		} else {
-			focusItemCode(currentY + 1);
+			addRow();
 		}
-	} else {
-		addRow();
 	}
+	
 }
 
 function getItemPromotion(item: IItem | ISimpleItem, proId: number) {
@@ -9528,14 +9552,8 @@ function addRow() {
 		html +=
 			'<td class="text-right"><input type="number" name="tax" min="0" class="taxpc text-right flex" readonly/></td>';
 	}
-
-	let locations: string = "";
-	for (const [key, value] of Object.entries(DicLocation)) {
-		//default primary location:
-		let selected: string = key == shop ? "selected" : "";
-		locations += `<option value='${key}' ${selected}>${value}</option>`;
-	}
-	html += `<td><select class="location flex text-center">${locations}</select></td>`;
+	
+	html += `<td><select class="location flex text-center">${setLocationListOptions(shop)}</select></td>`;
 
 	//let jobs: string = "";
 	//JobList.forEach((x) => jobs += `<option value='${x.JobID}'>${x.job}</option>`);
@@ -9586,6 +9604,16 @@ function addRow() {
 		focusItemCode(idx);
 	}
 }
+function setLocationListOptions(shop:string) {
+    let locations: string = "";
+    for (const [key, value] of Object.entries(DicLocation)) {
+        //default primary location:
+        let selected: string = key == shop ? "selected" : "";
+        locations += `<option value='${key}' ${selected}>${value}</option>`;
+    }
+    return locations;
+}
+
 function setJobListOptions(selectedJobId: number = 0) {
 	let jobs: string = `<option value="0">---</option>`;
 	MyobJobList.forEach((x) => {
@@ -11009,8 +11037,7 @@ function checkPurchaseItems(): boolean {
 }
 
 $(document).on("dblclick", ".itemcode", function () {
-	seq = parseInt($(this).parent("td").parent("tr").find("td:eq(0)").text());
-	currentY = seq - 1;
+	getRowCurrentY.call(this);
 	//console.log('seq:' + seq + ';currenty:' + currentY);
 	if (forpurchase) {
 		if (Purchase.pstStatus !== "order" && checkPurchaseItems()) {
@@ -22317,7 +22344,7 @@ interface IIA {
 	IALs: IIAL[];
 	iaMemo: string;
 	iaId: number;
-	CreateTimeDisplay: string;
+	JsJournalDate: string;
 }
 
 //Inventory Adjustment Line
@@ -22335,10 +22362,12 @@ interface IIAL {
 	AccountID: number | null;
 	JobID: number | null;
 	Memo: string;
+	NameDesc: string;
+	JounralNumber: string;
 }
 let IA: IIA;
 let IALs: IIAL[] = [];
-let SelectedIAL: IIAL;
+let SelectedIAL: IIAL|null;
 
 function triggerMenu(dashmenuIdx, submenuIdx) {
 	$(".dash__menu").find("ul").find(".btn_expand").eq(dashmenuIdx).trigger("click").find(".submenu").first().addClass("show").find("a").removeClass("active").parent("li").parent(".submenu").find("li").eq(submenuIdx).find("a").addClass("active");
