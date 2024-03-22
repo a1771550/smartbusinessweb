@@ -787,13 +787,10 @@ namespace SmartBusinessWeb.Controllers
 			}
 		}
 
-		[AllowAnonymous]
+		
         [HttpPost]
         public JsonResult RefundEpay(string salescode)
         {
-            /*
-    return string.Format("mch_id={0}&nonce_str={1}&out_trade_no={2}&service={3}", payservice.MerchantID, payservice.Nonce, payservice.OutTradeNo, payservice.Service);
-    */
             PayService payService = new PayService();
 
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
@@ -804,11 +801,9 @@ namespace SmartBusinessWeb.Controllers
                     payService = new PayService(_ps.auth_code, _ps.out_trade_no, _ps.body.Split(',').ToList(), _ps.total_fee, ePayMode.Refund);
                     SalesEditModel.GenEpaySignature(ref payService, ePayMode.Refund);
 
-                    /* payment for reference:
-                     * string xml = $"<xml><auth_code><![CDATA[{payService.AuthCode}]]></auth_code><body><![CDATA[{payService.Body}]]></body><mch_create_ip><![CDATA[{payService.MachineCreateIP}]]></mch_create_ip><mch_id><![CDATA[{payService.MerchantID}]]></mch_id><nonce_str><![CDATA[{payService.Nonce}]]></nonce_str><out_trade_no><![CDATA[{payService.OutTradeNo}]]></out_trade_no><service><![CDATA[{payService.Service}]]></service><total_fee><![CDATA[{payService.TotalFee}]]></total_fee><sign><![CDATA[{payService.Signature}]]></sign><notify_url><![CDATA[{payService.NotifyUrl}]]></notify_url></xml>";
-                     */
+                    string xml = $"<xml><auth_code><![CDATA[{payService.AuthCode}]]></auth_code><body><![CDATA[{payService.Body}]]></body><mch_create_ip><![CDATA[{payService.MachineCreateIP}]]></mch_create_ip><mch_id><![CDATA[{payService.MerchantID}]]></mch_id><nonce_str><![CDATA[{payService.Nonce}]]></nonce_str><op_user_id><![CDATA[{payService.MerchantID}]]></op_user_id><out_refund_no><![CDATA[{payService.OutRefundNo}]]></out_refund_no><out_trade_no><![CDATA[{payService.OutTradeNo}]]></out_trade_no><refund_fee><![CDATA[{payService.RefundFee}]]></refund_fee><service><![CDATA[{payService.Service}]]></service><total_fee><![CDATA[{payService.TotalFee}]]></total_fee><sign><![CDATA[{payService.Signature}]]></sign><notify_url><![CDATA[{payService.NotifyUrl}]]></notify_url></xml>";
 
-                    string xml = $"<xml><auth_code><![CDATA[{payService.AuthCode}]]></auth_code><body><![CDATA[{payService.Body}]]></body><mch_create_ip><![CDATA[{payService.MachineCreateIP}]]></mch_create_ip><mch_id><![CDATA[{payService.MerchantID}]]></mch_id><nonce_str><![CDATA[{payService.Nonce}]]></nonce_str><out_trade_no><![CDATA[{payService.OutTradeNo}]]></out_trade_no><service><![CDATA[{payService.Service}]]></service><total_fee><![CDATA[{payService.TotalFee}]]></total_fee><sign><![CDATA[{payService.Signature}]]></sign><notify_url><![CDATA[{payService.NotifyUrl}]]></notify_url></xml>";
+                    //string xml = $"<xml><auth_code><![CDATA[{payService.AuthCode}]]></auth_code><body><![CDATA[{payService.Body}]]></body><mch_create_ip><![CDATA[{payService.MachineCreateIP}]]></mch_create_ip><mch_id><![CDATA[{payService.MerchantID}]]></mch_id><op_user_id><![CDATA[{payService.MerchantID}]]></op_user_id><nonce_str><![CDATA[{payService.Nonce}]]></nonce_str><out_refund_no><![CDATA[{payService.OutRefundNo}]]></out_refund_no><service><![CDATA[{payService.Service}]]></service><total_fee><![CDATA[{payService.TotalFee}]]></total_fee><refund_fee><![CDATA[{payService.RefundFee}]]></refund_fee><sign><![CDATA[{payService.Signature}]]></sign><notify_url><![CDATA[{payService.NotifyUrl}]]></notify_url></xml>";
 
                     var xmlDoc = XMLHelper.PostXML(payService.GateWayUrl, xml);
 
@@ -831,34 +826,34 @@ namespace SmartBusinessWeb.Controllers
                                 {
                                     SalesEditModel.HandleUnSuccessfulResult(context, payService, nodelist, status, resultcode, ePayMode.Refund, apId);
                                     context.SaveChanges();
-                                    return Json(new { msg = Resources.Resource.PaymentRefundFailed, epaystatus = 0 });
+                                    return Json(new { msg = Resources.Resource.PaymentRefundFailed, epaystatus = 0 }, JsonRequestBehavior.AllowGet);
                                 }
                                 else if (resultcode == "0")
                                 {
                                     SalesEditModel.HandleSuccessfulResult(context, payService, nodelist, status, resultcode, ePayMode.Refund);
                                     context.SaveChanges();
-                                    return Json(new { msg = Resources.Resource.PaymentRefunded, epaystatus = 1 });
+                                    return Json(new { msg = Resources.Resource.PaymentRefunded, epaystatus = 1 }, JsonRequestBehavior.AllowGet);
                                 }
                             }
                             else
                             {
-                                return Json(new { msg = Resources.Resource.PaymentRefundFailed, epaystatus = 0 });
+                                return Json(new { msg = Resources.Resource.PaymentRefundFailed, epaystatus = 0 }, JsonRequestBehavior.AllowGet);
                             }
                         }
                         else
                         {
-                            return Json(new { msg = message, epaystatus = 0 });
+                            return Json(new { msg = message, epaystatus = 0 }, JsonRequestBehavior.AllowGet);
                         }
 
                     }
                     else
                     {
-                        return Json(new { msg = Resources.Resource.PaymentRefundFailed, epaystatus = 0 });
+                        return Json(new { msg = Resources.Resource.PaymentRefundFailed, epaystatus = 0 }, JsonRequestBehavior.AllowGet);
                     }
                 }
                 else
                 {
-                    return Json(new { msg = Resources.Resource.PaymentRefundFailed, epaystatus = 0 });
+                    return Json(new { msg = Resources.Resource.PaymentRefundFailed, epaystatus = 0 }, JsonRequestBehavior.AllowGet);
                 }
 
                 return null;
