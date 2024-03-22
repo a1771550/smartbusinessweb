@@ -265,7 +265,7 @@ namespace SmartBusinessWeb.Controllers
 							var device = ModelHelper.GetDevice(user.surUID, context); //don't use session, as no new refundno will be retreived.				
 							refundcode = ModelHelper.GetNewRefundCode(devicecode, device, context);
 							//totalamount *= -1;
-							int refundamt = (bool)ComInfo.ePayTest ? decimal.ToInt32(totalamount) : decimal.ToInt32(totalamount *= 100);
+							int refundamt = (bool)ComInfo.ePayTest ? decimal.ToInt32(totalamount/1000) : decimal.ToInt32(totalamount);
 							salestotal = (decimal)context.RtlSales.FirstOrDefault(x => x.rtsCode.ToLower() == salescode.ToLower() && x.AccountProfileId == apId).rtsFinalTotal;
 
 							var _ps = context.ePayments.FirstOrDefault(x => x.out_trade_no.ToUpper() == salescode.ToUpper() && x.AccountProfileId == apId);
