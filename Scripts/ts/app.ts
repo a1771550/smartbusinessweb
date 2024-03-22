@@ -18,7 +18,7 @@ let $appInfo = $("#appInfo");
 let $txtblk = $("#txtblk");
 
 
-
+let isEpay: boolean = false;
 let salesman: ICrmUser;
 let checkoutportal: string =
 	$appInfo.length === 0
@@ -1047,7 +1047,7 @@ function togglePaging(type: string = "item", show: boolean = true) {
 		$pagingblk.hide();
 	}
 }
-let shop: string = "";
+let shop: string = $appInfo.data("shop") as string;
 
 function GetTrainings(pageIndex) {
 	$.ajax({
@@ -2382,9 +2382,19 @@ function GetPaymentsInfo() {
 	function getPaymentInfo(e) {
 		if ($(e).val() !== "") {
 			let typecode: string = <string>$(e).attr("id");
-			let amt: number = parseFloat(<string>$(e).val());
-			//console.log("typecode:", typecode);
-			//console.log("amt:", amt);
+			let amt: number = Number($(e).data("amt"));
+			console.log("typecode:", typecode);
+			console.log("amt#0:", amt);
+
+			if (isEpay) {
+				if (typecode.toLowerCase() == "wechat" || typecode.toLowerCase() == "alipay")
+				{//to nothing
+					console.log("do nothing");
+					console.log("amt#e:" + amt);
+				}
+				else amt = 0;				
+			}
+			console.log("amt#1:", amt);
 			let paytype: IPaymentType = {
 				payId: 0,
 				pmtCode: typecode,
@@ -2392,6 +2402,7 @@ function GetPaymentsInfo() {
 				pmtIsCash: typecode.toLowerCase() == "cash",
 				TotalAmt: 0,
 			};
+			
 			Payments.push(paytype);
 			if (typecode.toLowerCase() === "coupon") {
 				_couponamt += amt;
@@ -2538,97 +2549,102 @@ function confirmPay() {
 			break;
 	}
 
-	let paymentsInfo = GetPaymentsInfo();
-	//console.log("paymentsInfo:", paymentsInfo);
-	let _couponamt: number = paymentsInfo.couponamt;
-	let _totalpay: number = paymentsInfo.totalpay;
+	//if (isEpay) {
+	//	submitSimpleSales();
+	//} else {
+		let paymentsInfo = GetPaymentsInfo();
+		//console.log("paymentsInfo:", paymentsInfo);
+		let _couponamt: number = paymentsInfo.couponamt;
+		let _totalpay: number = paymentsInfo.totalpay;
 
-	_totalpay = round(_totalpay, 2);
-	_totalamt = round(_totalamt, 2);
+		_totalpay = round(_totalpay, 2);
+		_totalamt = round(_totalamt, 2);
 
-	//console.log('totalpay:' + _totalpay + ';totalamt:' + _totalamt);
-	if (isNaN(_totalpay)) {
-		falert(paymentrequiredtxt, oktxt);
-	} else if (_totalpay < _totalamt) {
-		switch (salesType) {
-			case SalesType.simplesales:
-				submitSimpleSales();
-				break;
-			case SalesType.deposit:
-				break;
-			case SalesType.refund:
-				break;
-			case SalesType.preorder:
-				//console.log("here");
-				submitSales();
-				break;
-			default:
-			case SalesType.retail:
-				if (Sales.Deposit == 1) {
+		console.log('totalpay:' + _totalpay + ';totalamt:' + _totalamt);
+		if (isNaN(_totalpay)) {
+			falert(paymentrequiredtxt, oktxt);
+		} else if (_totalpay < _totalamt) {
+			switch (salesType) {
+				case SalesType.simplesales:
+					submitSimpleSales();
+					break;
+				case SalesType.deposit:
+					break;
+				case SalesType.refund:
+					break;
+				case SalesType.preorder:
+					//console.log("here");
 					submitSales();
-				} else {
-					falert(paymentnotenough, oktxt);
-					_totalpay = 0;
-				}
-				break;
-		}
-	} else if (_totalpay > _totalamt) {
-		if (Sales.Deposit == 1) {
-			$.fancyConfirm({
-				title: "",
-				message: depositmustnotgteqamtmsg,
-				shownobtn: false,
-				okButton: oktxt,
-				noButton: canceltxt,
-				callback: function (value) {
-					if (value) {
-						$("#Cash").trigger("focus");
+					break;
+				default:
+				case SalesType.retail:
+					if (Sales.Deposit == 1) {
+						submitSales();
+					} else {
+						falert(paymentnotenough, oktxt);
+						_totalpay = 0;
 					}
-				},
-			});
-		} else {
-			//console.log("usecoupon:" + usecoupon + ";_couponamt:" + _couponamt);
-			if (!usecoupon) {
-				Sales.Change = _totalpay - _totalamt;
-				//console.log('ichange:' + ichange + ';ready to open changemodal...');
-				openChangeModal();
+					break;
+			}
+		} else if (_totalpay > _totalamt) {
+			if (Sales.Deposit == 1) {
+				$.fancyConfirm({
+					title: "",
+					message: depositmustnotgteqamtmsg,
+					shownobtn: false,
+					okButton: oktxt,
+					noButton: canceltxt,
+					callback: function (value) {
+						if (value) {
+							$("#Cash").trigger("focus");
+						}
+					},
+				});
 			} else {
-				if (_couponamt < _totalamt) {
+				//console.log("usecoupon:" + usecoupon + ";_couponamt:" + _couponamt);
+				if (!usecoupon) {
 					Sales.Change = _totalpay - _totalamt;
 					//console.log('ichange:' + ichange + ';ready to open changemodal...');
 					openChangeModal();
-				}
-				if (_couponamt >= _totalamt) {
-					resetPay(true);
-					if (forsales)
-						submitSales();
-					if (forsimplesales) submitSimpleSales();
-					//        break;
-					//}
+				} else {
+					if (_couponamt < _totalamt) {
+						Sales.Change = _totalpay - _totalamt;
+						//console.log('ichange:' + ichange + ';ready to open changemodal...');
+						openChangeModal();
+					}
+					if (_couponamt >= _totalamt) {
+						resetPay(true);
+						if (forsales)
+							submitSales();
+						if (forsimplesales) submitSimpleSales();
+						//        break;
+						//}
+					}
 				}
 			}
+		} else if (_totalpay == _totalamt) {
+			switch (salesType) {
+				case SalesType.simplesales:
+					submitSimpleSales();
+					break;
+				case SalesType.deposit:
+					submitRemaining();
+					break;
+				case SalesType.refund:
+					submitRefund();
+					break;
+				case SalesType.simplesales:
+					submitSimpleSales();
+					break;
+				default:
+				case SalesType.preorder:
+				case SalesType.retail:
+					submitSales();
+					break;
+			}
 		}
-	} else if (_totalpay == _totalamt) {
-		switch (salesType) {
-			case SalesType.simplesales:
-				submitSimpleSales();
-				break;
-			case SalesType.deposit:
-				submitRemaining();
-				break;
-			case SalesType.refund:
-				submitRefund();
-				break;
-			case SalesType.simplesales:
-				submitSimpleSales();
-				break;
-			default:
-			case SalesType.preorder:
-			case SalesType.retail:
-				submitSales();
-				break;
-		}
-	}
+	//}
+	
 }
 
 function closeChangeModal() {
@@ -2670,7 +2686,7 @@ function openPayModal(totalamt: number = 0) {
 	initCashTxt(totalamt);
 }
 function initAmtDisplay(totalamt: number) {
-	$("#salesamount").text(formatmoney(totalamt));
+	$("#salesamount").data("amt",totalamt).text(formatmoney(totalamt));
 	$("#remainamt").text(formatmoney(0));
 }
 function initCashTxt(totalamt: number | null) {
@@ -7375,6 +7391,7 @@ let isorgan: boolean = true;
 let _firstname: string = "";
 let _lastname: string = "";
 let _mobilecount: number = 1;
+
 
 function fillFullName() {
 	let fullname = _firstname + " " + _lastname;
@@ -22345,6 +22362,7 @@ interface IIA {
 	iaMemo: string;
 	iaId: number;
 	JsJournalDate: string;
+	JournalDateDisplay: string;
 }
 
 //Inventory Adjustment Line
@@ -22363,7 +22381,7 @@ interface IIAL {
 	JobID: number | null;
 	Memo: string;
 	NameDesc: string;
-	JounralNumber: string;
+	JounralNumber: string;	
 }
 let IA: IIA;
 let IALs: IIAL[] = [];

@@ -13,7 +13,6 @@ let RefundableSalesList: Array<IRefundSales> = [];
 let salesrefundlist: Array<ISalesRefundBase> = [];
 salesType = SalesType.refund;
 let refundsalesln: IRefundSales;
-let isEpay = false;
 let epaytype: string = "";
 checkoutportal = $infoblk.data("checkoutportal");
 RefundList = [];

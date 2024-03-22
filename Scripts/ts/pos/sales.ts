@@ -4,30 +4,47 @@ let selectedCatId: number = 3;
 let filteredItemList: ISimpleItem[] = [];
 let $norecordfound;
 function togglePayment(code: string, show: boolean) {
-	//console.log("code:" + code);	
+	console.log("code:" + code);	
+	$(".single__add").removeClass("activee");
 	$(".single__add").each(function (i, e) {
 		if ($(e).data("code") == code) {
-			if (show) $(e).addClass("activee");
-			else $(e).removeClass("activee");
+			if (show) $(e).addClass("activee");		
+			let amt = Number($("#salesamount").data("amt"));
+			console.log("amt:" + amt);//ok
+			$(e).find(".paymenttype").data("amt", amt).val(formatnumber(amt));
 		}
 	});
 }
 
-$(document).on("click", ".btnpayment", function () {
+$(document).on("click", ".btnpayment", function () {	
 	let Id = $(this).attr("id") as string;
 	let code = $(this).data("type") as string;
 	let checked = togglePlusCheck(Id);
 	//console.log("checked:", checked);
 	togglePayModeTxt();
-	togglePayment(code, checked);
+	
 
 	if (checked) $(this).addClass("toggle");
 	else $(this).removeClass("toggle");
 
-	let isEpay = (code.toLowerCase() == "alipay" || code.toLowerCase() == "wechat");
+	isEpay = (code.toLowerCase() == "alipay" || code.toLowerCase() == "wechat");
 
-	if (isEpay) $("#txtPayerCode").prop("readonly", false).trigger("focus");
+	if (isEpay) {
+		//if (code.toLowerCase() == "alipay") {
+
+		//}
+		//if (code.toLowerCase() == "wechat") {
+
+		//}
+		
+		$(".btnpayment").not(this).removeClass("toggle");
+		$(".btnpayment").not(this).find(".pluse").hide();
+		$(".btnpayment").not(this).find(".checks").hide();
+		$("#txtPayerCode").prop("readonly", false).trigger("focus");
+	}
 	else $("#txtPayerCode").prop("readonly", true);
+
+	togglePayment(code, checked);
 
 });
 $(document).on("change", "#txtItemCode", function () {

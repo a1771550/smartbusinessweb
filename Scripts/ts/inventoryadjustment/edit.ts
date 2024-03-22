@@ -92,7 +92,7 @@ function addIALRow() {
 	let html = `<tr>
 							<td><input type="text" class="form-control itemcode" /></td>
 							<td><input type="text" class="form-control itemdesc" /></td>
-							<td><select class="location flex text-center">${setLocationListOptions(shop) }</select></td>
+							<td><select class="location form-control flex text-center">${setLocationListOptions(shop) }</select></td>
 							<td class="text-right"><input type="number" class="form-control qty" /></td>
 							<td class="text-right"><input type="number" class="form-control unitcost" /></td>
 							<td class="text-right"><input type="number" class="form-control amt" /></td>						
@@ -145,8 +145,8 @@ $(function () {
 
 	editmode = $infoblk.data("edit") === "True";
 	IA = $infoblk.data("ia");
-	//todo:
-	var date = new Date(IA.JsJournalDate);
+	
+	var date = IA.JournalDateDisplay ? new Date(IA.JournalDateDisplay):new Date();
 	initDatePicker("strDate", date);
 
 	if (!editmode) {
