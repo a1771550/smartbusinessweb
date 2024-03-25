@@ -1,6 +1,8 @@
 ﻿$infoblk = $("#infoblk");
 
 function fillInIA() {
+	IA.Id = Number($("#Id").val());
+	IA.JournalNumber = $("#IA_JournalNumber").val() as string;
 	IA.JsJournalDate = $("#strDate").val() as string;
 	IA.Memo = $("#memo").val() as string;
 }
@@ -22,7 +24,7 @@ function UpdateIA() {
 					$(`#${gTblName} tbody tr`).last().find(".itemcode").trigger("focus");
 				}
 			}
-		});	
+		});
 		return false;
 	}
 
@@ -31,9 +33,9 @@ function UpdateIA() {
 
 $(document).on("click", "#btnSave", function () {
 	UpdateIA();
-	let data = { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(),IA };
+	let data = { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), IA };
 	console.log("data:", data);
-	return;
+	//return;
 	openWaitingModal();
 	$.ajax({
 		//contentType: 'application/json; charset=utf-8',
@@ -48,7 +50,7 @@ $(document).on("click", "#btnSave", function () {
 	});
 });
 $(document).on("dblclick", ".memo", function () {
-	getRowCurrentY.call(this);	
+	getRowCurrentY.call(this);
 	openTextAreaModal(allocationmemotxt);
 });
 $(document).on("change", ".memo", function () {
@@ -59,43 +61,51 @@ $(document).on("change", ".memo", function () {
 	});
 });
 $(document).on("change", ".job", function () {
-	getRowCurrentY.call(this);	
-	let Id: number = Number($(this).val());	
+	getRowCurrentY.call(this);
+	let Id: number = Number($(this).val());
 	IALs.forEach((x) => {
 		if (x!.Seq == (currentY + 1)) x!.JobID = Id;
 	});
 });
 
 function fillInIALs() {
-    var IALs: IIAL[] = [];
-    $(`#${gTblName} tbody tr`).each(function(i, e) {
-        let itemcode = $(e).find(".itemcode").val() as string;
-        let qty = Number($(e).find(".qty").val());
-        let cost = Number($(e).find(".unitcost").val());
-        if (itemcode && qty > 0 && cost > 0) {
-            let ial = initIAL();
-            ial.itmCode = itemcode;
-            ial.Qty = qty;
-            ial.UnitCost = cost;
-            ial.lstStockLoc = $(e).find(".location").val() as string;
-            ial.Amt = Number($(e).find(".amt").val());
-            ial.AccountNumber = $(e).find(".acno").val() as string;
-            ial.JobID = Number($(e).find(".job").val());
-            ial.Memo = $(e).find(".memo").val() === "..." ? $(e).find(".memo").data("memo") : $(e).find(".memo").val() as string;
-            IALs.push(ial);
-        }
-    });
-    return IALs;
+	var IALs: IIAL[] = [];
+	$(`#${gTblName} tbody tr`).each(function (i, e) {
+		let itemcode = $(e).find(".itemcode").val() as string;
+		let strqty = $(e).find(".qty").val();
+		let qty = Number(strqty);
+		let strcost = $(e).find(".unitcost").val();
+		let cost = Number(strcost);
+		if (itemcode && strqty && strcost) {
+			let $memo = $(e).find(".memo");
+			let Id = editmode ? Number($(e).data("id")) : 0;
+			IALs.push({
+				Id: Id,
+				Seq: $(e).index()+1,
+				itmCode: itemcode,
+				Qty: qty,
+				UnitCost: cost,
+				lstStockLoc: $(e).find(".location").val() as string,
+				Amt: Number($(e).find(".amt").val()),
+				AccountNumber: $(e).find(".acno").val() as string,
+				JobID: Number($(e).find(".job").val()),
+				Memo: $memo.val() === "..." ? $memo.data("remark") : $memo.val() as string
+			} as IIAL);
+		}
+	});
+	return IALs;
 }
 
 function addIALRow() {
+	//console.log("addialrow called");
+	if (!shop) shop = $appInfo.data("shop");
 	let html = `<tr>
 							<td><input type="text" class="form-control itemcode" /></td>
 							<td><input type="text" class="form-control itemdesc" /></td>
-							<td><select class="location form-control flex text-center">${setLocationListOptions(shop) }</select></td>
-							<td class="text-right"><input type="number" class="form-control qty" /></td>
-							<td class="text-right"><input type="number" class="form-control unitcost" /></td>
-							<td class="text-right"><input type="number" class="form-control amt" /></td>						
+							<td><select class="location form-control flex text-center">${setLocationListOptions(shop)}</select></td>
+							<td class="text-right"><input type="text" class="form-control qty text-right" /></td>
+							<td class="text-right"><input type="text" class="form-control unitcost text-right" /></td>
+							<td class="text-right"><input type="text" class="form-control amt text-right" readonly /></td>						
 							<td><input type="text" class="form-control acno" readonly /></td>
 							<td><select class="job flex form-control">${setJobListOptions(0)}</select></td>
 							<td><input type="text" class="form-control memo" /></td>
@@ -104,17 +114,10 @@ function addIALRow() {
 
 	$(`#${gTblName} tbody`).append(html).find("tr").last().find(".itemcode").trigger("focus");
 
-	SelectedIAL = initIAL();
-	IALs.push(SelectedIAL);
+	setInputs4NumberOnly(["qty","unitcost","amt"]);
 }
 
-function initIAL(): IIAL {
-	var ial = {} as IIAL;
-	ial.JounralNumber = IA.JournalNumber;
-	ial.Seq = $(`#${gTblName} tbody tr`).index()+1;
-	return ial;
-}
-function populateAccount4IA(acno: string, acname: string) {	
+function populateAccount4IA(acno: string, acname: string) {
 	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
 
 	setAccName($tr, acno, acname);
@@ -128,31 +131,34 @@ $(document).on("click", "#btnAdd", function () {
 	if (IALs.length === 0) return false;
 	getRowCurrentY.call(this);
 	addIALRow();
-	
 });
 $(function () {
 	setFullPage();
 	initModals();
 	forIA = true;
 	gTblName = "tblIAL";
-	
 
 	MyobJobList = $infoblk.data("joblist");
 	DicAcAccounts = $infoblk.data("dicacaccounts");
 	DicLocation = $infoblk.data("diclocation");
 
-	triggerMenu(2,4);
+	triggerMenu(2, 4);
 
 	editmode = $infoblk.data("edit") === "True";
 	IA = $infoblk.data("ia");
 	
-	var date = IA.JournalDateDisplay ? new Date(IA.JournalDateDisplay):new Date();
+	var date = IA.JournalDateDisplay ? new Date(IA.JournalDateDisplay) : new Date();
+	//console.log("datedisplay:" + IA.JournalDateDisplay);
+	//console.log("date:", date);
 	initDatePicker("strDate", date);
 
-	if (!editmode) {
+	if (editmode) {
+		IALs = $infoblk.data("ials");
+		//console.log(IALs);
+	} else {
 		addIALRow();
+		currentY = 0;
 		seq = currentY + 1;
-		IALs.push({ Seq: seq } as IIAL);
 	}
 });
 

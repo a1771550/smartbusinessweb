@@ -50,6 +50,9 @@ using PPWLib.Models.User;
 using PPWLib.Models.POS.Sales;
 using DocumentFormat.OpenXml.Spreadsheet;
 using System.Web.Razor.Tokenizer.Symbols;
+using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Math;
+using Microsoft.Owin;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -96,6 +99,13 @@ namespace SmartBusinessWeb.Controllers
         protected string UploadsPODir { get { return ConfigurationManager.AppSettings["UploadsPODir"]; } }
 
         private SqlConnection SqlConnection { get { return new SqlConnection(DefaultConnection); } }
+
+        public void GetDate4Sql(string strDate)
+        {
+           
+            var date = CommonHelper.GetDateFrmString4SQL(strDate);
+            Response.Write(date);
+        }
 
         public JsonResult RefundEpay(string salescode)
         {
@@ -172,18 +182,18 @@ namespace SmartBusinessWeb.Controllers
             }
         }
 
-        public void GetEnquiries(string keyword=null,int pageIndex=1,int sortCol=8,string sortDirection="desc")
+        public void GetEnquiries(string keyword = null, int pageIndex = 1, int sortCol = 8, string sortDirection = "desc")
         {
             using var connection = new SqlConnection(DefaultConnection);
             connection.Open();
             if (string.IsNullOrEmpty(keyword)) keyword = null;
 
-            int pageSize = int.Parse(ConfigurationManager.AppSettings["EnquiryPageSize"]);            
+            int pageSize = int.Parse(ConfigurationManager.AppSettings["EnquiryPageSize"]);
             int startIndex = CommonHelper.GetStartIndex(pageIndex, pageSize);
 
             List<EnquiryModel> pagingEnqList = connection.Query<EnquiryModel>("GetEnquiries1 @apId=@apId,@sortCol=@sortCol,@sortOrder=@sortOrder,@startIndex=@startIndex,@pageSize=@pageSize,@keyword=@keyword", new { apId, sortCol, sortOrder = sortDirection, startIndex, pageSize, keyword }).ToList();
 
-            Response.Write("totalRecord:" + pagingEnqList[0].TotalRecord +"<br>");
+            Response.Write("totalRecord:" + pagingEnqList[0].TotalRecord + "<br>");
             foreach (var enq in pagingEnqList) Response.Write(enq.email + "<br>");
         }
 

@@ -1447,24 +1447,26 @@ function _writeItems(itemList: IItem[]) {
 	$.each(itemList, function () {
 		var item = this;
 		const itemcode: string = item.itmCode;
+		let _qty: number = item.Qty;
 
-		let trcls = "",
-			proId = 0;
+		let trcls = forIA && _qty <= 0 ? "" : "itmcode", proId = 0;
+
+		if (_qty <= 0) console.log("trcls:" + trcls);
 
 		if (!forpurchase) {
 			if (item.ItemPromotions.length > 0) {
 				if (item.ItemPromotions.find((e) => e.pro4Period)) {
-					trcls = "period";
+					trcls += " period";
 					proId = item.ItemPromotions.find((e) => e.pro4Period)!.proId;
 				} else {
-					trcls = "nonperiod";
+					trcls += " nonperiod";
 					proId = item.ItemPromotions[0].proId;
 				}
-			} else trcls = "";
+			}
 		}
-		let _qty: number = item.Qty;
 
-		html += `<tr class="itmcode ${trcls}" data-code="${itemcode}" data-proid="${proId}" data-qty="${_qty}">`;
+
+		html += `<tr class="${trcls}" data-code="${itemcode}" data-proid="${proId}" data-qty="${_qty}">`;
 		// row.addClass("itmcode").attr("data-code", itemcode);
 		html += `<td>${itemcode}</td>`;
 		// $("td", row).eq(0).html(itemcode);
@@ -1478,13 +1480,13 @@ function _writeItems(itemList: IItem[]) {
 		}
 
 		let price: number = 0;
-		
+
 		if (forsales || forwholesales || forstock || forpreorder) {
 			price = item.itmBaseSellingPrice!;
 		}
 
 		if (forpurchase) price = item.itmBuyStdCost!;
-		if (forIA) price = item.itmSellUnitAvgCost ??0;
+		if (forIA) price = item.itmSellUnitAvgCost ?? 0;
 
 		html += `<td style="text-align:rigth;width:100px;max-width:100px;">${formatnumber(price)}</td>`;
 
@@ -1543,7 +1545,7 @@ function _writeItems(itemList: IItem[]) {
 		html += "</tr>";
 	});
 	$("#tblItem tbody").empty().append(html);
-	if (!forpurchase) {
+	if (!forpurchase && !forIA) {
 		$("#tblItem tbody tr").each(function (i, e) {
 			if ($(e).find("td").eq(2).hasClass("outofstock")) {
 				$(e).removeClass("itmcode").addClass("outofstock");
@@ -2387,12 +2389,11 @@ function GetPaymentsInfo() {
 			console.log("amt#0:", amt);
 
 			if (isEpay) {
-				if (typecode.toLowerCase() == "wechat" || typecode.toLowerCase() == "alipay")
-				{//to nothing
+				if (typecode.toLowerCase() == "wechat" || typecode.toLowerCase() == "alipay") {//to nothing
 					console.log("do nothing");
 					console.log("amt#e:" + amt);
 				}
-				else amt = 0;				
+				else amt = 0;
 			}
 			console.log("amt#1:", amt);
 			let paytype: IPaymentType = {
@@ -2402,7 +2403,7 @@ function GetPaymentsInfo() {
 				pmtIsCash: typecode.toLowerCase() == "cash",
 				TotalAmt: 0,
 			};
-			
+
 			Payments.push(paytype);
 			if (typecode.toLowerCase() === "coupon") {
 				_couponamt += amt;
@@ -2552,99 +2553,99 @@ function confirmPay() {
 	//if (isEpay) {
 	//	submitSimpleSales();
 	//} else {
-		let paymentsInfo = GetPaymentsInfo();
-		//console.log("paymentsInfo:", paymentsInfo);
-		let _couponamt: number = paymentsInfo.couponamt;
-		let _totalpay: number = paymentsInfo.totalpay;
+	let paymentsInfo = GetPaymentsInfo();
+	//console.log("paymentsInfo:", paymentsInfo);
+	let _couponamt: number = paymentsInfo.couponamt;
+	let _totalpay: number = paymentsInfo.totalpay;
 
-		_totalpay = round(_totalpay, 2);
-		_totalamt = round(_totalamt, 2);
+	_totalpay = round(_totalpay, 2);
+	_totalamt = round(_totalamt, 2);
 
-		console.log('totalpay:' + _totalpay + ';totalamt:' + _totalamt);
-		if (isNaN(_totalpay)) {
-			falert(paymentrequiredtxt, oktxt);
-		} else if (_totalpay < _totalamt) {
-			switch (salesType) {
-				case SalesType.simplesales:
-					submitSimpleSales();
-					break;
-				case SalesType.deposit:
-					break;
-				case SalesType.refund:
-					break;
-				case SalesType.preorder:
-					//console.log("here");
+	console.log('totalpay:' + _totalpay + ';totalamt:' + _totalamt);
+	if (isNaN(_totalpay)) {
+		falert(paymentrequiredtxt, oktxt);
+	} else if (_totalpay < _totalamt) {
+		switch (salesType) {
+			case SalesType.simplesales:
+				submitSimpleSales();
+				break;
+			case SalesType.deposit:
+				break;
+			case SalesType.refund:
+				break;
+			case SalesType.preorder:
+				//console.log("here");
+				submitSales();
+				break;
+			default:
+			case SalesType.retail:
+				if (Sales.Deposit == 1) {
 					submitSales();
-					break;
-				default:
-				case SalesType.retail:
-					if (Sales.Deposit == 1) {
-						submitSales();
-					} else {
-						falert(paymentnotenough, oktxt);
-						_totalpay = 0;
+				} else {
+					falert(paymentnotenough, oktxt);
+					_totalpay = 0;
+				}
+				break;
+		}
+	} else if (_totalpay > _totalamt) {
+		if (Sales.Deposit == 1) {
+			$.fancyConfirm({
+				title: "",
+				message: depositmustnotgteqamtmsg,
+				shownobtn: false,
+				okButton: oktxt,
+				noButton: canceltxt,
+				callback: function (value) {
+					if (value) {
+						$("#Cash").trigger("focus");
 					}
-					break;
-			}
-		} else if (_totalpay > _totalamt) {
-			if (Sales.Deposit == 1) {
-				$.fancyConfirm({
-					title: "",
-					message: depositmustnotgteqamtmsg,
-					shownobtn: false,
-					okButton: oktxt,
-					noButton: canceltxt,
-					callback: function (value) {
-						if (value) {
-							$("#Cash").trigger("focus");
-						}
-					},
-				});
+				},
+			});
+		} else {
+			//console.log("usecoupon:" + usecoupon + ";_couponamt:" + _couponamt);
+			if (!usecoupon) {
+				Sales.Change = _totalpay - _totalamt;
+				//console.log('ichange:' + ichange + ';ready to open changemodal...');
+				openChangeModal();
 			} else {
-				//console.log("usecoupon:" + usecoupon + ";_couponamt:" + _couponamt);
-				if (!usecoupon) {
+				if (_couponamt < _totalamt) {
 					Sales.Change = _totalpay - _totalamt;
 					//console.log('ichange:' + ichange + ';ready to open changemodal...');
 					openChangeModal();
-				} else {
-					if (_couponamt < _totalamt) {
-						Sales.Change = _totalpay - _totalamt;
-						//console.log('ichange:' + ichange + ';ready to open changemodal...');
-						openChangeModal();
-					}
-					if (_couponamt >= _totalamt) {
-						resetPay(true);
-						if (forsales)
-							submitSales();
-						if (forsimplesales) submitSimpleSales();
-						//        break;
-						//}
-					}
+				}
+				if (_couponamt >= _totalamt) {
+					resetPay(true);
+					if (forsales)
+						submitSales();
+					if (forsimplesales) submitSimpleSales();
+					//        break;
+					//}
 				}
 			}
-		} else if (_totalpay == _totalamt) {
-			switch (salesType) {
-				case SalesType.simplesales:
-					submitSimpleSales();
-					break;
-				case SalesType.deposit:
-					submitRemaining();
-					break;
-				case SalesType.refund:
-					submitRefund();
-					break;
-				case SalesType.simplesales:
-					submitSimpleSales();
-					break;
-				default:
-				case SalesType.preorder:
-				case SalesType.retail:
-					submitSales();
-					break;
-			}
 		}
+	} else if (_totalpay == _totalamt) {
+		switch (salesType) {
+			case SalesType.simplesales:
+				submitSimpleSales();
+				break;
+			case SalesType.deposit:
+				submitRemaining();
+				break;
+			case SalesType.refund:
+				submitRefund();
+				break;
+			case SalesType.simplesales:
+				submitSimpleSales();
+				break;
+			default:
+			case SalesType.preorder:
+			case SalesType.retail:
+				submitSales();
+				break;
+		}
+	}
 	//}
-	
+
 }
 
 function closeChangeModal() {
@@ -2686,7 +2687,7 @@ function openPayModal(totalamt: number = 0) {
 	initCashTxt(totalamt);
 }
 function initAmtDisplay(totalamt: number) {
-	$("#salesamount").data("amt",totalamt).text(formatmoney(totalamt));
+	$("#salesamount").data("amt", totalamt).text(formatmoney(totalamt));
 	$("#remainamt").text(formatmoney(0));
 }
 function initCashTxt(totalamt: number | null) {
@@ -3552,15 +3553,15 @@ function initModals() {
 							if (remark !== "") {
 								if (IALs.length > 0) {
 									let idx = IALs.findIndex(x => x.Seq == (currentY + 1));
-									console.log("idx:" + idx);
+									//console.log("idx:" + idx);
 									if (IALs[idx]) {
-										IALs[idx].Memo = remark;			
-										console.log("$tr:", $tr);
+										IALs[idx].Memo = remark;
+										//console.log("$tr:", $tr);
 										$tr.find(".memo").data("remark", remark).val("...");
 									}
 								}
 							}
-							
+
 						}
 					},
 				},
@@ -8789,13 +8790,13 @@ let copiedItem: IItem;
 function handleItmCodeSelected(
 	el: HTMLElement
 ) {
-	//let comboIvId: string = "";
-	//let selectedIvList: IItemVariation[] = [];
+	//console.log("selecteditemcode#0:" + selectedItemCode);
 	if (!selectedItemCode) {
 		$tr = $(el);
 		selectedItemCode = $tr.data("code");
-	}	
-	//console.log("selectedItemCode:" + selectedItemCode); return false;	
+	}
+	//console.log("selectedItemCode#1:" + selectedItemCode);
+	//return false;	
 	closeItemModal();
 	seq = currentY + 1;
 	if (forsales || forpreorder || forwholesales || forpurchase || forIA) {
@@ -8877,33 +8878,42 @@ function GetSetSelectedLns(proId: any) {
 			(x) => x.itmCode == selectedItemCode
 		)!;
 	}
+
 	if (forIA) {
-		SelectedIAL = GetSetSelectedIAL();		
+		SelectedIAL = GetSetSelectedIAL();
+		//console.log("SelectedIAL#GetSetSelectedLns:", SelectedIAL);
 	}
 	toggleItemCodeChange(proId);
 }
-function GetSetSelectedIAL(): IIAL|null {
+function GetSetSelectedIAL(): IIAL {
+	var IAL = {} as IIAL;
 	if (IALs && IALs.length > 0) {
-		var IAL = IALs.find(x => x.Seq == (currentY + 1));
-		if (IAL) {
-			var item = ItemList.find(
-				(x) => x.itmCode == selectedItemCode
-			)!;
-			IAL.itmCode = selectedItemCode;
-			IAL.NameDesc = item.NameDesc;
-			IAL.UnitCost = item.itmSellUnitAvgCost ?? 0;
-			IAL.AccountID = item.ExpenseAccountID;
-		}
-		return IAL??null;
+		IAL = IALs.find(x => x.Seq == (currentY + 1)) as IIAL;
 	}
-	return null;
+	//console.log("IAL#0:", IAL);
+	if (!IAL || (IAL && !IAL.JounralNumber && !IAL.itmCode)) {
+		var item = ItemList.find(
+			(x) => x.itmCode == selectedItemCode
+		)!;
+		IAL = {
+			JounralNumber: IA.JournalNumber,
+			Seq: $(`#${gTblName} tbody tr`).last().index() + 1,
+			itmCode: selectedItemCode,
+			NameDesc: item.NameDesc,
+			UnitCost: item.itmSellUnitAvgCost ?? 0,
+			AccountID: item.ExpenseAccountID
+		} as IIAL;
+	}
+	//console.log("IAL#1:", IAL);
+	return IAL;
+
 }
 function populateItemRow(proId: number | null = 0, triggerChange: boolean = true) {
 	//console.log("here");
 	//console.log("selectedItemCode#popu:" + selectedItemCode);
 	if (!selectedItemCode) return false;
 
-	let $rows = $(`#${gTblName} tbody tr`);	
+	let $rows = $(`#${gTblName} tbody tr`);
 	let $target = $rows.eq(currentY);
 	//console.log($target);
 	seq = currentY + 1;
@@ -8981,22 +8991,23 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 		namedesc = selectedPurchaseItem!.Item.NameDesc;
 	}
 	if (forIA && SelectedIAL) namedesc = SelectedIAL.NameDesc;
+	//console.log("SelectedIAL#popuItemRow:", SelectedIAL);
 
 	const rowcls: string = isPromotion ? "promotion" : "";
 	$target.find("td").first().addClass(rowcls);
 
 	namedesctxt = handleItemDesc(namedesc);
-	
+
 	$target.find(".itemcode").val(selectedItemCode);
-	
-	$target		
+
+	$target
 		.find(".itemdesc")
 		.data("itemname", namedesctxt)
 		.attr("title", namedesc)
 		.val(namedesctxt);
-	
+
 	if (forpurchase) {
-		$target			
+		$target
 			.find(".baseunit")
 			.data("baseunit", selectedPurchaseItem!.Item.itmBuyUnit)
 			.val(selectedPurchaseItem!.Item.itmBuyUnit);
@@ -9013,7 +9024,7 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 		sellunit = selectedPreSalesLn!.Item.itmSellUnit;
 	}
 
-	$target		
+	$target
 		.find(".sellunit")
 		.data("sellunit", sellunit)
 		.val(sellunit);
@@ -9039,7 +9050,7 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 		prodiscpc = itemPromotion!.proDiscPc! > 0 ? itemPromotion!.proDiscPc : 0;
 	}
 
-	
+
 	let $qty = $target.find(".qty");
 	$qty.off("change");
 	$qty.val(qty).data({
@@ -9062,13 +9073,13 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 	itemOptions = DicItemOptions[selectedItemCode];
 
 	//console.log(itemOptions);
-	
+
 	const $bat = $target.find(".batch");
-	
+
 	const $sn = $target.find(".serialno");
-	
+
 	const $vt = $target.find(".validthru");
-	
+
 	const $iv = $target.find(".vari");
 
 	const readonly =
@@ -9259,7 +9270,7 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 		$iv.addClass("pointer").val(vari);
 	}
 
-	if (forsales || forpreorder || forpurchase || forwholesales) {		
+	if (forsales || forpreorder || forpurchase || forwholesales) {
 
 		if (forsales || forpreorder) {
 			//idx = PriceIdx4Sales;
@@ -9316,15 +9327,15 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 		}
 
 		price = price / exRate;
-		let $price = $target			
+		let $price = $target
 			.find(".price");
 		$price.off("change");
 		$price.data("price", price)
 			.val(formatnumber(price));
 		$price.on("change", handlePriceChange);
 
-		
-		if (isPromotion && proId) {		
+
+		if (isPromotion && proId) {
 			if (itemPromotion && itemPromotion.pro4Period) {
 				discpc = itemPromotion.proDiscPc!;
 			}
@@ -9340,9 +9351,9 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 		//console.log("enableTax:", enableTax);
 		if (!enableTax && triggerChange) $discpc.trigger("change");
 
-		
+
 		if (enableTax && !inclusivetax) {
-			let $tax = $target				
+			let $tax = $target
 				.find(".taxpc");
 
 			$tax.off("change");
@@ -9377,7 +9388,7 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 
 	if (forIA && SelectedIAL) {
 		$target.find(".unitcost").data("unitcost", SelectedIAL!.UnitCost).val(formatnumber(SelectedIAL!.UnitCost));
-		let acno:string|undefined = DicAcAccounts["COS"].find(x => x.AccountID == SelectedIAL!.AccountID)?.AccountNumber;
+		let acno: string | undefined = DicAcAccounts["COS"].find(x => x.AccountID == SelectedIAL!.AccountID)?.AccountNumber;
 		$target.find(".acno").val(acno ?? "");
 
 		$target.find(".amt").data("amt", SelectedIAL.UnitCost).val(formatnumber(SelectedIAL.UnitCost));
@@ -9388,9 +9399,11 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 	selectedWholesalesLn = null;
 	selectedPurchaseItem = null;
 	selectedPreSalesLn = null;
-	SelectedIAL = null;
+	//SelectedIAL = null;
 
 	if (forIA) {
+		//cleanUpIALs();
+		IALs.push(SelectedIAL);
 		addIALRow();
 	} else {
 		if ($rows.eq($rows.length).length) {
@@ -9414,8 +9427,13 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 			addRow();
 		}
 	}
-	
+
 }
+
+//function cleanUpIALs() {
+//    let idx = IALs.findIndex(x => !x.itmCode && !x.JounralNumber);
+//    if (idx >= 0) IALs.splice(idx, 1);
+//}
 
 function getItemPromotion(item: IItem | ISimpleItem, proId: number) {
 	if (isPromotion && item.ItemPromotions) {
@@ -9569,7 +9587,7 @@ function addRow() {
 		html +=
 			'<td class="text-right"><input type="number" name="tax" min="0" class="taxpc text-right flex" readonly/></td>';
 	}
-	
+
 	html += `<td><select class="location flex text-center">${setLocationListOptions(shop)}</select></td>`;
 
 	//let jobs: string = "";
@@ -9621,14 +9639,14 @@ function addRow() {
 		focusItemCode(idx);
 	}
 }
-function setLocationListOptions(shop:string) {
-    let locations: string = "";
-    for (const [key, value] of Object.entries(DicLocation)) {
-        //default primary location:
-        let selected: string = key == shop ? "selected" : "";
-        locations += `<option value='${key}' ${selected}>${value}</option>`;
-    }
-    return locations;
+function setLocationListOptions(shop: string) {
+	let locations: string = "";
+	for (const [key, value] of Object.entries(DicLocation)) {
+		//default primary location:
+		let selected: string = key == shop ? "selected" : "";
+		locations += `<option value='${key}' ${selected}>${value}</option>`;
+	}
+	return locations;
 }
 
 function setJobListOptions(selectedJobId: number = 0) {
@@ -15556,7 +15574,7 @@ function togglePaymentBlk(mode: string, toggleId: string, totalamt: number) {
 
 		initCashTxt(totalamt);
 
-		setInputs4NumberOnly("paymenttype");
+		setInput4NumberOnly("paymenttype");
 
 		populateOrderSummary();
 
@@ -16088,10 +16106,17 @@ $(document).on("change", ".nonitemoptions", function () {
 	}
 });
 
-function setInputs4NumberOnly(clsname: string) {
+function setInput4NumberOnly(clsname: string) {
 	setInputsFilter(document.getElementsByClassName(clsname)!, function (value) {
 		return /^-?[\d,\/.]*$/.test(value);
 	}, numberonlytxt);
+}
+function setInputs4NumberOnly(clsnames: string[]) {
+	clsnames.forEach((clsname) => {
+		setInputsFilter(document.getElementsByClassName(clsname)!, function (value) {
+			return /^-?[\d,\/.]*$/.test(value);
+		}, numberonlytxt);
+	});
 }
 
 function getTotalAmt4Order(): number {
@@ -19106,6 +19131,8 @@ function _submitSales() {
 						}, 15000); //reverse payment after payment api called for 15s.
 					}
 				}
+
+				isEpay = false;
 			}
 		},
 		dataType: "json",
@@ -22289,6 +22316,7 @@ function setInputsFilter(textboxes: any, inputFilter: (value: string) => boolean
 function getRowCurrentY(this: any, forTd: boolean = false) {
 	$tr = forTd ? $(this).parent("tr") : $(this).parent("td").parent("tr");
 	currentY = $tr.index();
+	seq = currentY + 1;
 }
 
 function getPdfThumbnail(cls: string = ""): string {
@@ -22381,11 +22409,12 @@ interface IIAL {
 	JobID: number | null;
 	Memo: string;
 	NameDesc: string;
-	JounralNumber: string;	
+	JounralNumber: string;
+	JounralDate: Date | null;
 }
 let IA: IIA;
 let IALs: IIAL[] = [];
-let SelectedIAL: IIAL|null;
+let SelectedIAL: IIAL;
 
 function triggerMenu(dashmenuIdx, submenuIdx) {
 	$(".dash__menu").find("ul").find(".btn_expand").eq(dashmenuIdx).trigger("click").find(".submenu").first().addClass("show").find("a").removeClass("active").parent("li").parent(".submenu").find("li").eq(submenuIdx).find("a").addClass("active");

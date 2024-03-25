@@ -1,22 +1,23 @@
 ﻿@model PPWLib.Models.Item.IAEditModel
 
 @{
-	IAModel IA = Model.InventoryAdjustment;
-	bool editmode = IA.Id > 0;
+	IALModel IA = Model.IA;
+	bool editmode = IA.iaId > 0;
 	string edittxt = editmode ? Resources.Resource.Edit : Resources.Resource.Add;
 	ViewBag.Title = edittxt + " " + Resources.Resource.InventoryAdjustment;
 	string Currency = Model.Currency;
 	int rand = CommonHelper.GetVersionRandomNo();
+	int maxmemocharnum = int.Parse(ConfigurationManager.AppSettings["MaxDescMemoRemarkCharNum"]);
 }
 <link href="~/Content/item/iaedit.css?v=@rand" rel="stylesheet" type="text/css" />
 
 <h2>@ViewBag.Title</h2>
 
-@using (Html.BeginForm("Edit", "InventoryAdjustment", FormMethod.Get, new { @Id = "frmIA", @class = "my-4" }))
+@using (Html.BeginForm("Edit", "IA", FormMethod.Get, new { @Id = "frmIA", @class = "my-4" }))
 {
 	@Html.AntiForgeryToken()
 
-	@Html.HiddenFor(model => IA.Id)
+	<input type="hidden" id="Id" name="Id" value="@IA.iaId" />
 
 	<div class="row">
 		<div class="col-12 col-md-3">
@@ -27,13 +28,14 @@
 		</div>
 		<div class="col-12 col-md-3">
 			@Html.Partial("_Date")
-			@Html.HiddenFor(model=>IA.JournalDate)
+			@Html.HiddenFor(model => IA.JournalDate)
 		</div>
 
 		<div class="col-12 col-md-3">
 			<div class="form-group">
 				<label>@Resources.Resource.Memo</label>
-				<textarea id="memo" name="Memo" rows="3" class="form-control flex">@IA.Memo</textarea>
+				<textarea id="memo" name="Memo" rows="3" class="form-control flex" maxlength="@maxmemocharnum">@IA.iaMemo</textarea>
+				<span class="danger small font-weight-bold">@string.Format(Resources.Resource.MaxCharLengthAllowed,maxmemocharnum)</span>
 			</div>
 		</div>
 	</div>
@@ -59,8 +61,42 @@
 						<th>@Resources.Resource.AllocationMemo</th>
 					</tr>
 				</thead>
-
 				<tbody>
+					@if (Model.IALs.Count > 0)
+					{
+						foreach (var ial in Model.IALs)
+						{
+							<tr data-id="@ial.Id">
+								<td><input type="text" class="form-control itemcode" value="@ial.itmCode" /></td>
+								<td><input type="text" class="form-control itemdesc" value="@ial.NameDesc" /></td>
+								<td>
+									<select class="location form-control flex text-center">
+										@foreach (var key in Model.DicLocation.Keys)
+										{
+											string shop = Model.DicLocation[key];
+											string selected = (shop == ial.lstStockLoc) ? "selected" : "";
+											<option value="@shop" @selected>@shop</option>
+										}
+									</select>
+								</td>
+								<td class="text-right"><input type="text" class="form-control qty text-right" value="@ial.Qty" /></td>
+								<td class="text-right"><input type="text" class="form-control unitcost text-right" value="@ial.UnitCost" /></td>
+								<td class="text-right"><input type="text" class="form-control amt text-right" readonly value="@ial.Amt" /></td>
+								<td><input type="text" class="form-control acno" readonly value="@ial.AccountNumber" /></td>
+								<td>
+									<select class="job flex form-control">
+										@foreach (var job in Model.JobList)
+										{
+											string selected = (job.JobID == ial.JobID) ? "selected" : "";
+											<option value="@job.JobID" @selected>@job.JobName</option>
+										}
+									</select>
+								</td>
+								<td><input type="text" class="form-control memo" data-remark="@ial.Memo" maxlength="@maxmemocharnum" value="@ial.MemoDisplay" /></td>
+							</tr>
+						}
+
+					}
 				</tbody>
 			</table>
 		</div>
@@ -75,9 +111,9 @@
 @Html.Partial("_WaitingModal")
 @Html.Partial("_AccountModal")
 @Html.Partial("_TextAreaModal")
-@Html.Partial("_ItemModal", null, new ViewDataDictionary { { "Currency", Model.Currency },{"forIA",true },{"priceheader",Resources.Resource.UnitCost } })
+@Html.Partial("_ItemModal", null, new ViewDataDictionary { { "Currency", Model.Currency }, { "forIA", true }, { "priceheader", Resources.Resource.UnitCost } })
 
-<div id="infoblk" data-edit="@editmode" data-ia="@JsonSerializer.Serialize(IA)" data-joblist="@JsonSerializer.Serialize(Model.JobList)" data-dicacaccounts="@JsonSerializer.Serialize(Model.DicAcAccounts)" data-diclocation="@JsonSerializer.Serialize(Model.DicLocation)"></div>
+<div id="infoblk" data-edit="@editmode" data-ials="@JsonSerializer.Serialize(Model.IALs)" data-ia="@JsonSerializer.Serialize(IA)" data-joblist="@JsonSerializer.Serialize(Model.JobList)" data-dicacaccounts="@JsonSerializer.Serialize(Model.DicAcAccounts)" data-diclocation="@JsonSerializer.Serialize(Model.DicLocation)"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script src="~/Scripts/ts/js/inventoryadjustment/edit.js?v=@rand"></script>

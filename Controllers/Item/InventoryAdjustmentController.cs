@@ -23,7 +23,7 @@ namespace SmartBusinessWeb.Controllers.Item
         public ActionResult Index(int SortCol = 0, string SortOrder = "desc", string Keyword = "", int? PageNo = 1)
         {
             ViewBag.ParentPage = "item";
-            ViewBag.PageName = "InventoryAdjustment";
+            ViewBag.PageName = "IA";
             if (string.IsNullOrEmpty(Keyword))
                 Keyword = null;
 
@@ -56,7 +56,7 @@ namespace SmartBusinessWeb.Controllers.Item
         public JsonResult Edit(IAModel IA)
         {
             ViewBag.ParentPage = "item";
-            ViewBag.PageName = "InventoryAdjustment";
+            ViewBag.PageName = "IA";
 
             IAEditModel.Edit(IA);
 

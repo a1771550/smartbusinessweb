@@ -28,6 +28,7 @@ using Microsoft.Data.SqlClient;
 using PPWLib.Models.POS.Sales;
 using PPWLib.Models.Journal;
 using CommonLib.Models.MYOB;
+using PPWLib.Models.Item;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -635,7 +636,10 @@ namespace SmartBusinessWeb.Controllers
 				string[] filenames;
 				switch (type)
 				{
-					case "journal":
+					case "ia":
+                        await ExportData4SB(apId, dmodel, "IA_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
+                        break;
+                    case "journal":
 						await ExportData4SB(apId, dmodel, "Journal_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
 						break;
 					case "supplier":
@@ -696,7 +700,100 @@ namespace SmartBusinessWeb.Controllers
 			using var connection = new SqlConnection(DefaultConnection);
 			connection.Open();
 
-			if (filename.StartsWith("Journal_"))
+            if (filename.StartsWith("IA_"))
+            {
+                #region Date Ranges
+                int year = DateTime.Now.Year;
+                DateTime frmdate;
+                DateTime todate;
+                if (string.IsNullOrEmpty(strfrmdate))
+                {
+                    //frmdate = new DateTime(year, 1, 1);
+                    frmdate = DateTime.Today;
+                }
+                else
+                {
+                    int mth = int.Parse(strfrmdate.Split('/')[1]);
+                    int day = int.Parse(strfrmdate.Split('/')[0]);
+                    year = int.Parse(strfrmdate.Split('/')[2]);
+                    frmdate = new DateTime(year, mth, day);
+                }
+                if (string.IsNullOrEmpty(strtodate))
+                {
+                    //todate = new DateTime(year, 12, 31);
+                    todate = DateTime.Today;
+                }
+                else
+                {
+                    int mth = int.Parse(strtodate.Split('/')[1]);
+                    int day = int.Parse(strtodate.Split('/')[0]);
+                    year = int.Parse(strtodate.Split('/')[2]);
+                    todate = new DateTime(year, mth, day);
+                }
+                #endregion
+
+                var session = ModelHelper.GetCurrentSession(context);
+                var location = session.sesShop.ToLower();
+                var device = session.sesDvc.ToLower();
+
+                dmodel.RetailCheckOutIds = new HashSet<long>();
+                dmodel.SelectedLocation = location;
+                dmodel.Device = device;
+
+                List<string> sqllist = IAEditModel.GetUploadSqlList(includeUploaded, comInfo, apId, context, connection, frmdate, todate, ref dmodel);
+
+                if (sqllist.Count > 0)
+                {
+                    #region Write to MYOB
+                    using (localhost.Dayends dayends = new localhost.Dayends())
+                    {
+                        dayends.Url = comInfo.WebServiceUrl;
+                        dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
+                    }
+                    #endregion
+
+                    #region Write sqllist into Log & update checkoutIds
+                    using (var transaction = context.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            ModelHelper.WriteLog(context, string.Format("Export IA data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
+                            List<InventoryAdjustment> ialist = context.InventoryAdjustments.Where(x => x.AccountProfileId == apId && dmodel.CheckOutIds_IA.Any(y => x.Id == y)).ToList();
+                            foreach (var ia in ialist)
+                            {
+                                ia.Checkout = true;
+								ia.ModifyTime = DateTime.Now;
+								ia.ModifyBy = SessUser.UserCode;
+                            }
+                            context.SaveChanges();
+                            transaction.Commit();
+                        }
+                        catch (DbEntityValidationException e)
+                        {
+                            transaction.Rollback();
+                            StringBuilder sb = new StringBuilder();
+                            foreach (var eve in e.EntityValidationErrors)
+                            {
+                                sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                                foreach (var ve in eve.ValidationErrors)
+                                {
+                                    sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                    ve.PropertyName,
+                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                    ve.ErrorMessage);
+                                }
+                            }
+                            ModelHelper.WriteLog(context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
+                            context.SaveChanges();
+                        }
+
+                    }
+                    #endregion
+                }
+            }
+
+            if (filename.StartsWith("Journal_"))
 			{
 				#region Date Ranges
 				int year = DateTime.Now.Year;
@@ -736,7 +833,7 @@ namespace SmartBusinessWeb.Controllers
 				dmodel.SelectedLocation = location;
 				dmodel.Device = device;
 
-				List<string> sqllist = JournalEditModel.GetUploadSqlList(includeUploaded, lang, comInfo, apId, context, connection, frmdate, todate, ref dmodel);
+				List<string> sqllist = JournalEditModel.GetUploadSqlList(includeUploaded, comInfo, apId, context, frmdate, todate, ref dmodel);
 
 				if (sqllist.Count > 0)
 				{
@@ -758,6 +855,7 @@ namespace SmartBusinessWeb.Controllers
 							foreach (var journal in journallist)
 							{
 								journal.IsCheckOut = true;
+								journal.ModifyTime = DateTime.Now;
 							}
 							context.SaveChanges();
 							transaction.Commit();

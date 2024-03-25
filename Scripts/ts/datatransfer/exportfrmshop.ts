@@ -70,4 +70,8 @@ $(document).on("click", ".export", function () {
   });
 });
 
+$(function () {
+    setFullPage();
+    initModals();
+});
 

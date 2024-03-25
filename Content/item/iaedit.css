@@ -13,16 +13,16 @@
 	#tblIAL th:nth-child(3) {
 		width: 100px;
 	}
-	#tblIAL th:nth-child(4), #tblIAL th:nth-child(5) {
-		width: 140px;
+	#tblIAL th:nth-child(4)  {
+		width: 120px;
 	}
-	#tblIAL th:nth-child(6), #tblIAL th:nth-child(7) {
+	#tblIAL th:nth-child(5),#tblIAL th:nth-child(6) {
 		width: 160px;
 	}
 
-	#tblIAL th:nth-child(8){
-		width:140px;
+	#tblIAL th:nth-child(7),#tblIAL th:nth-child(8) {
+		width: 140px;
 	}
 	#tblIAL th:last-child {
-		width: 130px;
+		width: 140px;
 	}
