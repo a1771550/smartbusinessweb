@@ -836,3 +836,10 @@ table.dataTable thead > tr > th.sorting_asc.text-right:before, table.dataTable t
     text-decoration: none!important;
     background-color: transparent!important;
 }
+
+#tblItem thead th:nth-child(3){
+    width:160px;
+}
+#tblItem thead th:nth-child(6) {
+    width: 100px;
+}

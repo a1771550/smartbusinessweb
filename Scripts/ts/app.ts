@@ -1449,10 +1449,8 @@ function _writeItems(itemList: IItem[]) {
 		const itemcode: string = item.itmCode;
 		let _qty: number = item.Qty;
 
-		let trcls = forIA && _qty <= 0 ? "" : "itmcode", proId = 0;
-
-		if (_qty <= 0) console.log("trcls:" + trcls);
-
+		let trcls = forIA && item.AbssQty <= 0 ? "" : "itmcode", proId = 0;
+		//if (_qty <= 0) console.log("trcls:" + trcls);
 		if (!forpurchase) {
 			if (item.ItemPromotions.length > 0) {
 				if (item.ItemPromotions.find((e) => e.pro4Period)) {
@@ -1465,18 +1463,17 @@ function _writeItems(itemList: IItem[]) {
 			}
 		}
 
-
-		html += `<tr class="${trcls}" data-code="${itemcode}" data-proid="${proId}" data-qty="${_qty}">`;
-		// row.addClass("itmcode").attr("data-code", itemcode);
-		html += `<td>${itemcode}</td>`;
-		// $("td", row).eq(0).html(itemcode);
+		html += `<tr class="${trcls}" data-code="${itemcode}" data-proid="${proId}" data-qty="${_qty}" data-abssqty="${item.AbssQty}">`;	
+		html += `<td>${itemcode}</td>`;		
 
 		var namedesc = handleItemDesc(item.NameDesc);
 		html += `<td style="max-width:250px;" title="${item.NameDesc}">${namedesc}</td>`;
 		let outofstock: boolean = forsales || forsimplesales || forpreorder || forIA ? false : itemcode.startsWith("/") ? false : _qty <= 0;
 		if (!forpurchase) {
 			let tdcls = outofstock ? "outofstock" : "";
-			html += `<td style="text-align:right;width:90px;max-width:90px;" class="${tdcls}">${_qty}</td>`;
+			let qtydisplay =`${_qty}`;
+			if (forIA) qtydisplay = `${_qty} <span class="text-primary font-weight-bold">(${item.AbssQty})</span>`;
+			html += `<td class="${tdcls} text-right">${qtydisplay}</td>`;
 		}
 
 		let price: number = 0;
