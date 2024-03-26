@@ -2381,7 +2381,7 @@ function GetPaymentsInfo() {
 	function getPaymentInfo(e) {
 		if ($(e).val() !== "") {
 			let typecode: string = <string>$(e).attr("id");
-			let amt: number = Number($(e).data("amt"));
+			let amt: number = isEpay? Number($(e).data("amt")): Number($(e).val());
 			console.log("typecode:", typecode);
 			console.log("amt#0:", amt);
 

@@ -724,9 +724,9 @@ function addRefRow(
 
 	let clsDel: string = "";
 
-	//console.log(`batdelId:${batdelId};vt:${vt};sn:${sn}`);
-	//console.log(`(batdelId!=null || vt!="" || sn!=""):`, (batdelId!=null || vt!="" || sn!=""));
-	if (batdelId != null || vt != "" || sn != "") {
+	console.log(`batdelId:${batdelId};vt:${vt};sn:${sn}`);
+	console.log(`(batdelId!=null || vt!=null || sn!=""):`, (batdelId!=null || vt!=null || sn!=""));
+	if (batdelId != null || vt != null || sn != "") {
 		clsDel = "bsv ";
 		if (itemOptions.ChkBatch) {
 			clsDel += "bat";
