@@ -4,16 +4,28 @@ let selectedCatId: number = 3;
 let filteredItemList: ISimpleItem[] = [];
 let $norecordfound;
 function togglePayment(code: string, show: boolean) {
-	console.log("code:" + code);	
-	$(".single__add").removeClass("activee");
-	$(".single__add").each(function (i, e) {
-		if ($(e).data("code") == code) {
-			if (show) $(e).addClass("activee");		
-			let amt = Number($("#salesamount").data("amt"));
-			console.log("amt:" + amt);//ok
-			$(e).find(".paymenttype").data("amt", amt).val(formatnumber(amt));
-		}
-	});
+
+	if (isEpay) {
+		$(".single__add").removeClass("activee");
+		$(".single__add").each(function (i, e) {
+			if ($(e).data("code") == code) {
+				if (show) $(e).addClass("activee");
+				let amt = Number($("#salesamount").data("amt"));
+				$(e).find(".paymenttype").data("amt", amt).val(formatnumber(amt));
+			}
+		});
+	} else {
+		$(".single__add").each(function (i, e) {
+			if ($(e).data("code") == code) {
+
+				if (show) $(e).addClass("activee");
+				else $(e).removeClass("activee");
+
+				let amt = $(".single__add").length === 1 ? Number($("#salesamount").data("amt")) : 0;
+				$(e).find(".paymenttype").data("amt", amt).val(formatnumber(amt));
+			}
+		});
+	}	
 }
 
 $(document).on("click", ".btnpayment", function () {	
@@ -30,13 +42,6 @@ $(document).on("click", ".btnpayment", function () {
 	isEpay = (code.toLowerCase() == "alipay" || code.toLowerCase() == "wechat");
 
 	if (isEpay) {
-		//if (code.toLowerCase() == "alipay") {
-
-		//}
-		//if (code.toLowerCase() == "wechat") {
-
-		//}
-		
 		$(".btnpayment").not(this).removeClass("toggle");
 		$(".btnpayment").not(this).find(".pluse").hide();
 		$(".btnpayment").not(this).find(".checks").hide();
