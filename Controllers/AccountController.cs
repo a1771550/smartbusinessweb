@@ -292,7 +292,9 @@ namespace SmartBusinessWeb.Controllers
         public ActionResult LogOff()
         {
             SessUser user = Session["User"] as SessUser;
-            var usercode = user == null ? FileHelper.Read(ConfigurationManager.AppSettings["UserCodeFile"]) : user.UserCode;
+            if (user == null) { FormsAuthentication.SignOut(); return RedirectToAction("Login", "Account"); }           
+
+            var usercode = user.UserCode;
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 context.CheckoutCurrentPCSession1(usercode, DateTime.Now.Date, apId, ConfigurationManager.AppSettings["Device"], ConfigurationManager.AppSettings["Shop"]);

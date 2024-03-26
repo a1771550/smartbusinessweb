@@ -58,6 +58,10 @@ namespace SmartBusinessWeb.Controllers.Item
             {
                 itemlist = sortDirection == "asc" ? itemlist.OrderBy(c => c.itmModifyTime).ToList() : itemlist.OrderByDescending(c => c.itmModifyTime).ToList();
             }
+            else if (sortColumnIndex == 4)
+            {
+                itemlist = sortDirection == "asc" ? itemlist.OrderBy(c => c.itmCheckout).ToList() : itemlist.OrderByDescending(c => c.itmCheckout).ToList();
+            }
 
             model.PagingItemList = itemlist.ToPagedList(No_Of_Page, Size_Of_Page);
             return View(model);

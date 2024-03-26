@@ -94,9 +94,10 @@ namespace SmartBusinessWeb.Controllers
                 DateTime frmdate, todate;
                 HandleDateRanges(strfrmdate, strtodate, out frmdate, out todate);
                 #endregion               
-
+               
                 data.sqllist = RetailEditModel.GetUploadSqlList(dmodel.includeUploaded, 2, comInfo, apId, context, connection, frmdate, todate, ref dmodel);
                 data.checkoutIds = dmodel.RetailCheckOutIds;
+                data.excludedOrderIds = dmodel.ExcludedOrderIds;
             }
             return System.Text.Json.JsonSerializer.Serialize(data);
         }
@@ -816,5 +817,6 @@ namespace SmartBusinessWeb.Controllers
     {
         public List<string> sqllist { get; set; }
         public HashSet<long> checkoutIds { get; set; }
+        public HashSet<long> excludedOrderIds { get; set; }
     }
 }

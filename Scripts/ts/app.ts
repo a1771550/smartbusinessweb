@@ -14611,8 +14611,6 @@ class ItemEditFrm extends SimpleForm {
 
 		let returnurl = `/Item/${$infoblk.data("referrer")}`;
 		if (ItemVari) {
-
-			//console.log('ItemVari:', ItemVari);
 			data = ItemAttrList
 				? {
 					Item: null,
@@ -14630,8 +14628,6 @@ class ItemEditFrm extends SimpleForm {
 					).val(),
 				};
 		} else {
-
-
 
 			if (!EditItem && ItemVariations.length > 0) {
 				//console.log("here");
@@ -16549,10 +16545,7 @@ function handleWhatsappClick(
 	popupCenter({ url: lnk, title: "", w: 900, h: 500 });
 }
 
-function itemEditPageLoad() {
-	//forsales = false;
-	//forstock = true;
-	AccountProfileId = parseInt(<string>$infoblk.data("accountprofileid"));
+function itemEditPageLoad() {		
 	initModals();
 	$("#itmCode").trigger("focus");
 	//console.log('codelist:', codelist);
@@ -16595,8 +16588,7 @@ function itemEditPageLoad() {
 		}
 		ItemAttrList = []; //only when btnEditItemAttr is clicked is filled the itemattrlist for accordion...
 	} else {
-		selectedItem = initItem();
-		selectedItem!.AccountProfileId = AccountProfileId;
+		selectedItem = initItem();	
 		selectedItem!.itmIsNonStock = false;
 		selectedItem!.itmIsActive = true;
 		if (!NonABSS) {

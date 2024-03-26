@@ -21,6 +21,7 @@ $(document).on("click", ".colheader", function () {
 $(function () {
 	forItem = true;
 	setFullPage();
+	gTblName = "tblItems";
 	let $sortorder = $("#sortorder");
 	let $sortcol = $("#sortcol");
 	//console.log("sortorder:" + $sortorder.val() + ";sortcol:" + $sortcol.val());

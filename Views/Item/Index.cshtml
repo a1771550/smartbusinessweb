@@ -7,7 +7,7 @@
 
 <h2>@ViewBag.Title</h2>
 <p class="my-3">
-	@Html.ActionLink(Resources.Resource.Add, "Edit", new { itemId = 0 }, new { @class = "btn btn-info" })
+	@Html.ActionLink(Resources.Resource.Add, "Edit", new { itemId = 0, referrer="Index" }, new { @class = "btn btn-info" })
 </p>
 
 @using (Html.BeginForm("Index", "Item", FormMethod.Get, new { @Id = "frmItem" }))
@@ -23,14 +23,14 @@
 	</div>
 
 	<div id="norecord" class="alert alert-warning hide">@Resources.Resource.NoDataFound</div>
-	<table id="tblItem" class="table table-bordered  table-hover table-condensed">
+	<table id="tblItems" class="table table-bordered  table-hover table-condensed">
 		<thead class="gray-header">
 			<tr>
 				<th scope="col" class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">@Resources.Resource.ItemCode</th>
-				<th scope="col" class="text-center colheader" data-col="1" data-keyword="@Model.Keyword"><span class="font-weight-bold small">@Resources.Resource.Name/@Resources.Resource.Description</span></th>
+				<th scope="col" class="text-center colheader" data-col="1" data-keyword="@Model.Keyword">@Resources.Resource.Name/@Resources.Resource.Description</th>
 				<th scope="col" class="text-center colheader" data-col="2" data-keyword="@Model.Keyword">@Resources.Resource.CreateTime</th>
 				<th scope="col" class="text-center colheader" data-col="3" data-keyword="@Model.Keyword">@Resources.Resource.ModifyTime</th>
-
+				<th scope="col" class="text-center colheader" data-col="4" data-keyword="@Model.Keyword">ABSS</th>
 				<th scope="col"></th>
 
 			</tr>
@@ -40,7 +40,10 @@
 		@foreach (var item in Model.PagingItemList)
 		{
 			var namedesctxt = item.NameDesc.Length > 40 ? item.NameDesc.Substring(0, 40) + "..." : item.NameDesc;
-			<tr>
+			var abssdisplay = (bool)item.itmCheckout ? Resources.Resource.Yes : Resources.Resource.No;
+			var disabled = (bool)item.itmCheckout ? "disabled" : "";
+			var trcls = (bool)item.itmCheckout ? "" : "nonabss";
+			<tr class="@trcls">
 
 				<td class="text-center">@item.itmCode</td>
 				<td class="text-center itemdesc" data-desc="@item.NameDesc">@namedesctxt</td>
@@ -48,9 +51,11 @@
 				<td class="text-center">@item.CreateTimeDisplay</td>
 				<td class="text-center">@item.ModifyTimeDisplay</td>
 
+				<td class="text-center">@abssdisplay</td>
+
 				<td>
 					<a class="btn btn-info" role="button" href="/Item/Edit?itemId=@item.itmItemID&referrer=Index">@Resources.Resource.Edit</a>
-					<a class="btn btn-outline-danger itemremove" role="button" href="#" data-id="@item.itmItemID">@Resources.Resource.Remove</a>
+					<a class="btn btn-outline-danger itemremove @disabled" role="button" href="#" data-id="@item.itmItemID">@Resources.Resource.Remove</a>
 				</td>
 			</tr>
 		}

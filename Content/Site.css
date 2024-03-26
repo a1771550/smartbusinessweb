@@ -843,3 +843,7 @@ table.dataTable thead > tr > th.sorting_asc.text-right:before, table.dataTable t
 #tblItem thead th:nth-child(6) {
     width: 100px;
 }
+
+#tblItems tbody tr.nonabss{
+    background-color:#fed1d1;
+}

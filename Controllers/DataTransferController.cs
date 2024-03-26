@@ -923,8 +923,8 @@ namespace SmartBusinessWeb.Controllers
 
                 dmodel.RetailCheckOutIds = new HashSet<long>();
                 dmodel.SelectedLocation = location;
-                dmodel.Device = device;
-
+                dmodel.Device = device;				
+			
                 List<string> sqllist = RetailEditModel.GetUploadSqlList(includeUploaded, lang, comInfo, apId, context, connection, frmdate, todate, ref dmodel);               
 
                 if (sqllist.Count > 0)
