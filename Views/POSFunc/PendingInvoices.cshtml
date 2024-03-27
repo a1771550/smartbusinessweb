@@ -1,7 +1,7 @@
-﻿@model PPWLib.Models.PendingInvoices
+﻿@model PPWLib.Models.Sales.PendingInvoice
 @using PagedList.Mvc;
 @{
-	ViewBag.Title = Resources.Resource.OutOfStockItems;
+	ViewBag.Title = Resources.Resource.PendingInvoices;
 	int rand = CommonHelper.GetVersionRandomNo();
 }
 <link rel="stylesheet" href="~/Content/pos/Sales.css?v=@rand" />
@@ -9,58 +9,56 @@
 
 <h2>@ViewBag.Title</h2>
 
-<table id="tblInvoices" class="table table-bordered  table-hover table-condensed">
-	<thead class="gray-header">
-		<tr>
-			<th class="text-left colheader" data-col="0" data-keyword="">@Resources.Resource.InvoiceNo</th>
-			<th class="text-left colheader" data-col="0" data-keyword="">@Resources.Resource.ItemDetail (@Resources.Resource.ItemCode | @Resources.Resource.Description | @Resources.Resource.DateTime)</th>
-			@*<th class="text-left colheader" data-col="0" data-keyword="">@Resources.Resource.ItemCode</th>
-			<th class="text-left colheader" data-col="1" data-keyword="">@Resources.Resource.Description</th>
-		<th class="text-right colheader" data-col="2" data-keyword="">@Resources.Resource.DateTimeHeader</th>*@
-		</tr>
-	</thead>
-	<tbody>
-		@foreach (var group in Model.PendingList)
-		{
+<div class="alert alert-info my-3 col-12 col-md-4 font-weight-bold">@Resources.Resource.Note4PendingInvoices</div>
+
+@if (Model.PendingInvoiceList != null && Model.PendingInvoiceList.Count > 0)
+{
+	<table id="tblInvoices" class="table table-bordered  table-hover table-condensed">
+		<thead class="gray-header">
 			<tr>
-				<td>
-					@group.Key
-				</td>
-				<td>
-					<table class="table table-borderless">
-						@foreach (var item in group)
-						{
-							string itemdesc = item.rtlDesc == null ? item.Item.itmDesc : item.rtlDesc;
-							<tr>
-								<td class="alert alert-danger">
-									@item.Item.itmCode
-								</td>
-								<td class="alert alert-danger">
-									@itemdesc
-								</td>
-								<td class="alert alert-danger">
-									@item.SalesTimeDisplay
-								</td>
-							</tr>
-						}
-					</table>
-				</td>
+				<th class="text-left colheader" data-col="0" data-keyword="">@Resources.Resource.InvoiceNo</th>
+				<th class="text-left colheader" data-col="1" data-keyword="">@Resources.Resource.ItemDetail (@Resources.Resource.ItemCode | @Resources.Resource.Description | @Resources.Resource.DateTime)</th>
 			</tr>
-		}
-	</tbody>
-</table>
+		</thead>
+		<tbody>
+			@foreach (var group in Model.PagingList)
+			{
+				<tr>
+					<td>
+						@group.Key
+					</td>
+					<td>
+						<table class="table table-borderless" style="font-size:.9rem;">
+							@foreach (var item in group)
+							{
+								string itemdesc = item.rtlDesc == null ? item.Item.itmDesc : item.rtlDesc;
+								<tr>
+									<td class="">
+										<span class="text-danger mx-1">@item.Item.itmCode</span>
+										<span class="text-danger mx-1">@itemdesc</span>
+										<span class="text-danger mx-1">@item.SalesTimeDisplay</span>
+									</td>
+								</tr>
+							}
+						</table>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
 
-<div id="pagingblk" class="my-3">
+	<div id="pagingblk" class="my-3">
+		@Html.PagedListPager(Model.PagingList, PageNo => Url.Action("PendingInvoices",
+			new { PageNo }))
+	</div>
+}
+else
+{
+	<div id="norecord" class="alert alert-warning">@Resources.Resource.NoDataFound</div>
+}
 
-	
-		@Html.PagedListPager(Model.PendingList, PageNo => Url.Action("PendingInvoices",
-			new { PageNo}))
-	
-</div>
+@Html.Partial("_WaitingModal")
 
-<script>
-	$(document).ready(function () {
-		$target = $('.pagination');
-		$target.wrap('<nav aria-label="Page navigation"></nav>').find('li').addClass('page-item').find('a').addClass('page-link');
-	});
-</script>
+<div id="infoblk"></div>
+
+<script src="~/Scripts/ts/js/pos/pendinginvoices.js?v=@rand"></script>

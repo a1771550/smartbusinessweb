@@ -8,7 +8,6 @@
 <link rel="stylesheet" href="~/Content/pos/Sales.css?v=@rand" />
 <link rel="stylesheet" href="~/Content/dayendscheckinout.css?v=@rand" />
 
-<span class="hide" data-debug="@Model.DayEndsItems.Count"></span>
 @if (Model.DayEndsItems.Count > 1)
 {
 	<ul class="nav nav-tabs" role="tablist">
@@ -53,7 +52,7 @@
 								<tbody>
 									@foreach (PaymentType payment in Model.PaymentTypes)
 									{
-										<tr><td>@Model.DicPayTypes[payment.pmtCode]</td><td class="text-right"><input type="number" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype" value="0" /></td></tr>
+										<tr><td>@Model.DicPayTypes[payment.pmtCode]</td><td class="text-right"><input type="number" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype flex" value="0" /></td></tr>
 									}
 								</tbody>
 							</table>
@@ -98,9 +97,9 @@ else
                                 <tr>
                                     <td>@Model.DicPayTypes[payment.pmtCode]</td>
                                     <td class="text-right">
-                                        <input type="number" id="@staticcode" name="@sysname" class="form-control paymenttype" value="0" readonly />
+                                        <input type="number" id="@staticcode" name="@sysname" class="form-control paymenttype flex" value="0" readonly />
                                     </td>
-                                    <td class="text-right"><input type="number" id="@payment.pmtCode" name="@countname" class="form-control paymenttype entry" data-type="@payment.pmtCode.ToLower()" value="0" /></td>
+                                    <td class="text-right"><input type="number" id="@payment.pmtCode" name="@countname" class="form-control flex paymenttype entry" data-type="@payment.pmtCode.ToLower()" value="0" /></td>
                                 </tr>
                             }
                         }

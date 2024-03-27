@@ -97,7 +97,7 @@ namespace SmartBusinessWeb.Controllers
                
                 data.sqllist = RetailEditModel.GetUploadSqlList(dmodel.includeUploaded, 2, comInfo, apId, context, connection, frmdate, todate, ref dmodel);
                 data.checkoutIds = dmodel.RetailCheckOutIds;
-                data.excludedOrderIds = dmodel.ExcludedOrderIds;
+                data.excludedOrderIds = dmodel.ExcludedRetailOrderIds;
             }
             return System.Text.Json.JsonSerializer.Serialize(data);
         }

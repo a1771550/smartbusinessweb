@@ -376,7 +376,6 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Item\ItemCategoryController.cs" />
     <Compile Include="Controllers\Item\ItemController.cs" />
-    <Compile Include="Controllers\Item\PGItemController.cs" />
     <Compile Include="Controllers\Item\TransferController.cs" />
     <Compile Include="Controllers\Records\JobController.cs" />
     <Compile Include="Controllers\JsonController.cs" />
@@ -3028,6 +3027,7 @@
     <Content Include="Scripts\ts\js\logout.js" />
     <Content Include="Scripts\ts\js\menu.js" />
     <Content Include="Scripts\ts\js\pos\advsales.js" />
+    <Content Include="Scripts\ts\js\pos\pendinginvoices.js" />
     <Content Include="Scripts\ts\js\pos\preorderedit.js" />
     <Content Include="Scripts\ts\js\pos\preorderlist.js" />
     <Content Include="Scripts\ts\js\pos\salesorderedit.js" />
@@ -4317,7 +4317,6 @@
     <Content Include="Scripts\ts\js\item\category.js" />
     <Content Include="Scripts\ts\js\item\categoryedit.js" />
     <Content Include="Scripts\ts\js\item\itemedit.js" />
-    <Content Include="Scripts\ts\js\item\pgitem.js" />
     <Content Include="Scripts\ts\js\item\pgitemedit.js" />
     <Content Include="Scripts\ts\js\item\stock.js" />
     <Content Include="Scripts\ts\js\locale\af.js" />
@@ -4645,6 +4644,8 @@
     <Content Include="Views\InventoryAdjustment\Edit.cshtml" />
     <Content Include="Scripts\ts\js\inventoryadjustment\edit.js.map" />
     <Content Include="Scripts\ts\js\itemtransfer\index.js.map" />
+    <Content Include="Views\POSFunc\ExcludedInvoices.cshtml" />
+    <Content Include="Scripts\ts\js\pos\pendinginvoices.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4704,7 +4705,6 @@
     <Content Include="Scripts\ts\js\item\category.js.map" />
     <Content Include="Scripts\ts\js\item\categoryedit.js.map" />
     <Content Include="Scripts\ts\js\item\itemedit.js.map" />
-    <Content Include="Scripts\ts\js\item\pgitem.js.map" />
     <Content Include="Scripts\ts\js\item\pgitemedit.js.map" />
     <Content Include="Scripts\ts\js\item\stock.js.map" />
     <Content Include="Scripts\ts\js\itemtransfer\transferedit.js.map" />
@@ -4845,8 +4845,6 @@
     <Content Include="Views\PaymentTypes\Index.cshtml" />
     <Content Include="Views\PGCustomer\Edit.cshtml" />
     <Content Include="Views\PGCustomer\Index.cshtml" />
-    <Content Include="Views\PGItem\Edit.cshtml" />
-    <Content Include="Views\PGItem\Index.cshtml" />
     <Content Include="Views\POSFunc\Dayends.cshtml" />
     <Content Include="Views\POSFunc\KStock.cshtml" />
     <Content Include="Views\POSFunc\PendingInvoices.cshtml" />
@@ -5086,6 +5084,8 @@
     <TypeScriptCompile Include="Scripts\ts\logout.ts" />
     <TypeScriptCompile Include="Scripts\ts\menu.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\advsales.ts" />
+    <TypeScriptCompile Include="Scripts\ts\pos\excludedinvoices.ts" />
+    <TypeScriptCompile Include="Scripts\ts\pos\pendinginvoices.ts" />
     <TypeScriptCompile Include="Scripts\ts\records\attendance.ts" />
     <TypeScriptCompile Include="Scripts\ts\crm\contact\attributes\attribute.ts" />
     <TypeScriptCompile Include="Scripts\ts\crm\contact\attributes\attributecommon.ts" />

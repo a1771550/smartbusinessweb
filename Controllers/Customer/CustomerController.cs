@@ -19,6 +19,8 @@ namespace SmartBusinessWeb.Controllers.Customer
     [CustomAuthenticationFilter]
     public class CustomerController : BaseController
     {
+
+
         [HttpPost]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
@@ -169,9 +171,69 @@ namespace SmartBusinessWeb.Controllers.Customer
 
         [HttpPost]
         public ActionResult AdvancedSearch(List<AdvSearchItem> advSearchItems)
-        {            
+        {
             List<PPWLib.Models.CRM.Customer.CustomerModel> filteredcusList = CustomerEditModel.GetFilteredList(apId, advSearchItems);
             return Json(filteredcusList);
+        }
+
+        [HandleError]
+        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        // GET: MyobCustomer
+        public ActionResult UnSyncList(int SortCol = 3, string SortOrder = "desc", string Keyword = "", int? PageNo = 1)
+        {
+            ViewBag.ParentPage = "customer";
+            ViewBag.PageName = "unsynclist";
+            if (string.IsNullOrEmpty(Keyword))
+                Keyword = null;
+            CustomerEditModel model = new CustomerEditModel
+            {
+                SortOrder = SortOrder == "desc" ? "asc" : "desc",
+                CurrentSortOrder = SortOrder,
+                Keyword = Keyword,
+            };
+
+            List<MyobCustomerModel> customerlist = new List<MyobCustomerModel>();
+
+            List<ActionLogModel> actionloglist = new List<ActionLogModel>();
+            List<int> cusIdList = new List<int>();
+            var apId = ComInfo.AccountProfileId;
+
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            {
+                //todo:
+                customerlist = ModelHelper.GetUnSyncCustomersList(context, Keyword).OrderByDescending(x => x.CreateTime).ToList();
+                model.IdList = customerlist.Select(x => (long)x.cusCustomerID).ToList();
+            }
+
+            model.SortCol = SortCol;
+
+            int Size_Of_Page = PageSize;
+            int No_Of_Page = PageNo ?? 1;
+            var sortColumnIndex = SortCol;
+            var sortDirection = SortOrder;
+
+
+            if (sortColumnIndex == 0)
+            {
+                customerlist = sortDirection == "asc" ? customerlist.OrderBy(c => c.cusName).ToList() : customerlist.OrderByDescending(c => c.cusName).ToList();
+            }
+            else if (sortColumnIndex == 1)
+            {
+                customerlist = sortDirection == "asc" ? customerlist.OrderBy(c => c.cusContact).ToList() : customerlist.OrderByDescending(c => c.cusContact).ToList();
+            }
+            else if (sortColumnIndex == 2)
+            {
+                customerlist = sortDirection == "asc" ? customerlist.OrderBy(c => c.cusEmail).ToList() : customerlist.OrderByDescending(c => c.cusEmail).ToList();
+            }
+            else if (sortColumnIndex == 3)
+            {
+                customerlist = sortDirection == "asc" ? customerlist.OrderBy(c => c.CreateTime).ToList() : customerlist.OrderByDescending(c => c.CreateTime).ToList();
+            }
+
+            model.MyobCustomerList = customerlist.ToPagedList(No_Of_Page, Size_Of_Page);
+
+
+            return View(model);
         }
 
 
@@ -313,33 +375,21 @@ namespace SmartBusinessWeb.Controllers.Customer
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [HttpGet]
-        public ActionResult Edit(int customerId = 0, string enqId="")
+        public ActionResult Edit(int customerId = 0, string enqId = "")
         {
             ViewBag.ParentPage = "customer";
             ViewBag.PageName = "edit";
             var region = CommonLib.Helpers.CultureHelper.GetCountryByIP();
             var comInfo = Session["ComInfo"] as ComInfo;
-            if (CheckoutPortal == "abss" || CheckoutPortal.ToLower() == "nonabss")
-            {
-                CustomerEditModel cmodel = new CustomerEditModel(customerId,enqId,false);
-                var model = cmodel.MyobCustomer;
-                //don't move the code below to the construction of CustomerModel!!!                
-                model.IpCountry = region != null ? region.EnglishName : "Hong Kong";
-                model.enableCRM = (bool)comInfo.enableCRM;
-                return View(model);
-            }
-            else
-            {
-                SalesCustomerEditModel smodel = new SalesCustomerEditModel(customerId);
-                var model = smodel.Customer;
-                if (region.EnglishName.ToLower() == "hong kong")
-                {
-                    model.IpCountry = "China";
-                }
-                model.enableCRM = (bool)comInfo.enableCRM;
-                return View("KEdit", model);
-            }
-        }        
+
+            CustomerEditModel cmodel = new CustomerEditModel(customerId, enqId, false);
+            var model = cmodel.MyobCustomer;
+            //don't move the code below to the construction of CustomerModel!!!                
+            model.IpCountry = region != null ? region.EnglishName : "Hong Kong";
+            model.enableCRM = (bool)comInfo.enableCRM;
+            return View(model);
+
+        }
 
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
@@ -348,7 +398,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         public JsonResult Edit(MyobCustomerModel model)
         {
             ViewBag.ParentPage = ViewBag.PageName = "customer";
-            CustomerEditModel cmodel = new CustomerEditModel();
+            CustomerEditModel cmodel = new();
 
             cmodel.Edit(model);
 
@@ -388,6 +438,6 @@ namespace SmartBusinessWeb.Controllers.Customer
             return Json(new { });
         }
 
-        
+
     }
 }

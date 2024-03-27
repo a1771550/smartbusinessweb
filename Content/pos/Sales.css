@@ -147,7 +147,13 @@ i.fa-plus, i.fa-minus {
 
 .form-control {
 	padding: 0 .75rem !important;
-	font-size: 80% !important;
-	/* height: 170%!important; */
 	height: calc(1.5rem + 2px) !important;
 }
+
+	.form-control:not(.flex) {
+		font-size: 80% !important;
+	}
+
+	.form-control.flex {
+		font-size: .9rem !important;
+	}

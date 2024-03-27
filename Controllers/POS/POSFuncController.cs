@@ -16,6 +16,7 @@ using CommonLib.Helpers;
 using System.Xml;
 using PPWLib.Models.Item;
 using PPWLib.Models.POS.Sales;
+using PPWLib.Models.Sales;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -23,13 +24,25 @@ namespace SmartBusinessWeb.Controllers
 	[SessionExpire]
 	public class POSFuncController : BaseController
 	{
-		[HandleError]
-		[CustomAuthorize("countpayment", "boss", "admin", "superadmin")]
+        [HandleError]
+        [CustomAuthorize("retail", "boss", "admin", "superadmin")]
+        public ActionResult ExcludedInvoices(int PageNo = 1, int SortCol=0, string SortOrder="desc", string Keyword="")
+        {
+            ViewBag.ParentPage = "sales";
+            ViewBag.PageName = "excludedinvoices";
+            ExcludedInvoiceEditModel model = new ExcludedInvoiceEditModel();
+			model.GetList(PageNo, SortCol, SortOrder, Keyword);
+            return View(model);
+        }
+
+
+        [HandleError]
+		[CustomAuthorize("retail", "boss", "admin", "superadmin")]
 		public ActionResult PendingInvoices(int? PageNo = 1)
 		{
-			ViewBag.ParentPage = "item";
+			ViewBag.ParentPage = "sales";
 			ViewBag.PageName = "pendinginvoices";
-			PendingInvoices model = new PendingInvoices();
+			PendingInvoice model = new PendingInvoice();
 			using (var context = new PPWDbContext(Session["DBName"].ToString()))
 			{
 				model.PendingInvoiceList = (from st in context.MyobLocStocks
@@ -53,15 +66,13 @@ namespace SmartBusinessWeb.Controllers
 
 			}
 
-			if (Session["PendingInvoices"] != null)
-			{
-				model.PendingInvoiceList = model.PendingInvoiceList.Concat((List<SalesLnView>)Session["PendingInvoices"]).ToList();
-			}
+			if (Session["PendingInvoices"] != null) model.PendingInvoiceList.AddRange((List<SalesLnView>)Session["PendingInvoices"]);
+          
 
 			var GroupedPendingInvoices = model.PendingInvoiceList.GroupBy(x => x.rtlCode).ToList();
 			int Size_Of_Page = (int)ComInfo.PageLength;
 			int No_Of_Page = (PageNo ?? 1);
-			model.PendingList = GroupedPendingInvoices.ToPagedList(No_Of_Page, Size_Of_Page);
+			model.PagingList = GroupedPendingInvoices.ToPagedList(No_Of_Page, Size_Of_Page);
 			return View(model);
 		}
 

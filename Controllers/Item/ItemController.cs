@@ -11,6 +11,7 @@ using CommonLib.Models;
 using System;
 using ModelHelper = PPWLib.Helpers.ModelHelper;
 using PPWLib.Models.Item;
+using PPWLib.Models.Sales;
 
 namespace SmartBusinessWeb.Controllers.Item
 {
@@ -77,16 +78,16 @@ namespace SmartBusinessWeb.Controllers.Item
             return Json(msg);
         }
 
-        [HandleError]
-        [CustomAuthorize("stock", "boss", "admin", "superadmin")]
-        public ActionResult ZeroStocks(string salescode, int? PageNo = 1)
-        {
-            ViewBag.ParentPage = "item";
-            ViewBag.PageName = "zerostocks";
-            PendingInvoices model = new PendingInvoices();
-            model.GetZeroStockList(salescode, PageNo);
-            return View(model);
-        }
+        //[HandleError]
+        //[CustomAuthorize("stock", "boss", "admin", "superadmin")]
+        //public ActionResult ZeroStocks(string salescode="", int? PageNo = 1)
+        //{
+        //    ViewBag.ParentPage = "item";
+        //    ViewBag.PageName = "zerostocks";
+        //    PendingInvoice model = new PendingInvoice();
+        //    model.GetZeroStockList(salescode, PageNo);
+        //    return View(model);
+        //}
 
         [HandleError]
         [CustomAuthorize("stock", "boss", "admin", "superadmin")]

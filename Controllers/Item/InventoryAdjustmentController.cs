@@ -31,6 +31,7 @@ namespace SmartBusinessWeb.Controllers.Item
             {
                 SortCol = SortCol,
                 SortOrder = (SortOrder == "desc") ? "asc" : "desc",
+                CurrentSortOrder = SortOrder,
                 Keyword = Keyword,
                 PageNo = PageNo
             };

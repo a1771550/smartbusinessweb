@@ -1864,17 +1864,6 @@ namespace SmartBusinessWeb.Controllers
                 return Json(customers, JsonRequestBehavior.AllowGet);
             }
 
-            if (filename.StartsWith("PGItems_"))
-            {
-                List<ItemModel> items = new List<ItemModel>();
-                using (var context = new PPWDbContext(Session["DBName"].ToString()))
-                {
-                    items = ModelHelper.GetPGItemList(context, accountProfileId, true);
-                }
-
-                return Json(items, JsonRequestBehavior.AllowGet);
-            }
-
             if (filename.StartsWith("Devices_"))
             {
                 List<DeviceModel> devices = new List<DeviceModel>();
@@ -2195,7 +2184,7 @@ namespace SmartBusinessWeb.Controllers
                                           ).ToList();
 
 
-                    var mergeditems = ModelHelper.GetMergedItemList(apId, context);
+                    items = ModelHelper.GetItemList(apId, context);
                     //var mergedcustomers = ModelHelper.GetMergedCustomerList(apId, context);
                     var c = context.MyobCustomers.FirstOrDefault(x => x.cusCustomerID == sales.rtsCusID);
                     PGCustomerModel customer = null;
@@ -2274,7 +2263,7 @@ namespace SmartBusinessWeb.Controllers
 
                     foreach (var salesln in salesLns)
                     {
-                        foreach (var i in mergeditems)
+                        foreach (var i in items)
                         {
                             if (salesln.rtlItemCode == i.itmCode)
                             {
@@ -2385,14 +2374,13 @@ namespace SmartBusinessWeb.Controllers
 
                     if (salesLns.Count > 0)
                     {
-                        var mergeditems = ModelHelper.GetMergedItemList(apId, context);
-                        //var mergedcustomers = ModelHelper.GetMergedCustomerList(apId, context);
+                        items = ModelHelper.GetItemList(apId, context);
 
                         foreach (var salesln in salesLns)
                         {
                             ModelHelper.SetDicItemSNs(salesln, snlist, ref DicItemSNs);
 
-                            foreach (var i in mergeditems)
+                            foreach (var i in items)
                             {
                                 if (salesln.rtlItemCode == i.itmCode)
                                 {
@@ -2538,8 +2526,7 @@ namespace SmartBusinessWeb.Controllers
 
                 if (salesLns.Count > 0)
                 {
-                    var mergeditems = ModelHelper.GetMergedItemList(apId, context);
-                    //var mergedcustomers = ModelHelper.GetMergedCustomerList(apId, context);
+                    items = ModelHelper.GetItemList(apId, context);
 
                     var salescodes = salesLns.Select(x => x.rtlCode).ToList();
 
@@ -2621,7 +2608,7 @@ namespace SmartBusinessWeb.Controllers
 
                     foreach (var salesln in salesLns)
                     {
-                        foreach (var i in mergeditems)
+                        foreach (var i in items)
                         {
                             if (salesln.rtlItemCode == i.itmCode)
                             {

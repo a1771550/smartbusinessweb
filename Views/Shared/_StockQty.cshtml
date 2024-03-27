@@ -1,8 +1,7 @@
 ﻿@{
     bool editmode = (bool)ViewData["editmode"];
    
-    ItemView Item = ViewData["Item"] == null ? null : (ItemView)ViewData["Item"];
-    ItemView PGItem = ViewData["PGItem"] == null ? null : (ItemView)ViewData["PGItem"];
+    ItemView Item = ViewData["Item"] == null ? null : (ItemView)ViewData["Item"];   
     int qty = 0;
     List<string> Shops = ViewData["Shops"] != null ? ViewData["Shops"] as List<string> : new List<string>();
 }
@@ -14,26 +13,9 @@
             <tr>
                 @if (editmode)
                 {
-                    if (ItemVari != null && ItemVari.DicLocQty!=null)
-                    {
-                        foreach (var shop in ItemVari.DicLocQty.Keys)
-                        {
-                            <th>@shop.Trim()</th>
-                        }
-                    }
-
                     if (Item != null && Item.DicLocQty != null)
                     {
                         foreach (var shop in Item.DicLocQty.Keys)
-                        {
-                            <th>@shop.Trim()</th>
-                        }
-                    }
-
-
-                    if (PGItem != null && PGItem.DicLocQty!=null)
-                    {
-                        foreach (var shop in PGItem.DicLocQty.Keys)
                         {
                             <th>@shop.Trim()</th>
                         }
@@ -53,15 +35,6 @@
             <tr>
                 @if (editmode)
                 {
-                    if (ItemVari != null && ItemVari.DicLocQty!=null)
-                    {
-                        foreach (var shop in ItemVari.DicLocQty.Keys)
-                        {
-                            qty = ItemVari.DicLocQty[shop];
-                            <td><input type="number" name="QuantityAvailable" class="form-control stqty" min="0" data-location="@shop.Trim()" value="@qty" /></td>
-                        }
-                    }
-
                     if (Item != null && Item.DicLocQty!=null)
                     {
                         foreach (var shop in Item.DicLocQty.Keys)
@@ -69,21 +42,12 @@
                             qty = Item.DicLocQty[shop];
                             <td><input type="number" name="QuantityAvailable" class="form-control stqty" min="0" data-location="@shop.Trim()" value="@qty" /></td>
                         }
-                    }
-                    if (PGItem != null && PGItem.DicLocQty!=null)
-                    {
-                        foreach (var shop in PGItem.DicLocQty.Keys)
-                        {
-                            qty = PGItem.DicLocQty[shop];
-                            <td><input type="number" name="QuantityAvailable" class="form-control stqty" min="0" data-location="@shop.Trim()" value="@qty" /></td>
-                        }
-                    }
+                    }                    
                 }
                 else
                 {
                     for (var i = 0; i < Shops.Count(); i++)
-                    {
-                        //qty = i == 0 ? 1 : 0;
+                    {                        
                         qty = 0;
                         <td><input type="number" name="QuantityAvailable" class="form-control stqty" min="0" data-location="@Shops[i].Trim()" value="@qty" /></td>
                     }

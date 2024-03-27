@@ -17576,7 +17576,7 @@ $(document).on("click", ".itemremove", function () {
 				$.ajax({
 					//contentType: 'application/json; charset=utf-8',
 					type: "POST",
-					url: "/PGItem/Delete",
+					url: "/Item/Delete",
 					data: {
 						__RequestVerificationToken: $(
 							"input[name=__RequestVerificationToken]"
@@ -22405,6 +22405,6 @@ let IA: IIA;
 let IALs: IIAL[] = [];
 let SelectedIAL: IIAL;
 
-function triggerMenu(dashmenuIdx, submenuIdx) {
+function triggerMenu(dashmenuIdx:number, submenuIdx:number) {
 	$(".dash__menu").find("ul").find(".btn_expand").eq(dashmenuIdx).trigger("click").find(".submenu").first().addClass("show").find("a").removeClass("active").parent("li").parent(".submenu").find("li").eq(submenuIdx).find("a").addClass("active");
 }

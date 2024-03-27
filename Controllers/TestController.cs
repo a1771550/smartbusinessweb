@@ -2540,15 +2540,7 @@ btest3
         {
             Response.Write(HashHelper.GenerateNonce());
         }
-        public void Debug6()
-        {
-            //int apId = 2;
-            //using (var context = new PPWDbContext(Session["DBName"].ToString()))
-            //{
-            //    int latestItemId = Helpers.ModelHelper.GetLatestItemID(context, apId);
-            //    Response.Write(latestItemId);
-            //}
-        }
+        
         public void Debug5()
         {
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
@@ -2634,7 +2626,7 @@ btest3
             {
                 int apId = 1;
 
-                var mergeditems = Helpers.ModelHelper.GetMergedItemList(apId, context);
+                var mergeditems = Helpers.ModelHelper.GetItemList(apId, context);
                 var mergedstocks = Helpers.ModelHelper.GetItemStockList(context, true);
 
                 //foreach(var stock in mergedstocks)

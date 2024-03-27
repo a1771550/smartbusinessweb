@@ -1,0 +1,57 @@
+﻿@model PPWLib.Models.Sales.ExcludedInvoiceEditModel
+@using PagedList.Mvc;
+@{
+	ViewBag.Title = Resources.Resource.ExcludedInvoices;
+	int rand = CommonHelper.GetVersionRandomNo();
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="alert alert-info my-3 col-12 col-md-5 font-weight-bold">@Resources.Resource.Note4ExcludedInvoices</div>
+
+@if (Model.OrderList!=null && Model.OrderList.Count > 0)
+{
+	using (Html.BeginForm("ExcludedInvoices", "POSFunc", FormMethod.Get, new { @Id = "frmOrder" }))
+	{
+		<table id="tblOrder" class="table table-bordered table-hover table-condensed">
+			<thead class="gray-header">
+				<tr>
+					<th scope="col" class="text-left colheader" data-col="0" data-keyword="@Model.Keyword">@Resources.Resource.InvoiceNo</th>
+					<th scope="col" class="text-left" data-keyword="@Model.Keyword">@Resources.Resource.Item</th>
+					<th scope="col" class="text-left" data-keyword="@Model.Keyword">@Resources.Resource.Customer</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in Model.PagingOrderList)
+				{
+					<tr>
+						<td>
+							@item.rtsCode
+						</td>
+						<td>
+							@item.ItemNames
+						</td>
+						<td>@item.CustomerName</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+		<div id="pagingblk" class="my-3">
+			@Html.PagedListPager(Model.PagingOrderList, PageNo => Url.Action("ExcludedInvoices",
+				new { PageNo, Model.SortCol, }))
+		</div>
+	}
+
+}
+else
+{
+	<div id="norecord" class="alert alert-warning">@Resources.Resource.NoDataFound</div>
+}
+
+@Html.Partial("_WaitingModal")
+
+<div id="infoblk"></div>
+
+<script src="~/Scripts/ts/js/pos/excludedinvoices.js?v=@rand"></script>
+

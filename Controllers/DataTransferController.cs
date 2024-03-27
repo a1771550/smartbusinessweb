@@ -29,6 +29,8 @@ using PPWLib.Models.POS.Sales;
 using PPWLib.Models.Journal;
 using CommonLib.Models.MYOB;
 using PPWLib.Models.Item;
+using PPWCommonLib.Helpers;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -614,6 +616,7 @@ namespace SmartBusinessWeb.Controllers
 			}
 
 			int ret = 0;
+			int excluded = 0;
 			CultureHelper.CurrentCulture = lang;
 			string msg = Resources.Resource.ExportDoneMsg;
 			DataTransferModel dmodel = new DataTransferModel
@@ -669,19 +672,24 @@ namespace SmartBusinessWeb.Controllers
 					default:
 					case "sales":
 						await ExportData4SB(apId, dmodel, "ItemSales_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
-						break;
+                        HandleExcludedOrders(FileType.Retail, dmodel);
+                        break;
 				}
-
 			}
-
 
 			if (Session["PendingInvoices"] != null)
 			{
 				string.Concat(msg, "<br>", Resources.Resource.InvoicesNotIntegratedDueToZeroStock);
 				ret = 1;
 			}
+            if (Session["ExcludedRetailOrderIds"] != null)
+            {
+                string.Concat(msg, "<br>", Resources.Resource.InvoicesNotIntegratedDueToUnsynsItemCustomers);
+                excluded = 1;
+            }
 
-			return CheckoutPortal == "abss" ? Json(new { msg, PendingInvoices = ret, offlinemode = 0 }) : Json(new { msg, PendingInvoices = ret, offlinemode = 0, result = System.Text.Json.JsonSerializer.Serialize(dicResult) });
+
+            return Json(new { msg, PendingInvoices = ret, ExcludedInvoices=excluded, offlinemode = 0 });
 		}
 
 		private async Task ExportData4SB(int accountprofileId, DataTransferModel dmodel, string filename, string strfrmdate = "", string strtodate = "", bool includeUploaded = false, int lang = 0)
@@ -1220,9 +1228,22 @@ namespace SmartBusinessWeb.Controllers
 			context.Dispose();
 		}
 
-       
+		private void HandleExcludedOrders(FileType fileType, DataTransferModel dmodel)
+		{
+			switch (fileType) 
+			{
+				default:
+				case FileType.Retail:
+					if (dmodel.ExcludedRetailOrderIds.Count > 0)
+					{
+						Session["ExcludedRetailOrderIds"] = dmodel.ExcludedRetailOrderIds;
+					}
+					break;
+			}
 
-        private static string StringHandlingForSQL(string str)
+		}
+
+		private static string StringHandlingForSQL(string str)
 		{
 			return CommonHelper.StringHandlingForSQL(str);
 		}
@@ -1320,6 +1341,7 @@ namespace SmartBusinessWeb.Controllers
 						{
 							supplier.supCheckout = true;
 							supplier.IsABSS = true;
+							supplier.ModifyTime = DateTime.Now;
 						}
 
 						break;
@@ -1328,6 +1350,7 @@ namespace SmartBusinessWeb.Controllers
 						foreach (var customer in mcustomers)
 						{
 							customer.cusCheckout = true;
+							customer.ModifyTime = DateTime.Now;
 						}
 						break;
 					case CheckOutType.PGCustomers:
@@ -1337,16 +1360,12 @@ namespace SmartBusinessWeb.Controllers
 							customer.cusCheckout = true;
 						}
 						break;					
-					case CheckOutType.Items:
-						List<PGItem> pitems = context.PGItems.Where(x => checkoutIds.Any(y => x.itmItemID == y) && x.AccountProfileId == accountProfileId).ToList();
-						List<MyobItem> mitems = context.MyobItems.Where(x => checkoutIds.Any(y => x.itmItemID == y) && x.AccountProfileId == accountProfileId).ToList();
-						foreach (var item in pitems)
-						{
-							item.itmCheckout = true;
-						}
+					case CheckOutType.Items:						
+						List<MyobItem> mitems = context.MyobItems.Where(x => checkoutIds.Any(y => x.itmItemID == y) && x.AccountProfileId == accountProfileId).ToList();						
 						foreach (var item in mitems)
 						{
 							item.itmCheckout = true;
+							item.itmModifyTime = DateTime.Now;
 						}
 						break;
 					default:
@@ -1355,6 +1374,7 @@ namespace SmartBusinessWeb.Controllers
 						foreach (var sales in saleslist)
 						{
 							sales.rtsCheckout = true;
+							sales.rtsModifyTime = DateTime.Now;
 						}
 						break;
 				}

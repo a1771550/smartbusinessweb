@@ -3,7 +3,7 @@
     var examplehtml = string.Format(example, "<span class=\"font-weight-bold\">", "</span>", "<span class=\"font-weight-bold\">", "</span>");   
    
     ItemModel Item = ViewData["Item"] == null ? null : (ItemModel)ViewData["Item"];
-    PGItemModel PGItem = ViewData["PGItem"] == null ? null : (PGItemModel)ViewData["PGItem"];
+ 
     string buyunit = "";
     string sellunit = "";
     int sellunitqty = 0;
@@ -14,12 +14,7 @@
         sellunit = Item.itmSellUnit;
         sellunitqty = Item.itmSellUnitQuantity == null ? 0 : (int)Item.itmSellUnitQuantity;
     }
-    if (PGItem != null)
-    {
-        buyunit = PGItem.itmBuyUnit;
-        sellunit = PGItem.itmSellUnit;
-        sellunitqty = PGItem.itmSellUnitQuantity == null ? 0 : (int)PGItem.itmSellUnitQuantity;
-    }
+   
 }
 <div id="itemBuySellUnitsModal">
     <div class="container">

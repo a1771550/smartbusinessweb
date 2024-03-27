@@ -78,14 +78,14 @@
 							<ul class="submenu collapse" id="collapseRetail">
 								@if (!isadmin)
 								{
-									sublnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "sales") ? "active" : "";
-									<li><a href="/POSFunc/Sales" class="@sublnkcls">@string.Format(Resources.Resource.OrderFormat, Resources.Resource.Retail)</a></li>
-									sublnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "advsales") ? "active" : "";
-									<li><a href="/POSFunc/AdvSales" class="@sublnkcls">@Html.Raw(string.Concat(string.Format(Resources.Resource.OrderFormat, Resources.Resource.Retail), "<span class='small'>(", Resources.Resource.Advanced, ")</span>"))</a></li>
-									sublnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "refund") ? "active" : "";
-									<li><a href="/POSFunc/Refund" class="@sublnkcls">@string.Format(Resources.Resource.OrderFormat, Resources.Resource.Refund)</a></li>
-									sublnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "salesorderlist") ? "active" : "";
-									<li><a href="/SalesOrder/Index" class="@sublnkcls">@string.Format(Resources.Resource.ListFormat, Resources.Resource.SalesOrder)</a></li>
+									<li><a href="/POSFunc/Sales">@string.Format(Resources.Resource.OrderFormat, Resources.Resource.Retail)</a></li>
+
+									<li><a href="/POSFunc/AdvSales">@Html.Raw(string.Concat(string.Format(Resources.Resource.OrderFormat, Resources.Resource.Retail), "<span class='small'>(", Resources.Resource.Advanced, ")</span>"))</a></li>
+
+									<li><a href="/POSFunc/Refund">@string.Format(Resources.Resource.OrderFormat, Resources.Resource.Refund)</a></li>
+									<li><a href="/SalesOrder/Index">@string.Format(Resources.Resource.ListFormat, Resources.Resource.SalesOrder)</a></li>
+									<li><a href="/POSFunc/PendingInvoices">@Resources.Resource.PendingInvoices</a></li>
+									<li><a href="/POSFunc/ExcludedInvoices">@Resources.Resource.ExcludedInvoices</a></li>
 								}
 
 								@if (HttpContext.Current.Session["Reports"] == null)
@@ -118,19 +118,19 @@
 								<p>@Resources.Resource.Customer</p>
 							</a>
 							<ul class="submenu collapse" id="collapseCustomer">
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "customer") ? "active" : ""; }
+							
 
-								<li><a href="/Customer/Index" class="@sublnkcls">@string.Format(Resources.Resource.ManagementFormat, Resources.Resource.Customer)</a></li>
+								<li><a href="/Customer/Index">@string.Format(Resources.Resource.ManagementFormat, Resources.Resource.Customer)</a></li>
 
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "pricelevels") ? "active" : ""; }
+							
 
-								<li><a href="/PriceLevels/Index" class="@sublnkcls">@Resources.Resource.PointLevel</a></li>
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "pgcustomer") ? "active" : ""; }
+								<li><a href="/PriceLevels/Index">@Resources.Resource.PointLevel</a></li>
+							
 
-								<li><a href="/PGCustomer/Index" class="@sublnkcls">@string.Format(Resources.Resource.AddFormat, Resources.Resource.Customer)</a></li>
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "enquiry") ? "active" : ""; }
+								<li><a href="/Customer/UnSyncList">@string.Format(Resources.Resource.AddFormat, Resources.Resource.Customer)</a></li>
+							
 
-								<li><a href="/Enquiry/Index" class="@sublnkcls">@Resources.Resource.Enquiry</a></li>
+								<li><a href="/Enquiry/Index">@Resources.Resource.Enquiry</a></li>
 							</ul>
 						</li>
 						<li class="btn_expand">
@@ -154,8 +154,8 @@
 
 								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "category") ? "active" : ""; }
 								<li><a class="@sublnkcls" href="/ItemCategory/Index">@Resources.Resource.Category</a></li>
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "zerostocks") ? "active" : ""; }
-								<li><a href="/Item/ZeroStocks" class="@sublnkcls">@Resources.Resource.OutOfStockItems</a></li>
+								
+							@*	<li><a href="/Item/ZeroStocks" class="@sublnkcls">@Resources.Resource.OutOfStockItems</a></li>*@
 							</ul>
 						</li>
 						<li class="btn_expand">

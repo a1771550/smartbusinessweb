@@ -13,27 +13,7 @@
 @using (Html.BeginForm("DoExportFrmShop", "DataTransfer", FormMethod.Post, new { @id = "frmExport" }))
 {
     @Html.AntiForgeryToken()
-    @*<div class="row justify-content-end mx-1">
-        <div class="form-check form-check-inline">
-            <input class="form-check-input checkoutportal" type="radio" id="abss" disabled value="abss" @absschecked>
-            <label class="form-check-label" for="abss">ABSS</label>
-        </div>
-        <div class="form-check form-check-inline">
-            <input class="form-check-input checkoutportal" type="radio" id="kingdee" disabled value="kingdee" @kingdeechecked>
-            <label class="form-check-label" for="kingdee">@Resources.Resource.Kingdee</label>
-        </div>
-    </div>*@
-
-    @*<div class="form-inline justify-content-end my-2">
-        <label for="drpLocation">@Resources.Resource.Location:</label>
-        <select class="custom-select mx-2" id="drpLocation" name="location">
-           @foreach(var shop in Model.ShopCodeList)
-           {
-               string selected = Model.ShopCode == shop ? "selected" : "";
-                    <option value="@shop" @selected>@shop</option>
-                }
-        </select>
-    </div>*@
+   
 
 <div class="row justify-content-center py-5 px-3">
 	<span class="label mx-3">@Resources.Resource.ExportDatePrompt</span>

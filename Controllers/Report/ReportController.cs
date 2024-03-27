@@ -228,7 +228,7 @@ namespace SmartBusinessWeb.Controllers.Report
                     DateTime frmtime = session.sesTimeFr;
                     DateTime totime = (DateTime)session.sesTimeTo;
 
-                    var items = ModelHelper.GetMergedItemList(apId, context);
+                    var items = ModelHelper.GetItemList(apId, context);
 
                     model.SalesLnViews = (from sl in context.RtlSalesLns
                                               //join i in context.MyobItems
