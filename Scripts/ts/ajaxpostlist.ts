@@ -1,12 +1,5 @@
 ﻿$infoblk = $('#infoblk');
 
-function initPhoneMailFormData(): IPhoneMailFormData {
-    return {
-        __RequestVerificationToken: <string>$('input[name=__RequestVerificationToken]').val(),
-        PhoneMailList: [],
-        model: initCustomer(),
-    };
-}
 function initPhoneMail(): IPhoneMail {
     return {
         phone: '',
@@ -34,7 +27,7 @@ $(document).on('click', '#btnPost', function () {
     //testlist.push(test1);
     //testlist.push(test2);
     //_formdata.PhoneMailList = testlist.slice(0);
-    const customer = initCustomer();
+    const customer = {} as ICustomer;
     let _formdata: ICustomerFormData = initCustomerFormData(customer);
     AttributeList = [];
     for (var i = 0; i < 30; i++) {
@@ -42,7 +35,7 @@ $(document).on('click', '#btnPost', function () {
         AttributeList.push(attribute);
     }
 
-    let _customer: ICustomer = initCustomer();
+    let _customer: ICustomer = {} as ICustomer;
     _customer.cusCustomerID = 43;
     _formdata.model = _customer;
     //_formdata.AttributeList = AttributeList.slice(0);

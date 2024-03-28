@@ -198,7 +198,8 @@ namespace SmartBusinessWeb.Controllers
 			if (filename.StartsWith("Job_"))
 			{
 				List<MyobJobModel> joblist = MYOBHelper.GetJobList(AbssConnectionString);
-				using (var transaction = context.Database.BeginTransaction())
+                StringBuilder sb = new StringBuilder();
+                using (var transaction = context.Database.BeginTransaction())
 				{
 					try
 					{
@@ -242,7 +243,7 @@ namespace SmartBusinessWeb.Controllers
 					catch (DbEntityValidationException e)
 					{
 						transaction.Rollback();
-						StringBuilder sb = new StringBuilder();
+						
 						foreach (var eve in e.EntityValidationErrors)
 						{
 							sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -255,16 +256,21 @@ namespace SmartBusinessWeb.Controllers
 				ve.ErrorMessage);
 							}
 						}
-						ModelHelper.WriteLog(context, string.Format("Import JobName data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
-						context.SaveChanges();
 					}
 				}
-			}
+                if (!string.IsNullOrEmpty(sb.ToString()))
+                {
+                    using var _context = new PPWDbContext(Session["DBName"].ToString());
+                    ModelHelper.WriteLog(_context, string.Format("Import JobName data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
+                }
+               
+            }
 
 			if (filename.StartsWith("Currency_"))
 			{
 				List<MyobCurrencyModel> emplist = MYOBHelper.GetCurrencyList(AbssConnectionString);
-				using (var transaction = context.Database.BeginTransaction())
+                StringBuilder sb = new StringBuilder();
+                using (var transaction = context.Database.BeginTransaction())
 				{
 					try
 					{
@@ -305,7 +311,7 @@ namespace SmartBusinessWeb.Controllers
 					catch (DbEntityValidationException e)
 					{
 						transaction.Rollback();
-						StringBuilder sb = new StringBuilder();
+						
 						foreach (var eve in e.EntityValidationErrors)
 						{
 							sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -318,11 +324,14 @@ namespace SmartBusinessWeb.Controllers
 				ve.ErrorMessage);
 							}
 						}
-						ModelHelper.WriteLog(context, string.Format("Import Currency data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
-						context.SaveChanges();
 					}
 				}
-			}
+                if (!string.IsNullOrEmpty(sb.ToString()))
+                {
+                    using var _context = new PPWDbContext(Session["DBName"].ToString());
+                    ModelHelper.WriteLog(_context, string.Format("Import Currency data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
+                }
+            }
 
 			if (filename.StartsWith("Suppliers_"))
 			{
@@ -350,8 +359,8 @@ namespace SmartBusinessWeb.Controllers
 				List<CommonLib.Models.MYOB.TaxModel> taxlist = MYOBHelper.GetTaxList(abssConn);
 				decimal taxrate = (decimal)taxlist.FirstOrDefault().TaxPercentageRate;
 				string taxcode = taxlist.FirstOrDefault().TaxCode;
-
-				using (var transaction = context.Database.BeginTransaction())
+                StringBuilder sb = new StringBuilder();
+                using (var transaction = context.Database.BeginTransaction())
 				{
 					try
 					{
@@ -405,7 +414,7 @@ namespace SmartBusinessWeb.Controllers
 					catch (DbEntityValidationException e)
 					{
 						transaction.Rollback();
-						StringBuilder sb = new StringBuilder();
+						
 						foreach (var eve in e.EntityValidationErrors)
 						{
 							sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -418,17 +427,21 @@ namespace SmartBusinessWeb.Controllers
 				ve.ErrorMessage);
 							}
 						}
-						ModelHelper.WriteLog(context, string.Format("Import Tax data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
-						context.SaveChanges();
+						
 					}
 				}
-			}
+                if (!string.IsNullOrEmpty(sb.ToString()))
+                {
+                    using var _context = new PPWDbContext(Session["DBName"].ToString());
+                    ModelHelper.WriteLog(_context, string.Format("Import Tax data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
+                }       
+            }
 
 			if (filename.StartsWith("Account_"))
 			{
 				List<AccountModel> accountlist = MYOBHelper.GetAccountList(AbssConnectionString);
-
-				using (var transaction = context.Database.BeginTransaction())
+                StringBuilder sb = new StringBuilder();
+                using (var transaction = context.Database.BeginTransaction())
 				{
 					try
 					{
@@ -453,15 +466,14 @@ namespace SmartBusinessWeb.Controllers
 						}
 
 						context.Accounts.AddRange(newaccounts);
-						ModelHelper.WriteLog(context, "Import Account data from Central done", "ExportFrmCentral");
-						context.SaveChanges();
+						ModelHelper.WriteLog(context, "Import Account data from Central done", "ExportFrmCentral");						
 						transaction.Commit();
 
 					}
 					catch (DbEntityValidationException e)
 					{
 						transaction.Rollback();
-						StringBuilder sb = new StringBuilder();
+						
 						foreach (var eve in e.EntityValidationErrors)
 						{
 							sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -474,11 +486,15 @@ namespace SmartBusinessWeb.Controllers
 				ve.ErrorMessage);
 							}
 						}
-						ModelHelper.WriteLog(context, string.Format("Import Account data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
-						context.SaveChanges();
+						
 					}
 				}
-			}
+                if (!string.IsNullOrEmpty(sb.ToString()))
+                {
+                    using var _context = new PPWDbContext(Session["DBName"].ToString());
+                    ModelHelper.WriteLog(_context, string.Format("Import Account data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
+                }        
+            }
 
 			return Json(new { msg });
 		}
@@ -761,6 +777,7 @@ namespace SmartBusinessWeb.Controllers
                     #endregion
 
                     #region Write sqllist into Log & update checkoutIds
+                    StringBuilder sb = new StringBuilder();
                     using (var transaction = context.Database.BeginTransaction())
                     {
                         try
@@ -779,7 +796,7 @@ namespace SmartBusinessWeb.Controllers
                         catch (DbEntityValidationException e)
                         {
                             transaction.Rollback();
-                            StringBuilder sb = new StringBuilder();
+                           
                             foreach (var eve in e.EntityValidationErrors)
                             {
                                 sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -791,12 +808,15 @@ namespace SmartBusinessWeb.Controllers
                     eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
                     ve.ErrorMessage);
                                 }
-                            }
-                            ModelHelper.WriteLog(context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
-                            context.SaveChanges();
+                            }                           
                         }
-
                     }
+                    if (!string.IsNullOrEmpty(sb.ToString()))
+                    {
+                        using var _context = new PPWDbContext(Session["DBName"].ToString());
+                        ModelHelper.WriteLog(_context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
+                    }         
+                  
                     #endregion
                 }
             }
@@ -851,10 +871,11 @@ namespace SmartBusinessWeb.Controllers
 						dayends.Url = comInfo.WebServiceUrl;
 						dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
 					}
-					#endregion
+                    #endregion
 
-					#region Write sqllist into Log & update checkoutIds
-					using (var transaction = context.Database.BeginTransaction())
+                    #region Write sqllist into Log & update checkoutIds
+                    StringBuilder sb = new StringBuilder();
+                    using (var transaction = context.Database.BeginTransaction())
 					{
 						try
 						{
@@ -871,7 +892,7 @@ namespace SmartBusinessWeb.Controllers
 						catch (DbEntityValidationException e)
 						{
 							transaction.Rollback();
-							StringBuilder sb = new StringBuilder();
+							
 							foreach (var eve in e.EntityValidationErrors)
 							{
 								sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -883,14 +904,17 @@ namespace SmartBusinessWeb.Controllers
 					eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
 					ve.ErrorMessage);
 								}
-							}
-							ModelHelper.WriteLog(context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
-							context.SaveChanges();
+							}							
 						}
-
 					}
-					#endregion
-				}
+                    if (!string.IsNullOrEmpty(sb.ToString()))
+                    {
+                        using var _context = new PPWDbContext(Session["DBName"].ToString());
+                        ModelHelper.WriteLog(_context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
+                    }
+                     
+                    #endregion
+                }
 			}
 
 			if (filename.StartsWith("ItemSales_"))
@@ -946,6 +970,7 @@ namespace SmartBusinessWeb.Controllers
                     #endregion
 
                     #region Write sqllist into Log & update checkoutIds
+                    StringBuilder sb = new StringBuilder();
                     using (var transaction = context.Database.BeginTransaction())
                     {
                         try
@@ -962,7 +987,7 @@ namespace SmartBusinessWeb.Controllers
                         catch (DbEntityValidationException e)
                         {
                             transaction.Rollback();
-                            StringBuilder sb = new StringBuilder();
+                           
                             foreach (var eve in e.EntityValidationErrors)
                             {
                                 sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -974,12 +999,16 @@ namespace SmartBusinessWeb.Controllers
                     eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
                     ve.ErrorMessage);
                                 }
-                            }
-                            ModelHelper.WriteLog(context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",",sqllist), ConnectionString), "ExportFrmShop");
-                            context.SaveChanges();
+                            }                           
                         }
-
                     }
+                    if (!string.IsNullOrEmpty(sb.ToString()))
+                    {
+                        using var _context = new PPWDbContext(Session["DBName"].ToString());
+                        ModelHelper.WriteLog(_context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
+                    }
+                   
+                    
                     #endregion
                 }
             }
@@ -1033,6 +1062,7 @@ namespace SmartBusinessWeb.Controllers
                     }
 
                     #region Write sqllist into Log & update checkoutIds
+                    StringBuilder sb = new StringBuilder();
                     using (var transaction = context.Database.BeginTransaction())
                     {
                         try
@@ -1050,7 +1080,7 @@ namespace SmartBusinessWeb.Controllers
                         catch (DbEntityValidationException e)
                         {
                             transaction.Rollback();
-                            StringBuilder sb = new StringBuilder();
+                          
                             foreach (var eve in e.EntityValidationErrors)
                             {
                                 sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -1062,12 +1092,14 @@ namespace SmartBusinessWeb.Controllers
                     eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
                     ve.ErrorMessage);
                                 }
-                            }
-                            ModelHelper.WriteLog(context, string.Format("Export Wholesales data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",",sqllist), ConnectionString), "ExportFrmShop");
-                            context.SaveChanges();
+                            }                           
                         }
-
                     }
+                    if (!string.IsNullOrEmpty(sb.ToString()))
+                    {
+                        using var _context = new PPWDbContext(Session["DBName"].ToString());
+                        ModelHelper.WriteLog(_context, string.Format("Export Wholesales data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
+                    }                   
                     #endregion
                 }
 
@@ -1143,7 +1175,6 @@ namespace SmartBusinessWeb.Controllers
 
 				sql += string.Join(",", values) + ")";
 				ModelHelper.WriteLog(context, string.Format("sql:{0}; checkoutids:{1}", sql, string.Join(",", dmodel.CheckOutIds_Item)), "ExportFrmShop");
-				context.SaveChanges();
 
 				using (localhost.Dayends dayends = new localhost.Dayends())
 				{
@@ -1182,7 +1213,6 @@ namespace SmartBusinessWeb.Controllers
 				}
 
 				ModelHelper.WriteLog(context, string.Join(",", sql), "ExportFrmShop#Stock");
-				context.SaveChanges();
 
 				updateDB(dmodel.CheckOutIds_Stock.ToArray(), accountprofileId, CheckOutType.PGLocStocks);
 			}
@@ -1218,8 +1248,7 @@ namespace SmartBusinessWeb.Controllers
 				new KeyValuePair<string, string>("accountprofileId", accountprofileId.ToString()),
 			});
 					await client.PostAsync(central4device, content);
-					ModelHelper.WriteLog(context, "Device Exported Done", "ExportFrmShop");
-					context.SaveChanges();
+					ModelHelper.WriteLog(context, "Device Exported Done", "ExportFrmShop");					
 				}
 			}
 
@@ -1378,8 +1407,7 @@ namespace SmartBusinessWeb.Controllers
 						}
 						break;
 				}
-				ModelHelper.WriteLog(context, string.Format("checkouttype:{0}; checkoutids:{1}", checkOutType, string.Join(",", checkoutIds)), "ExportFrmShop#checkoutIds");
-				context.SaveChanges();
+				ModelHelper.WriteLog(context, string.Format("checkouttype:{0}; checkoutids:{1}", checkOutType, string.Join(",", checkoutIds)), "ExportFrmShop#checkoutIds");				
 			}
 		}
 
@@ -1462,8 +1490,6 @@ namespace SmartBusinessWeb.Controllers
 
 					ModelHelper.WriteLog(context, string.Join(",", sqllist), "ExportFrmShop");
 					onlineModeItem.checkoutIds = dmodel.CheckOutIds_Customer;
-
-					context.SaveChanges();
 				}
 			}
 		}
@@ -1577,8 +1603,7 @@ namespace SmartBusinessWeb.Controllers
 					}
 
 					ModelHelper.WriteLog(context, string.Join(",", sqllist), "ExportFrmShop");
-					onlineModeItem.checkoutIds = dmodel.CheckOutIds_Customer;
-					context.SaveChanges();
+					onlineModeItem.checkoutIds = dmodel.CheckOutIds_Customer;					
 				}
 			}
 		}
@@ -1640,8 +1665,7 @@ namespace SmartBusinessWeb.Controllers
 
 					sqllist.Add(sql);
 
-					ModelHelper.WriteLog(context, string.Join(",", sqllist), "ExportFrmShop");
-					context.SaveChanges();
+					ModelHelper.WriteLog(context, string.Join(",", sqllist), "ExportFrmShop");					
 				}
 			}
 		}

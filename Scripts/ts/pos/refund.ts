@@ -286,9 +286,8 @@ function getReceiptOk(data) {
 		enableTax = taxModel.EnableTax;
 		RefundSales = data.sales;
 		selectedSalesCode = RefundSales.rtsCode;
-		selectedCus = checkoutportal == "abss" ? data.customer : data.kcustomer;
-		selectedCusCodeName =
-			checkoutportal == "abss" ? selectedCus.cusCode : selectedCus.CustCode;
+		selectedCus = data.customer;
+		selectedCusCodeName =selectedCus.cusCode;
 		companyinfo = data.companyinfo;
 		receipt = data.receipt;
 		ItemList = data.items.slice(0);
@@ -1198,15 +1197,7 @@ function submitRefund() {
 	Refund.rtsEpay = isEpay;
 	Refund.rtsFinalTotal = itotalamt;
 	Refund.epaytype = epaytype;
-	Refund.rtsCusID =
-		checkoutportal == "kindgee"
-			? selectedCus.CustId
-			: selectedCus.cusCustomerID;
-
-	//console.log('salescode:' + selectedSalesCode + ';notes:' + iremark + ';change:' + ichange);
-	//console.log('Payments:', Payments);
-	// console.log("refundlist:", RefundList);
-	// return false;
+	Refund.rtsCusID = selectedCus.cusCustomerID;
 
 	if (RefundList.length > 0) {
 		const url = "/POSFunc/ProcessRefund";

@@ -11,7 +11,7 @@ $(document).on("click", ".contact", function () {
 			//console.log(data);
 			let cusIds: number[] = [];
 			if (data && data.length > 0) {
-				data.forEach((x) => { cusIds.push(x.cusId!); });
+				data.forEach((x) => { cusIds.push(x.cusCustomerID); });
 				//console.log(cusIds);
 				window.open("/Customer/Index?cusIds=" + cusIds.join(","), "_blank");
 			}

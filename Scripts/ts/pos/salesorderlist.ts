@@ -95,7 +95,7 @@ $(document).on("click", ".copy", function () {
 	recurOrder = initRecurOrder();
 	recurOrder.Mode = "savefrmposted";
 	recurOrder.rtsUID = $(this).data("id") as number;
-	selectedCus = initCustomer();
+	selectedCus = {} as ICustomer;
 	$target = $(this).parent("td").parent("tr").find("td.customer");
 	selectedCus.cusCode = $target.data("code");
 	selectedCus.cusName = $target.data("name");

@@ -368,7 +368,6 @@
     <Compile Include="Controllers\Records\JournalController.cs" />
     <Compile Include="Controllers\Records\TrainingController.cs" />
     <Compile Include="Controllers\Customer\CustomerController.cs" />
-    <Compile Include="Controllers\Customer\PGCustomerController.cs" />
     <Compile Include="Controllers\DataTransferController.cs" />
     <Compile Include="Controllers\DemoController.cs" />
     <Compile Include="Controllers\EmailSettingsController.cs" />
@@ -419,6 +418,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include=".gitattributes" />
+    <Content Include=".gitignore" />
     <Content Include="bundles\images\ui-icons_444444_256x240.png" />
     <Content Include="bundles\images\ui-icons_555555_256x240.png" />
     <Content Include="bundles\images\ui-icons_777620_256x240.png" />
@@ -2865,6 +2866,7 @@
     <Content Include="Images\selectlogo.png" />
     <Content Include="Images\working-app.GIF" />
     <Content Include="Images\X-office-calendar.svg" />
+    <Content Include="POSProWeb.favdoc.user" />
     <Content Include="Scripts\ASPSnippets_Pager.min.js" />
     <Content Include="Scripts\bootstrap-sortable.js" />
     <Content Include="Scripts\bootstrap-table.js" />
@@ -3018,6 +3020,7 @@
     <Content Include="Content\mean\js\owl.carousel.min.js" />
     <Content Include="Content\mean\js\Popper.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\ts\js\customer\unsynclist.js" />
     <Content Include="Scripts\ts\js\inventoryadjustment\edit.js" />
     <Content Include="Scripts\ts\js\inventoryadjustment\index.js" />
     <Content Include="Scripts\ts\js\itemtransfer\index.js" />
@@ -4305,8 +4308,6 @@
     <Content Include="Scripts\ts\js\customer\customeredit.js" />
     <Content Include="Scripts\ts\js\customer\customerfollowup.js" />
     <Content Include="Scripts\ts\js\customer\kingdeecustomeredit.js" />
-    <Content Include="Scripts\ts\js\customer\pgcustomer.js" />
-    <Content Include="Scripts\ts\js\customer\pgcustomeredit.js" />
     <Content Include="Scripts\ts\js\datatransfer\exportfrmshop.js" />
     <Content Include="Scripts\ts\js\datatransfer\importfrmcentral.js" />
     <Content Include="Scripts\ts\js\emailsetting.js" />
@@ -4646,6 +4647,8 @@
     <Content Include="Scripts\ts\js\itemtransfer\index.js.map" />
     <Content Include="Views\POSFunc\ExcludedInvoices.cshtml" />
     <Content Include="Scripts\ts\js\pos\pendinginvoices.js.map" />
+    <Content Include="Views\Customer\UnSyncList.cshtml" />
+    <Content Include="Scripts\ts\js\customer\unsynclist.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4695,8 +4698,6 @@
     <Content Include="Scripts\ts\js\customer\customeredit.js.map" />
     <Content Include="Scripts\ts\js\customer\customerfollowup.js.map" />
     <Content Include="Scripts\ts\js\customer\kingdeecustomeredit.js.map" />
-    <Content Include="Scripts\ts\js\customer\pgcustomer.js.map" />
-    <Content Include="Scripts\ts\js\customer\pgcustomeredit.js.map" />
     <Content Include="Scripts\ts\js\datatransfer\exportfrmshop.js.map" />
     <Content Include="Scripts\ts\js\datatransfer\importfrmcentral.js.map" />
     <Content Include="Scripts\ts\js\emailsetting.js.map" />
@@ -5078,6 +5079,7 @@
     <TypeScriptCompile Include="Scripts\tinymce\tinymce.d.ts" />
     <TypeScriptCompile Include="Scripts\ts\ajaxpostlist.ts" />
     <TypeScriptCompile Include="Scripts\ts\app.ts" />
+    <TypeScriptCompile Include="Scripts\ts\customer\unsynclist.ts" />
     <TypeScriptCompile Include="Scripts\ts\inventoryadjustment\edit.ts" />
     <TypeScriptCompile Include="Scripts\ts\inventoryadjustment\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\lang.ts" />
@@ -5118,8 +5120,6 @@
     <TypeScriptCompile Include="Scripts\ts\customer\customeredit.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\customerfollowup.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\kingdeecustomeredit.ts" />
-    <TypeScriptCompile Include="Scripts\ts\customer\pgcustomer.ts" />
-    <TypeScriptCompile Include="Scripts\ts\customer\pgcustomeredit.ts" />
     <TypeScriptCompile Include="Scripts\ts\datatransfer\exportfrmshop.ts" />
     <TypeScriptCompile Include="Scripts\ts\datatransfer\importfrmcentral.ts" />
     <TypeScriptCompile Include="Scripts\ts\emailsetting.ts" />

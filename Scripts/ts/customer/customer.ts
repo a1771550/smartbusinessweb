@@ -83,31 +83,7 @@ $(document).on("click", ".kremove", function () {
 	});
 });
 
-$(document).on("click", ".detail", function () {
-	let customerId = $(this).data("id");
-	$.ajax({
-		type: "GET",
-		url: "/Customer/Detail",
-		data: { customerId: customerId },
-		success: function (data) {
-			console.log("data:", data);
-			let html = customerdetail(data);
-			$.fancyConfirm({
-				title: "",
-				message: html,
-				shownobtn: false,
-				okButton: oktxt,
-				noButton: canceltxt,
-				callback: function (value) {
-					if (value) {
-						$("#txtKeyword").trigger("focus");
-					}
-				},
-			});
-		},
-		dataType: "json",
-	});
-});
+
 
 $(document).on("click", ".remove", function () {
 	let cusId = $(this).data("id");

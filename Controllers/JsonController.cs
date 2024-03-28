@@ -23,13 +23,12 @@ namespace SmartBusinessWeb.Controllers
     {
 		[System.Web.Mvc.AllowAnonymous]
 		[System.Web.Mvc.HttpPost]
-		public async Task<HttpResponseMessage> PostTest(int apId, FormCollection form)
+		public HttpResponseMessage PostTest(int apId, FormCollection form)
 		{
 			HttpRequestMessage request = new HttpRequestMessage();
 			string dbname = GetDbName(apId);
 			using var context = new PPWDbContext(dbname);
-			ModelHelper.WriteLog(context, form["msg"], form["type"]);
-			await context.SaveChangesAsync();
+			ModelHelper.WriteLog(context, form["msg"], form["type"]);		
 			return request.CreateResponse(System.Net.HttpStatusCode.OK);
 		}
 
@@ -43,16 +42,12 @@ namespace SmartBusinessWeb.Controllers
 		}
 
 		[System.Web.Http.HttpPost]
-        public async Task<HttpResponseMessage> HttpPost(int apId, [FromBody] List<DebugLog> logs)
+        public HttpResponseMessage HttpPost(int apId, [FromBody] List<DebugLog> logs)
         {            
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
             using var context = new PPWDbContext(dbname);
-            foreach(var log in logs)
-            {
-                ModelHelper.WriteLog(context, log.Message, log.LogType);
-            }            
-            await context.SaveChangesAsync();
+            foreach(var log in logs) ModelHelper.WriteLog(context, log.Message, log.LogType);           
             return request.CreateResponse(System.Net.HttpStatusCode.OK);
         }       
 
@@ -232,7 +227,7 @@ namespace SmartBusinessWeb.Controllers
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
             using var context = new PPWDbContext(dbname);
-
+            StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
                 try
@@ -276,8 +271,7 @@ namespace SmartBusinessWeb.Controllers
                     await context.SaveChangesAsync();
 
 
-                    ModelHelper.WriteLog(context, "Import Customer data from Central done", "ImportFrmCentral");
-                    await context.SaveChangesAsync();
+                    ModelHelper.WriteLog(context, "Import Customer data from Central done", "ImportFrmCentral");                
                     transaction.Commit();
 
                     return request.CreateResponse(System.Net.HttpStatusCode.OK);
@@ -285,7 +279,7 @@ namespace SmartBusinessWeb.Controllers
                 catch (DbEntityValidationException e)
                 {
                     transaction.Rollback();
-                    StringBuilder sb = new StringBuilder();
+                   
                     foreach (var eve in e.EntityValidationErrors)
                     {
                         sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -298,12 +292,15 @@ namespace SmartBusinessWeb.Controllers
                 ve.ErrorMessage);
                         }
                     }
-                    //throw new Exception(sb.ToString());
-                    ModelHelper.WriteLog(context, string.Format("Import customer data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
-                    context.SaveChanges();
                 }
             }
-
+            if (!string.IsNullOrEmpty(sb.ToString()))
+            {
+                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                ModelHelper.WriteLog(_context, string.Format("Import customer data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+            }
+           
+            
             return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
         }
 
@@ -313,7 +310,7 @@ namespace SmartBusinessWeb.Controllers
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
             using var context = new PPWDbContext(dbname);
-
+            StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
                 try
@@ -332,7 +329,7 @@ namespace SmartBusinessWeb.Controllers
 
 
                     ModelHelper.WriteLog(context, "Import CustomerInfo4Abss data from Central done", "ImportFrmCentral");
-                    context.SaveChanges();
+                  
                     transaction.Commit();
 
                     return request.CreateResponse(System.Net.HttpStatusCode.OK);
@@ -340,7 +337,7 @@ namespace SmartBusinessWeb.Controllers
                 catch (DbEntityValidationException e)
                 {
                     transaction.Rollback();
-                    StringBuilder sb = new StringBuilder();
+                   
                     foreach (var eve in e.EntityValidationErrors)
                     {
                         sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -353,12 +350,16 @@ namespace SmartBusinessWeb.Controllers
                 ve.ErrorMessage);
                         }
                     }
-                    //throw new Exception(sb.ToString());
-                    ModelHelper.WriteLog(context, string.Format("Import customerInfo data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
-                    context.SaveChanges();
+                   
                 }
             }
-
+            if (!string.IsNullOrEmpty(sb.ToString()))
+            {
+                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                ModelHelper.WriteLog(_context, string.Format("Import customerInfo data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+            }
+         
+           
             return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
         }
 
@@ -368,7 +369,7 @@ namespace SmartBusinessWeb.Controllers
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
             using var context = new PPWDbContext(dbname);
-
+            StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
                 try
@@ -384,10 +385,7 @@ namespace SmartBusinessWeb.Controllers
 
                     context.Suppliers.AddRange(suppliers);
                     await context.SaveChangesAsync();
-
-
-                    ModelHelper.WriteLog(context, "Import Supplier data from Central done", "ImportFrmCentral");
-                    await context.SaveChangesAsync();
+                    ModelHelper.WriteLog(context, "Import Supplier data from Central done", "ImportFrmCentral");                   
                     transaction.Commit();
 
                     return request.CreateResponse(System.Net.HttpStatusCode.OK);
@@ -395,7 +393,7 @@ namespace SmartBusinessWeb.Controllers
                 catch (DbEntityValidationException e)
                 {
                     transaction.Rollback();
-                    StringBuilder sb = new StringBuilder();
+                    
                     foreach (var eve in e.EntityValidationErrors)
                     {
                         sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -408,12 +406,14 @@ namespace SmartBusinessWeb.Controllers
                 ve.ErrorMessage);
                         }
                     }
-                    //throw new Exception(sb.ToString());
-                    ModelHelper.WriteLog(context, string.Format("Import supplier data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
-                    context.SaveChanges();
                 }
             }
-
+            if (!string.IsNullOrEmpty(sb.ToString()))
+            {
+                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                ModelHelper.WriteLog(_context, string.Format("Import supplier data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+            }
+           
             return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
         }
 
@@ -423,7 +423,7 @@ namespace SmartBusinessWeb.Controllers
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
             using var context = new PPWDbContext(dbname);
-
+            StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
                 try
@@ -450,7 +450,7 @@ namespace SmartBusinessWeb.Controllers
                 catch (DbEntityValidationException e)
                 {
                     transaction.Rollback();
-                    StringBuilder sb = new StringBuilder();
+                    
                     foreach (var eve in e.EntityValidationErrors)
                     {
                         sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -463,12 +463,14 @@ namespace SmartBusinessWeb.Controllers
                 ve.ErrorMessage);
                         }
                     }
-                    //throw new Exception(sb.ToString());
-                    ModelHelper.WriteLog(context, string.Format("Import supplierInfo data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
-                    context.SaveChanges();
                 }
             }
-
+            if (!string.IsNullOrEmpty(sb.ToString()))
+            {
+                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                ModelHelper.WriteLog(_context, string.Format("Import supplierInfo data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+            }
+       
             return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
         }
 
@@ -479,7 +481,7 @@ namespace SmartBusinessWeb.Controllers
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
             using var context = new PPWDbContext(dbname);
-
+            StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
                 try
@@ -502,7 +504,7 @@ namespace SmartBusinessWeb.Controllers
                 catch (DbEntityValidationException e)
                 {
                     transaction.Rollback();
-                    StringBuilder sb = new StringBuilder();
+                   
                     foreach (var eve in e.EntityValidationErrors)
                     {
                         sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -515,12 +517,15 @@ namespace SmartBusinessWeb.Controllers
                 ve.ErrorMessage);
                         }
                     }
-                    //throw new Exception(sb.ToString());
-                    ModelHelper.WriteLog(context, string.Format("Import location data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
-                    context.SaveChanges();
+                    
                 }
             }
-
+            if (!string.IsNullOrEmpty(sb.ToString()))
+            {
+                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                ModelHelper.WriteLog(_context, string.Format("Import location data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+            }
+           
             return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
         }
 
@@ -530,7 +535,7 @@ namespace SmartBusinessWeb.Controllers
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
             using var context = new PPWDbContext(dbname);
-
+            StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
                 try
@@ -554,7 +559,7 @@ namespace SmartBusinessWeb.Controllers
                 catch (DbEntityValidationException e)
                 {
                     transaction.Rollback();
-                    StringBuilder sb = new StringBuilder();
+                   
                     foreach (var eve in e.EntityValidationErrors)
                     {
                         sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -567,13 +572,15 @@ namespace SmartBusinessWeb.Controllers
                 ve.ErrorMessage);
                         }
                     }
-                    //throw new Exception(sb.ToString());
-                    ModelHelper.WriteLog(context, string.Format("Import item data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
-                    context.SaveChanges();
+                   
                 }
             }
-
-
+            if (!string.IsNullOrEmpty(sb.ToString()))
+            {
+                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                ModelHelper.WriteLog(_context, string.Format("Import item data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+            }
+          
             return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
         }
 
@@ -583,7 +590,7 @@ namespace SmartBusinessWeb.Controllers
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
             using var context = new PPWDbContext(dbname);
-
+            StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
                 try
@@ -606,7 +613,7 @@ namespace SmartBusinessWeb.Controllers
                 catch (DbEntityValidationException e)
                 {
                     transaction.Rollback();
-                    StringBuilder sb = new StringBuilder();
+                 
                     foreach (var eve in e.EntityValidationErrors)
                     {
                         sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -619,12 +626,15 @@ namespace SmartBusinessWeb.Controllers
                 ve.ErrorMessage);
                         }
                     }
-                    //throw new Exception(sb.ToString());
-                    ModelHelper.WriteLog(context, string.Format("Import stock data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
-                    context.SaveChanges();
+                  
                 }
             }
-
+            if (!string.IsNullOrEmpty(sb.ToString()))
+            {
+                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                ModelHelper.WriteLog(_context, string.Format("Import stock data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+            }
+           
             return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
         }
 
@@ -634,8 +644,8 @@ namespace SmartBusinessWeb.Controllers
 			HttpRequestMessage request = new HttpRequestMessage();
 			string dbname = GetDbName(apId);
 			using var context = new PPWDbContext(dbname);
-
-			using (var transaction = context.Database.BeginTransaction())
+            StringBuilder sb = new StringBuilder();
+            using (var transaction = context.Database.BeginTransaction())
 			{
 				try
 				{
@@ -657,7 +667,7 @@ namespace SmartBusinessWeb.Controllers
 				catch (DbEntityValidationException e)
 				{
 					transaction.Rollback();
-					StringBuilder sb = new StringBuilder();
+				
 					foreach (var eve in e.EntityValidationErrors)
 					{
 						sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -670,13 +680,16 @@ namespace SmartBusinessWeb.Controllers
 				ve.ErrorMessage);
 						}
 					}
-					//throw new Exception(sb.ToString());
-					ModelHelper.WriteLog(context, string.Format("Import itemPrice data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
-					context.SaveChanges();
+				
 				}
 			}
-
-			return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
+            if (!string.IsNullOrEmpty(sb.ToString()))
+            {
+                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                ModelHelper.WriteLog(_context, string.Format("Import itemPrice data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+            }        
+         
+            return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
 		}
 		[System.Web.Http.HttpPost]
 		public async Task<HttpResponseMessage> PostAbssAccountData(int apId, [FromBody] List<Account> accounts)
@@ -684,8 +697,8 @@ namespace SmartBusinessWeb.Controllers
 			HttpRequestMessage request = new HttpRequestMessage();
 			string dbname = GetDbName(apId);
 			using var context = new PPWDbContext(dbname);
-
-			using (var transaction = context.Database.BeginTransaction())
+            StringBuilder sb = new StringBuilder();
+            using (var transaction = context.Database.BeginTransaction())
 			{
 				try
 				{
@@ -707,7 +720,7 @@ namespace SmartBusinessWeb.Controllers
 				catch (DbEntityValidationException e)
 				{
 					transaction.Rollback();
-					StringBuilder sb = new StringBuilder();
+					
 					foreach (var eve in e.EntityValidationErrors)
 					{
 						sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -720,13 +733,16 @@ namespace SmartBusinessWeb.Controllers
 				ve.ErrorMessage);
 						}
 					}
-					//throw new Exception(sb.ToString());
-					ModelHelper.WriteLog(context, string.Format("Import account data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
-					context.SaveChanges();
+				
 				}
 			}
-
-			return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
+            if (!string.IsNullOrEmpty(sb.ToString()))
+            {
+                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                ModelHelper.WriteLog(_context, string.Format("Import account data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+            }          
+            
+            return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
 		}
 
 		[System.Web.Http.HttpPost]
@@ -735,8 +751,8 @@ namespace SmartBusinessWeb.Controllers
 			HttpRequestMessage request = new HttpRequestMessage();
 			string dbname = GetDbName(apId);
 			using var context = new PPWDbContext(dbname);
-
-			using (var transaction = context.Database.BeginTransaction())
+            StringBuilder sb = new StringBuilder();
+            using (var transaction = context.Database.BeginTransaction())
 			{
 				try
 				{
@@ -758,7 +774,7 @@ namespace SmartBusinessWeb.Controllers
 				catch (DbEntityValidationException e)
 				{
 					transaction.Rollback();
-					StringBuilder sb = new StringBuilder();
+					
 					foreach (var eve in e.EntityValidationErrors)
 					{
 						sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -771,13 +787,15 @@ namespace SmartBusinessWeb.Controllers
 				ve.ErrorMessage);
 						}
 					}
-					//throw new Exception(sb.ToString());
-					ModelHelper.WriteLog(context, string.Format("Import job data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
-					context.SaveChanges();
+				
 				}
 			}
-
-			return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
+            if (!string.IsNullOrEmpty(sb.ToString()))
+            {
+                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                ModelHelper.WriteLog(_context, string.Format("Import job data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+            }
+            return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
 		}
 		private static string GetDbName(int apId)
         {

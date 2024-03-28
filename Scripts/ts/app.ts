@@ -844,107 +844,6 @@ function contactdetail(data: IContact) {
 	html += "</ul>";
 	return html;
 }
-
-function customerdetail(data: ICustomer) {
-	let _statustxt = data.IsActive == 1 ? activetxt : inactivetxt;
-	let staff = typeof data.Staff === "undefined" ? "N/A" : data.Staff.UserName;
-	let contact = data.cusContact ?? "N/A";
-	let mobile = data.cusMobile ?? "N/A";
-	let addr = data.cusAddr ?? "N/A";
-	let _isorgan = data.IsOrganization == "1";
-	let _isorgantxt = _isorgan ? yestxt : notxt;
-	let _cname = _isorgan ? data.cusName : data.cusFirstName + " " + data.cusName;
-	let html =
-		"<h3>" +
-		customerdetailtxt +
-		"</h3>" +
-		'<ul class="list-group list-group-flush">';
-	html +=
-		'<li class="list-group-item"><strong>' +
-		isorgantxt +
-		"</strong>: " +
-		_isorgantxt +
-		"</li>";
-	html +=
-		'<li class="list-group-item"><strong>' +
-		nametxt +
-		"</strong>: " +
-		_cname +
-		"</li>";
-	html +=
-		'<li class="list-group-item"><strong>' +
-		statustxt +
-		"</strong>: " +
-		_statustxt +
-		"</li>";
-	html +=
-		'<li class="list-group-item"><strong>' +
-		phonetxt +
-		"</strong>: " +
-		data.cusCode +
-		"</li>";
-	html +=
-		'<li class="list-group-item"><strong>' +
-		emailtxt +
-		"</strong>: " +
-		data.cusEmail +
-		"</li>";
-
-	html +=
-		'<li class="list-group-item"><strong>' +
-		stafftxt +
-		"</strong>: " +
-		staff +
-		"</li>";
-
-	html +=
-		'<li class="list-group-item"><strong>' +
-		contacttxt +
-		"</strong>: " +
-		contact +
-		"</li>";
-	html +=
-		'<li class="list-group-item"><strong>' +
-		mobiletxt +
-		"</strong>: " +
-		mobile +
-		"</li>";
-	html +=
-		'<li class="list-group-item"><strong>' +
-		addresstxt +
-		"</strong>: " +
-		addr +
-		"</li>";
-	html +=
-		'<li class="list-group-item"><strong>' +
-		createtimetxt +
-		"</strong>: " +
-		data.CreateTimeDisplay +
-		"</li>";
-	html +=
-		'<li class="list-group-item"><strong>' +
-		modifytimetxt +
-		"</strong>: " +
-		data.ModifyTimeDisplay +
-		"</li>";
-
-	//console.log('jsonattributelist:', data.JsonAttributeList);
-
-	//html += '<li class="list-group-item"><strong>' + attributelisttxt + '</strong>';
-	//html += '<table class="table table-bordered"><thead><tr><th>' + nametxt + '</th><th>' + valuetxt + '</th></tr></thead><tbody>';
-
-	//var attrlist = JSON.parse(data.JsonAttributeList);
-	//console.log('attrlist:', attrlist);
-
-	//$.each(attrlist, function (i: string, e: string) {
-	//    html += '<tr><td>' + i + '</td><td>' + e.replace('||', ',') + '</td></tr>';
-	//})
-	html += "</tbody></table></li>";
-
-	html += "</ul>";
-	return html;
-}
-
 interface PayService {
 	authCode: string;
 	gateWayUrl: string;
@@ -1729,34 +1628,9 @@ function OnGetCustomersSuccess(response) {
 			_writeCustomers(CusList);
 		}
 
-		if (searchcusmode) {
-			// console.log("cuslist length:" + CusList.length);
-
-			// if (CusList.length === 1) {
-			//   selectedCus = CusList[0];
-			//   // console.log("selectedCus#ongetcustomerssccuess:", selectedCus);
-			//   selectedCusCodeName = selectedCus.cusCustomerID.toString();
-			//   selectCus();
-			//   closeCusModal();
-			// } else {
-			//   openCusModal();
-			//   _writeCustomers(CusList);
-			// }
+		if (searchcusmode) {			
 			searchcusmode = false;
-		} else {
-			// var row = $("#tblCus tr:last-child").removeAttr("style").clone(false);
-			// $("#tblCus tr").not($("#tblCus tr:first-child")).remove();
-
-			// $.each(CusList, function () {
-			//   var customer = this;
-			//   row.addClass("cuscode").attr("data-code", customer.cusCustomerID);
-			//   //console.log('customer:', customer);
-			//   $("td", row).eq(0).html(customer.cusCode);
-			//   $("td", row).eq(1).html(customer.cusName);
-
-			//   $("#tblCus").append(row);
-			//   row = $("#tblCus tr:last-child").clone(false);
-			// });
+		} else {			
 			$(".CusPager").ASPSnippets_Pager({
 				ActiveCssClass: "current",
 				PagerCssClass: "pager",
@@ -1764,7 +1638,6 @@ function OnGetCustomersSuccess(response) {
 				PageSize: model.PageSize,
 				RecordCount: model.RecordCount,
 			});
-			// openCusModal();
 		}
 	} else {
 		togglePaging("customer", false);
@@ -1790,32 +1663,17 @@ function _writeCustomers(_customerlist: Array<ICustomer>) {
 function OnSearchCustomersSuccess(response) {
 	keyword = "";
 	closeWaitingModal();
-	console.log("response:", response);
+	//console.log("response:", response);
 	var model = response;
-	console.log("modelcustomers:", model.Customers);
+	//console.log("modelcustomers:", model.Customers);
 
 	if (model.Customers.length > 0) {
 		togglePaging("customer", true);
 		CusList = model.Customers.slice(0);
-
-		console.log("cuslist:", CusList);
+		//console.log("cuslist:", CusList);
 		if (typeof CusList === "undefined") {
 			GetCustomers4Sales(1);
 		} else {
-			//let modelcustomerlist: Array<ICustomer> = model.Customers.slice(0);
-			//let filteredmodelcuslist: Array<ICustomer> = [];
-			//$.each(modelcustomerlist, function (i, e: ICustomer) {
-			//    let _customer = $.grep(cuslist, function (v, k) {
-			//        return e.cusCustomerID == v.cusCustomerID;
-			//    })[0];
-
-			//    if (typeof _customer === 'undefined') {
-			//        filteredmodelcuslist.push(e);
-			//    }
-			//});
-
-			//cuslist = [...cuslist, ...filteredmodelcuslist];
-			//console.log('cuslist after merge:', cuslist);
 
 			var row = $("#tblCus tr:last-child").removeAttr("style").clone(false);
 			$("#tblCus tr").not($("#tblCus tr:first-child")).remove();
@@ -1823,14 +1681,14 @@ function OnSearchCustomersSuccess(response) {
 			$.each(CusList, function () {
 				var customer = this;
 				row.addClass("cuscode").attr("data-code", customer.cusCustomerID);
-				let chktag = `<input type="checkbox" class="chk" data-Id="${customer.cusCustomerID}">`;
-				let detailtag = `<a href="#" class="btn btn-success detail" role="button" data-Id="${customer.cusCustomerID}">${detailtxt}</a></td>`;
-				let callhistorytag = `<a href="/CallHistory/Index?customerId=${customer.cusCustomerID}" class="btn btn-outline-warning" role="button" data-Id="${customer.AccountProfileId}"><span class="small">${callhistorytxt}</span></a>`;
-				let attrtag = `<a class="btn btn-primary" role="button" href="/CustomerAttribute/Index?customerId=${customer.cusCustomerID}&AccountProfileId=${customer.AccountProfileId}">${attributetxt}</a>`;
-				let editremovetag = `<a class="btn btn-info" role="button" href="/Customer/Edit?customerId=${customer.cusCustomerID}&AccountProfileId=${customer.AccountProfileId}"><span class="small">${edittxt}</span></a>
-                    <a class="btn btn-danger remove" role="button" href="#" data-Id="${customer.cusCustomerID}" data-apid="${customer.AccountProfileId}"><span class="small">${removetxt}</span></a>`;
-				let salesman =
-					customer.SalesPerson == null ? "N/A" : customer.SalesPerson.UserName;
+				let chktag = `<input type="checkbox" class="chk" data-id="${customer.cusCustomerID}">`;
+				let detailtag = `<a href="#" class="btn btn-success detail" role="button" data-id="${customer.cusCustomerID}">${detailtxt}</a></td>`;
+				let callhistorytag = `<a href="/CallHistory/Index?customerId=${customer.cusCustomerID}" class="btn btn-outline-warning" role="button"><span class="small">${callhistorytxt}</span></a>`;
+				let attrtag = `<a class="btn btn-primary" role="button" href="/CustomerAttribute/Index?customerId=${customer.cusCustomerID}">${attributetxt}</a>`;
+				let editremovetag = `<a class="btn btn-info" role="button" href="/Customer/Edit?customerId=${customer.cusCustomerID}"><span class="small">${edittxt}</span></a>
+                    <a class="btn btn-danger remove" role="button" href="#" data-id="${customer.cusCustomerID}"><span class="small">${removetxt}</span></a>`;
+				let salesman = "N/A";
+					
 				$("td", row)
 					.eq(0)
 					.css({ width: "5px", "max-width": "5px" })
@@ -1845,17 +1703,17 @@ function OnSearchCustomersSuccess(response) {
 					.eq(2)
 					.css({ width: "100px", "max-width": "100px" })
 					.addClass("text-center")
-					.html(customer.cusContact);
+					.html(customer.cusContact??"");
 				$("td", row)
 					.eq(3)
 					.css({ width: "110px", "max-width": "110px" })
 					.addClass("text-center")
-					.html(customer.cusEmail);
+					.html(customer.cusEmail??"");
 				$("td", row)
 					.eq(4)
 					.css({ width: "100px", "max-width": "100px" })
 					.addClass("text-center")
-					.html(customer.AccountProfileName);
+					.html(customer.AccountProfileName??"");
 				$("td", row)
 					.eq(5)
 					.css({ width: "100px", "max-width": "100px" })
@@ -5590,200 +5448,83 @@ interface ICustomerPointPriceLevel {
 	PriceLevelID: string;
 	CustomerPoint: number;
 }
-function initCustomer(): ICustomer {
-	return {
-		cusIsActive: false,
-		cusChgCtrl: "",
-		cusCode: $("#cusCode").val() as string,
-		cusName: $("#cusName").val() as string,
-		cusTitle: "",
-		cusFirstName: "",
-		cusSurname: "",
-		cusGender: "",
-		cusPhone: "",
-		cusFax: "",
-		cusEmail: $("#cusEmail").val() as string,
-		cusAddr: "",
-		cusContact: "",
-		cusPriceLevel: "",
-		cusStatusCode: "",
-		cusRmks: "",
-		cusStatusAttained: null,
-		cusDeposit: null,
-		cusPointsSoFar: 0,
-		PointsActive: 0,
-		cusPointsUsed: 0,
-		cusVipNextReset: null,
-		CreateBy: "",
-		CreateTime: null,
-		ModifyBy: "",
-		ModifyTime: null,
-		cusLockBy: "",
-		cusLockTime: null,
-		cusPriceLevelID: "",
-		cusCustomerID: 0,
-		cusTermsID: null,
-		cusDSN: "",
-		AccountProfileId: 1,
-		AccountProfileName: "",
-		cusPriceLevelDescription: null,
-		salescode: "",
-		IsActive: -1,
-		Staff: initCrmUser(),
-		IsOrganization: "",
-		cusMobile: "",
-		CreateTimeDisplay: "",
-		ModifyTimeDisplay: "",
-		cusAddrLocation: 0,
-		cusAddrStreetLine1: "",
-		cusAddrStreetLine2: "",
-		cusAddrStreetLine3: "",
-		cusAddrStreetLine4: "",
-		cusAddrCity: "",
-		cusAddrState: "",
-		cusAddrPostcode: "",
-		cusAddrCountry: "",
-		cusAddrPhone1: "",
-		cusAddrPhone2: "",
-		cusAddrPhone3: "",
-		cusAddrFax: "",
-		cusAddrWeb: "",
-		Address: initAddress(),
-		SalesPerson: initCrmUser(),
-		cusIsOrganization: true,
-		CustId: 0,
-		CustCode: "",
-		CustName: "",
-		CustPointsSoFar: 0,
-		CustPointsUsed: 0,
-		CustPhone: "",
-		AddressList: [],
-		cusSaleComment: "",
-		PaymentIsDue: 0,
-		BRExpiryDate: "",
-		BRNo: "",
-		BalanceDueDays: 0,
-		IsBRexpired: false,
-		cusStatus: "",
-		PaymentTermsDesc: "",
-		cusPhone1Whatsapp: false,
-		cusPhone2Whatsapp: false,
-		cusPhone3Whatsapp: false,
-		IsLastSellingPrice: false,
-		customerItems: [],
-		CurrencyID: null,
-		CurrencyCode: null,
-		TaxIDNumber: null,
-		TaxCodeID: 0,
-		TaxPercentageRate: 0,
-		ExchangeRate: 0,
-		JobList: [],
-		UploadFileList: [],
-		FollowUpDateInfo: {} as ICustomerInfo,
-		statuscls: null,
-		CustomAttributes: null,
-		FollowUpStatusDisplay: null,
-		FollowUpDateDisplay: null,
-		cusId: null,
-		unsubscribe: false,
-	};
-}
-
 interface ICustomer {
+	cusCustomerID: number;
 	cusIsActive: boolean;
-	cusChgCtrl: string;
 	cusCode: string;
 	cusName: string;
-	cusTitle: string;
-	cusFirstName: string;
-	cusSurname: string;
-	cusGender: string;
-	cusPhone: string;
-	cusFax: string;
-	cusEmail: string;
-	cusAddr: string;
-	cusContact: string;
-	cusPriceLevel: string;
-	cusStatusCode: string;
-	cusRmks: string;
-	cusStatusAttained: string | null;
-	cusDeposit: number | null;
+	cusContact: string | null;
+	cusPhone: string | null;
+	cusMobile: string | null;
+	cusEmail: string | null;
+	cusFax: string | null;
+	cusAddrLocation: number | null;
+	cusAddrStreetLine1: string | null;
+	cusAddrStreetLine2: string | null;
+	cusAddrStreetLine3: string | null;
+	cusAddrStreetLine4: string | null;
+	cusAddrStreetLine5: string | null;
+	cusAddrCity: string | null;
+	cusAddrState: string | null;
+	cusAddrPostcode: string | null;
+	cusAddrCountry: string | null;
+	cusAddrPhone1: string | null;
+	cusAddrPhone2: string|null;
+	cusAddrPhone3: string|null;
+	cusAddrFax: string|null;
+	cusAddrWeb: string|null;
+	cusPriceLevel: string|null;
+	cusPriceLevelID: string|null;
 	cusPointsSoFar: number;
-	PointsActive: number;
+	cusPointsActive: number;
 	cusPointsUsed: number;
-	cusVipNextReset: string | null;
-	CreateBy: string;
-	CreateTime: string | null;
-	ModifyBy: string;
-	ModifyTime: string | null;
-	cusLockBy: string;
-	cusLockTime: string | null;
-	cusPriceLevelID: string;
-	cusCustomerID: number;
+	cusSaleComment: string|null;
 	cusTermsID: number | null;
-	cusDSN: string;
-	AccountProfileId: number;
-	AccountProfileName: string;
-	cusPriceLevelDescription: string | null;
-	salescode: string;
-	IsActive: number;
-	Staff: ICrmUser;
-	IsOrganization: string;
-	cusMobile: string;
-	CreateTimeDisplay: string;
-	ModifyTimeDisplay: string;
-	cusAddrLocation: number;
-	cusAddrStreetLine1: string;
-	cusAddrStreetLine2: string;
-	cusAddrStreetLine3: string;
-	cusAddrStreetLine4: string;
-	cusAddrCity: string;
-	cusAddrState: string;
-	cusAddrPostcode: string;
-	cusAddrCountry: string;
-	cusAddrPhone1: string;
-	cusAddrPhone2: string;
-	cusAddrPhone3: string;
-	cusAddrFax: string;
-	cusAddrWeb: string;
-	Address: IAddress;
-	SalesPerson: ICrmUser;
-	cusIsOrganization: boolean;
-	CustId: number;
-	CustCode: string;
-	CustName: string;
-	CustPointsSoFar: number;
-	CustPointsUsed: number;
-	CustPhone: string;
-	AddressList: Array<IAddressView>;
-	cusSaleComment: string;
-	PaymentIsDue: number;
-	BRExpiryDate: string;
-	BRNo: string;
-	BalanceDueDays: number;
-	IsBRexpired: boolean;
-	cusStatus: string | null;
-	PaymentTermsDesc: string | null;
-	cusPhone1Whatsapp: boolean | null;
-	cusPhone2Whatsapp: boolean | null;
-	cusPhone3Whatsapp: boolean | null;
-	IsLastSellingPrice: boolean;
-	customerItems: ICustomerItem[];
+	TermsOfPaymentID: string|null;
+	PaymentIsDue: number | null;
+	DiscountDays: number | null;
+	BalanceDueDays: number | null;
+	DiscountDate: number | null;
+	BalanceDueDate: number | null;
+	PaymentTermsDesc: string;
+	FollowUpDate: Date | null;
 	CurrencyID: number | null;
-	CurrencyCode: string | null;
-	TaxIDNumber: string | null;
+	CurrencyCode: string|null;
+	TaxIDNumber: string|null;
 	TaxCodeID: number | null;
+	cusWhatsappPhoneNo: string | null;
+	statuscls: string | null;
+	FollowUpStatus: string | null;
+	FollowUpStatusDisplay: string | null;
+	CustomAttributes: string | null;
+	UploadFileList: string[];
+	ImgList: string[];
+	FileList: string[];
+	GlobalAttributeList: IGlobalAttribute[];
+	CustomAttributeList: ICustomAttribute[];
+	jsCustomAttributeList: string | null;
+	cusPriceLevelDescription: string|null;
+	StreetLines: string[];
+	IpCountry: string | null;
+	salescode: string | null;
+	FollowUpDateDisplay: string | null;
+	AccountProfileName: string | null;
+	CreateTimeDisplay: string | null;
+	ModifyTimeDisplay: string | null;
+	iPriceLevel: number | null;
+	PointsActive: number;
+	LastSellingPrice: number | null;
+	AddressList: IAddressView[];
+	NewCustomerId: number | null;
+	IsLastSellingPrice: boolean | null;
 	TaxPercentageRate: number | null;
 	ExchangeRate: number | null;
-	JobList: IMyobJob[];
-	UploadFileList: string[];
-	FollowUpDateInfo: ICustomerInfo;
-	statuscls: string | null;
-	CustomAttributes: string | null;
-	FollowUpStatusDisplay: string | null;
-	FollowUpDateDisplay: string | null;
-	cusId: number | null;
-	unsubscribe: boolean;
+	TaxCode: string | null;
+	FollowUpDateInfo: ICustomerInfo | null;
+	jsCustomerInfo: string | null;
+	FollowUpRecordList: ICustomerInfo[];
+	unsubscribe: boolean | null;
+	CustomerItems: ICustomerItem[];
 }
 function initAddressView(): IAddressView {
 	return {
@@ -7358,7 +7099,7 @@ interface IStockFilter {
 function initCustomerFormData(customer: ICustomer): ICustomerFormData {
 	return {
 		model: structuredClone(customer),
-		addressList: [],
+		/*addressList: [],*/
 		__RequestVerificationToken: <string>(
 			$("input[name=__RequestVerificationToken]").val()
 		),
@@ -7378,7 +7119,7 @@ interface IBaseFormData {
 }
 interface ICustomerFormData extends IBaseFormData {
 	model: ICustomer;
-	addressList: Array<IAddressView>;
+	//addressList: Array<IAddressView>;
 }
 interface IContactFormData extends IBaseFormData {
 	model: IContact;
@@ -9276,8 +9017,8 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 			} else {
 				if (selectedCus.cusCode.toLowerCase() !== "guest") {
 					//console.log("selectedCus:", selectedCus);
-					if (selectedCus.customerItems) {
-						const proItems = selectedCus.customerItems.filter(
+					if (selectedCus.CustomerItems) {
+						const proItems = selectedCus.CustomerItems.filter(
 							(x) => x.itmCode == selectedItemCode
 						);
 						const proItem =
@@ -11679,7 +11420,7 @@ function OnGetStocksOK(response) {
 			//let _disabled = (itemoption) && itemoption.Disabled ? "disabled" : "";
 			let _disabled = _checked !== "" ? "disabled" : "";
 			if (forstock)
-				html += `<td style="width:10px;max-width:10px;"><input type="checkbox" class="form-check chk" data-Id="${item.itmItemID}" ${_checked} ${_disabled}></td>`;
+				html += `<td style="width:10px;max-width:10px;"><input type="checkbox" class="form-check chk" data-id="${item.itmItemID}" ${_checked} ${_disabled}></td>`;
 
 			if (!fortransfer && enablebuysellunits) {
 				html = html
@@ -11797,7 +11538,7 @@ function OnGetStocksOK(response) {
 
 				let _html = forstock
 					? `${locqtydisplay}`
-					: `<input type="number" class="${inputcls}" data-isprimary="${isprimary}" data-code="${item.itmCode}" style="width:70%;" data-shop="${e}" data-onhandstock="${item.OnHandStock}" data-Id="${Id}" data-oldval="${locqty}" data-abssqty="${abssqty}" data-itemid="${item.itmItemID}" value="${locqty}" ${readonly} title="${transferdblclickhints}"/>`;
+					: `<input type="number" class="${inputcls}" data-isprimary="${isprimary}" data-code="${item.itmCode}" style="width:70%;" data-shop="${e}" data-onhandstock="${item.OnHandStock}" data-id="${Id}" data-oldval="${locqty}" data-abssqty="${abssqty}" data-itemid="${item.itmItemID}" value="${locqty}" ${readonly} title="${transferdblclickhints}"/>`;
 
 				html += `<td class="text-right" style="width:${qtycolwidth};max-width:${qtycolwidth}">${_html}</td>`;
 
@@ -11811,7 +11552,7 @@ function OnGetStocksOK(response) {
 				html += `<td style="width:${qtycolwidth};max-width:${qtycolwidth}" class="text-right">${_html}</td>`;
 			}
 			if (forstock) {
-				let _html = `<button class="btn btn-info mr-2 edit btnsmall" type="button" data-Id="${item.itmItemID}" onclick="editItem(${item.itmItemID});"><span class="">${edittxt}</span></button>`;
+				let _html = `<button class="btn btn-info mr-2 edit btnsmall" type="button" data-id="${item.itmItemID}" onclick="editItem(${item.itmItemID});"><span class="">${edittxt}</span></button>`;
 				html += `<td>${_html}</td>`;
 			}
 			html += "</tr>";
@@ -16313,7 +16054,7 @@ const populateIaAccordion = (addRow: boolean) => {
 		const chkused = c.iaUsed4Variation ? "checked" : "";
 
 		return `
-            <h3>${c.iaName}<span class="small danger float-right" data-Id="${c.tmpId}" onclick="toggleAccordionState(1);removeItemAttr(this);" style="background-color:white;border-radius:3px;padding:1px;">${removetxt}</span></h3>
+            <h3>${c.iaName}<span class="small danger float-right" data-id="${c.tmpId}" onclick="toggleAccordionState(1);removeItemAttr(this);" style="background-color:white;border-radius:3px;padding:1px;">${removetxt}</span></h3>
                 <div class="row">
                     <div class="col-12 col-md-3">
                         <label>${nametxt}</label>
@@ -16347,7 +16088,7 @@ const populateIaAccordion = (addRow: boolean) => {
 
 	if (addRow) {
 		let latestId = `attr#${ItemAttrList.length}`;
-		html.push(`<h3>${customattributetxt}<span class="small danger float-right" data-Id="${latestId}" onclick="toggleAccordionState(1);removeItemAttr(this);" style="background-color:white;border-radius:3px;padding:1px;">${removetxt}</span></h3>
+		html.push(`<h3>${customattributetxt}<span class="small danger float-right" data-id="${latestId}" onclick="toggleAccordionState(1);removeItemAttr(this);" style="background-color:white;border-radius:3px;padding:1px;">${removetxt}</span></h3>
                 <div class="row">
                     <div class="col-12 col-md-3">
                         <label>${nametxt}</label>
@@ -17393,9 +17134,7 @@ function OnSearchCustomersOK(data) {
 				customer.cusEmail == null || customer.cusEmail == ""
 					? "N/A"
 					: customer.cusEmail;
-			let cname = customer.cusIsOrganization
-				? customer.cusName
-				: customer.cusFirstName + " " + customer.cusName;
+			let cname = customer.cusName;
 			html += `<tr>
 
                 <td style="width:110px;max-width:110px;" class="text-center">${cname}</td>
@@ -17409,8 +17148,8 @@ function OnSearchCustomersOK(data) {
 			//<td style="width:70px;max-width:70px;"><a href="#" class="btn btn-success detail" role="button" data-id="${customer.cusCustomerID}">${detailtxt}</a></td>
 
 			html += `<td style="width:125px;max-width:125px;">
-                    <a class="btn btn-info" role="button" href="/Customer/Edit?customerId=${customer.cusCustomerID}&AccountProfileId=${customer.AccountProfileId}"><span class="small">${edittxt}</span></a>
-                    <a class="btn btn-danger remove" role="button" href="#" data-Id="${customer.cusCustomerID}" data-apid="${customer.AccountProfileId}"><span class="small">${removetxt}</span></a>
+                    <a class="btn btn-info" role="button" href="/Customer/Edit?customerId=${customer.cusCustomerID}"><span class="small">${edittxt}</span></a>
+                    <a class="btn btn-danger remove" role="button" href="#" data-id="${customer.cusCustomerID}"><span class="small">${removetxt}</span></a>
                 </td>
             </tr>`;
 		});
@@ -17434,7 +17173,7 @@ function validCusForm() {
 		msg += $infoblk.data("customerphonerequired") + "<br>";
 	} else {
 		if (customer.cusPhone !== <string>$("#phoneinuse").val()!.toString()) {
-			if (phonelist.includes(customer.cusPhone)) {
+			if (phonelist.includes(customer.cusPhone??"")) {
 				msg += customerphoneduplicatederrtxt + "<br>";
 				duplicated = true;
 			}
@@ -17468,10 +17207,7 @@ function validCusForm() {
 					if (_attrmode) {
 						if (isorgan && customer.cusName === "") {
 							$cusname.addClass("focus");
-						}
-						if (!isorgan && customer.cusFirstName === "") {
-							$cusfname.addClass("focus");
-						}
+						}					
 						if (customer.cusCode === "") {
 							$cuscode.addClass("focus");
 						}
@@ -17493,15 +17229,10 @@ function validCusForm() {
 }
 
 function fillInCustomer() {
-	customer = initCustomer();
+	customer = {} as ICustomer;
 	customer.cusCustomerID = <number>$("#cusCustomerID").val();
-	customer.cusCode = editmode
-		? ($("#cusCode").val() as string)
-		: ($("#cusPhone").val() as string);
-	// console.log("cuscode:" + customer.cusCode);
-	customer.cusName = isorgan
-		? <string>$("#cusName").val()
-		: <string>$("#cusLastName").val();
+	customer.cusCode = $("#cusCode").val() as string;
+	customer.cusName = <string>$("#cusName").val();
 	customer.cusPhone = <string>$("#cusPhone").val();
 	customer.cusSaleComment = <string>$salecomment.val();
 	customer.PaymentIsDue = <number>$paymentIsDue.val();
@@ -17509,17 +17240,14 @@ function fillInCustomer() {
 	let $points = $("#points");
 	let newpoints: number = <number>$points.val();
 	let oldpoints: number = <number>$points.data("oldpoints");
-	customer.cusPointsSoFar += newpoints - oldpoints;
-	customer.cusEmail = <string>$("#cusEmail").val();
-	customer.IsActive = <number>$("#IsActive").val();
-	customer.AccountProfileId = <number>$("#AccountProfileId").val();
-	customer.IsOrganization = <string>$("#IsOrgan").val();
+	customer.cusPointsSoFar += (newpoints - oldpoints);
+	customer.cusEmail = <string>$("#cusEmail").val();	
 	customer.cusContact = <string>$("#cusContact").val();
-	customer.cusFirstName = <string>$("#cusFirstName").val();
-	customer.cusAddrCity = <string>$("#cusAddrCity").val();
+	customer.cusAddrCity = <string>$("#cusCity").val();
 	customer.cusAddrCountry = <string>$("#cusCountry").val();
 	customer.cusAddrWeb = <string>$("#cusAddrWeb").val();
 
+	customer.AddressList = [];
 	for (let i = 1; i <= 5; i++) {
 		let address: IAddressView = initAddressView();
 		address.CusAddrLocation = i.toString();
@@ -17534,31 +17262,24 @@ function fillInCustomer() {
 	customer.cusAddrStreetLine4 = <string>$("#cusAddrStreetLine4").val();
 
 	customer.cusAddrPhone1 = <string>$("#cusAddrPhone1").val();
-	customer.cusPhone1Whatsapp = false;
 	let $phone2 = $("#cusAddrPhone2");
 	if ($phone2.length) {
-		customer.cusAddrPhone2 = <string>$("#cusAddrPhone2").val();
-		customer.cusPhone2Whatsapp = false;
+		customer.cusAddrPhone2 = <string>$("#cusAddrPhone2").val();	
 	}
 	let $phone3 = $("#cusAddrPhone3");
 	if ($phone3.length) {
-		customer.cusAddrPhone3 = <string>$("#cusAddrPhone3").val();
-		customer.cusPhone3Whatsapp = false;
+		customer.cusAddrPhone3 = <string>$("#cusAddrPhone3").val();		
 	}
 
 	customer.IsLastSellingPrice = $("#IsLastSellingPrice").is(":checked");
 
-	if (editmode) {
-		$("#drpCity").val($("#cusCity").val() as string);
+	if (customer.FollowUpDateInfo) {
+		customer.FollowUpDateInfo.type = "date";
+		customer.FollowUpDateInfo.status = $(".followup:checked").val() as string;
+		customer.FollowUpDateInfo.JsFollowUpDate = $("#followUpDate").val() as string;
+		customer.FollowUpDateInfo.Id = Number($("#FollowUpDateInfo_Id").val());
 	}
-	//else {
-	//    $("#cusCountry").val("香港");
-	//}
-
-	customer.FollowUpDateInfo.type = "date";
-	customer.FollowUpDateInfo.status = $(".followup:checked").val() as string;
-	customer.FollowUpDateInfo.JsFollowUpDate = $("#followUpDate").val() as string;
-	customer.FollowUpDateInfo.Id = Number($("#FollowUpDateInfo_Id").val());
+	
 
 	customer.unsubscribe = $("#chkUnsubscribe").is(":checked");
 }
@@ -17874,33 +17595,35 @@ function selectcus() {
 		let $drpaddr = fillInAddressList();
 		deliveryAddressId = <number>$drpaddr.val();
 
-		selectedCusCodeName = selectedCus.cusCustomerID.toString();
+		if (selectedCus) {
+			selectedCusCodeName = selectedCus.cusCustomerID.toString();
 
-		let $cusname = $("#txtCustomerName");
-		$cusname.off("change");
-		$cusname.val(selectedCus.cusName);
-		$cusname.off("focus").on("change", handleCustomerNameChange);
+			let $cusname = $("#txtCustomerName");
+			$cusname.off("change");
+			$cusname.val(selectedCus.cusName);
+			$cusname.off("focus").on("change", handleCustomerNameChange);
 
-		if (selectedCus.cusName.toLowerCase() !== "guest") {
-			$("#txtPhone").val(selectedCus.cusPhone);
-			$("#txtPoints").val(<number>selectedCus.PointsActive);
-			//setCustomerPriceLevel();
-			$("#txtPriceLevel").val(<string>selectedCus.cusPriceLevelDescription);
-			//console.log("cus joblist:", selectedCus.JobList);
-			if (enableTax && !inclusivetax) {
-				//console.log("here");
-				updateRows();
+			if (selectedCus.cusName.toLowerCase() !== "guest") {
+				$("#txtPhone").val(selectedCus.cusPhone??"");
+				$("#txtPoints").val(<number>selectedCus.PointsActive);
+				//setCustomerPriceLevel();
+				$("#txtPriceLevel").val(<string>selectedCus.cusPriceLevelDescription);
+				//console.log("cus joblist:", selectedCus.JobList);
+				if (enableTax && !inclusivetax) {
+					//console.log("here");
+					updateRows();
+				}
+			} else {
+				$("#txtPhone").val("");
+				$("#txtPoints").val(0);
+				$("#txtPriceLevel").val("");
 			}
-		} else {
-			$("#txtPhone").val("");
-			$("#txtPoints").val(0);
-			$("#txtPriceLevel").val("");
+
+			$(".cuscode").text(selectedCus.cusCode);
+
+			if (!useForexAPI && selectedCus.ExchangeRate)
+				exRate = selectedCus.ExchangeRate!;
 		}
-
-		$(".cuscode").text(selectedCus.cusCode);
-
-		if (!useForexAPI && selectedCus.ExchangeRate)
-			exRate = selectedCus.ExchangeRate!;
 	}
 }
 
@@ -18629,7 +18352,7 @@ $(document).on("click", ".respond", function () {
 
 	if (forcustomer) {
 		customerId = $(this).data("id") as number;
-		selectedCus = initCustomer();
+		selectedCus = {} as ICustomer;
 		selectedCus.cusCode = $(this).data("code");
 		selectedCus.cusCustomerID = customerId;
 		selectedCus.cusName = $(this).data("name");
@@ -19183,7 +18906,7 @@ function handleRecurOrderList(this: any) {
 			Wholesales.wsCustomerPO = ws.wsCustomerPO;
 			$("#txtCustomerPO").val(Wholesales.wsCustomerPO);
 			// console.log("data customer#orderid:", data.Customer);
-			selectedCus = initCustomer();
+			selectedCus = {} as ICustomer;
 			selectedCus.cusCustomerID = ws.Customer.cusCustomerID;
 			selectedCus.cusName = ws.Customer.cusName;
 			selectedCus.cusPhone = ws.Customer.cusPhone;
@@ -19361,47 +19084,6 @@ $(document).on("change", "#cusCountry", function () {
 	$("#cusAddrCountry").val($(this).val() as string);
 });
 
-function fillInCities() {
-	var regionfile = approvalmode
-		? "/Api/GetCitiesFrmMyobCustomList"
-		: "/scripts/hongkong_regions.json";
-	$.ajax({
-		type: "GET",
-		url: regionfile,
-		data: {},
-		success: function (data) {
-			let html = "<option value=''>---</option>";
-			//console.log(data.data);
-			// console.log("customer city:" + customer.cusAddrCity);
-			if (approvalmode) {
-				data.map((d: any) => {
-					//   console.log(d[1]);
-					const region = d.Name;
-					const selected = region == customer.cusAddrCity ? "selected" : "";
-					html += `<option value="${region}" ${selected}>${region}</option>`;
-				});
-			} else {
-				data.data.map((d: string[]) => {
-					//   console.log(d[1]);
-					const region = d[1];
-					const selected = region == customer.cusAddrCity ? "selected" : "";
-					html += `<option value="${region}" ${selected}>${region}</option>`;
-				});
-			}
-			// $.each(data, function (i, e) {});
-			_fillInCity(html);
-		},
-		dataType: "json",
-	});
-}
-
-function _fillInCity(html: string) {
-	$("#drpCity").empty().append(html);
-	$("#drpCity").val(customer.cusAddrCity);
-}
-$(document).on("change", "#drpCity", function () {
-	$("#cusAddrCity").val($(this).val() as string);
-});
 $(document).on("dblclick", ".orderId", function () {
 	handleRecurOrderList.call(this);
 });
@@ -19881,9 +19563,9 @@ function handleAssign(salespersonId: number | null) {
 					let email = formatEmail(e.Email, e.UserName) ?? "N/A";
 					let notes = e.surNotes ?? "N/A";
 					if (salespersonId != null && salespersonId == e.surUID) {
-						html += `<tr data-Id="${e.surUID}" class="selected"><td>${uname}</td><td>${email}</td><td>${notes}</td><td><span class="small">${e.ModifyTimeDisplay}</span></td></tr>`;
+						html += `<tr data-id="${e.surUID}" class="selected"><td>${uname}</td><td>${email}</td><td>${notes}</td><td><span class="small">${e.ModifyTimeDisplay}</span></td></tr>`;
 					} else {
-						html += `<tr data-Id="${e.surUID}" class="pointer" ondblclick="assignSave(${e.surUID});"><td>${uname}</td><td>${email}</td><td>${notes}</td><td><span class="small">${e.ModifyTimeDisplay}</span></td></tr>`;
+						html += `<tr data-id="${e.surUID}" class="pointer" ondblclick="assignSave(${e.surUID});"><td>${uname}</td><td>${email}</td><td>${notes}</td><td><span class="small">${e.ModifyTimeDisplay}</span></td></tr>`;
 					}
 				});
 				$target = $("#tblsalesmen tbody");
@@ -20124,11 +19806,11 @@ function infoCallBackOk(data: IInfoBase[]) {
 			let lastedited: string = lasteditedbyformat
 				.replace("{0}", x.ModifiedBy!)
 				.replace("{1}", x.ModifyTimeDisplay!);
-			html += `<div class="displayblk col-12 col-sm-4 mb-1" data-enqid="${x.enId}" data-cusid="${x.cusId}" data-Id="${x.Id}">
+			html += `<div class="displayblk col-12 col-sm-4 mb-1" data-enqid="${x.enId}" data-cusid="${x.cusId}" data-id="${x.Id}">
                             <div class="card">
                                 <div class="text-right small"><span class="fa fa-edit text-info record pointer mr-2"></span><span class="fa fa-close text-danger record pointer"></span></div>
                                 <div class="card-body">
-                                    <div class="txtarea" data-Id="${x.Id}">
+                                    <div class="txtarea" data-id="${x.Id}">
                                         <p class="recorddisplay">${x.followUpRecord}</p>
                                         <input type="text" class="form-control recordentry hide" data-record="${x.followUpRecord}" onchange="handleRecordChange(this);" />
                                         <span class="small d-inline-block lastedited">${lastedited}</span>
@@ -20327,7 +20009,7 @@ function confirmAdvancedSearch() {
 						(data as ICustomer[]).forEach((customer) => {
 							const email = customer.cusEmail ?? "N/A";
 							const cname = customer.cusName;
-							html += `<tr class="${customer.statuscls}" data-Id="${customer.cusCustomerID}">
+							html += `<tr class="${customer.statuscls}" data-id="${customer.cusCustomerID}">
                     <td style="width:110px;max-width:110px;" class="text-center">${cname}</td>
                     <td style="width:100px;max-width:100px;" class="text-center">${customer.cusContact}</td>
                     <td style="width:110px;max-width:110px;" class="text-center">${email}</td>
@@ -20338,7 +20020,7 @@ function confirmAdvancedSearch() {
 
                     <td style="width:120px;max-width:120px;">
                         <a class="btn btn-info btnsmall" role="button" href="/Customer/Edit?customerId=${customer.cusCustomerID}">${edittxt}</a>
-                        <a class="btn btn-danger btnsmall remove" role="button" href="#" data-Id="${customer.cusCustomerID}" data-apid="${customer.AccountProfileId}">${removetxt}</a>
+                        <a class="btn btn-danger btnsmall remove" role="button" href="#" data-id="${customer.cusCustomerID}">${removetxt}</a>
                     </td>
                 </tr>`;
 						});
@@ -20348,7 +20030,7 @@ function confirmAdvancedSearch() {
 						(data as IeTrack[]).forEach((etrack) => {
 							const email = etrack.Email ?? "N/A";
 							const cname = etrack.ContactName;
-							html += `<tr class="${etrack.statuscls}" data-Id="${etrack.ContactId}">
+							html += `<tr class="${etrack.statuscls}" data-id="${etrack.ContactId}">
                              <td style="width:110px;max-width:110px;" class="text-left">${etrack.BlastSubject}</td>
                     <td style="width:110px;max-width:110px;" class="text-left">${cname}</td>
                     <td style="width:100px;max-width:100px;" class="text-left">${etrack.Organization}</td>
@@ -21913,7 +21595,7 @@ function addItemVariRow(hasFocusCls: boolean, maxqty: number) {
             <label for="${ivdelqtyId}">
                ${pocode}
              </label>
-              <input type="text" class="form-control ivdelqty mx-2" Id="${ivdelqtyId}" data-ivseq="${ivseq}" data-itemcode="${selectedItemCode}" data-Id="${Id}" data-pocode=${pocode} data-ivqty="${maxqty}" data-totalqty="${e.qty}" data-ividlist="${e.ivIdList}" min="0" max="${maxqty}" data-currentivdq="${currentivdq}" ${disabled} style="max-width:80px;" value="${currentivdq}">
+              <input type="text" class="form-control ivdelqty mx-2" Id="${ivdelqtyId}" data-ivseq="${ivseq}" data-itemcode="${selectedItemCode}" data-id="${Id}" data-pocode=${pocode} data-ivqty="${maxqty}" data-totalqty="${e.qty}" data-ividlist="${e.ivIdList}" min="0" max="${maxqty}" data-currentivdq="${currentivdq}" ${disabled} style="max-width:80px;" value="${currentivdq}">
            </div>`; //don't use number type here => errorpone!!!
 
 					/**

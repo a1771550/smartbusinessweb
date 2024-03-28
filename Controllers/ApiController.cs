@@ -98,7 +98,6 @@ namespace SmartBusinessWeb.Controllers
                 msg = $"Hi {comInfo.contactName}, the ABSS file is being locked, making the ABSS Data Transfer job unsuccessful.";
                 SendSimpleEmail(comInfo.contactEmail, comInfo.contactName, msg, "ABSS Data Transfer Failed", context, apId);
                 ModelHelper.WriteLog(context, msg, "AutoABSSTransfer");
-                context.SaveChanges();
                 return;
             }
             ModelHelper.SaveSuppliersFrmCentral(context, apId, comInfo);
@@ -109,7 +108,6 @@ namespace SmartBusinessWeb.Controllers
             msg = $"Hi {comInfo.contactName}, the ABSS data is successfully downloaded and saved to the SmartBusiness Database.";
             SendSimpleEmail(comInfo.contactEmail, comInfo.contactName, msg, "ABSS Data Transfer OK", context, apId);
             ModelHelper.WriteLog(context, msg, "AutoABSSTransfer");
-            context.SaveChanges();
 
             #region Dispose Connections           
             context.Dispose();
@@ -214,8 +212,9 @@ namespace SmartBusinessWeb.Controllers
             #endregion
         }
 
-        private static void WriteLogUpdateCheckoutIds(int apId, PPWDbContext context, string ConnectionString, List<string> sqllist, HashSet<long> checkoutIds, PosUploadType type)
+        private void WriteLogUpdateCheckoutIds(int apId, PPWDbContext context, string ConnectionString, List<string> sqllist, HashSet<long> checkoutIds, PosUploadType type)
         {
+            StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
                 try
@@ -256,7 +255,7 @@ namespace SmartBusinessWeb.Controllers
                 catch (DbEntityValidationException e)
                 {
                     transaction.Rollback();
-                    StringBuilder sb = new StringBuilder();
+                   
                     foreach (var eve in e.EntityValidationErrors)
                     {
                         sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -269,9 +268,12 @@ namespace SmartBusinessWeb.Controllers
             ve.ErrorMessage);
                         }
                     }
-                    ModelHelper.WriteLog(context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
-                    context.SaveChanges();
                 }
+            }
+            if (!string.IsNullOrEmpty(sb.ToString()))
+            {
+                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                ModelHelper.WriteLog(_context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
             }
         }
 
@@ -1367,7 +1369,7 @@ namespace SmartBusinessWeb.Controllers
                 var content = await _client.GetStringAsync(url);
                 var cuslist = JsonConvert.DeserializeObject<List<CommonLib.Models.MYOB.MYOBCustomerModel>>(content);
                 var currentcodelist = string.Join(",", cuslist.Select(x => x.CardIdentification).ToList());
-
+                StringBuilder sb = new StringBuilder();
                 using (var transaction = context.Database.BeginTransaction())
                 {
                     try
@@ -1445,14 +1447,13 @@ namespace SmartBusinessWeb.Controllers
                         }
                         context.Contacts.AddRange(newcontacts);
                         context.SaveChanges();
-                        ModelHelper.WriteLog(context, "Import PGCustomer data from Central done", "ImportFrmCentral");
-                        transaction.Commit();
+                        ModelHelper.WriteLog(context, "Import Customer data from Central done", "ImportFrmCentral");                      
 
                     }
                     catch (DbEntityValidationException e)
                     {
                         transaction.Rollback();
-                        StringBuilder sb = new StringBuilder();
+                       
                         foreach (var eve in e.EntityValidationErrors)
                         {
                             sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -1465,11 +1466,14 @@ namespace SmartBusinessWeb.Controllers
                 ve.ErrorMessage);
                             }
                         }
-                        ModelHelper.WriteLog(context, string.Format("Import PGCustomer data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
-                        context.SaveChanges();
                     }
                 }
-
+                if (!string.IsNullOrEmpty(sb.ToString()))
+                {
+                    using var _context = new PPWDbContext(Session["DBName"].ToString());
+                    ModelHelper.WriteLog(_context, string.Format("Import PGCustomer data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
+                }
+              
             }
             return RedirectToAction("ImportFrmABSS", "Contact", new { done = 1 });
         }
@@ -3134,8 +3138,7 @@ namespace SmartBusinessWeb.Controllers
                     customer.cusMobile = _customer.cusMobile;
                     customer.BalanceDueDays = _customer.BalanceDueDays;
                     customer.PaymentIsDue = _customer.PaymentIsDue;
-                    customer.PaymentTermsDesc = _customer.Description;
-                    customer.IsABSS = _customer.isABSS == 1;
+                    customer.PaymentTermsDesc = _customer.Description;                
                     customer.IsLastSellingPrice = _customer.IsLastSellingPrice;
                     customer.unsubscribe = _customer.unsubscribe;
                     GetCustomerAddressList(context, ref customer);

@@ -80,8 +80,8 @@ $(document).on("click", "#btnEdit", function () {
         _formdata.model = customer;
 
         let _url = "/Customer/Edit";
-        console.log("formdata:", _formdata);
-        console.log("url:" + _url);
+        //console.log("formdata:", _formdata);
+        //console.log("url:" + _url);
         //return false;
         openWaitingModal();
         $.ajax({
@@ -90,7 +90,7 @@ $(document).on("click", "#btnEdit", function () {
             data: _formdata,
             success: function () {
                 closeWaitingModal();
-                window.location.href = "/Customer/Index";
+                window.location.href = `/Customer/${$infoblk.data("referrer")}`;
             },
             dataType: "json",
         });
@@ -223,7 +223,6 @@ $(document).on("click", ".cattr.pointer.fa-close", function () {
     removeCattr($(this).data("cattr"));
 });
 function handleAttrAccordionActivated() {
-
     //console.log("cattrlist#handle:", cAttributes);    
     if (cAttributes) {
         displayCustomAttributes();
@@ -243,6 +242,8 @@ function displayCustomAttributes() {
 }
 
 $(function () {
+    setFullPage();
+    triggerMenu(1, 2);
     forcustomer = true;
     apId = Number($infoblk.data("apid"));
     //console.log('sortorder:' + $('#sortorder').val() + ';sortcol:' + $('#sortcol').val());

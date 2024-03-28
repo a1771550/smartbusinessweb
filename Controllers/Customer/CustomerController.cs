@@ -179,60 +179,22 @@ namespace SmartBusinessWeb.Controllers.Customer
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         // GET: MyobCustomer
-        public ActionResult UnSyncList(int SortCol = 3, string SortOrder = "desc", string Keyword = "", int? PageNo = 1)
+        public ActionResult UnSyncList(int PageNo = 1, int SortCol = 3, string SortOrder = "desc", string Keyword = "")
         {
             ViewBag.ParentPage = "customer";
             ViewBag.PageName = "unsynclist";
-            if (string.IsNullOrEmpty(Keyword))
-                Keyword = null;
+            if (string.IsNullOrEmpty(Keyword)) Keyword = null;
+
             CustomerEditModel model = new CustomerEditModel
             {
+                SortCol = SortCol,
                 SortOrder = SortOrder == "desc" ? "asc" : "desc",
                 CurrentSortOrder = SortOrder,
                 Keyword = Keyword,
             };
 
-            List<MyobCustomerModel> customerlist = new List<MyobCustomerModel>();
-
-            List<ActionLogModel> actionloglist = new List<ActionLogModel>();
-            List<int> cusIdList = new List<int>();
-            var apId = ComInfo.AccountProfileId;
-
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
-            {
-                //todo:
-                customerlist = ModelHelper.GetUnSyncCustomersList(context, Keyword).OrderByDescending(x => x.CreateTime).ToList();
-                model.IdList = customerlist.Select(x => (long)x.cusCustomerID).ToList();
-            }
-
-            model.SortCol = SortCol;
-
-            int Size_Of_Page = PageSize;
-            int No_Of_Page = PageNo ?? 1;
-            var sortColumnIndex = SortCol;
-            var sortDirection = SortOrder;
-
-
-            if (sortColumnIndex == 0)
-            {
-                customerlist = sortDirection == "asc" ? customerlist.OrderBy(c => c.cusName).ToList() : customerlist.OrderByDescending(c => c.cusName).ToList();
-            }
-            else if (sortColumnIndex == 1)
-            {
-                customerlist = sortDirection == "asc" ? customerlist.OrderBy(c => c.cusContact).ToList() : customerlist.OrderByDescending(c => c.cusContact).ToList();
-            }
-            else if (sortColumnIndex == 2)
-            {
-                customerlist = sortDirection == "asc" ? customerlist.OrderBy(c => c.cusEmail).ToList() : customerlist.OrderByDescending(c => c.cusEmail).ToList();
-            }
-            else if (sortColumnIndex == 3)
-            {
-                customerlist = sortDirection == "asc" ? customerlist.OrderBy(c => c.CreateTime).ToList() : customerlist.OrderByDescending(c => c.CreateTime).ToList();
-            }
-
-            model.MyobCustomerList = customerlist.ToPagedList(No_Of_Page, Size_Of_Page);
-
-
+            model.CustomerList = ModelHelper.GetCustomersList(SortCol, SortOrder, Keyword, false).ToList();
+            model.PagingCustomerList = model.CustomerList.ToPagedList(PageNo, PageSize);
             return View(model);
         }
 
@@ -240,7 +202,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         // GET: MyobCustomer
-        public ActionResult Index(int SortCol = 5, string SortOrder = "desc", string Keyword = "", int? PageNo = 1, int? CheckAll = 0, int SortCol_a = 0, string SortOrder_a = "desc", string Keyword_a = "", int? PageNo_a = 1, string cusIds = null)
+        public ActionResult Index(int SortCol = 5, string SortOrder = "desc", string Keyword = "", int PageNo = 1, int? CheckAll = 0, int SortCol_a = 0, string SortOrder_a = "desc", string Keyword_a = "", int PageNo_a = 1, string cusIds = null)
         {
             ViewBag.ParentPage = ViewBag.PageName = "customer";
             if (string.IsNullOrEmpty(Keyword))
@@ -248,28 +210,22 @@ namespace SmartBusinessWeb.Controllers.Customer
             CustomerEditModel model = new CustomerEditModel
             {
                 CurrentSortOrder = SortOrder,
-                SortOrder = SortOrder,//will switch later
+                SortCol = SortCol,
                 Keyword = Keyword,
                 CheckAll = CheckAll,
                 CurrentSortOrder_a = SortOrder_a,
                 Keyword_a = Keyword_a,
             };
-
-            List<PPWLib.Models.CRM.Customer.CustomerModel> customerlist = new List<PPWLib.Models.CRM.Customer.CustomerModel>();
-
-            List<SalesCustomerModel> kcustomerlist = new List<SalesCustomerModel>();
-
             List<ActionLogModel> actionloglist = new List<ActionLogModel>();
             List<int> cusIdList = new List<int>();
             var apId = ComInfo.AccountProfileId;
 
-            //GetCustomerListNoPaging2
-            customerlist = ModelHelper.GetCustomerListNoPaging(apId, Keyword).OrderByDescending(x => x.FollowUpDate).ThenByDescending(x => x.CreateTime).ToList();
+            model.CustomerList = ModelHelper.GetCustomersList(SortCol, SortOrder, Keyword).ToList();
 
             if (cusIds != null)
             {
                 var _cusIdList = cusIds.Split(',');
-                customerlist = customerlist.Where(x => _cusIdList.Contains(x.cusCustomerID.ToString())).ToList();
+                model.CustomerList = model.CustomerList.Where(x => _cusIdList.Contains(x.cusCustomerID.ToString())).ToList();
             }
 
             using var context = new PPWDbContext(Session["DBName"].ToString());
@@ -288,42 +244,10 @@ namespace SmartBusinessWeb.Controllers.Customer
                              }
                       ).OrderByDescending(x => x.actLogTime).ToList();
 
-            int Size_Of_Page = int.Parse(System.Configuration.ConfigurationManager.AppSettings["ContactPageSize"]);
-            int No_Of_Page = PageNo ?? 1;
-            int No_Of_Page_a = PageNo_a ?? 1;
 
-            #region Do Sorting
-            model.SortCol = SortCol;
             model.SortCol_a = SortCol_a;
-            var sortColumnIndex = SortCol;
-            var sortDirection = SortOrder;
             var sortColumnIndex_a = SortCol_a;
             var sortDirection_a = SortOrder_a;
-            if (sortColumnIndex == 0)
-            {
-                customerlist = sortDirection == "asc" ? customerlist.OrderBy(c => c.cusName).ToList() : customerlist.OrderByDescending(c => c.cusName).ToList();
-            }
-            else if (sortColumnIndex == 1)
-            {
-                customerlist = sortDirection == "asc" ? customerlist.OrderBy(c => c.cusContact).ToList() : customerlist.OrderByDescending(c => c.cusContact).ToList();
-            }
-            else if (sortColumnIndex == 2)
-            {
-                customerlist = sortDirection == "asc" ? customerlist.OrderBy(c => c.cusEmail).ToList() : customerlist.OrderByDescending(c => c.cusEmail).ToList();
-            }
-            else if (sortColumnIndex == 3)
-            {
-                customerlist = sortDirection == "asc" ? customerlist.OrderBy(c => c.CreateTime).ToList() : customerlist.OrderByDescending(c => c.CreateTime).ToList();
-            }
-            else if (sortColumnIndex == 4)
-            {
-                customerlist = sortDirection == "asc" ? customerlist.OrderBy(c => c.FollowUpStatus).ToList() : customerlist.OrderByDescending(c => c.FollowUpStatus).ToList();
-            }
-            else if (sortColumnIndex == 5)
-            {
-                customerlist = sortDirection == "asc" ? customerlist.OrderBy(c => c.FollowUpDate).ToList() : customerlist.OrderByDescending(c => c.FollowUpDate).ToList();
-            }
-            //}
             if (sortColumnIndex_a == 0)
             {
                 actionloglist = sortDirection_a == "asc" ? actionloglist.OrderBy(c => c.actUserCode).ToList() : actionloglist.OrderByDescending(c => c.actUserCode).ToList();
@@ -332,34 +256,14 @@ namespace SmartBusinessWeb.Controllers.Customer
             {
                 actionloglist = sortDirection_a == "asc" ? actionloglist.OrderBy(c => c.actLogTime).ToList() : actionloglist.OrderByDescending(c => c.actLogTime).ToList();
             }
-            if (SortOrder_a == "desc")
-            {
-                model.SortOrder_a = "asc";
-            }
-            else
-            {
-                model.SortOrder_a = "desc";
-            }
-            #endregion
 
-            #region switch sortorder
-            if (string.IsNullOrEmpty(Keyword))
-            {
-                if (SortOrder == "desc")
-                {
-                    model.SortOrder = "asc";
-                }
-                else
-                {
-                    model.SortOrder = "desc";
-                }
-            }
-            #endregion
+            model.SortOrder_a = SortOrder_a == "desc" ? "asc" : "desc";
+            model.SortOrder = SortOrder == "desc" ? "asc" : "desc";
 
-            model.CustomerList = customerlist.ToPagedList(No_Of_Page, Size_Of_Page);
-            model.CusIdList = customerlist.Select(x => x.cusCustomerID).ToHashSet();
+            model.PagingCustomerList = model.CustomerList.ToPagedList(PageNo, PageSize);
+            model.CusIdList = model.CustomerList.Select(x => x.cusCustomerID).ToHashSet();
 
-            model.ActionLogList = actionloglist.ToPagedList(No_Of_Page_a, Size_Of_Page);
+            model.ActionLogList = actionloglist.ToPagedList(PageNo_a, PageSize);
 
             model.GlobalAttrList = CustomerEditModel.GetGlobalAttrList(apId);
             model.GlobalAttrList.Add(new GlobalAttributeModel
@@ -375,19 +279,18 @@ namespace SmartBusinessWeb.Controllers.Customer
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [HttpGet]
-        public ActionResult Edit(int customerId = 0, string enqId = "")
+        public ActionResult Edit(int customerId = 0, string enqId = "", string referrer="")
         {
             ViewBag.ParentPage = "customer";
             ViewBag.PageName = "edit";
             var region = CommonLib.Helpers.CultureHelper.GetCountryByIP();
             var comInfo = Session["ComInfo"] as ComInfo;
 
-            CustomerEditModel cmodel = new CustomerEditModel(customerId, enqId, false);
-            var model = cmodel.MyobCustomer;
-            //don't move the code below to the construction of CustomerModel!!!                
-            model.IpCountry = region != null ? region.EnglishName : "Hong Kong";
-            model.enableCRM = (bool)comInfo.enableCRM;
-            return View(model);
+            CustomerEditModel cmodel = new CustomerEditModel(customerId, enqId);
+            cmodel.Referrer = referrer;
+            cmodel.IpCountry = region != null ? region.EnglishName : "Hong Kong";
+            cmodel.enableCRM = (bool)comInfo.enableCRM;
+            return View(cmodel);
 
         }
 
@@ -402,26 +305,6 @@ namespace SmartBusinessWeb.Controllers.Customer
 
             cmodel.Edit(model);
 
-            string msg = Resources.Resource.CustomerSaved;
-            return Json(msg);
-        }
-
-        [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public JsonResult KEdit(SalesCustomerModel model)
-        {
-            ViewBag.ParentPage = ViewBag.PageName = "customer";
-            SalesCustomerEditModel smodel = new SalesCustomerEditModel();
-            if (model.Id == 0)
-            {
-                smodel.Add(model);
-            }
-            else
-            {
-                smodel.Edit(model);
-            }
             string msg = Resources.Resource.CustomerSaved;
             return Json(msg);
         }

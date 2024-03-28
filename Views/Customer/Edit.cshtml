@@ -1,29 +1,26 @@
-﻿@model PPWLib.Models.Customer.MyobCustomerModel
+﻿@model CustomerEditModel
 @{
     string plsentertxt = string.Format(Resources.Resource.PlsEnterFormat, string.Format(string.Format(Resources.Resource.ValueFormat, string.Format(Resources.Resource.AllFormat, string.Format(Resources.Resource.DropDownFormat, Resources.Resource.CustomAttribute)))));
 
     bool enablecrm = Model.enableCRM;
-    bool edit = Model.cusCustomerID > 0;
+	var Customer = Model.MyobCustomer;
+    bool edit = Customer.cusCustomerID > 0;
 
     ViewBag.Title = edit ? string.Format(Resources.Resource.EditFormat, Resources.Resource.Customer) : string.Format(Resources.Resource.AddFormat, Resources.Resource.Customer);
 
-
     string phonelist = string.Join(",", Model.CusPhoneList);
-    string maillist = string.Join(",", Model.CusEmailList);
+    string maillist = string.Join(",", Model.CusEmailList);   
+
     int rand = CommonHelper.GetVersionRandomNo();
     string mandatory = Resources.Resource.StarMarkedMandatory.Replace("*", "<span class='asterisk'>*</span>");
-    string _organchecked = Model.cusIsOrganization ? "checked" : "";
-    string _indivchecked = Model.cusIsOrganization ? "" : "checked";
+    string _organchecked = Customer.cusIsOrganization ? "checked" : "";
+    string _indivchecked = Customer.cusIsOrganization ? "" : "checked";
     string _checked = "checked";
     bool isorgan = true;
     int iorgan = 1;
-    var tmpcust = new PPWLib.Models.Customer.MyobCustomerModel();
-    tmpcust.Address = new CommonLib.Models.MYOB.AddressModel();
     if (edit)
     {
-        isorgan = _organchecked == "checked";
-        tmpcust = Model;
-        tmpcust.Address = Model.Address;
+        isorgan = _organchecked == "checked";      
     }
     else
     {
@@ -36,7 +33,7 @@
     string maxcharlength4fnametxt = string.Format("({0})", string.Format(Resources.Resource.MaxChar, ConfigurationManager.AppSettings["MaxFirstNameLength"]));
     string maxcharlength4lnametxt = string.Format("({0})", string.Format(Resources.Resource.MaxChar, ConfigurationManager.AppSettings["MaxLastNameLength"]));
 
-    string _readonly = Model.IsABSS ? "readonly" : "";
+    string _readonly = Customer.cusCheckout!=null&&(bool)Customer.cusCheckout ? "readonly" : "";
     var enteratleasttxt = string.Format(Resources.Resource.EnterAtLeastOneFormat, Resources.Resource.Item);
 }
 <link rel="stylesheet" type="text/css" href="~/Content/customer/edit.css?v=@rand" />
@@ -51,293 +48,253 @@
 
 <div class="form-horizontal my-4">
 
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+	@Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-    @Html.HiddenFor(model => model.cusCustomerID)
-    @Html.HiddenFor(model => model.AccountProfileId)
-    @Html.HiddenFor(model => model.cusCode)
+	<input type="hidden" id="cusCustomerID" name="cusCustomerID" value="@Customer.cusCustomerID" />
+	<input type="hidden" id="cusCode" name="cusCode" value="@Customer.cusCode" />
 
+	<div class="row">
+		<div class="col-12 col-md-4">
+			<div class="form-group">
+				<label class="control-label" for="PaymentIsDue">@Resources.Resource.PaymentIsDue</label>
 
-    <div class="row">
-        <div class="col-12 col-md-4">
-            <div class="form-group">
-                <label class="control-label" for="BRNo">@Resources.Resource.PaymentIsDue</label>
+				@Html.DropDownListFor(model => Customer.PaymentIsDue, Model.TermsOfPaymentList as SelectList, new { @class = "form-control",@id="PaymentIsDue" })
 
-                @Html.DropDownListFor(model => model.PaymentIsDue, Model.TermsOfPaymentList as SelectList, new { @class = "form-control" })
+			</div>
+		</div>
+		<div class="col-12 col-md-4">
+			<div class="form-group">
+				<label class="control-label" for="BalanceDueDays">@Resources.Resource.BalanceDueDays</label>
 
-            </div>
-        </div>
-        <div class="col-12 col-md-4">
-            <div class="form-group">
-                <label class="control-label" for="BalanceDueDays">@Resources.Resource.BalanceDueDays</label>
+				<input type="number" class="form-control" id="BalanceDueDays" name="BalanceDueDays" value="@Customer.BalanceDueDays" />
 
-                <input type="number" class="form-control" id="BalanceDueDays" name="BalanceDueDays" value="@Model.BalanceDueDays" />
+			</div>
+		</div>
+		<div class="col-12 col-md-4">
 
-            </div>
-        </div>
-        <div class="col-12 col-md-4">
+		</div>
+	</div>
 
-        </div>
-    </div>
+	<hr />
 
-    <hr />
+	<input type="hidden" id="IsOrgan" value="@iorgan" />
 
-    <input type="hidden" id="IsOrgan" value="@iorgan" />
+	<div class="row">
+		<div class="col-12 col-md-3">
+			<div id="colastname" class="form-group required">
+				<label class="control-label " for="cusName">@Resources.Resource.Name</label>
 
-    <div class="row">
-        <div class="col-12 col-md-3">
-            <div id="colastname" class="form-group required">
-                <label class="control-label " for="cusName">@Resources.Resource.Name</label>
+				<input type="text" class="form-control" maxlength="@ConfigurationManager.AppSettings["MaxCoNameLength"]" id="cusName" name="cusName" value="@Html.Raw(Customer.cusName)" @_readonly />
+				<span id="maxconamelength" class="danger small">@maxcharlength4conametxt</span>
+				@if (edit)
+				{
+					<span class="danger small d-block">@string.Format(Resources.Resource.ABSSNameNotModifiableAfterUploaded, Resources.Resource.Customer)</span>
+				}
 
-                <input type="text" class="form-control" maxlength="@ConfigurationManager.AppSettings["MaxCoNameLength"]" id="cusName" name="cusName" value="@Html.Raw(Model.cusName)" @_readonly />
-                <span id="maxconamelength" class="danger small">@maxcharlength4conametxt</span>
-                @if (edit)
-                {
-                    <span class="danger small d-block">@string.Format(Resources.Resource.ABSSNameNotModifiableAfterUploaded, Resources.Resource.Customer)</span>
-                }
+			</div>			
+		</div>
+		<div class="col-12 col-md-3">
 
-            </div>
+			<div class="form-group required">
+				<label class="control-label " for="cusPhone">@Resources.Resource.Phone</label>
+				<input type="text" class="form-control" id="cusPhone" name="cusPhone" value="@Customer.cusPhone" />
+		
+			</div>
 
-            <div id="namesblk" class="hide" data-lastname="@Html.Raw(Model.cusName)">
+		</div>
+		<div class="col-12 col-md-3">
+			<div class="form-group required">
+				<label class="control-label " for="cusContact">@Resources.Resource.Contact</label>
 
-                <label class="control-label " for="cusFirstName">@Resources.Resource.FirstName</label>
+				<input type="text" class="form-control" id="cusContact" name="cusContact" value="@Html.Raw(Customer.cusContact)" />
 
-                <input type="text" class="form-control" maxlength="@ConfigurationManager.AppSettings["MaxFirstNameLength"]" id="cusFirstName" name="cusFirstName" value="@Html.Raw(Model.cusFirstName)" />
-                <span id="maxfnamelength" class="alert small">@maxcharlength4fnametxt</span>
+			</div>
+		</div>
+		<div class="col-12 col-md-3">
+			<div class="form-group">
+				<label class="control-label" for="cusEmail">@Resources.Resource.Email</label>
+				<input type="email" class="form-control email" id="cusEmail" name="cusEmail" value="@Customer.cusEmail" />
+			</div>
+		</div>
+	</div>
 
-                <div id="lnameblk" class="my-3">
-                    <label class="control-label " for="cusLastName">@Resources.Resource.LastName</label>
+	<div class="row">
+		<div class="col-12 col-md-3">
+			<div class="form-group">
+				<label class="control-label" for="cusCity">@Resources.Resource.City</label>
+				<input type="text" id="cusCity" name="cusCity" class="form-control" value="@Customer.cusAddrCity" />
+			</div>
+		</div>
+		<div class="col-12 col-md-3">
+			<div class="form-group">
+				@Html.Partial("_DefaultCountries", null, new ViewDataDictionary { { "edit", edit }, { "Countries", Model.MyobCountries }, { "SelectedCountry", Customer.cusAddrCountry } })
+			</div>
+		</div>
+		<div class="col-12 col-md-3">
+			<div class="form-group">
+				<label class="control-label" for="cusAddrWeb">@Resources.Resource.Website</label>
+				<input type="text" id="cusAddrWeb" name="cusAddrWeb" class="form-control" value="@Customer.cusAddrWeb" />
+			</div>
+		</div>
+		<div class="col-12 col-md-3">
+			<div class="form-group">
+				<label class="control-label" for="cusPointsSoFar">@Resources.Resource.Points</label>
+				<input type="number" id="points" class="form-control" data-oldpoints="@Customer.cusPointsActive" value="@Customer.cusPointsActive" />
+			</div>
 
-                    <input type="text" class="form-control" maxlength="@ConfigurationManager.AppSettings["MaxLastNameLength"]" id="cusLastName" name="cusLastName" value="@Html.Raw(Model.cusLastName)" />
-                    <span id="maxlnamelength" class="alert small">@maxcharlength4lnametxt</span>
-                </div>
-
-
-            </div>
-        </div>
-        <div class="col-12 col-md-3">
-
-            <div class="form-group required">
-                <label class="control-label " for="cusPhone">@Resources.Resource.Phone</label>
-
-                @Html.EditorFor(model => model.cusPhone, new { htmlAttributes = new { @class = "form-control" } })
-
-            </div>
-
-        </div>
-        <div class="col-12 col-md-3">
-            <div class="form-group required">
-                <label class="control-label " for="cusContact">@Resources.Resource.Contact</label>
-
-                <input type="text" class="form-control" id="cusContact" name="cusContact" value="@Html.Raw(Model.cusContact)" />
-
-            </div>
-        </div>
-        <div class="col-12 col-md-3">
-            <div class="form-group">
-                <label class="control-label" for="cusEmail">@Resources.Resource.Email</label>
-
-                @Html.EditorFor(model => model.cusEmail, new { htmlAttributes = new { @class = "form-control email", @type = "email" } })
-
-
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12 col-md-3">
-            <div class="form-group">
-                <label class="control-label" for="cusCity">@Resources.Resource.City</label>
-
-                <input type="text" id="cusCity" name="cusCity" class="form-control" value="@tmpcust.cusAddrCity" />
-
-            </div>
-        </div>
-        <div class="col-12 col-md-3">
-            <div class="form-group">
-                @Html.Partial("_DefaultCountries", null, new ViewDataDictionary { { "edit", edit }, { "Countries", Model.MyobCountries }, { "SelectedCountry", Model.cusAddrCountry } })
-            </div>
-        </div>
-        <div class="col-12 col-md-3">
-            <div class="form-group">
-                <label class="control-label" for="cusAddrWeb">@Resources.Resource.Website</label>
-
-                <input type="text" id="cusAddrWeb" name="cusAddrWeb" class="form-control" value="@tmpcust.cusAddrWeb" />
-
-            </div>
-        </div>
-        <div class="col-12 col-md-3">
-
-            <div class="form-group">
-                <label class="control-label" for="cusPointsSoFar">@Resources.Resource.Points</label>
-
-                <input type="number" id="points" class="form-control" data-oldpoints="@Model.cusPointsActive" value="@Model.cusPointsActive" />
-
-            </div>
-
-        </div>
-    </div>
+		</div>
+	</div>
 
 
-    @for (int i = 1; i <= 4; i++)
-    {
-        string lbl = $"{Resources.Resource.Address}{i}";
-        string _id = $"cusAddrStreetLine{i}";
-        <div class="form-group">
-            <label class="control-label" for="">@lbl</label>
+	@for (int i = 1; i <= 4; i++)
+	{
+		string lbl = $"{Resources.Resource.Address}{i}";
+		string _id = $"cusAddrStreetLine{i}";
+		<div class="form-group">
+			<label class="control-label" for="">@lbl</label>
+			<input type="text" id="@_id" class="form-control address" style="max-width:none;" maxlength="255" value="@Customer.StreetLines[i - 1]" />
+		</div>
+	}
 
-            <input type="text" id="@_id" class="form-control address" style="max-width:none;" maxlength="255" value="@Model.StreetLines[i - 1]" />
+	@if ((bool) Model.ComInfo.enableWhatsappLink)
+	{
+		<div class="d-flex">
 
-        </div>
-    }
-
-    @if ((bool)Model.ComInfo.enableWhatsappLink)
-    {
-        <div class="d-flex">
-
-            <div class="col-12 col-md-4">
-                <div class="form-group">
-                    <label class="control-label " for="cusAddrPhone1">@Resources.Resource.Phone 1</label>
-                    @Html.EditorFor(model => model.cusAddrPhone1, new { htmlAttributes = new { @class = "form-control mobile" } })
-                    <span class="small whatsappphone font-weight-bold" data-phone="1" style="color:#9f8ccf">WhatsApp</span>
-                </div>
-            </div>
+			<div class="col-12 col-md-4">
+				<div class="form-group">
+					<label class="control-label " for="cusAddrPhone1">@Resources.Resource.Phone 1</label>
+					<input type="text" id="cusAddrPhone1" name="cusAddrPhone1" class="form-control mobile" value="@Customer.cusAddrPhone1" />
+					<span class="small whatsappphone font-weight-bold" data-phone="1" style="color:#9f8ccf">WhatsApp</span>
+				</div>
+			</div>
 
 
-            <div class="col-12 col-md-4">
-                <div class="form-group">
-                    <label class="control-label " for="cusAddrPhone2">@Resources.Resource.Phone 2</label>
-                    @Html.EditorFor(model => model.cusAddrPhone2, new { htmlAttributes = new { @class = "form-control mobile" } })
-                    <span class="small whatsappphone font-weight-bold pointer" data-phone="@Model.cusAddrPhone2" style="color:#9f8ccf">WhatsApp</span>
-                </div>
-            </div>
-            <div class="col-12 col-md-4">
-                <div class="form-group">
-                    <label class="control-label " for="cusAddrPhone3">@Resources.Resource.Phone 3</label>
-                    @Html.EditorFor(model => model.cusAddrPhone3, new { htmlAttributes = new { @class = "form-control mobile" } })
-                    <span class="small whatsappphone font-weight-bold pointer" data-phone="@Model.cusAddrPhone3" style="color:#9f8ccf">WhatsApp</span>
-                </div>
-            </div>
-        </div>
-    }
+			<div class="col-12 col-md-4">
+				<div class="form-group">
+					<label class="control-label " for="cusAddrPhone2">@Resources.Resource.Phone 2</label>
+					<input type="text" id="cusAddrPhone2" name="cusAddrPhone2" class="form-control mobile" value="@Customer.cusAddrPhone2" />
+					<span class="small whatsappphone font-weight-bold pointer" data-phone="@Customer.cusAddrPhone2" style="color:#9f8ccf">WhatsApp</span>
+				</div>
+			</div>
+			<div class="col-12 col-md-4">
+				<div class="form-group">
+					<label class="control-label " for="cusAddrPhone3">@Resources.Resource.Phone 3</label>
+					<input type="text" id="cusAddrPhone3" name="cusAddrPhone3" class="form-control mobile" value="@Customer.cusAddrPhone3" />
+					<span class="small whatsappphone font-weight-bold pointer" data-phone="@Customer.cusAddrPhone3" style="color:#9f8ccf">WhatsApp</span>
+				</div>
+			</div>
+		</div>
+	}
 
-    @{ _checked = "checked";}
-    @if (edit)
-    {
-        _checked = Model.IsLastSellingPrice == null ? "" : (bool)Model.IsLastSellingPrice ? "checked" : "";
-    }
-
-    <div class="form-group">
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="IsLastSellingPrice" value="1" @_checked>
-            <label class="form-check-label font-weight-bold" for="IsLastSellingPrice">@Resources.Resource.LastSellingPrice</label>
-        </div>
-    </div>
+	@{ _checked = edit && Customer.IsLastSellingPrice != null && (bool)Customer.IsLastSellingPrice ? "checked" : "";}
 
 
-    <button type="button" class="btn btn-warning" id="btnFile">@Resources.Resource.UploadFile</button>
-    <button type="button" class="btn btn-primary ml-2 hide" id="btnViewFile">@Resources.Resource.ViewFile</button>
+	<div class="form-group">
+		<div class="form-check">
+			<input class="form-check-input" type="checkbox" id="IsLastSellingPrice" value="1" @_checked>
+			<label class="form-check-label font-weight-bold" for="IsLastSellingPrice">@Resources.Resource.LastSellingPrice</label>
+		</div>
+	</div>
 
-    <link rel="stylesheet" type="text/css" href="~/Content/globalattribute.css?v=@rand" />
-    <div id="globalattr" class="my-4">
-        @Html.Partial("_GlobalAttributes", Model.GlobalAttributeList, new ViewDataDictionary { { "CustomAttributeList", Model.CustomAttributeList } })
-        @Html.Partial("_DropDownModal", null, new ViewDataDictionary { { "cls", "default" } })
-        @Html.Partial("_GComboModal")
-    </div>
+	@if (edit)
+	{
+		<button type="button" class="btn btn-warning" id="btnFile">@Resources.Resource.UploadFile</button>
+		<button type="button" class="btn btn-primary ml-2 hide" id="btnViewFile">@Resources.Resource.ViewFile</button>
 
-    @{
-        var _needchecked = Model.FollowUpDateInfo == null ? "checked" : Model.FollowUpDateInfo.status == CusFollowUpStatus.need.ToString() ? "checked" : "";
-        var _noneedchecked = Model.FollowUpDateInfo == null ? "" : Model.FollowUpDateInfo.status == CusFollowUpStatus.noneed.ToString() ? "checked" : "";
-        var _completechecked = Model.FollowUpDateInfo == null ? "" : Model.FollowUpDateInfo.status == CusFollowUpStatus.completed.ToString() ? "checked" : "";
-    }
-    <div class="form-group">
-        <label class="mr-4">@string.Format(Resources.Resource.FollowUpFormat, Resources.Resource.Status)</label>
-        <div class="form-check form-check-inline small">
-            <input class="form-check-input followup" type="radio" name="followup" id="radNeed" value="@CusFollowUpStatus.need.ToString()" @_needchecked>
-            <label class="form-check-label" for="radNeed">@Resources.Resource.NeedFollowUp</label>
-        </div>
-        <div class="form-check form-check-inline small">
-            <input class="form-check-input followup" type="radio" name="followup" id="radNoNeed" value="@CusFollowUpStatus.noneed.ToString()" @_noneedchecked>
-            <label class="form-check-label" for="radNoNeed">@Resources.Resource.NoNeedFollowUp</label>
-        </div>
-        <div class="form-check form-check-inline small">
-            <input class="form-check-input followup" type="radio" name="followup" id="radCompleted" value="@CusFollowUpStatus.completed.ToString()" @_completechecked>
-            <label class="form-check-label" for="radCompleted">@Resources.Resource.Completed</label>
-        </div>
-    </div>
+		<link rel="stylesheet" type="text/css" href="~/Content/globalattribute.css?v=@rand" />
+		<div id="globalattr" class="my-4">
+			@Html.Partial("_GlobalAttributes", Customer.GlobalAttributeList, new ViewDataDictionary { { "CustomAttributeList", Customer.CustomAttributeList } })
+			@Html.Partial("_DropDownModal", null, new ViewDataDictionary { { "cls", "default" } })
+			@Html.Partial("_GComboModal")
+		</div>
 
-    <div class="form-group">
-        <label class="control-label">@string.Format(Resources.Resource.DateFormat, Resources.Resource.FollowUp)</label>
-        <input type="datetime" class="form-control datepicker" id="followUpDate" />
-        @Html.HiddenFor(model => model.FollowUpDateInfo.followUpDate)
-        @Html.HiddenFor(model => model.FollowUpDateInfo.FollowUpDateDisplay)
-        @Html.HiddenFor(model => model.FollowUpDateInfo.Id)
-    </div>
+		var _needchecked = Customer.FollowUpDateInfo == null ? "checked" : Customer.FollowUpDateInfo.status == CusFollowUpStatus.need.ToString() ? "checked" : "";
+		var _noneedchecked = Customer.FollowUpDateInfo == null ? "" : Customer.FollowUpDateInfo.status == CusFollowUpStatus.noneed.ToString() ? "checked" : "";
+		var _completechecked = Customer.FollowUpDateInfo == null ? "" : Customer.FollowUpDateInfo.status == CusFollowUpStatus.completed.ToString() ? "checked" : "";
+
+		<div class="form-group">
+			<label class="mr-4">@string.Format(Resources.Resource.FollowUpFormat, Resources.Resource.Status)</label>
+			<div class="form-check form-check-inline small">
+				<input class="form-check-input followup" type="radio" name="followup" id="radNeed" value="@CusFollowUpStatus.need.ToString()" @_needchecked>
+				<label class="form-check-label" for="radNeed">@Resources.Resource.NeedFollowUp</label>
+			</div>
+			<div class="form-check form-check-inline small">
+				<input class="form-check-input followup" type="radio" name="followup" id="radNoNeed" value="@CusFollowUpStatus.noneed.ToString()" @_noneedchecked>
+				<label class="form-check-label" for="radNoNeed">@Resources.Resource.NoNeedFollowUp</label>
+			</div>
+			<div class="form-check form-check-inline small">
+				<input class="form-check-input followup" type="radio" name="followup" id="radCompleted" value="@CusFollowUpStatus.completed.ToString()" @_completechecked>
+				<label class="form-check-label" for="radCompleted">@Resources.Resource.Completed</label>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="control-label">@string.Format(Resources.Resource.DateFormat, Resources.Resource.FollowUp)</label>
+			<input type="datetime" class="form-control datepicker" id="followUpDate" />
+			<input type="hidden" id="followUpInfoId" name="followUpInfoId" value="@Customer.FollowUpDateInfo.Id" />
+			<input type="hidden" id="followUpDate" name="followUpDate" value="@Customer.FollowUpDateInfo.followUpDate" />
+			<input type="hidden" id="FollowUpDateDisplay" name="FollowUpDateDisplay" value="@Customer.FollowUpDateInfo.FollowUpDateDisplay" />
+		
+		</div>
 
 
-    <div id="followupRecordBlk" class="form-group">
-        <label>@string.Format(Resources.Resource.RecordsFormat, Resources.Resource.FollowUp) <span id="addRecord" class="fa fa-plus small text-primary pointer"></span></label>
-        <div class="row">
-            @if (Model.FollowUpRecordList != null && Model.FollowUpRecordList.Count > 0)
-            {
-                foreach (var record in Model.FollowUpRecordList)
-                {
-                    @Html.Partial("_FollowUpBlk",null,new ViewDataDictionary { { "record", record }, {"displayclss", "col-12 col-sm-4 mb-1" } })  
-                }
-            }
+		<div id="followupRecordBlk" class="form-group">
+			<label>@string.Format(Resources.Resource.RecordsFormat, Resources.Resource.FollowUp) <span id="addRecord" class="fa fa-plus small text-primary pointer"></span></label>
+			<div class="row">
+				@if (Customer.FollowUpRecordList != null && Customer.FollowUpRecordList.Count > 0)
+				{
+					foreach (var record in Customer.FollowUpRecordList)
+					{
+						@Html.Partial("_FollowUpBlk", null, new ViewDataDictionary { { "record", record }, { "displayclss", "col-12 col-sm-4 mb-1" } })
+					}
+				}
 
-            <div class="displayblk template col-12 col-sm-4 mb-1 hide">
-                <div class="card">
-                    <div class="text-right small"><span class="fa fa-edit text-info record pointer mr-2"></span><span class="fa fa-close text-danger record pointer"></span></div>
-                    <div class="card-body">
-                        <div class="txtarea">
-                            <p class="recorddisplay"></p>
-                            <input type="text" class="form-control recordentry hide" data-record="" onchange="handleRecordChange(this);" />
-                            <span class="small d-inline-block lastedited">@Resources.Resource.LastEditedByFormat</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+				<div class="displayblk template col-12 col-sm-4 mb-1 hide">
+					<div class="card">
+						<div class="text-right small"><span class="fa fa-edit text-info record pointer mr-2"></span><span class="fa fa-close text-danger record pointer"></span></div>
+						<div class="card-body">
+							<div class="txtarea">
+								<p class="recorddisplay"></p>
+								<input type="text" class="form-control recordentry hide" data-record="" onchange="handleRecordChange(this);" />
+								<span class="small d-inline-block lastedited">@Resources.Resource.LastEditedByFormat</span>
+							</div>
+						</div>
+					</div>
+				</div>
 
-            <div class="recordblk col-12 col-sm-4 hide" data-cusid="@Model.cusCustomerID">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="txtarea">
-                            <textarea class="form-control record" name="CustomerInfo_followUpRecord" rows="5" cols="30"></textarea>
-                        </div>
-                        <div class="buttons">
-                            <button type="button" class="btn btn-secondary saverecord" data-cusid="@Model.cusCustomerID"><span class="small">@Resources.Resource.Confirm</span></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+				<div class="recordblk col-12 col-sm-4 hide" data-cusid="@Customer.cusCustomerID">
+					<div class="card">
+						<div class="card-body">
+							<div class="txtarea">
+								<textarea class="form-control record" name="CustomerInfo_followUpRecord" rows="5" cols="30"></textarea>
+							</div>
+							<div class="buttons">
+								<button type="button" class="btn btn-secondary saverecord" data-cusid="@Customer.cusCustomerID"><span class="small">@Resources.Resource.Confirm</span></button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
-    @{ 
-        string chkunsubscribe = edit ?Model.unsubscribe==null?"":(bool)Model.unsubscribe?"checked":"": "";
-    }
+		string chkunsubscribe = Customer.unsubscribe != null && (bool)Customer.unsubscribe ? "checked" : "";
+		<div class="form-check">
+			<input class="form-check-input" type="checkbox" value="0" id="chkUnSubscribe" @chkunsubscribe>
+			<label class="form-check-label" for="chkUnSubscribe">
+				@Resources.Resource.UnSubscribeFrmEblast
+			</label>
+		</div>
+	}
 
-    <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="0" id="chkUnSubscribe" @chkunsubscribe>
-        <label class="form-check-label" for="chkUnSubscribe">
-            @Resources.Resource.UnSubscribeFrmEblast
-        </label>
-    </div>
-
-    <button type="button" id="btnEdit" class="btn btn-success mr-2">@Resources.Resource.Save</button>
-
-    <input type="hidden" id="IsActive" name="IsActive" value="1" />
-    <input type="hidden" id="codeinuse" value="@Model.cusCode" />
-    <input type="hidden" id="phoneinuse" value="@Model.cusPhone" />
-    <input type="hidden" id="AccountProfileId" name="AccountProfileId" value="@Model.AccountProfileId" />
-    <input type="hidden" id="enqEmail" name="enqEmail" value="@Model.cusEmail" />
+	<button type="button" id="btnEdit" class="btn btn-success mr-2 my-4">@Resources.Resource.Save</button>
+	<input type="hidden" id="codeinuse" value="@Customer.cusCode" />
+	<input type="hidden" id="phoneinuse" value="@Customer.cusPhone" />
+	<input type="hidden" id="enqEmail" name="enqEmail" value="@Customer.cusEmail" />
 </div>
 }
 
-
 <div>
-    @Html.ActionLink(Resources.Resource.BackToList, "Index")
+    @Html.ActionLink(Resources.Resource.BackToList, Model.Referrer= "UnsyncList")
 </div>
 
 @Html.Partial("_WaitingModal")
@@ -347,13 +304,14 @@
 @{
     string UploadSizeLimitMB = ConfigurationManager.AppSettings["MaxUploadSize"];
     string exceeduploadfilelimittxt = string.Format(Resources.Resource.ExceedUploadSizeLimitWarning, UploadSizeLimitMB);
+    string gattrnamelist = Customer.GlobalAttributeList != null && Customer.GlobalAttributeList.Count > 0 ? string.Join(",", Customer.GlobalAttributeList.Select(x => x.attrName).ToHashSet()) : "";    
 }
 
-<div id="infoblk" data-cusid="@Model.cusCustomerID" data-phonelist="@phonelist" data-maillist="@maillist" data-customernamerequired="@Resources.Resource.CustomerNameRequired" data-customerphonerequired="@Resources.Resource.CustomerPhoneRequired" data-customerphoneduplicatederr="@Resources.Resource.CustomerPhoneDuplicatedErr" data-returnurl="Customer/Edit" data-edit="@edit" data-followupdaterequired="@Resources.Resource.FollowUpDateRequired" data-customerid="@Model.cusCustomerID" data-apid="@Model.AccountProfileId" data-maxconamelength="@ConfigurationManager.AppSettings["MaxCoNameLength"]" data-contactrequired="@Resources.Resource.ContactRequired" data-duplicatedemailalert="@Resources.Resource.DuplicatedEmailAlert" data-ipcountry="@Model.IpCountry" data-selectatleastoneitemtxt="@Resources.Resource.SelectAtLeastOneItemRequired" data-firstnamerequired="@Resources.Resource.FirstNameRequired" data-plsenteralldropdownattrvals="@plsentertxt" data-enablecrm="@Model.enableCRM" data-formaterrwarning="@Resources.Resource.FormatErrWarning" data-salecommentrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.SaleComment)" data-entercustomnamefirsttxt="@string.Format(Resources.Resource.EnterFirstFormat, string.Format(Resources.Resource.NameFormat,Resources.Resource.CustomField))" data-savedtxt="@string.Format(Resources.Resource.Saved,Resources.Resource.Attribute)" data-enteratleasttxt="@enteratleasttxt" data-enterattribtefirsttxt="@string.Format(Resources.Resource.EnterFirstFormat, string.Format(Resources.Resource.NameFormat,Resources.Resource.Attribute))" data-customfieldvaltxt="@string.Format(Resources.Resource.ValueFormat,Resources.Resource.CustomField)" data-uploadurl="/Customer/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@string.Join(",",Model.UploadFileList)" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-jscustomattributelist="@Model.JsCustomAttributeList" data-gattrnamelist="@string.Join(",",Model.GlobalAttributeList.Select(x=>x.attrName).ToHashSet())" data-jscustomerinfo="@Model.JsCustomerInfo"></div>
+<div id="infoblk" data-cusid="@Customer.cusCustomerID" data-phonelist="@phonelist" data-maillist="@maillist" data-customernamerequired="@Resources.Resource.CustomerNameRequired" data-customerphonerequired="@Resources.Resource.CustomerPhoneRequired" data-customerphoneduplicatederr="@Resources.Resource.CustomerPhoneDuplicatedErr" data-returnurl="Customer/Edit" data-edit="@edit" data-followupdaterequired="@Resources.Resource.FollowUpDateRequired" data-customerid="@Customer.cusCustomerID" data-apid="@Customer.AccountProfileId" data-maxconamelength="@ConfigurationManager.AppSettings["MaxCoNameLength"]" data-contactrequired="@Resources.Resource.ContactRequired" data-duplicatedemailalert="@Resources.Resource.DuplicatedEmailAlert" data-ipcountry="@Customer.IpCountry" data-selectatleastoneitemtxt="@Resources.Resource.SelectAtLeastOneItemRequired" data-firstnamerequired="@Resources.Resource.FirstNameRequired" data-plsenteralldropdownattrvals="@plsentertxt" data-enablecrm="@Model.enableCRM" data-formaterrwarning="@Resources.Resource.FormatErrWarning" data-salecommentrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.SaleComment)" data-entercustomnamefirsttxt="@string.Format(Resources.Resource.EnterFirstFormat, string.Format(Resources.Resource.NameFormat,Resources.Resource.CustomField))" data-savedtxt="@string.Format(Resources.Resource.Saved,Resources.Resource.Attribute)" data-enteratleasttxt="@enteratleasttxt" data-enterattribtefirsttxt="@string.Format(Resources.Resource.EnterFirstFormat, string.Format(Resources.Resource.NameFormat,Resources.Resource.Attribute))" data-customfieldvaltxt="@string.Format(Resources.Resource.ValueFormat,Resources.Resource.CustomField)" data-uploadurl="/Customer/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@string.Join(",",Customer.UploadFileList)" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-jscustomattributelist="@Customer.JsCustomAttributeList" data-gattrnamelist="@gattrnamelist" data-jscustomerinfo="@Customer.JsCustomerInfo" data-referrer="@Model.Referrer"></div>
 
 
 <script src="~/Scripts/ts/js/customer/customeredit.js?v=@rand"></script>
 <script src="~/Scripts/ts/js/crm/contact/attributes/globalattribute.js?v=@rand"></script>
 
 @Html.Partial("_UploadFileModal", null, new ViewDataDictionary { { "uploadUrl", "/Customer/UploadFile" } })
-@Html.Partial("_ViewFileModal", null, new ViewDataDictionary { { "imglist", Model.ImgList }, { "filelist", Model.FileList } })
+@Html.Partial("_ViewFileModal", null, new ViewDataDictionary { { "imglist", Customer.ImgList }, { "filelist", Customer.FileList } })
