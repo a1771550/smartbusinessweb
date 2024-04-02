@@ -848,3 +848,6 @@ table.dataTable thead > tr > th.sorting_asc.text-right:before, table.dataTable t
     background-color:#fed1d1;
 }
 
+#pagingblk, #pagingblk_a{
+    font-size:.8rem!important;
+}

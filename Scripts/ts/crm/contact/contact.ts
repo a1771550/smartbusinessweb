@@ -1,7 +1,33 @@
 ﻿$infoblk = $('#infoblk');
 $target = $('#tblcontact tbody');
 let assignedcontactlist: { [Key: string]: string };
-
+function handleEblastContacts() {
+    openWaitingModal();
+    $.ajax({
+        type: "POST",
+        url: '/Customer/AddToEblast',
+        data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val(), contactIds: IdList },
+        success: function (data) {
+            closeWaitingModal();
+            if (data) {
+                $.fancyConfirm({
+                    title: '',
+                    message: data,
+                    shownobtn: false,
+                    okButton: oktxt,
+                    noButton: notxt,
+                    callback: function (value) {
+                        if (value) {
+                            closeWaitingModal();
+                            $('#txtKeyword').trigger("focus");
+                        }
+                    }
+                });
+            }
+        },
+        dataType: 'json'
+    });
+}
 $(document).on('dblclick', '.sgid', function () {
     AssignContactsToGroup($(this).data("id"));
 });
@@ -228,6 +254,7 @@ $('#btnSearchAttr').on('click', function (e) {
     openGattrFilterModal();
 });
 
+
 $(document).on('dblclick', '.hotid', function () {
     closeHotListModal();
     let id: number = <number>$(this).data("id");
@@ -236,22 +263,22 @@ $(document).on('dblclick', '.hotid', function () {
     console.log('dicHotListContacts:', dicHotListContacts);
 
     let hotlistaddedcontactIds: Array<number> = [];
-   
+
     for (const [key, value] of Object.entries(dicHotListContacts)) {
         if (id == parseInt(key)) {
             $.each(IdList, function (i, e) {
                 if (value.includes(e)) {
                     hotlistaddedcontactIds.push(e);
                 }
-            });       
-             //remove id from idlist:
+            });
+            //remove id from idlist:
             IdList = IdList.filter(function (e) { return !value.includes(e); });
         }
     }
 
     console.log('hotlistaddedcontactIds:', hotlistaddedcontactIds);
-   
-    if (hotlistaddedcontactIds.length > 0) { 
+
+    if (hotlistaddedcontactIds.length > 0) {
         $.ajax({
             type: "GET",
             url: '/Api/GetContactNamesByIds',
@@ -444,7 +471,7 @@ $('#btnBlast').on('click', function (e) {
                 }
             }
         });
-    } else {        
+    } else {
         console.log('IdList:', IdList);
         console.log('dicEblastContacts:', dicEblastContacts);
 
@@ -498,33 +525,6 @@ $('#btnBlast').on('click', function (e) {
     }
 });
 
-//function handleEblastContacts() {
-//    openWaitingModal();
-//    $.ajax({
-//        type: "POST",
-//        url: '/Contact/AddToEblast',
-//        data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val(), contactIds: IdList },
-//        success: function (data) {
-//            closeWaitingModal();
-//            if (data) {
-//                $.fancyConfirm({
-//                    title: '',
-//                    message: data,
-//                    shownobtn: false,
-//                    okButton: oktxt,
-//                    noButton: notxt,
-//                    callback: function (value) {
-//                        if (value) {
-//                            closeWaitingModal();
-//                            $('#txtKeyword').focus();
-//                        }
-//                    }
-//                });
-//            }
-//        },
-//        dataType: 'json'
-//    });
-//}
 
 $(document).on('click', '.detail', function () {
     let contactId = $(this).data("id");

@@ -30,7 +30,6 @@ using PPWLib.Models.Journal;
 using CommonLib.Models.MYOB;
 using PPWLib.Models.Item;
 using PPWCommonLib.Helpers;
-using DocumentFormat.OpenXml.Drawing.Diagrams;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -43,7 +42,7 @@ namespace SmartBusinessWeb.Controllers
 
         private string kingdeeApiBaseUrl = ConfigurationManager.AppSettings["KingdeeApiBaseUrl"];
 		private bool SetOrderStatus4Myob { get { return ConfigurationManager.AppSettings["SetOrderStatus4Myob"] == "1"; } }
-		private List<MyobCustomerModel> VipList;
+		private List<CustomerModel> VipList;
 		private bool ispng { get { return ConfigurationManager.AppSettings["IsPNG"] == "1"; } }
 		private string dayendsFolder { get; set; }
 		//{2}/Api/GetMyobData?dsn={0}&amp;filename={1}       
@@ -616,7 +615,7 @@ namespace SmartBusinessWeb.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<ActionResult> DoExportFrmShopAsync(DayEndsModel model, FormCollection formCollection)
 		{
-			VipList = new List<MyobCustomerModel>();
+			VipList = new List<CustomerModel>();
 			bool includePending = model.IncludePending = formCollection["chkPending"] != null;
 			bool includeUploaded = model.IncludeUploaded = formCollection["chkUploaded"] != null;
 			string type = formCollection["type"];
@@ -1222,7 +1221,7 @@ namespace SmartBusinessWeb.Controllers
 				WritePGCustomerToABSS(AccountProfileId, ref onlineModeItem, dmodel);
 				updateDB(onlineModeItem.checkoutIds.ToArray(), AccountProfileId, CheckOutType.PGCustomers);
 				WriteMyobCustomerToABSS(AccountProfileId, ref onlineModeItem, dmodel);
-				updateDB(onlineModeItem.checkoutIds.ToArray(), AccountProfileId, CheckOutType.MyobCustomers);
+				updateDB(onlineModeItem.checkoutIds.ToArray(), AccountProfileId, CheckOutType.Customers);
 				WriteVipToABSS();
 			}
 
@@ -1374,7 +1373,7 @@ namespace SmartBusinessWeb.Controllers
 						}
 
 						break;
-					case CheckOutType.MyobCustomers:
+					case CheckOutType.Customers:
 						List<MyobCustomer> mcustomers = context.MyobCustomers.Where(x => checkoutIds.Any(y => x.cusCustomerID == y) && x.AccountProfileId == accountProfileId).ToList();
 						foreach (var customer in mcustomers)
 						{
@@ -1382,13 +1381,7 @@ namespace SmartBusinessWeb.Controllers
 							customer.ModifyTime = DateTime.Now;
 						}
 						break;
-					case CheckOutType.PGCustomers:
-						List<PGCustomer> pcustomers = context.PGCustomers.Where(x => checkoutIds.Any(y => x.cusCustomerID == y) && x.AccountProfileId == accountProfileId).ToList();
-						foreach (var customer in pcustomers)
-						{
-							customer.cusCheckout = true;
-						}
-						break;					
+								
 					case CheckOutType.Items:						
 						List<MyobItem> mitems = context.MyobItems.Where(x => checkoutIds.Any(y => x.itmItemID == y) && x.AccountProfileId == accountProfileId).ToList();						
 						foreach (var item in mitems)
@@ -1588,7 +1581,7 @@ namespace SmartBusinessWeb.Controllers
 			using (var context = new PPWDbContext(Session["DBName"].ToString()))
 			{
 				string ConnectionString = GetAbssConnectionString(context, "READ_WRITE", AccountProfileId);
-				ModelHelper.GetDataTransferData(context, AccountProfileId, CheckOutType.MyobCustomers, ref dmodel);
+				ModelHelper.GetDataTransferData(context, AccountProfileId, CheckOutType.Customers, ref dmodel);
 
 				if (dmodel.CustomerList.Count > 0)
 				{

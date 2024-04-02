@@ -1,36 +1,8 @@
 ﻿$infoblk = $("#infoblk");
 $target = $("#tblCustomer tbody");
 
-$(document).on("click", ".kremove", function () {
-    alert("to be implemented...");
-    return false;
-    let cusId = $(this).data("id");
-    let token = $("input[name=__RequestVerificationToken]").val();
-    $.fancyConfirm({
-        title: "",
-        message: confirmremove,
-        shownobtn: true,
-        okButton: oktxt,
-        noButton: canceltxt,
-        callback: function (value) {
-            if (value) {
-                $.ajax({
-                    type: "POST",
-                    url: "/Customer/KDelete",
-                    data: { customerId: cusId, __RequestVerificationToken: token },
-                    success: function () {
-                        window.location.reload();
-                    },
-                    dataType: "json",
-                });
-            }
-        },
-    });
-});
-
 $(document).on("click", ".remove", function () {
-    let cusId = $(this).data("id");
-    let apId = $(this).data("apid");
+    let cusId = $(this).data("id");  
     let token = $("input[name=__RequestVerificationToken]").val();
     $.fancyConfirm({
         title: "",
@@ -42,10 +14,9 @@ $(document).on("click", ".remove", function () {
             if (value) {
                 $.ajax({
                     type: "POST",
-                    url: "/PGCustomer/Delete",
+                    url: "/Customer/Delete",
                     data: {
-                        customerId: cusId,
-                        accountProfileId: apId,
+                        customerId: cusId,                       
                         __RequestVerificationToken: token,
                     },
                     success: function () {
@@ -59,13 +30,12 @@ $(document).on("click", ".remove", function () {
 });
 
 $(document).on("click", "#btnReload", function () {
-    window.location.href = "/PGCustomer/Index";
+    window.location.href = "/Customer/Index";
 });
 
 $(document).on("click", "#btnSearch", function () {
     keyword = <string>$("#txtKeyword").val();
-    if (keyword !== "") {
-        forMyob = false;
+    if (keyword !== "") {       
         getCustomers();
     }
 });

@@ -1,9 +1,7 @@
-﻿using CommonLib.App_GlobalResources;
-using CommonLib.Helpers;
+﻿using CommonLib.Helpers;
 using CommonLib.Models;
 using KingdeeLib.Helpers;
 using KingdeeLib.Models;
-using KingdeeLib.Models.Sales;
 using LumenWorks.Framework.IO.Csv;
 using Newtonsoft.Json;
 using PPWCommonLib.BaseModels;
@@ -48,11 +46,6 @@ using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using PPWLib.Models.User;
 using PPWLib.Models.POS.Sales;
-using DocumentFormat.OpenXml.Spreadsheet;
-using System.Web.Razor.Tokenizer.Symbols;
-using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.Math;
-using Microsoft.Owin;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -676,16 +669,7 @@ namespace SmartBusinessWeb.Controllers
                        DateTimeStyles.None, out datetimeValue);
             Response.Write(datetimeValue);
         }
-        public void Debug71()
-        {
-            using var connection = new Microsoft.Data.SqlClient.SqlConnection(DefaultConnection);
-            connection.Open();
-            var CustomerList = connection.Query<PGCustomerModel>(@"EXEC dbo.GetCustomerList4Checkout1 @apId=@apId,@companyId=@companyId", new { apId, companyId }).ToList();
-            foreach (var customer in CustomerList)
-            {
-                Response.Write(customer.cusCustomerID);
-            }
-        }
+      
 
         public void GetAppUrl()
         {
@@ -1646,22 +1630,7 @@ btest3
         public void JsonTest()
         {
             Response.Write(PPWLib.Helpers.JsonHelper.Test());
-        }
-
-        public void Debug40()
-        {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
-            {
-                string[] attrnames = new[] { "Locality", "Industry", "PGCustomer", "Account Software", "Antivirus Software", "Server OS", "Mobile" };
-                foreach (var attrname in attrnames)
-                {
-                    List<string> values = context.CustomAttributeValues.Where(x => x.attrId.Contains(attrname)).Select(x => x.attrValue).Distinct().ToList();
-                    GlobalAttribute gatt = context.GlobalAttributes.FirstOrDefault(x => x.attrName == attrname);
-                    gatt.attrValue = String.Join("||", values);
-                }
-                context.SaveChanges();
-            }
-        }
+        }        
 
         public async Task UploadRefund()
         {
@@ -2219,76 +2188,6 @@ btest3
                 Response.Write(mvaliditemscount);
             }
         }
-
-        public void Debug21()
-        {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
-            {
-                //var apId = 1;
-                //var sql = "Select cusPhone, cusEmail From MyobCustomer Where cusPhone is not null and AccountProfileId=1 and cusIsActive=1 " +
-                //    "Union Select cusPhone, cusEmail From PGCustomer Where cusPhone is not null and AccountProfileId=1 and cusIsActive=1;";
-                var startIndex = 0;
-                var pageSize = 10;
-                var accountProfileId = 1;
-                var sql = $"Select itmCode,itmName from MyobItem where AccountProfileId={accountProfileId} and itmIsActive=1 Order by itmCode Offset {startIndex} rows Fetch Next {pageSize} rows only";
-
-                try
-                {
-                    var items = context.Database.SqlQuery<SalesItem>(sql).ToList();
-                    foreach (var item in items)
-                    {
-                        //if (!string.IsNullOrEmpty(email))
-                        //{
-                        //Response.Write(string.Format("{0}<br>", item.key));
-                        //}
-
-                    }
-                }
-                catch (Exception)
-                {
-
-                }
-
-            }
-        }
-
-        public void Debug20()
-        {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
-            {
-                var customerlist = (from s in context.RtlSales
-                                    join customer in context.MyobCustomers
-                                    on s.rtsCusID equals customer.cusCustomerID
-                                    select new PGCustomerModel
-                                    {
-                                        cusFirstName = customer.cusFirstName,
-                                        cusIsOrganization = customer.cusIsOrganization,
-                                        cusContact = customer.cusContact,
-                                        cusCustomerID = customer.cusCustomerID,
-                                        cusCode = customer.cusCode,
-                                        cusName = customer.cusName,
-                                        cusPhone = customer.cusPhone,
-                                        cusPointsSoFar = customer.cusPointsSoFar,
-                                        cusPointsUsed = customer.cusPointsUsed,
-                                        cusPriceLevelID = customer.cusPriceLevelID,
-                                        cusIsActive = customer.cusIsActive,
-                                        CreateTime = (DateTime)customer.CreateTime,
-                                        ModifyTime = customer.ModifyTime,
-                                        cusEmail = customer.cusEmail
-                                    }
-                                    ).ToList();
-
-                var groupedcuslist = customerlist.GroupBy(x => x.cusCustomerID).ToList();
-                foreach (var group in groupedcuslist)
-                {
-                    Response.Write(group.Max(x => x.cusPointsActive));
-                }
-            }
-        }
-
-
-
-
         public void Debug18()
         {
             var today = DateTime.Today;
@@ -2373,46 +2272,7 @@ btest3
             System.Threading.Thread.Sleep(TimeSpan.FromSeconds(3));
             Response.Write("debug13 done");
         }
-
-        public void Debug11()
-        {
-            int accountProfileId = 1;
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
-            {
-                var customerlist = (from c in context.MyobCustomers
-                                        //join pl in context.PriceLevels
-                                        //on c.cusPriceLevelID equals pl.PriceLevelID
-                                        //join ap in context.AccountProfiles
-                                        //on c.AccountProfileId equals ap.Id
-                                        //where c.cusIsActive == true
-                                    where c.AccountProfileId == accountProfileId
-                                    //&& ap.Id == accountProfileId
-                                    select new PGCustomerModel
-                                    {
-                                        cusCustomerID = c.cusCustomerID,
-                                        cusCode = c.cusCode,
-                                        cusName = c.cusName,
-                                        cusPhone = c.cusPhone,
-                                        cusPointsSoFar = c.cusPointsSoFar,
-                                        cusPointsUsed = c.cusPointsUsed,
-                                        cusPriceLevelID = c.cusPriceLevelID,
-                                        //cusPriceLevelDescription = pl.Description,
-                                        cusIsActive = c.cusIsActive,
-                                        CreateTime = (DateTime)c.CreateTime,
-                                        ModifyTime = c.ModifyTime,
-                                        cusEmail = c.cusEmail,
-                                        //AccountProfileName = ap.ProfileName,
-                                        //AccountProfileId = c.AccountProfileId
-                                    }
-                             ).ToList();
-
-                foreach (var customer in customerlist)
-                {
-                    Response.Write(customer.cusName + ";" + customer.cusPhone + "<br>");
-                }
-            }
-        }
-
+    
         public void Debug10()
         {
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
@@ -2541,85 +2401,7 @@ btest3
             Response.Write(HashHelper.GenerateNonce());
         }
         
-        public void Debug5()
-        {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
-            {
-                //string device = "p10";
-                string location = "office";
-                string strfrmdate = "28/03/2022";
-                string strtodate = "28/03/2022";
-                //int lang = 0;
-                int accountprofileId = 1;
-
-                #region Date Ranges
-                int year = DateTime.Now.Year;
-                DateTime frmdate;
-                DateTime todate;
-                if (string.IsNullOrEmpty(strfrmdate))
-                {
-                    frmdate = new DateTime(year, 1, 1);
-                }
-                else
-                {
-                    int mth = int.Parse(strfrmdate.Split('/')[1]);
-                    int day = int.Parse(strfrmdate.Split('/')[0]);
-                    year = int.Parse(strfrmdate.Split('/')[2]);
-                    frmdate = new DateTime(year, mth, day);
-                }
-                if (string.IsNullOrEmpty(strtodate))
-                {
-                    todate = new DateTime(year, 12, 31);
-                }
-                else
-                {
-                    int mth = int.Parse(strtodate.Split('/')[1]);
-                    int day = int.Parse(strtodate.Split('/')[0]);
-                    year = int.Parse(strtodate.Split('/')[2]);
-                    todate = new DateTime(year, mth, day);
-                }
-                #endregion
-
-                var SalesLnViews = (from sl in context.RtlSalesLns
-                                    join i in context.MyobItems
-                                    on sl.rtlItemCode equals i.itmCode
-                                    join s in context.RtlSales
-                                on sl.rtlCode equals s.rtsCode
-                                    join c in context.PGCustomers
-                                    on s.rtsCusID equals c.cusCustomerID
-
-                                    where s.rtsDate >= frmdate && s.rtsDate <= todate && s.rtsType == "RS" && s.rtsCheckout == false
-                                    && s.rtsSalesLoc.ToLower() == location
-                                    && c.AccountProfileId == accountprofileId && c.cusIsActive == true
-                                    && i.AccountProfileId == accountprofileId
-
-                                    select new SalesLnView
-                                    {
-                                        rtlUID = sl.rtlUID,
-                                        rtlCode = sl.rtlCode,
-                                        Item = new ItemModel
-                                        {
-                                            itmCode = i.itmCode,
-                                            itmDesc = i.itmDesc,
-                                            itmBaseSellingPrice = i.itmBaseSellingPrice,
-                                            itmIsNonStock = i.itmIsNonStock
-                                        },
-                                        dQty = (double)sl.rtlQty,
-                                        dLineSalesAmt = (double)sl.rtlSalesAmt,
-                                        dLineDiscPc = sl.rtlLineDiscPc == null ? 0 : (double)sl.rtlLineDiscPc,
-                                        dPrice = (double)sl.rtlSellingPrice,
-                                        rtlDate = sl.rtlDate,
-                                        rtlSalesLoc = sl.rtlSalesLoc,
-                                        CustomerID = s.rtsCusID,
-                                        //CustomerName = c.cusName,
-                                        rtlRefSales = sl.rtlRefSales,
-                                        SalesPersonName = s.rtsUpLdLog.ToUpper(),
-                                        rtlSalesAmt = sl.rtlSalesAmt,
-                                    }
-                                             ).ToList();
-                Response.Write(SalesLnViews.Count);
-            }
-        }
+     
         public void Debug4()
         {
             using (var context = new PPWDbContext(Session["DBName"].ToString()))

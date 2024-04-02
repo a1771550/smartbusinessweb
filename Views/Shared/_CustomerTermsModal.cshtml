@@ -1,5 +1,5 @@
 ﻿@{ 
-    MyobCustomerModel customer = ViewData["MyobCustomer"] as MyobCustomerModel;
+    CustomerModel customer = ViewData["MyobCustomer"] as CustomerModel;
     var paymentIsDue = customer == null ? "" : customer.PaymentTermsDesc;
     var balancedueDays = customer == null ? 0 : customer.BalanceDueDays;
 }

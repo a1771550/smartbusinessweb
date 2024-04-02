@@ -261,14 +261,14 @@ namespace SmartBusinessWeb.Controllers
                 logoreceipt.appVal = formCollection["LogoReceipt"];
 
                 string defaultcusname = formCollection["DefaultCustomerReceipt"];
-                PGCustomer customer = context.PGCustomers.FirstOrDefault(x => x.cusCode == "GUEST" && x.cusIsActive == true);
+                var customer = context.MyobCustomers.FirstOrDefault(x => x.cusCode == "GUEST" && x.cusIsActive == true);
                 if (customer != null)
                 {
                     customer.cusName = defaultcusname;
                 }
 
                 string defaultrefcusname = formCollection["DefaultCustomerRefund"];
-                PGCustomer recustomer = context.PGCustomers.FirstOrDefault(x => x.cusCode == "WALK-IN" && x.cusIsActive == true);
+                var recustomer = context.MyobCustomers.FirstOrDefault(x => x.cusCode == "WALK-IN" && x.cusIsActive == true);
                 if (recustomer != null)
                 {
                     recustomer.cusName = defaultrefcusname;

@@ -6,6 +6,14 @@ approvalmode = $infoblk.data("approvalmode") === "True";
 let cusId: number = editmode ? Number($infoblk.data("cusid")) : 0;
 let gattrnamelist: string[] = [];
 
+$(document).on("change", "#cusPhone", function () {
+    let maxlength = Number($(this).attr("maxlength"));
+    let phone = $(this).val() as string;
+    if (phone && phone!.length > maxlength) {
+        phone = phone.substring(0, maxlength);
+        $(this).val(phone);
+    }
+});
 $(document).on("change", ".labeltxt", function () {
     let attrname = $(this).val() as string;
     if (attrname) {

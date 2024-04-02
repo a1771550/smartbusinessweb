@@ -123,7 +123,7 @@
 
 								<li><a href="/PriceLevels/Index">@Resources.Resource.PointLevel</a></li>
 
-								<li><a href="/Customer/UnSyncList">@Resources.Resource.NewCustomerManagement</a></li>
+							@*	<li><a href="/Customer/UnSyncList">@Resources.Resource.NewCustomerManagement</a></li>*@
 
 								<li><a href="/Enquiry/Index">@Resources.Resource.Enquiry</a></li>
 							</ul>
@@ -135,22 +135,20 @@
 								<p>@Resources.Resource.Item</p>
 							</a>
 							<ul class="submenu collapse" id="collapseItem">
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "pglist") ? "active" : ""; }
-								<li><a href="/Item/Index" class="@sublnkcls">@string.Format(Resources.Resource.ListFormat, Resources.Resource.Item)</a></li>
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "stock") ? "active" : ""; }
-								<li><a href="/Item/Stock" class="@sublnkcls">@Resources.Resource.Stock</a></li>
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "transfer") ? "active" : ""; }
-								<li><a href="/Transfer/Index" class="@sublnkcls">@Resources.Resource.StockTransfer</a></li>
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "transferlist") ? "active" : ""; }
-								<li><a href="/Transfer/List" class="@sublnkcls">@Resources.Resource.StockTransferOrder</a></li>
+							
+								<li><a href="/Item/Index">@string.Format(Resources.Resource.ListFormat, Resources.Resource.Item)</a></li>
 								
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "InventoryAdjustment") ? "active" : ""; }
-								<li><a href="/InventoryAdjustment/Index" class="@sublnkcls">@Resources.Resource.InventoryAdjustment</a></li>
+								<li><a href="/Item/Stock">@Resources.Resource.Stock</a></li>
+							
+								<li><a href="/Transfer/Index">@Resources.Resource.StockTransfer</a></li>
+							
+								<li><a href="/Transfer/List">@Resources.Resource.StockTransferOrder</a></li>
+								
+								
+								<li><a href="/InventoryAdjustment/Index">@Resources.Resource.InventoryAdjustment</a></li>
 
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "category") ? "active" : ""; }
-								<li><a class="@sublnkcls" href="/ItemCategory/Index">@Resources.Resource.Category</a></li>
-								
-							@*	<li><a href="/Item/ZeroStocks" class="@sublnkcls">@Resources.Resource.OutOfStockItems</a></li>*@
+						
+								<li><a href="/ItemCategory/Index">@Resources.Resource.Category</a></li>
 							</ul>
 						</li>
 						<li class="btn_expand">
@@ -181,23 +179,23 @@
 							<ul class="submenu collapse" id="collapseWholeSales">
 								@if (!isadmin)
 								{
-									sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "create") ? "active" : "";
-									<li>@Html.ActionLink(string.Format(Resources.Resource.AddFormat, Resources.Resource.Order), "Edit", "WholeSales", new { Id = 0, type = "order" }, new { @class = sublnkcls })</li>
-									sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "list") ? "active" : "";
+									<li>
+										<a href="/Wholesales/Edit?Id=0&type=order">@string.Format(Resources.Resource.AddFormat, Resources.Resource.Order)</a>
+									</li>
+								
 									fordelivery = string.Concat("<span class='small'>(", fordelivery, ")</span>");
 									var wholesaleslist = Html.Raw(string.Concat(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.WholeSaleOrder), fordelivery));
 
-									<li><a class="@sublnkcls" href="/WholeSales/Index">@wholesaleslist</a></li>
+									<li><a href="/WholeSales/Index">@wholesaleslist</a></li>
 								}
 
 
 								@if (approvalmode && isadmin)
-								{
-									sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "salesorderlist") ? "active" : "";
+								{									
 
 									forapproval = string.Concat("<span class='small'>(", forapproval, ")</span>");
 									var wholesalesorderlist = Html.Raw(string.Concat(string.Format(Resources.Resource.ListFormat, Resources.Resource.WholeSaleOrder), forapproval));
-									<li><a class="@sublnkcls" href="/WholeSales/SalesOrderList">@wholesalesorderlist</a></li>
+									<li><a href="/WholeSales/SalesOrderList">@wholesalesorderlist</a></li>
 								}
 
 							</ul>
@@ -210,22 +208,20 @@
 							</a>
 							<ul class="submenu collapse" id="collapsePurchase">
 								@if (!isadmin)
-								{
-									sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "order") ? "active" : "";
-									<li>@Html.ActionLink(string.Format(Resources.Resource.NewFormat, Resources.Resource.PurchaseOrder), "Edit", "Purchase", new { Id = 0, type = "order" }, new { @class = sublnkcls })</li>
-									sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "purchase") ? "active" : "";
+								{									
+									<li>@Html.ActionLink(string.Format(Resources.Resource.NewFormat, Resources.Resource.PurchaseOrder), "Edit", "Purchase", new { Id = 0, type = "order" })</li>								
 									forreceival = string.Concat("<span class='small'>(", forreceival, ")</span>");
 									var purchaselist = Html.Raw(string.Concat(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.PurchaseOrder), forreceival));
-									<li><a class="@sublnkcls" href="/Purchase/Index">@purchaselist</a></li>
+									<li><a href="/Purchase/Index">@purchaselist</a></li>
+									<li>
+										<a href="/Supplier/Index">@string.Format(Resources.Resource.ManagementFormat, Resources.Resource.Supplier)</a>										
+									</li>
 								}
 
 								@if (approvalmode && isadmin)
-								{
-									sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "purchaseorderlist") ? "active" : "";
+								{								
 									var purchaseorderlist = Html.Raw(string.Concat(string.Format(Resources.Resource.ListFormat, Resources.Resource.PurchaseOrder), forapproval));
-									<li><a class="@sublnkcls" href="/Purchase/PurchaseOrderList">@purchaseorderlist</a></li>
-									sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "supplier") ? "active" : "";
-									<li>@Html.ActionLink(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.Supplier), "Index", "Supplier", null, new { @class = sublnkcls })</li>
+									<li><a href="/Purchase/PurchaseOrderList">@purchaseorderlist</a></li>
 								}
 							</ul>
 						</li>

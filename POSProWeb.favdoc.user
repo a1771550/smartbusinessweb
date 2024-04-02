@@ -185,6 +185,11 @@
           <path>Scripts\ts\records\training.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\records\training.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>unsynclist.ts</name>
+          <path>Scripts\ts\customer\unsynclist.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\customer\unsynclist.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -406,6 +411,11 @@
           <name>InventoryAdjustmentController.cs</name>
           <path>Controllers\Item\InventoryAdjustmentController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Item\InventoryAdjustmentController.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>SupplierController.cs</name>
+          <path>Controllers\Purchase\SupplierController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Purchase\SupplierController.cs</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

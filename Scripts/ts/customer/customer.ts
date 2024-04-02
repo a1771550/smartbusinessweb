@@ -1,6 +1,7 @@
 ﻿$infoblk = $("#infoblk");
 $target = $("#tblCustomer tbody");
 
+
 $(document).on("click", ".customattrs", function () {
 	if($(this).text()!=="" && $(this).text().trim()!=="")
 		openDescModal($(this).html().trim(),customattributetxt,500);
@@ -9,10 +10,7 @@ $(document).on("click", ".customattrs", function () {
 $(document).on("dblclick", `#tblCustomer tbody tr`, function () {
 	window.location.href = "/Customer/Edit?customerId=" + $(this).data("id");///Customer/Edit?customerId=@customer.cusCustomerID
 });
-$(document).on("click", "#btnBlast", function () {
-	IdList = ($("#tblCustomer").data("idlist")).split(",");
-	handleEblastContacts();
-});
+
 $(document).on("click", ".btnminus", function () {
 	let $ele = $(this).parent("div").parent("form");
 	$target = $ele.prev("form");
@@ -27,63 +25,6 @@ $(document).on("click", ".btnplus", function () {
 $(document).on("click", "#btnAdvSearch", function () {
 	openAdvancedSearchModal();
 });
-
-function handleEblastContacts() {
-	openWaitingModal();
-	$.ajax({
-		type: "POST",
-		url: '/Customer/AddToEblast',
-		data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val(), contactIds: IdList },
-		success: function (data) {
-			closeWaitingModal();
-			if (data) {
-				$.fancyConfirm({
-					title: '',
-					message: data,
-					shownobtn: false,
-					okButton: oktxt,
-					noButton: notxt,
-					callback: function (value) {
-						if (value) {
-							closeWaitingModal();
-							$('#txtKeyword').trigger("focus");
-						}
-					}
-				});
-			}
-		},
-		dataType: 'json'
-	});
-}
-
-$(document).on("click", ".kremove", function () {
-	alert("to be implemented...");
-	return false;
-	let cusId = $(this).data("id");
-	let token = $("input[name=__RequestVerificationToken]").val();
-	$.fancyConfirm({
-		title: "",
-		message: confirmremove,
-		shownobtn: true,
-		okButton: oktxt,
-		noButton: canceltxt,
-		callback: function (value) {
-			if (value) {
-				$.ajax({
-					type: "POST",
-					url: "/Customer/KDelete",
-					data: { customerId: cusId, __RequestVerificationToken: token },
-					success: function () {
-						window.location.reload();
-					},
-					dataType: "json",
-				});
-			}
-		},
-	});
-});
-
-
 
 $(document).on("click", ".remove", function () {
 	let cusId = $(this).data("id");
@@ -156,6 +97,7 @@ $(document).on("click", ".colheader", function () {
 		.trigger("submit");
 });
 
+
 $(function () {
 	forcustomer = true;
 	setFullPage();
@@ -196,23 +138,45 @@ $(function () {
 
 	var checkall = getParameterByName("CheckAll");
 	if (checkall !== null) {
-		console.log("checkall:" + checkall);
+		//console.log("checkall:" + checkall);
 		let checked = checkall == "1";
 		$(".chk").prop("checked", checked);
 		handleCheckall(checked);
 	}
+	
+	//dicHotListContacts = $infoblk.data('jsonhotlistcontactlist');
+	//dicEblastContacts = $infoblk.data('jsoneblastcontactlist');
+	//CurrentEblastId = <number>$infoblk.data('currenteblastid');
 
-	intervalHandler = setInterval(blinker, 4000);
-	$(".blinking").on("mouseover", function () {
-		if (intervalHandler) {
-			clearInterval(intervalHandler);
-			intervalHandler = null;
-		}
-	});
+	//console.log('dichotlistcontacts:', dicHotListContacts);
+	//console.log('dicEblastContacts:', dicEblastContacts);
+	//console.log(CurrentEblastId);
 
-	$(".blinking").on("mouseout", function () {
-		if (!intervalHandler) {
-			intervalHandler = setInterval(blinker, 4000);
-		}
-	});
+	if ($infoblk.data('returnmsg')) {
+		$.fancyConfirm({
+			title: '',
+			message: $infoblk.data('returnmsg'),
+			shownobtn: false,
+			okButton: oktxt,
+			noButton: notxt,
+			callback: function (value) {
+				if (value) {
+					$('#txtKeyword').trigger("focus");
+				}
+			}
+		});
+	}
+
+	//intervalHandler = setInterval(blinker, 4000);
+	//$(".blinking").on("mouseover", function () {
+	//	if (intervalHandler) {
+	//		clearInterval(intervalHandler);
+	//		intervalHandler = null;
+	//	}
+	//});
+	//$(".blinking").on("mouseout", function () {
+	//	if (!intervalHandler) {
+	//		intervalHandler = setInterval(blinker, 4000);
+	//	}
+	//});
 });

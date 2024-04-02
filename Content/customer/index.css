@@ -1,1 +1,29 @@
-﻿
+﻿#tblCustomer th:nth-child(1), #tblCustomer th:nth-child(2), #tblCustomer th:nth-child(3), #tblCustomer th:nth-child(7), #tblCustomer td:nth-child(1), #tblCustomer td:nth-child(2), #tblCustomer td:nth-child(3), #tblCustomer td:nth-child(7) {
+	width: 110px !important;
+	/*max-width: 110px !important;*/
+}
+#tblCustomer th:nth-child(4), #tblCustomer td:nth-child(4) {
+	width: 250px !important;
+	/*max-width: 250px !important;*/
+}
+
+#tblCustomer th:nth-child(5), #tblCustomer td:nth-child(5) {
+	width: 90px !important;
+	/*max-width: 90px !important;*/
+}
+#tblCustomer th:nth-child(6), #tblCustomer td:nth-child(6) {
+	width: 120px !important;
+	/*max-width: 120px !important;*/
+}
+#tblCustomer th:last-child, #tblCustomer td:last-child {
+	width: 120px !important;
+	/*max-width: 120px !important;*/
+}
+/*#tblCustomer th:last-child, #tblCustomer td:last-child {
+	line-height: normal !important;
+	margin: 0 !important;
+	vertical-align: middle !important;
+	width: 50px !important;
+	max-width: 50px !important;
+}
+*/

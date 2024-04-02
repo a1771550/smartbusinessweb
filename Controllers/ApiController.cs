@@ -21,7 +21,6 @@ using System.Data.Entity.Validation;
 using System.Text;
 using KingdeeLib.Models.ItemStock;
 using KingdeeLib.Helpers;
-using KingdeeLib.Models.Sales;
 using CommonLib.App_GlobalResources;
 using CommonLib.BaseModels;
 using System.Net.Mail;
@@ -35,7 +34,7 @@ using PPWLib.Models.WholeSales;
 using Dapper;
 using PPWLib.Models.POS.Settings;
 using System.Data.Entity;
-using MyobCustomerModel = PPWLib.Models.Customer.MyobCustomerModel;
+using CustomerModel = PPWLib.Models.Customer.CustomerModel;
 using System.Web;
 using System.Data.Entity.Core.Objects;
 using PPWLib.Models.Purchase.Supplier;
@@ -44,7 +43,6 @@ using PPWLib.Models.Purchase;
 using ItemModel = PPWLib.Models.Item.ItemModel;
 using PPWLib.Models.User;
 using CommonLib.Models.MYOB;
-using PPWLib.Models.Customer;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -255,7 +253,7 @@ namespace SmartBusinessWeb.Controllers
                 catch (DbEntityValidationException e)
                 {
                     transaction.Rollback();
-                   
+
                     foreach (var eve in e.EntityValidationErrors)
                     {
                         sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -697,7 +695,7 @@ namespace SmartBusinessWeb.Controllers
             List<SalesmanModel> AdminList = new List<SalesmanModel>();
             string msg = Resource.NoReceiptFound;
             SalesmanModel salesman = null;
-            MyobCustomerModel customer = null;
+            CustomerModel customer = null;
             string url = "";
             SessUser user = Session["User"] as SessUser;
             bool enableSendMail = (bool)ComInfo.enableEmailNotification;
@@ -713,7 +711,7 @@ namespace SmartBusinessWeb.Controllers
                 ShopCode = sales.wsSalesLoc;
 
                 var _customer = context.MyobCustomers.FirstOrDefault(x => x.cusCode == sales.wsCusCode);
-                customer = new MyobCustomerModel
+                customer = new CustomerModel
                 {
                     cusName = _customer.cusName,
                     cusCustomerID = _customer.cusCustomerID
@@ -1091,11 +1089,11 @@ namespace SmartBusinessWeb.Controllers
                 };
 
                 var customergroup = context.GetCustomer4ApprovalByCusCode2(apId, s.wsCusCode).ToList().GroupBy(x => x.cusCustomerID).ToList(); //one customer may have multiple addresses
-                MyobCustomerModel Customer = null;
+                CustomerModel Customer = null;
                 foreach (var group in customergroup)
                 {
                     var customer = group.FirstOrDefault();
-                    Customer = new MyobCustomerModel
+                    Customer = new CustomerModel
                     {
                         cusCustomerID = customer.cusCustomerID,
                         cusCode = customer.cusCode,
@@ -1447,13 +1445,13 @@ namespace SmartBusinessWeb.Controllers
                         }
                         context.Contacts.AddRange(newcontacts);
                         context.SaveChanges();
-                        ModelHelper.WriteLog(context, "Import Customer data from Central done", "ImportFrmCentral");                      
+                        ModelHelper.WriteLog(context, "Import Customer data from Central done", "ImportFrmCentral");
 
                     }
                     catch (DbEntityValidationException e)
                     {
                         transaction.Rollback();
-                       
+
                         foreach (var eve in e.EntityValidationErrors)
                         {
                             sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
@@ -1471,9 +1469,9 @@ namespace SmartBusinessWeb.Controllers
                 if (!string.IsNullOrEmpty(sb.ToString()))
                 {
                     using var _context = new PPWDbContext(Session["DBName"].ToString());
-                    ModelHelper.WriteLog(_context, string.Format("Import PGCustomer data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
+                    ModelHelper.WriteLog(_context, string.Format("Import Customer data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
                 }
-              
+
             }
             return RedirectToAction("ImportFrmABSS", "Contact", new { done = 1 });
         }
@@ -1489,7 +1487,7 @@ namespace SmartBusinessWeb.Controllers
                 var sql = $"Select {columns} From MyobCustomer Where cusEmail=@email and cusPhone=@phone";
                 using (var context = new PPWDbContext(Session["DBName"].ToString()))
                 {
-                    var customer = context.Database.SqlQuery<PGCustomerModel>(sql, new SqlParameter("email", parameters[0]), new SqlParameter("phone", parameters[1])).FirstOrDefault();
+                    var customer = context.Database.SqlQuery<CustomerModel>(sql, new SqlParameter("email", parameters[0]), new SqlParameter("phone", parameters[1])).FirstOrDefault();
                     return Json(customer, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -1499,7 +1497,7 @@ namespace SmartBusinessWeb.Controllers
                 var sql = $"Select {columns} From MyobCustomer Where {searchcol}=@{type}";
                 using (var context = new PPWDbContext(Session["DBName"].ToString()))
                 {
-                    var customer = context.Database.SqlQuery<PGCustomerModel>(sql, new SqlParameter(type, parameters[0])).FirstOrDefault();
+                    var customer = context.Database.SqlQuery<CustomerModel>(sql, new SqlParameter(type, parameters[0])).FirstOrDefault();
                     return Json(customer, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -1510,7 +1508,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public JsonResult SearchContact(string type, string[] parameters)
         {
-            PGCustomerModel customer = new PGCustomerModel();
+            CustomerModel customer = new CustomerModel();
             //var columns = "cusName,cusFirstName,cusIsOrganization,cusContact";
             if (type == "emailphone")
             {
@@ -1835,13 +1833,13 @@ namespace SmartBusinessWeb.Controllers
 
             if (filename.StartsWith("Vip_"))
             {
-                List<PGCustomerModel> customers = new List<PGCustomerModel>();
+                List<CustomerModel> customers = new List<CustomerModel>();
 
                 using (var context = new PPWDbContext(Session["DBName"].ToString()))
                 {
-                    customers = (from c in context.PGCustomers
+                    customers = (from c in context.MyobCustomers
                                  where c.AccountProfileId == accountProfileId && c.cusIsActive == true
-                                 select new PGCustomerModel
+                                 select new CustomerModel
                                  {
                                      cusIsOrganization = c.cusIsOrganization,
                                      cusContact = c.cusContact,
@@ -2132,7 +2130,7 @@ namespace SmartBusinessWeb.Controllers
         {
             SearchReceiptModel obj = new SearchReceiptModel();
             List<ItemModel> items = new List<ItemModel>();
-            List<PGCustomerModel> customers = new List<PGCustomerModel>();
+            List<CustomerModel> customers = new List<CustomerModel>();
             List<SalesLnView> salesLns = new List<SalesLnView>();
             List<SalesLnView> refundLns = new List<SalesLnView>();
             Dictionary<string, List<SerialNoView>> DicItemSNs = new Dictionary<string, List<SerialNoView>>();
@@ -2191,12 +2189,12 @@ namespace SmartBusinessWeb.Controllers
                     items = ModelHelper.GetItemList(apId, context);
                     //var mergedcustomers = ModelHelper.GetMergedCustomerList(apId, context);
                     var c = context.MyobCustomers.FirstOrDefault(x => x.cusCustomerID == sales.rtsCusID);
-                    PGCustomerModel customer = null;
+                    CustomerModel customer = null;
                     //foreach (var c in mergedcustomers)
                     //{
                     if (c != null)
                     {
-                        customer = new PGCustomerModel
+                        customer = new CustomerModel
                         {
                             cusCustomerID = c.cusCustomerID,
                             salescode = sales.rtsCode,
@@ -2308,7 +2306,7 @@ namespace SmartBusinessWeb.Controllers
         {
             SearchReceiptModel obj = new SearchReceiptModel();
             List<ItemModel> items = new List<ItemModel>();
-            List<PGCustomerModel> customers = new List<PGCustomerModel>();
+            List<CustomerModel> customers = new List<CustomerModel>();
             List<SalesLnView> salesLns = new List<SalesLnView>();
             List<SalesLnView> refundLns = new List<SalesLnView>();
             obj.retmsg = "";
@@ -2443,7 +2441,7 @@ namespace SmartBusinessWeb.Controllers
                             {
                                 if (c.cusCustomerID == salesln.CustomerID)
                                 {
-                                    customers.Add(new PGCustomerModel
+                                    customers.Add(new CustomerModel
                                     {
                                         cusCustomerID = c.cusCustomerID,
                                         salescode = salesln.rtlCode,
@@ -2482,7 +2480,7 @@ namespace SmartBusinessWeb.Controllers
         {
             SearchReceiptModel obj = new SearchReceiptModel();
             List<ItemModel> items = new List<ItemModel>();
-            List<PGCustomerModel> customers = new List<PGCustomerModel>();
+            List<CustomerModel> customers = new List<CustomerModel>();
             List<SalesLnView> salesLns = new List<SalesLnView>();
             List<SalesLnView> refundLns = new List<SalesLnView>();
             obj.retmsg = "";
@@ -2572,7 +2570,7 @@ namespace SmartBusinessWeb.Controllers
                         {
                             if (c.cusCustomerID == salesln.CustomerID)
                             {
-                                customers.Add(new PGCustomerModel
+                                customers.Add(new CustomerModel
                                 {
                                     cusCustomerID = c.cusCustomerID,
                                     salescode = salesln.rtlCode,
@@ -2673,7 +2671,7 @@ namespace SmartBusinessWeb.Controllers
             decimal salesamt = 0;
             decimal refundamt = 0;
             decimal payamt = 0;
-            PGCustomerModel customer = null;
+            CustomerModel customer = null;
             CentralDataModel model = new CentralDataModel();
             RtlSale _sales = null;
 
@@ -2686,7 +2684,7 @@ namespace SmartBusinessWeb.Controllers
                 var _customer = context.SearchCustomer1(apId, 0, phoneno).FirstOrDefault();
                 if (_customer != null)
                 {
-                    customer = new PGCustomerModel
+                    customer = new CustomerModel
                     {
                         cusCustomerID = _customer.cusCustomerID,
                         cusCode = _customer.cusCode,
@@ -3030,24 +3028,11 @@ namespace SmartBusinessWeb.Controllers
                 var pagesize = model.PageSize = PageSize;
                 model.PageIndex = pageIndex;
                 int startIndex = CommonHelper.GetStartIndex(pageIndex, pagesize);
-                if (keyword == "")
-                {
-                    keyword = null;
-                }
+                if (keyword == "") keyword = null;             
 
-                if (string.IsNullOrEmpty(mode) || mode == "search")
-                {
-                    var customerlist = ModelHelper.GetCustomers4Sales(context, pageIndex, pagesize, keyword, true, true);
-                    model.RecordCount = (int)context.GetCustomerCount4Sales2(apId, keyword).FirstOrDefault();
-                    model.MyobCustomers = customerlist;
-                }
-                else
-                {
-                    var customerlist = ModelHelper.GetPGCustomerList(context, false, pageIndex, pagesize, keyword);
-                    model.RecordCount = (int)context.GetPGCustomerCount3(apId, keyword).FirstOrDefault();
-                    model.PGCustomers = customerlist;
-                }
+                model.Customers = (string.IsNullOrEmpty(mode) || mode == "search") ? ModelHelper.GetCustomers4Sales(context, pageIndex, pagesize, keyword, true) : ModelHelper.GetCustomerList(false, pageIndex, pagesize, keyword);
 
+                model.RecordCount = (int)context.GetCustomerCount(apId, keyword).FirstOrDefault();
                 return Json(model);
             }
 
@@ -3055,7 +3040,7 @@ namespace SmartBusinessWeb.Controllers
 
 
         [HttpGet]
-        public ActionResult SearchCustomersAjax(int pageIndex = 1, string keyword = "", int imyob = 1)
+        public ActionResult SearchCustomersAjax(int pageIndex = 1, string keyword = "")
         {
             CustomerViewModel model = new CustomerViewModel();
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
@@ -3064,32 +3049,12 @@ namespace SmartBusinessWeb.Controllers
                 int pagesize = model.PageSize = PageSize;
                 model.PageIndex = pageIndex;
 
-                if (imyob == 1)
-                {
-                    var customerlist = ModelHelper.GetCustomers4Sales(context, pageIndex, pagesize, keyword, false, false);
-                    if (string.IsNullOrEmpty(keyword))
-                    {
-                        model.RecordCount = (int)context.GetCustomerCount4Sales2(apId, keyword).FirstOrDefault();
-                    }
-                    else
-                    {
-                        model.RecordCount = customerlist.Count;
-                    }
-                    model.MyobCustomers = customerlist;
-                }
-                else
-                {
-                    var customerlist = ModelHelper.GetPGCustomerList(context, false, pageIndex, pagesize, keyword);
-                    if (string.IsNullOrEmpty(keyword))
-                    {
-                        model.RecordCount = (int)context.GetPGCustomerCount3(apId, keyword).FirstOrDefault();
-                    }
-                    else
-                    {
-                        model.RecordCount = customerlist.Count;
-                    }
-                    model.PGCustomers = customerlist;
-                }
+                var customerlist = ModelHelper.GetCustomerList(false, pageIndex, pagesize, keyword);
+
+                model.RecordCount = (int)context.GetCustomerCount(apId, keyword).FirstOrDefault();
+
+                model.Customers = customerlist;
+
                 return Json(model, JsonRequestBehavior.AllowGet);
             }
 
@@ -3100,7 +3065,7 @@ namespace SmartBusinessWeb.Controllers
         {
             using var connection = new SqlConnection(DefaultConnection);
             connection.Open();
-            MyobCustomerModel customer = connection.QueryFirstOrDefault<MyobCustomerModel>(@"EXEC dbo.GetCustomerByCode5 @apId=@apId,@cusCode=@cusCode", new { apId, cusCode });
+            CustomerModel customer = connection.QueryFirstOrDefault<CustomerModel>(@"EXEC dbo.GetCustomerByCode5 @apId=@apId,@cusCode=@cusCode", new { apId, cusCode });
 
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
@@ -3117,7 +3082,7 @@ namespace SmartBusinessWeb.Controllers
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
                 var _customer = context.GetCustomerById19(customerId, false, AccountProfileId).FirstOrDefault();
-                MyobCustomerModel customer = new MyobCustomerModel();
+                CustomerModel customer = new CustomerModel();
                 if (_customer != null)
                 {
                     customer.cusCustomerID = _customer.cusCustomerID;
@@ -3138,7 +3103,7 @@ namespace SmartBusinessWeb.Controllers
                     customer.cusMobile = _customer.cusMobile;
                     customer.BalanceDueDays = _customer.BalanceDueDays;
                     customer.PaymentIsDue = _customer.PaymentIsDue;
-                    customer.PaymentTermsDesc = _customer.Description;                
+                    customer.PaymentTermsDesc = _customer.Description;
                     customer.IsLastSellingPrice = _customer.IsLastSellingPrice;
                     customer.unsubscribe = _customer.unsubscribe;
                     GetCustomerAddressList(context, ref customer);
@@ -3149,7 +3114,7 @@ namespace SmartBusinessWeb.Controllers
             }
         }
 
-        public void GetCustomerAddressList(PPWDbContext context, ref MyobCustomerModel customer)
+        public void GetCustomerAddressList(PPWDbContext context, ref CustomerModel customer)
         {
             var _addresslist = context.GetCustomerAddressList1(AccountProfileId, customer.cusCode).ToList();
             if (_addresslist != null && _addresslist.Count > 0)

@@ -172,37 +172,13 @@ namespace SmartBusinessWeb.Controllers.Customer
         [HttpPost]
         public ActionResult AdvancedSearch(List<AdvSearchItem> advSearchItems)
         {
-            List<PPWLib.Models.CRM.Customer.CustomerModel> filteredcusList = CustomerEditModel.GetFilteredList(apId, advSearchItems);
+            List<CustomerModel> filteredcusList = CustomerEditModel.GetFilteredList(apId, advSearchItems);
             return Json(filteredcusList);
         }
 
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
-        // GET: MyobCustomer
-        public ActionResult UnSyncList(int PageNo = 1, int SortCol = 3, string SortOrder = "desc", string Keyword = "")
-        {
-            ViewBag.ParentPage = "customer";
-            ViewBag.PageName = "unsynclist";
-            if (string.IsNullOrEmpty(Keyword)) Keyword = null;
-
-            CustomerEditModel model = new CustomerEditModel
-            {
-                SortCol = SortCol,
-                SortOrder = SortOrder == "desc" ? "asc" : "desc",
-                CurrentSortOrder = SortOrder,
-                Keyword = Keyword,
-            };
-
-            model.CustomerList = ModelHelper.GetCustomersList(SortCol, SortOrder, Keyword, false).ToList();
-            model.PagingCustomerList = model.CustomerList.ToPagedList(PageNo, PageSize);
-            return View(model);
-        }
-
-
-        [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
-        // GET: MyobCustomer
-        public ActionResult Index(int SortCol = 5, string SortOrder = "desc", string Keyword = "", int PageNo = 1, int? CheckAll = 0, int SortCol_a = 0, string SortOrder_a = "desc", string Keyword_a = "", int PageNo_a = 1, string cusIds = null)
+        public ActionResult Index(int SortCol = 4, string SortOrder = "desc", string Keyword = "", int PageNo = 1, int? CheckAll = 0, int SortCol_a = 0, string SortOrder_a = "desc", string Keyword_a = "", int PageNo_a = 1, string cusIds = null)
         {
             ViewBag.ParentPage = ViewBag.PageName = "customer";
             if (string.IsNullOrEmpty(Keyword))
@@ -220,7 +196,7 @@ namespace SmartBusinessWeb.Controllers.Customer
             List<int> cusIdList = new List<int>();
             var apId = ComInfo.AccountProfileId;
 
-            model.CustomerList = ModelHelper.GetCustomersList(SortCol, SortOrder, Keyword).ToList();
+            model.CustomerList = ModelHelper.GetCustomerList(SortCol, SortOrder, Keyword, null).ToList();
 
             if (cusIds != null)
             {
@@ -279,7 +255,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [HttpGet]
-        public ActionResult Edit(int customerId = 0, string enqId = "", string referrer="")
+        public ActionResult Edit(int customerId = 0, string enqId = "", string referrer = "")
         {
             ViewBag.ParentPage = "customer";
             ViewBag.PageName = "edit";
@@ -298,7 +274,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult Edit(MyobCustomerModel model)
+        public JsonResult Edit(CustomerModel model)
         {
             ViewBag.ParentPage = ViewBag.PageName = "customer";
             CustomerEditModel cmodel = new();
@@ -314,10 +290,10 @@ namespace SmartBusinessWeb.Controllers.Customer
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int customerId, int accountProfileId)
+        public ActionResult Delete(int customerId)
         {
             ViewBag.ParentPage = ViewBag.PageName = "customer";
-            CustomerEditModel.Delete(customerId, accountProfileId);
+            CustomerEditModel.Delete(customerId);
             return Json(new { });
         }
 

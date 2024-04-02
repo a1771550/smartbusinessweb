@@ -4844,8 +4844,6 @@
     <Content Include="Views\OtherSettings\Index.cshtml" />
     <Content Include="Views\OtherSettings\KingdeeAccountInfo.cshtml" />
     <Content Include="Views\PaymentTypes\Index.cshtml" />
-    <Content Include="Views\PGCustomer\Edit.cshtml" />
-    <Content Include="Views\PGCustomer\Index.cshtml" />
     <Content Include="Views\POSFunc\Dayends.cshtml" />
     <Content Include="Views\POSFunc\KStock.cshtml" />
     <Content Include="Views\POSFunc\PendingInvoices.cshtml" />

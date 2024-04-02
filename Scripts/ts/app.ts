@@ -1607,11 +1607,7 @@ function OnGetCustomersSuccess(response) {
 	closeWaitingModal();
 	// console.log("response:", response);
 	var model = response;
-
-	// console.log("searchcusmode:" + searchcusmode);
-	model.Customers = forMyob
-		? model.MyobCustomers.slice(0)
-		: model.PGCustomers.slice(0);
+	
 	//console.log("modelcustomers:", model.Customers);
 	if (model.Customers.length > 0) {
 		togglePaging("customer", true);
@@ -5449,82 +5445,74 @@ interface ICustomerPointPriceLevel {
 	CustomerPoint: number;
 }
 interface ICustomer {
+    ExchangeRate: number|null;
+    CreateTimeDisplay: any;
+    AccountProfileName: string;
 	cusCustomerID: number;
-	cusIsActive: boolean;
 	cusCode: string;
 	cusName: string;
 	cusContact: string | null;
-	cusPhone: string | null;
+	cusPhone: string;
 	cusMobile: string | null;
 	cusEmail: string | null;
-	cusFax: string | null;
 	cusAddrLocation: number | null;
 	cusAddrStreetLine1: string | null;
 	cusAddrStreetLine2: string | null;
 	cusAddrStreetLine3: string | null;
 	cusAddrStreetLine4: string | null;
-	cusAddrStreetLine5: string | null;
 	cusAddrCity: string | null;
 	cusAddrState: string | null;
 	cusAddrPostcode: string | null;
 	cusAddrCountry: string | null;
 	cusAddrPhone1: string | null;
-	cusAddrPhone2: string|null;
-	cusAddrPhone3: string|null;
-	cusAddrFax: string|null;
-	cusAddrWeb: string|null;
-	cusPriceLevel: string|null;
-	cusPriceLevelID: string|null;
+	cusAddrPhone2: string | null;
+	cusAddrPhone3: string | null;
+	cusAddrWeb: string | null;
+	cusPriceLevel: string | null;
+	cusPriceLevelID: string | null;
 	cusPointsSoFar: number;
-	cusPointsActive: number;
-	cusPointsUsed: number;
-	cusSaleComment: string|null;
+	cusPointsActive: number | null;
+	cusPointsUsed: number | null;
+	cusSaleComment: string | null;
 	cusTermsID: number | null;
-	TermsOfPaymentID: string|null;
+	TermsOfPaymentID: string | null;
 	PaymentIsDue: number | null;
 	DiscountDays: number | null;
 	BalanceDueDays: number | null;
-	DiscountDate: number | null;
-	BalanceDueDate: number | null;
-	PaymentTermsDesc: string;
-	FollowUpDate: Date | null;
+	ImportPaymentIsDue: number | null;
+	PaymentTermsDesc: string | null;
+	FollowUpDate: string | null;
 	CurrencyID: number | null;
-	CurrencyCode: string|null;
-	TaxIDNumber: string|null;
+	CurrencyCode: string | null;
+	TaxIDNumber: string | null;
 	TaxCodeID: number | null;
+	cusStatus: string | null;
 	cusWhatsappPhoneNo: string | null;
+	cusPriceLevelDescription: string | null;
+	IpCountry: string | null;
+	salescode: string | null;
+	iPriceLevel: number | null;
+	//PointsActive: number | null;
+	AddressList: IAddressView[];
+	NewCustomerId: number;
+	IsLastSellingPrice: boolean | null;
 	statuscls: string | null;
-	FollowUpStatus: string | null;
 	FollowUpStatusDisplay: string | null;
+	FollowUpDateDisplay: string | null;
 	CustomAttributes: string | null;
 	UploadFileList: string[];
 	ImgList: string[];
 	FileList: string[];
 	GlobalAttributeList: IGlobalAttribute[];
 	CustomAttributeList: ICustomAttribute[];
-	jsCustomAttributeList: string | null;
-	cusPriceLevelDescription: string|null;
-	StreetLines: string[];
-	IpCountry: string | null;
-	salescode: string | null;
-	FollowUpDateDisplay: string | null;
-	AccountProfileName: string | null;
-	CreateTimeDisplay: string | null;
-	ModifyTimeDisplay: string | null;
-	iPriceLevel: number | null;
-	PointsActive: number;
-	LastSellingPrice: number | null;
-	AddressList: IAddressView[];
-	NewCustomerId: number | null;
-	IsLastSellingPrice: boolean | null;
-	TaxPercentageRate: number | null;
-	ExchangeRate: number | null;
 	TaxCode: string | null;
-	FollowUpDateInfo: ICustomerInfo | null;
-	jsCustomerInfo: string | null;
+	FollowUpDateInfo: ICustomerInfo;
 	FollowUpRecordList: ICustomerInfo[];
 	unsubscribe: boolean | null;
 	CustomerItems: ICustomerItem[];
+	StreetLines: string[];
+	CustomerInfo: ICustomerInfo[];
+	TaxPercentageRate: number | null;
 }
 function initAddressView(): IAddressView {
 	return {
@@ -6764,55 +6752,27 @@ function handleCheckall(checked: boolean) {
 	//console.log("idlist:", IdList);
 	icheckall = checked ? 1 : 0;
 
-	//if (forstock) {
-	//    if ($(".page").length) {
-	//        $(".page").each(function (i, e) {
-	//            let href: string = <string>$(e).attr("href");
-	//            href += `&CheckAll=${ichecked}`;
-	//            $(e).attr("href", href);
-	//            console.log("href:"+$(e).attr("href"));
-	//        });
-	//    }
-	//} else {
 	if ($(".page-link").length) {
 		$(".page-link").each(function (i, e) {
-			let href: string = <string>$(e).attr("href");
-			href += `&CheckAll=${icheckall}`;
-			$(e).attr("href", href);
-			console.log("href:" + $(e).attr("href"));
+			if (!$(e).parent("li").hasClass("active")) {
+				let href: string = <string>$(e).attr("href");
+				href += `&CheckAll=${icheckall}`;
+				$(e).attr("href", href);
+				//console.log("href:" + $(e).attr("href"));
+			}			
 		});
 	}
-	//}
 }
 function handleCheckEnqAll(checked: boolean) {
 	assignEnqIdList = [];
-	if (checked) {
-		//console.log("infoblk idlist:", $infoblk.data("idlist"));
-		//if ($infoblk.data("idlist")) {
-		//    let idlist: string[] = $infoblk.data("idlist").split(",");
-		//    assignEnqIdList = idlist.slice(0);
-		//} else {
+	if (checked) {		
 		$(".enqchk").each(function (i, e) {
 			assignEnqIdList.push($(e).data("id"));
 		});
-		//}
+		
 	} else {
 		assignEnqIdList = [];
 	}
-
-	//$("#chkenqall").prop("checked", checked);
-
-	//console.log("assignEnqIdList:", assignEnqIdList);
-	//let ichecked = checked ? 1 : 0;
-
-	//if ($(".page-link").length) {
-	//    $(".page-link").each(function (i, e) {
-	//        let href: string = <string>$(e).attr("href");
-	//        href += `&CheckAll=${ichecked}`;
-	//        $(e).attr("href", href);
-	//        console.log($(e).attr("href"));
-	//    });
-	//}
 }
 $(".chk").on("input", function (e) {
 	e.stopPropagation();
@@ -13914,13 +13874,7 @@ function confirmBatchSnQty() {
 									$target.prop("checked", false);
 									let sn: string = $target.val() as string;
 									let batId: string = $target.attr("id") as string;
-									let batcode: string = $target.data("batcode") as string;
-
-									//todo: snvtlist
-									//snvtlist =
-									//    DicItemSeqBatSnVt[itemseq][
-									//        batcode
-									//    ].slice(0);
+									
 									let idx = -1;
 									$.each(snvtlist, function (index, ele) {
 										if (ele.sn == sn) {
@@ -13942,10 +13896,6 @@ function confirmBatchSnQty() {
 									if (idx >= 0) {
 										DeliveryItems.splice(idx, 1);
 									}
-
-									//todo: snvtlist slice
-									//DicItemSeqBatSnVt[itemseq][batcode] =
-									//    snvtlist.slice(0);
 
 									$target
 										.parent("div")
@@ -17102,13 +17052,12 @@ function getCustomers() {
 	SearchCustomers();
 }
 
-let forMyob: boolean = true;
-function SearchCustomers() {
-	let imyob = forMyob ? 1 : 0;
+
+function SearchCustomers() {	
 	$.ajax({
 		url: "/Api/SearchCustomersAjax",
 		type: "GET",
-		data: { pageIndex: 1, keyword: keyword.toLowerCase(), imyob },
+		data: { pageIndex: 1, keyword: keyword.toLowerCase() },
 		contentType: "application/json; charset=utf-8",
 		dataType: "json",
 		success: OnSearchCustomersOK,
@@ -17231,7 +17180,7 @@ function validCusForm() {
 function fillInCustomer() {
 	customer = {} as ICustomer;
 	customer.cusCustomerID = <number>$("#cusCustomerID").val();
-	customer.cusCode = $("#cusCode").val() as string;
+	customer.cusCode = $("#cusPhone").val() as string;
 	customer.cusName = <string>$("#cusName").val();
 	customer.cusPhone = <string>$("#cusPhone").val();
 	customer.cusSaleComment = <string>$salecomment.val();
@@ -17605,7 +17554,7 @@ function selectcus() {
 
 			if (selectedCus.cusName.toLowerCase() !== "guest") {
 				$("#txtPhone").val(selectedCus.cusPhone??"");
-				$("#txtPoints").val(<number>selectedCus.PointsActive);
+				$("#txtPoints").val(Number(selectedCus.cusPointsActive??0));
 				//setCustomerPriceLevel();
 				$("#txtPriceLevel").val(<string>selectedCus.cusPriceLevelDescription);
 				//console.log("cus joblist:", selectedCus.JobList);
@@ -18913,7 +18862,7 @@ function handleRecurOrderList(this: any) {
 			selectedCus.cusPriceLevelID = ws.Customer.cusPriceLevelID;
 			selectedCus.cusPointsSoFar = ws.Customer.cusPointsSoFar;
 			selectedCus.cusPointsUsed = ws.Customer.cusPointsUsed;
-			selectedCus.PointsActive = ws.Customer.PointsActive;
+			selectedCus.cusPointsActive = ws.Customer.cusPointsActive;
 			selectedCus.cusPriceLevelDescription =
 				ws.Customer.cusPriceLevelDescription;
 			selectedCus.AddressList = ws.Customer.AddressList;
@@ -20926,9 +20875,7 @@ $(document).on("dblclick", ".batch", function () {
 						}
 					}
 				});
-			} else {
-				//todo:
-			}
+			} 
 
 			html += ivlist + "</ul></td>";
 

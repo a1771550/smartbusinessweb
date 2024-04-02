@@ -365,20 +365,20 @@ function fillinRefundForm() {
 	$("#txtCustomerCode").val(selectedCusCodeName);
 	$("#txtStaticCustomerName").val(selectedCus.cusName);
 	if (selectedCusCodeName.toLowerCase() !== "guest") {
-		$("#txtPoints").val(selectedCus.PointsActive);
+		$("#txtPoints").val(selectedCus.cusPointsActive??0);
 		$("#txtPhone").val(selectedCus.cusCode);
-		if (selectedCus.PointsActive == 0) {
+		if (selectedCus.cusPointsActive == 0) {
 			$("#txtPriceLevel").val(cpplList[0].PriceLevelDescription);
 			selectedCus.cusPriceLevelID = cpplList[0].PriceLevelID;
 		} else {
 			$.each(cpplList, function (i, e) {
 				/* console.log('customerpoint:' + e.CustomerPoint + ';cuspointactive:' + selectedCus.cusPointsActive);*/
-				if (e.CustomerPoint == selectedCus.PointsActive) {
+				if (e.CustomerPoint == selectedCus.cusPointsActive) {
 					$("#txtPriceLevel").val(cpplList[i].PriceLevelDescription);
 					selectedCus.cusPriceLevelID = cpplList[i].PriceLevelID;
 					return false;
 				}
-				if (e.CustomerPoint > selectedCus.PointsActive) {
+				if (e.CustomerPoint > (selectedCus.cusPointsActive??0)) {
 					if (
 						typeof cpplList[i - 1] !== "undefined" &&
 						typeof cpplList[i - 1].PriceLevelDescription !== "undefined"
@@ -390,7 +390,7 @@ function fillinRefundForm() {
 				}
 			});
 			if (
-				selectedCus.PointsActive >
+				(selectedCus.cusPointsActive??0) >
 				cpplList[cpplList.length - 1].CustomerPoint
 			) {
 				$("#txtPriceLevel").val(
