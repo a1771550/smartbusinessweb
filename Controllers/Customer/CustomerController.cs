@@ -254,7 +254,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [HttpGet]
-        public ActionResult Edit(int Id = 0, string enqId = "", string referrer = "")
+        public ActionResult Edit(int Id = 0, string enqId = null, string referrer = "")
         {
             ViewBag.ParentPage = "customer";
             ViewBag.PageName = "edit";

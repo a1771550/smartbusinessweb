@@ -1,7 +1,14 @@
 ﻿$infoblk = $("#infoblk");
-editmode = $infoblk.data("edit") === "True";
 
-let supplier: ISupplier;
+$(document).on("change", "#supEmail", function () {
+    handleCardEmailChange.call(this);
+});
+$(document).on("change", "#supPhone", function () {
+    handleCardPhoneChange.call(this);
+});
+$(document).on("change", "#supName", function () {
+    handleCardNameChange.call(this);
+});
 
 $(document).on("click", "#btnSave", function () {
     if (_validSupplier()) {
@@ -54,7 +61,7 @@ function _validSupplier(): boolean {
 
 function fillInSupplier(): ISupplier {
     return {
-        supId: <number>$("#supId").val(),
+        supId: Number($("#supId").val()),
         supName: <string>$("#supName").val(),
         supPhone: <string>$("#supPhone").val(),
         supEmail: <string>$("#supEmail").val(),
@@ -75,9 +82,15 @@ function fillInSupplier(): ISupplier {
 }
 
 $(function () {
+    setFullPage();
+    triggerMenu(5,2);
     forsupplier = true;
     initModals();
     supplier = fillInSupplier();
+
+    PhoneNameEmailList = $infoblk.data("phonenameemaillist");
+
+    editmode = supplier.supId > 0;
 
     uploadsizelimit = parseInt($infoblk.data("uploadsizelimit"));
     uploadsizelimitmb = parseInt($infoblk.data("uploadsizelimitmb"));

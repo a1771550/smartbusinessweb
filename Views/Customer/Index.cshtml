@@ -52,14 +52,13 @@
 			</thead>
 			<tbody>
 				@foreach (var customer in Model.PagingCustomerList)
-				{
-					var email = string.IsNullOrEmpty(customer.cusEmail) ? "N/A" : customer.cusEmail;
+				{				
 					string cname = customer.cusIsOrganization ? customer.cusName : string.Concat(customer.cusFirstName, " ", customer.cusName);
 					var disabled = (customer.cusCheckout != null && (bool)customer.cusCheckout) ? "disabled" : "";
 					<tr class="@customer.statuscls pointer" data-id="@customer.cusCustomerID">
 						<td class="text-center">@cname</td>
 						<td class="text-center">@customer.cusContact</td>
-						<td class="text-center">@email</td>
+						<td class="text-center">@Html.Raw(customer.EmailDisplay)</td>
 						<td class="text-center customattrs">
 							@if (!string.IsNullOrWhiteSpace(customer.CustomAttributes))
 							{
@@ -72,7 +71,7 @@
 						<td class="text-center">@customer.AccountProfileName</td>
 
 						<td>
-							<a class="btn btn-info btnsmall" role="button" href="/Customer/Edit?customerId=@customer.cusCustomerID&referrer=Index">@Resources.Resource.Edit</a>
+							<a class="btn btn-info btnsmall" role="button" href="/Customer/Edit?Id=@customer.cusCustomerID&referrer=Index">@Resources.Resource.Edit</a>
 							<a class="btn btn-danger btnsmall remove @disabled" role="button" href="#" data-id="@customer.cusCustomerID" data-apid="@customer.AccountProfileId">@Resources.Resource.Remove</a>
 						</td>
 						@*<td>

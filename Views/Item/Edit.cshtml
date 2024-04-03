@@ -40,7 +40,7 @@ else
 
 @Html.Partial("_WaitingModal")
 
-<div id="infoblk" data-shop="@Model.ComInfo.Shop" data-namelist="@(string.Join(",",Model.ItemNameList))" data-codelist="@codelist" data-supcodelist="@supcodelist" data-jsondicacaccounts="@Model.JsonDicAcAccounts" data-accountprofileid="@Model.AccountProfileId" data-jsonitem="@Model.JsonItem" data-stockqtyerr="@Resources.Resource.StockQtyLTZeroErr" data-jsonattrlist="@Model.JsonItemAttrList" data-jsondiclocqty="@Model.Item.JsonDicLocQty" data-jsonitemvariations="@Model.JsonItemVariations" data-jsonselectedivlist="@Model.JsonSelectedIVList" data-jsonitemvari="@Model.JsonItemVari" data-edititem="@Model.EditItem" data-referrer="@Model.Referrer"></div>
+<div id="infoblk" data-shop="@Model.ComInfo.Shop" data-namelist="@(string.Join(",",Model.ItemNameList))" data-codelist="@codelist" data-supcodelist="@supcodelist" data-jsondicacaccounts="@Model.JsonDicAcAccounts" data-accountprofileid="@Model.AccountProfileId" data-jsonitem="@Model.JsonItem" data-stockqtyerr="@Resources.Resource.StockQtyLTZeroErr" data-jsonattrlist="@Model.JsonItemAttrList" data-jsondiclocqty="@Model.Item.JsonDicLocQty" data-jsonitemvariations="@Model.JsonItemVariations" data-jsonselectedivlist="@Model.JsonSelectedIVList" data-jsonitemvari="@Model.JsonItemVari" data-edititem="@Model.EditItem" data-referrer="@Model.Referrer" data-codenamelist="@JsonSerializer.Serialize(Model.CodeNameList)"></div>
 
 
 <script src="~/Scripts/ts/js/item/itemedit.js?v=@rand"></script>

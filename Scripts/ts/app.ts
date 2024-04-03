@@ -12,6 +12,23 @@ enum TriggerReferrer {
 	Row,
 	Modal
 }
+
+//for myobItem
+interface ICodeName {
+	Code: string;
+	Name: string;
+}
+let CodeNameList: ICodeName[] = [];
+
+//for myobCustomer & myobSupplier
+interface IPhoneNameEmail {
+	Phone: string;
+	Name: string;
+	Email: string;
+}
+let PhoneNameEmailList: IPhoneNameEmail[] = [];
+let supplier: ISupplier;
+
 let triggerReferrer: TriggerReferrer;
 
 let $appInfo = $("#appInfo");
@@ -46,8 +63,11 @@ let NamesMatch: boolean = false;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
+//const searchcustxt:string = $txtblk.data("searchcustxt");
+const duplicatedemailalert: string = $txtblk.data("duplicatedemailalert");
 const duplicateditemnamewarning: string = $txtblk.data("duplicateditemnamewarning");
-const duplicatedcustomernamewarning: string = $txtblk.data("duplicatedcustomernamewarning");
+const duplicatednamewarning: string = $txtblk.data("duplicatednamewarning");
+const duplicatedphonewarning: string = $txtblk.data("duplicatedphonewarning");
 const datanotenough4submittxt: string = $txtblk.data("datanotenough4submittxt");
 const allocationmemotxt: string = $txtblk.data("allocationmemotxt");
 const discpctxt: string = $txtblk.data("discpctxt");
@@ -1365,15 +1385,15 @@ function _writeItems(itemList: IItem[]) {
 			}
 		}
 
-		html += `<tr class="${trcls}" data-code="${itemcode}" data-proid="${proId}" data-qty="${_qty}" data-abssqty="${item.AbssQty}">`;	
-		html += `<td>${itemcode}</td>`;		
+		html += `<tr class="${trcls}" data-code="${itemcode}" data-proid="${proId}" data-qty="${_qty}" data-abssqty="${item.AbssQty}">`;
+		html += `<td>${itemcode}</td>`;
 
 		var namedesc = handleItemDesc(item.NameDesc);
 		html += `<td style="max-width:250px;" title="${item.NameDesc}">${namedesc}</td>`;
 		let outofstock: boolean = forsales || forsimplesales || forpreorder || forIA ? false : itemcode.startsWith("/") ? false : _qty <= 0;
 		if (!forpurchase) {
 			let tdcls = outofstock ? "outofstock" : "";
-			let qtydisplay =`${_qty}`;
+			let qtydisplay = `${_qty}`;
 			if (forIA) qtydisplay = `${_qty} <span class="text-primary font-weight-bold">(${item.AbssQty})</span>`;
 			html += `<td class="${tdcls} text-right">${qtydisplay}</td>`;
 		}
@@ -1610,7 +1630,7 @@ function OnGetCustomersSuccess(response) {
 	closeWaitingModal();
 	// console.log("response:", response);
 	var model = response;
-	
+
 	//console.log("modelcustomers:", model.Customers);
 	if (model.Customers.length > 0) {
 		togglePaging("customer", true);
@@ -1627,9 +1647,9 @@ function OnGetCustomersSuccess(response) {
 			_writeCustomers(CusList);
 		}
 
-		if (searchcusmode) {			
+		if (searchcusmode) {
 			searchcusmode = false;
-		} else {			
+		} else {
 			$(".CusPager").ASPSnippets_Pager({
 				ActiveCssClass: "current",
 				PagerCssClass: "pager",
@@ -1687,7 +1707,7 @@ function OnSearchCustomersSuccess(response) {
 				let editremovetag = `<a class="btn btn-info" role="button" href="/Customer/Edit?customerId=${customer.cusCustomerID}"><span class="small">${edittxt}</span></a>
                     <a class="btn btn-danger remove" role="button" href="#" data-id="${customer.cusCustomerID}"><span class="small">${removetxt}</span></a>`;
 				let salesman = "N/A";
-					
+
 				$("td", row)
 					.eq(0)
 					.css({ width: "5px", "max-width": "5px" })
@@ -1702,17 +1722,17 @@ function OnSearchCustomersSuccess(response) {
 					.eq(2)
 					.css({ width: "100px", "max-width": "100px" })
 					.addClass("text-center")
-					.html(customer.cusContact??"");
+					.html(customer.cusContact ?? "");
 				$("td", row)
 					.eq(3)
 					.css({ width: "110px", "max-width": "110px" })
 					.addClass("text-center")
-					.html(customer.cusEmail??"");
+					.html(customer.cusEmail ?? "");
 				$("td", row)
 					.eq(4)
 					.css({ width: "100px", "max-width": "100px" })
 					.addClass("text-center")
-					.html(customer.AccountProfileName??"");
+					.html(customer.AccountProfileName ?? "");
 				$("td", row)
 					.eq(5)
 					.css({ width: "100px", "max-width": "100px" })
@@ -2238,7 +2258,7 @@ function GetPaymentsInfo() {
 	function getPaymentInfo(e) {
 		if ($(e).val() !== "") {
 			let typecode: string = <string>$(e).attr("id");
-			let amt: number = isEpay? Number($(e).data("amt")): Number($(e).val());
+			let amt: number = isEpay ? Number($(e).data("amt")) : Number($(e).val());
 			console.log("typecode:", typecode);
 			console.log("amt#0:", amt);
 
@@ -5448,9 +5468,9 @@ interface ICustomerPointPriceLevel {
 	CustomerPoint: number;
 }
 interface ICustomer {
-    ExchangeRate: number|null;
-    CreateTimeDisplay: any;
-    AccountProfileName: string;
+	ExchangeRate: number | null;
+	CreateTimeDisplay: any;
+	AccountProfileName: string;
 	cusCustomerID: number;
 	cusCode: string;
 	cusName: string;
@@ -6762,17 +6782,17 @@ function handleCheckall(checked: boolean) {
 				href += `&CheckAll=${icheckall}`;
 				$(e).attr("href", href);
 				//console.log("href:" + $(e).attr("href"));
-			}			
+			}
 		});
 	}
 }
 function handleCheckEnqAll(checked: boolean) {
 	assignEnqIdList = [];
-	if (checked) {		
+	if (checked) {
 		$(".enqchk").each(function (i, e) {
 			assignEnqIdList.push($(e).data("id"));
 		});
-		
+
 	} else {
 		assignEnqIdList = [];
 	}
@@ -13877,7 +13897,7 @@ function confirmBatchSnQty() {
 									$target.prop("checked", false);
 									let sn: string = $target.val() as string;
 									let batId: string = $target.attr("id") as string;
-									
+
 									let idx = -1;
 									$.each(snvtlist, function (index, ele) {
 										if (ele.sn == sn) {
@@ -16239,7 +16259,7 @@ function handleWhatsappClick(
 	popupCenter({ url: lnk, title: "", w: 900, h: 500 });
 }
 
-function itemEditPageLoad() {		
+function itemEditPageLoad() {
 	initModals();
 	$("#itmCode").trigger("focus");
 	//console.log('codelist:', codelist);
@@ -16282,7 +16302,7 @@ function itemEditPageLoad() {
 		}
 		ItemAttrList = []; //only when btnEditItemAttr is clicked is filled the itemattrlist for accordion...
 	} else {
-		selectedItem = initItem();	
+		selectedItem = initItem();
 		selectedItem!.itmIsNonStock = false;
 		selectedItem!.itmIsActive = true;
 		if (!NonABSS) {
@@ -16452,30 +16472,6 @@ if ($("#isActive").length) {
 }
 let ItemVari: IItemVariation | null;
 
-$(document).on("change", "#itmCode", function () {
-	let code: string = <string>$(this).val();
-	if (code !== "") {
-		if (code !== $("#codeinuse").val()) {
-			if (phonelist.includes(code)||codelist.includes(code)) {
-				$.fancyConfirm({
-					title: "",
-					message: itemcodeduplicatederr,
-					shownobtn: false,
-					okButton: oktxt,
-					noButton: canceltxt,
-					callback: function (value) {
-						if (value) {
-							$("#itmCode").trigger("focus");
-						}
-					},
-				});
-			} else if (selectedItem) {
-				selectedItem!.itmCode = code;
-			}
-		}
-	}
-});
-
 $(document).on("change", "#itmSupCode", function () {
 	let code: string = <string>$(this).val();
 	if (selectedItem && code !== "") {
@@ -16487,33 +16483,73 @@ $(document).on("click", "#btnCopyFrm", function () {
 	GetItems(1);
 });
 
+$(document).on("change", "#itmCode", function () {
+	let $code = $(this);
+	let code: string = <string>$code.val();
+	if (code) {
+		trimByMaxLength($code);
+		if (code !== $("#codeinuse").val()) {
+			if (CodeNameList && CodeNameList.length > 0) {
+				let idx = CodeNameList.findIndex(x => x.Code.toLowerCase() == code.toLowerCase());
+				if (idx >= 0) {
+					$.fancyConfirm({
+						title: "",
+						message: itemcodeduplicatederr,
+						shownobtn: false,
+						okButton: oktxt,
+						noButton: notxt,
+						callback: function (value) {
+							if (value) {
+								$code.val("").trigger("focus");
+							}
+						}
+					});
+				} else {
+					if (selectedItem) {
+						selectedItem!.itmCode = code;
+					}
+				}
+			}
+		}
+	}
+});
 $(document).on("change", "#itmName", function () {
 	let $name = $(this);
 	let name: string = <string>$name.val();
-	if (namelist.includes(name)) {
-		$.fancyConfirm({
-			title: "",
-			message: duplicateditemnamewarning,
-			shownobtn: false,
-			okButton: oktxt,
-			noButton: notxt,
-			callback: function (value) {
-				if (value) {
-					$name.val("").trigger("focus");
+	if (name) {
+		trimByMaxLength($name);
+
+		if (CodeNameList && CodeNameList.length > 0) {
+			let idx = CodeNameList.findIndex(x => x.Name.toLowerCase() == name.toLowerCase());
+			if (idx >= 0) {
+				$.fancyConfirm({
+					title: "",
+					message: duplicatednamewarning,
+					shownobtn: false,
+					okButton: oktxt,
+					noButton: notxt,
+					callback: function (value) {
+						if (value) {
+							$name.val("").trigger("focus");
+						}
+					}
+				});
+			} else {
+				if (selectedItem) {
+					selectedItem!.itmName = name;
 				}
 			}
-		});	
-	} else {
-		if (selectedItem && name !== "") {
-			selectedItem!.itmName = name;
 		}
-	}	
+	}
 });
 $(document).on("change", "#itmDesc", function () {
-	let _val: string = <string>$(this).val();
-	if (selectedItem && _val !== "") {
-		selectedItem!.itmDesc = _val;
+	let $desc = $(this);
+	let desc: string = <string>$desc.val();
+	if (desc) {
+		trimByMaxLength($desc);
+		if (selectedItem) selectedItem!.itmDesc = desc;
 	}
+	
 });
 $(document).on("change", "#BaseSellingPrice", function () {
 	let _val: number = <number>$(this).val();
@@ -16646,6 +16682,15 @@ $(document).on("click", ".iapage", function () {
 	let page = parseInt(<string>$(this).data("page"));
 	changeAccountPage(page);
 });
+function trimByMaxLength($obj: JQuery<HTMLElement>) {
+	let maxlength = Number($obj.data("maxlength"));
+	let obj = $obj.val() as string;
+	if (obj!.length > maxlength) {
+		obj = obj.substring(0, maxlength);
+		$obj.val(obj);
+	}
+}
+
 function numAccountPages(): number {
 	if (filteredAccountList.length > 0) {
 		return Math.ceil(filteredAccountList.length / records_per_page);
@@ -17072,7 +17117,7 @@ function getCustomers() {
 }
 
 
-function SearchCustomers() {	
+function SearchCustomers() {
 	$.ajax({
 		url: "/Api/SearchCustomersAjax",
 		type: "GET",
@@ -17141,7 +17186,7 @@ function validCusForm() {
 		msg += $infoblk.data("customerphonerequired") + "<br>";
 	} else {
 		if (customer.cusPhone !== <string>$("#phoneinuse").val()!.toString()) {
-			if (phonelist.includes(customer.cusPhone??"")) {
+			if (phonelist.includes(customer.cusPhone ?? "")) {
 				msg += customerphoneduplicatederrtxt + "<br>";
 				duplicated = true;
 			}
@@ -17175,7 +17220,7 @@ function validCusForm() {
 					if (_attrmode) {
 						if (isorgan && customer.cusName === "") {
 							$cusname.addClass("focus");
-						}					
+						}
 						if (customer.cusCode === "") {
 							$cuscode.addClass("focus");
 						}
@@ -17198,7 +17243,7 @@ function validCusForm() {
 
 function fillInCustomer() {
 	customer = {} as ICustomer;
-	customer.cusCustomerID = <number>$("#cusCustomerID").val();
+	customer.cusCustomerID = Number($("#cusCustomerID").val());
 	customer.cusCode = $("#cusPhone").val() as string;
 	customer.cusName = <string>$("#cusName").val();
 	customer.cusPhone = <string>$("#cusPhone").val();
@@ -17209,7 +17254,7 @@ function fillInCustomer() {
 	let newpoints: number = <number>$points.val();
 	let oldpoints: number = <number>$points.data("oldpoints");
 	customer.cusPointsSoFar += (newpoints - oldpoints);
-	customer.cusEmail = <string>$("#cusEmail").val();	
+	customer.cusEmail = <string>$("#cusEmail").val();
 	customer.cusContact = <string>$("#cusContact").val();
 	customer.cusAddrCity = <string>$("#cusCity").val();
 	customer.cusAddrCountry = <string>$("#cusCountry").val();
@@ -17232,11 +17277,11 @@ function fillInCustomer() {
 	customer.cusAddrPhone1 = <string>$("#cusAddrPhone1").val();
 	let $phone2 = $("#cusAddrPhone2");
 	if ($phone2.length) {
-		customer.cusAddrPhone2 = <string>$("#cusAddrPhone2").val();	
+		customer.cusAddrPhone2 = <string>$("#cusAddrPhone2").val();
 	}
 	let $phone3 = $("#cusAddrPhone3");
 	if ($phone3.length) {
-		customer.cusAddrPhone3 = <string>$("#cusAddrPhone3").val();		
+		customer.cusAddrPhone3 = <string>$("#cusAddrPhone3").val();
 	}
 
 	customer.IsLastSellingPrice = $("#IsLastSellingPrice").is(":checked");
@@ -17247,7 +17292,7 @@ function fillInCustomer() {
 		customer.FollowUpDateInfo.JsFollowUpDate = $("#followUpDate").val() as string;
 		customer.FollowUpDateInfo.Id = Number($("#FollowUpDateInfo_Id").val());
 	}
-	
+
 
 	customer.unsubscribe = $("#chkUnsubscribe").is(":checked");
 }
@@ -17572,8 +17617,8 @@ function selectcus() {
 			$cusname.off("focus").on("change", handleCustomerNameChange);
 
 			if (selectedCus.cusName.toLowerCase() !== "guest") {
-				$("#txtPhone").val(selectedCus.cusPhone??"");
-				$("#txtPoints").val(Number(selectedCus.cusPointsActive??0));
+				$("#txtPhone").val(selectedCus.cusPhone ?? "");
+				$("#txtPoints").val(Number(selectedCus.cusPointsActive ?? 0));
 				//setCustomerPriceLevel();
 				$("#txtPriceLevel").val(<string>selectedCus.cusPriceLevelDescription);
 				//console.log("cus joblist:", selectedCus.JobList);
@@ -19057,8 +19102,116 @@ $(document).on("dblclick", ".orderId", function () {
 });
 let useForexAPI: boolean = false;
 let codelist: string[] = [];
-let namelist: string[] = [];
 
+function handleCardEmailChange(this: any) {
+	let $email = $(this);
+	let email = $email.val() as string;
+
+	if (email) {
+		trimByMaxLength($email);
+
+		if (!validateEmail(email)) {
+			$.fancyConfirm({
+				title: "",
+				message: emailformaterr,
+				shownobtn: false,
+				okButton: oktxt,
+				noButton: notxt,
+				callback: function (value) {
+					if (value) {
+						$email.val("").trigger("focus");
+					}
+				}
+			});
+		}
+
+		if (PhoneNameEmailList && PhoneNameEmailList.length > 0) {
+			let idx = PhoneNameEmailList.findIndex(x => x.Email.toLowerCase() == email.toLowerCase());
+			if (idx >= 0) {
+				$.fancyConfirm({
+					title: "",
+					message: duplicatedemailalert,
+					shownobtn: false,
+					okButton: oktxt,
+					noButton: notxt,
+					callback: function (value) {
+						if (value) {
+							$email.trigger("focus");
+						}
+					}
+				});
+			}
+		}
+	}
+}
+function handleCardPhoneChange(this: any) {
+	let $phone = $(this);
+	let phone = $phone.val() as string;
+	if (phone) {
+		trimByMaxLength($phone);
+		if (PhoneNameEmailList && PhoneNameEmailList.length > 0) {
+			let idx = PhoneNameEmailList.findIndex(x => x.Phone.toLowerCase() == phone.toLowerCase());
+			if (idx >= 0) {
+				$.fancyConfirm({
+					title: "",
+					message: duplicatedphonewarning,
+					shownobtn: false,
+					okButton: oktxt,
+					noButton: notxt,
+					callback: function (value) {
+						if (value) {
+							$phone.val("").trigger("focus");
+						}
+					}
+				});
+			}
+		}
+	}
+}
+
+function handleCardNameChange(this: any) {
+	let $name = $(this);
+	let name = $name.val() as string;
+
+	if (name) {
+		trimByMaxLength($name);
+
+		if (name.toUpperCase() === "GUEST") {
+			$.fancyConfirm({
+				title: "",
+				message: guestcantaddedmsg,
+				shownobtn: false,
+				okButton: oktxt,
+				noButton: canceltxt,
+				callback: function (value) {
+					if (value) {
+						$name.val("").trigger("focus");
+					}
+				},
+			});
+		}
+
+		if (PhoneNameEmailList && PhoneNameEmailList.length > 0) {
+			let idx = PhoneNameEmailList.findIndex(x => x.Name.toLowerCase() == name.toLowerCase());
+			if (idx >= 0) {
+				$.fancyConfirm({
+					title: "",
+					message: duplicatednamewarning,
+					shownobtn: false,
+					okButton: oktxt,
+					noButton: notxt,
+					callback: function (value) {
+						if (value) {
+							$name.val("").trigger("focus");
+						}
+					}
+				});
+			}
+		}
+	}
+
+
+}
 $(document).on("change", "#chkAllLoc", function () {
 	if ($(this).is(":checked")) {
 		const location = $("#drpLocation").val() as string;
@@ -20895,7 +21048,7 @@ $(document).on("dblclick", ".batch", function () {
 						}
 					}
 				});
-			} 
+			}
 
 			html += ivlist + "</ul></td>";
 
@@ -22054,6 +22207,6 @@ let IA: IIA;
 let IALs: IIAL[] = [];
 let SelectedIAL: IIAL;
 
-function triggerMenu(dashmenuIdx:number, submenuIdx:number) {
+function triggerMenu(dashmenuIdx: number, submenuIdx: number) {
 	$(".dash__menu").find("ul").find(".btn_expand").eq(dashmenuIdx).trigger("click").find(".submenu").first().addClass("show").find("a").removeClass("active").parent("li").parent(".submenu").find("li").eq(submenuIdx).find("a").addClass("active");
 }

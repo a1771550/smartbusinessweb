@@ -1,94 +1,94 @@
 ﻿@model PPWLib.Models.Purchase.Supplier.SupplierEditModel
 @using PagedList.Mvc;
 @{
-    ViewBag.Title = Resources.Resource.Supplier;
-    int rand = CommonHelper.GetVersionRandomNo();
-    string checkoutportal = (HttpContext.Current.Session["ComInfo"] as ComInfo).DefaultCheckoutPortal;
-    bool nonabss = checkoutportal.ToLower() == "nonabss";
+	ViewBag.Title = Resources.Resource.Supplier;
+	int rand = CommonHelper.GetVersionRandomNo();
+	string checkoutportal = (HttpContext.Current.Session["ComInfo"] as ComInfo).DefaultCheckoutPortal;
+	bool nonabss = checkoutportal.ToLower() == "nonabss";
 }
 <link href="~/Content/supplier/index.css?v=@rand" rel="stylesheet" type="text/css" />
 <h2 class="clearfix">
 	@ViewBag.Title
-	<a href="/Supplier/Edit/0" class="btn btn-info float-right btnsmall50">@Resources.Resource.Add</a>
+	<a href="/Supplier/Edit/0" class="btn btn-info float-right btnsmall40">@Resources.Resource.Add</a>
 </h2>
 
-
-@using (Html.BeginForm("Index", "Supplier", FormMethod.Get, new { @Id = "frmSupplier" }))
+@if (Model.SupplierList != null && Model.SupplierList.Count > 0)
 {
-    <div class="form-inline mb-2 my-4">
-        <div class="form-group">
-            <input type="text" class="form-control" id="txtKeyword" placeholder="@Resources.Resource.KeywordRequired" />
-            <button id="btnSearch" type="button" class="btn btn-success ml-4">@Resources.Resource.Search</button>
-            <button id="btnReload" type="button" class="btn btn-secondary ml-4">@Resources.Resource.Reload</button>
-        </div>
-    </div>
-    <table id="tblSupplier" class="table table-bordered  table-hover table-condensed">       
-        <thead class="gray-header">
-            <tr>
-                <th class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">
-                    @Resources.Resource.Name
-                </th>
-                <th class="text-center colheader" data-col="1" data-keyword="@Model.Keyword">
-                    @Resources.Resource.Email
-                </th>
+	using (Html.BeginForm("Index", "Supplier", FormMethod.Get, new { @Id = "frmSupplier" }))
+	{
+		<div class="form-inline mb-2 my-4">
+			<div class="form-group">
+				<input type="text" class="form-control" id="txtKeyword" placeholder="@Resources.Resource.KeywordRequired" />
+				<button id="btnSearch" type="button" class="btn btn-success ml-4">@Resources.Resource.Search</button>
+				<button id="btnReload" type="button" class="btn btn-secondary ml-4">@Resources.Resource.Reload</button>
+			</div>
+		</div>
+		<table id="tblSupplier" class="table table-bordered  table-hover table-condensed">
+			<thead class="gray-header">
+				<tr>
+					<th class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">
+						@Resources.Resource.Name
+					</th>
+					<th class="text-center colheader" data-col="1" data-keyword="@Model.Keyword">
+						@Resources.Resource.Email
+					</th>
 
-                <th class="text-center colheader" data-col="2" data-keyword="@Model.Keyword">
-                    @Resources.Resource.Phone
-                </th>
-                <th class="text-center colheader" data-col="3" data-keyword="@Model.Keyword">
-                    @Resources.Resource.Contact
-                </th>
-                <th scope="col" class="text-center colheader" data-col="4" data-keyword="@Model.Keyword">@Resources.Resource.CreateTime</th>
-                @if (!nonabss)
-                {
-                    <th class="text-center">ABSS</th>
-                }
+					<th class="text-center colheader" data-col="2" data-keyword="@Model.Keyword">
+						@Resources.Resource.Phone
+					</th>
+					<th class="text-center colheader" data-col="3" data-keyword="@Model.Keyword">
+						@Resources.Resource.Contact
+					</th>
+					<th scope="col" class="text-center colheader" data-col="4" data-keyword="@Model.Keyword">@Resources.Resource.CreateTime</th>
+					<th scope="col" class="text-center colheader" data-col="5" data-keyword="@Model.Keyword">ABSS</th>
+					<th></th>
+				</tr>
+			</thead>
+			@foreach (var item in Model.PagingSupplierList)
+			{
+				string disabled = item.supCheckout != null && (bool)item.supCheckout ? "" : "disabled";
+				<tr>
+					<td class="text-center">
+						@Html.DisplayFor(modelItem => item.supName)
+					</td>
+					<td class="text-center">
+						@Html.Raw(item.EmailDisplay)
+					</td>
+					<td class="text-center">
+						@Html.DisplayFor(modelItem => item.supPhone)
+					</td>
+					<td class="text-center">
+						@Html.DisplayFor(modelItem => item.supContact)
+					</td>
+					<td class="text-center">@item.CreateTimeDisplay</td>
 
-                <th></th>
-            </tr>
-        </thead>
-        @foreach (var item in Model.SupplierList)
-        {
-            string disabled = item.supCheckout!=null && (bool)item.supCheckout ? "" : "disabled";
-            <tr>
-                <td class="text-center">
-                    @Html.DisplayFor(modelItem => item.supName)
-                </td>
-                <td class="text-center">
-                    @Html.DisplayFor(modelItem => item.supEmail)
-                </td>
-                <td class="text-center">
-                    @Html.DisplayFor(modelItem => item.supPhone)
-                </td>
-                <td class="text-center">
-                    @Html.DisplayFor(modelItem => item.supContact)
-                </td>
-                <td class="text-center">@item.CreateTimeDisplay</td>
-                @if (!nonabss)
-                {
-                    <td class="text-center">@item.AccountProfileName</td>
-                }
+					<td class="text-center">@item.AccountProfileName</td>
+					<td>
 
-                <td>
-                   
-                    <a class="btn btn-info mx-1" role="button" href="/Supplier/Edit?Id=@item.supId">@Resources.Resource.Edit</a>
-                    <a class="btn btn-danger remove mx-1 @disabled" href="#" data-id="@item.supId">@Resources.Resource.Remove</a>
-                </td>
-            </tr>
-        }
-    </table>
+						<a class="btn btn-info mx-1" role="button" href="/Supplier/Edit?Id=@item.supId">@Resources.Resource.Edit</a>
+						<a class="btn btn-danger remove mx-1 @disabled" href="#" data-id="@item.supId">@Resources.Resource.Remove</a>
+					</td>
+				</tr>
+			}
+		</table>
 
-    <div id="pagingblk" class="my-3">
-        
-            @Html.PagedListPager(Model.PagingSupplierList, PageNo => Url.Action("Index",
-new { PageNo, SortOrder = Model.CurrentSortOrder, SortCol=Model.SortCol, Keyword = Model.Keyword }))
-       
-    </div>
+		<div id="pagingblk" class="my-3">
+			@Html.PagedListPager(Model.PagingSupplierList, PageNo => Url.Action("Index",
+new { PageNo, SortOrder = Model.CurrentSortOrder, SortCol = Model.SortCol, Keyword = Model.Keyword }))
 
-    <input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
-    <input type="hidden" id="sortcol" value="@Model.SortCol" />
+		</div>
 
-    @Html.Partial("_WaitingModal")
+		<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+		<input type="hidden" id="sortcol" value="@Model.SortCol" />
+
+		@Html.Partial("_WaitingModal")
+	}
 }
+else
+{
+	<div id="norecord" class="alert alert-warning">@Resources.Resource.NoDataFound</div>
+}
+
+
 <div id="infoblk"></div>
 <script src="~/Scripts/ts/js/purchase/supplier.js?v=@rand"></script>

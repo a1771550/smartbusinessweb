@@ -186,9 +186,9 @@
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\records\training.ts</absolutePath>
         </Favorite>
         <Favorite>
-          <name>unsynclist.ts</name>
-          <path>Scripts\ts\customer\unsynclist.ts</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\customer\unsynclist.ts</absolutePath>
+          <name>supplier.ts</name>
+          <path>Scripts\ts\purchase\supplier.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\purchase\supplier.ts</absolutePath>
         </Favorite>
       </favorites>
     </Folder>
@@ -305,6 +305,16 @@
           <name>_ViewFileBlk.cshtml</name>
           <path>Views\Shared\_ViewFileBlk.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Shared\_ViewFileBlk.cshtml</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>customer-Index.cshtml</name>
+          <path>Views\Customer\Index.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Customer\Index.cshtml</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>supplier-Index.cshtml</name>
+          <path>Views\Supplier\Index.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Supplier\Index.cshtml</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

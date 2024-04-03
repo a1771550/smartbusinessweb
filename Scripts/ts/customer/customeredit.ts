@@ -3,14 +3,7 @@
 let cusId: number = editmode ? Number($infoblk.data("cusid")) : 0;
 let gattrnamelist: string[] = [];
 
-$(document).on("change", "#cusPhone", function () {
-    let maxlength = Number($(this).attr("maxlength"));
-    let phone = $(this).val() as string;
-    if (phone && phone!.length > maxlength) {
-        phone = phone.substring(0, maxlength);
-        $(this).val(phone);
-    }
-});
+
 $(document).on("change", ".labeltxt", function () {
     let attrname = $(this).val() as string;
     if (attrname) {
@@ -121,107 +114,15 @@ $(document).on("change", ".isorgan", function () {
     toggleNames();
 });
 
-$(document).on("change", "#cusCode", function () {
-    let $cuscode = $(this);
-    let cuscode = <string>$cuscode.val();
-    if (cuscode !== "") {
-        if (cuscode.toUpperCase() === "GUEST") {
-            $.fancyConfirm({
-                title: "",
-                message: guestcantaddedmsg,
-                shownobtn: false,
-                okButton: oktxt,
-                noButton: canceltxt,
-                callback: function (value) {
-                    if (value) {
-                        $cuscode.val("").trigger("focus");
-                    }
-                },
-            });
-        }
-
-        if (phonelist.includes(cuscode)) {
-            $.fancyConfirm({
-                title: "",
-                message: customerphoneduplicatederrtxt,
-                shownobtn: false,
-                okButton: oktxt,
-                noButton: canceltxt,
-                callback: function (value) {
-                    if (value) {
-                        $cuscode.val("").trigger("focus");
-                    }
-                },
-            });
-        }
-    }
+$(document).on("change", "#cusPhone", function () {
+    handleCardPhoneChange.call(this);
 });
 $(document).on("change", "#cusName", function () {
-    let $cusname = $(this);
-    let _cname = <string>$cusname.val();
-    if (_cname !== "") {
-        if (_cname.toUpperCase() === "GUEST") {
-            $.fancyConfirm({
-                title: "",
-                message: guestcantaddedmsg,
-                shownobtn: false,
-                okButton: oktxt,
-                noButton: canceltxt,
-                callback: function (value) {
-                    if (value) {
-                        $cusname.val("").trigger("focus");
-                    }
-                },
-            });
-        }
-        if (namelist.includes(_cname)) {
-            $.fancyConfirm({
-                title: "",
-                message: duplicatedcustomernamewarning,
-                shownobtn: false,
-                okButton: oktxt,
-                noButton: canceltxt,
-                callback: function (value) {
-                    if (value) {
-                        $cusname.val("").trigger("focus");
-                    }
-                },
-            });
-        }
-    }
-    
-});
-
-$(document).on("change", "#cusFirstName", function () {
-    _firstname = <string>$(this).val();
-    fillFullName();
-});
-$(document).on("change", "#cusLastName", function () {
-    _lastname = <string>$(this).val();
-    fillFullName();
+    handleCardNameChange.call(this);
 });
 
 $(document).on("change", "#cusEmail", function () {
-    let $email = $(this);
-    let _email: string = <string>$email.val();
-    if (_email !== "") {
-        if (maillist.includes(_email)) {
-            $.fancyConfirm({
-                title: "",
-                message: $infoblk.data("duplicatedemailalert"),
-                shownobtn: true,
-                okButton: oktxt,
-                noButton: canceltxt,
-                callback: function (value) {
-                    if (value) {
-                        $email.trigger("focus");
-                    } else {
-                        $email.val("").trigger("focus");
-                    }
-                },
-            });
-        }
-    }
+    handleCardEmailChange.call(this);
 });
 
 function removeCattr(cattr: string) {
@@ -283,13 +184,11 @@ $(function () {
 
     initModals();
 
-    phonelist = $infoblk.data("phonelist").split(",");   
-    maillist = $infoblk.data("maillist").split(",");
-    namelist = $infoblk.data("namelist").split(",");
-    approvalmode = $infoblk.data("approvalmode") === "True";
-    editmode = Number($("#cusCustomerID").val()) > 0;
-
     fillInCustomer();
+
+    PhoneNameEmailList = $infoblk.data("phonenameemaillist");
+    approvalmode = $infoblk.data("approvalmode") === "True";
+    editmode = customer.cusCustomerID > 0;
 
     let $cusname = $("#cusName");
     let $salecomment = $("#cusSaleComment");

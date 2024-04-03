@@ -3,8 +3,8 @@
 @{
     var lang = CultureHelper.CurrentCulture;
     var Supplier = Model.Supplier;
-    var action = Supplier != null && Supplier.supId == 0 ? Resources.Resource.Add : Resources.Resource.Edit;
-    ViewBag.Title = (lang == 2) ? String.Concat(action, " ", Resources.Resource.Supplier) : String.Concat(action, "", Resources.Resource.Supplier);
+    var action = Supplier != null && Supplier.supId > 0 ? Resources.Resource.EditFormat : Resources.Resource.AddFormat;
+    ViewBag.Title = string.Format(action, Resources.Resource.Supplier);
     var rand = CommonHelper.GetVersionRandomNo();
     bool edit = Supplier != null && Supplier.supId > 0;
     string _readonly = !edit ? "" : (edit) && Supplier.supCheckout != null && (bool)Supplier.supCheckout ? "readonly" : "";
@@ -22,26 +22,26 @@
             <div class="col-12 col-md-3">
                 <div class="form-group required">
                     <label class="control-label" for="supName">@Resources.Resource.Name</label>
-                    <input type="text" id="supName" name="supName" class="form-control" @_readonly value="@Supplier.supName" />
+                    <input type="text" id="supName" name="supName" class="form-control" maxlength="@ConfigurationManager.AppSettings["MaxCoNameLength"]" @_readonly value="@Supplier.supName" />
                     <span class="small alert" style="margin-left:-1em;">@string.Format(Resources.Resource.ABSSNameNotModifiableAfterUploaded, Resources.Resource.Supplier)</span>
                 </div>
             </div>
             <div class="col-12 col-md-3">
                 <div class="form-group">
                     <label class="control-label" for="supEmail">@Resources.Resource.Email</label>
-                    <input type="email" class="form-control" value="@Supplier.supEmail" />                 
+                    <input type="email" id="supEmail" name="supEmail" class="form-control" maxlength="255" value="@Supplier.supEmail" />                 
                 </div>
             </div>
             <div class="col-12 col-md-3">
 				<div class="form-group">
 					<label class="control-label" for="supPhone">@Resources.Resource.Phone</label>
-					<input type="text" class="form-control" value="@Supplier.supPhone" />
+					<input type="text" class="form-control" id="supPhone" name="supPhone" maxlength="@int.Parse(ConfigurationManager.AppSettings["MaxCardCodeLength"])" value="@Supplier.supPhone" />
 				</div>
             </div>
             <div class="col-12 col-md-3">
 				<div class="form-group">
 					<label class="control-label" for="supContact">@Resources.Resource.Contact</label>
-					<input type="email" class="form-control" value="@Supplier.supContact" />
+					<input type="text" class="form-control" value="@Supplier.supContact" />
 				</div>
             </div>
         </div>
@@ -142,7 +142,7 @@
     string UploadSizeLimitMB = ConfigurationManager.AppSettings["MaxUploadSize"];
     string exceeduploadfilelimittxt = string.Format(Resources.Resource.ExceedUploadSizeLimitWarning, UploadSizeLimitMB);
 }
-<div id="infoblk" class="hide" data-apid="@Supplier.AccountProfileId" data-uploadurl="/Supplier/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@string.Join(",",Supplier.UploadFileList)" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]"></div>
+<div id="infoblk" class="hide" data-apid="@Supplier.AccountProfileId" data-uploadurl="/Supplier/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@string.Join(",",Supplier.UploadFileList)" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-phonenameemaillist="@JsonSerializer.Serialize(Model.PhoneNameEmailList)"></div>
 <script src="~/Scripts/ts/js/purchase/supplieredit.js?v=@rand"></script>
 
 @Html.Partial("_UploadFileModal", null, new ViewDataDictionary { { "uploadUrl", "/Supplier/UploadFile" } })
