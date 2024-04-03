@@ -1,13 +1,13 @@
-﻿@model PPWLib.Models.Purchase.Supplier.SupplierModel
+﻿@model PPWLib.Models.Purchase.Supplier.SupplierEditModel
 
 @{
     var lang = CultureHelper.CurrentCulture;
-    var action = Model != null && Model.supId == 0 ? Resources.Resource.Add : Resources.Resource.Edit;
+    var Supplier = Model.Supplier;
+    var action = Supplier != null && Supplier.supId == 0 ? Resources.Resource.Add : Resources.Resource.Edit;
     ViewBag.Title = (lang == 2) ? String.Concat(action, " ", Resources.Resource.Supplier) : String.Concat(action, "", Resources.Resource.Supplier);
     var rand = CommonHelper.GetVersionRandomNo();
-    bool edit = Model != null && Model.supId > 0;
-    string _readonly = !edit ? "" : (edit) && Model.IsABSS != null && (bool)Model.IsABSS ? "readonly" : "";
-    //Response.Write(_readonly);return;
+    bool edit = Supplier != null && Supplier.supId > 0;
+    string _readonly = !edit ? "" : (edit) && Supplier.supCheckout != null && (bool)Supplier.supCheckout ? "readonly" : "";
 }
 
 <h2>@ViewBag.Title</h2>
@@ -22,27 +22,27 @@
             <div class="col-12 col-md-3">
                 <div class="form-group required">
                     <label class="control-label" for="supName">@Resources.Resource.Name</label>
-                    <input type="text" id="supName" name="supName" class="form-control" @_readonly value="@Model.supName" />
+                    <input type="text" id="supName" name="supName" class="form-control" @_readonly value="@Supplier.supName" />
                     <span class="small alert" style="margin-left:-1em;">@string.Format(Resources.Resource.ABSSNameNotModifiableAfterUploaded, Resources.Resource.Supplier)</span>
                 </div>
             </div>
             <div class="col-12 col-md-3">
                 <div class="form-group">
                     <label class="control-label" for="supEmail">@Resources.Resource.Email</label>
-                    @Html.EditorFor(model => model.supEmail, new { htmlAttributes = new { @class = "form-control", @type = "email" } })
+                    <input type="email" class="form-control" value="@Supplier.supEmail" />                 
                 </div>
             </div>
             <div class="col-12 col-md-3">
-                <div class="form-group">
-                    <label class="control-label" for="supPhone">@Resources.Resource.Phone</label>
-                    @Html.EditorFor(model => model.supPhone, new { htmlAttributes = new { @class = "form-control" } })
-                </div>
+				<div class="form-group">
+					<label class="control-label" for="supPhone">@Resources.Resource.Phone</label>
+					<input type="text" class="form-control" value="@Supplier.supPhone" />
+				</div>
             </div>
             <div class="col-12 col-md-3">
-                <div class="form-group">
-                    <label class="control-label" for="supContact">@Resources.Resource.Contact</label>
-                    @Html.EditorFor(model => model.supContact, new { htmlAttributes = new { @class = "form-control" } })
-                </div>
+				<div class="form-group">
+					<label class="control-label" for="supContact">@Resources.Resource.Contact</label>
+					<input type="email" class="form-control" value="@Supplier.supContact" />
+				</div>
             </div>
         </div>
 
@@ -50,18 +50,18 @@
             <div class="col-12 col-md-4">
                 <div class="form-group">
                     <label class="control-label" for="supAddrCity">@Resources.Resource.City</label>
-                    <input type="text" id="supAddrCity" name="supAddrCity" class="form-control" value="@Model.supAddrCity" />
+                    <input type="text" id="supAddrCity" name="supAddrCity" class="form-control" value="@Supplier.supAddrCity" />
                 </div>
             </div>
             <div class="col-12 col-md-4">
                 <div class="form-group">
-                    @Html.Partial("_DefaultCountries", null, new ViewDataDictionary { { "edit", edit }, { "Countries", Model.MyobCountries }, { "SelectedCountry", Model.supAddrCountry } })
+                    @Html.Partial("_DefaultCountries", null, new ViewDataDictionary { { "edit", edit }, { "Countries", Model.MyobCountries }, { "SelectedCountry", Supplier.supAddrCountry } })
                 </div>
             </div>
             <div class="col-12 col-md-4">
                 <div class="form-group">
                     <label class="control-label" for="supAddrWeb">@Resources.Resource.Website</label>
-                    <input type="text" id="supAddrWeb" name="supAddrWeb" class="form-control" value="@Model.supAddrWeb" />
+                    <input type="text" id="supAddrWeb" name="supAddrWeb" class="form-control" value="@Supplier.supAddrWeb" />
                 </div>
             </div>
         </div>
@@ -75,39 +75,39 @@
 
             <div class="form-group">
                 <label class="control-label" for="">@lbl</label>
-                <input type="text" id="@_id" class="form-control address" style="max-width:94%;" maxlength="255" value="@Model.StreetLines[i - 1]" />
+                <input type="text" id="@_id" class="form-control address" style="max-width:94%;" maxlength="255" value="@Supplier.StreetLines[i - 1]" />
             </div>
 
         }
 
         <div class="d-flex">
             <div class="col-12 col-md-4">
-                <div class="form-group">
-                    <label class="control-label " for="supAddrPhone1">@Resources.Resource.Mobile 1</label>
-                    @Html.EditorFor(model => model.supAddrPhone1, new { htmlAttributes = new { @class = "form-control mobile" } })
-                    <span class="small whatsappphone font-weight-bold" data-phone="1" style="color:#9f8ccf">WhatsApp</span>
-                </div>
+				<div class="form-group">
+					<label class="control-label " for="supAddrPhone1">@Resources.Resource.Mobile 1</label>
+					<input type="text" id="supAddrPhone1" name="supAddrPhone1" class="form-control mobile" value="@Supplier.supAddrPhone1" />	
+					<span class="small whatsappphone font-weight-bold" data-phone="1" style="color:#9f8ccf">WhatsApp</span>
+				</div>
             </div>
             <div class="col-12 col-md-4">
-                <div class="form-group">
-                    <label class="control-label " for="supAddrPhone2">@Resources.Resource.Mobile 2</label>
-                    @Html.EditorFor(model => model.supAddrPhone2, new { htmlAttributes = new { @class = "form-control mobile" } })
-                    <span class="small whatsappphone font-weight-bold" data-phone="2" style="color:#9f8ccf">WhatsApp</span>
-                </div>
+				<div class="form-group">
+					<label class="control-label " for="supAddrPhone2">@Resources.Resource.Mobile 2</label>
+					<input type="text" id="supAddrPhone2" name="supAddrPhone2" class="form-control mobile" value="@Supplier.supAddrPhone2" />
+					<span class="small whatsappphone font-weight-bold" data-phone="2" style="color:#9f8ccf">WhatsApp</span>
+				</div>
             </div>
             <div class="col-12 col-md-4">
-                <div class="form-group">
-                    <label class="control-label " for="supAddrPhone3">@Resources.Resource.Mobile 3</label>
-                    @Html.EditorFor(model => model.supAddrPhone3, new { htmlAttributes = new { @class = "form-control mobile" } })
-                    <span class="small whatsappphone font-weight-bold" data-phone="3" style="color:#9f8ccf">WhatsApp</span>
-                </div>
+				<div class="form-group">
+					<label class="control-label " for="supAddrPhone3">@Resources.Resource.Mobile 3</label>
+					<input type="text" id="supAddrPhone3" name="supAddrPhone3" class="form-control mobile" value="@Supplier.supAddrPhone3" />
+					<span class="small whatsappphone font-weight-bold" data-phone="3" style="color:#9f8ccf">WhatsApp</span>
+				</div>
             </div>
         </div>
 
         @{var _checked = "checked";}
         @if (edit)
         {
-            _checked = Model.IsLastPurchasePrice ? "checked" : "";
+            _checked = Supplier.IsLastPurchasePrice ? "checked" : "";
         }
 
         <div class="form-group">
@@ -126,7 +126,7 @@
 
         <div class="form-group my-4">
             <button id="btnSave" type="button" class="btn btn-success">@Resources.Resource.Save</button>
-            @Html.HiddenFor(model => model.supId)
+            <input type="hidden" id="supId" name="supId" value="@Supplier.supId" />
         </div>
 
     </div>
@@ -142,8 +142,8 @@
     string UploadSizeLimitMB = ConfigurationManager.AppSettings["MaxUploadSize"];
     string exceeduploadfilelimittxt = string.Format(Resources.Resource.ExceedUploadSizeLimitWarning, UploadSizeLimitMB);
 }
-<div id="infoblk" class="hide" data-apid="@Model.AccountProfileId" data-uploadurl="/Supplier/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@string.Join(",",Model.UploadFileList)" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]"></div>
+<div id="infoblk" class="hide" data-apid="@Supplier.AccountProfileId" data-uploadurl="/Supplier/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@string.Join(",",Supplier.UploadFileList)" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]"></div>
 <script src="~/Scripts/ts/js/purchase/supplieredit.js?v=@rand"></script>
 
 @Html.Partial("_UploadFileModal", null, new ViewDataDictionary { { "uploadUrl", "/Supplier/UploadFile" } })
-@Html.Partial("_ViewFileModal", null, new ViewDataDictionary { { "imglist", Model.ImgList }, { "filelist", Model.FileList } })
+@Html.Partial("_ViewFileModal", null, new ViewDataDictionary { { "imglist", Supplier.ImgList }, { "filelist", Supplier.FileList } })

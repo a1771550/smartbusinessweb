@@ -26,7 +26,6 @@ using CommonLib.BaseModels;
 using System.Net.Mail;
 using System.Net;
 using PPWLib.Models.MYOB;
-using PPWLib.Models.POS.MYOB;
 using PPWLib.Helpers;
 using PPWLib.Models.Item;
 using CommonLib.Models;
@@ -466,7 +465,7 @@ namespace SmartBusinessWeb.Controllers
                 var purchase = context.Purchases.FirstOrDefault(x => x.pstCode.ToLower() == receiptno.ToLower());
                 ShopCode = purchase.pstLocStock;
 
-                var _supplier = context.Suppliers.FirstOrDefault(x => x.supCode == purchase.supCode);
+                var _supplier = context.MyobSuppliers.FirstOrDefault(x => x.supCode == purchase.supCode);
                 supplier = new SupplierModel
                 {
                     supName = _supplier.supName,
@@ -1910,7 +1909,7 @@ namespace SmartBusinessWeb.Controllers
         {
             if (filename.StartsWith("Suppliers_"))
             {
-                List<MyobSupplierModel> suplist = MYOBHelper.GetSupplierList(ConnectionString);
+                List<SupplierModel> suplist = MYOBHelper.GetSupplierList(ConnectionString);
                 var json = Json(suplist, JsonRequestBehavior.AllowGet);
                 json.MaxJsonLength = int.MaxValue;
                 return json;
@@ -2434,7 +2433,7 @@ namespace SmartBusinessWeb.Controllers
                                      }).ToList();
 
                         var custIds = string.Join(",", salesLns.Select(x => x.CustomerID).ToList());
-                        var _customers = context.GetMergedCustomersByIds(custIds).ToList();
+                        var _customers = context.GetCustomersByCusIds(apId, custIds).ToList();
                         foreach (var c in _customers)
                         {
                             foreach (var salesln in salesLns)
@@ -2443,13 +2442,12 @@ namespace SmartBusinessWeb.Controllers
                                 {
                                     customers.Add(new CustomerModel
                                     {
-                                        cusCustomerID = c.cusCustomerID,
+                                        cusCustomerID = c.cusCustomerID??0,
                                         salescode = salesln.rtlCode,
                                         cusCode = c.cusCode,
                                         cusIsActive = c.cusIsActive,
                                         cusName = c.cusName,
                                         cusPhone = c.cusPhone,
-                                        cusFax = c.cusFax,
                                         cusPointsSoFar = c.cusPointsSoFar,
                                         cusPointsUsed = c.cusPointsUsed,
                                         cusPriceLevelID = c.cusPriceLevelID
@@ -2562,7 +2560,7 @@ namespace SmartBusinessWeb.Controllers
                                  }).ToList();
 
                     var custIds = string.Join(",", salesLns.Select(x => x.CustomerID).ToList());
-                    var _customers = context.GetMergedCustomersByIds(custIds).ToList();
+                    var _customers = context.GetCustomersByCusIds(apId, custIds).ToList();
 
                     foreach (var c in _customers)
                     {
@@ -2572,13 +2570,12 @@ namespace SmartBusinessWeb.Controllers
                             {
                                 customers.Add(new CustomerModel
                                 {
-                                    cusCustomerID = c.cusCustomerID,
+                                    cusCustomerID = c.cusCustomerID??0,
                                     salescode = salesln.rtlCode,
                                     cusCode = c.cusCode,
                                     cusIsActive = c.cusIsActive,
                                     cusName = c.cusName,
                                     cusPhone = c.cusPhone,
-                                    cusFax = c.cusFax,
                                     cusPointsSoFar = c.cusPointsSoFar,
                                     cusPointsUsed = c.cusPointsUsed,
                                     cusPriceLevelID = c.cusPriceLevelID
@@ -3081,7 +3078,7 @@ namespace SmartBusinessWeb.Controllers
         {
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
-                var _customer = context.GetCustomerById19(customerId, false, AccountProfileId).FirstOrDefault();
+                var _customer = context.GetCustomerById19(customerId, AccountProfileId).FirstOrDefault();
                 CustomerModel customer = new CustomerModel();
                 if (_customer != null)
                 {

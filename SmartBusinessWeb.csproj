@@ -2788,6 +2788,8 @@
     <Content Include="Content\select2\select2.min.css" />
     <Content Include="Content\stock.css" />
     <Content Include="Content\stocktransfer.css" />
+    <Content Include="Content\supplier\edit.css" />
+    <Content Include="Content\supplier\index.css" />
     <Content Include="Content\training.css" />
     <Content Include="Content\transfer.css" />
     <Content Include="Content\wholesalesprint.css" />
@@ -4475,7 +4477,6 @@
     <Content Include="Scripts\ts\js\pos\purchasestockedit.js" />
     <Content Include="Scripts\ts\js\pos\receipt.js" />
     <Content Include="Scripts\ts\js\pos\refund.js" />
-    <Content Include="Scripts\ts\js\pos\return.js" />
     <Content Include="Scripts\ts\js\pos\sales.js" />
     <Content Include="Scripts\ts\js\pos\search.js" />
     <Content Include="Scripts\ts\js\pos\showits.js" />
@@ -4730,7 +4731,6 @@
     <Content Include="Scripts\ts\js\pos\purchasestockedit.js.map" />
     <Content Include="Scripts\ts\js\pos\receipt.js.map" />
     <Content Include="Scripts\ts\js\pos\refund.js.map" />
-    <Content Include="Scripts\ts\js\pos\return.js.map" />
     <Content Include="Scripts\ts\js\pos\sales.js.map" />
     <Content Include="Scripts\ts\js\pos\search.js.map" />
     <Content Include="Scripts\ts\js\pos\showits.js.map" />

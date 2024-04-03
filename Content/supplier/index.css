@@ -1,0 +1,16 @@
+﻿#tblSupplier th:nth-child(1), #tblSupplier th:nth-child(2), #tblSupplier th:nth-child(3), #tblSupplier th:nth-child(7), #tblSupplier td:nth-child(1), #tblSupplier td:nth-child(2), #tblSupplier td:nth-child(3), #tblSupplier td:nth-child(7) {
+	width: 110px !important;
+}
+#tblSupplier th:nth-child(4), #tblSupplier td:nth-child(4) {
+	width: 250px !important;
+}
+
+#tblSupplier th:nth-child(5), #tblSupplier td:nth-child(5) {
+	width: 90px !important;
+}
+#tblSupplier th:nth-child(6), #tblSupplier td:nth-child(6) {
+	width: 120px !important;
+}
+#tblSupplier th:last-child, #tblSupplier td:last-child {
+	width: 120px !important;
+}

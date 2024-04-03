@@ -1363,12 +1363,11 @@ namespace SmartBusinessWeb.Controllers
 				switch (checkOutType)
 				{
 					case CheckOutType.Suppliers:
-						List<Supplier> suppliers = context.Suppliers.Where(x => checkoutIds.Any(y => x.supId == y) && x.AccountProfileId == accountProfileId).ToList();
+						List<MyobSupplier> suppliers = context.MyobSuppliers.Where(x => checkoutIds.Any(y => x.supId == y) && x.AccountProfileId == accountProfileId).ToList();
 
 						foreach (var supplier in suppliers)
 						{
-							supplier.supCheckout = true;
-							supplier.IsABSS = true;
+							supplier.supCheckout = true;							
 							supplier.ModifyTime = DateTime.Now;
 						}
 
@@ -1429,19 +1428,15 @@ namespace SmartBusinessWeb.Controllers
 			{
 				string value = "";
 				string cardstatus = supplier.supIsActive ? "N" : "Y";
-				string firstname = supplier.supIsOrganization ? "" : StringHandlingForSQL(supplier.supFirstName ?? supplier.supName);
-
 				/*
-				 * "CoLastName", "CardID", "CardStatus", "Address1Phone1", "CustomField3", "Address1Email", "PaymentIsDue", "DiscountDays", "BalanceDueDays", "Address1ContactName", "Address1AddressLine1", "Address1AddressLine2", "Address1AddressLine3", "Address1AddressLine4", "Address1Phone2", "Address1Phone3", "Address1City", "Address1Country", "Address1Website", "FirstName", "CurrencyCode", "BillingRate"
-				 */
-
-				//string address = StringHandleAddress(string.Concat(supplier.supAddrStreetLine1, supplier.supAddrStreetLine2, supplier.supAddrStreetLine3, supplier.supAddrStreetLine4));
+				 * "CoLastName", "CardID", "CardStatus", "Address1Phone1", "CustomField3", "Address1Email", "PaymentIsDue", "DiscountDays", "BalanceDueDays", "Address1ContactName", "Address1AddressLine1", "Address1AddressLine2", "Address1AddressLine3", "Address1AddressLine4", "Address1Phone2", "Address1Phone3", "Address1City", "Address1Country", "Address1Website", "CurrencyCode", "BillingRate"
+				 */				
 				supplier.supAddrStreetLine1 = CommonHelper.StringHandleAddress(supplier.supAddrStreetLine1);
 				supplier.supAddrStreetLine2 = CommonHelper.StringHandleAddress(supplier.supAddrStreetLine2);
 				supplier.supAddrStreetLine3 = CommonHelper.StringHandleAddress(supplier.supAddrStreetLine3);
 				supplier.supAddrStreetLine4 = CommonHelper.StringHandleAddress(supplier.supAddrStreetLine4);
 
-				value = string.Format("(" + strcolumn + ")", StringHandlingForSQL(supplier.supName), StringHandlingForSQL(supplier.supCode), cardstatus, StringHandlingForSQL(supplier.supPhone), "", StringHandlingForSQL(supplier.supEmail), "", "", "", "", supplier.supAddrStreetLine1, supplier.supAddrStreetLine2, supplier.supAddrStreetLine3, supplier.supAddrStreetLine4, StringHandlingForSQL(supplier.supAddrPhone2), StringHandlingForSQL(supplier.supAddrPhone3), StringHandlingForSQL(supplier.supAddrCity), StringHandlingForSQL(supplier.supAddrCountry), StringHandlingForSQL(supplier.supAddrWeb), firstname);
+				value = string.Format("(" + strcolumn + ")", StringHandlingForSQL(supplier.supName), StringHandlingForSQL(supplier.supCode), cardstatus, StringHandlingForSQL(supplier.supPhone), "", StringHandlingForSQL(supplier.supEmail), "", "", "", "", supplier.supAddrStreetLine1, supplier.supAddrStreetLine2, supplier.supAddrStreetLine3, supplier.supAddrStreetLine4, StringHandlingForSQL(supplier.supAddrPhone2), StringHandlingForSQL(supplier.supAddrPhone3), StringHandlingForSQL(supplier.supAddrCity), StringHandlingForSQL(supplier.supAddrCountry), StringHandlingForSQL(supplier.supAddrWeb));
 
 				values.Add(value);
 			}

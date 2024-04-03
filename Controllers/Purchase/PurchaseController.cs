@@ -1,5 +1,4 @@
-﻿using CommonLib.Helpers;
-using PagedList;
+﻿using PagedList;
 using SmartBusinessWeb.Infrastructure;
 using PPWDAL;
 using PPWLib.Models;
@@ -11,7 +10,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
-using PPWCommonLib.Helpers;
 
 namespace SmartBusinessWeb.Controllers.Purchase
 {

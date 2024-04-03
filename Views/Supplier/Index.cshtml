@@ -2,9 +2,11 @@
 @using PagedList.Mvc;
 @{
     ViewBag.Title = Resources.Resource.Supplier;
+    int rand = CommonHelper.GetVersionRandomNo();
     string checkoutportal = (HttpContext.Current.Session["ComInfo"] as ComInfo).DefaultCheckoutPortal;
     bool nonabss = checkoutportal.ToLower() == "nonabss";
 }
+<link href="~/Content/supplier/index.css?v=@rand" rel="stylesheet" type="text/css" />
 <h2 class="clearfix">
 	@ViewBag.Title
 	<a href="/Supplier/Edit/0" class="btn btn-info float-right btnsmall50">@Resources.Resource.Add</a>
@@ -20,15 +22,7 @@
             <button id="btnReload" type="button" class="btn btn-secondary ml-4">@Resources.Resource.Reload</button>
         </div>
     </div>
-    <table id="tblSupplier" class="table table-bordered  table-hover table-condensed">
-        @*<colgroup>
-            <col width="120">
-            <col width="120">
-            <col width="120">
-            <col width="120">
-            <col width="100">
-            <col width="130">
-        </colgroup>*@
+    <table id="tblSupplier" class="table table-bordered  table-hover table-condensed">       
         <thead class="gray-header">
             <tr>
                 <th class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">
@@ -96,5 +90,5 @@ new { PageNo, SortOrder = Model.CurrentSortOrder, SortCol=Model.SortCol, Keyword
 
     @Html.Partial("_WaitingModal")
 }
-<div id="infoblk" class="hide"></div>
-<script src="~/Scripts/ts/js/purchase/supplier.js?v=@CommonHelper.GetVersionRandomNo()"></script>
+<div id="infoblk"></div>
+<script src="~/Scripts/ts/js/purchase/supplier.js?v=@rand"></script>

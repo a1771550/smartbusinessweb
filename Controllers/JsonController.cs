@@ -364,7 +364,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [System.Web.Http.HttpPost]
-        public async Task<HttpResponseMessage> PostAbssSupplierData(int apId, [FromBody] List<Supplier> suppliers)
+        public async Task<HttpResponseMessage> PostAbssSupplierData(int apId, [FromBody] List<MyobSupplier> suppliers)
         {
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
@@ -375,15 +375,15 @@ namespace SmartBusinessWeb.Controllers
                 try
                 {
                     List<int> supplierIds = suppliers.Select(x => x.supId).Distinct().ToList();
-                    List<Supplier> _suppliers = context.Suppliers.Where(x => x.AccountProfileId == apId && supplierIds.Contains(x.supId)).ToList();
+                    List<MyobSupplier> _suppliers = context.MyobSuppliers.Where(x => x.AccountProfileId == apId && supplierIds.Contains(x.supId)).ToList();
 
                     #region remove current data first:   
-                    context.Suppliers.RemoveRange(_suppliers);
+                    context.MyobSuppliers.RemoveRange(_suppliers);
                     await context.SaveChangesAsync();
                     #endregion
 
 
-                    context.Suppliers.AddRange(suppliers);
+                    context.MyobSuppliers.AddRange(suppliers);
                     await context.SaveChangesAsync();
                     ModelHelper.WriteLog(context, "Import Supplier data from Central done", "ImportFrmCentral");                   
                     transaction.Commit();

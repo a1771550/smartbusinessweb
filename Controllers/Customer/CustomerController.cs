@@ -20,7 +20,6 @@ namespace SmartBusinessWeb.Controllers.Customer
     public class CustomerController : BaseController
     {
 
-
         [HttpPost]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
@@ -196,7 +195,7 @@ namespace SmartBusinessWeb.Controllers.Customer
             List<int> cusIdList = new List<int>();
             var apId = ComInfo.AccountProfileId;
 
-            model.CustomerList = ModelHelper.GetCustomerList(SortCol, SortOrder, Keyword, null).ToList();
+            model.GetList(SortCol, SortOrder, Keyword, null);
 
             if (cusIds != null)
             {

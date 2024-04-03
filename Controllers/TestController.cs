@@ -10,7 +10,6 @@ using PPWDAL;
 using PPWLib.Models;
 using PPWLib.Models.Item;
 using PPWLib.Models.MYOB;
-using PPWLib.Models.POS.MYOB;
 using PPWLib.Models.Purchase;
 using PPWLib.Models.WholeSales;
 using PPWMyobLib;
@@ -796,18 +795,18 @@ namespace SmartBusinessWeb.Controllers
         //    using var context = new PPWDbContext(Session["DBName"].ToString());
         //    //ComInfo ComInfo = context.ComInfoes.FirstOrDefault(x => x.Id == 1);
         //    //string ConnectionString = string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ;", ComInfo.MYOBDriver, ComInfo.MYOBUID, ComInfo.MYOBPASS, ComInfo.MYOBDb, ComInfo.MYOBExe, ComInfo.MYOBKey);
-        //    //List<MyobSupplierModel> suplist = MYOBHelper.GetSupplierList(ConnectionString);
+        //    //List<SupplierModel> suplist = MYOBHelper.GetSupplierList(ConnectionString);
         //    //using (var transaction = context.Database.BeginTransaction())
         //    //{
         //    //    try
         //    //    {
         //    //        /* remove current records first: */
-        //    //        List<Supplier> suppliers = context.Suppliers.Where(x => x.AccountProfileId == AccountProfileId && x.CompanyId == CompanyId).ToList();
-        //    //        context.Suppliers.RemoveRange(suppliers);
+        //    //        List<MyobSupplier> suppliers = context.MyobSuppliers.Where(x => x.AccountProfileId == AccountProfileId && x.CompanyId == CompanyId).ToList();
+        //    //        context.MyobSuppliers.RemoveRange(suppliers);
         //    //        context.SaveChanges();
         //    //        /*********************************/
 
-        //    //        List<Supplier> newsuppliers = new List<Supplier>();
+        //    //        List<MyobSupplier> newsuppliers = new List<MyobSupplier>();
 
         //    //        foreach (var supplier in suplist)
         //    //        {
@@ -831,7 +830,7 @@ namespace SmartBusinessWeb.Controllers
         //    //            msupplier.supAbss = true;
         //    //            newsuppliers.AddPG(msupplier);
         //    //        }
-        //    //        context.Suppliers.AddRange(newsuppliers);
+        //    //        context.MyobSuppliers.AddRange(newsuppliers);
         //    //        Helpers.ModelHelper.WriteLog(context, "Import Supplier data from Central done", "ImportFrmCentral");
         //    //        context.SaveChanges();
         //    //        transaction.Commit();
@@ -1419,23 +1418,7 @@ btest3
             string showtext = string.Concat(test.Substring(0, icount), " ...");
             Response.Write(showtext);
         }
-        public async Task Debug46()
-        {
-            using var context = new PPWDbContext();
-            var cominfo = context.ComInfoes.AsNoTracking().FirstOrDefault();
-            var url = string.Format(CentralApiUrl, "Suppliers_", UriHelper.GetBaseUrl());
-            //Response.Write(url);
-            //return;
-            HttpClient _client = new HttpClient();
-            _client.MaxResponseContentBufferSize = int.MaxValue;
-            var content = await _client.GetStringAsync(url);
-            var supplierlist = JsonConvert.DeserializeObject<List<MyobSupplierModel>>(content).ToList();
-            foreach (var supplier in supplierlist)
-            {
-                Response.Write(supplier.supName + "<br>");
-            }
-            //Response.Write(content);
-        }
+    
         public void Debug45()
         {
             using var context = new PPWDbContext();
