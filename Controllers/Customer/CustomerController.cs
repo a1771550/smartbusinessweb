@@ -255,17 +255,19 @@ namespace SmartBusinessWeb.Controllers.Customer
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [HttpGet]
-        public ActionResult Edit(int customerId = 0, string enqId = "", string referrer = "")
+        public ActionResult Edit(int Id = 0, string enqId = "", string referrer = "")
         {
             ViewBag.ParentPage = "customer";
             ViewBag.PageName = "edit";
             var region = CommonLib.Helpers.CultureHelper.GetCountryByIP();
             var comInfo = Session["ComInfo"] as ComInfo;
 
-            CustomerEditModel cmodel = new CustomerEditModel(customerId, enqId);
-            cmodel.Referrer = referrer;
-            cmodel.IpCountry = region != null ? region.EnglishName : "Hong Kong";
-            cmodel.enableCRM = (bool)comInfo.enableCRM;
+            CustomerEditModel cmodel = new CustomerEditModel(Id, enqId)
+            {
+                Referrer = referrer,
+                IpCountry = region != null ? region.EnglishName : "Hong Kong",
+                enableCRM = (bool)comInfo.enableCRM
+            };
             return View(cmodel);
 
         }

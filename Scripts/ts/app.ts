@@ -45,6 +45,9 @@ let UserName: string = "";
 let NamesMatch: boolean = false;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
+//const searchcustxt:string = $txtblk.data("searchcustxt");
+const duplicateditemnamewarning: string = $txtblk.data("duplicateditemnamewarning");
+const duplicatedcustomernamewarning: string = $txtblk.data("duplicatedcustomernamewarning");
 const datanotenough4submittxt: string = $txtblk.data("datanotenough4submittxt");
 const allocationmemotxt: string = $txtblk.data("allocationmemotxt");
 const discpctxt: string = $txtblk.data("discpctxt");
@@ -16453,7 +16456,7 @@ $(document).on("change", "#itmCode", function () {
 	let code: string = <string>$(this).val();
 	if (code !== "") {
 		if (code !== $("#codeinuse").val()) {
-			if (phonelist.includes(code)) {
+			if (phonelist.includes(code)||codelist.includes(code)) {
 				$.fancyConfirm({
 					title: "",
 					message: itemcodeduplicatederr,
@@ -16485,10 +16488,26 @@ $(document).on("click", "#btnCopyFrm", function () {
 });
 
 $(document).on("change", "#itmName", function () {
-	let _val: string = <string>$(this).val();
-	if (selectedItem && _val !== "") {
-		selectedItem!.itmName = _val;
-	}
+	let $name = $(this);
+	let name: string = <string>$name.val();
+	if (namelist.includes(name)) {
+		$.fancyConfirm({
+			title: "",
+			message: duplicateditemnamewarning,
+			shownobtn: false,
+			okButton: oktxt,
+			noButton: notxt,
+			callback: function (value) {
+				if (value) {
+					$name.val("").trigger("focus");
+				}
+			}
+		});	
+	} else {
+		if (selectedItem && name !== "") {
+			selectedItem!.itmName = name;
+		}
+	}	
 });
 $(document).on("change", "#itmDesc", function () {
 	let _val: string = <string>$(this).val();
@@ -19038,6 +19057,7 @@ $(document).on("dblclick", ".orderId", function () {
 });
 let useForexAPI: boolean = false;
 let codelist: string[] = [];
+let namelist: string[] = [];
 
 $(document).on("change", "#chkAllLoc", function () {
 	if ($(this).is(":checked")) {

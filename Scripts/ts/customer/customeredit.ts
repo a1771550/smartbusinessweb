@@ -1,8 +1,5 @@
 ﻿$infoblk = $("#infoblk");
-phonelist = $infoblk.data("phonelist").split(",");
-maillist = $infoblk.data("maillist").split(",");
-editmode = $infoblk.data("edit") === "True";
-approvalmode = $infoblk.data("approvalmode") === "True";
+
 let cusId: number = editmode ? Number($infoblk.data("cusid")) : 0;
 let gattrnamelist: string[] = [];
 
@@ -162,20 +159,37 @@ $(document).on("change", "#cusCode", function () {
 $(document).on("change", "#cusName", function () {
     let $cusname = $(this);
     let _cname = <string>$cusname.val();
-    if (_cname !== "" && _cname.toUpperCase() === "GUEST") {
-        $.fancyConfirm({
-            title: "",
-            message: guestcantaddedmsg,
-            shownobtn: false,
-            okButton: oktxt,
-            noButton: canceltxt,
-            callback: function (value) {
-                if (value) {
-                    $cusname.val("").trigger("focus");
-                }
-            },
-        });
+    if (_cname !== "") {
+        if (_cname.toUpperCase() === "GUEST") {
+            $.fancyConfirm({
+                title: "",
+                message: guestcantaddedmsg,
+                shownobtn: false,
+                okButton: oktxt,
+                noButton: canceltxt,
+                callback: function (value) {
+                    if (value) {
+                        $cusname.val("").trigger("focus");
+                    }
+                },
+            });
+        }
+        if (namelist.includes(_cname)) {
+            $.fancyConfirm({
+                title: "",
+                message: duplicatedcustomernamewarning,
+                shownobtn: false,
+                okButton: oktxt,
+                noButton: canceltxt,
+                callback: function (value) {
+                    if (value) {
+                        $cusname.val("").trigger("focus");
+                    }
+                },
+            });
+        }
     }
+    
 });
 
 $(document).on("change", "#cusFirstName", function () {
@@ -254,7 +268,7 @@ $(function () {
     triggerMenu(1, 2);
     forcustomer = true;
     apId = Number($infoblk.data("apid"));
-    //console.log('sortorder:' + $('#sortorder').val() + ';sortcol:' + $('#sortcol').val());
+   
     $target = $(".colheader").eq(parseInt(<string>$("#sortcol").val()));
     let sortcls =
         $("#sortorder").val() === "asc" ? "fa fa-sort-up" : "fa fa-sort-down";
@@ -269,6 +283,10 @@ $(function () {
 
     initModals();
 
+    phonelist = $infoblk.data("phonelist").split(",");   
+    maillist = $infoblk.data("maillist").split(",");
+    namelist = $infoblk.data("namelist").split(",");
+    approvalmode = $infoblk.data("approvalmode") === "True";
     editmode = Number($("#cusCustomerID").val()) > 0;
 
     fillInCustomer();

@@ -12,7 +12,10 @@
 }
 <link href="~/Content/customer/index.css?v=@rand" rel="stylesheet" type="text/css" />
 
-<h2>@ViewBag.Title</h2>
+<h2 class="clearfix">
+	@ViewBag.Title
+	<a href="/Customer/Edit?Id=0&referrer=Index" class="btn btn-info btnsmall40 float-right" title="@Resources.Resource.Add">@Resources.Resource.Add</a> 
+</h2>
 
 @if (Model.CustomerList != null && Model.CustomerList.Count > 0)
 {
@@ -87,7 +90,7 @@
 
 		<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
 		<input type="hidden" id="sortcol" value="@Model.SortCol" />
-		<a href="#" id="btnOpenAction" class="btn btn-success" role="button" onclick="javascript:openActionModal();">@Resources.Resource.OpenCustomerPointActionLog</a>
+		@*<a href="#" id="btnOpenAction" class="btn btn-success" role="button" onclick="javascript:openActionModal();">@Resources.Resource.OpenCustomerPointActionLog</a>*@
 		<div id="actionModal">
 
 			<table id="tblActionLog" class="table table-bordered  table-hover table-condensed">

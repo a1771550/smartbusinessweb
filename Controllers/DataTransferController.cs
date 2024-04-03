@@ -1377,7 +1377,7 @@ namespace SmartBusinessWeb.Controllers
 						List<MyobCustomer> mcustomers = context.MyobCustomers.Where(x => checkoutIds.Any(y => x.cusCustomerID == y) && x.AccountProfileId == accountProfileId).ToList();
 						foreach (var customer in mcustomers)
 						{
-							customer.cusCheckout = true;
+							customer.cusCheckout = true;							
 							customer.ModifyTime = DateTime.Now;
 						}
 						break;

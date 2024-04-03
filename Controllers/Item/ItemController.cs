@@ -105,7 +105,6 @@ namespace SmartBusinessWeb.Controllers.Item
         public ActionResult Edit(int itemId, string referrer)
         {
             ViewBag.ParentPage = ViewBag.PageName = "item";
-            //ItemEditModel model = new ItemEditModel(itemId, true);
             ItemEditModel model = new ItemEditModel();
             model.Get(itemId);
             model.Referrer = referrer;

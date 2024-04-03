@@ -6,9 +6,9 @@ $(function () {
     triggerMenu(2, 0);
     $("h2").addClass("text-center");
     EditItem = $infoblk.data("edititem") == "True";
+    namelist = $infoblk.data("namelist").split(",");
     codelist = $infoblk.data("codelist").split(",");
-    //console.log("codelist:", codelist);
+    phonelist = $infoblk.data("codelist").split(",");  
     supcodelist = $infoblk.data("supcodelist").split(",");
-
     itemEditPageLoad();
 });
