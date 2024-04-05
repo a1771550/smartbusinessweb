@@ -293,11 +293,11 @@ select.required:after {
     color: red;
 }
 
-.select2-container--focus,
+/*.select2-container--focus,
 .focus:not(.option.selected) {
   border: 1px solid #ff8989;
   border-radius: 0.25rem;
-}
+}*/
 
 .savebtn {
   color: #fff !important;

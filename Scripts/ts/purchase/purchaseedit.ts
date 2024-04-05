@@ -435,20 +435,8 @@ $(document).on("change", "#pstRemark", function () {
 	Purchase.pstRemark = <string>$(this).val();
 });
 
-function populateFileList4Po(files: string[]) {
-	//F:\SmartPOSPro\Uploads\PO\1\KP100003
-	//https://localhost:7777/Purchase/1/KP100003/sample.pdf
-	if (files.length > 0) {
-		let html = "";
-		const pdfthumbnail = getPdfThumbnail();
-		files.forEach((x) => {
-			let removefilelnk = getRemoveFileLnk(x);
-			let filelnk = `<a href="#" class="filelnk" data-lnk="/Purchase/${apId}/${Purchase.pstCode}/${x}">${pdfthumbnail}${x}</a> ${removefilelnk}`;
-			html += `<li>${filelnk}</li>`;
-		});
-		$(".viewfileblk").find(".file").empty().append(html);
-	}
-}
+
+
 
 function initPurchaseForm() {
 	approvalmode = $infoblk.data("approvalmode") == "True";
@@ -490,7 +478,7 @@ function initPurchaseForm() {
 	if ($infoblk.data("uploadfilelist") !== "") {
 		Purchase.FileList = $infoblk.data("uploadfilelist").split(",");
 		//console.log("Purchase.FileList:", Purchase.FileList);	
-		populateFileList4Po(Purchase.FileList);
+		populateFileList(Purchase.FileList);
 	}
 	//console.log("#0 Purchase.JsPurchaseDate:" + Purchase.JsPurchaseDate + ";Purchase.JsPromisedDate:" + Purchase.JsPromisedDate);
 

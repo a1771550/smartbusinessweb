@@ -157,7 +157,7 @@ $(function () {
 	setFullPage();
 	let $sortorder = $("#sortorder");
 	let $sortcol = $("#sortcol");
-	console.log("sortorder:" + $sortorder.val() + ";sortcol:" + $sortcol.val());
+	//console.log("sortorder:" + $sortorder.val() + ";sortcol:" + $sortcol.val());
 	$target = $(".colheader").eq(<number>$sortcol.val());
 	let sortcls =
 		$sortorder.val() === "desc" ? "fa fa-sort-up" : "fa fa-sort-down";

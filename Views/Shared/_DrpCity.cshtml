@@ -1,0 +1,9 @@
+﻿@{
+    bool edit = (bool)ViewData["edit"];
+    //List<PPWCommonLib.BaseModels.City> Cities = (List<PPWCommonLib.BaseModels.City>)ViewData["Cities"];
+    //string selectedCity = (string)ViewData["SelectedCity"];
+}
+
+<label id="lblCity" class="d-block" for="drpCity" data-city="@Resources.Resource.City" data-area="@Resources.Resource.Area4Address" data-region="@Resources.Resource.Region">@Resources.Resource.Region</label>
+<select id="drpCity" class="form-control"></select>
+

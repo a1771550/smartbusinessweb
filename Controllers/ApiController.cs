@@ -1483,7 +1483,7 @@ namespace SmartBusinessWeb.Controllers
             var columns = "cusName,cusFirstName,cusIsOrganization";
             if (type == "emailphone")
             {
-                var sql = $"Select {columns} From MyobCustomer Where cusEmail=@email and cusPhone=@phone";
+                var sql = $"Select {columns} From Customer Where cusEmail=@email and cusPhone=@phone";
                 using (var context = new PPWDbContext(Session["DBName"].ToString()))
                 {
                     var customer = context.Database.SqlQuery<CustomerModel>(sql, new SqlParameter("email", parameters[0]), new SqlParameter("phone", parameters[1])).FirstOrDefault();
@@ -1493,7 +1493,7 @@ namespace SmartBusinessWeb.Controllers
             else
             {
                 var searchcol = type == "email" ? "cusEmail" : "cusPhone";
-                var sql = $"Select {columns} From MyobCustomer Where {searchcol}=@{type}";
+                var sql = $"Select {columns} From Customer Where {searchcol}=@{type}";
                 using (var context = new PPWDbContext(Session["DBName"].ToString()))
                 {
                     var customer = context.Database.SqlQuery<CustomerModel>(sql, new SqlParameter(type, parameters[0])).FirstOrDefault();
@@ -3113,7 +3113,7 @@ namespace SmartBusinessWeb.Controllers
 
         public void GetCustomerAddressList(PPWDbContext context, ref CustomerModel customer)
         {
-            var _addresslist = context.GetCustomerAddressList1(AccountProfileId, customer.cusCode).ToList();
+            var _addresslist = context.GetCustomerAddressList2(AccountProfileId, customer.cusCode).ToList();
             if (_addresslist != null && _addresslist.Count > 0)
             {
                 customer.AddressList = new List<AddressView>();

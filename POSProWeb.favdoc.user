@@ -316,6 +316,16 @@
           <path>Views\Supplier\Index.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Supplier\Index.cshtml</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>supplier-Edit.cshtml</name>
+          <path>Views\Supplier\Edit.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Supplier\Edit.cshtml</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>_UploadFileModal.cshtml</name>
+          <path>Views\Shared\_UploadFileModal.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Shared\_UploadFileModal.cshtml</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -465,6 +475,14 @@
         <Favorite>
           <name>PreorderEditModel.cs</name>
           <absolutePath>F:\repos\PPWProject\PPWLib\Models\POS\Sales\PreorderEditModel.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>CustomerEditModel.cs</name>
+          <absolutePath>F:\repos\PPWProject\PPWLib\Models\Customer\CustomerEditModel.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>SupplierEditModel.cs</name>
+          <absolutePath>F:\repos\PPWProject\PPWLib\Models\Purchase\Supplier\SupplierEditModel.cs</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

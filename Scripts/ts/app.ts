@@ -27,7 +27,7 @@ interface IPhoneNameEmail {
 	Email: string;
 }
 let PhoneNameEmailList: IPhoneNameEmail[] = [];
-let supplier: ISupplier;
+let Supplier: ISupplier;
 
 let triggerReferrer: TriggerReferrer;
 
@@ -60,6 +60,7 @@ let forpassedtomanager: boolean = false;
 let recreateOnVoid: number = 0;
 let UserName: string = "";
 let NamesMatch: boolean = false;
+let SelectedCountry: number = 1;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
@@ -922,7 +923,7 @@ function getItemAccountMode(mode: string): ItemAccountMode {
 function togglePaging(type: string = "item", show: boolean = true) {
 	let $pager: JQuery;
 	switch (type) {
-		case "customer":
+		case "Customer":
 			$target = $("#tblCus");
 			$pager = $(".CusPager");
 			break;
@@ -1633,7 +1634,7 @@ function OnGetCustomersSuccess(response) {
 
 	//console.log("modelcustomers:", model.Customers);
 	if (model.Customers.length > 0) {
-		togglePaging("customer", true);
+		togglePaging("Customer", true);
 
 		CusList = model.Customers.slice(0);
 		if (CusList.length === 1) {
@@ -1659,7 +1660,7 @@ function OnGetCustomersSuccess(response) {
 			});
 		}
 	} else {
-		togglePaging("customer", false);
+		togglePaging("Customer", false);
 	}
 }
 function _writeCustomers(_customerlist: Array<ICustomer>) {
@@ -1687,7 +1688,7 @@ function OnSearchCustomersSuccess(response) {
 	//console.log("modelcustomers:", model.Customers);
 
 	if (model.Customers.length > 0) {
-		togglePaging("customer", true);
+		togglePaging("Customer", true);
 		CusList = model.Customers.slice(0);
 		//console.log("cuslist:", CusList);
 		if (typeof CusList === "undefined") {
@@ -1767,7 +1768,7 @@ function OnSearchCustomersSuccess(response) {
 		}
 		//}
 	} else {
-		togglePaging("customer", false);
+		togglePaging("Customer", false);
 	}
 }
 
@@ -6227,6 +6228,7 @@ interface JQuery {
 	DataTable({ }): any;
 	select2(): any;
 	select2({ }): any;
+	select2({ }, any): any;
 	addHook({ }, { }): any;
 	pagination({ }): any;
 	before({ }): any;
@@ -6279,7 +6281,7 @@ function fillAttribute($e: JQuery, attrval: string = ""): IAttribute {
 	};
 }
 
-let customer: ICustomer;
+let Customer: ICustomer;
 function initAttribute(
 	_customerId = 0,
 	name = "",
@@ -17182,22 +17184,22 @@ function validCusForm() {
 	let $cusemail = $("#cusEmail");
 	let emailerr = false;
 
-	if (customer.cusPhone === "") {
+	if (Customer.cusPhone === "") {
 		msg += $infoblk.data("customerphonerequired") + "<br>";
 	} else {
-		if (customer.cusPhone !== <string>$("#phoneinuse").val()!.toString()) {
-			if (phonelist.includes(customer.cusPhone ?? "")) {
+		if (Customer.cusPhone !== <string>$("#phoneinuse").val()!.toString()) {
+			if (phonelist.includes(Customer.cusPhone ?? "")) {
 				msg += customerphoneduplicatederrtxt + "<br>";
 				duplicated = true;
 			}
 		}
 	}
 
-	if (customer.cusContact === "") {
+	if (Customer.cusContact === "") {
 		msg += $infoblk.data("contactrequired") + "<br>";
 	}
 
-	let email = customer.cusEmail;
+	let email = Customer.cusEmail;
 
 	if (email !== "") {
 		if (!validateEmail(email)) {
@@ -17218,13 +17220,13 @@ function validCusForm() {
 				console.log("duplicated:" + duplicated);
 				if (value) {
 					if (_attrmode) {
-						if (isorgan && customer.cusName === "") {
+						if (isorgan && Customer.cusName === "") {
 							$cusname.addClass("focus");
 						}
-						if (customer.cusCode === "") {
+						if (Customer.cusCode === "") {
 							$cuscode.addClass("focus");
 						}
-						if (customer.cusContact === "") {
+						if (Customer.cusContact === "") {
 							$contact.addClass("focus");
 						}
 						if (duplicated) {
@@ -17242,59 +17244,59 @@ function validCusForm() {
 }
 
 function fillInCustomer() {
-	customer = {} as ICustomer;
-	customer.cusCustomerID = Number($("#cusCustomerID").val());
-	customer.cusCode = $("#cusPhone").val() as string;
-	customer.cusName = <string>$("#cusName").val();
-	customer.cusPhone = <string>$("#cusPhone").val();
-	customer.cusSaleComment = <string>$salecomment.val();
-	customer.PaymentIsDue = <number>$paymentIsDue.val();
-	customer.BalanceDueDays = <number>$("#BalanceDueDays").val();
+	Customer = {} as ICustomer;
+	Customer.cusCustomerID = Number($("#cusCustomerID").val());
+	Customer.cusCode = $("#cusPhone").val() as string; //NOT #cusCode!!!
+	Customer.cusName = <string>$("#cusName").val();
+	Customer.cusPhone = <string>$("#cusPhone").val();
+	Customer.cusSaleComment = <string>$salecomment.val();
+	Customer.PaymentIsDue = <number>$paymentIsDue.val();
+	Customer.BalanceDueDays = <number>$("#BalanceDueDays").val();
 	let $points = $("#points");
 	let newpoints: number = <number>$points.val();
 	let oldpoints: number = <number>$points.data("oldpoints");
-	customer.cusPointsSoFar += (newpoints - oldpoints);
-	customer.cusEmail = <string>$("#cusEmail").val();
-	customer.cusContact = <string>$("#cusContact").val();
-	customer.cusAddrCity = <string>$("#cusCity").val();
-	customer.cusAddrCountry = <string>$("#cusCountry").val();
-	customer.cusAddrWeb = <string>$("#cusAddrWeb").val();
+	Customer.cusPointsSoFar += (newpoints - oldpoints);
+	Customer.cusEmail = <string>$("#cusEmail").val();
+	Customer.cusContact = <string>$("#cusContact").val();
+	Customer.cusAddrCity = <string>$("#city").val(); //NOT $("#drpCity").val()!
+	Customer.cusAddrCountry = <string>$("#drpCountry").val();
+	Customer.cusAddrWeb = <string>$("#cusAddrWeb").val();
 
-	customer.AddressList = [];
+	Customer.AddressList = [];
 	for (let i = 1; i <= 5; i++) {
 		let address: IAddressView = initAddressView();
 		address.CusAddrLocation = i.toString();
 		address.StreetLine1 = $(`#addr${i}`).find(".address").eq(0).val() as string;
 		address.StreetLine2 = $(`#addr${i}`).find(".address").eq(1).val() as string;
-		customer.AddressList.push(address);
+		Customer.AddressList.push(address);
 	}
 
-	customer.cusAddrStreetLine1 = <string>$("#cusAddrStreetLine1").val();
-	customer.cusAddrStreetLine2 = <string>$("#cusAddrStreetLine2").val();
-	customer.cusAddrStreetLine3 = <string>$("#cusAddrStreetLine3").val();
-	customer.cusAddrStreetLine4 = <string>$("#cusAddrStreetLine4").val();
+	Customer.cusAddrStreetLine1 = <string>$("#cusAddrStreetLine1").val();
+	Customer.cusAddrStreetLine2 = <string>$("#cusAddrStreetLine2").val();
+	Customer.cusAddrStreetLine3 = <string>$("#cusAddrStreetLine3").val();
+	Customer.cusAddrStreetLine4 = <string>$("#cusAddrStreetLine4").val();
 
-	customer.cusAddrPhone1 = <string>$("#cusAddrPhone1").val();
+	Customer.cusAddrPhone1 = <string>$("#cusAddrPhone1").val();
 	let $phone2 = $("#cusAddrPhone2");
 	if ($phone2.length) {
-		customer.cusAddrPhone2 = <string>$("#cusAddrPhone2").val();
+		Customer.cusAddrPhone2 = <string>$("#cusAddrPhone2").val();
 	}
 	let $phone3 = $("#cusAddrPhone3");
 	if ($phone3.length) {
-		customer.cusAddrPhone3 = <string>$("#cusAddrPhone3").val();
+		Customer.cusAddrPhone3 = <string>$("#cusAddrPhone3").val();
 	}
 
-	customer.IsLastSellingPrice = $("#IsLastSellingPrice").is(":checked");
+	Customer.IsLastSellingPrice = $("#IsLastSellingPrice").is(":checked");
 
-	if (customer.FollowUpDateInfo) {
-		customer.FollowUpDateInfo.type = "date";
-		customer.FollowUpDateInfo.status = $(".followup:checked").val() as string;
-		customer.FollowUpDateInfo.JsFollowUpDate = $("#followUpDate").val() as string;
-		customer.FollowUpDateInfo.Id = Number($("#FollowUpDateInfo_Id").val());
+	if (Customer.FollowUpDateInfo) {
+		Customer.FollowUpDateInfo.type = "date";
+		Customer.FollowUpDateInfo.status = $(".followup:checked").val() as string;
+		Customer.FollowUpDateInfo.JsFollowUpDate = $("#followUpDate").val() as string;
+		Customer.FollowUpDateInfo.Id = Number($("#FollowUpDateInfo_Id").val());
 	}
 
 
-	customer.unsubscribe = $("#chkUnsubscribe").is(":checked");
+	Customer.unsubscribe = $("#chkUnsubscribe").is(":checked");
 }
 
 $(document).on("click", ".itemremove", function () {
@@ -19125,8 +19127,8 @@ function handleCardEmailChange(this: any) {
 			});
 		}
 
-		if (PhoneNameEmailList && PhoneNameEmailList.length > 0) {
-			let idx = PhoneNameEmailList.findIndex(x => x.Email.toLowerCase() == email.toLowerCase());
+		if (PhoneNameEmailList && PhoneNameEmailList.length > 0) {		
+			let idx = PhoneNameEmailList.findIndex(x => (x.Email && x.Email.toLowerCase()) == email.toLowerCase());
 			if (idx >= 0) {
 				$.fancyConfirm({
 					title: "",
@@ -19150,7 +19152,7 @@ function handleCardPhoneChange(this: any) {
 	if (phone) {
 		trimByMaxLength($phone);
 		if (PhoneNameEmailList && PhoneNameEmailList.length > 0) {
-			let idx = PhoneNameEmailList.findIndex(x => x.Phone.toLowerCase() == phone.toLowerCase());
+			let idx = PhoneNameEmailList.findIndex(x => (x.Phone && x.Phone.toLowerCase()) == phone.toLowerCase());
 			if (idx >= 0) {
 				$.fancyConfirm({
 					title: "",
@@ -19192,7 +19194,7 @@ function handleCardNameChange(this: any) {
 		}
 
 		if (PhoneNameEmailList && PhoneNameEmailList.length > 0) {
-			let idx = PhoneNameEmailList.findIndex(x => x.Name.toLowerCase() == name.toLowerCase());
+			let idx = PhoneNameEmailList.findIndex(x => (x.Name && x.Name.toLowerCase()) == name.toLowerCase());
 			if (idx >= 0) {
 				$.fancyConfirm({
 					title: "",
@@ -22030,14 +22032,35 @@ function setAccName(tr: JQuery<Element>, acno: string, acname: string) {
 		purchasePayment.AccountNo = acno;
 	}
 }
-function handleUploadedFile(result: any) {
-	closeWaitingModal();
-
-	if (forpurchase) {
-		populateFileList4Po(result.FileList);
-		closeUploadFileModal();
+function populateFileList(files: string[]) {
+	//F:\SmartPOSPro\Uploads\PO\1\KP100003
+	//https://localhost:7777/Purchase/1/KP100003/sample.pdf
+	if (files.length > 0) {
+		let html = "";
+		const pdfthumbnail = getPdfThumbnail();
+		files.forEach((x) => {
+			let removefilelnk = "", filelnk = "";
+			if (forpurchase) {
+				removefilelnk = getRemoveFileLnk(x, Purchase.pstCode);
+				filelnk = `<a href="#" class="filelnk" data-lnk="/Purchase/${apId}/${Purchase.pstCode}/${x}">${pdfthumbnail}${x}</a> ${removefilelnk}`;
+			}
+			if (forcustomer) {
+				removefilelnk = getRemoveFileLnk(x, Customer.cusCode);
+				filelnk = `<a href="#" class="filelnk" data-lnk="/Customer/${apId}/${Customer.cusCode}/${x}">${pdfthumbnail}${x}</a> ${removefilelnk}`;
+			}
+			if (forsupplier) {
+				removefilelnk = getRemoveFileLnk(x, Supplier.supCode);
+				filelnk = `<a href="#" class="filelnk" data-lnk="/Supplier/${apId}/${Supplier.supCode}/${x}">${pdfthumbnail}${x}</a> ${removefilelnk}`;
+			}
+			html += `<li>${filelnk}</li>`;
+		});
+		$(".viewfileblk").find(".file").empty().append(html);
 	}
-	if (forpurchase && forpurchasepayments) {
+}
+function handleUploadedFile(result: any) {
+	closeWaitingModal();	
+	
+	if (forpurchasepayments) {
 		let fileList: string[] = result.FileList;
 
 		if (fileList.length > 0) {
@@ -22053,6 +22076,10 @@ function handleUploadedFile(result: any) {
 			});
 			viewFileModal.find(".filelist").empty().append(html);
 		}
+	} else {
+		console.log("result.FileList:", result.FileList);
+		populateFileList(result.FileList);
+		closeUploadFileModal();
 	}
 }
 
@@ -22114,8 +22141,8 @@ function getPdfThumbnail(cls: string = ""): string {
 	return `<img src="/images/pdf.jpg" class="${cls} thumbnail">`;
 }
 
-function getRemoveFileLnk(file: string): string {
-	return `<i class="fa fa-trash removefile" data-file="${file}" data-code="${Purchase.pstCode}"></i>`;
+function getRemoveFileLnk(file: string, code:string): string {
+	return `<i class="fa fa-trash removefile" data-file="${file}" data-code="${code}"></i>`;
 }
 
 $(document).on("click", ".filelnk", function () {
@@ -22141,7 +22168,7 @@ $(document).on("click", ".removefile", function () {
 			url = "/Purchase/RemoveFile";
 			let idx = Purchase.FileList.findIndex(x => x == file);
 			if (idx >= 0) Purchase.FileList.splice(idx, 1);
-			populateFileList4Po(Purchase.FileList);
+			populateFileList(Purchase.FileList);
 			let pstCode = $(this).data("code");
 			data = { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), pstCode, filename: file };
 		}
@@ -22210,3 +22237,58 @@ let SelectedIAL: IIAL;
 function triggerMenu(dashmenuIdx: number, submenuIdx: number) {
 	$(".dash__menu").find("ul").find(".btn_expand").eq(dashmenuIdx).trigger("click").find(".submenu").first().addClass("show").find("a").removeClass("active").parent("li").parent(".submenu").find("li").eq(submenuIdx).find("a").addClass("active");
 }
+
+function initCityDropDown(selectedCity: string = "", lang: number = 1) {
+	let regionfile: string = "";
+	let $lblcity = $("#lblCity");
+	//console.log("SelectedCountry:" + SelectedCountry);
+	if (SelectedCountry == 1) {
+		regionfile = "/scripts/hongkong_regions.json";
+		//console.log($lblcity.data("area"));
+		$lblcity.text($lblcity.data("area"));
+	}
+	if (SelectedCountry == 2) {
+		regionfile = "/scripts/macau_regions.json";
+		$lblcity.text($lblcity.data("area"));
+	}
+	if (SelectedCountry == 3) {
+		regionfile = "";
+		$("#drpCity").empty().trigger("change");
+		$lblcity.text($lblcity.data("city"));
+	}
+
+	if (regionfile) {
+		$.ajax({
+			type: "GET",
+			url: regionfile,
+			data: {},
+			success: function (data) {
+				let html = "<option value=''>---</option>";
+				//console.log(data.data);
+				data.data.map((d: string[]) => {
+					//   console.log(d[1]);
+					const region = d[lang];
+					const selected = ((selectedCity) && (d[0] == selectedCity!)) ? "selected" : "";
+					html += `<option value="${d[0]}" ${selected}>${region}</option>`;
+				});
+				$("#drpCity").empty().append(html).select2();
+			},
+			dataType: "json",
+		});
+	}
+	
+}
+
+$(document).on("change", "#drpCountry", function () {
+	SelectedCountry = Number($(this).val());
+	//console.log("SelectedCountry:" + SelectedCountry);
+	let $lblcountry = $("#lblCountry");
+	let countrytxt = (SelectedCountry == 3) ? $lblcountry.data("country") : $lblcountry.data("region");
+	//console.log($lblcountry.data("country"));
+	$lblcountry.text(countrytxt);	
+	initCityDropDown("", lang);
+});
+
+$(document).on("change", "#drpCity", function () {
+	$("#city").val($(this).val());
+});

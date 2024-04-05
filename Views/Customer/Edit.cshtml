@@ -1,38 +1,36 @@
 ﻿@model CustomerEditModel
 @{
-    string plsentertxt = string.Format(Resources.Resource.PlsEnterFormat, string.Format(string.Format(Resources.Resource.ValueFormat, string.Format(Resources.Resource.AllFormat, string.Format(Resources.Resource.DropDownFormat, Resources.Resource.CustomAttribute)))));
+	string plsentertxt = string.Format(Resources.Resource.PlsEnterFormat, string.Format(string.Format(Resources.Resource.ValueFormat, string.Format(Resources.Resource.AllFormat, string.Format(Resources.Resource.DropDownFormat, Resources.Resource.CustomAttribute)))));
 
-    bool enablecrm = Model.enableCRM;
-	var Customer = Model.MyobCustomer;
-    bool edit = Customer.cusCustomerID > 0;
+	bool enablecrm = Model.enableCRM;
+	var Customer = Model.Customer;
+	bool edit = Customer.cusCustomerID > 0;
 
-    ViewBag.Title = edit ? string.Format(Resources.Resource.EditFormat, Resources.Resource.Customer) : string.Format(Resources.Resource.AddFormat, Resources.Resource.Customer);
+	ViewBag.Title = edit ? string.Format(Resources.Resource.EditFormat, Resources.Resource.Customer) : string.Format(Resources.Resource.AddFormat, Resources.Resource.Customer);
 
-    int rand = CommonHelper.GetVersionRandomNo();
-    string mandatory = Resources.Resource.StarMarkedMandatory.Replace("*", "<span class='asterisk'>*</span>");
-    string _organchecked = Customer.cusIsOrganization ? "checked" : "";
-    string _indivchecked = Customer.cusIsOrganization ? "" : "checked";
-    string _checked = "checked";
-    bool isorgan = true;
-    int iorgan = 1;
-    if (edit)
-    {
-        isorgan = _organchecked == "checked";      
-    }
-    else
-    {
-        _organchecked = "checked";
-        _indivchecked = "";
-    }
-    string maxcharlengthallowedtxt = string.Format("({0})", string.Format(Resources.Resource.MaxChar, ConfigurationManager.AppSettings["MaxCoNameLength"]));
-    iorgan = isorgan ? 1 : 0;
-    string maxcharlength4conametxt = string.Format("({0})", string.Format(Resources.Resource.MaxChar, ConfigurationManager.AppSettings["MaxCoNameLength"]));
-    string maxcharlength4fnametxt = string.Format("({0})", string.Format(Resources.Resource.MaxChar, ConfigurationManager.AppSettings["MaxFirstNameLength"]));
-    string maxcharlength4lnametxt = string.Format("({0})", string.Format(Resources.Resource.MaxChar, ConfigurationManager.AppSettings["MaxLastNameLength"]));
+	int rand = CommonHelper.GetVersionRandomNo();
+	string mandatory = Resources.Resource.StarMarkedMandatory.Replace("*", "<span class='asterisk'>*</span>");
+	string _organchecked = Customer.cusIsOrganization ? "checked" : "";
+	string _indivchecked = Customer.cusIsOrganization ? "" : "checked";
+	string _checked = "checked";
+	bool isorgan = true;
+	int iorgan = 1;
+	if (edit)
+	{
+		isorgan = _organchecked == "checked";
+	}
+	else
+	{
+		_organchecked = "checked";
+		_indivchecked = "";
+	}
 
-    string _readonly = Customer.cusCheckout!=null&&(bool)Customer.cusCheckout ? "readonly" : "";
-    var enteratleasttxt = string.Format(Resources.Resource.EnterAtLeastOneFormat, Resources.Resource.Item);
+	string maxcharlength4conametxt = string.Format("({0})", string.Format(Resources.Resource.MaxChar, ConfigurationManager.AppSettings["MaxCoNameLength"]));
+	string maxcharlength4codetxt = string.Format("({0})", string.Format(Resources.Resource.MaxChar, ConfigurationManager.AppSettings["MaxCardCodeLength"]));
+	string _readonly = Customer.cusCheckout!=null&&(bool)Customer.cusCheckout ? "readonly" : "";
+	var enteratleasttxt = string.Format(Resources.Resource.EnterAtLeastOneFormat, Resources.Resource.Item);
 }
+<link href="~/Content/select2/custom.css?v=@rand" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css" href="~/Content/customer/edit.css?v=@rand" />
 
 <h2>@ViewBag.Title</h2>
@@ -78,11 +76,11 @@
 
 	<div class="row">
 		<div class="col-12 col-md-3">
-			<div id="colastname" class="form-group required">
+			<div id="colastname" class="form-group required" data-customernull="@(Customer==null)">
 				<label class="control-label " for="cusName">@Resources.Resource.Name</label>
 
-				<input type="text" class="form-control" maxlength="@ConfigurationManager.AppSettings["MaxCoNameLength"]" id="cusName" name="cusName" value="@Html.Raw(Customer.cusName)" @_readonly />
-				<span id="maxconamelength" class="danger small">@maxcharlength4conametxt</span>
+				<input type="text" class="form-control" maxlength="@ConfigurationManager.AppSettings["MaxCoNameLength"]" id="cusName" name="cusName" value="@Customer.cusName" @_readonly />
+				<span class="danger small d-block">@maxcharlength4conametxt</span>
 				@if (edit)
 				{
 					<span class="danger small d-block">@string.Format(Resources.Resource.ABSSNameNotModifiableAfterUploaded, Resources.Resource.Customer)</span>
@@ -95,7 +93,7 @@
 			<div class="form-group required">
 				<label class="control-label " for="cusPhone">@Resources.Resource.Phone</label>
 				<input type="text" class="form-control" id="cusPhone" name="cusPhone" maxlength="@int.Parse(ConfigurationManager.AppSettings["MaxCardCodeLength"])" value="@Customer.cusPhone" />
-		
+				<span class="danger small">@maxcharlength4codetxt</span>
 			</div>
 
 		</div>
@@ -117,14 +115,15 @@
 
 	<div class="row">
 		<div class="col-12 col-md-3">
-			<div class="form-group">
-				<label class="control-label" for="cusCity">@Resources.Resource.City</label>
-				<input type="text" id="cusCity" name="cusCity" class="form-control" value="@Customer.cusAddrCity" />
+			<div class="form-group">				
+				@Html.Partial("_DrpCity", null, new ViewDataDictionary { { "edit", edit }, { "SelectedCity", Customer.cusAddrCity } })
+				<input type="hidden" id="city" name="cusAddrCity" value="@Customer.cusAddrCity" />
 			</div>
 		</div>
-		<div class="col-12 col-md-3">
+		<div class="col-12 col-md-3" data-country="@(string.IsNullOrEmpty(Customer.cusAddrCountry))">			
 			<div class="form-group">
-				@Html.Partial("_DefaultCountries", null, new ViewDataDictionary { { "edit", edit }, { "Countries", Model.MyobCountries }, { "SelectedCountry", Customer.cusAddrCountry } })
+				@Html.Partial("_DrpCountry", null, new ViewDataDictionary { { "edit", edit }, { "Countries", Model.DefaultCountries }, { "SelectedCountry", Customer.cusAddrCountry } })
+				<input type="hidden" id="cusAddrCountry" name="cusAddrCountry" value="@Customer.cusAddrCountry" />
 			</div>
 		</div>
 		<div class="col-12 col-md-3">
@@ -305,7 +304,7 @@
     string gattrnamelist = Customer.GlobalAttributeList != null && Customer.GlobalAttributeList.Count > 0 ? string.Join(",", Customer.GlobalAttributeList.Select(x => x.attrName).ToHashSet()) : "";    
 }
 
-<div id="infoblk" data-cusid="@Customer.cusCustomerID" data-phonenameemaillist="@JsonSerializer.Serialize(Model.PhoneNameEmailList)" data-customernamerequired="@Resources.Resource.CustomerNameRequired" data-customerphonerequired="@Resources.Resource.CustomerPhoneRequired" data-customerphoneduplicatederr="@Resources.Resource.CustomerPhoneDuplicatedErr" data-returnurl="Customer/Edit" data-edit="@edit" data-followupdaterequired="@Resources.Resource.FollowUpDateRequired" data-customerid="@Customer.cusCustomerID" data-apid="@Customer.AccountProfileId" data-maxconamelength="@ConfigurationManager.AppSettings["MaxCoNameLength"]" data-contactrequired="@Resources.Resource.ContactRequired" data-duplicatedemailalert="@Resources.Resource.DuplicatedEmailAlert" data-ipcountry="@Customer.IpCountry" data-selectatleastoneitemtxt="@Resources.Resource.SelectAtLeastOneItemRequired" data-firstnamerequired="@Resources.Resource.FirstNameRequired" data-plsenteralldropdownattrvals="@plsentertxt" data-enablecrm="@Model.enableCRM" data-formaterrwarning="@Resources.Resource.FormatErrWarning" data-salecommentrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.SaleComment)" data-entercustomnamefirsttxt="@string.Format(Resources.Resource.EnterFirstFormat, string.Format(Resources.Resource.NameFormat,Resources.Resource.CustomField))" data-savedtxt="@string.Format(Resources.Resource.Saved,Resources.Resource.Attribute)" data-enteratleasttxt="@enteratleasttxt" data-enterattribtefirsttxt="@string.Format(Resources.Resource.EnterFirstFormat, string.Format(Resources.Resource.NameFormat,Resources.Resource.Attribute))" data-customfieldvaltxt="@string.Format(Resources.Resource.ValueFormat,Resources.Resource.CustomField)" data-uploadurl="/Customer/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@string.Join(",",Customer.UploadFileList)" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-jscustomattributelist="@JsonSerializer.Serialize(Customer.CustomAttributeList)" data-gattrnamelist="@gattrnamelist" data-jscustomerinfo="@JsonSerializer.Serialize(Customer.CustomerInfoList)" data-referrer="@Model.Referrer"></div>
+<div id="infoblk" data-cusid="@Customer.cusCustomerID" data-phonenameemaillist="@JsonSerializer.Serialize(Model.PhoneNameEmailList)" data-customernamerequired="@Resources.Resource.CustomerNameRequired" data-customerphonerequired="@Resources.Resource.CustomerPhoneRequired" data-customerphoneduplicatederr="@Resources.Resource.CustomerPhoneDuplicatedErr" data-returnurl="Customer/Edit" data-edit="@edit" data-followupdaterequired="@Resources.Resource.FollowUpDateRequired" data-customerid="@Customer.cusCustomerID" data-apid="@Customer.AccountProfileId" data-maxconamelength="@ConfigurationManager.AppSettings["MaxCoNameLength"]" data-contactrequired="@Resources.Resource.ContactRequired" data-duplicatedemailalert="@Resources.Resource.DuplicatedEmailAlert" data-ipcountry="@Customer.IpCountry" data-selectatleastoneitemtxt="@Resources.Resource.SelectAtLeastOneItemRequired" data-firstnamerequired="@Resources.Resource.FirstNameRequired" data-plsenteralldropdownattrvals="@plsentertxt" data-enablecrm="@Model.enableCRM" data-formaterrwarning="@Resources.Resource.FormatErrWarning" data-salecommentrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.SaleComment)" data-entercustomnamefirsttxt="@string.Format(Resources.Resource.EnterFirstFormat, string.Format(Resources.Resource.NameFormat,Resources.Resource.CustomField))" data-savedtxt="@string.Format(Resources.Resource.Saved,Resources.Resource.Attribute)" data-enteratleasttxt="@enteratleasttxt" data-enterattribtefirsttxt="@string.Format(Resources.Resource.EnterFirstFormat, string.Format(Resources.Resource.NameFormat,Resources.Resource.Attribute))" data-customfieldvaltxt="@string.Format(Resources.Resource.ValueFormat,Resources.Resource.CustomField)" data-uploadurl="/Customer/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@string.Join(",",Customer.UploadFileList)" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-jscustomattributelist="@JsonSerializer.Serialize(Customer.CustomAttributeList)" data-gattrnamelist="@gattrnamelist" data-jscustomerinfo="@JsonSerializer.Serialize(Customer.CustomerInfoList)" data-referrer="@Model.Referrer" data-lang="@CultureHelper.CurrentCulture"></div>
 
 
 <script src="~/Scripts/ts/js/customer/customeredit.js?v=@rand"></script>

@@ -12,7 +12,7 @@ $(document).on("change", "#supName", function () {
 
 $(document).on("click", "#btnSave", function () {
     if (_validSupplier()) {
-        console.log("supplier:", supplier);
+        console.log("Supplier:", Supplier);
         //return false;
         $.ajax({
             type: "POST",
@@ -21,7 +21,7 @@ $(document).on("click", "#btnSave", function () {
                 __RequestVerificationToken: $(
                     "input[name=__RequestVerificationToken]"
                 ).val(),
-                model: supplier,
+                model: Supplier,
             },
             success: function (data) {
                 if (data.msg !== "") {
@@ -35,9 +35,9 @@ $(document).on("click", "#btnSave", function () {
 
 function _validSupplier(): boolean {
     let msg = "";
-    supplier = fillInSupplier();
+    fillInSupplier();
 
-    if (supplier.supName == "") {
+    if (Supplier.supName == "") {
         msg += `${namerequiredtxt}<br>`;
         $("#supName").addClass("focus");
     }
@@ -59,10 +59,11 @@ function _validSupplier(): boolean {
     return msg === "";
 }
 
-function fillInSupplier(): ISupplier {
-    return {
+function fillInSupplier() {
+    Supplier = {
         supId: Number($("#supId").val()),
         supName: <string>$("#supName").val(),
+        supCode: <string>$("#supPhone").val(), //NOT #supCode!!!
         supPhone: <string>$("#supPhone").val(),
         supEmail: <string>$("#supEmail").val(),
         supContact: <string>$("#supContact").val(),
@@ -70,15 +71,14 @@ function fillInSupplier(): ISupplier {
         supAddrStreetLine2: <string>$("#supAddrStreetLine2").val(),
         supAddrStreetLine3: <string>$("#supAddrStreetLine3").val(),
         supAddrStreetLine4: <string>$("#supAddrStreetLine4").val(),
-        supAddrCity: <string>$("#supAddrCity").val(),
-        supAddrCountry: <string>$("#supAddrCountry").val(),
+        supAddrCity: <string>$("#city").val(), //NOT ("#drpCity").val()!
+        supAddrCountry: <string>$("#drpCountry").val(),
         supAddrWeb: <string>$("#supAddrWeb").val(),
         supAddrPhone1: <string>$("#supAddrPhone1").val(),
         supAddrPhone2: <string>$("#supAddrPhone2").val(),
         supAddrPhone3: <string>$("#supAddrPhone3").val(),
-        CreateTimeDisplay: "",
-        ModifyTimeDisplay: "",
-    } as ISupplier;
+        IsLastPurchasePrice: $("#IsLastPurchasePrice").is(":checked"),
+    } as unknown as ISupplier;
 }
 
 $(function () {
@@ -86,17 +86,27 @@ $(function () {
     triggerMenu(5,2);
     forsupplier = true;
     initModals();
-    supplier = fillInSupplier();
+    fillInSupplier();
+    //console.log("supplier:", supplier);
 
     PhoneNameEmailList = $infoblk.data("phonenameemaillist");
 
-    editmode = supplier.supId > 0;
+    editmode = Supplier.supId > 0;
 
     uploadsizelimit = parseInt($infoblk.data("uploadsizelimit"));
     uploadsizelimitmb = parseInt($infoblk.data("uploadsizelimitmb"));
     if ($infoblk.data("uploadfilelist") !== "") {
-        supplier.UploadFileList = ($infoblk.data("uploadfilelist").toString()).split(",");
+        Supplier.UploadFileList = ($infoblk.data("uploadfilelist").toString()).split(",");
         $("#btnViewFile").removeClass("hide");
     }
+
+    SelectedCountry = editmode ? Number(Supplier.supAddrCountry) ?? 1 : 1;
+    let selectedCity = editmode ? Supplier.supAddrCity ?? "" : "";
+    //console.log("selectedCity:" + selectedCity);
+    lang = Number($infoblk.data("lang")) + 1;
+    initCityDropDown(selectedCity, lang);
+    $("#drpCountry").select2();
+    $("#drpCity").select2();
+
     $("#supName").trigger("focus");
 });

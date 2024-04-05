@@ -72,7 +72,7 @@ namespace SmartBusinessWeb.Controllers.Customer
             {
                 try
                 {
-                    List<string> filenamelist = new List<string>();
+                    List<string> FileList = new List<string>();
                     string filedir = string.Format(UploadsCusDir, apId, cusId);//Cus/{0}/{1}
                     string dir = "";
                     string filename = string.Empty;
@@ -91,27 +91,29 @@ namespace SmartBusinessWeb.Controllers.Customer
                         }
                         string fname = Path.Combine(absdir, filename);
                         _file.SaveAs(fname);
-                        filenamelist.Add(filename);
+                        FileList.Add(filename);
                     }
                     using (var context = new PPWDbContext(Session["DBName"].ToString()))
                     {
-                        SessUser user = Session["User"] as SessUser;
-                        CustomerInfo cusInfo = new CustomerInfo
-                        {
-                            cusId = cusId,
-                            fileName = filenamelist.FirstOrDefault(),
-                            type = "file",
-                            CreateBy = user.UserCode,
-                            CreateTime = DateTime.Now,
-                            AccountProfileId = apId
-                        };
-                        context.CustomerInfoes.Add(cusInfo);
-                        context.SaveChanges();
-                    }
-                    dir = string.Concat(@"/", filedir);
-                    //string filepath = Path.Combine(dir, string.Format(file, ext));
-                    string filepath = Path.Combine(dir, filename);
-                    return Json(new { msg = Resources.Resource.UploadOkMsg, filepath });
+                        var cusInfo = context.CustomerInfoes.FirstOrDefault(x=>x.fileName==filename && x.AccountProfileId==apId);
+                        if(cusInfo==null) {
+                            SessUser user = Session["User"] as SessUser;
+                            cusInfo = new CustomerInfo
+                            {
+                                cusId = cusId,
+                                fileName = FileList.FirstOrDefault(),
+                                type = "file",
+                                CreateBy = user.UserCode,
+                                CreateTime = DateTime.Now,
+                                AccountProfileId = apId
+                            };
+                            context.CustomerInfoes.Add(cusInfo);
+                            context.SaveChanges();
+                        }
+                       
+                        FileList = context.CustomerInfoes.Where(x=>x.cusId== cusId).Select(x=>x.fileName).Distinct().ToList();
+                    }                             
+                    return Json(new { msg = Resources.Resource.UploadOkMsg, FileList });
                 }
                 catch (Exception ex)
                 {

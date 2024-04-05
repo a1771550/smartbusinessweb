@@ -93,7 +93,7 @@ $(document).on('change', '#gattrblk .form-control.cattr', function () {
         const Id: string = makeId(16);
         let cattr: ICustomAttribute = {
             attrId: Id,
-            contactId: customer.cusCustomerID,
+            contactId: Customer.cusCustomerID,
             attrName: Id,
             attrValue: val,
             attrType:"custom",

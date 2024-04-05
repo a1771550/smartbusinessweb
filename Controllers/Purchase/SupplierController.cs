@@ -24,7 +24,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
             {
                 try
                 {
-                    List<string> filenamelist = new List<string>();
+                    List<string> FileList = new List<string>();
                     string filedir = string.Format(UploadsSupDir, apId, supId);//Sup/{0}/{1}
                     string dir = "";
                     string filename = string.Empty;
@@ -43,27 +43,31 @@ namespace SmartBusinessWeb.Controllers.Purchase
                         }
                         string fname = Path.Combine(absdir, filename);
                         _file.SaveAs(fname);
-                        filenamelist.Add(filename);
+                        FileList.Add(filename);
                     }
                     using (var context = new PPWDbContext(Session["DBName"].ToString()))
                     {
-                        SessUser user = Session["User"] as SessUser;
-                        SupplierInfo supInfo = new SupplierInfo
+                        var supInfo = context.SupplierInfoes.FirstOrDefault(x => x.fileName == filename && x.AccountProfileId == apId);
+                        if (supInfo == null)
                         {
-                            supId = supId,
-                            fileName = filenamelist.FirstOrDefault(),
-                            type = "file",
-                            CreateBy = user.UserCode,
-                            CreateTime = DateTime.Now,
-                            AccountProfileId = apId
-                        };
-                        context.SupplierInfoes.Add(supInfo);
-                        context.SaveChanges();
+                            SessUser user = Session["User"] as SessUser;
+                            supInfo = new SupplierInfo
+                            {
+                                supId = supId,
+                                fileName = FileList.FirstOrDefault(),
+                                type = "file",
+                                CreateBy = user.UserCode,
+                                CreateTime = DateTime.Now,
+                                AccountProfileId = apId
+                            };
+                            context.SupplierInfoes.Add(supInfo);
+                            context.SaveChanges();
+                        }
+                        
+                        FileList = context.SupplierInfoes.Where(x => x.supId == supId).Select(x => x.fileName).Distinct().ToList();
                     }
-                    dir = string.Concat(@"/", filedir);
-                    //string filepath = Path.Combine(dir, string.Format(file, ext));
-                    string filepath = Path.Combine(dir, filename);
-                    return Json(new { msg = Resources.Resource.UploadOkMsg, filepath });
+                  
+                    return Json(new { msg = Resources.Resource.UploadOkMsg, FileList });
                 }
                 catch (Exception ex)
                 {

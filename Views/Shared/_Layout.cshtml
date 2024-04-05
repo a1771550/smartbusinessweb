@@ -3,7 +3,6 @@
 	string lnkcls = "";
 	string sublnkcls = "";
 	string reportlnktxt = string.Empty;
-	string reportlnkcls = "nav-link dropdown-toggle {0}";
 	System.Collections.Generic.List<ReportView> reports = null;
 	string pagename = ViewBag.PageName ?? string.Empty;
 	string eximtxt = string.Concat(Resources.Resource.Export, "-", Resources.Resource.Import);
@@ -209,7 +208,7 @@
 							<ul class="submenu collapse" id="collapsePurchase">
 								@if (!isadmin)
 								{									
-									<li>@Html.ActionLink(string.Format(Resources.Resource.NewFormat, Resources.Resource.PurchaseOrder), "Edit", "Purchase", new { Id = 0, type = "order" })</li>								
+									<li><a href="/Purchase/Edit?Id=0&type=order">@string.Format(Resources.Resource.NewFormat, Resources.Resource.PurchaseOrder)</a></li>								
 									forreceival = string.Concat("<span class='small'>(", forreceival, ")</span>");
 									var purchaselist = Html.Raw(string.Concat(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.PurchaseOrder), forreceival));
 									<li><a href="/Purchase/Index">@purchaselist</a></li>

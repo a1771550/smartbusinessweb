@@ -2784,6 +2784,7 @@
     <Content Include="Content\reports.css" />
     <Content Include="Content\pos\Sales.css" />
     <Content Include="Content\search.css" />
+    <Content Include="Content\select2\custom.css" />
     <Content Include="Content\select2\select2.css" />
     <Content Include="Content\select2\select2.min.css" />
     <Content Include="Content\stock.css" />
@@ -3022,6 +3023,7 @@
     <Content Include="Content\mean\js\owl.carousel.min.js" />
     <Content Include="Content\mean\js\Popper.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\select2\select2.min.css" />
     <Content Include="Scripts\ts\js\customer\unsynclist.js" />
     <Content Include="Scripts\ts\js\inventoryadjustment\edit.js" />
     <Content Include="Scripts\ts\js\inventoryadjustment\index.js" />
@@ -4129,6 +4131,7 @@
     <Content Include="Scripts\jquery-3.7.1.min.map" />
     <Content Include="Scripts\node_modules\undici-types\package.json" />
     <Content Include="Scripts\node_modules\undici-types\README.md" />
+    <Content Include="Scripts\macau_regions.json" />
     <None Include="Scripts\oldjquery\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\oldjquery\jquery-1.10.2.js" />
     <Content Include="Scripts\oldjquery\jquery-1.10.2.min.js" />
@@ -4526,7 +4529,7 @@
     <Content Include="Views\Shared\_ItemVariModal.cshtml" />
     <Content Include="Views\Shared\_PoItemVariModal.cshtml" />
     <Content Include="Views\OtherSettings\PrivacyPolicy.cshtml" />
-    <Content Include="Views\Shared\_DefaultCountries.cshtml" />
+    <Content Include="Views\Shared\_DrpCountry.cshtml" />
     <Content Include="Views\Preorder\Index.cshtml" />
     <Content Include="Views\Shared\_NoRecordFound.cshtml" />
     <Content Include="Views\Preorder\Edit.cshtml" />
@@ -4650,6 +4653,7 @@
     <Content Include="Scripts\ts\js\pos\pendinginvoices.js.map" />
     <Content Include="Views\Customer\UnSyncList.cshtml" />
     <Content Include="Scripts\ts\js\customer\unsynclist.js.map" />
+    <Content Include="Views\Shared\_DrpCity.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -5087,17 +5091,6 @@
     <TypeScriptCompile Include="Scripts\ts\pos\excludedinvoices.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\pendinginvoices.ts" />
     <TypeScriptCompile Include="Scripts\ts\records\attendance.ts" />
-    <TypeScriptCompile Include="Scripts\ts\crm\contact\attributes\attribute.ts" />
-    <TypeScriptCompile Include="Scripts\ts\crm\contact\attributes\attributecommon.ts" />
-    <TypeScriptCompile Include="Scripts\ts\crm\contact\attributes\attributeedit.ts" />
-    <TypeScriptCompile Include="Scripts\ts\crm\contact\attributes\globalattribute.ts" />
-    <TypeScriptCompile Include="Scripts\ts\crm\contact\callhistory\callhistory.ts" />
-    <TypeScriptCompile Include="Scripts\ts\crm\contact\callhistory\callhistory_edit.ts" />
-    <TypeScriptCompile Include="Scripts\ts\crm\contact\contact.ts" />
-    <TypeScriptCompile Include="Scripts\ts\crm\contact\contactedit.ts" />
-    <TypeScriptCompile Include="Scripts\ts\crm\contact\hotlist\hotlist.ts" />
-    <TypeScriptCompile Include="Scripts\ts\crm\contact\hotlist\hotlist_edit.ts" />
-    <TypeScriptCompile Include="Scripts\ts\crm\contact\import\importfrmabss.ts" />
     <TypeScriptCompile Include="Scripts\ts\crm\dashboard.ts" />
     <TypeScriptCompile Include="Scripts\ts\crm\eblast\eblast.ts" />
     <TypeScriptCompile Include="Scripts\ts\crm\eblast\eblastedit.ts" />

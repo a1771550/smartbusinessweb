@@ -1,148 +1,155 @@
 ﻿@model PPWLib.Models.Purchase.Supplier.SupplierEditModel
 
 @{
-    var lang = CultureHelper.CurrentCulture;
-    var Supplier = Model.Supplier;
-    var action = Supplier != null && Supplier.supId > 0 ? Resources.Resource.EditFormat : Resources.Resource.AddFormat;
-    ViewBag.Title = string.Format(action, Resources.Resource.Supplier);
-    var rand = CommonHelper.GetVersionRandomNo();
-    bool edit = Supplier != null && Supplier.supId > 0;
-    string _readonly = !edit ? "" : (edit) && Supplier.supCheckout != null && (bool)Supplier.supCheckout ? "readonly" : "";
+	var lang = CultureHelper.CurrentCulture;
+	var Supplier = Model.Supplier;
+	bool edit = Supplier != null && Supplier.supId > 0;
+	var action = edit ? Resources.Resource.EditFormat : Resources.Resource.AddFormat;
+	ViewBag.Title = string.Format(action, Resources.Resource.Supplier);
+	var rand = CommonHelper.GetVersionRandomNo();
+
+	string _readonly = !edit ? "" : (edit) && Supplier.supCheckout != null && (bool)Supplier.supCheckout ? "readonly" : "";
+	string maxcharlength4conametxt = string.Format("({0})", string.Format(Resources.Resource.MaxChar, ConfigurationManager.AppSettings["MaxCoNameLength"]));
+	string maxcharlength4codetxt = string.Format("({0})", string.Format(Resources.Resource.MaxChar, ConfigurationManager.AppSettings["MaxCardCodeLength"]));
 }
 
-<h2>@ViewBag.Title</h2>
+<h2 data-edit="@edit">@ViewBag.Title</h2>
 
-@using (Html.BeginForm("Edit", "Supplier", FormMethod.Post, new { @id = "supplierform" }))
+<link href="~/Content/select2/custom.css?v=@rand" rel="stylesheet" type="text/css" />
+
+@using (Html.BeginForm("Edit", "Supplier", FormMethod.Post, new { @id = "frmSupplier" }))
 {
-    @Html.AntiForgeryToken()
+	@Html.AntiForgeryToken()
 
-    <div class="form-horizontal my-4" data-readonly="@_readonly">
+	<div class="form-horizontal my-4" data-readonly="@_readonly">
 
-        <div class="row">
-            <div class="col-12 col-md-3">
-                <div class="form-group required">
-                    <label class="control-label" for="supName">@Resources.Resource.Name</label>
-                    <input type="text" id="supName" name="supName" class="form-control" maxlength="@ConfigurationManager.AppSettings["MaxCoNameLength"]" @_readonly value="@Supplier.supName" />
-                    <span class="small alert" style="margin-left:-1em;">@string.Format(Resources.Resource.ABSSNameNotModifiableAfterUploaded, Resources.Resource.Supplier)</span>
-                </div>
-            </div>
-            <div class="col-12 col-md-3">
-                <div class="form-group">
-                    <label class="control-label" for="supEmail">@Resources.Resource.Email</label>
-                    <input type="email" id="supEmail" name="supEmail" class="form-control" maxlength="255" value="@Supplier.supEmail" />                 
-                </div>
-            </div>
-            <div class="col-12 col-md-3">
+		<div class="row">
+			<div class="col-12 col-md-3">
+				<div class="form-group required" data-name="@Supplier.supName">
+					
+					<label class="control-label" for="supName">@Resources.Resource.Name</label>
+					<input type="text" id="supName" name="supName" class="form-control" maxlength="@ConfigurationManager.AppSettings["MaxCoNameLength"]" @_readonly value="@Supplier.supName" />
+					<span class="danger small maxconamelength d-block">@maxcharlength4conametxt</span>
+					<span class="small danger">@string.Format(Resources.Resource.ABSSNameNotModifiableAfterUploaded, Resources.Resource.Supplier)</span>
+				</div>
+			</div>
+			<div class="col-12 col-md-3">
+				<div class="form-group">
+					<label class="control-label" for="supEmail">@Resources.Resource.Email</label>
+					<input type="email" id="supEmail" name="supEmail" class="form-control" maxlength="255" value="@Supplier.supEmail" />
+				</div>
+			</div>
+			<div class="col-12 col-md-3">
 				<div class="form-group">
 					<label class="control-label" for="supPhone">@Resources.Resource.Phone</label>
 					<input type="text" class="form-control" id="supPhone" name="supPhone" maxlength="@int.Parse(ConfigurationManager.AppSettings["MaxCardCodeLength"])" value="@Supplier.supPhone" />
+					<span class="danger small">@maxcharlength4codetxt</span>
 				</div>
-            </div>
-            <div class="col-12 col-md-3">
+			</div>
+			<div class="col-12 col-md-3">
 				<div class="form-group">
 					<label class="control-label" for="supContact">@Resources.Resource.Contact</label>
 					<input type="text" class="form-control" value="@Supplier.supContact" />
 				</div>
-            </div>
-        </div>
+			</div>
+		</div>
 
-        <div class="row">
-            <div class="col-12 col-md-4">
-                <div class="form-group">
-                    <label class="control-label" for="supAddrCity">@Resources.Resource.City</label>
-                    <input type="text" id="supAddrCity" name="supAddrCity" class="form-control" value="@Supplier.supAddrCity" />
-                </div>
-            </div>
-            <div class="col-12 col-md-4">
-                <div class="form-group">
-                    @Html.Partial("_DefaultCountries", null, new ViewDataDictionary { { "edit", edit }, { "Countries", Model.MyobCountries }, { "SelectedCountry", Supplier.supAddrCountry } })
-                </div>
-            </div>
-            <div class="col-12 col-md-4">
-                <div class="form-group">
-                    <label class="control-label" for="supAddrWeb">@Resources.Resource.Website</label>
-                    <input type="text" id="supAddrWeb" name="supAddrWeb" class="form-control" value="@Supplier.supAddrWeb" />
-                </div>
-            </div>
-        </div>
+		<div class="row">
+			<div class="col-12 col-md-4">
+				<div class="form-group">
+					@Html.Partial("_DrpCity", null, new ViewDataDictionary { { "edit", edit }, { "SelectedCity", Supplier.supAddrCity } })
+					<input type="hidden" id="city" name="supAddrCity" value="@Supplier.supAddrCity" />
+				</div>
+			</div>
+			<div class="col-12 col-md-4" data-country="@(string.IsNullOrEmpty(Supplier.supAddrCountry))">
+				<div class="form-group">
+					@Html.Partial("_DrpCountry", null, new ViewDataDictionary { { "edit", edit }, { "Countries", Model.DefaultCountries }, { "SelectedCountry", Supplier.supAddrCountry } })
+					<input type="hidden" id="supAddrCountry" name="supAddrCountry" value="@Supplier.supAddrCountry" />
+				</div>
+			</div>
+			<div class="col-12 col-md-4">
+				<div class="form-group">
+					<label class="control-label" for="supAddrWeb">@Resources.Resource.Website</label>
+					<input type="text" id="supAddrWeb" name="supAddrWeb" class="form-control" value="@Supplier.supAddrWeb" />
+				</div>
+			</div>
+		</div>
 
+		@for (int i = 1; i <= 4; i++)
+		{
+			string lbl = $"{Resources.Resource.Address}{i}";
+			string _id = $"supAddrStreetLine{i}";
 
+			<div class="form-group">
+				<label class="control-label" for="">@lbl</label>
+				<input type="text" id="@_id" class="form-control address" style="max-width:94%;" maxlength="255" value="@Supplier.StreetLines[i - 1]" />
+			</div>
 
-        @for (int i = 1; i <= 4; i++)
-        {
-            string lbl = $"{Resources.Resource.Address}{i}";
-            string _id = $"supAddrStreetLine{i}";
+		}
 
-            <div class="form-group">
-                <label class="control-label" for="">@lbl</label>
-                <input type="text" id="@_id" class="form-control address" style="max-width:94%;" maxlength="255" value="@Supplier.StreetLines[i - 1]" />
-            </div>
-
-        }
-
-        <div class="d-flex">
-            <div class="col-12 col-md-4">
+		<div class="d-flex">
+			<div class="col-12 col-md-4">
 				<div class="form-group">
 					<label class="control-label " for="supAddrPhone1">@Resources.Resource.Mobile 1</label>
-					<input type="text" id="supAddrPhone1" name="supAddrPhone1" class="form-control mobile" value="@Supplier.supAddrPhone1" />	
+					<input type="text" id="supAddrPhone1" name="supAddrPhone1" class="form-control mobile" value="@Supplier.supAddrPhone1" />
 					<span class="small whatsappphone font-weight-bold" data-phone="1" style="color:#9f8ccf">WhatsApp</span>
 				</div>
-            </div>
-            <div class="col-12 col-md-4">
+			</div>
+			<div class="col-12 col-md-4">
 				<div class="form-group">
 					<label class="control-label " for="supAddrPhone2">@Resources.Resource.Mobile 2</label>
 					<input type="text" id="supAddrPhone2" name="supAddrPhone2" class="form-control mobile" value="@Supplier.supAddrPhone2" />
 					<span class="small whatsappphone font-weight-bold" data-phone="2" style="color:#9f8ccf">WhatsApp</span>
 				</div>
-            </div>
-            <div class="col-12 col-md-4">
+			</div>
+			<div class="col-12 col-md-4">
 				<div class="form-group">
 					<label class="control-label " for="supAddrPhone3">@Resources.Resource.Mobile 3</label>
 					<input type="text" id="supAddrPhone3" name="supAddrPhone3" class="form-control mobile" value="@Supplier.supAddrPhone3" />
 					<span class="small whatsappphone font-weight-bold" data-phone="3" style="color:#9f8ccf">WhatsApp</span>
 				</div>
-            </div>
-        </div>
+			</div>
+		</div>
 
-        @{var _checked = "checked";}
-        @if (edit)
-        {
-            _checked = Supplier.IsLastPurchasePrice ? "checked" : "";
-        }
+		@{var _checked = "";}
+		@if (edit)
+		{
+			_checked = Supplier.IsLastPurchasePrice ? "checked" : "";
+		}
 
-        <div class="form-group">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="IsLastPurchasePrice" value="1" @_checked>
-                <label class="form-check-label font-weight-bold" for="IsLastPurchasePrice">@Resources.Resource.LastPurchasePrice</label>
-            </div>
-        </div>
+		<div class="form-group">
+			<div class="form-check">
+				<input class="form-check-input" type="checkbox" id="IsLastPurchasePrice" value="1" @_checked>
+				<label class="form-check-label font-weight-bold" for="IsLastPurchasePrice">@Resources.Resource.LastPurchasePrice</label>
+			</div>
+		</div>
 
-        @if (edit)
-        {
-            <button type="button" class="btn btn-warning" id="btnFile">@Resources.Resource.UploadFile</button>
-            <button type="button" class="btn btn-primary ml-2 hide" id="btnViewFile">@Resources.Resource.ViewFile</button>
-        }
+		@if (edit)
+		{
+			<button type="button" class="btn btn-warning" id="btnFile">@Resources.Resource.UploadFile</button>
+			<button type="button" class="btn btn-primary ml-2 hide" id="btnViewFile">@Resources.Resource.ViewFile</button>
+		}
 
 
-        <div class="form-group my-4">
-            <button id="btnSave" type="button" class="btn btn-success">@Resources.Resource.Save</button>
-            <input type="hidden" id="supId" name="supId" value="@Supplier.supId" />
-        </div>
+		<div class="form-group my-4">
+			<button id="btnSave" type="button" class="btn btn-success">@Resources.Resource.Save</button>
+			<input type="hidden" id="supId" name="supId" value="@Supplier.supId" />
+		</div>
 
-    </div>
+	</div>
 }
 
 @Html.Partial("_WaitingModal")
 
 <div>
-    @Html.ActionLink(Resources.Resource.BackToList, "Index", "Supplier")
+	@Html.ActionLink(Resources.Resource.BackToList, "Index", "Supplier")
 </div>
 
 @{
-    string UploadSizeLimitMB = ConfigurationManager.AppSettings["MaxUploadSize"];
-    string exceeduploadfilelimittxt = string.Format(Resources.Resource.ExceedUploadSizeLimitWarning, UploadSizeLimitMB);
+	string UploadSizeLimitMB = ConfigurationManager.AppSettings["MaxUploadSize"];
+	string exceeduploadfilelimittxt = string.Format(Resources.Resource.ExceedUploadSizeLimitWarning, UploadSizeLimitMB);
 }
-<div id="infoblk" class="hide" data-apid="@Supplier.AccountProfileId" data-uploadurl="/Supplier/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@string.Join(",",Supplier.UploadFileList)" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-phonenameemaillist="@JsonSerializer.Serialize(Model.PhoneNameEmailList)"></div>
+<div id="infoblk" class="hide" data-apid="@Supplier.AccountProfileId" data-uploadurl="/Supplier/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@string.Join(",",Supplier.UploadFileList)" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-phonenameemaillist="@JsonSerializer.Serialize(Model.PhoneNameEmailList)" data-lang="@CultureHelper.CurrentCulture"></div>
 <script src="~/Scripts/ts/js/purchase/supplieredit.js?v=@rand"></script>
 
 @Html.Partial("_UploadFileModal", null, new ViewDataDictionary { { "uploadUrl", "/Supplier/UploadFile" } })
