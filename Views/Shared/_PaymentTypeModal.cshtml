@@ -1,0 +1,46 @@
+﻿<div id="paymentTypeModal">
+	<div class="form-group">
+		<div class="row">
+			<div class="col-3 text-right"><label for="pmtName" class="form-label">@Resources.Resource.PaymentType</label></div>
+			<div class="col-9"><input type="text" id="pmtName" name="pmtName" class="form-control" /></div>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="row">
+			<div class="col-3 text-right"><span class="form-label">@Resources.Resource.ServiceCharge (%)</span></div>
+			
+				<div class="col-9"><input type="number" min="0" id="pmtSCR" name="pmtServiceChargePercent" class="form-control text-left" /></div>
+			
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="row">
+			<div class="col-3 text-right"><span class="form-label">@Resources.Resource.Cash</span></div>
+			<div class="col-9">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input iscash" type="radio" name="pmtIsCash" id="pmtIsCash1" value="1" checked>
+					<label class="form-check-label" for="pmtIsCash1">@Resources.Resource.Yes</label>
+				</div>
+				<div class="form-check form-check-inline">
+					<input class="form-check-input iscash" type="radio" name="pmtIsCash" id="pmtIsCash2" value="0">
+					<label class="form-check-label" for="pmtIsCash2">@Resources.Resource.No</label>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="row">
+			<div class="col-3 text-right"><span class="form-label">@Resources.Resource.Status</span></div>
+			<div class="col-9">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input isactive" type="radio" name="pmtIsActive" id="pmtIsActive1" value="1" checked>
+					<label class="form-check-label" for="pmtIsActive1">@Resources.Resource.Active</label>
+				</div>
+				<div class="form-check form-check-inline">
+					<input class="form-check-input isactive" type="radio" name="pmtIsActive" id="pmtIsActive2" value="0">
+					<label class="form-check-label" for="pmtIsActive2">@Resources.Resource.Inactive</label>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -12,6 +12,17 @@ enum TriggerReferrer {
 	Row,
 	Modal
 }
+interface IPaymentType {
+	Id: number;
+	pmtCode: string;
+	pmtName: string;
+	pmtDescription: string | null;
+	pmtServiceChargePercent: number | null;
+	pmtIsActive: boolean | null;
+	pmtIsCash: boolean | null;	
+	serviceChargeDisplay: string | null;
+}
+
 
 //for myobItem
 interface ICodeName {
@@ -64,7 +75,7 @@ let SelectedCountry: number = 1;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
-//const searchcustxt:string = $txtblk.data("searchcustxt");
+const paymenttypetxt: string = $txtblk.data("paymenttypetxt");
 const duplicatedemailalert: string = $txtblk.data("duplicatedemailalert");
 const duplicateditemnamewarning: string = $txtblk.data("duplicateditemnamewarning");
 const duplicatednamewarning: string = $txtblk.data("duplicatednamewarning");
@@ -610,6 +621,7 @@ let waitingModal: any,
 	itemVariModal: any,
 	barcodeModal: any,
 	transferModal: any,
+	paymentTypeModal:any,
 	voidPaymentModal: any;
 
 let sysdateformat: string = "yyyy-mm-dd";
@@ -659,14 +671,14 @@ let itemsnbvlist: Array<IItemSnBatVt> = [];
 
 let itemsnvtlist: { [Key: string]: Array<ISnVt> } = {}; //key = itemcode:seq
 
-let Payments: Array<IPaymentType> = [];
+let Payments: Array<IPayType> = [];
 let allownegativestock = false;
 //let Sale.Roundings = 0;
 let iremain = 0;
 let _openSerialModal = false;
 let companyinfo: ICompanyInfo;
 let receipt: IReceipt;
-let DicPayTypes: { [Key: string]: IPaymentType } = {}; //Dictionary<IPaymentType>;
+let DicPayTypes: { [Key: string]: IPayType } = {}; 
 let DicInvoiceItemSeqSerialNoList: { [Key: string]: ISerialNo[] } = {};
 let defaultAttVals: { [Key: string]: string } = {};
 let duplicatedSerailNo = false;
@@ -2271,7 +2283,7 @@ function GetPaymentsInfo() {
 				else amt = 0;
 			}
 			console.log("amt#1:", amt);
-			let paytype: IPaymentType = {
+			let paytype: IPayType = {
 				payId: 0,
 				pmtCode: typecode,
 				Amount: amt,
@@ -3389,7 +3401,53 @@ function closeVoidPaymentModal() {
 	UserName = "";
 	NamesMatch = false;
 }
+function openPaymentTypeModal() {
+	paymentTypeModal.dialog("open");	
+}
+function closePaymentTypeModal() {
+	paymentTypeModal.dialog("close");	
+}
 function initModals() {
+	if ($("#paymentTypeModal").length) {
+		paymentTypeModal = $("#paymentTypeModal").dialog({
+			width: 600,
+			title: paymenttypetxt,
+			autoOpen: false,
+			modal: true,
+			buttons: [
+				{
+					text: savetxt,
+					class: "savebtn",
+					click: handlePaymentTypeSaved,
+				},
+				{
+					class: "secondarybtn",
+					text: canceltxt,
+					click: closePaymentTypeModal
+				},
+			],
+		});
+	}
+	
+	voidPaymentModal = $("#voidPaymentModal").dialog({
+		width: 500,
+		title: void4paymenttxt,
+		autoOpen: false,
+		modal: true,
+		buttons: [
+			{
+				text: savetxt,
+				class: "savebtn",
+				click: handleVoidPayment,
+			},
+			{
+				class: "secondarybtn",
+				text: canceltxt,
+				click: closeVoidPaymentModal
+			},
+		],
+	});
+
 	if ($("#textareaModal").length) {
 		textareaModal = $("#textareaModal").dialog({
 			width: 700,
@@ -3452,24 +3510,7 @@ function initModals() {
 		});
 	}
 
-	voidPaymentModal = $("#voidPaymentModal").dialog({
-		width: 500,
-		title: void4paymenttxt,
-		autoOpen: false,
-		modal: true,
-		buttons: [
-			{
-				text: savetxt,
-				class: "savebtn",
-				click: handleVoidPayment,
-			},
-			{
-				class: "secondarybtn",
-				text: canceltxt,
-				click: closeVoidPaymentModal
-			},
-		],
-	});
+	
 	barcodeModal = $("#barcodeModal").dialog({
 		width: 400,
 		title: barcodetxt,
@@ -6009,7 +6050,7 @@ interface IItemSN {
 	serialcodes: Array<string>;
 	validthru: string | null;
 }
-interface IPaymentType {
+interface IPayType {
 	payId: number;
 	pmtCode: string;
 	Amount: number;
@@ -7772,7 +7813,7 @@ interface ISaleOrder {
 	Customer: ICustomer;
 	SalesLnViews: Array<ISalesLn>;
 	PayLnViews: Array<IPayLn>;
-	PaymentTypes: Array<IPaymentType>;
+	PaymentTypes: Array<IPayType>;
 	DicPayTypes: Array<typeof DicPayType>;
 	rtsDeliveryAddressId: number | null;
 	DeliveryDateDisplay: string;
@@ -22296,3 +22337,65 @@ $(document).on("change", "#drpCountry", function () {
 $(document).on("change", "#drpCity", function () {
 	$("#city").val($(this).val());
 });
+
+function handlePaymentTypeSaved() {
+	let url = ptmode === 0 ? '/PaymentTypes/Create' : '/PaymentTypes/Edit';
+	let Id = ptmode === 1 ? payType.Id : 0;
+	payType = {
+		Id: Id,
+		pmtCode: payType.pmtCode,
+		pmtName: $('#pmtName').val(),
+		pmtServiceChargePercent: Number($("#pmtSCR").val()),
+		pmtIsCash: $('#pmtIsCash1').is(':checked'),
+		pmtIsActive: $('#pmtIsActive1').is(':checked'),
+	} as IPaymentType;
+
+	if (payType.pmtName === '') {
+		$.fancyConfirm({
+			title: '',
+			message: $infoblk.data("namerequiredtxt"),
+			shownobtn: false,
+			okButton: oktxt,
+			noButton: canceltxt,
+			callback: function (value) {
+				if (value) {
+					$('#pmtName').trigger("focus");
+				}
+			}
+		});
+	} else {
+		if (ptmode === 0) {
+			if (checkIfDuplicatedPayTypeName(payType.pmtName)) {
+				$.fancyConfirm({
+					title: '',
+					message: $infoblk.data("duplicatednamewarningtxt"),
+					shownobtn: false,
+					okButton: oktxt,
+					noButton: canceltxt,
+					callback: function (value) {
+						if (value) {
+							$('#pmtName').trigger("focus");
+						}
+					}
+				});
+				return false;
+			}
+		}
+	}
+
+
+	let data = { model: payType, __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val() }
+	console.log("data:", data);
+	//return;
+	$.ajax({
+		type: "POST",
+		url: url,
+		data: data,
+		success: function (data) {
+			if (data.msg) {
+				window.location.reload();
+			}
+		},
+		dataType: 'json'
+	});
+}

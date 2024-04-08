@@ -51,6 +51,7 @@ namespace SmartBusinessWeb.Controllers
                 PaymentType paymentType = new PaymentType
                 {
                     pmtCode = string.Concat("Type", CommonHelper.GenerateRandomCode()),
+                    pmtServiceChargePercent = model.pmtServiceChargePercent,
                     pmtIsActive = model.pmtIsActive,
                     pmtIsCash = model.pmtIsCash,
                     pmtEditable = true,
@@ -96,6 +97,7 @@ namespace SmartBusinessWeb.Controllers
                 {
                     Id = paymentType.Id,
                     pmtCode = paymentType.pmtCode,
+                    pmtServiceChargePercent = paymentType.pmtServiceChargePercent,
                     pmtIsActive = paymentType.pmtIsActive,
                     pmtIsCash = paymentType.pmtIsCash,
                 };
@@ -135,6 +137,7 @@ namespace SmartBusinessWeb.Controllers
                     paymentType.pmtCode = model.pmtCode;
                     paymentType.pmtIsCash = model.pmtIsCash;
                     paymentType.pmtIsActive = model.pmtIsActive;
+                    paymentType.pmtServiceChargePercent = model.pmtServiceChargePercent;
                     paymentType.ModifyBy = SessUser.UserCode;
                     paymentType.ModifyTime = DateTime.Now;
 

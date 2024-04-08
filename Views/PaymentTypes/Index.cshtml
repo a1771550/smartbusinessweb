@@ -11,241 +11,46 @@
 	<button type="button" id="btnAdd" class="btn btn-success">@Resources.Resource.Add</button>
 </div>
 <table id="tblPay" class="table  table-bordered table-hover table-condensed my-4">
-	<colgroup><col style="width:50%;"><col style="width:10%;"><col style="width:20%;"><col style="width:20%;"></colgroup>
+	<colgroup>
+	<col style="width:45%;">
+	<col style="width:15%;">
+	<col style="width:15%;">
+	<col style="width:10%;">	
+	<col style="width:15%;">
+	</colgroup>
 	<thead class="gray-header">
-		<tr><th>@Resources.Resource.PaymentType</th><th>@Resources.Resource.Cash</th><th>@Resources.Resource.Status</th><th></th></tr>
+		<tr>
+			<th>@Resources.Resource.PaymentType</th>
+			<th>@Resources.Resource.Cash</th>
+			<th>@Resources.Resource.ServiceCharge (%)</th>
+			<th>@Resources.Resource.Status</th>
+			<th></th>
+		</tr>
 	</thead>
 	<tbody>
 		@foreach (var item in Model)
 		{
 			string iscash = (bool)item.pmtIsCash ? Resources.Resource.Yes : Resources.Resource.No;
 			string statustxt = (bool)item.pmtIsActive ? Resources.Resource.Active : Resources.Resource.Inactive;
-			<tr data-id="@item.Id" data-code="@item.pmtCode"><td>@item.pmtName</td><td data-cash="@item.pmtIsCash">@iscash</td><td data-status="@item.pmtIsActive">@statustxt</td><td><button type="button" class="btn btn-info btnEdit mr-3" data-id="@item.Id">@Resources.Resource.Edit</button><button type="button" class="btn btn-danger btnDelete" data-id="@item.Id">@Resources.Resource.Remove</button></td></tr>
+			<tr data-id="@item.Id" data-code="@item.pmtCode">
+				<td class="name" data-name="@item.pmtName">@item.pmtName</td>
+				<td class="cash" data-iscash="@item.pmtIsCash">@iscash</td>
+				<td class="servicecharge" data-servicecharge="@item.pmtServiceChargePercent">@item.ServiceChargeDisplay</td>
+				<td class="status" data-status="@item.pmtIsActive">@statustxt</td>
+				<td>
+					<button type="button" class="btn btn-info btnEdit mx-1" data-id="@item.Id">@Resources.Resource.Edit</button>
+					<button type="button" class="btn btn-danger btnDelete mx-1" data-id="@item.Id">@Resources.Resource.Remove</button>
+				</td>
+			</tr>
 		}
 	</tbody>
 </table>
 
-<div id="editModal">
-	<div class="form-group">
-		<div class="row">
-			<div class="col-3 text-right"><label for="txtName" class="form-label">@Resources.Resource.PaymentType</label></div>
-			<div class="col-9"><input type="text" id="txtName" name="pmtName" class="form-control" /></div>
-		</div>
-	</div>
-	<div class="form-group">
-		<div class="row">
-			<div class="col-3 text-right"><span class="form-label">@Resources.Resource.Cash</span></div>
-			<div class="col-9">
-				<div class="form-check form-check-inline">
-					<input class="form-check-input iscash" type="radio" name="pmtIsCash" id="pmtIsCash1" value="1" checked>
-					<label class="form-check-label" for="pmtIsCash1">@Resources.Resource.Yes</label>
-				</div>
-				<div class="form-check form-check-inline">
-					<input class="form-check-input iscash" type="radio" name="pmtIsCash" id="pmtIsCash2" value="0">
-					<label class="form-check-label" for="pmtIsCash2">@Resources.Resource.No</label>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="form-group">
-		<div class="row">
-			<div class="col-3 text-right"><span class="form-label">@Resources.Resource.Status</span></div>
-			<div class="col-9">
-				<div class="form-check form-check-inline">
-					<input class="form-check-input isactive" type="radio" name="pmtIsActive" id="pmtIsActive1" value="1" checked>
-					<label class="form-check-label" for="pmtIsActive1">@Resources.Resource.Active</label>
-				</div>
-				<div class="form-check form-check-inline">
-					<input class="form-check-input isactive" type="radio" name="pmtIsActive" id="pmtIsActive2" value="0">
-					<label class="form-check-label" for="pmtIsActive2">@Resources.Resource.Inactive</label>
-				</div>
-			</div>
-		</div>
-	</div>
-	@Html.AntiForgeryToken()
-</div>
 
-<script>
-	let editModal = null;
-	let mode = 0;
-	let paytype = {};
 
-	$(document).on('click', '.btnDelete', function () {
-		let _token = editModal.find('input[name="__RequestVerificationToken"]').val();
-		let id = parseInt($(this).data('id'));
-		$.fancyConfirm({
-			title: '',
-			message: '@Resources.Resource.ConfirmRemove',
-			shownobtn: true,
-			okButton: oktxt,
-			noButton: canceltxt,
-			callback: function (value) {
-				if (value) {
-					$.ajax({
-						type: "POST",
-						url: '/PaymentTypes/Delete',
-						data: { Id: id, '__RequestVerificationToken': _token },
-						success: function (data) {
-							if(data.msg)
-								window.location.reload(true);
-						},
-						dataType: 'json'
-					});
-				}
-			}
-		});
-	});
+@Html.AntiForgeryToken()
+@Html.Partial("_WaitingModal")
+@Html.Partial("_PaymentTypeModal")
 
-	$(document).on('click', '#btnAdd', function () {
-		model = 0;
-		openModal();
-	});
-	$(document).on('click', '.btnEdit', function () {
-		mode = 1;
-		let id = $(this).data('id');
-		let $tr = $(this).parent('td').parent('tr');
-		openModal();
-		fillForm(genPaytype(id,$tr));
-	});
-	$(document).on('dblclick', '#tblPay tbody tr', function () {
-		mode = 1;
-		let id = $(this).data('id');
-		let $tr = $(this);
-		openModal();
-		fillForm(genPaytype(id, $tr));
-	});
-
-	function genPaytype(id,$tr) {
-		paytype = {
-			id: id,
-			code: $tr.data('code'),
-			name: $tr.find('td:eq(0)').html(),
-			cash: $tr.find('td:eq(1)').data('cash'),
-			active: $tr.find('td:eq(2)').data('status')
-		};
-		console.log('paytype:', paytype);
-		return paytype;
-	}
-
-	function fillForm(paytype) {
-		$('#txtName').val(paytype.name);
-		let iscash = paytype.cash === 'True';
-		let active = paytype.active === 'True';
-		if (iscash) {
-			$('#pmtIsCash1').prop('checked', true);
-		} else {
-			$('#pmtIsCash2').prop('checked', true);
-		}
-		if (active) {
-			$('#pmtIsActive1').prop('checked', true);
-		} else {
-			$('#pmtIsActive2').prop('checked', true);
-		}
-	}
-
-	function openModal() {
-		editModal.dialog("option", { "width": 600, "title": "@Resources.Resource.PaymentType" });
-		editModal.dialog("open");
-	}
-
-	function checkIfDuplicatedName(pmtname) {
-		let duplicated = false;
-		$('#tblPay tbody tr').each(function (i, e) {
-			let _name = $(this).find('td:eq(0)').html();
-			if (_name === pmtname) {
-				duplicated = true;
-				return false;
-			}
-		});
-		return duplicated;
-	}
-
-	function submitForm() {
-		let url = mode === 0 ? '/PaymentTypes/Create' : '/PaymentTypes/Edit';
-		let _token = editModal.find('input[name="__RequestVerificationToken"]').val();
-		let data = {
-			pmtCode: paytype.code,
-			pmtName: $('#txtName').val(),
-			pmtIsCash: $('#pmtIsCash1').is(':checked'),
-			pmtIsActive: $('#pmtIsActive1').is(':checked'),
-			'__RequestVerificationToken': _token
-		};
-		if (mode === 1) {
-			data.Id = paytype.id;
-		}
-
-		if (data.pmtName === '') {
-			$.fancyConfirm({
-				title: '',
-				message: '@Resources.Resource.PayTypeNameRequired',
-				shownobtn: false,
-				okButton: oktxt,
-				noButton: canceltxt,
-				callback: function (value) {
-					if (value) {
-						$('#txtName').focus();
-					}
-				}
-			});
-
-		} else {
-			if (mode === 0) {
-				if (checkIfDuplicatedName(data.pmtName)) {
-					$.fancyConfirm({
-						title: '',
-						message: '@Resources.Resource.DuplicatedPayTypeNameWarning',
-						shownobtn: false,
-						okButton: oktxt,
-						noButton: canceltxt,
-						callback: function (value) {
-							if (value) {
-								$('#txtName').focus();
-							}
-						}
-					});
-					return false;
-				}
-			}
-			//console.log('data:', data);
-			//return false;
-
-			$.ajax({
-				type: "POST",
-				url: url,
-				data: data,
-				success: function (data) {
-					if (data.msg) {
-						window.location.reload(true);
-					}
-				},
-				dataType: 'json'
-			});
-		}
-
-	}
-
-	function closeModal() {
-		editModal.dialog('close');
-	}
-
-	$(document).ready(function () {
-		setFullPage();
-		triggerMenu(11, 0);
-		editModal = $('#editModal').dialog({
-			autoOpen: false,
-			modal: true,
-			buttons:
-				[
-					{
-						text: "@Resources.Resource.Save",
-						"class": "saveBtnCls",
-						click: submitForm,
-					},
-					{
-						text: "@Resources.Resource.Cancel",
-						click: closeModal,
-					},
-				],
-		});
-	});
-</script>
+<div id="infoblk" data-namerequiredtxt="@Resources.Resource.PayTypeNameRequired" data-duplicatednamewarningtxt="@Resources.Resource.DuplicatedPayTypeNameWarning"></div>
+<script src="~/Scripts/ts/js/paymenttypes/index.js?v=@rand"></script>

@@ -1,6 +1,6 @@
 ﻿$infoblk = $("#infoblk");
 
-let paylns: Array<IPaymentType> = [];
+let paylns: Array<IPayType> = [];
 let expectedamt: number = 0;
 let actualamt = 0; //actual amt
 let checkamt = false;
