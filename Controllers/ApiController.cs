@@ -1345,9 +1345,7 @@ namespace SmartBusinessWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DoImportFrmABSSAsync()
         {
-            //string msg = Resources.Resource.ImportDoneMsg;
             string url = "";
-            string dsn = "";
             int accountprofileId = 0;
             string filename = "Customers_";
             var dateTime = DateTime.Now;
@@ -1355,8 +1353,7 @@ namespace SmartBusinessWeb.Controllers
             {
                 Session currsess = ModelHelper.GetCurrentSession(context);
                 accountprofileId = currsess.AccountProfileId;
-                var accountProfileView = ModelHelper.GetAccountProfile(accountprofileId, context);
-                dsn = accountProfileView.DsnName;
+                var accountProfileView = ModelHelper.GetAccountProfile(accountprofileId, context);               
             }
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {

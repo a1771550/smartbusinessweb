@@ -2798,6 +2798,7 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Images\20220625crmgen2-blue.jpg" />
+    <Content Include="Images\account.png" />
     <Content Include="Images\background.jpeg" />
     <Content Include="Images\btnunsubscribe.jpg" />
     <Content Include="Images\calendar.gif" />

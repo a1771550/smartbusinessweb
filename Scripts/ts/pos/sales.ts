@@ -382,7 +382,8 @@ $(function () {
 	$norecordfound = $("#norecordfound");
 
 	if (SimpleItemList.length == 0)
-		$norecordfound.removeClass("hide");
+		$norecordfound.show();
+	else $norecordfound.hide();
 
 	$("#txtCustomerName").val(defaultcustomer.cusName);
 

@@ -66,6 +66,12 @@ $(document).on("click", ".import", function () {
                         falert($infoblk.data("importdonemsg"), oktxt);
                         closeWaitingModal();
                         switch (type) {
+                            case "ci":
+                                $("#btnImportCI").off("click").prop("disabled", true);
+                                break;
+                            case "spp":
+                                $("#btnImportSPP").off("click").prop("disabled", true);
+                                break;
                             case "accountreceivable":
                                 $("#btnImportAR").off("click").prop("disabled", true);
                                 break;

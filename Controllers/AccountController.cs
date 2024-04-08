@@ -35,19 +35,16 @@ namespace SmartBusinessWeb.Controllers
         {
             SysUser user = null;
             string msg = string.Empty;
-            int apId = 0;
+            int apId = model.apId;
             string hash = string.Empty;
             GetUserByEmail3_Result _user = null;
-
 
             using (var context = new PPWDbContext("SmartBusinessWeb_db"))
             {
                 hash = HashHelper.ComputeHash(model.Password);
                 int lang = CultureHelper.CurrentCulture;
                 _user = context.GetUserByEmail3(model.Email).FirstOrDefault();
-                if (_user == null) return RedirectToAction("Login", new { err = "2" });
-               
-                apId = _user.AccountProfileId;
+                if (_user == null) return RedirectToAction("Login", new { err = "2" });               
                 Session["DBName"] = _user.dbName;
             }
 
@@ -83,7 +80,7 @@ namespace SmartBusinessWeb.Controllers
                         ManagerId = __user.ManagerId,
                         surDesc = __user.surDesc,
                         surNotes = __user.surNotes,
-                        AccountProfileId = __user.AccountProfileId,
+                        AccountProfileId = apId,
                         surCreateTime = __user.surCreateTime,
                         surModifyTime = __user.surModifyTime,
                     };
@@ -133,6 +130,7 @@ namespace SmartBusinessWeb.Controllers
             string token = CommonHelper.GenSessionToken();
             DateTime currDate = DateTime.Now.Date;
             DateTime currTime = DateTime.Now;
+            int apId = model.apId;
 
             Session session;
 
@@ -140,18 +138,14 @@ namespace SmartBusinessWeb.Controllers
             string refundprefix = device == null ? "" : device.dvcRefundPrefix;
             int accountno = device == null ? 0 : (int)device.AccountNo;
 
-            var lastsess = context.GetLastPCSession1(user.AccountProfileId, user.UserName, model.SelectedDevice, model.SelectedShop).FirstOrDefault();
+            var lastsess = context.GetLastPCSession1(apId, user.UserName, model.SelectedDevice, model.SelectedShop).FirstOrDefault();
 
-            var appparams = context.GetLoginDataFrmAppParam(user.AccountProfileId).ToList();
+            var appparams = context.GetLoginDataFrmAppParam(apId).ToList();
 
             var enablecashdrawer = appparams[0].ToString() == "1";
             Session["EnableCashDrawer"] = enablecashdrawer;
             //bool enablecheckdayends = context.AppParams.FirstOrDefault(x => x.appParam == "EnableDayendsCheckOnLogout").appVal == "1";
             bool enablecheckdayends = appparams[1].ToString() == "1";
-
-            int accountProfileId = model.AccountProfileId;
-            //set sesDvcSeq:
-            //user may have unpurposely closed the browser
 
             int seq;
             if (lastsess != null)
@@ -191,7 +185,7 @@ namespace SmartBusinessWeb.Controllers
                 sesCreateTime = DateTime.Now,
                 sesToken = token,
                 AccountNo = accountno,
-                AccountProfileId = accountProfileId,
+                AccountProfileId = apId,
                 sesDvcSeq = seq,
                 sesSalesPrefix = salesprefix,
                 sesRefundPrefix = refundprefix,
@@ -214,7 +208,7 @@ namespace SmartBusinessWeb.Controllers
                 NetworkName = user.surNetworkName,
                 PrinterName = printername,
                 Roles = UserHelper.GetUserRoles(user),
-                AccountProfileId = accountProfileId,
+                AccountProfileId = apId,
                 ManagerId = user.ManagerId,
                 Device = device,
                 Email = user.Email,
@@ -228,7 +222,7 @@ namespace SmartBusinessWeb.Controllers
             Session["SessionToken"] = token;
             Session["IsCentral"] = model.IsCentral;
             Session["eBlastId"] = 0;
-            Session["AccountProfileId"] = model.AccountProfileId;
+            Session["AccountProfileId"] = apId;
             Session["IsAdmin"] = isadmin;
             MenuHelper.UpdateMenus(context);
         }

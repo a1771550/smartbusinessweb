@@ -92,6 +92,12 @@ namespace SmartBusinessWeb.Controllers
 
         private SqlConnection SqlConnection { get { return new SqlConnection(DefaultConnection); } }
 
+        public void Device()
+        {
+            using var context = new PPWDbContext("SmartBusinessWeb_db");
+            Device device = context.Devices.Where(x => x.AccountProfileId == 2 && x.dvcSalesId == 18).FirstOrDefault();
+            Response.Write(device.dvcNextRtlSalesNo);
+        }
         public void GetDate4Sql(string strDate)
         {
            

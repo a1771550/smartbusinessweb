@@ -36,35 +36,44 @@
 						</div>
 
 						<div class="row productblk">
-						@Html.Partial("_NoRecordFound")
-
-							@foreach (var item in FilteredItemList)
+							@if (FilteredItemList != null && FilteredItemList.Count > 0)
 							{
-								<div class="col-lg-3 col-sm-6 d-flex ">
-									<div class="productset flex-fill pointer" id="@item.itmCode" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode" data-price="@item.itmBaseSellingPrice" data-file="@item.itmPicFile">
-										<div class="productsetimg">
-											<img src="~/images/items/@item.itmPicFile" alt="@item.NameDesc">
-											<h6>@Resources.Resource.Qty: @item.QtySellable</h6>
+								foreach (var item in FilteredItemList)
+								{
+									<div class="col-lg-3 col-sm-6 d-flex ">
+										<div class="productset flex-fill pointer" id="@item.itmCode" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode" data-price="@item.itmBaseSellingPrice" data-file="@item.itmPicFile">
+											<div class="productsetimg">
+												<img src="~/images/items/@item.itmPicFile" alt="@item.NameDesc">
+												<h6>@Resources.Resource.Qty: @item.QtySellable</h6>
 
-											<div class="check-product hide" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode" data-price="@item.itmBaseSellingPrice" data-file="@item.itmPicFile">
-												<i class="fa fa-check"></i>
+												<div class="check-product hide" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode" data-price="@item.itmBaseSellingPrice" data-file="@item.itmPicFile">
+													<i class="fa fa-check"></i>
+												</div>
 											</div>
-										</div>
-										<div class="productsetcontent">
-											<h5>@item.CategoryName</h5>
-											<h4><span class="itmnamedesc">@item.NameDesc</span></h4>
-											<h6><span class="itmprice">@Model.Currency@CommonHelper.FormatNumber(item.itmBaseSellingPrice)</span></h6>
-											<div class="discount-box">
+											<div class="productsetcontent">
+												<h5>@item.CategoryName</h5>
+												<h4><span class="itmnamedesc">@item.NameDesc</span></h4>
+												<h6><span class="itmprice">@Model.Currency@CommonHelper.FormatNumber(item.itmBaseSellingPrice)</span></h6>
+												<div class="discount-box">
 
-												<label class="small" for="discount">@Resources.Resource.DiscPc:</label>
+													<label class="small" for="discount">@Resources.Resource.DiscPc:</label>
 
-												<input type="number" class="sdiscpc small flex" name="discpc" min="0" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode" data-price="@item.itmBaseSellingPrice" data-file="@item.itmPicFile">
+													<input type="number" class="sdiscpc small flex" name="discpc" min="0" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode" data-price="@item.itmBaseSellingPrice" data-file="@item.itmPicFile">
 
+												</div>
 											</div>
 										</div>
 									</div>
-								</div>
+								}
 							}
+							else
+							{
+								@Html.Partial("_NoRecordFound")
+							}
+
+
+
+
 
 
 						</div>

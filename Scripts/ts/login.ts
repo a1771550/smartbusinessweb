@@ -38,6 +38,7 @@ $(function () {
         $("#btnLogin").trigger("focus");
     }
 
+    $("#apId").val(1);
     $("#loginblk").defaultButton("#btnLogin");
 });
 $(document).on("change", "input", function () {

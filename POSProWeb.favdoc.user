@@ -331,6 +331,16 @@
           <path>Views\Shared\_UploadFileModal.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Shared\_UploadFileModal.cshtml</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>DayendsExportFrmShop.cshtml</name>
+          <path>Views\DataTransfer\DayendsExportFrmShop.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\DataTransfer\DayendsExportFrmShop.cshtml</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>DayendsImportFrmCentral.cshtml</name>
+          <path>Views\DataTransfer\DayendsImportFrmCentral.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\DataTransfer\DayendsImportFrmCentral.cshtml</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
