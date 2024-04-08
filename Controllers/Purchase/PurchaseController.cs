@@ -10,12 +10,24 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
+using PPWLib.Models.Sales;
 
 namespace SmartBusinessWeb.Controllers.Purchase
 {
     [CustomAuthenticationFilter]
     public class PurchaseController : BaseController
     {
+        [HandleError]
+        [CustomAuthorize("purchase", "boss", "admin", "superadmin")]
+        public ActionResult ExcludedOrders(int PageNo = 1, int SortCol = 0, string SortOrder = "desc", string Keyword = "")
+        {
+            ViewBag.ParentPage = "purchase";            
+            ExcludedOrderEditModel model = new ExcludedOrderEditModel();
+            HashSet<long> OrderIds = Session["ExcludedPurchaseOrderIds"] == null ? null : Session["ExcludedPurchaseOrderIds"] as HashSet<long>;
+            model.GetList(PageNo, SortCol, SortOrder, Keyword, OrderIds);
+            return View(model);
+        }
+
         [HandleError]
         [CustomAuthorize("purchase", "boss", "admin", "superadmin")]
         [HttpPost]

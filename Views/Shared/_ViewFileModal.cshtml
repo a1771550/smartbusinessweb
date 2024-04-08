@@ -4,7 +4,7 @@
 	List<string> filelist = ViewData["filelist"] as List<string>;
 	FuncType type = ViewData["FuncType"] == null ? FuncType.PurchasePayment : (FuncType)ViewData["FuncType"];
 	string filelnk = ViewData["filelnk"] == null ? string.Empty : ViewData["filelnk"] as string;
-	long paymentId = ViewData["paymentId"] == null ? 0 : Convert.ToInt64(ViewData["paymentId"]);	
+	long paymentId = ViewData["paymentId"] == null ? 0 : Convert.ToInt64(ViewData["paymentId"]);
 }
 
 <div class="viewFileModal">
@@ -15,15 +15,21 @@
 
 	@if (filelist.Count > 0)
 	{
-		<ul class="filelist horizontallist">
+		<ul class="file horizontallist">
 			@foreach (var file in filelist)
 			{
 				string htmlfile = file;
 				if (!string.IsNullOrEmpty(filelnk))
 				{
 					htmlfile = filelnk.Replace("FILE", file);
+					<li class="p-2" data-file="@file" data-payid="@paymentId">@Html.Raw(htmlfile)</li>
 				}
-				<li class="p-2" data-file="@file" data-payid="@paymentId">@Html.Raw(htmlfile)</li>
+				else
+				{
+					<li>@Html.Raw(file)</li>
+				}
+
+
 			}
 		</ul>
 	}
@@ -41,5 +47,5 @@
 
 
 	}
-	
+
 </div>

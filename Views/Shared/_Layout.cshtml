@@ -157,16 +157,16 @@
 								<p>@Resources.Resource.Promotion</p>
 							</a>
 							<ul class="submenu collapse" id="collapsePromotion">
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "eblast") ? "active" : ""; }
-								<li><a class="@sublnkcls" href="/eBlast/Index">@Resources.Resource.eBlast</a></li>
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "etrack") ? "active" : ""; }
-								<li><a class="@sublnkcls" href="/eTrack/TrackResult?pass=@ConfigurationManager.AppSettings["eTrackToken"]">@Resources.Resource.TrackResult</a></li>
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "itemperiodpromotion") ? "active" : ""; }
-								<li><a class="@sublnkcls" href="/ItemPeriodPromotion/Index">@Resources.Resource.ItemPeriodPromotion</a></li>
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "itemqtypromotion") ? "active" : ""; }
-								<li><a class="@sublnkcls" href="/ItemQtyPromotion/Index">@Resources.Resource.ItemQtyPromotion</a></li>
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "promotion") ? "active" : ""; }
-								<li><a class="@sublnkcls" href="/Promotion/Index">@string.Format(Resources.Resource.ListFormat, Resources.Resource.Promotion)</a></li>
+							
+								<li><a href="/eBlast/Index">@Resources.Resource.eBlast</a></li>
+							
+								<li><a href="/eTrack/TrackResult?pass=@ConfigurationManager.AppSettings["eTrackToken"]">@Resources.Resource.TrackResult</a></li>
+							
+								<li><a href="/ItemPeriodPromotion/Index">@Resources.Resource.ItemPeriodPromotion</a></li>
+							
+								<li><a href="/ItemQtyPromotion/Index">@Resources.Resource.ItemQtyPromotion</a></li>
+						
+								<li><a href="/Promotion/Index">@string.Format(Resources.Resource.ListFormat, Resources.Resource.Promotion)</a></li>
 							</ul>
 						</li>
 						<li class="btn_expand">
@@ -207,18 +207,22 @@
 							</a>
 							<ul class="submenu collapse" id="collapsePurchase">
 								@if (!isadmin)
-								{									
-									<li><a href="/Purchase/Edit?Id=0&type=order">@string.Format(Resources.Resource.NewFormat, Resources.Resource.PurchaseOrder)</a></li>								
+								{
+									<li><a href="/Purchase/Edit?Id=0&type=order">@string.Format(Resources.Resource.NewFormat, Resources.Resource.PurchaseOrder)</a></li>
+
 									forreceival = string.Concat("<span class='small'>(", forreceival, ")</span>");
 									var purchaselist = Html.Raw(string.Concat(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.PurchaseOrder), forreceival));
 									<li><a href="/Purchase/Index">@purchaselist</a></li>
 									<li>
-										<a href="/Supplier/Index">@string.Format(Resources.Resource.ManagementFormat, Resources.Resource.Supplier)</a>										
+										<a href="/Supplier/Index">@string.Format(Resources.Resource.ManagementFormat, Resources.Resource.Supplier)</a>
+									</li>
+									<li>
+										<a href="/Purchase/ExcludedOrders">@Resources.Resource.ExcludedOrders</a>
 									</li>
 								}
 
 								@if (approvalmode && isadmin)
-								{								
+								{
 									var purchaseorderlist = Html.Raw(string.Concat(string.Format(Resources.Resource.ListFormat, Resources.Resource.PurchaseOrder), forapproval));
 									<li><a href="/Purchase/PurchaseOrderList">@purchaseorderlist</a></li>
 								}

@@ -7,9 +7,9 @@
 
 <h2>@ViewBag.Title</h2>
 
-<div class="alert alert-info my-3 col-12 col-md-5 font-weight-bold">@Resources.Resource.Note4ExcludedInvoices</div>
+<div class="alert alert-info my-3 col-12 col-md-6 font-weight-bold">@Resources.Resource.Note4ExcludedInvoices</div>
 
-@if (Model.OrderList!=null && Model.OrderList.Count > 0)
+@if (Model.OrderList != null && Model.OrderList.Count > 0)
 {
 	using (Html.BeginForm("ExcludedInvoices", "POSFunc", FormMethod.Get, new { @Id = "frmOrder" }))
 	{
@@ -31,7 +31,7 @@
 						<td>
 							@item.ItemNames
 						</td>
-						<td>@item.CustomerName</td>
+						<td>@item.CustomerNames</td>
 					</tr>
 				}
 			</tbody>
@@ -39,14 +39,16 @@
 
 		<div id="pagingblk" class="my-3">
 			@Html.PagedListPager(Model.PagingOrderList, PageNo => Url.Action("ExcludedInvoices",
-				new { PageNo, Model.SortCol, }))
+				new { PageNo, SortCol = Model.SortCol, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
 		</div>
-	}
 
+		<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+		<input type="hidden" id="sortcol" name="SortCol" value="@Model.SortCol" />
+	}
 }
 else
 {
-	<div id="norecord" class="alert alert-warning">@Resources.Resource.NoDataFound</div>
+	@Html.Partial("_NoRecordFound")
 }
 
 @Html.Partial("_WaitingModal")

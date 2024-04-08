@@ -13,6 +13,7 @@ using System.Web;
 using System.Web.Mvc;
 using ActionLogModel = PPWLib.Models.ActionLogModel;
 using Resources = CommonLib.App_GlobalResources;
+using System.Reflection.Emit;
 
 namespace SmartBusinessWeb.Controllers.Customer
 {
@@ -66,14 +67,14 @@ namespace SmartBusinessWeb.Controllers.Customer
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UploadFile(int cusId)
+        public ActionResult UploadFile(string cusCode)
         {
             if (Request.Files.Count > 0)
             {
                 try
                 {
                     List<string> FileList = new List<string>();
-                    string filedir = string.Format(UploadsCusDir, apId, cusId);//Cus/{0}/{1}
+                    string filedir = string.Format(UploadsCusDir, apId, cusCode);//Cus/{0}/{1}
                     string dir = "";
                     string filename = string.Empty;
                     HttpFileCollectionBase files = Request.Files;
@@ -95,12 +96,12 @@ namespace SmartBusinessWeb.Controllers.Customer
                     }
                     using (var context = new PPWDbContext(Session["DBName"].ToString()))
                     {
-                        var cusInfo = context.CustomerInfoes.FirstOrDefault(x=>x.fileName==filename && x.AccountProfileId==apId);
+                        var cusInfo = context.CustomerInfoes.FirstOrDefault(x=>x.fileName==filename && x.AccountProfileId== apId && x.cusCode == cusCode);
                         if(cusInfo==null) {
                             SessUser user = Session["User"] as SessUser;
                             cusInfo = new CustomerInfo
                             {
-                                cusId = cusId,
+                                cusCode = cusCode,
                                 fileName = FileList.FirstOrDefault(),
                                 type = "file",
                                 CreateBy = user.UserCode,
@@ -111,7 +112,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                             context.SaveChanges();
                         }
                        
-                        FileList = context.CustomerInfoes.Where(x=>x.cusId== cusId).Select(x=>x.fileName).Distinct().ToList();
+                        FileList = context.CustomerInfoes.Where(x=>x.cusCode== cusCode).Select(x=>x.fileName).Distinct().ToList();
                     }                             
                     return Json(new { msg = Resources.Resource.UploadOkMsg, FileList });
                 }

@@ -1,0 +1,60 @@
+﻿@model PPWLib.Models.Purchase.ExcludedOrderEditModel
+@using PagedList.Mvc;
+@{
+	ViewBag.Title = Resources.Resource.ExcludedOrders;
+	int rand = CommonHelper.GetVersionRandomNo();
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="alert alert-info my-3 col-12 col-md-5 font-weight-bold">@Resources.Resource.Note4ExcludedOrders</div>
+
+@if (Model.OrderList != null && Model.OrderList.Count > 0)
+{
+	using (Html.BeginForm("ExcludedOrders", "Purchase", FormMethod.Get, new { @Id = "frmOrder" }))
+	{
+		<table id="tblOrder" class="table table-bordered table-hover table-condensed">
+			<thead class="gray-header">
+				<tr>
+					<th scope="col" class="text-left colheader" data-col="0" data-keyword="@Model.Keyword">@string.Format(Resources.Resource.OrderFormat, Resources.Resource.Number)</th>
+					<th scope="col" class="text-left" data-keyword="@Model.Keyword">@Resources.Resource.Item</th>
+					<th scope="col" class="text-left" data-keyword="@Model.Keyword">@Resources.Resource.Supplier</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in Model.PagingOrderList)
+				{
+					<tr>
+						<td>
+							@item.pstCode
+						</td>
+						<td>
+							@item.ItemNames
+						</td>
+						<td>@item.SupplierNames</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+		<div id="pagingblk" class="my-3">
+			@Html.PagedListPager(Model.PagingOrderList, PageNo => Url.Action("ExcludedOrders",
+				new { PageNo, SortCol=Model.SortCol, SortOrder = Model.CurrentSortOrder,Keyword=Model.Keyword }))
+		</div>
+
+		<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+		<input type="hidden" id="sortcol" name="SortCol" value="@Model.SortCol" />
+	}
+
+}
+else
+{
+	@Html.Partial("_NoRecordFound")
+}
+
+@Html.Partial("_WaitingModal")
+
+<div id="infoblk"></div>
+
+<script src="~/Scripts/ts/js/purchase/excludedorders.js?v=@rand"></script>
+

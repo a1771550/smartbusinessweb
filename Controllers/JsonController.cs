@@ -204,7 +204,7 @@ namespace SmartBusinessWeb.Controllers
 
                 var connectionString = ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", dbname);
 
-                data.sqllist = PurchaseEditModel.GetUploadPurchaseSqlList(apId, ref dmodel, strfrmdate, strtodate, comInfo, context, frmdate, todate, connectionString);
+                data.sqllist = PurchaseEditModel.GetUploadPurchaseSqlList(apId, ref dmodel, strfrmdate, strtodate, comInfo, context, frmdate, todate);
                 data.checkoutIds = dmodel.PoCheckOutIds;
             }
             return System.Text.Json.JsonSerializer.Serialize(data);
@@ -315,8 +315,8 @@ namespace SmartBusinessWeb.Controllers
             {
                 try
                 {
-                    List<string> cusCodes = customerInfos.Select(x => x.CusCode).Distinct().ToList();
-                    List<CustomerInfo4Abss> _customerInfos = context.CustomerInfo4Abss.Where(x => x.AccountProfileId == apId && cusCodes.Contains(x.CusCode)).ToList();
+                    List<string> cusCodes = customerInfos.Select(x => x.cusCode).Distinct().ToList();
+                    List<CustomerInfo4Abss> _customerInfos = context.CustomerInfo4Abss.Where(x => x.AccountProfileId == apId && cusCodes.Contains(x.cusCode)).ToList();
 
                     #region remove current data first:
                     //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [CustomerInfo4Abss]");                   
@@ -428,8 +428,8 @@ namespace SmartBusinessWeb.Controllers
             {
                 try
                 {
-                    List<string> supCode = supplierInfos.Select(x => x.SupCode).Distinct().ToList();
-                    List<SupplierInfo4Abss> _supplierInfos = context.SupplierInfo4Abss.Where(x => x.AccountProfileId == apId && supCode.Contains(x.SupCode)).ToList();
+                    List<string> supCode = supplierInfos.Select(x => x.supCode).Distinct().ToList();
+                    List<SupplierInfo4Abss> _supplierInfos = context.SupplierInfo4Abss.Where(x => x.AccountProfileId == apId && supCode.Contains(x.supCode)).ToList();
 
                     #region remove current data first:
                     //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [SupplierInfo4Abss]");                   

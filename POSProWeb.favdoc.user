@@ -190,6 +190,11 @@
           <path>Scripts\ts\purchase\supplier.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\purchase\supplier.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>excludedinvoices.ts</name>
+          <path>Scripts\ts\pos\excludedinvoices.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\excludedinvoices.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

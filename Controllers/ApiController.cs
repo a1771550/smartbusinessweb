@@ -1409,7 +1409,7 @@ namespace SmartBusinessWeb.Controllers
                             {
                                 var locationId = customer.AddressList[0].Location;
                                 var cuscode = customer.CardIdentification;
-                                List<CustomerInfo4Abss> cusinfos = context.CustomerInfo4Abss.Where(x => x.AccountProfileId == accountprofileId && x.CusAddrLocation == locationId && x.CusCode == cuscode).ToList();
+                                List<CustomerInfo4Abss> cusinfos = context.CustomerInfo4Abss.Where(x => x.AccountProfileId == accountprofileId && x.cusAddrLocation == locationId && x.cusCode == cuscode).ToList();
                                 context.CustomerInfo4Abss.RemoveRange(cusinfos);
                                 context.SaveChanges();
 
@@ -1417,9 +1417,9 @@ namespace SmartBusinessWeb.Controllers
                                 {
                                     CustomerInfo4Abss customerInfo = new CustomerInfo4Abss
                                     {
-                                        CusCode = customer.CardIdentification,
+                                        cusCode = customer.CardIdentification,
                                         AccountProfileId = accountprofileId,
-                                        CusAddrLocation = addr.Location,
+                                        cusAddrLocation = addr.Location,
                                         StreetLine1 = addr.StreetLine1,
                                         StreetLine2 = addr.StreetLine2,
                                         StreetLine3 = addr.StreetLine3,
@@ -3122,8 +3122,8 @@ namespace SmartBusinessWeb.Controllers
                     customer.AddressList.Add(new AddressView
                     {
                         Id = _address.Id,
-                        CusCode = _address.CusCode,
-                        CusAddrLocation = _address.CusAddrLocation,
+                        cusCode = _address.cusCode,
+                        cusAddrLocation = _address.cusAddrLocation,
                         AccountProfileId = _address.AccountProfileId,
                         StreetLine1 = _address.StreetLine1,
                         StreetLine2 = _address.StreetLine2,

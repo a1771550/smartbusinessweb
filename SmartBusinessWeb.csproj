@@ -3039,6 +3039,8 @@
     <Content Include="Scripts\ts\js\pos\preorderlist.js" />
     <Content Include="Scripts\ts\js\pos\salesorderedit.js" />
     <Content Include="Scripts\ts\js\pos\salesorderlist.js" />
+    <Content Include="Scripts\ts\js\purchase\excludedorders.js" />
+    <Content Include="Scripts\ts\js\purchase\purchaseorderlist.js" />
     <Content Include="Scripts\ts\js\records\attendance.js" />
     <Content Include="Scripts\ts\js\records\job.js" />
     <Content Include="Scripts\ts\js\records\journaledit.js" />
@@ -4654,6 +4656,9 @@
     <Content Include="Views\Customer\UnSyncList.cshtml" />
     <Content Include="Scripts\ts\js\customer\unsynclist.js.map" />
     <Content Include="Views\Shared\_DrpCity.cshtml" />
+    <Content Include="Views\Purchase\ExcludedOrders.cshtml" />
+    <Content Include="Scripts\ts\js\purchase\purchaseorderlist.js.map" />
+    <Content Include="Scripts\ts\js\purchase\excludedorders.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -5090,6 +5095,7 @@
     <TypeScriptCompile Include="Scripts\ts\pos\advsales.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\excludedinvoices.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\pendinginvoices.ts" />
+    <TypeScriptCompile Include="Scripts\ts\purchase\excludedorders.ts" />
     <TypeScriptCompile Include="Scripts\ts\records\attendance.ts" />
     <TypeScriptCompile Include="Scripts\ts\crm\dashboard.ts" />
     <TypeScriptCompile Include="Scripts\ts\crm\eblast\eblast.ts" />

@@ -4,18 +4,7 @@ $(document).on("click", "#btnReload", function () {
 	window.location.href = "/POSFunc/ExcludedInvoices";
 });
 $(document).on("click", ".colheader", function () {
-	let $sortcol = $("<input>").attr({
-		type: "hidden",
-		name: "SortCol",
-		value: $(this).data("col"),
-	});
-	let $keyword = $("<input>").attr({
-		type: "hidden",
-		name: "Keyword",
-		value: $(this).data("keyword"),
-	});
-
-	$("#frmOrder").append($sortcol).append($keyword).trigger("submit");
+	$("#frmOrder").trigger("submit");
 });
 
 $(function () {

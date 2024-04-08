@@ -49,7 +49,7 @@
 			<div class="col-12 col-md-3">
 				<div class="form-group">
 					<label class="control-label" for="supContact">@Resources.Resource.Contact</label>
-					<input type="text" class="form-control" value="@Supplier.supContact" />
+					<input type="text" class="form-control" id="supContact" name="supContact" value="@Supplier.supContact" />
 				</div>
 			</div>
 		</div>
@@ -149,8 +149,8 @@
 	string UploadSizeLimitMB = ConfigurationManager.AppSettings["MaxUploadSize"];
 	string exceeduploadfilelimittxt = string.Format(Resources.Resource.ExceedUploadSizeLimitWarning, UploadSizeLimitMB);
 }
-<div id="infoblk" class="hide" data-apid="@Supplier.AccountProfileId" data-uploadurl="/Supplier/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@string.Join(",",Supplier.UploadFileList)" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-phonenameemaillist="@JsonSerializer.Serialize(Model.PhoneNameEmailList)" data-lang="@CultureHelper.CurrentCulture"></div>
+<div id="infoblk" class="hide" data-apid="@Supplier.AccountProfileId" data-uploadurl="/Supplier/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@string.Join(",",Supplier.UploadFileList)" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-phonenameemaillist="@JsonSerializer.Serialize(Model.PhoneNameEmailList)" data-lang="@CultureHelper.CurrentCulture" data-filecount="@Supplier.FileList.Count"></div>
 <script src="~/Scripts/ts/js/purchase/supplieredit.js?v=@rand"></script>
 
 @Html.Partial("_UploadFileModal", null, new ViewDataDictionary { { "uploadUrl", "/Supplier/UploadFile" } })
-@Html.Partial("_ViewFileModal", null, new ViewDataDictionary { { "imglist", Supplier.ImgList }, { "filelist", Supplier.FileList } })
+@Html.Partial("_ViewFileModal", null, new ViewDataDictionary { { "imglist", Supplier.ImgList }, { "filelist", Supplier.FileList },{"FuncType", FuncType.Supplier } })

@@ -18,14 +18,14 @@ namespace SmartBusinessWeb.Controllers.Purchase
     {
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UploadFile(int supId)
+        public ActionResult UploadFile(string supCode)
         {
             if (Request.Files.Count > 0)
             {
                 try
                 {
                     List<string> FileList = new List<string>();
-                    string filedir = string.Format(UploadsSupDir, apId, supId);//Sup/{0}/{1}
+                    string filedir = string.Format(UploadsSupDir, apId, supCode);//Sup/{0}/{1}
                     string dir = "";
                     string filename = string.Empty;
                     HttpFileCollectionBase files = Request.Files;
@@ -47,13 +47,13 @@ namespace SmartBusinessWeb.Controllers.Purchase
                     }
                     using (var context = new PPWDbContext(Session["DBName"].ToString()))
                     {
-                        var supInfo = context.SupplierInfoes.FirstOrDefault(x => x.fileName == filename && x.AccountProfileId == apId);
+                        var supInfo = context.SupplierInfoes.FirstOrDefault(x => x.fileName == filename && x.AccountProfileId == apId && x.supCode==supCode);
                         if (supInfo == null)
                         {
                             SessUser user = Session["User"] as SessUser;
                             supInfo = new SupplierInfo
                             {
-                                supId = supId,
+                                supCode = supCode,
                                 fileName = FileList.FirstOrDefault(),
                                 type = "file",
                                 CreateBy = user.UserCode,
@@ -64,7 +64,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
                             context.SaveChanges();
                         }
                         
-                        FileList = context.SupplierInfoes.Where(x => x.supId == supId).Select(x => x.fileName).Distinct().ToList();
+                        FileList = context.SupplierInfoes.Where(x => x.supCode == supCode).Select(x => x.fileName).Distinct().ToList();
                     }
                   
                     return Json(new { msg = Resources.Resource.UploadOkMsg, FileList });

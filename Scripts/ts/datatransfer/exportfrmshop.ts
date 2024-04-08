@@ -52,6 +52,9 @@ $(document).on("click", ".export", function () {
 									if (data.ExcludedInvoices == 1) {
 										window.location.href = "/POSFunc/ExcludedInvoices";
 									}
+									if (data.ExcludedPOs == 1) {
+										window.location.href = "/Purchase/ExcludedOrders";
+									}
 									else {
 										if (data.PendingInvoices == 1) {
 											url = "/POSFunc/PendingInvoices";

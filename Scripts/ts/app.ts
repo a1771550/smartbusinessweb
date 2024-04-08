@@ -3099,11 +3099,15 @@ function openUploadFileModal() {
 }
 function closeUploadFileModal() {
 	uploadFileModal.dialog("close");
-	//if (!forpayments)
-	//	window.location.reload();
 }
 
 function openViewFileModal() {
+	if (forpurchasepayments) {
+		populateFileList4PurchasePayments(UploadedFileList);
+	} else {
+		//console.log("UploadedFileList:", UploadedFileList);
+		populateFileList(UploadedFileList);
+	}
 	viewFileModal.dialog("open");
 }
 function closeViewFileModal() {
@@ -5541,8 +5545,8 @@ interface ICustomer {
 function initAddressView(): IAddressView {
 	return {
 		Id: 0,
-		CusCode: "",
-		CusAddrLocation: "",
+		cusCode: "",
+		cusAddrLocation: "",
 		AccountProfileId: 0,
 		StreetLine1: "",
 		StreetLine2: "",
@@ -5564,8 +5568,8 @@ function initAddressView(): IAddressView {
 }
 interface IAddressView {
 	Id: number;
-	CusCode: string;
-	CusAddrLocation: string;
+	cusCode: string;
+	cusAddrLocation: string;
 	AccountProfileId: number;
 	StreetLine1: string;
 	StreetLine2: string;
@@ -16551,7 +16555,7 @@ $(document).on("change", "#itmDesc", function () {
 		trimByMaxLength($desc);
 		if (selectedItem) selectedItem!.itmDesc = desc;
 	}
-	
+
 });
 $(document).on("change", "#BaseSellingPrice", function () {
 	let _val: number = <number>$(this).val();
@@ -17265,7 +17269,7 @@ function fillInCustomer() {
 	Customer.AddressList = [];
 	for (let i = 1; i <= 5; i++) {
 		let address: IAddressView = initAddressView();
-		address.CusAddrLocation = i.toString();
+		address.cusAddrLocation = i.toString();
 		address.StreetLine1 = $(`#addr${i}`).find(".address").eq(0).val() as string;
 		address.StreetLine2 = $(`#addr${i}`).find(".address").eq(1).val() as string;
 		Customer.AddressList.push(address);
@@ -19127,7 +19131,7 @@ function handleCardEmailChange(this: any) {
 			});
 		}
 
-		if (PhoneNameEmailList && PhoneNameEmailList.length > 0) {		
+		if (PhoneNameEmailList && PhoneNameEmailList.length > 0) {
 			let idx = PhoneNameEmailList.findIndex(x => (x.Email && x.Email.toLowerCase()) == email.toLowerCase());
 			if (idx >= 0) {
 				$.fancyConfirm({
@@ -20014,8 +20018,8 @@ interface IInfoBase {
 }
 interface ICustomerInfo extends IInfoBase {
 	/*Id: number;*/
-	CusCode: string;
-	CusAddrLocation: number;
+	cusCode: string;
+	cusAddrLocation: number;
 	AccountProfileId: number;
 	StreetLine1: string;
 	StreetLine2: string;
@@ -22032,6 +22036,8 @@ function setAccName(tr: JQuery<Element>, acno: string, acname: string) {
 		purchasePayment.AccountNo = acno;
 	}
 }
+
+let UploadedFileList: string[] = [];
 function populateFileList(files: string[]) {
 	//F:\SmartPOSPro\Uploads\PO\1\KP100003
 	//https://localhost:7777/Purchase/1/KP100003/sample.pdf
@@ -22054,33 +22060,31 @@ function populateFileList(files: string[]) {
 			}
 			html += `<li>${filelnk}</li>`;
 		});
-		$(".viewfileblk").find(".file").empty().append(html);
+
+		if (forpurchasepayments)
+			$(".viewfileblk").find(".file").empty().append(html);
+		else
+			viewFileModal.find(".file").empty().append(html);
 	}
 }
 function handleUploadedFile(result: any) {
-	closeWaitingModal();	
-	
-	if (forpurchasepayments) {
-		let fileList: string[] = result.FileList;
+	closeWaitingModal();
+	UploadedFileList = structuredClone(result.FileList);
+	//console.log("UploadedFileList:", UploadedFileList);
+	closeUploadFileModal();
+}
 
-		if (fileList.length > 0) {
+function populateFileList4PurchasePayments(fileList:string[]) {
+	$("#uploadmsg").fadeIn("slow");
 
-			$("#uploadmsg").fadeIn("slow");
-
-			let paymentId = purchasePayment.Id;
-			purchasePayment.fileName = fileList.join();
-			//<li class="p-2" data-file="Project_Requirements.pdf"><a href="#" class="filelnk" data-lnk="/Purchase/1/Project_Requirements.pdf"><img src="/images/pdf.jpg" class="thumbnail">Project_Requirements.pdf</a> <i class="fa fa-trash removefile" data-file="Project_Requirements.pdf" data-payid="1"></i></li>
-			let html = "";
-			fileList.forEach((x) => {
-				html += `<li class="p-2" data-file="${x}"><a href="#" class="filelnk" data-lnk="/Purchase/${paymentId}/${x}"><img src="/images/pdf.jpg" class="thumbnail">${x}</a> <i class="fa fa-trash removefile" data-file="${x}" data-payid="${paymentId}"></i></li>`;
-			});
-			viewFileModal.find(".filelist").empty().append(html);
-		}
-	} else {
-		console.log("result.FileList:", result.FileList);
-		populateFileList(result.FileList);
-		closeUploadFileModal();
-	}
+	let paymentId = purchasePayment.Id;
+	purchasePayment.fileName = fileList.join();
+	//<li class="p-2" data-file="Project_Requirements.pdf"><a href="#" class="filelnk" data-lnk="/Purchase/1/Project_Requirements.pdf"><img src="/images/pdf.jpg" class="thumbnail">Project_Requirements.pdf</a> <i class="fa fa-trash removefile" data-file="Project_Requirements.pdf" data-payid="1"></i></li>
+	let html = "";
+	fileList.forEach((x) => {
+		html += `<li class="p-2" data-file="${x}"><a href="#" class="filelnk" data-lnk="/Purchase/${paymentId}/${x}"><img src="/images/pdf.jpg" class="thumbnail">${x}</a> <i class="fa fa-trash removefile" data-file="${x}" data-payid="${paymentId}"></i></li>`;
+	});
+	viewFileModal.find(".filelist").empty().append(html);
 }
 
 function setInputFilter(textbox: Element, inputFilter: (value: string) => boolean, errMsg: string): void {
@@ -22141,7 +22145,7 @@ function getPdfThumbnail(cls: string = ""): string {
 	return `<img src="/images/pdf.jpg" class="${cls} thumbnail">`;
 }
 
-function getRemoveFileLnk(file: string, code:string): string {
+function getRemoveFileLnk(file: string, code: string): string {
 	return `<i class="fa fa-trash removefile" data-file="${file}" data-code="${code}"></i>`;
 }
 
@@ -22276,7 +22280,7 @@ function initCityDropDown(selectedCity: string = "", lang: number = 1) {
 			dataType: "json",
 		});
 	}
-	
+
 }
 
 $(document).on("change", "#drpCountry", function () {
@@ -22285,7 +22289,7 @@ $(document).on("change", "#drpCountry", function () {
 	let $lblcountry = $("#lblCountry");
 	let countrytxt = (SelectedCountry == 3) ? $lblcountry.data("country") : $lblcountry.data("region");
 	//console.log($lblcountry.data("country"));
-	$lblcountry.text(countrytxt);	
+	$lblcountry.text(countrytxt);
 	initCityDropDown("", lang);
 });
 
