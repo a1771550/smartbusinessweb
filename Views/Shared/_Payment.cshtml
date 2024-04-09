@@ -74,7 +74,7 @@
 								string btnName = string.Concat("btn" + payment.pmtCode);
 								activecls = idx == 0 ? "toggle" : "";
 
-								<button id="@btnName" class="btnpayment toggle-button @activecls" data-target="payMode" data-type="@payment.pmtCode">
+								<button id="@btnName" class="btnpayment toggle-button @activecls" data-target="payMode" data-type="@payment.pmtCode" data-scpc="@payment.pmtServiceChargePercent">
 									<span class="pluse">
 										<i class="fal fa-plus"></i>
 									</span><span class="checks">
@@ -96,7 +96,7 @@
 									string btnName = string.Concat("btn" + payment.pmtCode);
 									activecls = idx == 0 ? "toggle" : "";
 
-									<button id="@btnName" class="btnpayment toggle-button @activecls" data-target="payMode" data-type="@payment.pmtCode">
+									<button id="@btnName" class="btnpayment toggle-button @activecls" data-target="payMode" data-type="@payment.pmtCode" data-scpc="@payment.pmtServiceChargePercent">
 										<span class="pluse">
 											<i class="fal fa-plus"></i>
 										</span><span class="checks">
@@ -115,7 +115,7 @@
 							{
 								string btnName = string.Concat("btn" + payment.pmtCode);
 								activecls = idx == 0 ? "toggle" : "";
-								<button id="@btnName" class="btnpayment toggle-button @activecls" data-target="payMode" data-type="@payment.pmtCode">
+								<button id="@btnName" class="btnpayment toggle-button @activecls" data-target="payMode" data-type="@payment.pmtCode" data-scpc="@payment.pmtServiceChargePercent">
 									<span class="pluse">
 										<i class="fal fa-plus"></i>
 									</span><span class="checks">
@@ -146,7 +146,7 @@
 							activecls = idx == 0 ? "activee" : "";
 							<div class="single__add @activecls" data-code="@payment.pmtCode">
 								<span>@DicPayTypes[payment.pmtCode]</span>
-								<input type="text" id="@payment.pmtCode" class="paymenttype" placeholder="0">
+								<input type="text" id="@payment.pmtCode" class="paymenttype" placeholder="0" data-scpc="@payment.pmtServiceChargePercent">
 								<a href="#" class="currencyCode">HKD</a>
 							</div>
 							idx++;
@@ -185,8 +185,8 @@
 				
 			</div>
 		</div>
-		<div id="epayblk" class="dash_mid_right">
-			<div class="dash__pay">
+		<div class="dash_mid_right">
+			<div id="epayblk" class="dash__pay">
 				<div class="dash__pay--title">
 					<h3>@Resources.Resource.ePayment</h3>
 				</div>
@@ -211,6 +211,7 @@
 				<div class="table__single last">
 					<h3>@Resources.Resource.Tax <span class="taxamt"></span></h3>
 					<h3>@Resources.Resource.Discount <span class="discamt"></span></h3>
+					<h3>@Resources.Resource.ServiceCharge <span class="servicechargeamt"></span></h3>
 					<h3>@Resources.Resource.TotalAmount <span class="totalamt"></span></h3>
 				</div>
 			</div>

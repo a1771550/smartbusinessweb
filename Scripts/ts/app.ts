@@ -19,10 +19,12 @@ interface IPaymentType {
 	pmtDescription: string | null;
 	pmtServiceChargePercent: number | null;
 	pmtIsActive: boolean | null;
-	pmtIsCash: boolean | null;	
+	pmtIsCash: boolean | null;
 	serviceChargeDisplay: string | null;
 }
-
+let PayTypes: IPaymentType[] = [];
+let ServiceChargePC: number = 0;
+let ServiceChargeAmt: number = 0;
 
 //for myobItem
 interface ICodeName {
@@ -621,7 +623,7 @@ let waitingModal: any,
 	itemVariModal: any,
 	barcodeModal: any,
 	transferModal: any,
-	paymentTypeModal:any,
+	paymentTypeModal: any,
 	voidPaymentModal: any;
 
 let sysdateformat: string = "yyyy-mm-dd";
@@ -678,7 +680,7 @@ let iremain = 0;
 let _openSerialModal = false;
 let companyinfo: ICompanyInfo;
 let receipt: IReceipt;
-let DicPayTypes: { [Key: string]: IPayType } = {}; 
+let DicPayTypes: { [Key: string]: IPayType } = {};
 let DicInvoiceItemSeqSerialNoList: { [Key: string]: ISerialNo[] } = {};
 let defaultAttVals: { [Key: string]: string } = {};
 let duplicatedSerailNo = false;
@@ -2065,26 +2067,18 @@ const getPaymentRemain = (): number => {
 	return salesamt - payments;
 };
 
-function setRemain($e: JQuery, amt: number, forsales: boolean = true) {
+function setRemain($e: JQuery, amt: number) {
 	let type: string = <string>$e.attr("id")?.toString();
-	//console.log('type:' + type);
-	//console.log('DicPayTypes:', DicPayTypes);
-	let iscash = false;
-	for (const [key, value] of Object.entries(DicPayTypes)) {
-		//console.log(`${key}: ${value}`);
-		if (key == type) {
-			iscash = value.pmtIsCash;
-			break;
-		}
-	}
-	//console.log('iscash:' + iscash);
+	let code: string = $e.attr("id") as string;
+	let iscash: boolean = code.toLowerCase() === "cash";
+
 	let _totalpay: number = 0, _totalamt: number = 0;
 	if (!forsimplesales) {
 		_totalpay = getTotalPayments();
 		_totalamt = getTotalAmt4Order();
 	}
 
-	if (forsales) {
+	if (forsales || forsimplesales) {
 		_setRemain(amt, _totalamt, _totalpay, iscash, type, $e);
 	} else {
 		_setRemain(amt, itotalremainamt, _totalpay, iscash, type, $e);
@@ -2143,9 +2137,9 @@ function _setremain(_remain: number, _amt: number) {
 			if ($tr != null) {
 				if (chkchange && !paymenttypechange) {
 					if (_amt < 0) {
-						$tr.find("td:eq(1)").find(".paymenttype").val(formatnumber(0));
+						$tr.find(".paymenttype").val(formatnumber(0)).trigger("change");
 					} else {
-						$tr.find("td:eq(1)").find(".paymenttype").val(_amt.toFixed(2));
+						$tr.find(".paymenttype").val(_amt.toFixed(2)).trigger("change");
 					}
 				}
 
@@ -2188,7 +2182,7 @@ function _setremain(_remain: number, _amt: number) {
 
 	$("#remainamt").text(formatmoney(_remain));
 
-	console.log("remainlt0:", _remain <= 0);
+	//console.log("remainlt0:", _remain <= 0);
 	if (forsimplesales) setRemainDisplay(_remain <= 0);
 }
 function setRemainDisplay(remainLt0: boolean) {
@@ -2384,34 +2378,38 @@ $(document).on("change", ".chkpayment", function () {
 });
 
 $(document).on("change", ".paymenttype", function () {
-	if (!fordayends) {
-		let payamt: number = Number($(this).val());
-		//console.log("payamt:" + payamt);
+	if (fordayends) return false;
 
-		paymenttypechange = true;
-		chkchange = false;
+	let payamt: number = Number($(this).val());
+	//console.log("payamt:" + payamt);
+	//let scpc: number = Number($(this).data("scpc"));
 
-		if (payamt == 0) {
-			$(this).val(formatnumber(0));
-			if (Sales.Deposit == 0) {
-				setRemain($(this), 0);
-			}
-		} else {
-			$(this).val(formatnumber(payamt));
-			let amt = payamt / exRate;
-			//console.log("amt:" + amt);
-			if (amt >= 0) {
-				if (Sales && Sales.Deposit == 0) {
-					couponamt = amt;
-					setRemain($(this), amt);
-				}
-				if (PreSales && PreSales.rtsStatus == SalesStatus.presettling) {
-					couponamt = amt;
-					setRemain($(this), amt);
-				}
+	paymenttypechange = true;
+	chkchange = false;
+
+	if (payamt == 0) {
+		$(this).val(formatnumber(0));
+		if (Sales.Deposit == 0) {
+			setRemain($(this), 0);
+		}
+	}
+	if (payamt > 0) {
+		ServiceChargePC += Number($(this).data("scpc"));
+		console.log("ServiceChargePC:" + ServiceChargePC);
+		if (forsimplesales) populateOrderSummary();
+
+		$(this).val(formatnumber(payamt));
+		let amt = payamt / exRate;
+		//console.log("amt:" + amt);
+		if (amt >= 0) {
+			couponamt = amt;
+			if ((Sales && Sales.Deposit == 0) || (PreSales && PreSales.rtsStatus == SalesStatus.presettling)) {
+				//console.log("ready for setremain...");
+				setRemain($(this), amt);
 			}
 		}
 	}
+
 });
 
 function confirmPay() {
@@ -3402,10 +3400,10 @@ function closeVoidPaymentModal() {
 	NamesMatch = false;
 }
 function openPaymentTypeModal() {
-	paymentTypeModal.dialog("open");	
+	paymentTypeModal.dialog("open");
 }
 function closePaymentTypeModal() {
-	paymentTypeModal.dialog("close");	
+	paymentTypeModal.dialog("close");
 }
 function initModals() {
 	if ($("#paymentTypeModal").length) {
@@ -3428,7 +3426,7 @@ function initModals() {
 			],
 		});
 	}
-	
+
 	voidPaymentModal = $("#voidPaymentModal").dialog({
 		width: 500,
 		title: void4paymenttxt,
@@ -3510,7 +3508,7 @@ function initModals() {
 		});
 	}
 
-	
+
 	barcodeModal = $("#barcodeModal").dialog({
 		width: 400,
 		title: barcodetxt,
@@ -5813,6 +5811,8 @@ interface ISimpleItem {
 	ItemPromotions: IItemPromotion[];
 	catId: number;
 	SellingPriceDisplay: string;
+	//ServiceChargePercent: number | null;
+	//ServiceChargeAmt: number | null;
 }
 interface IItem extends ISimpleItem {
 	itmIsActive: boolean;
@@ -6133,6 +6133,8 @@ interface ISales extends ISalesBase {
 	rtsSpecialApproval: boolean;
 	rtsGiftOption: number;
 	Mode: string;
+	rtsServiceChargePc: number | null;
+	rtsServiceChargeAmt: number | null;
 }
 
 interface ISalesRefundBase {
@@ -7697,6 +7699,8 @@ interface ISimpleSales {
 	rtsCurrency: string;
 	rtsRefCode: string;
 	PayAmt: number;
+	ServiceChargePercent: number;
+	ServiceChargeAmt: number;
 }
 interface ISimpleSalesLn {
 	rtlUID: number;
@@ -7828,6 +7832,8 @@ let DicItemSNs: { [Key: string]: Array<ISerialNo> } = {};
 
 
 interface IPreSales {
+    rtsServiceChargeAmt: number;
+    rtsServiceChargePc: number;
 	Currency: string;
 	NextSalesCode: string;
 	authcode: string;
@@ -15339,13 +15345,12 @@ function togglePaymentBlk(mode: string, toggleId: string, totalamt: number) {
 }
 function populateOrderSummary() {
 	$("#receiptno").text(Sales.rtsCode);
-	//console.log($("#receiptno").text());
 	$("#salesdate").text(formatDate());
 	$("#salestime").text(formatTime());
 
 	let currencySym = $infoblk.data("currency");
 
-	let subtotal: number = 0, total: number = 0, disc: number = 0;
+	let subtotal: number = 0, total: number = 0, disc: number = 0, scamt: number = 0;
 	let html = "";
 
 	SelectedSimpleItemList.forEach((x: ISimpleItem) => {
@@ -15358,10 +15363,13 @@ function populateOrderSummary() {
 
 	$(".table__single.items").empty().html(html);
 
-	total = subtotal - disc;
+	ServiceChargeAmt += (subtotal * ServiceChargePC / 100);
+
+	total = subtotal - disc + ServiceChargeAmt;
 
 	$(".taxamt").text(currencySym + formatnumber(0));
 	$(".discamt").text(currencySym + formatnumber(disc));
+	$(".servicechargeamt").text(currencySym + formatnumber(ServiceChargeAmt));
 	$(".totalamt").text(currencySym + formatnumber(total));
 }
 $(document).on("change", ".batch", function () {
@@ -17897,6 +17905,8 @@ function updateSimpleSales() {
 	Sales.authcode = authcode;
 	Sales.rtsCurrency = $("#rtsCurrency").val() as string;
 	Sales.rtsExRate = exRate;
+	Sales.rtsServiceChargePc = ServiceChargePC;
+	Sales.rtsServiceChargeAmt = ServiceChargeAmt;
 
 	SimpleSalesLns = [];
 	$(".product-lists").each(function (i, e) {
@@ -17908,6 +17918,9 @@ function updateSimpleSales() {
 }
 
 function updateSales() {
+	Sales.rtsServiceChargePc = ServiceChargePC;
+	Sales.rtsServiceChargeAmt = ServiceChargeAmt;
+
 	let totalamt = 0;
 	let $rows = $("#tblSales tbody tr");
 	$rows.each(function (i, e) {
@@ -18829,6 +18842,8 @@ function _submitSales() {
 		Sales.rtsSalesLoc = $("#drpLocation").val() as string;
 		Sales.rtsDvc = $("#drpDevice").val() as string;
 		Sales.rtsAllLoc = $("#chkAllLoc").is(":checked");
+		Sales.rtsServiceChargePc = ServiceChargePC;
+		//Sales.rtsServiceChargeAmt = Sales.rtsFinalTotal * ServiceChargePC/100;
 	}
 	if (forpreorder) {
 		url = "/Preorder/Edit";
@@ -18842,6 +18857,8 @@ function _submitSales() {
 		PreSales.rtsSalesLoc = $("#drpLocation").val() as string;
 		PreSales.rtsDvc = $("#drpDevice").val() as string;
 		PreSales.rtsAllLoc = $("#chkAllLoc").is(":checked");
+		PreSales.rtsServiceChargePc = ServiceChargePC;
+		PreSales.rtsServiceChargeAmt = ServiceChargeAmt;
 	}
 
 	let data = forpreorder
@@ -18849,7 +18866,6 @@ function _submitSales() {
 		: { Sales, SalesLnList, Payments, DeliveryItems };
 	console.log("data:", data);
 	//return false;
-
 	openWaitingModal();
 	$.ajax({
 		type: "POST",
@@ -22115,7 +22131,7 @@ function handleUploadedFile(result: any) {
 	closeUploadFileModal();
 }
 
-function populateFileList4PurchasePayments(fileList:string[]) {
+function populateFileList4PurchasePayments(fileList: string[]) {
 	$("#uploadmsg").fadeIn("slow");
 
 	let paymentId = purchasePayment.Id;
@@ -22385,7 +22401,7 @@ function handlePaymentTypeSaved() {
 
 
 	let data = { model: payType, __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val() }
-	console.log("data:", data);
+	//console.log("data:", data);
 	//return;
 	$.ajax({
 		type: "POST",

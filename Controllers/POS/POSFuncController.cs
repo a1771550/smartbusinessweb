@@ -674,6 +674,7 @@ namespace SmartBusinessWeb.Controllers
 
             ViewBag.ParentPage = "sales";
             ViewBag.PageName = "sales";
+           
             SalesModel model = new SalesModel(true);
             return View(model);
         }

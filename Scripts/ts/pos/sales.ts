@@ -3,13 +3,13 @@ const formatzero = formatnumber(0);
 let selectedCatId: number = 3;
 let filteredItemList: ISimpleItem[] = [];
 let $norecordfound;
-function togglePayment(code: string, show: boolean) {
+function togglePayment(code: string, checked: boolean) {
 
 	if (isEpay) {
 		$(".single__add").removeClass("activee");
 		$(".single__add").each(function (i, e) {
 			if ($(e).data("code") == code) {
-				if (show) $(e).addClass("activee");
+				if (checked) $(e).addClass("activee");
 				let amt = Number($("#salesamount").data("amt"));
 				$(e).find(".paymenttype").data("amt", amt).val(formatnumber(amt));
 			}
@@ -18,7 +18,7 @@ function togglePayment(code: string, show: boolean) {
 		$(".single__add").each(function (i, e) {
 			if ($(e).data("code") == code) {
 
-				if (show) $(e).addClass("activee");
+				if (checked) $(e).addClass("activee");
 				else $(e).removeClass("activee");
 
 				let amt = $(".single__add").length === 1 ? Number($("#salesamount").data("amt")) : 0;
@@ -31,7 +31,7 @@ function togglePayment(code: string, show: boolean) {
 $(document).on("click", ".btnpayment", function () {	
 	let Id = $(this).attr("id") as string;
 	let code = $(this).data("type") as string;
-	let checked = togglePlusCheck(Id);
+	let checked = togglePlusCheck(Id);	
 	//console.log("checked:", checked);
 	togglePayModeTxt();
 	
@@ -360,6 +360,9 @@ $(function () {
 
 	comInfo = $infoblk.data("cominfo");
 	DicPayTypes = $infoblk.data("dicpaytypes");
+	//console.log("DicPayTypes:", DicPayTypes);
+	PayTypes = $infoblk.data("paytypes");
+	//console.log("PayTypes:", PayTypes);
 	DicCurrencyExRate = $infoblk.data("diccurrencyexrate");
 	defaultcustomer = $infoblk.data("defaultcustomer");
 
@@ -372,8 +375,6 @@ $(function () {
 
 	openTapContent(this, $infoblk.data("defaultcatname"), selectedCatId);
 	$(".tab").find("button").first().addClass("active");
-
-	//$(".check-product").addClass("hide");
 
 	Sales = initSimpleSales();
 

@@ -70,12 +70,6 @@
 							{
 								@Html.Partial("_NoRecordFound")
 							}
-
-
-
-
-
-
 						</div>
 					</div>
 				}
@@ -195,7 +189,7 @@
 @Html.Partial("_BarcodeModal")
 @Html.Partial("_ChangeModal")
 
-<div id="infoblk" data-defaultcatname="@Model.CategoryList.First().NameDisplay" data-currency="@Model.Currency" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicpaytypes="@JsonSerializer.Serialize(Model.DicPayTypes)" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)" data-defaultcustomer="@JsonSerializer.Serialize(Model.DefaultCustomer)" data-itemlist="@JsonSerializer.Serialize(Model.SimpleItemList)" data-filteredlist="@JsonSerializer.Serialize(FilteredItemList)"></div>
+<div id="infoblk" data-defaultcatname="@Model.CategoryList.First().NameDisplay" data-currency="@Model.Currency" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicpaytypes="@JsonSerializer.Serialize(Model.DicPayTypes)" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)" data-defaultcustomer="@JsonSerializer.Serialize(Model.DefaultCustomer)" data-itemlist="@JsonSerializer.Serialize(Model.SimpleItemList)" data-filteredlist="@JsonSerializer.Serialize(FilteredItemList)" data-paytypes="@JsonSerializer.Serialize(Model.PaymentTypes)"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script src="~/Scripts/ts/js/pos/sales.js?v=@rand"></script>

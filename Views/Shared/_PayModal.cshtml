@@ -120,7 +120,7 @@
 									</div>
 								</div>
 							</td>
-							<td class="text-right"><input type="number" min="0" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype" value="0" @_readonly /></td>
+							<td class="text-right"><input type="number" min="0" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype flex" value="0" @_readonly  data-scpc="@payment.pmtServiceChargePercent"/></td>
 						</tr>
 						idx++;
 					}
@@ -145,7 +145,7 @@
 									</div>
 								</div>
 							</td>
-							<td class="text-right"><input type="number" min="0" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype" value="0" @_readonly /></td>
+							<td class="text-right"><input type="number" min="0" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype flex" value="0" @_readonly  data-scpc="@payment.pmtServiceChargePercent"/></td>
 						</tr>
 						idx++;
 					}
@@ -160,7 +160,7 @@
 							<tr data-code="@payment.pmtCode">
 								<td>@DicPayTypes[payment.pmtCode]</td>
 								<td class="text-right">
-									<input type="number" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype" value="0" />
+									<input type="number" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype flex" value="0" data-scpc="@payment.pmtServiceChargePercent" />
 								</td>
 							</tr>
 						}
