@@ -202,7 +202,7 @@ $(function () {
                 selectedCus = defaultcustomer;
                 Sales = initSales();
                 /*console.log("Sales@loadpostback:", Sales);*/
-                Sales.rtsCusID = selectedCus.cusCustomerID;
+                Sales.rtsCusCode = selectedCus.cusCode;
                 //Sales.rtsDvc = $infoblk.data("device");
                 //Sales.rtsSalesLoc = $infoblk.data("shop");
                 Sales.rtsGiftOption = 0;

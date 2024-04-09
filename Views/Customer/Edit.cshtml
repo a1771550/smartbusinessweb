@@ -259,14 +259,14 @@
 					</div>
 				</div>
 
-				<div class="recordblk col-12 col-sm-4 hide" data-cusid="@Customer.cusCustomerID">
+				<div class="recordblk col-12 col-sm-4 hide" data-cuscode="@Customer.cusCode" data-cusid="@Customer.cusCustomerID">
 					<div class="card">
 						<div class="card-body">
 							<div class="txtarea">
 								<textarea class="form-control record" name="CustomerInfo_followUpRecord" rows="5" cols="30"></textarea>
 							</div>
 							<div class="buttons">
-								<button type="button" class="btn btn-secondary saverecord" data-cusid="@Customer.cusCustomerID"><span class="small">@Resources.Resource.Confirm</span></button>
+								<button type="button" class="btn btn-secondary saverecord" data-cuscode="@Customer.cusCode" data-cusid="@Customer.cusCustomerID"><span class="small">@Resources.Resource.Confirm</span></button>
 							</div>
 						</div>
 					</div>

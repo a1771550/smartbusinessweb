@@ -3,7 +3,9 @@
 let cusId: number = editmode ? Number($infoblk.data("cusid")) : 0;
 let gattrnamelist: string[] = [];
 
-
+$(document).on("click", "#addRecord", function () {
+	handleAddRecordClick.call(this);
+});
 $(document).on("change", ".labeltxt", function () {
 	let attrname = $(this).val() as string;
 	if (attrname) {

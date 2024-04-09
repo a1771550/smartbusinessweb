@@ -62,7 +62,7 @@ $(document).on("click", "#btnReload", function () {
 
 $(document).on("click", "#btnSearch", function (e) {
 	e.preventDefault();
-	$("#sortorder").val("desc");
+	//$("#sortorder").val("desc");
 	$("#frmCustomer").trigger("submit");
 });
 

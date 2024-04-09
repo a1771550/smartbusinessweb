@@ -2215,7 +2215,7 @@ namespace SmartBusinessWeb.Controllers
                                 where s.rtsCode.ToLower() == salescode.ToLower() && s.rtsType == "RS" && s.rtsDvc.ToLower() == device && s.rtsSalesLoc.ToLower() == location
                                 select new SalesLnView
                                 {
-                                    CustomerID = s.rtsCusID,
+                                    cusCode = s.rtsCusCode,
                                     rtlCode = sl.rtlCode,
                                     rtlItemCode = sl.rtlItemCode,
                                     rtlSeq = sl.rtlSeq,
@@ -2242,7 +2242,7 @@ namespace SmartBusinessWeb.Controllers
                                  where s.rtsRefCode.ToLower() == salescode.ToLower() && s.rtsType == "RF" && s.rtsDvc.ToLower() == device && s.rtsSalesLoc.ToLower() == location
                                  select new SalesLnView
                                  {
-                                     CustomerID = s.rtsCusID,
+                                     cusCode = s.rtsCusCode,
                                      rtlCode = sl.rtlCode,
                                      rtlRefSales = sl.rtlRefSales,
                                      rtlItemCode = sl.rtlItemCode,
@@ -2363,7 +2363,7 @@ namespace SmartBusinessWeb.Controllers
                                     rtlBatch = sl.rtlBatch,
                                     rtsRmks = s.rtsRmks,
                                     rtsInternalRmks = s.rtsInternalRmks,
-                                    CustomerID = s.rtsCusID,
+                                    cusCode = s.rtsCusCode,
                                     rtsIsEpay = s.rtsEpay,
                                     rtsCustomerPO = s.rtsCustomerPO,
                                     rtsDeliveryDate = s.rtsDeliveryDate
@@ -2413,7 +2413,7 @@ namespace SmartBusinessWeb.Controllers
                                      where salesitemcodes.Contains(sl.rtlRefSales + ":" + sl.rtlItemCode) && s.rtsType == "RF" && s.rtsDvc.ToLower() == device && s.rtsSalesLoc.ToLower() == location
                                      select new SalesLnView
                                      {
-                                         CustomerID = s.rtsCusID,
+                                         cusCode = s.rtsCusCode,
                                          rtlCode = sl.rtlCode,
                                          rtlRefSales = sl.rtlRefSales,
                                          rtlItemCode = sl.rtlItemCode,
@@ -2514,7 +2514,7 @@ namespace SmartBusinessWeb.Controllers
                                 rtlBatch = sl.rtlBatch,
                                 rtsRmks = s.rtsRmks,
                                 rtsInternalRmks = s.rtsInternalRmks,
-                                CustomerID = s.rtsCusID,
+                                cusCode = s.rtsCusCode,
                                 rtsIsEpay = s.rtsEpay,
                                 rtsCustomerPO = s.rtsCustomerPO,
                                 rtsDeliveryDate = s.rtsDeliveryDate
@@ -2540,7 +2540,7 @@ namespace SmartBusinessWeb.Controllers
                                  where salescodes.Contains(sl.rtlRefSales) && s.rtsType == "RF" && s.rtsDvc.ToLower() == device && s.rtsSalesLoc.ToLower() == location
                                  select new SalesLnView
                                  {
-                                     CustomerID = s.rtsCusID,
+                                     cusCode = s.rtsCusCode,
                                      rtlCode = sl.rtlCode,
                                      rtlRefSales = sl.rtlRefSales,
                                      rtlItemCode = sl.rtlItemCode,
@@ -2661,7 +2661,7 @@ namespace SmartBusinessWeb.Controllers
             var devicecode = device;
             lang = lang == -1 ? currsess.sesLang : lang;
             int apId = currsess.AccountProfileId;
-            int salescusId = -1;
+            string salescusCode = string.Empty;
             decimal salesamt = 0;
             decimal refundamt = 0;
             decimal payamt = 0;
@@ -2675,7 +2675,7 @@ namespace SmartBusinessWeb.Controllers
             }
             else
             {
-                var _customer = context.SearchCustomer1(apId, 0, phoneno).FirstOrDefault();
+                var _customer = context.SearchCustomerByCode(apId, null, phoneno).FirstOrDefault();
                 if (_customer != null)
                 {
                     customer = new CustomerModel
@@ -2697,9 +2697,9 @@ namespace SmartBusinessWeb.Controllers
 
             if (_sales != null)
             {
-                salescusId = _sales.rtsCusID;
+                salescusCode = _sales.rtsCusCode;
 
-                var _customer = context.SearchCustomer1(apId, salescusId, "").FirstOrDefault();
+                var _customer = context.SearchCustomerByCode(apId, salescusCode, "").FirstOrDefault();
                 model.hascustomer = _customer != null;
                 if (model.hascustomer)
                 {

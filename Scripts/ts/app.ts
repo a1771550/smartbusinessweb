@@ -1677,12 +1677,14 @@ function OnGetCustomersSuccess(response) {
 		togglePaging("Customer", false);
 	}
 }
+
+//todo:
 function _writeCustomers(_customerlist: Array<ICustomer>) {
 	let html = "";
 	$.each(_customerlist, function (i, e) {
 		html +=
 			'<tr class="cuscode" data-code="' +
-			e.cusCustomerID +
+			e.cusCode +
 			'"><td>' +
 			e.cusCode +
 			"</td><td>" +
@@ -14826,8 +14828,7 @@ function initSales(): ISales {
 		rtsStatus: "",
 		rtsDate: "",
 		rtsTime: "",
-		rtsCusID: 0,
-		rtsCusMbr: "",
+		rtsCusCode: "",	
 		rtsLineTotal: 0,
 		rtsLineTotalPlusTax: 0,
 		rtsFinalDisc: 0,
@@ -14835,18 +14836,14 @@ function initSales(): ISales {
 		rtsFinalAdj: 0,
 		rtsFinalTotal: 0,
 		rtsRmks: "",
-		rtsRmksOnDoc: "",
-		rtsCarRegNo: "",
+		rtsRmksOnDoc: "",	
 		rtsUpldBy: "",
-		rtsKawadaUpldBy: "",
 		rtsUpldTime: null,
 		rtsUpLdLog: "",
 		rtsInternalRmks: "",
 		rtsMonthBase: false,
 		rtsLineTaxAmt: 0,
-		rtsEpay: false,
-		rtsKInvoiceId: 0,
-		rtsKInvoiceCode: "",
+		rtsEpay: false,	
 		rtsDeliveryAddressId: 0,
 		rtsDeliveryAddress1: "",
 		rtsDeliveryAddress2: "",
@@ -14859,13 +14856,7 @@ function initSales(): ISales {
 		rtsSaleComment: "",
 		rtsCheckout: false,
 		rtsCheckoutPortal: "",
-		rtsParentUID: 0,
-		AccountProfileId: 0,
-		CompanyId: 0,
-		rtsCreateBy: "",
-		rtsCreateTime: "",
-		rtsModifyBy: "",
-		rtsModifyTime: null,
+		rtsParentUID: 0,	
 		rtsExRate: 1,
 		rtsCurrency: "HKD",
 		Roundings: 0,
@@ -14898,8 +14889,7 @@ function initSimpleSales(): ISales {
 		rtsStatus: "",
 		rtsDate: "",
 		rtsTime: "",
-		rtsCusID: defaultcustomer.cusCustomerID,
-		rtsCusMbr: "",
+		rtsCusCode: defaultcustomer.cusCode,
 		rtsLineTotal: 0,
 		rtsLineTotalPlusTax: 0,
 		rtsFinalDisc: 0,
@@ -14908,17 +14898,13 @@ function initSimpleSales(): ISales {
 		rtsFinalTotal: 0,
 		rtsRmks: "",
 		rtsRmksOnDoc: "",
-		rtsCarRegNo: "",
 		rtsUpldBy: "",
-		rtsKawadaUpldBy: "",
 		rtsUpldTime: null,
 		rtsUpLdLog: "",
 		rtsInternalRmks: "",
 		rtsMonthBase: false,
 		rtsLineTaxAmt: 0,
 		rtsEpay: false,
-		rtsKInvoiceId: 0,
-		rtsKInvoiceCode: "",
 		rtsDeliveryAddressId: 0,
 		rtsDeliveryAddress1: "",
 		rtsDeliveryAddress2: "",
@@ -14932,12 +14918,6 @@ function initSimpleSales(): ISales {
 		rtsCheckout: false,
 		rtsCheckoutPortal: "",
 		rtsParentUID: 0,
-		AccountProfileId: 0,
-		CompanyId: 0,
-		rtsCreateBy: "",
-		rtsCreateTime: "",
-		rtsModifyBy: "",
-		rtsModifyTime: null,
 		rtsExRate: 1,
 		rtsCurrency: "HKD",
 		Roundings: 0,
@@ -14966,8 +14946,7 @@ interface IRtlSale {
 	rtsStatus: string;
 	rtsDate: string;
 	rtsTime: string;
-	rtsCusID: number;
-	rtsCusMbr: string;
+	rtsCusCode: string;
 	rtsLineTotal: number | null;
 	rtsLineTotalPlusTax: number | null;
 	rtsFinalDisc: number | null;
@@ -14976,17 +14955,13 @@ interface IRtlSale {
 	rtsFinalTotal: number | null;
 	rtsRmks: string;
 	rtsRmksOnDoc: string;
-	rtsCarRegNo: string;
 	rtsUpldBy: string;
-	rtsKawadaUpldBy: string;
 	rtsUpldTime: string | null;
 	rtsUpLdLog: string;
 	rtsInternalRmks: string;
 	rtsMonthBase: boolean;
 	rtsLineTaxAmt: number | null;
 	rtsEpay: boolean;
-	rtsKInvoiceId: number | null;
-	rtsKInvoiceCode: string;
 	rtsDeliveryAddressId: number | null;
 	rtsDeliveryAddress1: string;
 	rtsDeliveryAddress2: string;
@@ -14999,13 +14974,7 @@ interface IRtlSale {
 	rtsSaleComment: string;
 	rtsCheckout: boolean;
 	rtsCheckoutPortal: string;
-	rtsParentUID: number | null;
-	AccountProfileId: number;
-	CompanyId: number;
-	rtsCreateBy: string;
-	rtsCreateTime: string;
-	rtsModifyBy: string;
-	rtsModifyTime: string | null;
+	rtsParentUID: number | null;	
 	rtsExRate: number | null;
 	rtsCurrency: string;
 	rtsAllLoc: boolean;
@@ -17613,7 +17582,7 @@ function selectCus() {
 
 	$("#txtCustomerName").trigger("focus");
 
-	if (Sales) Sales.rtsCusID = selectedCus.cusCustomerID;
+	if (Sales) Sales.rtsCusCode = selectedCus.cusCode;
 }
 let deliveryAddressId: number = 0;
 function setupForexInfo() {
@@ -18827,7 +18796,7 @@ function _submitSales() {
 	let url = "";
 	if (forsales) {
 		url = "/POSFunc/ProcessAdvSales";
-		Sales.rtsCusID = selectedCus.cusCustomerID;
+		Sales.rtsCusCode = selectedCus.cusCode;
 		Sales.rtsRmks = $("#txtNotes").val() as string;
 		Sales.rtsInternalRmks = $("#txtInternalNotes").val() as string;
 		Sales.authcode = authcode;
@@ -19960,8 +19929,8 @@ function handleRecordChange(ele) {
 						.find("span")
 						.text(
 							lasteditedbyformat
-								.replace("{0}", data.ModifiedBy!)
-								.replace("{1}", data.ModifyTimeDisplay!)
+								.replace("{0}", data.ModifiedBy??data.CreatedBy)
+								.replace("{1}", data.ModifyTimeDisplay??data.CreateTimeDisplay)
 						);
 				}
 			},
@@ -19989,13 +19958,13 @@ function infoCallBackOk(data: IInfoBase[]) {
 		let html = "";
 		data.forEach((x) => {
 			let lastedited: string = lasteditedbyformat
-				.replace("{0}", x.ModifiedBy!)
-				.replace("{1}", x.ModifyTimeDisplay!);
+				.replace("{0}", x.ModifiedBy??x.CreatedBy)
+				.replace("{1}", x.ModifyTimeDisplay??x.CreateTimeDisplay);
 			html += `<div class="displayblk col-12 col-sm-4 mb-1" data-enqid="${x.enId}" data-cusid="${x.cusId}" data-id="${x.Id}">
                             <div class="card">
                                 <div class="text-right small"><span class="fa fa-edit text-info record pointer mr-2"></span><span class="fa fa-close text-danger record pointer"></span></div>
                                 <div class="card-body">
-                                    <div class="txtarea" data-id="${x.Id}">
+                                    <div class="txtarea" data-cuscode="${x.cusCode}" data-id="${x.Id}">
                                         <p class="recorddisplay">${x.followUpRecord}</p>
                                         <input type="text" class="form-control recordentry hide" data-record="${x.followUpRecord}" onchange="handleRecordChange(this);" />
                                         <span class="small d-inline-block lastedited">${lastedited}</span>
@@ -20013,7 +19982,8 @@ $(document).on("click", ".saverecord", function () {
 		.parent(".card-body")
 		.parent(".card")
 		.parent(".recordblk");
-	let cusId: number = forcustomer ? Number($target.data("cusid")) : 0;
+	let cusCode: string = forcustomer ? $target.data("cuscode") as string : "";
+	//console.log("cusCode:" + cusCode);
 	let enqId: string = forenquiry ? $target.data("enqid").toString() : "";
 	const record: string = $target.find(".record").val() as string;
 	if (record) {
@@ -20029,11 +19999,11 @@ $(document).on("click", ".saverecord", function () {
 		let callback: any = {};
 		if (forcustomer) {
 			customerInfo = {
-				cusId,
+				cusCode,
 				followUpRecord: record,
 			} as ICustomerInfo;
 			data.model = customerInfo;
-			url = cusId > 0 ? "/Customer/SaveRecord" : "";
+			url = cusCode ? "/Customer/SaveRecord" : "";
 		}
 		if (forenquiry) {
 			enquiryInfo = {
@@ -20060,6 +20030,7 @@ $(document).on("click", ".saverecord", function () {
 interface IInfoBase {
 	Id: any;
 	cusId: number | null;
+	cusCode: string | null;
 	enId: string | null;
 	fileName: string;
 	type: string;

@@ -1197,7 +1197,7 @@ function submitRefund() {
 	Refund.rtsEpay = isEpay;
 	Refund.rtsFinalTotal = itotalamt;
 	Refund.epaytype = epaytype;
-	Refund.rtsCusID = selectedCus.cusCustomerID;
+	Refund.rtsCusCode = selectedCus.cusCode;
 
 	if (RefundList.length > 0) {
 		const url = "/POSFunc/ProcessRefund";

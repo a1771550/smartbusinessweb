@@ -257,14 +257,14 @@ namespace SmartBusinessWeb.Controllers.Customer
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [HttpGet]
-        public ActionResult Edit(int Id = 0, string enqId = null, string referrer = "")
+        public ActionResult Edit(string cusCode = null, string enqId = null, string referrer = "")
         {
             ViewBag.ParentPage = "customer";
             ViewBag.PageName = "edit";
             var region = CommonLib.Helpers.CultureHelper.GetCountryByIP();
             var comInfo = Session["ComInfo"] as ComInfo;
 
-            CustomerEditModel cmodel = new CustomerEditModel(Id, enqId)
+            CustomerEditModel cmodel = new CustomerEditModel(cusCode, enqId)
             {
                 Referrer = referrer,
                 IpCountry = region != null ? region.EnglishName : "Hong Kong",
