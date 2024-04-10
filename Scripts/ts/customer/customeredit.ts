@@ -47,7 +47,7 @@ $(document).on("dblclick", ".pointer.attr", function () {
 });
 
 $(document).on("click", "#btnSaveGattr", function () {
-	saveGattr(Customer.cusCustomerID);
+	saveGattr(Customer.cusCode);
 });
 
 $(document).on("click", "#btnEdit", function () {
@@ -58,7 +58,6 @@ $(document).on("click", "#btnEdit", function () {
 
 		let _url = "/Customer/Edit";
 		//console.log("formdata:", _formdata);
-		//console.log("url:" + _url);
 		//return false;
 		openWaitingModal();
 		$.ajax({
@@ -172,6 +171,7 @@ $(function () {
 	let $cusname = $("#cusName");
 
 	cAttributes = $infoblk.data("jscustomattributelist") as ICustomAttribute[];
+	console.log("cAttributes:", cAttributes);
 
 	$("#globalattr").accordion({
 		collapsible: true,
@@ -200,10 +200,10 @@ $(function () {
 
 	gattrnamelist = $infoblk.data("gattrnamelist").toString().split(",");
 
-	if ($("#CustomerInfo_FollowUpDateDisplay").val() === "") {
+	if ($("#FollowUpDateInfo_FollowUpDateDisplay").val() === "") {
 		initDatePicker("followUpDate", new Date());
 	} else {
-		initDatePicker("followUpDate", convertCsharpDateStringToJsDate($("#CustomerInfo_FollowUpDateDisplay").val() as string));
+		initDatePicker("followUpDate", convertCsharpDateStringToJsDate($("#FollowUpDateInfo_FollowUpDateDisplay").val() as string));
 	}
 
 	SelectedCountry = editmode ? Number(Customer.cusAddrCountry) ?? 1 : 1;

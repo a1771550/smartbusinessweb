@@ -26,12 +26,12 @@ namespace SmartBusinessWeb.Controllers.Sales
 
         [HandleError]
         [CustomAuthorize("retail", "boss", "admin", "superadmin")]
-        public ActionResult Index(string strfrmdate = "", string strtodate = "", int? PageNo = 1, string SortName = "rtsTime", string SortOrder = "desc", string Shop = "", string Device = "", string Keyword = "", int filter = 0, string searchmode = "")
+        public ActionResult Index(int PageNo = 1, int SortCol = 5, string SortOrder = "desc", string Shop = "", string Device = "", string Keyword = "", int filter = 0, string searchmode = "")
         {
             ViewBag.ParentPage = "sales";
             ViewBag.PageName = "salesorderlist";
 			SalesOrderEditInfo model = new();
-			model.GetList(strfrmdate, strtodate, (int)PageNo, SortName, SortOrder, Shop, Device, Keyword, filter, searchmode);
+			model.GetList(PageNo, SortCol, SortOrder, Shop, Device, Keyword, filter, searchmode);
 			return View(model);
         }
     }

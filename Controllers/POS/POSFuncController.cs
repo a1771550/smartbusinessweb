@@ -256,7 +256,7 @@ namespace SmartBusinessWeb.Controllers
 
             #region JS Properties
             int isepay = Refund.rtsEpay ? 1 : 0;
-            int CusID = Refund.CusID;
+            string CusCode = Refund.rtsCusCode;
             string Notes = Refund.rtsRmks;
             int Change = (int)Refund.Change;
             string salescode = Refund.salescode;
@@ -363,7 +363,7 @@ namespace SmartBusinessWeb.Controllers
                                                 Message = Resources.Resource.eRefundSuccessful,
                                                 Status = 1,
                                             };
-                                            HandleNormalRefund(RefundList, CusID, Notes, Payments, Change, salescode, devicecode, isepay, epaytype, context, refundcode, user);
+                                            HandleNormalRefund(RefundList, CusCode, Notes, Payments, Change, salescode, devicecode, isepay, epaytype, context, refundcode, user);
                                         }
                                     }
                                     else
@@ -390,7 +390,7 @@ namespace SmartBusinessWeb.Controllers
                         }
                         else
                         {
-                            refundcode = HandleNormalRefund(RefundList, CusID, Notes, Payments, Change, salescode, devicecode, isepay, epaytype, context, "", user);
+                            refundcode = HandleNormalRefund(RefundList, CusCode, Notes, Payments, Change, salescode, devicecode, isepay, epaytype, context, "", user);
                         }
 
                         transaction.Commit();
@@ -406,7 +406,7 @@ namespace SmartBusinessWeb.Controllers
             }
         }
 
-        private string HandleNormalRefund(List<SalesViewModel> RefundList, int CusID, string Notes, List<PayLnView> Payments, decimal Change, string salescode, string devicecode, int isepay, string epaytype, PPWDbContext context, string refundcode, SessUser user)
+        private string HandleNormalRefund(List<SalesViewModel> RefundList, string CusCode, string Notes, List<PayLnView> Payments, decimal Change, string salescode, string devicecode, int isepay, string epaytype, PPWDbContext context, string refundcode, SessUser user)
         {
             List<RtlSalesLn> SalesLines = new List<RtlSalesLn>();
             List<RtlPayLn> PayLnList = new List<RtlPayLn>();
@@ -469,7 +469,7 @@ namespace SmartBusinessWeb.Controllers
 
                     RtlSalesLn rtlSalesLn = new RtlSalesLn(); //MUST not use object initializer in the loop, otherwise will get error.    
                     rtlSalesLn.rtlSalesLoc = refsalesln.rtlSalesLoc;
-                    rtlSalesLn.rtlStockLoc = refundln.rtlStockLoc;
+                    rtlSalesLn.rtlStockLoc = refundln.rtlStockLoc;                    
                     rtlSalesLn.rtlDvc = devicecode;
                     rtlSalesLn.rtlCode = refundcode;
                     rtlSalesLn.rtlRefSales = salescode;
@@ -526,7 +526,7 @@ namespace SmartBusinessWeb.Controllers
                     rtsCode = refundcode,
                     rtsRefCode = salescode,
                     rtsType = "RF",
-                    rtsCusID = CusID,
+                    rtsCusCode = CusCode,
                     rtsCurrency = sales.rtsCurrency,
                     rtsExRate = sales.rtsExRate,
                     rtsLineTotal = linetotal,

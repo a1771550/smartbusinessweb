@@ -14,7 +14,7 @@
 
 <h2 class="clearfix">
 	@ViewBag.Title
-	<a href="/Customer/Edit?Id=0&referrer=Index" class="btn btn-info btnsmall40 float-right" title="@Resources.Resource.Add">@Resources.Resource.Add</a> 
+	<a href="/Customer/Edit?Id=0&referrer=Index" class="btn btn-info btnsmall40 float-right" title="@Resources.Resource.Add">@Resources.Resource.Add</a>
 </h2>
 
 @if (Model.CustomerList != null && Model.CustomerList.Count > 0)
@@ -29,7 +29,7 @@
 				<button id="btnReload" type="button" class="btn btn-warning ml-3">@Resources.Resource.Reload</button>
 				<button id="btnAdvSearch" type="button" class="btn btn-danger ml-3">@Resources.Resource.AdvancedSearch</button>
 				@*<button id="btnHotList" type="button" class="btn btn-info ml-3">@Resources.Resource.AddContactsToHotList</button>
-				<button id="btnBlast" type="button" class="btn btn-primary ml-3">@Resources.Resource.AddContactsToEblast</button>*@
+					<button id="btnBlast" type="button" class="btn btn-primary ml-3">@Resources.Resource.AddContactsToEblast</button>*@
 			</div>
 		</div>
 
@@ -46,14 +46,14 @@
 					<th scope="col" class="text-center colheader" data-col="5" data-keyword="@Model.Keyword">ABSS</th>
 					<th scope="col"></th>
 					@*<th scope="col">
-						<input type="checkbox" id="chkall" />
-					</th>*@
+							<input type="checkbox" id="chkall" />
+						</th>*@
 				</tr>
 			</thead>
 			<tbody>
 				@foreach (var customer in Model.PagingCustomerList)
-				{				
-					string cname = customer.cusIsOrganization ? customer.cusName : string.Concat(customer.cusFirstName, " ", customer.cusName);
+				{
+					string cname = customer.cusName;
 					var disabled = (customer.cusCheckout != null && (bool)customer.cusCheckout) ? "disabled" : "";
 					<tr class="@customer.statuscls pointer" data-id="@customer.cusCustomerID">
 						<td class="text-center">@cname</td>
@@ -75,8 +75,8 @@
 							<a class="btn btn-danger btnsmall remove @disabled" role="button" href="#" data-id="@customer.cusCustomerID" data-apid="@customer.AccountProfileId">@Resources.Resource.Remove</a>
 						</td>
 						@*<td>
-							<input type="checkbox" class="chk" data-id="@customer.cusCustomerID" />
-						</td>*@
+								<input type="checkbox" class="chk" data-id="@customer.cusCustomerID" />
+							</td>*@
 					</tr>
 				}
 			</tbody>
@@ -88,8 +88,8 @@
 		</div>
 
 		<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
-		<input type="hidden" id="sortcol" name="SortCol" value="@Model.SortCol" />
-		@*<a href="#" id="btnOpenAction" class="btn btn-success" role="button" onclick="javascript:openActionModal();">@Resources.Resource.OpenCustomerPointActionLog</a>*@
+		<input type="hidden" id="sortcol" value="@Model.SortCol" />
+ <!--no "name" attr in propose!-->
 		<div id="actionModal">
 
 			<table id="tblActionLog" class="table table-bordered  table-hover table-condensed">

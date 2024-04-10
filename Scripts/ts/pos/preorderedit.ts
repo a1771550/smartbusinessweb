@@ -3,7 +3,7 @@ $(function () {
 	forpreorder = true;
 	setFullPage();
 	initModals();
-
+	triggerMenu(0, 3);
 	salesType = SalesType.preorder;
 	batchidx = 5;
 	snidx = batchidx + 1;

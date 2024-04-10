@@ -112,7 +112,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                             context.SaveChanges();
                         }
                        
-                        FileList = context.CustomerInfoes.Where(x=>x.cusCode== cusCode).Select(x=>x.fileName).Distinct().ToList();
+                        FileList = context.CustomerInfoes.Where(x=>x.cusCode== cusCode && x.AccountProfileId==apId && x.type=="file").Select(x=>x.fileName).Distinct().ToList();
                     }                             
                     return Json(new { msg = Resources.Resource.UploadOkMsg, FileList });
                 }
@@ -152,10 +152,10 @@ namespace SmartBusinessWeb.Controllers.Customer
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult SaveAttr(int customerId, List<GlobalAttributeModel> gAttributes, List<CustomAttributeView> cAttributes)
+        public JsonResult SaveAttr(string cusCode, List<GlobalAttributeModel> gAttributes, List<CustomAttributeView> cAttributes)
         {
             var msg = string.Format(Resources.Resource.Saved, Resources.Resource.Attribute);
-            CustomerEditModel.SaveAttr(apId, customerId, gAttributes, cAttributes);
+            CustomerEditModel.SaveAttr(apId, cusCode, gAttributes, cAttributes);
             return Json(msg);
         }
 
@@ -163,10 +163,10 @@ namespace SmartBusinessWeb.Controllers.Customer
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult UpdateFollowUpDate(int customerId, string followupdate)
+        public JsonResult UpdateFollowUpDate(string cusCode, string followupdate)
         {
             CustomerEditModel model = new CustomerEditModel();
-            model.UpdateFollowUpDate(customerId, followupdate);
+            model.UpdateFollowUpDate(cusCode, followupdate);
             var msg = string.Format(Resources.Resource.FollowUpDate, Resources.Resource.SavedOkFormat);
             return Json(msg);
         }
@@ -294,10 +294,10 @@ namespace SmartBusinessWeb.Controllers.Customer
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int customerId)
+        public ActionResult Delete(string cusCode)
         {
             ViewBag.ParentPage = ViewBag.PageName = "customer";
-            CustomerEditModel.Delete(customerId);
+            CustomerEditModel.Delete(cusCode);
             return Json(new { });
         }
 

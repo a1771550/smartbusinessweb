@@ -33,7 +33,7 @@
 <link href="~/Content/select2/custom.css?v=@rand" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css" href="~/Content/customer/edit.css?v=@rand" />
 
-<h2>@ViewBag.Title</h2>
+<h2 data-filelistcount="@Customer.FileList.Count()">@ViewBag.Title</h2>
 @using (Html.BeginForm("Edit", "Customer", FormMethod.Get, new { @Id = "frmCustomer" }))
 {
     @Html.AntiForgeryToken()
@@ -155,13 +155,13 @@
 
 	@if ((bool) Model.ComInfo.enableWhatsappLink)
 	{
-		<div class="d-flex">
+		<div class="row">
 
 			<div class="col-12 col-md-4">
-				<div class="form-group">
-					<label class="control-label " for="cusAddrPhone1">@Resources.Resource.Phone 1</label>
+				<div class="form-group clearfix">
+					<label class=" " for="cusAddrPhone1">@Resources.Resource.Phone 1</label>
 					<input type="text" id="cusAddrPhone1" name="cusAddrPhone1" class="form-control mobile" value="@Customer.cusAddrPhone1" />
-					<span class="small whatsappphone font-weight-bold" data-phone="1" style="color:#9f8ccf">WhatsApp</span>
+					<span class="fa fa-whatsapp whatsappphone font-weight-bold pointer" data-phone="@Customer.cusAddrPhone1" style="color:#9f8ccf" title="WhatsApp"></span>
 				</div>
 			</div>
 
@@ -170,14 +170,14 @@
 				<div class="form-group">
 					<label class="control-label " for="cusAddrPhone2">@Resources.Resource.Phone 2</label>
 					<input type="text" id="cusAddrPhone2" name="cusAddrPhone2" class="form-control mobile" value="@Customer.cusAddrPhone2" />
-					<span class="small whatsappphone font-weight-bold pointer" data-phone="@Customer.cusAddrPhone2" style="color:#9f8ccf">WhatsApp</span>
+					<span class="fa fa-whatsapp whatsappphone font-weight-bold pointer" data-phone="@Customer.cusAddrPhone2" style="color:#9f8ccf"></span>
 				</div>
 			</div>
 			<div class="col-12 col-md-4">
 				<div class="form-group">
 					<label class="control-label " for="cusAddrPhone3">@Resources.Resource.Phone 3</label>
 					<input type="text" id="cusAddrPhone3" name="cusAddrPhone3" class="form-control mobile" value="@Customer.cusAddrPhone3" />
-					<span class="small whatsappphone font-weight-bold pointer" data-phone="@Customer.cusAddrPhone3" style="color:#9f8ccf">WhatsApp</span>
+					<span class="fa fa-whatsapp whatsappphone font-weight-bold pointer" data-phone="@Customer.cusAddrPhone3" style="color:#9f8ccf" title="WhatsApp"></span>
 				</div>
 			</div>
 		</div>
@@ -229,8 +229,8 @@
 			<label class="control-label">@string.Format(Resources.Resource.DateFormat, Resources.Resource.FollowUp)</label>
 			<input type="datetime" class="form-control datepicker" id="followUpDate" />			
 			<input type="hidden" id="followUpInfoId" name="followUpInfoId" value="@(Customer.FollowUpDateInfo==null?0: Customer.FollowUpDateInfo.Id)" />
-			<input type="hidden" id="followUpDate" name="followUpDate" value="@(Customer.FollowUpDateInfo==null?null: Customer.FollowUpDateInfo.followUpDate)" />
-			<input type="hidden" id="FollowUpDateDisplay" name="FollowUpDateDisplay" value="@(Customer.FollowUpDateInfo==null?"": Customer.FollowUpDateInfo.FollowUpDateDisplay)" />
+			<input type="hidden" id="FollowUpDateInfo_followUpDate" value="@(Customer.FollowUpDateInfo==null?null: Customer.FollowUpDateInfo.followUpDate)" />
+			<input type="hidden" id="FollowUpDateInfo_FollowUpDateDisplay" value="@(Customer.FollowUpDateInfo==null?"": Customer.FollowUpDateInfo.FollowUpDateDisplay)" />
 		
 		</div>
 
@@ -274,8 +274,8 @@
 			</div>
 		</div>
 
-		string chkunsubscribe = Customer.unsubscribe != null && (bool)Customer.unsubscribe ? "checked" : "";
-		<div class="form-check">
+		string chkunsubscribe = Customer.cusUnsubscribe != null && (bool)Customer.cusUnsubscribe ? "checked" : "";
+		<div class="form-check" data-checked="@chkunsubscribe">
 			<input class="form-check-input" type="checkbox" value="0" id="chkUnSubscribe" @chkunsubscribe>
 			<label class="form-check-label" for="chkUnSubscribe">
 				@Resources.Resource.UnSubscribeFrmEblast
@@ -291,7 +291,7 @@
 }
 
 <div>
-    @Html.ActionLink(Resources.Resource.BackToList, Model.Referrer)
+    @Html.ActionLink(Resources.Resource.BackToList, "Index")
 </div>
 
 @Html.Partial("_WaitingModal")
@@ -308,7 +308,7 @@
 
 
 <script src="~/Scripts/ts/js/customer/customeredit.js?v=@rand"></script>
-<script src="~/Scripts/ts/js/crm/contact/attributes/globalattribute.js?v=@rand"></script>
+<script src="~/Scripts/ts/js/customer/attributes/globalattribute.js?v=@rand"></script>
 
 @Html.Partial("_UploadFileModal", null, new ViewDataDictionary { { "uploadUrl", "/Customer/UploadFile" } })
 @Html.Partial("_ViewFileModal", null, new ViewDataDictionary { { "imglist", Customer.ImgList }, { "filelist", Customer.FileList } })

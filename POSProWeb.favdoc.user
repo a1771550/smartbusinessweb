@@ -195,6 +195,11 @@
           <path>Scripts\ts\pos\excludedinvoices.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\excludedinvoices.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>item-index.ts</name>
+          <path>Scripts\ts\item\index.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\item\index.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -340,6 +345,16 @@
           <name>DayendsImportFrmCentral.cshtml</name>
           <path>Views\DataTransfer\DayendsImportFrmCentral.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\DataTransfer\DayendsImportFrmCentral.cshtml</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>customer-Edit.cshtml</name>
+          <path>Views\Customer\Edit.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Customer\Edit.cshtml</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>enquiry-Edit.cshtml</name>
+          <path>Views\Enquiry\Edit.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Enquiry\Edit.cshtml</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

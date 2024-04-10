@@ -67,7 +67,7 @@ new { PageNo, SortCol = Model.SortCol, SortOrder = Model.CurrentSortOrder, Keywo
 	</div>
 
 	<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
-	<input type="hidden" id="sortcol" value="@Model.SortCol" />
+	<input type="hidden" id="sortcol" value="@Model.SortCol" /> <!--no "name" attr in propose!-->
 }
 
 @Html.Partial("_WaitingModal")

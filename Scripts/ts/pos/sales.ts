@@ -173,6 +173,7 @@ $(document).on("click", "#btnCheckout", function () {
 	//console.log("Sales:", Sales);
 	//return false;
 	if (Sales.rtsFinalTotal > 0) {
+		//console.log("cusid:" + Sales.rtsCusID);
 		if (Sales.rtsCusCode) {
 			togglePaymentBlk("open", "salesBlk", Sales.rtsFinalTotal);
 		}

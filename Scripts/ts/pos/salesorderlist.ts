@@ -9,11 +9,11 @@ searchmodelist =
 $(document).on("click", "#btnFilter", function (e: JQuery.Event) {
 	e.preventDefault();
 	if (isapprover) {
-		$("#frmSalesOrderList").trigger("submit");
+		$("#frmSalesOrder").trigger("submit");
 	} else {
 		if (searchmodelist.length === 0) searchmodelist.push("0");
 		$("#searchmode").val(searchmodelist.join(","));
-		$("#frmSalesOrderList").trigger("submit");
+		$("#frmSalesOrder").trigger("submit");
 	}
 });
 
@@ -103,15 +103,23 @@ $(document).on("click", ".copy", function () {
 });
 
 $(document).on("click", "#btnReload", function () {
-	window.location.href = "/POSFunc/SalesOrderList";
+	window.location.href = "/SalesOrder/Index";
 });
 
 $(document).on("click", ".colheader", function () {
-	let $sortorder = $("#sortorder").val($(this).data("order"));
-	let $sortname = $("#sortname").val($(this).data("category"));
-	$("#frmSalesOrderList")
-		.append($sortorder)
-		.append($sortname)
+	let $sortcol = $("<input>").attr({
+		type: "hidden",
+		name: "SortCol",
+		value: $(this).data("col"),
+	});
+	let $keyword = $("<input>").attr({
+		type: "hidden",
+		name: "Keyword",
+		value: $(this).data("keyword"),
+	});
+	$("#frmSalesOrder")
+		.append($keyword)
+		.append($sortcol)
 		.trigger("submit");
 });
 
@@ -121,33 +129,16 @@ $(function () {
 	setFullPage();
 	triggerMenu(0, 3);
 
-	const filter: any = getParameterByName("filter");
-	if (filter !== null && Number(filter) === 1) {
-		$(".colheader").each(function (i, e) {
-			if ($(e).data("category") == $("#sortname").val()) {
-				let sortcls =
-					$("#currentsortorder").val() === "asc"
-						? "fa fa-sort-down"
-						: "fa fa-sort-up";
-				$(e).addClass(sortcls);
-				return false;
-			}
-		});
-	} else {
-		$(".colheader").each(function (i, e) {
-			if ($(e).data("category") == $("#sortname").val()) {
-				let sortcls =
-					$("#currentsortorder").val() === "asc"
-						? "fa fa-sort-up"
-						: "fa fa-sort-down";
-				$(e).addClass(sortcls);
-				return false;
-			}
-		});
-	}
+	let $sortorder = $("#sortorder");
+	let $sortcol = $("#sortcol");
+	console.log('sortorder:' + $sortorder.val() + ';sortcol:' + $sortcol.val());
+	$target = $(".colheader").eq(Number($sortcol.val()));
+	let sortcls =
+		$sortorder.val() === "desc" ? "fa fa-sort-up" : "fa fa-sort-down";
+	$target.addClass(sortcls);
 
-	initModals();
-	$("#txtKeyword").trigger("focus");
+
+	initModals();	
 
 	$target = $(".pagination");
 	$target
@@ -163,4 +154,5 @@ $(function () {
 	if (keyword !== null) {
 		$("#txtKeyword").val(keyword);
 	}
+	$("#txtKeyword").trigger("focus");
 });

@@ -64,7 +64,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
                             context.SaveChanges();
                         }
                         
-                        FileList = context.SupplierInfoes.Where(x => x.supCode == supCode).Select(x => x.fileName).Distinct().ToList();
+                        FileList = context.SupplierInfoes.Where(x => x.AccountProfileId==apId && x.type=="file" && x.supCode == supCode).Select(x => x.fileName).Distinct().ToList();
                     }
                   
                     return Json(new { msg = Resources.Resource.UploadOkMsg, FileList });

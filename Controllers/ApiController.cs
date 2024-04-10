@@ -1103,9 +1103,7 @@ namespace SmartBusinessWeb.Controllers
                         cusPhone = customer.cusPhone,
                         cusPriceLevelDescription = customer.cusPriceLevelID == "" ? "" : ModelHelper.GetCustomerPriceLevelDescription(context, customer.cusPriceLevelID),
                         cusContact = customer.cusContact,
-                        cusSaleComment = customer.cusSaleComment,
-                        BRExpiryDate = customer.BRExpiryDate,
-                        BRNo = customer.BRNo,
+                        cusSaleComment = customer.cusSaleComment,                    
                         AbssSalesID = customer.AbssSalesID,
                         cusAddrWeb = customer.cusAddrWeb,
                     };
@@ -1512,11 +1510,10 @@ namespace SmartBusinessWeb.Controllers
                 using (var context = new PPWDbContext(Session["DBName"].ToString()))
                 {
                     //var customer = context.Database.SqlQuery<CustomerModel>(sql, new SqlParameter("email", parameters[0]), new SqlParameter("phone", parameters[1])).FirstOrDefault();
-                    var _customer = context.SearchContactByEmailPhone(parameters[0], parameters[1]).FirstOrDefault();
+                    var _customer = context.SearchContactByEmailPhone(apId, parameters[0], parameters[1]).FirstOrDefault();
                     if (_customer != null)
                     {
                         customer.cusName = _customer.cusName;
-                        customer.cusFirstName = _customer.cusFirstName;
                         customer.cusIsOrganization = _customer.cusIsOrganization;
                         customer.cusContact = _customer.cusContact;
                     }
@@ -1532,22 +1529,20 @@ namespace SmartBusinessWeb.Controllers
                     //var customer = context.Database.SqlQuery<CustomerModel>(sql, new SqlParameter(type, parameters[0])).FirstOrDefault();
                     if (type == "email")
                     {
-                        var _customer = context.SearchContactByEmail(parameters[0]).FirstOrDefault();
+                        var _customer = context.SearchContactByEmail(apId, parameters[0]).FirstOrDefault();
                         if (_customer != null)
                         {
                             customer.cusName = _customer.cusName;
-                            customer.cusFirstName = _customer.cusFirstName;
                             customer.cusIsOrganization = _customer.cusIsOrganization;
                             customer.cusContact = _customer.cusContact;
                         }
                     }
                     else
                     {
-                        var _customer = context.SearchContactByPhone(parameters[0]).FirstOrDefault();
+                        var _customer = context.SearchContactByPhone(apId, parameters[0]).FirstOrDefault();
                         if (_customer != null)
                         {
                             customer.cusName = _customer.cusName;
-                            customer.cusFirstName = _customer.cusFirstName;
                             customer.cusIsOrganization = _customer.cusIsOrganization;
                             customer.cusContact = _customer.cusContact;
                         }
@@ -1852,7 +1847,7 @@ namespace SmartBusinessWeb.Controllers
                                      cusName = c.cusName,
                                      cusPhone = c.cusPhone,
                                      cusEmail = c.cusEmail,
-                                     cusFax = c.cusFax,
+                                     cusAddrFax = c.cusAddrFax,
                                      cusPointsSoFar = c.cusPointsSoFar,
                                      cusPointsUsed = c.cusPointsUsed,
                                      cusPriceLevelID = c.cusPriceLevelID,
@@ -2198,7 +2193,7 @@ namespace SmartBusinessWeb.Controllers
                             cusIsActive = c.cusIsActive,
                             cusName = c.cusName,
                             cusPhone = c.cusPhone,
-                            cusFax = c.cusFax,
+                            cusAddrFax = c.cusAddrFax,
                             cusPointsSoFar = c.cusPointsSoFar,
                             cusPointsUsed = c.cusPointsUsed,
                             cusPriceLevelID = c.cusPriceLevelID
@@ -2429,17 +2424,17 @@ namespace SmartBusinessWeb.Controllers
                                          rtsDeliveryDate = s.rtsDeliveryDate
                                      }).ToList();
 
-                        var custIds = string.Join(",", salesLns.Select(x => x.CustomerID).ToList());
-                        var _customers = context.GetCustomersByCusIds(apId, custIds).ToList();
+                        var cusCodes = string.Join(",", salesLns.Select(x => x.cusCode).ToList());
+                        var _customers = context.GetCustomersByCusCodes(apId, cusCodes).ToList();
                         foreach (var c in _customers)
                         {
                             foreach (var salesln in salesLns)
                             {
-                                if (c.cusCustomerID == salesln.CustomerID)
+                                if (c.cusCode == salesln.cusCode)
                                 {
                                     customers.Add(new CustomerModel
                                     {
-                                        cusCustomerID = c.cusCustomerID??0,
+                                        cusCustomerID = c.cusCustomerID,
                                         salescode = salesln.rtlCode,
                                         cusCode = c.cusCode,
                                         cusIsActive = c.cusIsActive,
@@ -2556,18 +2551,18 @@ namespace SmartBusinessWeb.Controllers
                                      rtsDeliveryDate = s.rtsDeliveryDate
                                  }).ToList();
 
-                    var custIds = string.Join(",", salesLns.Select(x => x.CustomerID).ToList());
-                    var _customers = context.GetCustomersByCusIds(apId, custIds).ToList();
+                    var cusCodes = string.Join(",", salesLns.Select(x => x.cusCode).ToList());
+                    var _customers = context.GetCustomersByCusCodes(apId, cusCodes).ToList();
 
                     foreach (var c in _customers)
                     {
                         foreach (var salesln in salesLns)
                         {
-                            if (c.cusCustomerID == salesln.CustomerID)
+                            if (c.cusCode == salesln.cusCode)
                             {
                                 customers.Add(new CustomerModel
                                 {
-                                    cusCustomerID = c.cusCustomerID??0,
+                                    cusCustomerID = c.cusCustomerID,
                                     salescode = salesln.rtlCode,
                                     cusCode = c.cusCode,
                                     cusIsActive = c.cusIsActive,
@@ -2797,43 +2792,12 @@ namespace SmartBusinessWeb.Controllers
         {
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
-                Session currsess = ModelHelper.GetCurrentSession(context);
-                int apId = currsess.AccountProfileId;
+                Session currsess = ModelHelper.GetCurrentSession(context);                
                 var shop = currsess.sesShop;
                 var device = currsess.sesDvc;
                 var lang = currsess.sesLang;
 
-                if (devicecode != device)
-                {
-                    string url = string.Format(CentralApiUrl4Receipt, shop, devicecode, receiptno, phoneno, lang, refund, CentralBaseUrl);
-                    HttpClient _client = new HttpClient();
-                    var content = await _client.GetStringAsync(url);
-                    var model = JsonConvert.DeserializeObject<CentralDataModel>(content);
-                    if (model.noreceiptFound == 1)
-                    {
-                        return Json(new { msg = Resource.NoReceiptFound }, JsonRequestBehavior.AllowGet);
-                    }
-                    else
-                    {
-                        if (model.toBeRefunded <= 0)
-                        {
-                            return Json(new { msg = Resource.AlreadyRefundedFullAmt }, JsonRequestBehavior.AllowGet);
-                        }
-                        else
-                        {
-                            if (model.customer != null)
-                            {
-                                return Json(model, JsonRequestBehavior.AllowGet);
-                            }
-                            else
-                            {
-                                return Json(new { msg = Resource.NoReceiptFound }, JsonRequestBehavior.AllowGet);
-                            }
-                        }
-                    }
-
-                }
-                else
+                if (devicecode == device)
                 {
                     CentralDataModel model = getReceiptData(context, receiptno, phoneno, lang);
 
@@ -2862,6 +2826,35 @@ namespace SmartBusinessWeb.Controllers
                     else
                     {
                         return Json(new { msg = Resource.NoReceiptFound }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+                else
+                {
+                    string url = string.Format(CentralApiUrl4Receipt, shop, devicecode, receiptno, phoneno, lang, refund, CentralBaseUrl);
+                    HttpClient _client = new HttpClient();
+                    var content = await _client.GetStringAsync(url);
+                    var model = JsonConvert.DeserializeObject<CentralDataModel>(content);
+                    if (model.noreceiptFound == 1)
+                    {
+                        return Json(new { msg = Resource.NoReceiptFound }, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        if (model.toBeRefunded <= 0)
+                        {
+                            return Json(new { msg = Resource.AlreadyRefundedFullAmt }, JsonRequestBehavior.AllowGet);
+                        }
+                        else
+                        {
+                            if (model.customer != null)
+                            {
+                                return Json(model, JsonRequestBehavior.AllowGet);
+                            }
+                            else
+                            {
+                                return Json(new { msg = Resource.NoReceiptFound }, JsonRequestBehavior.AllowGet);
+                            }
+                        }
                     }
                 }
             }
@@ -3066,47 +3059,9 @@ namespace SmartBusinessWeb.Controllers
                 GetCustomerAddressList(context, ref customer);
                 //ModelHelper.GetCustomerPriceLevelDesc(context, ref customer);                
             }
-
             return Json(customer, JsonRequestBehavior.AllowGet);
         }
-
-        [HttpGet]
-        public JsonResult GetCustomerById(int customerId)
-        {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
-            {
-                var _customer = context.GetCustomerById19(customerId, AccountProfileId).FirstOrDefault();
-                CustomerModel customer = new CustomerModel();
-                if (_customer != null)
-                {
-                    customer.cusCustomerID = _customer.cusCustomerID;
-                    customer.cusFirstName = _customer.cusFirstName;
-                    customer.cusIsOrganization = _customer.cusIsOrganization;
-                    customer.cusContact = _customer.cusContact;
-                    customer.cusCode = _customer.cusCode;
-                    customer.cusName = _customer.cusName;
-                    customer.cusPhone = _customer.cusPhone;
-                    customer.cusPointsSoFar = _customer.cusPointsSoFar;
-                    customer.cusPointsUsed = _customer.cusPointsUsed;
-                    customer.cusPriceLevelID = _customer.cusPriceLevelID;
-                    customer.cusIsActive = _customer.cusIsActive;
-                    customer.CreateTime = _customer.CreateTime;
-                    customer.ModifyTime = _customer.ModifyTime;
-                    customer.cusEmail = _customer.cusEmail;
-                    //customer.AccountProfileId = _customer.AccountProfileId;
-                    customer.cusMobile = _customer.cusMobile;
-                    customer.BalanceDueDays = _customer.BalanceDueDays;
-                    customer.PaymentIsDue = _customer.PaymentIsDue;
-                    customer.PaymentTermsDesc = _customer.Description;
-                    customer.IsLastSellingPrice = _customer.IsLastSellingPrice;
-                    customer.unsubscribe = _customer.unsubscribe;
-                    GetCustomerAddressList(context, ref customer);
-                    customer.AccountProfileName = _customer.AccountProfileName;
-                    ModelHelper.GetCustomerPriceLevelDesc(context, ref customer);
-                }
-                return Json(customer, JsonRequestBehavior.AllowGet);
-            }
-        }
+   
 
         public void GetCustomerAddressList(PPWDbContext context, ref CustomerModel customer)
         {

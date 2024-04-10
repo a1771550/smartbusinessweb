@@ -27,6 +27,7 @@ namespace SmartBusinessWeb.Controllers.Customer
 				model = (from cp in context.CustomerPointPriceLevels
 						 join pl in context.PriceLevels
 						 on cp.PriceLevelID equals pl.PriceLevelID
+						 where cp.AccountProfileId==apId && pl.AccountProfileId==apId
 						 select new CustomerPointPriceLevelModel
 						 {
 							 Id = cp.Id,
@@ -50,12 +51,15 @@ namespace SmartBusinessWeb.Controllers.Customer
 				CustomerPointPriceLevel cppl = new CustomerPointPriceLevel
 				{
 					CustomerPoint = model.CustomerPoint,
-					PriceLevelID = model.PriceLevelID
+					PriceLevelID = model.PriceLevelID,
+					AccountProfileId = apId,				
 				};
 				PriceLevel priceLevel = new PriceLevel
 				{
 					PriceLevelID = model.PriceLevelID,
-					Description = model.PriceLevelDescription
+					Description = model.PriceLevelDescription,
+					AccountProfileId = apId,
+					CreateTime = DateTime.Now
 				};
 				context.CustomerPointPriceLevels.Add(cppl);
 				context.PriceLevels.Add(priceLevel);
@@ -101,7 +105,7 @@ namespace SmartBusinessWeb.Controllers.Customer
 			using (var context = new PPWDbContext(Session["DBName"].ToString()))
 			{
 				CustomerPointPriceLevel cppl = context.CustomerPointPriceLevels.Find(Id);
-				PriceLevel priceLevel = context.PriceLevels.FirstOrDefault(x => x.PriceLevelID == cppl.PriceLevelID);
+				PriceLevel priceLevel = context.PriceLevels.FirstOrDefault(x => x.AccountProfileId==apId && x.PriceLevelID == cppl.PriceLevelID);
 				
 				string msg = string.Empty;
 				if (cppl != null)

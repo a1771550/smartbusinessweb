@@ -36,7 +36,7 @@
 		</div>		
 		@Html.Partial("_LoginPartial")
 	</nav>
-	<div class="container">
+	<div class="container" style="margin-top:2em;">
 		<div>
 			@if (TempData["message"] != null)
 			{
@@ -49,10 +49,10 @@
 		</div>
 		
 	</div>
-    <div class="container body-content">
+    <div class="container body-content my-5">
         <div class="mt-auto alert alert-danger">@Resources.Resource.UnAuthorizedWarning</div>
         <button type="button" class="btn btn-outline-primary my-auto" onclick="javascript: history.go(-1);">@Resources.Resource.Back</button>
-        <hr />
+       
         @Html.Partial("_Footer")
     </div>
 	<script>

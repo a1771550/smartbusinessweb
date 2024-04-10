@@ -5,7 +5,7 @@
 	}
 
 	abstract validform(): boolean;
-	abstract submitform();
+	abstract submitForm();
 }
 
 enum TriggerReferrer {
@@ -172,7 +172,7 @@ let ismanager: boolean = false;
 let TransferList: Array<IStockTransfer> = [];
 let isLocal: boolean = false;
 let $infoblk: any;
-let customerId: number = 0;
+let cusCode: string;
 let batdelqtychange: boolean = false;
 let chkbatsnvtchange: boolean = false;
 let vtdelqtychange: boolean = false;
@@ -939,28 +939,23 @@ function togglePaging(type: string = "item", show: boolean = true) {
 	switch (type) {
 		case "Customer":
 			$target = $("#tblCus");
-			$pager = $(".CusPager");
 			break;
 		case "hotlist":
 			$target = $("#tblHotList");
-			$pager = $(".Pager");
 		case "contact":
 			$target = $("#tblContact");
-			$pager = $(".ContactPager");
 			break;
 		case "stock":
 			$target = $("#tblStock");
-			$pager = $(".StockPager");
 			break;
 		case "transfer":
-			$target = $("#tblTransfer");
-			$pager = $(".TransferPager");
+			$target = $("#tblTransfer");			
 			break;
 		default:
 		case "item":
-			$target = $("#tblItem");
-			$pager = $(".Pager");
+			$target = $("#tblItem");			
 	}
+	$pager = $(".Pager");
 	let $norecord: JQuery = $target.prev("#norecord");
 	if (show) {
 		$target.show();
@@ -1507,6 +1502,7 @@ $(document).on("click", ".Pager .page", function () {
 	if (fortraining) GetTrainings(pageindex);
 	if (forsales || forpreorder || forwholesales || forpurchase)
 		GetItems(pageindex);
+	if (forsales ||forsimplesales) GetCustomers4Sales(pageindex);
 
 	if (forstock) GetStocks(pageindex);
 });
@@ -1654,7 +1650,7 @@ function OnGetCustomersSuccess(response) {
 		if (CusList.length === 1) {
 			selectedCus = structuredClone(CusList[0]);
 			//console.log("selectedCus#ongetcustomerssccuess:", selectedCus);
-			selectedCusCodeName = selectedCus.cusCustomerID.toString();
+			selectedCusCodeName = selectedCus.cusCode;
 			selectCus();
 			closeCusModal();
 		} else {
@@ -1665,7 +1661,7 @@ function OnGetCustomersSuccess(response) {
 		if (searchcusmode) {
 			searchcusmode = false;
 		} else {
-			$(".CusPager").ASPSnippets_Pager({
+			$(".Pager").ASPSnippets_Pager({
 				ActiveCssClass: "current",
 				PagerCssClass: "pager",
 				PageIndex: model.PageIndex,
@@ -1678,7 +1674,6 @@ function OnGetCustomersSuccess(response) {
 	}
 }
 
-//todo:
 function _writeCustomers(_customerlist: Array<ICustomer>) {
 	let html = "";
 	$.each(_customerlist, function (i, e) {
@@ -1694,7 +1689,7 @@ function _writeCustomers(_customerlist: Array<ICustomer>) {
 	$target = $("#tblCus tbody");
 	$target.find("tr.cuscode").remove();
 	$target.append(html);
-	$(".CusPager").empty();
+	$target.find(".Pager").empty();
 }
 function OnSearchCustomersSuccess(response) {
 	keyword = "";
@@ -1842,7 +1837,7 @@ function saveAttributeVals(edit = true) {
 
 	let _attform = new attform(edit);
 	if (_attform.validform()) {
-		_attform.submitform();
+		_attform.submitForm();
 	}
 }
 
@@ -3841,33 +3836,6 @@ function initModals() {
 		});
 	}
 
-	if ($("#customerFollowUpModal").length)
-		customerFollowUpModal = $("#customerFollowUpModal").dialog({
-			width: 400,
-			title: customerfollowuptxt,
-			autoOpen: false,
-			open: function (e) {
-				$(e.target)
-					.parent()
-					.css("background-color", "#fefbf5")
-					.find(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix")
-					.css("background-color", "#fefbf5");
-			},
-			modal: true,
-			buttons: [
-				{
-					class: "savebtn",
-					text: oktxt,
-					click: confirmCustomerFollowUp,
-				},
-				{
-					class: "secondarybtn",
-					text: canceltxt,
-					click: closeCustomerFollowUpModal,
-				},
-			],
-		});
-
 	if ($("#customerTermsModal").length)
 		customerTermsModal = $("#customerTermsModal").dialog({
 			width: 400,
@@ -5536,6 +5504,7 @@ interface ICustomer {
 	cusAddrPhone1: string | null;
 	cusAddrPhone2: string | null;
 	cusAddrPhone3: string | null;
+	cusAddrFax: string | null;
 	cusAddrWeb: string | null;
 	cusPriceLevel: string | null;
 	cusPriceLevelID: string | null;
@@ -5544,6 +5513,7 @@ interface ICustomer {
 	cusPointsUsed: number | null;
 	cusSaleComment: string | null;
 	cusTermsID: number | null;
+	cusUnsubscribe: boolean;
 	TermsOfPaymentID: string | null;
 	PaymentIsDue: number | null;
 	DiscountDays: number | null;
@@ -5576,8 +5546,7 @@ interface ICustomer {
 	CustomAttributeList: ICustomAttribute[];
 	TaxCode: string | null;
 	FollowUpDateInfo: ICustomerInfo;
-	FollowUpRecordList: ICustomerInfo[];
-	unsubscribe: boolean | null;
+	FollowUpRecordList: ICustomerInfo[];	
 	CustomerItems: ICustomerItem[];
 	StreetLines: string[];
 	CustomerInfo: ICustomerInfo[];
@@ -6785,7 +6754,7 @@ let apId: number = 0;
 
 interface ICustomAttribute {
 	attrId: string;
-	contactId: number;
+	cusCode: string;
 	attrName: string;
 	attrValue: string | null;
 	attrType: string | null;
@@ -7834,6 +7803,7 @@ let DicItemSNs: { [Key: string]: Array<ISerialNo> } = {};
 
 
 interface IPreSales {
+    rtsCusCode: string;
     rtsServiceChargeAmt: number;
     rtsServiceChargePc: number;
 	Currency: string;
@@ -7844,8 +7814,7 @@ interface IPreSales {
 	SalesDateDisplay: string;
 	SettleDateDisplay: string;
 	salescode: string;
-	rtsUID: number;
-	rtsCusID: number;
+	rtsUID: number;	
 	rtsLineTotalPlusTax: number | null;
 	rtsFinalDiscAmt: number | null;
 	rtsRmks: string;
@@ -14290,8 +14259,6 @@ class ItemEditFrm extends SimpleForm {
 		this.edit = edit;
 	}
 
-
-
 	validform(): boolean {
 		let msg = "";
 
@@ -14372,7 +14339,7 @@ class ItemEditFrm extends SimpleForm {
 		return msg === "";
 	}
 
-	submitform() {
+	submitForm() {
 		let url = !EditItem && ItemVariations.length > 0
 			? "/Item/EditIV"
 			: "/Item/Edit";
@@ -15459,13 +15426,13 @@ $(document).on("dblclick", ".cuscode", function () {
 	closeCusModal();
 	selectedCusCodeName = $(this).data("code");
 	selectedCus = CusList.filter(
-		(x) => x.cusCustomerID.toString() == selectedCusCodeName
+		(x) => x.cusCode == selectedCusCodeName
 	)[0];
 	if (!selectedCus) {
 		$.ajax({
 			type: "GET",
-			url: "/Api/GetCustomerById",
-			data: { customerId: parseInt(selectedCusCodeName) },
+			url: "/Api/GetCustomerByCode",
+			data: { cusCode: selectedCusCodeName },
 			success: function (data: ICustomer) {
 				selectedCus = data;
 				selectCus();
@@ -16247,7 +16214,7 @@ const removeItemAttr = (ele) => {
 $(document).on("click", "#btnSaveItem", function () {
 	let itemeditfrm: ItemEditFrm = new ItemEditFrm(editmode);
 	if (itemeditfrm.validform()) {
-		itemeditfrm.submitform();
+		itemeditfrm.submitForm();
 	}
 });
 
@@ -16271,16 +16238,23 @@ function handleWhatsappClick(
 	e.preventDefault();
 	let lnk = $appInfo.data("whatsappapilnk");
 	const txt = $appInfo.data("whatsappapidefaulttxt");
-	$target = $(this).hasClass("fa")
-		? $(this).next("input")
-		: $(this).prev("input");
-	let phoneno = ($target.val() as string).trim();
-	if (!phoneno.startsWith("852")) {
-		phoneno = `852${phoneno}`;
-		$target.val(phoneno);
+	if (forcustomer) $target = $(this).prev("input");
+	else {
+		$target = $(this).hasClass("fa")
+			? $(this).next("input")
+			: $(this).prev("input");
 	}
-	lnk = lnk.replace("{0}", $target.val()).replace("{1}", txt);
-	popupCenter({ url: lnk, title: "", w: 900, h: 500 });
+	let phoneno = $target.val();
+	if (phoneno) {
+		phoneno = (phoneno as string).trim();
+		if (!phoneno.startsWith("852")) {
+			phoneno = `852${phoneno}`;
+			$target.val(phoneno);
+		}
+		lnk = lnk.replace("{0}", $target.val()).replace("{1}", txt);
+		popupCenter({ url: lnk, title: "", w: 900, h: 500 });
+	}
+	
 }
 
 function itemEditPageLoad() {
@@ -16891,13 +16865,7 @@ function fillInItemModal() {
 let forCustomer: boolean = false;
 function confirmDateTime() {
 	let strdate = $("#strDateTime").val();
-	if (forCustomer) {
-		//$.post("/Customer/UpdateFollowUpDate", {
-		//    __RequestVerificationToken: $(
-		//        "input[name=__RequestVerificationToken]"
-		//    ).val(),
-		//    customerId,
-		//    followupdate: strdate });
+	if (forCustomer) {		
 		$.ajax({
 			type: "POST",
 			url: "/Customer/UpdateFollowUpDate",
@@ -16905,7 +16873,7 @@ function confirmDateTime() {
 				__RequestVerificationToken: $(
 					"input[name=__RequestVerificationToken]"
 				).val(),
-				customerId,
+				cusCode,
 				followupdate: strdate,
 			},
 			success: function (data) {
@@ -17310,15 +17278,15 @@ function fillInCustomer() {
 
 	Customer.IsLastSellingPrice = $("#IsLastSellingPrice").is(":checked");
 
+	if (!Customer.FollowUpDateInfo) Customer.FollowUpDateInfo = { Id:0} as ICustomerInfo;
 	if (Customer.FollowUpDateInfo) {
 		Customer.FollowUpDateInfo.type = "date";
 		Customer.FollowUpDateInfo.status = $(".followup:checked").val() as string;
 		Customer.FollowUpDateInfo.JsFollowUpDate = $("#followUpDate").val() as string;
-		Customer.FollowUpDateInfo.Id = Number($("#FollowUpDateInfo_Id").val());
+		Customer.FollowUpDateInfo.Id = Number($("#followUpInfoId").val());
 	}
 
-
-	Customer.unsubscribe = $("#chkUnsubscribe").is(":checked");
+	Customer.cusUnsubscribe = $("#chkUnSubscribe").is(":checked");
 }
 
 $(document).on("click", ".itemremove", function () {
@@ -17783,6 +17751,9 @@ let salesln: ISalesLn;
 let checkedcashdrawer: boolean = false;
 
 function updatePreSales() {
+	//PreSales.rtsServiceChargePc = ServiceChargePC;
+	//PreSales.rtsServiceChargeAmt = ServiceChargeAmt;
+
 	let totalamt = 0;
 	let $rows = $(`#${gTblName} tbody tr`);
 	$rows.each(function (i, e) {
@@ -17874,8 +17845,8 @@ function updateSimpleSales() {
 	Sales.authcode = authcode;
 	Sales.rtsCurrency = $("#rtsCurrency").val() as string;
 	Sales.rtsExRate = exRate;
-	Sales.rtsServiceChargePc = ServiceChargePC;
-	Sales.rtsServiceChargeAmt = ServiceChargeAmt;
+	//Sales.rtsServiceChargePc = ServiceChargePC;
+	//Sales.rtsServiceChargeAmt = ServiceChargeAmt;
 
 	SimpleSalesLns = [];
 	$(".product-lists").each(function (i, e) {
@@ -17887,8 +17858,8 @@ function updateSimpleSales() {
 }
 
 function updateSales() {
-	Sales.rtsServiceChargePc = ServiceChargePC;
-	Sales.rtsServiceChargeAmt = ServiceChargeAmt;
+	//Sales.rtsServiceChargePc = ServiceChargePC;
+	//Sales.rtsServiceChargeAmt = ServiceChargeAmt;
 
 	let totalamt = 0;
 	let $rows = $("#tblSales tbody tr");
@@ -18393,10 +18364,9 @@ $(document).on("click", ".respond", function () {
 	let type: string = $(this).data("type");
 
 	if (forcustomer) {
-		customerId = $(this).data("id") as number;
+		cusCode = $(this).data("code") as string;
 		selectedCus = {} as ICustomer;
-		selectedCus.cusCode = $(this).data("code");
-		selectedCus.cusCustomerID = customerId;
+		selectedCus.cusCode = cusCode;	
 		selectedCus.cusName = $(this).data("name");
 	} else {
 		if (!receiptno)
@@ -18516,54 +18486,7 @@ function handleWhatsAppPhone(phone: string) {
 }
 
 function respondReview(type) {
-	openWaitingModal();
-	if (forcustomer) {
-		$.ajax({
-			type: "POST",
-			url: "/Api/RespondCustomerReview",
-			data: {
-				__RequestVerificationToken: $(
-					"input[name=__RequestVerificationToken]"
-				).val(),
-				type,
-				customerId,
-				usercode: $infoblk.data("usercode"),
-				rejectreason,
-			},
-			success: function (data) {
-				closeWaitingModal();
-				//console.log('datamsg:' + data.msg);
-				//return false;
-				if (data) {
-					//let html: string = "";
-					let msg: string = "";
-					if (type == "approve") {
-						forapprovedcustomer = true;
-						msg = approvedcustomertxt;
-					}
-					if (type == "reject") {
-						forrejectedcustomer = true;
-						msg = rejectedcustomertxt;
-					}
-					//console.log("salesman:", data.salesman);
-					//let e: ISalesman = data.salesman;
-					//html = `<tr><td>${e.UserName}</td><td><button type="button" class="btn btn-primary whatspplink" data-code="" data-phone="" data-name="" data-customerurl="${data.url}">${sendtxt}</button></td></tr>`;
-					if (enableWhatsappLnk) {
-						msg = msg
-							.replace("{0}", encodeURIComponent(data.customername))
-							.replace("{1}", data.url);
-						whatsapplnk = whatsapplnk
-							.replace("{0}", handleWhatsAppPhone(data.adminphone))
-							.replace("{1}", msg);
-						window.open(whatsapplnk, "_blank");
-					}
-
-					window.location.href = "/Customer/Index";
-				}
-			},
-			dataType: "json",
-		});
-	}
+	openWaitingModal();	
 	if (forwholesales) {
 		$.ajax({
 			type: "POST",
@@ -18816,7 +18739,7 @@ function _submitSales() {
 	}
 	if (forpreorder) {
 		url = "/Preorder/Edit";
-		PreSales.rtsCusID = selectedCus.cusCustomerID;
+		PreSales.rtsCusCode = selectedCus.cusCode;
 		PreSales.rtsRmks = $("#txtNotes").val() as string;
 		PreSales.rtsInternalRmks = $("#txtInternalNotes").val() as string;
 		PreSales.authcode = authcode;
@@ -18827,7 +18750,7 @@ function _submitSales() {
 		PreSales.rtsDvc = $("#drpDevice").val() as string;
 		PreSales.rtsAllLoc = $("#chkAllLoc").is(":checked");
 		PreSales.rtsServiceChargePc = ServiceChargePC;
-		PreSales.rtsServiceChargeAmt = ServiceChargeAmt;
+		//PreSales.rtsServiceChargeAmt = ServiceChargeAmt;
 	}
 
 	let data = forpreorder
@@ -19863,7 +19786,7 @@ $(document).on("click", ".fa-close.record", function () {
 	$target = $(this).parent("div").parent(".card").parent(".displayblk");
 	let model: ICustomerInfo = {
 		Id: Number($target.data("id")),
-		cusId,
+		cusCode,
 	} as ICustomerInfo;
 	$.ajax({
 		//contentType: 'application/json; charset=utf-8',
@@ -19960,7 +19883,7 @@ function infoCallBackOk(data: IInfoBase[]) {
 			let lastedited: string = lasteditedbyformat
 				.replace("{0}", x.ModifiedBy??x.CreatedBy)
 				.replace("{1}", x.ModifyTimeDisplay??x.CreateTimeDisplay);
-			html += `<div class="displayblk col-12 col-sm-4 mb-1" data-enqid="${x.enId}" data-cusid="${x.cusId}" data-id="${x.Id}">
+			html += `<div class="displayblk col-12 col-sm-4 mb-1" data-enqid="${x.enId}" data-cuscode="${x.cusCode}" data-id="${x.Id}">
                             <div class="card">
                                 <div class="text-right small"><span class="fa fa-edit text-info record pointer mr-2"></span><span class="fa fa-close text-danger record pointer"></span></div>
                                 <div class="card-body">
@@ -20028,8 +19951,7 @@ $(document).on("click", ".saverecord", function () {
 
 
 interface IInfoBase {
-	Id: any;
-	cusId: number | null;
+	Id: any;	
 	cusCode: string | null;
 	enId: string | null;
 	fileName: string;
@@ -20044,8 +19966,7 @@ interface IInfoBase {
 	ModifyTimeDisplay: string | null;
 	ModifiedBy: string | null;
 }
-interface ICustomerInfo extends IInfoBase {
-	/*Id: number;*/
+interface ICustomerInfo extends IInfoBase {	
 	cusCode: string;
 	cusAddrLocation: number;
 	AccountProfileId: number;
@@ -20065,19 +19986,7 @@ interface ICustomerInfo extends IInfoBase {
 	Salutation: string;
 	ContactName: string;
 	WWW: string;
-	Street: string;
-	//cusId: number;
-	//fileName: string;
-	//remark: string;
-	//type: string;
-	//status: string;
-	//followUpDate: Date | null;
-	//JsFollowUpDate: string | null;
-	//followUpRecord: string | null;
-	//CreateTimeDisplay: string | null;
-	//CreatedBy: string | null;
-	//ModifyTimeDisplay: string | null;
-	//ModifiedBy: string | null;
+	Street: string;	
 }
 interface IEnquiryInfo extends IInfoBase {
 	Id: string;
@@ -22097,8 +22006,8 @@ function populateFileList(files: string[]) {
 }
 function handleUploadedFile(result: any) {
 	closeWaitingModal();
+	closeViewFileModal();
 	UploadedFileList = structuredClone(result.FileList);
-	//console.log("UploadedFileList:", UploadedFileList);
 	closeUploadFileModal();
 }
 
@@ -22386,3 +22295,4 @@ function handlePaymentTypeSaved() {
 		dataType: 'json'
 	});
 }
+
