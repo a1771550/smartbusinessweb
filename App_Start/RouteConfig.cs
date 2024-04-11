@@ -31,13 +31,13 @@ namespace SmartBusinessWeb
             //http://192.168.123.54:9000/Track/3/22535/testemail/testemail/67456475/kevinlau@united.com.hk/12345/0/
             routes.MapRoute(
                null,
-               "Track/{blastId}/{contactId}/{contactName}/{organization}/{phone}/{email}/{companyId}/{imported}/",
+               "Track/{blastId}/{cusCode}/{contactName}/{organization}/{phone}/{email}/{companyId}/{imported}/",
 new { controller = "Api", action = "ViewTrack" }
                );
 
             routes.MapRoute(
                 null,
-                "Track/{blastId}/{contactId}/",
+                "Track/{blastId}/{cusCode}/",
 new { controller = "Api", action = "ViewTrack", contactName = UrlParameter.Optional, organization = UrlParameter.Optional, phone = UrlParameter.Optional, email = UrlParameter.Optional, companyId = UrlParameter.Optional, imported = UrlParameter.Optional }
                 );
 

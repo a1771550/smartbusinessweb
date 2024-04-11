@@ -1182,9 +1182,7 @@ namespace SmartBusinessWeb.Controllers
             }
 
             if (filename.StartsWith("Customers_"))
-            {
-                WritePGCustomerToABSS(AccountProfileId, ref onlineModeItem, dmodel);
-                updateDB(onlineModeItem.checkoutIds.ToArray(), AccountProfileId, CheckOutType.PGCustomers);
+            {               
                 WriteMyobCustomerToABSS(AccountProfileId, ref onlineModeItem, dmodel);
                 updateDB(onlineModeItem.checkoutIds.ToArray(), AccountProfileId, CheckOutType.Customers);
                 WriteVipToABSS();
@@ -1327,14 +1325,14 @@ namespace SmartBusinessWeb.Controllers
                 string value = "";
                 string cardstatus = supplier.supIsActive ? "N" : "Y";
                 /*
-				 * "CoLastName", "CardID", "CardStatus", "Address1Phone1", "CustomField3", "Address1Email", "PaymentIsDue", "DiscountDays", "BalanceDueDays", "Address1ContactName", "Address1AddressLine1", "Address1AddressLine2", "Address1AddressLine3", "Address1AddressLine4", "Address1Phone2", "Address1Phone3", "Address1City", "Address1Country", "Address1Website", "CurrencyCode", "BillingRate"
+				 * "CoLastName", "CardID", "CardStatus", "Address1Phone1", "CustomField3", "Address1Email", "PaymentIsDue", "DiscountDays", "BalanceDueDays", "Address1ContactName", "Address1AddressLine1", "Address1AddressLine2", "Address1AddressLine3", "Address1AddressLine4", "Address1Phone2", "Address1Phone3", "Address1City", "Address1Country", "Address1Website","RecordID"
 				 */
                 supplier.supAddrStreetLine1 = CommonHelper.StringHandleAddress(supplier.supAddrStreetLine1);
                 supplier.supAddrStreetLine2 = CommonHelper.StringHandleAddress(supplier.supAddrStreetLine2);
                 supplier.supAddrStreetLine3 = CommonHelper.StringHandleAddress(supplier.supAddrStreetLine3);
                 supplier.supAddrStreetLine4 = CommonHelper.StringHandleAddress(supplier.supAddrStreetLine4);
 
-                value = string.Format("(" + strcolumn + ")", StringHandlingForSQL(supplier.supName), StringHandlingForSQL(supplier.supCode), cardstatus, StringHandlingForSQL(supplier.supPhone), "", StringHandlingForSQL(supplier.supEmail), "", "", "", "", supplier.supAddrStreetLine1, supplier.supAddrStreetLine2, supplier.supAddrStreetLine3, supplier.supAddrStreetLine4, StringHandlingForSQL(supplier.supAddrPhone2), StringHandlingForSQL(supplier.supAddrPhone3), StringHandlingForSQL(supplier.supAddrCity), StringHandlingForSQL(supplier.supAddrCountry), StringHandlingForSQL(supplier.supAddrWeb));
+                value = string.Format("(" + strcolumn + ")", StringHandlingForSQL(supplier.supName), StringHandlingForSQL(supplier.supCode), cardstatus, StringHandlingForSQL(supplier.supPhone), "", StringHandlingForSQL(supplier.supEmail), "", "", "", "", supplier.supAddrStreetLine1, supplier.supAddrStreetLine2, supplier.supAddrStreetLine3, supplier.supAddrStreetLine4, StringHandlingForSQL(supplier.supAddrPhone2), StringHandlingForSQL(supplier.supAddrPhone3), StringHandlingForSQL(supplier.CityTxt), StringHandlingForSQL(supplier.CountryTxt), StringHandlingForSQL(supplier.supAddrWeb), supplier.supId);
 
                 values.Add(value);
             }
@@ -1348,36 +1346,6 @@ namespace SmartBusinessWeb.Controllers
             using localhost.Dayends dayends = new localhost.Dayends();
             dayends.Url = ComInfo.WebServiceUrl;
             dayends.WriteMYOB(ConnectionString, sql);
-
-        }
-
-        private void WritePGCustomerToABSS(int AccountProfileId, ref OnlineModeItem onlineModeItem, DataTransferModel dmodel)
-        {
-            string sql = MyobHelper.InsertImportCustomer4ApprovalSql.Replace("0", "{0}");
-            List<string> sqllist = new List<string>();
-
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
-            {
-                string ConnectionString = GetAbssConnectionString(context, "READ_WRITE", AccountProfileId);
-                ModelHelper.GetDataTransferData(context, AccountProfileId, CheckOutType.PGCustomers, ref dmodel);
-
-                if (dmodel.CustomerList.Count > 0)
-                {
-                    List<string> values;
-                    GetMyobSQL4Customer(context, out values, dmodel.CustomerList);
-
-                    sql = string.Format(sql, string.Join(",", values));
-                    sqllist.Add(sql);
-
-                    using (localhost.Dayends dayends = new localhost.Dayends())
-                    {
-                        dayends.WriteMYOB(ConnectionString, sql);
-                    }
-
-                    ModelHelper.WriteLog(context, string.Join(",", sqllist), "ExportFrmShop");
-                    onlineModeItem.checkoutIds = dmodel.CheckOutIds_Customer;
-                }
-            }
         }
 
         private static void GetMyobSQL4Customer(PPWDbContext context, out List<string> values, List<CustomerModel> customerlist)
@@ -1417,14 +1385,7 @@ namespace SmartBusinessWeb.Controllers
 
                 string streetln1 = "";
                 string streetln2 = "";
-                //string street1ln1 = "";
-                //string street1ln2 = "";
-                //string street2ln1 = "";
-                //string street2ln2 = "";
-                //string street3ln1 = "";
-                //string street3ln2 = "";
-                //string street4ln1 = "";
-                //string street4ln2 = "";
+               
                 if (customer.AddressList != null && customer.AddressList.Count > 0)
                 {
                     if (customer.AddressList[0] != null)
@@ -1432,36 +1393,12 @@ namespace SmartBusinessWeb.Controllers
                         streetln1 = customer.AddressList[0].StreetLine1;
                         streetln2 = customer.AddressList[0].StreetLine2;
                         streetln1 = CommonHelper.StringToNarrow4SQL(string.Concat(streetln1, streetln2));
-                    }
-                    //if (customer.AddressList.Count >= 2 && customer.AddressList[1] != null)
-                    //{
-                    //    street1ln1 = customer.AddressList[1].StreetLine1;
-                    //    street1ln2 = customer.AddressList[1].StreetLine2;
-                    //    street1ln1 = CommonHelper.StringToNarrow4SQL(string.Concat(street1ln1, street1ln2));
-                    //}
-                    //if (customer.AddressList.Count >= 3 && customer.AddressList[2] != null)
-                    //{
-                    //    street2ln1 = customer.AddressList[2].StreetLine1;
-                    //    street2ln2 = customer.AddressList[2].StreetLine2;
-                    //    street2ln1 = CommonHelper.StringToNarrow4SQL(string.Concat(street2ln1, street2ln2));
-                    //}
-                    //if (customer.AddressList.Count >= 4 && customer.AddressList[3] != null)
-                    //{
-                    //    street3ln1 = customer.AddressList[3].StreetLine1;
-                    //    street3ln2 = customer.AddressList[3].StreetLine2;
-                    //    street3ln1 = CommonHelper.StringToNarrow4SQL(string.Concat(street3ln1, street3ln2));
-                    //}
-                    //if (customer.AddressList.Count >= 5 && customer.AddressList[4] != null)
-                    //{
-                    //    street4ln1 = customer.AddressList[4].StreetLine1;
-                    //    street4ln2 = customer.AddressList[4].StreetLine2;
-                    //    street4ln1 = CommonHelper.StringToNarrow4SQL(string.Concat(street4ln1, street4ln2));
-                    //}
+                    }                    
                 }
 
-                /*"CoLastName", "CardID", "CardStatus", "ItemPriceLevel", "InvoiceDelivery", "Address1Email", "Address1ContactName", "Address1AddressLine1", "Address1Phone1", "Address1Phone2", "Address1Phone3", "Address1City", "Address1Country", "Address1Website", "PaymentIsDue", "BalanceDueDays", "Address2Website"
+                /*"CoLastName", "CardID", "CardStatus", "ItemPriceLevel", "InvoiceDelivery", "Address1Email", "Address1ContactName", "Address1AddressLine1", "Address1Phone1", "Address1Phone2", "Address1Phone3", "Address1City", "Address1Country", "Address1Website", "PaymentIsDue", "BalanceDueDays", "Address2Website", "RecordID"
 				 */
-                value = string.Format("(" + strcolumn + ")", CommonHelper.StringToNarrow4SQL(customer.cusName), StringHandlingForSQL(customer.cusCode), cardstatus, customer.iPriceLevel, deliverystatus, StringHandlingForSQL(customer.cusEmail), StringHandlingForSQL(customer.cusContact), streetln1, StringHandlingForSQL(customer.cusAddrPhone1), StringHandlingForSQL(customer.cusAddrPhone2), StringHandlingForSQL(customer.cusAddrPhone3), StringHandlingForSQL(customer.cusAddrCity), StringHandlingForSQL(customer.cusAddrCountry), StringHandlingForSQL(customer.cusAddrWeb), customer.PaymentIsDue, customer.Terms.BalanceDueDays, customer.cusPointsActive.ToString());
+                value = string.Format("(" + strcolumn + ")", CommonHelper.StringToNarrow4SQL(customer.cusName), StringHandlingForSQL(customer.cusCode), cardstatus, customer.iPriceLevel, deliverystatus, StringHandlingForSQL(customer.cusEmail), StringHandlingForSQL(customer.cusContact), streetln1, StringHandlingForSQL(customer.cusAddrPhone1), StringHandlingForSQL(customer.cusAddrPhone2), StringHandlingForSQL(customer.cusAddrPhone3), StringHandlingForSQL(customer.CityTxt), StringHandlingForSQL(customer.CountryTxt), StringHandlingForSQL(customer.cusAddrWeb), customer.PaymentIsDue, customer.Terms.BalanceDueDays, customer.cusPointsActive.ToString(), customer.cusCustomerID);
                 values.Add(value);
             }
         }

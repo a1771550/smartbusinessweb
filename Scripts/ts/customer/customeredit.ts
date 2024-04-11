@@ -171,7 +171,7 @@ $(function () {
 	let $cusname = $("#cusName");
 
 	cAttributes = $infoblk.data("jscustomattributelist") as ICustomAttribute[];
-	console.log("cAttributes:", cAttributes);
+	//console.log("cAttributes:", cAttributes);
 
 	$("#globalattr").accordion({
 		collapsible: true,

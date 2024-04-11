@@ -5482,6 +5482,8 @@ interface ICustomerPointPriceLevel {
 	CustomerPoint: number;
 }
 interface ICustomer {
+	CityTxt: string | null;
+	CountryTxt: string | null;
 	ExchangeRate: number | null;
 	CreateTimeDisplay: any;
 	AccountProfileName: string;
@@ -5540,8 +5542,6 @@ interface ICustomer {
 	FollowUpDateDisplay: string | null;
 	CustomAttributes: string | null;
 	UploadFileList: string[];
-	ImgList: string[];
-	FileList: string[];
 	GlobalAttributeList: IGlobalAttribute[];
 	CustomAttributeList: ICustomAttribute[];
 	TaxCode: string | null;
@@ -11105,56 +11105,9 @@ function handleItemDescDblClick(this: any) {
 	openDescModal();
 }
 
-function initSupplier(): ISupplier {
-	return {
-		supId: 0,
-		supAbss: false,
-		supIsActive: false,
-		supIsIndividual: false,
-		supCode: "",
-		supName: "",
-		supTitle: "",
-		supFirstName: "",
-		supLastName: "",
-		supGender: "",
-		supPhone: "",
-		supMobile: "",
-		supEmail: "",
-		supNotes: "",
-		supContact: "",
-		supCardRecordID: 0,
-		supIdentifierID: "",
-		supCustomField1: "",
-		supCustomField2: "",
-		supCustomField3: "",
-		supAddrLocation: 0,
-		supAddrStreetLine1: "",
-		supAddrStreetLine2: "",
-		supAddrStreetLine3: "",
-		supAddrStreetLine4: "",
-		supAddrCity: "",
-		supAddrState: "",
-		supAddrPostcode: "",
-		supAddrCountry: "",
-		supAddrPhone1: "",
-		supAddrPhone2: "",
-		supAddrPhone3: "",
-		supAddrFax: "",
-		supAddrWeb: "",
-		supCheckout: false,
-		CreateTimeDisplay: "",
-		ModifyTimeDisplay: "",
-		supPhone1Whatsapp: false,
-		supPhone2Whatsapp: false,
-		supPhone3Whatsapp: false,
-		isABSS: false,
-		TaxPercentageRate: 0,
-		ExchangeRate: 1,
-		JobList: [],
-		UploadFileList: [],
-	};
-}
 interface ISupplier {
+	CityTxt: string | null;
+	CountryTxt: string | null;
 	supId: number;
 	supAbss: boolean;
 	supIsActive: boolean;
@@ -17240,16 +17193,18 @@ function fillInCustomer() {
 	Customer.cusName = <string>$("#cusName").val();
 	Customer.cusPhone = <string>$("#cusPhone").val();
 	Customer.cusSaleComment = <string>$salecomment.val();
-	Customer.PaymentIsDue = <number>$paymentIsDue.val();
-	Customer.BalanceDueDays = <number>$("#BalanceDueDays").val();
-	let $points = $("#points");
-	let newpoints: number = <number>$points.val();
-	let oldpoints: number = <number>$points.data("oldpoints");
-	Customer.cusPointsSoFar += (newpoints - oldpoints);
+	Customer.PaymentIsDue = Number($paymentIsDue.val());
+	Customer.BalanceDueDays = Number($("#BalanceDueDays").val());
+	//let $points = $("#points");
+	//let newpoints: number = Number($points.val());
+	//let oldpoints: number = Number($points.data("oldpoints"));
+	Customer.cusPointsSoFar = Number($("#cusPointsSoFar").val());
 	Customer.cusEmail = <string>$("#cusEmail").val();
 	Customer.cusContact = <string>$("#cusContact").val();
 	Customer.cusAddrCity = <string>$("#city").val(); //NOT $("#drpCity").val()!
 	Customer.cusAddrCountry = <string>$("#drpCountry").val();
+	Customer.CityTxt = $("#drpCity option:selected").text() as string;
+	Customer.CountryTxt = $("#drpCountry option:selected").text() as string;
 	Customer.cusAddrWeb = <string>$("#cusAddrWeb").val();
 
 	Customer.AddressList = [];
@@ -21987,6 +21942,10 @@ function populateFileList(files: string[]) {
 				removefilelnk = getRemoveFileLnk(x, Purchase.pstCode);
 				filelnk = `<a href="#" class="filelnk" data-lnk="/Purchase/${apId}/${Purchase.pstCode}/${x}">${pdfthumbnail}${x}</a> ${removefilelnk}`;
 			}
+			if (forenquiry) {
+				removefilelnk = getRemoveFileLnk(x, enquiry.enId);
+				filelnk = `<a href="#" class="filelnk" data-lnk="/Enquiry/${apId}/${enquiry.enId}/${x}">${pdfthumbnail}${x}</a> ${removefilelnk}`;
+			}
 			if (forcustomer) {
 				removefilelnk = getRemoveFileLnk(x, Customer.cusCode);
 				filelnk = `<a href="#" class="filelnk" data-lnk="/Customer/${apId}/${Customer.cusCode}/${x}">${pdfthumbnail}${x}</a> ${removefilelnk}`;
@@ -22007,7 +21966,7 @@ function populateFileList(files: string[]) {
 function handleUploadedFile(result: any) {
 	closeWaitingModal();
 	closeViewFileModal();
-	UploadedFileList = structuredClone(result.FileList);
+	UploadedFileList = structuredClone(result.FileList);	
 	closeUploadFileModal();
 }
 
@@ -22105,7 +22064,8 @@ $(document).on("click", ".removefile", function () {
 			let Id = Number($(this).data("payid"));
 			$(this).parent("li").remove();
 			data = { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), Id, filename: file };
-		} else {
+		}
+		else{
 			url = "/Purchase/RemoveFile";
 			let idx = Purchase.FileList.findIndex(x => x == file);
 			if (idx >= 0) Purchase.FileList.splice(idx, 1);
@@ -22113,6 +22073,30 @@ $(document).on("click", ".removefile", function () {
 			let pstCode = $(this).data("code");
 			data = { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), pstCode, filename: file };
 		}
+	}
+	if (forcustomer) {
+		url = "/Customer/RemoveFile";
+		let idx = Customer.UploadFileList.findIndex(x => x == file);
+		if (idx >= 0) Customer.UploadFileList.splice(idx, 1);
+		populateFileList(Customer.UploadFileList);
+		let cusCode = $(this).data("code");
+		data = { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), cusCode, filename: file };
+	}
+	if (forsupplier) {
+		url = "/Supplier/RemoveFile";
+		let idx = Supplier.UploadFileList.findIndex(x => x == file);
+		if (idx >= 0) Supplier.UploadFileList.splice(idx, 1);
+		populateFileList(Supplier.UploadFileList);
+		let cusCode = $(this).data("code");
+		data = { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), cusCode, filename: file };
+	}
+	if (forenquiry) {
+		url = "/Enquiry/RemoveFile";
+		let idx = enquiry.UploadFileList.findIndex(x => x == file);
+		if (idx >= 0) enquiry.UploadFileList.splice(idx, 1);
+		populateFileList(enquiry.UploadFileList);
+		let enqId = $(this).data("code");
+		data = { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), enqId, filename: file };
 	}
 
 	handleRemoveFile(url, data);

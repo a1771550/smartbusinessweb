@@ -12,6 +12,7 @@ using System.IO;
 using System.Web;
 using System;
 using CommonLib.Helpers;
+using Resources = CommonLib.App_GlobalResources;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -20,13 +21,22 @@ namespace SmartBusinessWeb.Controllers
     {
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public ActionResult RemoveFile(string enqId, string filename)
+        {
+            string msg = string.Format(Resource.FileFormat, Resource.Removed);
+            PPWCommonLib.Helpers.FileHelper.Remove(enqId, filename, FuncType.Enquiry);
+            return Json(msg);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult UploadFile(string enqId)
         {
             if (Request.Files.Count > 0)
             {
                 try
                 {
-                    List<string> filenamelist = new List<string>();
+                    List<string> FileList = new List<string>();
                     string filedir = string.Format(UploadsEnqDir, apId, enqId);//Enq/{0}/{1}
                     string dir = "";
                     string filename = string.Empty;
@@ -45,28 +55,30 @@ namespace SmartBusinessWeb.Controllers
                         }
                         string fname = Path.Combine(absdir, filename);
                         _file.SaveAs(fname);
-                        filenamelist.Add(filename);
+                        FileList.Add(filename);
                     }
                     using (var context = new PPWDbContext(Session["DBName"].ToString()))
                     {
-                        SessUser user = Session["User"] as SessUser;
-                        var Id = CommonHelper.GenerateNonce(152, false);
-                        EnquiryInfo enqInfo = new EnquiryInfo
+                        var enqInfo = context.EnquiryInfoes.FirstOrDefault(x => x.fileName == filename && x.AccountProfileId == apId && x.enId == enqId);
+                        if (enqInfo == null)
                         {
-                            Id = Id,
-                            enId = enqId,
-                            fileName = filenamelist.FirstOrDefault(),
-                            type = "file",
-                            CreateBy = user.UserCode,
-                            CreateTime = DateTime.Now,
-                        };
-                        context.EnquiryInfoes.Add(enqInfo);
-                        context.SaveChanges();
-                    }
-                    dir = string.Concat(@"/", filedir);
-                    //string filepath = Path.Combine(dir, string.Format(file, ext));
-                    string filepath = Path.Combine(dir, filename);
-                    return Json(new { msg = Resource.UploadOkMsg, filepath });
+                            SessUser user = Session["User"] as SessUser;
+                            var Id = CommonHelper.GenerateNonce(152, false);                        
+                            context.EnquiryInfoes.Add(new EnquiryInfo
+                            {
+                                Id = Id,
+                                enId = enqId,
+                                fileName = FileList.FirstOrDefault(),
+                                type = "file",
+                                CreateBy = user.UserCode,
+                                CreateTime = DateTime.Now,
+                                AccountProfileId = apId,
+                            });
+                            context.SaveChanges();
+                        }
+                        FileList = context.EnquiryInfoes.Where(x => x.enId == enqId && x.AccountProfileId == apId && x.type == "file").Select(x => x.fileName).Distinct().ToList();
+                    }                   
+                    return Json(new { msg = Resource.UploadOkMsg, FileList });
                 }
                 catch (Exception ex)
                 {

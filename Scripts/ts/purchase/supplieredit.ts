@@ -71,8 +71,10 @@ function fillInSupplier() {
         supAddrStreetLine2: <string>$("#supAddrStreetLine2").val(),
         supAddrStreetLine3: <string>$("#supAddrStreetLine3").val(),
         supAddrStreetLine4: <string>$("#supAddrStreetLine4").val(),
-        supAddrCity: <string>$("#city").val(), //NOT ("#drpCity").val()!
-        supAddrCountry: <string>$("#drpCountry").val(),
+        supAddrCity: <string>$("#city").val(), //NOT ("#drpCity").val()!        
+        supAddrCountry: <string>$("#drpCountry").val(),     
+        CityTxt: $("#drpCity option:selected").text() as string,
+        CountryTxt: $("#drpCountry option:selected").text() as string,
         supAddrWeb: <string>$("#supAddrWeb").val(),
         supAddrPhone1: <string>$("#supAddrPhone1").val(),
         supAddrPhone2: <string>$("#supAddrPhone2").val(),

@@ -49,10 +49,10 @@ namespace SmartBusinessWeb.Controllers
             message.BodyEncoding = Encoding.UTF8;
             message.IsBodyHtml = true;
             string cname = "testemail";
-            //http://ip/Track/{blastId}/{contactId}/{contactName}/{organization}/{phone}/{email}/{imported}
-            //string url = string.Format(@"{6}?blastId={0}&contactId={1}&contactName={2}&organization={3}&phone={4}&email={5}", blastId, "000000", cname, cname, "123456", testemail, host);
-            //Track/{blastId}/{contactId}/{contactName}/{organization}/{phone}/{email}/{companyId}/{imported}/
-            string url = string.Format(@"{8}/{0}/{1}/{2}/{3}/{4}/{5}/{6}/{7}/", blastId, "22535", cname, cname, "67456475", testemail, "12345", "0", host);
+         
+            //string url = string.Format(@"{6}?blastId={0}&cusCode={1}&contactName={2}&organization={3}&phone={4}&email={5}", blastId, "000000", cname, cname, "123456", testemail, host);
+            //Track/{blastId}/{cusCode}/{contactName}/{organization}/{phone}/{email}/{companyId}/{imported}/
+            string url = string.Format(@"{8}/{0}/{1}/{2}/{3}/{4}/{5}/{6}/{7}/", blastId, "99999999", cname, cname, "67456475", testemail, "12345", "0", host);
             //url = HttpUtility.UrlEncode(url);
             //url = HttpUtility.UrlDecode(url);
             //url = HttpUtility.HtmlDecode(url);
@@ -190,12 +190,12 @@ namespace SmartBusinessWeb.Controllers
                     message.BodyEncoding = Encoding.UTF8;
                     message.IsBodyHtml = true;
                     
-                    //Track/{blastId}/{contactId}/{contactName}/{organization}/{phone}/{email}/{companyId}/{imported}/
-                    string url = string.Format(@"{8}/{0}/{1}/{2}/{3}/{4}/{5}/{6}/{7}/", blastId, customer.cusId, customer.cusContact, cname, customer.cusPhone, email, 0, 0, host);
+                    //Track/{blastId}/{cusCode}/{contactName}/{organization}/{phone}/{email}/{companyId}/{imported}/
+                    string url = string.Format(@"{8}/{0}/{1}/{2}/{3}/{4}/{5}/{6}/{7}/", blastId, customer.cusCode, customer.cusContact, cname, customer.cusPhone, email, 0, 0, host);
                     //url = HttpUtility.UrlEncode(url);
                     string img = $"<img src=\"{url}\" width=\"1\" height=\"1\">";
                     //string mailbody = System.IO.File.ReadAllText(filename);                                    
-                    message.Body = eblast.blContent.Replace("##NAME##", cname).Replace("##IMG##", img).Replace("##CUSID##",customer.cusId.ToString());
+                    message.Body = eblast.blContent.Replace("##NAME##", cname).Replace("##IMG##", img).Replace("##CUSCODE##", customer.cusCode);
                     cusmessages.Add(
                         new eBlastCustomer
                         {

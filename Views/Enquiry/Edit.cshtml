@@ -79,11 +79,12 @@
 
 		@if (Model.enAssignedSalesId > 0)
 		{
-			<div class="form-group">
-				<label for="enAssignedSalesId">@Resources.Resource.Assigned</label>
+			<div class="form-group my-4">
+				<label class="fa fa-user" for="enAssignedSalesId">@Resources.Resource.Assigned</label>
 
 				<div class="checkbox">
-					@Html.EditorFor(model => model.SalesPersonName, new { htmlAttributes = new { @class = "form-control pointer", @readonly = "readonly" } })
+					<span class="text-info font-weight-bold pointer" id="SalesPersonName">@Model.SalesPersonName</span>
+					
 					@Html.HiddenFor(model => model.enEdited)
 					@Html.HiddenFor(model => model.enAssignedSalesId)
 				</div>
@@ -157,14 +158,14 @@
 						</div>
 					</div>
 
-					<div class="recordblk col-12 col-sm-4 hide" data-enqid="@Model.Id">
+					<div class="recordblk col-12 col-sm-4 hide" data-enqid="@Model.enId" data-id="@Model.Id">
 						<div class="card">
 							<div class="card-body">
 								<div class="txtarea">
 									<textarea class="form-control record" name="EnquiryInfo_followUpRecord" rows="5" cols="30"></textarea>
 								</div>
 								<div class="buttons my-2">
-									<button type="button" class="btn btn-secondary saverecord" data-id="@Model.Id"><span class="small">@Resources.Resource.Confirm</span></button>
+									<button type="button" class="btn btn-secondary saverecord" data-enqid="@Model.enId" data-id="@Model.Id"><span class="small">@Resources.Resource.Confirm</span></button>
 								</div>
 							</div>
 						</div>
@@ -178,15 +179,7 @@
 				<div class="form-group">
 					<button type="button" class="btn btn-warning" id="btnFile">@Resources.Resource.UploadFile</button>
 					<button type="button" class="btn btn-primary ml-2 hide" id="btnViewFile">@Resources.Resource.ViewFile</button>
-					@if (Model.FileList.Count > 0)
-					{
-						<ul class="my-3 horizontallist" style="border: 1px solid #b2adad; border-radius: .3rem; padding:.3rem;">
-							@foreach (var file in Model.FileList)
-							{
-								<li>@Html.Raw(file)</li>
-							}
-						</ul>
-					}
+					
 				</div>
 			</div>
 

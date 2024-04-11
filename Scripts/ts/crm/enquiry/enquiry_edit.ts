@@ -47,13 +47,7 @@ function _validenquiryform(): boolean {
 			okButton: oktxt,
 			noButton: notxt,
 			callback: function (value) {
-				if (value) {
-					//if ($frm.val() === '') {
-					//	$frm.trigger("focus");
-					//}
-					//else if ($subject.val() === '') {
-					//	$subject.trigger("focus");
-					//}
+				if (value) {					
 					if (emailerr) {
 						$email.trigger("focus");
 					}
@@ -98,14 +92,14 @@ $(function () {
 	initModals();
 	triggerMenu(1, 3);
 
+	fillInEnquiry();
+
 	uploadsizelimit = parseInt($infoblk.data("uploadsizelimit"));
 	uploadsizelimitmb = parseInt($infoblk.data("uploadsizelimitmb"));
 	if ($infoblk.data("uploadfilelist") !== "") {
 		enquiry.UploadFileList = ($infoblk.data("uploadfilelist").toString()).split(",");
 		$("#btnViewFile").removeClass("hide");
 	}
-
-	fillInEnquiry();
 
 	if (enquiry.Id == "") {
 		$("#addRecord").off("click");

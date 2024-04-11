@@ -18,6 +18,15 @@ namespace SmartBusinessWeb.Controllers.Purchase
     {
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public ActionResult RemoveFile(string supCode, string filename)
+        {
+            string msg = string.Format(Resources.Resource.FileFormat, Resources.Resource.Removed);
+            PPWCommonLib.Helpers.FileHelper.Remove(supCode, filename, CommonLib.Helpers.FuncType.Supplier);
+            return Json(msg);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult UploadFile(string supCode)
         {
             if (Request.Files.Count > 0)

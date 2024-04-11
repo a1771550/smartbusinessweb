@@ -72,23 +72,14 @@ namespace SmartBusinessWeb.Controllers
                 model.AttrVal = attrVal;
 
                 model.eTracks = new List<eTrackModel>();
+
                 #region Dates Handling
                 DateTime frmdate, todate;
                 CommonHelper.DatesHandling(strfrmdate, strtodate, out frmdate, out todate);
                 model.DateFromTxt = CommonHelper.FormatDate(frmdate, true);
                 model.DateToTxt = CommonHelper.FormatDate(todate, true);
                 #endregion
-
-                //List<GetEtracks_Result> _eTracks = new List<GetEtracks_Result>();
-                ////List<GetEtrackLogs_Result> _eTracks = new List<GetEtrackLogs_Result>();
-                //using (econtext = new eTrackDbContext())
-                //{
-                /*
-                 * SELECT Distinct ContactId,Id,BlastId,Replace(ContactName,'+',' ') as ContactName,ViewDate,Replace(Organization,'+',' ') as Organization,Phone,Email,IP,CreateTime From eTrack Where (ViewDate >= @frmdate and ViewDate <=@todate) Order by ViewDate Desc;
-                 */
-                //_eTracks = econtext.GetEtracks(frmdate, todate).ToList();
-                //_eTracks = econtext.GetEtrackLogs(frmdate, todate).ToList();
-                //}               
+                          
                 using var connection = new Microsoft.Data.SqlClient.SqlConnection(DefaultConnection);
                 connection.Open();
                 var _eTracks = connection.Query<eTrackModel>(@"EXEC dbo.GetEtracks @apId=@apId,@frmdate=@frmdate,@todate=@todate", new { apId, frmdate, todate }).ToList();
@@ -166,6 +157,7 @@ namespace SmartBusinessWeb.Controllers
                             {
                                 Id = item.Id,
                                 BlastId = item.BlastId,
+                                cusCode = item.cusCode,
                                 ContactId = item.ContactId,
                                 ContactName = item.ContactName,
                                 ViewDate = item.ViewDate,
@@ -173,8 +165,6 @@ namespace SmartBusinessWeb.Controllers
                                 Phone = item.Phone,
                                 Email = item.Email,
                                 IP = item.IP,
-                                //CreateTime = item.CreateTime,
-                                //BlastSubject = eBlastEditModel.Get(int.Parse(item.BlastId)).blSubject
                             };
                             model.eTracks.Add(etrack);
                         }
@@ -215,13 +205,6 @@ namespace SmartBusinessWeb.Controllers
                 //if the query string of the password does not equal to the current one, users will not be allowed to access the tracking result page and thus redirected to an unauthorization-warning page.
                 return RedirectToAction("UnAuthorized");
             }
-            //}
-            //else
-            //{
-            //    ViewTrackModel model = new ViewTrackModel();
-            //    model.PagingEtrackList = null;
-            //    return View(model);
-            //}
         }
 
 

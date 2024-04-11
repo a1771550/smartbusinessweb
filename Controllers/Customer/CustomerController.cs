@@ -20,6 +20,15 @@ namespace SmartBusinessWeb.Controllers.Customer
     [CustomAuthenticationFilter]
     public class CustomerController : BaseController
     {
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult RemoveFile(string cusCode, string filename)
+        {
+            string msg = string.Format(Resources.Resource.FileFormat, Resources.Resource.Removed);
+            PPWCommonLib.Helpers.FileHelper.Remove(cusCode, filename, CommonLib.Helpers.FuncType.Customer);
+            return Json(msg);
+        }
+
 
         [HttpPost]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
@@ -98,8 +107,8 @@ namespace SmartBusinessWeb.Controllers.Customer
                     {
                         var cusInfo = context.CustomerInfoes.FirstOrDefault(x=>x.fileName==filename && x.AccountProfileId== apId && x.cusCode == cusCode);
                         if(cusInfo==null) {
-                            SessUser user = Session["User"] as SessUser;
-                            cusInfo = new CustomerInfo
+                            SessUser user = Session["User"] as SessUser;                       
+                            context.CustomerInfoes.Add(new CustomerInfo
                             {
                                 cusCode = cusCode,
                                 fileName = FileList.FirstOrDefault(),
@@ -107,11 +116,9 @@ namespace SmartBusinessWeb.Controllers.Customer
                                 CreateBy = user.UserCode,
                                 CreateTime = DateTime.Now,
                                 AccountProfileId = apId
-                            };
-                            context.CustomerInfoes.Add(cusInfo);
+                            });
                             context.SaveChanges();
-                        }
-                       
+                        }                       
                         FileList = context.CustomerInfoes.Where(x=>x.cusCode== cusCode && x.AccountProfileId==apId && x.type=="file").Select(x=>x.fileName).Distinct().ToList();
                     }                             
                     return Json(new { msg = Resources.Resource.UploadOkMsg, FileList });

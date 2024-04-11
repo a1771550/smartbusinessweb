@@ -10,7 +10,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
-using PPWLib.Models.Sales;
 
 namespace SmartBusinessWeb.Controllers.Purchase
 {
@@ -122,7 +121,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
         public ActionResult RemoveFile(string pstCode, string filename)
         {
             string msg = string.Format(Resources.Resource.FileFormat, Resources.Resource.Removed);
-            PPWCommonLib.Helpers.FileHelper.Remove(pstCode, filename);
+            PPWCommonLib.Helpers.FileHelper.Remove(pstCode, filename, CommonLib.Helpers.FuncType.Purchase);
             return Json(msg);
         }
 

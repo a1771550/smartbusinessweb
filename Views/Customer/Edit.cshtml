@@ -134,8 +134,8 @@
 		</div>
 		<div class="col-12 col-md-3">
 			<div class="form-group">
-				<label class="control-label" for="cusPointsSoFar">@Resources.Resource.Points</label>
-				<input type="number" id="points" class="form-control" data-oldpoints="@Customer.cusPointsActive" value="@Customer.cusPointsActive" />
+				<label for="cusPointsSoFar">@Resources.Resource.Points</label>
+				<input type="number" id="cusPointsSoFar" name="cusPointsSoFar" class="form-control" value="@(Customer.cusPointsSoFar??0)" title="@Resources.Resource.Points" />
 			</div>
 
 		</div>

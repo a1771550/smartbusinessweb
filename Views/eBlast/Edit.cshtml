@@ -119,7 +119,7 @@
 
 @{ 
    string postbackurl = Request.IsLocal ? string.Concat("http://", UriHelper.GetLocalIPAddress()) : "https://app.united.com.hk";
-    postbackurl = string.Concat("/Api/UnsubscribeEblast?cusId=##CUSID##");
+    postbackurl = string.Concat("/Api/UnsubscribeEblast?cusCode=##CUSCODE##");
 }
 <!-- TinyMCE Script Reference -->
 <script src="~/Scripts/tinymce/tinymce.min.js"></script>
