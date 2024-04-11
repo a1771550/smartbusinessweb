@@ -6964,9 +6964,9 @@ let hotlistlist: Array<IHotList>;
 function initHotList(ele: JQuery | null): IHotList {
 	return ele === null
 		? {
-			Id: <number>$("#Id").val(),
+			Id: Number($("#Id").val()),
 			hoName: <string>$("#hoName").val(),
-			hoSalesmanResponsible: <number>$("#drpSalesmen").val(),
+			hoSalesmanResponsible: Number($("#drpSalesmen").val()),
 			hoDescription: <string>$("#hoDescription").val(),
 			CreateTimeDisplay: <string>$("#JsJournalDate").val(),
 			ModifyTimeDisplay: <string>$("#ModifyTimeDisplay").val(),
@@ -6974,9 +6974,9 @@ function initHotList(ele: JQuery | null): IHotList {
 			SalesmanList: [],
 		}
 		: {
-			Id: <number>$(ele).data("id"),
+			Id: Number($(ele).data("id")),
 			hoName: <string>$(ele).data("name"),
-			hoSalesmanResponsible: <number>$(ele).data("salesmanresponsible"),
+			hoSalesmanResponsible: Number($(ele).data("salesmanresponsible")),
 			hoDescription: <string>$(ele).data("desc"),
 			CreateTimeDisplay: <string>$(ele).data("createtime"),
 			ModifyTimeDisplay: <string>$(ele).data("modifytime"),
@@ -18380,6 +18380,7 @@ let forattendance: boolean = false;
 let forjob: boolean = false;
 let fortraining: boolean = false;
 let forcustomer: boolean = false;
+let forhotlist: boolean = false;
 let forrejectedcustomer: boolean = false;
 let forapprovedcustomer: boolean = false;
 $(document).on("click", ".whatspplink", function () {

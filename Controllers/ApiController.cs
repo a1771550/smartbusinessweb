@@ -70,6 +70,22 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HttpGet]
+        public JsonResult GetCustomersByHotListId(long hotlistId)
+        {
+            //todo:
+            //GetCustomersByHotListId
+            using (var context = new G3DbContext())
+            {
+                long?[] idListArray = context.GetContactIdsFrmHotList(hotlistId).ToArray();
+                var idlist = string.Join(",", idListArray.ToList());
+                var _contacts = context.GetContactListByIDs2(idlist).ToList();
+                var contacts = new List<ContactModel>();
+                ModelHelper.PopulateContactListByIDs2(_contacts, ref contacts, ModelHelper.GetAccountProfileId(context));
+                return Json(contacts, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpGet]
         public void GetAbssProducts(int apId)
         {
             Response.Write(apId);
@@ -275,11 +291,11 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HttpGet]
-        public ActionResult UnsubscribeEblast(int cusid)
+        public ActionResult UnsubscribeEblast(string cusCode)
         {
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
-                context.UnsubscribeEblast(apId, cusid);
+                context.UnsubscribeEblast2(apId, cusCode);
                 context.SaveChanges();
             }
             return Redirect("~/static/unsubscribe_zh.html");

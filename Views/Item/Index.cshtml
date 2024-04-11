@@ -4,7 +4,6 @@
 	ViewBag.Title = string.Format(Resources.Resource.ListFormat, Resources.Resource.Item);
 	int rand = CommonHelper.GetVersionRandomNo();
 }
-
 <h2>@ViewBag.Title</h2>
 <p class="my-3">
 	@Html.ActionLink(Resources.Resource.Add, "Edit", new { itemId = 0, referrer="Index" }, new { @class = "btn btn-info" })

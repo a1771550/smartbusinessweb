@@ -1,0 +1,81 @@
+﻿@model PPWLib.Models.HotListEditModel
+@using PagedList.Mvc;
+@{
+	ViewBag.Title = string.Format(Resources.Resource.ListFormat, Resources.Resource.HotList);
+	int rand = CommonHelper.GetVersionRandomNo();
+	string idlist = string.Join(",", Model.IdList);
+}
+<link href="~/Scripts/paginationjs/pagination.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="~/Content/hotlist/index.css?v=@rand" />
+<h3 class="clearfix">
+	@ViewBag.Title
+	<a href="/HotList/Edit?Id=0&referrer=Index" class="btn btn-info btnsmall40 float-right" title="@Resources.Resource.Add">@Resources.Resource.Add</a>
+</h3>
+
+
+@using (Html.BeginForm("Index", "HotList", FormMethod.Get, new { @Id = "frmHotList" }))
+{
+	@Html.AntiForgeryToken()
+	<div class="form-inline mb-2 my-4">
+		<div class="form-group">
+			<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" />
+			<button id="btnSearch" type="submit" class="btn btn-success mx-1">@Resources.Resource.Search</button>
+			<button id="btnReload" type="button" class="btn btn-warning mx-1">@Resources.Resource.Reload</button>
+		</div>
+	</div>
+
+
+	<table id="tblHotlist" class="table table-bordered  table-hover table-condensed">
+		<thead class="gray-header">
+			<tr>
+				<th scope="col" class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">@Resources.Resource.Name</th>
+				<th scope="col" class="text-center colheader" data-col="1" data-keyword="@Model.Keyword">@Resources.Resource.SalesPerson</th>
+				<th scope="col" class="text-center colheader" data-col="2" data-keyword="@Model.Keyword">@Resources.Resource.CreateTime</th>
+				<th scope="col" class="text-center colheader" data-col="3" data-keyword="@Model.Keyword">@Resources.Resource.ModifyTime</th>
+				<th scope="col"></th>
+
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model.PagingHotListList)
+			{
+				<tr data-id="@item.Id" class="pointer">
+					<td>
+						@Html.DisplayFor(modelItem => item.hoName)
+					</td>
+					<td>@Html.DisplayFor(modelItem => item.SalesPersonName)</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.CreateTime)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.ModifyTime)
+					</td>
+					<td>
+						<a class="btn btn-primary detail" href="#" data-id="@item.Id" data-name="@item.hoName" data-salesmanname="@item.SalesPersonName" data-createtime="@item.CreateTimeDisplay" data-modifytime="@item.ModifyTimeDisplay" data-desc="@item.hoDescription" data-salesmanresponsible="@item.hoSalesmanResponsible" role="button">@Resources.Resource.Detail</a>
+						@Html.ActionLink(Resources.Resource.Edit, "Edit", new { id = item.Id }, new { @class = "btn btn-info", @role = "button" })
+						<a href="#" class="btn btn-danger remove" data-id="@item.Id" role="button">@Resources.Resource.Remove</a>
+
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+	<div id="pagingblk" class="my-3">
+		@Html.PagedListPager(Model.PagingHotListList, PageNo => Url.Action("Index",
+new { PageNo, SortCol = Model.SortCol, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
+	</div>
+
+	<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+	<input type="hidden" id="sortcol" value="@Model.SortCol" />
+	<!--no "name" attr in propose!-->
+}
+
+@Html.Partial("_WaitingModal")
+
+@Html.Partial("_DescModal")
+
+<div id="infoblk" data-referrer="index"></div>
+
+<script src="~/Scripts/ts/js/hotlist/index.js?v=@rand"></script>
+
+

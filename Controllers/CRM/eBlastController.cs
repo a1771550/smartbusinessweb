@@ -171,7 +171,7 @@ namespace SmartBusinessWeb.Controllers
             string cname;
             List<string> sentemaillist = new List<string>();
 
-            List<eBlastCustomer> cusmessages = new List<eBlastCustomer>();
+            List<eBlastCustomerModel> cusmessages = new List<eBlastCustomerModel>();
 
             foreach (var customer in contacts)
             {
@@ -197,7 +197,7 @@ namespace SmartBusinessWeb.Controllers
                     //string mailbody = System.IO.File.ReadAllText(filename);                                    
                     message.Body = eblast.blContent.Replace("##NAME##", cname).Replace("##IMG##", img).Replace("##CUSCODE##", customer.cusCode);
                     cusmessages.Add(
-                        new eBlastCustomer
+                        new eBlastCustomerModel
                         {
                             cusEmail = email,
                             mailmessage = message

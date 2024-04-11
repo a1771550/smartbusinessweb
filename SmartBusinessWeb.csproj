@@ -359,6 +359,7 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\ApiController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\CRM\HotListController.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Controllers\Item\InventoryAdjustmentController.cs" />
     <Compile Include="Controllers\SimpleContactController.cs" />
@@ -4651,6 +4652,7 @@
     <Content Include="Views\Shared\_PaymentTypeModal.cshtml" />
     <Content Include="Scripts\ts\js\customer\attributes\attributeedit.js.map" />
     <Content Include="Scripts\ts\js\customer\attributes\globalattribute.js.map" />
+    <Content Include="Views\HotList\Index.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
