@@ -60,6 +60,8 @@ namespace SmartBusinessWeb.Controllers
         private string DbName { get { return Session["DBName"].ToString(); } }
         private string CheckoutPortal { get { return ComInfo.DefaultCheckoutPortal; } }
         private string DefaultConnection { get { return Session["DBName"] == null ? ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", "SmartBusinessWeb_db") : ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", Session["DBName"].ToString()); } }
+        private SqlConnection SqlConnection { get { return new SqlConnection(DefaultConnection); } }
+
         private List<string> Shops;
         private string ShopCode { get; set; }
 
@@ -72,17 +74,18 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public JsonResult GetCustomersByHotListId(long hotlistId)
         {
-            //todo:
             //GetCustomersByHotListId
-            using (var context = new G3DbContext())
-            {
-                long?[] idListArray = context.GetContactIdsFrmHotList(hotlistId).ToArray();
-                var idlist = string.Join(",", idListArray.ToList());
-                var _contacts = context.GetContactListByIDs2(idlist).ToList();
-                var contacts = new List<ContactModel>();
-                ModelHelper.PopulateContactListByIDs2(_contacts, ref contacts, ModelHelper.GetAccountProfileId(context));
-                return Json(contacts, JsonRequestBehavior.AllowGet);
-            }
+            //using var context = new PPWDbContext(Session["DBName"].ToString());
+
+            //long?[] idListArray = context.GetContactIdsFrmHotList(hotlistId).ToArray();
+            //var idlist = string.Join(",", idListArray.ToList());
+            //var _contacts = context.GetContactListByIDs2(idlist).ToList();
+            //var contacts = new List<ContactModel>();
+            //ModelHelper.PopulateContactListByIDs2(_contacts, ref contacts, ModelHelper.GetAccountProfileId(context));
+            if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
+            List<CustomerModel> customers = SqlConnection.Query<CustomerModel>("EXEC dbo.GetCustomersByHotListId @apId=@apId,@hotlistId=@hotlistId", new {apId,hotlistId}).ToList();
+            return Json(customers, JsonRequestBehavior.AllowGet);
+
         }
 
         [HttpGet]
@@ -1119,7 +1122,7 @@ namespace SmartBusinessWeb.Controllers
                         cusPhone = customer.cusPhone,
                         cusPriceLevelDescription = customer.cusPriceLevelID == "" ? "" : ModelHelper.GetCustomerPriceLevelDescription(context, customer.cusPriceLevelID),
                         cusContact = customer.cusContact,
-                        cusSaleComment = customer.cusSaleComment,                    
+                        cusSaleComment = customer.cusSaleComment,
                         AbssSalesID = customer.AbssSalesID,
                         cusAddrWeb = customer.cusAddrWeb,
                     };
@@ -1367,7 +1370,7 @@ namespace SmartBusinessWeb.Controllers
             {
                 Session currsess = ModelHelper.GetCurrentSession(context);
                 accountprofileId = currsess.AccountProfileId;
-                var accountProfileView = ModelHelper.GetAccountProfile(accountprofileId, context);               
+                var accountProfileView = ModelHelper.GetAccountProfile(accountprofileId, context);
             }
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
@@ -2808,7 +2811,7 @@ namespace SmartBusinessWeb.Controllers
         {
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
-                Session currsess = ModelHelper.GetCurrentSession(context);                
+                Session currsess = ModelHelper.GetCurrentSession(context);
                 var shop = currsess.sesShop;
                 var device = currsess.sesDvc;
                 var lang = currsess.sesLang;
@@ -3031,7 +3034,7 @@ namespace SmartBusinessWeb.Controllers
                 var pagesize = model.PageSize = PageSize;
                 model.PageIndex = pageIndex;
                 int startIndex = CommonHelper.GetStartIndex(pageIndex, pagesize);
-                if (keyword == "") keyword = null;             
+                if (keyword == "") keyword = null;
 
                 model.Customers = (string.IsNullOrEmpty(mode) || mode == "search") ? ModelHelper.GetCustomers4Sales(context, pageIndex, pagesize, keyword, true) : ModelHelper.GetCustomerList(false, pageIndex, pagesize, keyword);
 
@@ -3077,7 +3080,7 @@ namespace SmartBusinessWeb.Controllers
             }
             return Json(customer, JsonRequestBehavior.AllowGet);
         }
-   
+
 
         public void GetCustomerAddressList(PPWDbContext context, ref CustomerModel customer)
         {

@@ -1,7 +1,8 @@
-﻿@model PPWLib.Models.WholeSales.WholeSalesModel
+﻿@model PPWLib.Models.WholeSales.WholeSalesEditModel
 @{
-    ViewBag.Title = Resources.Resource.Delivery;
-    int rand = CommonHelper.GetVersionRandomNo();
+	ViewBag.Title = Resources.Resource.Delivery;
+	int rand = CommonHelper.GetVersionRandomNo();
+	WholeSalesModel WholeSales = Model.WholeSales;
 }
 <link rel="stylesheet" type="text/css" href="~/Scripts/jspreadsheet/dist/jexcel.css" />
 <link rel="stylesheet" type="text/css" href="~/Scripts/jsuites/dist/jsuites.css" />
@@ -10,185 +11,188 @@
 
 @using (Html.BeginForm("Delivery", "WholeSales", FormMethod.Post))
 {
-    @Html.AntiForgeryToken()
-    @Html.HiddenFor(model => model.wsUID)
-    @Html.HiddenFor(model => model.wsCode)
-    @Html.HiddenFor(model => model.wsRefCode)
-    @Html.HiddenFor(model => model.wsDvc)
-    @Html.HiddenFor(model => model.wsType)
-    @Html.HiddenFor(model => model.wsStatus)
+	@Html.AntiForgeryToken()
+	<input type="hidden" id="wsUID" name="wsUID" value="@WholeSales.wsUID" />
+	<input type="hidden" id="wsUID" name="wsUID" value="@WholeSales.wsUID" />
 
-    <div class="container">
-        <div class="row">
-            <div class="col-12 col-md-3">
-                <div class="form-group">
-                    <label class="control-label">@string.Format(Resources.Resource.WholeSalesFormat, Resources.Resource.Code)</label>
+	@Html.HiddenFor(model => model.wsUID)
+	@Html.HiddenFor(model => model.wsCode)
+	@Html.HiddenFor(model => model.wsRefCode)
+	@Html.HiddenFor(model => model.wsDvc)
+	@Html.HiddenFor(model => model.wsType)
+	@Html.HiddenFor(model => model.wsStatus)
 
-                    <input type="text" class="form-control" id="wsCode" name="wsCode" value="@Model.wsCode" readonly />
+	<div class="container">
+		<div class="row">
+			<div class="col-12 col-md-3">
+				<div class="form-group">
+					<label class="control-label">@string.Format(Resources.Resource.WholeSalesFormat, Resources.Resource.Code)</label>
 
-                </div>
-            </div>
-            <div class="col-12 col-md-3">
-                <div class="form-group required">
-                    <label class="control-label">@string.Format(Resources.Resource.DateFormat, Resources.Resource.WholeSales)</label>
+					<input type="text" class="form-control" id="wsCode" name="wsCode" value="@Model.wsCode" readonly />
 
-                    <input type="datetime" class="form-control datepicker" id="wholesalesDate" />
-                    @Html.HiddenFor(model => model.wsDate)
-                    @Html.HiddenFor(model => model.WholesalesDateDisplay)
+				</div>
+			</div>
+			<div class="col-12 col-md-3">
+				<div class="form-group required">
+					<label class="control-label">@string.Format(Resources.Resource.DateFormat, Resources.Resource.WholeSales)</label>
 
-                </div>
-            </div>
+					<input type="datetime" class="form-control datepicker" id="wholesalesDate" />
+					@Html.HiddenFor(model => model.wsDate)
+					@Html.HiddenFor(model => model.WsDateDisplay)
 
-            @{
-                var currency = Model.wsCurrency ?? "HKD";
-            }
-            <div class="col-12 col-md-3">
-                <div class="form-group required">
-                    <label class="control-label" for="wsCurrency">@Resources.Resource.Currency</label>
-                    <input type="text" class="form-control" id="wsCurrency" name="wsCurrency" value="@currency" />
-                </div>
-            </div>
+				</div>
+			</div>
 
-            <div class="col-12 col-md-3">
-                <div class="form-group required">
-                    <label class="control-label" for="drpLocation">@Resources.Resource.Location</label>
+			@{
+				var currency = Model.wsCurrency ?? "HKD";
+			}
+			<div class="col-12 col-md-3">
+				<div class="form-group required">
+					<label class="control-label" for="wsCurrency">@Resources.Resource.Currency</label>
+					<input type="text" class="form-control" id="wsCurrency" name="wsCurrency" value="@currency" />
+				</div>
+			</div>
 
-                    <select id="drpLocation" name="wsSalesLoc" class="form-control">
-                        <option value="">-- @Resources.Resource.Select --</option>
-                        @foreach (var item in Model.LocationList)
-                        {
-                            string selected = Model.wsSalesLoc == item.Value ? "selected" : "";
-                            <option value="@item.Value" @selected>@item.Text</option>
-                        }
-                    </select>
+			<div class="col-12 col-md-3">
+				<div class="form-group required">
+					<label class="control-label" for="drpLocation">@Resources.Resource.Location</label>
 
-                </div>
-            </div>
-        </div>
+					<select id="drpLocation" name="wsSalesLoc" class="form-control">
+						<option value="">-- @Resources.Resource.Select --</option>
+						@foreach (var item in Model.LocationList)
+						{
+							string selected = Model.wsSalesLoc == item.Value ? "selected" : "";
+							<option value="@item.Value" @selected>@item.Text</option>
+						}
+					</select>
 
-        <div class="row">
-            <div class="col-12 col-md-3">
-                <div class="form-group required">
-                    <label class="control-label" for="drpCustomer">@Resources.Resource.Customer</label>
+				</div>
+			</div>
+		</div>
 
-                    <select id="drpCustomer" name="wsCusID" class="form-control">
-                        <option value="">-- @Resources.Resource.Select --</option>
-                        @foreach (var item in Model.CustomerList)
-                        {
-                            var selected = Model.wsCusID.ToString() == item.Value ? "selected" : "";
-                            <option value="@item.Value" @selected>@item.Text</option>
-                        }
-                    </select>
+		<div class="row">
+			<div class="col-12 col-md-3">
+				<div class="form-group required">
+					<label class="control-label" for="drpCustomer">@Resources.Resource.Customer</label>
 
-                </div>
-            </div>
-            <div class="col-12 col-md-3">
-                <div class="form-group">
-                    <label class="control-label" for="wsCustomerTerms">@Resources.Resource.CustomerTerms</label>
+					<select id="drpCustomer" name="wsCusID" class="form-control">
+						<option value="">-- @Resources.Resource.Select --</option>
+						@foreach (var item in Model.CustomerList)
+						{
+							var selected = Model.wsCusID.ToString() == item.Value ? "selected" : "";
+							<option value="@item.Value" @selected>@item.Text</option>
+						}
+					</select>
 
-                    <input type="text" class="form-control pointer" id="wsCustomerTerms" name="wsCustomerTerms" readonly value="@Model.wsCustomerTerms" />
+				</div>
+			</div>
+			<div class="col-12 col-md-3">
+				<div class="form-group">
+					<label class="control-label" for="wsCustomerTerms">@Resources.Resource.CustomerTerms</label>
 
-                </div>
-            </div>
-            <div class="col-12 col-md-3">
-                <div class="form-group">
-                    <label class="control-label" for="wsCustomerPO">@Resources.Resource.CustomerPO</label>
+					<input type="text" class="form-control pointer" id="wsCustomerTerms" name="wsCustomerTerms" readonly value="@Model.wsCustomerTerms" />
 
-                    <input type="text" class="form-control" id="wsCustomerPO" name="wsCustomerPO" value="@Model.wsCustomerPO" />
+				</div>
+			</div>
+			<div class="col-12 col-md-3">
+				<div class="form-group">
+					<label class="control-label" for="wsCustomerPO">@Resources.Resource.CustomerPO</label>
 
-                </div>
-            </div>
-        </div>
-    </div>
+					<input type="text" class="form-control" id="wsCustomerPO" name="wsCustomerPO" value="@Model.wsCustomerPO" />
 
-    <div class="d-flex justify-content-center my-4" data-status="@Model.wsStatus">
-        <table id="tblWSI" class="jexcel jexcel_overflow" cellpadding="0" cellspacing="0" unselectable="yes" style="width:100%;">
-            <colgroup>
-                <col width="50">
-                <col width="150">
-                <col width="200">
-                <col width="90">
-                @{ var colcls = Model.wsStatus == WholeSalesStatus.invoice.ToString() ? "" : "hide";}
-                <col class="@colcls" width="90">
-                <col class="@colcls" width="90">
-                <col class="@colcls" width="50">
+				</div>
+			</div>
+		</div>
+	</div>
 
-                <col width="90">
-                <col width="100">
-                <col width="60">
-                @if (Model.EnableTax && !Model.InclusiveTax)
-                {
-                    <col width="60">
-                }
-                <col width="120">
-            </colgroup>
-            <thead class="resizable">
-                <tr>
-                    <td class="jexcel_selectall text-center"><input type="checkbox" class="chkall" /></td>
-                    <td title="@Resources.Resource.ItemCode" style="text-align: center;">@Resources.Resource.ItemCode</td>
-                    <td title="@Resources.Resource.ItemName" style="text-align: center;">@Resources.Resource.ItemName</td>
-                    <td title="@Resources.Resource.BaseUnit" style="text-align: right;">@Resources.Resource.BaseUnit</td>
-                    <td title="@Resources.Resource.Qty" style="text-align: right;">@Resources.Resource.Qty</td>
-                    @if (Model.wsStatus == WholeSalesStatus.invoice.ToString())
-                    {
-                        <td title="@Resources.Resource.Batch" style="text-align: center;">@Resources.Resource.Batch</td>
-                        <td title="@Resources.Resource.SerialNo" style="text-align: center;">@Resources.Resource.SerialNoItemHeader</td>
-                        <td title="@Resources.Resource.ValidThru" style="text-align: center;">@Resources.Resource.ValidThru</td>
-                    }
-                    <td title="@Resources.Resource.UnitPrice" style="text-align: right;">@Resources.Resource.UnitPrice (@Model.Currency)</td>
-                    <td title="@Resources.Resource.DiscPc" style="text-align: right;">@Resources.Resource.DiscPc</td>
-                    @if (Model.EnableTax && !Model.InclusiveTax)
-                    {
-                        <td title="@Resources.Resource.Tax" style="text-align: right;">@Resources.Resource.TaxItemHeader</td>
-                    }
+	<div class="d-flex justify-content-center my-4" data-status="@Model.wsStatus">
+		<table id="tblWSI" class="jexcel jexcel_overflow" cellpadding="0" cellspacing="0" unselectable="yes" style="width:100%;">
+			<colgroup>
+				<col width="50">
+				<col width="150">
+				<col width="200">
+				<col width="90">
+				@{ var colcls = Model.wsStatus == WholeSalesStatus.invoice.ToString() ? "" : "hide";}
+				<col class="@colcls" width="90">
+				<col class="@colcls" width="90">
+				<col class="@colcls" width="50">
 
-                    <td title="@Resources.Resource.Amount" style="text-align: right;">@Resources.Resource.Amount (@Model.Currency)</td>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
+				<col width="90">
+				<col width="100">
+				<col width="60">
+				@if (Model.EnableTax && !Model.InclusiveTax)
+				{
+					<col width="60">
+				}
+				<col width="120">
+			</colgroup>
+			<thead class="resizable">
+				<tr>
+					<td class="jexcel_selectall text-center"><input type="checkbox" class="chkall" /></td>
+					<td title="@Resources.Resource.ItemCode" style="text-align: center;">@Resources.Resource.ItemCode</td>
+					<td title="@Resources.Resource.ItemName" style="text-align: center;">@Resources.Resource.ItemName</td>
+					<td title="@Resources.Resource.BaseUnit" style="text-align: right;">@Resources.Resource.BaseUnit</td>
+					<td title="@Resources.Resource.Qty" style="text-align: right;">@Resources.Resource.Qty</td>
+					@if (Model.wsStatus == WholeSalesStatus.invoice.ToString())
+					{
+						<td title="@Resources.Resource.Batch" style="text-align: center;">@Resources.Resource.Batch</td>
+						<td title="@Resources.Resource.SerialNo" style="text-align: center;">@Resources.Resource.SerialNoItemHeader</td>
+						<td title="@Resources.Resource.ValidThru" style="text-align: center;">@Resources.Resource.ValidThru</td>
+					}
+					<td title="@Resources.Resource.UnitPrice" style="text-align: right;">@Resources.Resource.UnitPrice (@Model.Currency)</td>
+					<td title="@Resources.Resource.DiscPc" style="text-align: right;">@Resources.Resource.DiscPc</td>
+					@if (Model.EnableTax && !Model.InclusiveTax)
+					{
+						<td title="@Resources.Resource.Tax" style="text-align: right;">@Resources.Resource.TaxItemHeader</td>
+					}
 
-    var decimaltotal = CommonHelper.FormatNumber(Model.Total);
-    <div class="row my-4">
-        <div class="col-12 col-md-4">
-            <div class="form-group">
-                <label class="control-label">@Resources.Resource.PromisedDate</label>
+					<td title="@Resources.Resource.Amount" style="text-align: right;">@Resources.Resource.Amount (@Model.Currency)</td>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</div>
 
-                <input type="datetime" class="form-control datepicker" id="promisedDate" />
-                @Html.HiddenFor(model => model.wsPromisedDate)
-                @Html.HiddenFor(model => model.PromisedDateDisplay)
-            </div>
-        </div>
-        <div class="col-12 col-md-4">
-            <div class="form-group">
-                <label class="control-label" for="wsRemark">@Resources.Resource.Remark</label>
+	var decimaltotal = CommonHelper.FormatNumber(Model.Total);
+	<div class="row my-4">
+		<div class="col-12 col-md-4">
+			<div class="form-group">
+				<label class="control-label">@Resources.Resource.PromisedDate</label>
 
-                <textarea class="form-control" id="wsRemark" name="wsRemark" rows="5">@Model.wsRemark</textarea>
+				<input type="datetime" class="form-control datepicker" id="promisedDate" />
+				@Html.HiddenFor(model => model.wsPromisedDate)
+				@Html.HiddenFor(model => model.PromisedDateDisplay)
+			</div>
+		</div>
+		<div class="col-12 col-md-4">
+			<div class="form-group">
+				<label class="control-label" for="wsRemark">@Resources.Resource.Remark</label>
 
-            </div>
-        </div>
-        <div class="col-12 col-md-4 text-right">
-            <div class="form-inline mb-2 float-right">
-                <div class="form-group">
-                    <label for="txtTotal" class="col-form-label mx-sm-3 font-weight-bold">@Resources.Resource.TotalAmount (@Model.Currency)</label>
-                    <input type="number" class="form-control" id="txtTotal" readonly name="TotalAmount" value="@decimaltotal" />
-                </div>
-            </div>
-        </div>
+				<textarea class="form-control" id="wsRemark" name="wsRemark" rows="5">@Model.wsRemark</textarea>
 
-    </div>
+			</div>
+		</div>
+		<div class="col-12 col-md-4 text-right">
+			<div class="form-inline mb-2 float-right">
+				<div class="form-group">
+					<label for="txtTotal" class="col-form-label mx-sm-3 font-weight-bold">@Resources.Resource.TotalAmount (@Model.Currency)</label>
+					<input type="number" class="form-control" id="txtTotal" readonly name="TotalAmount" value="@decimaltotal" />
+				</div>
+			</div>
+		</div>
 
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <a role="button" href="#" id="btnSave" class="btn btn-success">@Resources.Resource.Save</a>
-        </div>
-    </div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-md-offset-2 col-md-10">
+			<a role="button" href="#" id="btnSave" class="btn btn-success">@Resources.Resource.Save</a>
+		</div>
+	</div>
 }
 
 <div>
 
-    @Html.ActionLink(Resources.Resource.BackToList, "Index")
+	@Html.ActionLink(Resources.Resource.BackToList, "Index")
 </div>
 
 @Html.Partial("_ItemModal", null, new ViewDataDictionary { { "currency", Model.Currency }, { "priceheader", Resources.Resource.UnitPrice } })

@@ -565,6 +565,7 @@ let graphsettings: IGraphSettings;
 let graphsettingslist: Array<IGraphSettings> = [];
 
 let IdList: number[] = [];
+let CodeList: string[] = [];
 
 let gAttributes: Array<IGlobalAttribute> = [];
 let gAttribute: IGlobalAttribute;
@@ -949,11 +950,11 @@ function togglePaging(type: string = "item", show: boolean = true) {
 			$target = $("#tblStock");
 			break;
 		case "transfer":
-			$target = $("#tblTransfer");			
+			$target = $("#tblTransfer");
 			break;
 		default:
 		case "item":
-			$target = $("#tblItem");			
+			$target = $("#tblItem");
 	}
 	$pager = $(".Pager");
 	let $norecord: JQuery = $target.prev("#norecord");
@@ -1502,7 +1503,7 @@ $(document).on("click", ".Pager .page", function () {
 	if (fortraining) GetTrainings(pageindex);
 	if (forsales || forpreorder || forwholesales || forpurchase)
 		GetItems(pageindex);
-	if (forsales ||forsimplesales) GetCustomers4Sales(pageindex);
+	if (forsales || forsimplesales) GetCustomers4Sales(pageindex);
 
 	if (forstock) GetStocks(pageindex);
 });
@@ -5482,6 +5483,7 @@ interface ICustomerPointPriceLevel {
 	CustomerPoint: number;
 }
 interface ICustomer {
+	cusCheckout: null;
 	CityTxt: string | null;
 	CountryTxt: string | null;
 	ExchangeRate: number | null;
@@ -5546,7 +5548,7 @@ interface ICustomer {
 	CustomAttributeList: ICustomAttribute[];
 	TaxCode: string | null;
 	FollowUpDateInfo: ICustomerInfo;
-	FollowUpRecordList: ICustomerInfo[];	
+	FollowUpRecordList: ICustomerInfo[];
 	CustomerItems: ICustomerItem[];
 	StreetLines: string[];
 	CustomerInfo: ICustomerInfo[];
@@ -6777,18 +6779,34 @@ function plusBtn(
 let assignedsalesmanEnqIds: number[] = [];
 let icheckall: number = 0;
 function handleCheckall(checked: boolean) {
-	IdList = [];
-	if (checked) {
-		//console.log("infoblk idlist:", $infoblk.data("idlist"));
-		if ($infoblk.data("idlist")) {
-			IdList = $infoblk.data("idlist").split(",");
+	if (forcustomer) {
+		CodeList = [];
+		if (checked) {
+			//console.log("infoblk idlist:", $infoblk.data("idlist"));
+			if ($infoblk.data("codelist")) {
+				CodeList = structuredClone($infoblk.data("codelist"));
+			} else {
+				$(".chk").each(function (i, e) {
+					CodeList.push($(e).data("code"));
+				});
+			}
 		} else {
-			$(".chk").each(function (i, e) {
-				IdList.push($(e).data("id"));
-			});
+			CodeList = [];
 		}
 	} else {
 		IdList = [];
+		if (checked) {
+			//console.log("infoblk idlist:", $infoblk.data("idlist"));
+			if ($infoblk.data("idlist")) {
+				IdList = $infoblk.data("idlist").split(",");
+			} else {
+				$(".chk").each(function (i, e) {
+					IdList.push($(e).data("id"));
+				});
+			}
+		} else {
+			IdList = [];
+		}
 	}
 
 	$("#chkall").prop("checked", checked);
@@ -7803,9 +7821,9 @@ let DicItemSNs: { [Key: string]: Array<ISerialNo> } = {};
 
 
 interface IPreSales {
-    rtsCusCode: string;
-    rtsServiceChargeAmt: number;
-    rtsServiceChargePc: number;
+	rtsCusCode: string;
+	rtsServiceChargeAmt: number;
+	rtsServiceChargePc: number;
 	Currency: string;
 	NextSalesCode: string;
 	authcode: string;
@@ -7814,7 +7832,7 @@ interface IPreSales {
 	SalesDateDisplay: string;
 	SettleDateDisplay: string;
 	salescode: string;
-	rtsUID: number;	
+	rtsUID: number;
 	rtsLineTotalPlusTax: number | null;
 	rtsFinalDiscAmt: number | null;
 	rtsRmks: string;
@@ -14748,7 +14766,7 @@ function initSales(): ISales {
 		rtsStatus: "",
 		rtsDate: "",
 		rtsTime: "",
-		rtsCusCode: "",	
+		rtsCusCode: "",
 		rtsLineTotal: 0,
 		rtsLineTotalPlusTax: 0,
 		rtsFinalDisc: 0,
@@ -14756,14 +14774,14 @@ function initSales(): ISales {
 		rtsFinalAdj: 0,
 		rtsFinalTotal: 0,
 		rtsRmks: "",
-		rtsRmksOnDoc: "",	
+		rtsRmksOnDoc: "",
 		rtsUpldBy: "",
 		rtsUpldTime: null,
 		rtsUpLdLog: "",
 		rtsInternalRmks: "",
 		rtsMonthBase: false,
 		rtsLineTaxAmt: 0,
-		rtsEpay: false,	
+		rtsEpay: false,
 		rtsDeliveryAddressId: 0,
 		rtsDeliveryAddress1: "",
 		rtsDeliveryAddress2: "",
@@ -14776,7 +14794,7 @@ function initSales(): ISales {
 		rtsSaleComment: "",
 		rtsCheckout: false,
 		rtsCheckoutPortal: "",
-		rtsParentUID: 0,	
+		rtsParentUID: 0,
 		rtsExRate: 1,
 		rtsCurrency: "HKD",
 		Roundings: 0,
@@ -14894,7 +14912,7 @@ interface IRtlSale {
 	rtsSaleComment: string;
 	rtsCheckout: boolean;
 	rtsCheckoutPortal: string;
-	rtsParentUID: number | null;	
+	rtsParentUID: number | null;
 	rtsExRate: number | null;
 	rtsCurrency: string;
 	rtsAllLoc: boolean;
@@ -16207,7 +16225,7 @@ function handleWhatsappClick(
 		lnk = lnk.replace("{0}", $target.val()).replace("{1}", txt);
 		popupCenter({ url: lnk, title: "", w: 900, h: 500 });
 	}
-	
+
 }
 
 function itemEditPageLoad() {
@@ -16818,7 +16836,7 @@ function fillInItemModal() {
 let forCustomer: boolean = false;
 function confirmDateTime() {
 	let strdate = $("#strDateTime").val();
-	if (forCustomer) {		
+	if (forCustomer) {
 		$.ajax({
 			type: "POST",
 			url: "/Customer/UpdateFollowUpDate",
@@ -17233,7 +17251,7 @@ function fillInCustomer() {
 
 	Customer.IsLastSellingPrice = $("#IsLastSellingPrice").is(":checked");
 
-	if (!Customer.FollowUpDateInfo) Customer.FollowUpDateInfo = { Id:0} as ICustomerInfo;
+	if (!Customer.FollowUpDateInfo) Customer.FollowUpDateInfo = { Id: 0 } as ICustomerInfo;
 	if (Customer.FollowUpDateInfo) {
 		Customer.FollowUpDateInfo.type = "date";
 		Customer.FollowUpDateInfo.status = $(".followup:checked").val() as string;
@@ -18321,7 +18339,7 @@ $(document).on("click", ".respond", function () {
 	if (forcustomer) {
 		cusCode = $(this).data("code") as string;
 		selectedCus = {} as ICustomer;
-		selectedCus.cusCode = cusCode;	
+		selectedCus.cusCode = cusCode;
 		selectedCus.cusName = $(this).data("name");
 	} else {
 		if (!receiptno)
@@ -18442,7 +18460,7 @@ function handleWhatsAppPhone(phone: string) {
 }
 
 function respondReview(type) {
-	openWaitingModal();	
+	openWaitingModal();
 	if (forwholesales) {
 		$.ajax({
 			type: "POST",
@@ -19808,8 +19826,8 @@ function handleRecordChange(ele) {
 						.find("span")
 						.text(
 							lasteditedbyformat
-								.replace("{0}", data.ModifiedBy??data.CreatedBy)
-								.replace("{1}", data.ModifyTimeDisplay??data.CreateTimeDisplay)
+								.replace("{0}", data.ModifiedBy ?? data.CreatedBy)
+								.replace("{1}", data.ModifyTimeDisplay ?? data.CreateTimeDisplay)
 						);
 				}
 			},
@@ -19837,8 +19855,8 @@ function infoCallBackOk(data: IInfoBase[]) {
 		let html = "";
 		data.forEach((x) => {
 			let lastedited: string = lasteditedbyformat
-				.replace("{0}", x.ModifiedBy??x.CreatedBy)
-				.replace("{1}", x.ModifyTimeDisplay??x.CreateTimeDisplay);
+				.replace("{0}", x.ModifiedBy ?? x.CreatedBy)
+				.replace("{1}", x.ModifyTimeDisplay ?? x.CreateTimeDisplay);
 			html += `<div class="displayblk col-12 col-sm-4 mb-1" data-enqid="${x.enId}" data-cuscode="${x.cusCode}" data-id="${x.Id}">
                             <div class="card">
                                 <div class="text-right small"><span class="fa fa-edit text-info record pointer mr-2"></span><span class="fa fa-close text-danger record pointer"></span></div>
@@ -19907,7 +19925,7 @@ $(document).on("click", ".saverecord", function () {
 
 
 interface IInfoBase {
-	Id: any;	
+	Id: any;
 	cusCode: string | null;
 	enId: string | null;
 	fileName: string;
@@ -19922,7 +19940,7 @@ interface IInfoBase {
 	ModifyTimeDisplay: string | null;
 	ModifiedBy: string | null;
 }
-interface ICustomerInfo extends IInfoBase {	
+interface ICustomerInfo extends IInfoBase {
 	cusCode: string;
 	cusAddrLocation: number;
 	AccountProfileId: number;
@@ -19942,7 +19960,7 @@ interface ICustomerInfo extends IInfoBase {
 	Salutation: string;
 	ContactName: string;
 	WWW: string;
-	Street: string;	
+	Street: string;
 }
 interface IEnquiryInfo extends IInfoBase {
 	Id: string;
@@ -20003,15 +20021,12 @@ function confirmAdvancedSearch() {
 				attrValue: $(e).find(".attrval").val() as string,
 			});
 		});
-		console.log("advSearchItems:", advSearchItems);
-		var data = {
-			__RequestVerificationToken: $(
-				"input[name=__RequestVerificationToken]"
-			).val(),
-			advSearchItems,
-			eTrackAdvSearchItem,
-		};
+		//console.log("advSearchItems:", advSearchItems);		
+		var data = forcustomer ? {
+			advSearchItems
+		} : { eTrackAdvSearchItem };
 		//return;
+		// Must not use [HttpGet]!!! (due to the parameter type)
 		$.ajax({
 			//contentType: 'application/json; charset=utf-8',
 			type: "POST",
@@ -20024,24 +20039,25 @@ function confirmAdvancedSearch() {
 					: (data as IeTrack[]).map((x) => Number(x.ContactId));
 				console.log("idlist:", IdList);
 				$(`#${gTblName}`).data("idlist", IdList.join(","));
+				$("#pagingblk").hide();
 				if (data.length > 0) {
 					let html = "";
 					if (forcustomer) {
 						(data as ICustomer[]).forEach((customer) => {
-							const email = customer.cusEmail ?? "N/A";
+							const email = formatEmail(customer.cusEmail ?? "", customer.cusEmail) ?? "N/A";
 							const cname = customer.cusName;
-							html += `<tr class="${customer.statuscls}" data-id="${customer.cusCustomerID}">
-                    <td style="width:110px;max-width:110px;" class="text-center">${cname}</td>
-                    <td style="width:100px;max-width:100px;" class="text-center">${customer.cusContact}</td>
-                    <td style="width:110px;max-width:110px;" class="text-center">${email}</td>
-                    <td style="width:110px;max-width:110px;" class="text-center">${customer.CustomAttributes}</td>
-                    <td style="width:110px;max-width:110px;" class="text-center">${customer.CreateTimeDisplay}</td>
-                    <td style="width:70px;max-width:70px;" class="text-center">${customer.FollowUpStatusDisplay}</td>
-                    <td style="width:110px;max-width:110px;" class="text-center">${customer.FollowUpDateDisplay}</td>
-
-                    <td style="width:120px;max-width:120px;">
-                        <a class="btn btn-info btnsmall" role="button" href="/Customer/Edit?customerId=${customer.cusCustomerID}">${edittxt}</a>
-                        <a class="btn btn-danger btnsmall remove" role="button" href="#" data-id="${customer.cusCustomerID}">${removetxt}</a>
+							let disabled = (customer.cusCheckout) ? "disabled" : "";
+							html += `<tr class="${customer.statuscls} pointer" data-id="${customer.cusCustomerID}">
+                    <td class="text-center">${cname}</td>
+                    <td class="text-center">${customer.cusContact}</td>
+                    <td class="text-center">${email}</td>
+                    <td class="text-center customattrs">${customer.CustomAttributes}</td>                   
+                    <td class="text-center">${customer.FollowUpStatusDisplay}</td>
+                    <td class="text-center">${customer.FollowUpDateDisplay}</td>
+					 <td class="text-center">${customer.AccountProfileName}</td>
+                    <td>
+                        <a class="btn btn-info btnsmall" role="button" href="/Customer/Edit?cusCode=${customer.cusCode}&referrer=Index">${edittxt}</a>
+                        <a class="btn btn-danger btnsmall remove ${disabled}" role="button" href="#" data-code="${customer.cusCode}" data-id="${customer.cusCustomerID}">${removetxt}</a>
                     </td>
                 </tr>`;
 						});
@@ -20065,15 +20081,16 @@ function confirmAdvancedSearch() {
 
 					$(`#${gTblName}`).show().find("tbody").empty().append(html);
 					$("#norecord").addClass("hide");
-					//$(`#${gTblName}`).prev(".row").hide();
-					//model.ContactCount = model.eTracks.Select(x => x.ContactName).Distinct().Count();
-					$("#totalrecord").text(data.length);
-					$("#contactcount").text(countUnique(data.map((x) => x.ContactName)));
-					$("#iPageSize").trigger("focus");
-				} else {
+					/*$("#norecord").hide();*/
+					//if (foretrack) {
+					//	$("#totalrecord").text(data.length);
+					//	$("#contactcount").text(countUnique(data.map((x) => x.ContactName)));
+					//	$("#iPageSize").trigger("focus");
+					//}					
+				}
+				else {
 					$(`#${gTblName}`).hide();
-					$("#norecord").removeClass("hide");
-					//$(`#${gTblName}`).prev(".row").show();
+					$("#norecord").show();
 				}
 			},
 			dataType: "json",
@@ -21967,7 +21984,7 @@ function populateFileList(files: string[]) {
 function handleUploadedFile(result: any) {
 	closeWaitingModal();
 	closeViewFileModal();
-	UploadedFileList = structuredClone(result.FileList);	
+	UploadedFileList = structuredClone(result.FileList);
 	closeUploadFileModal();
 }
 
@@ -22066,7 +22083,7 @@ $(document).on("click", ".removefile", function () {
 			$(this).parent("li").remove();
 			data = { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), Id, filename: file };
 		}
-		else{
+		else {
 			url = "/Purchase/RemoveFile";
 			let idx = Purchase.FileList.findIndex(x => x == file);
 			if (idx >= 0) Purchase.FileList.splice(idx, 1);
@@ -22281,3 +22298,92 @@ function handlePaymentTypeSaved() {
 	});
 }
 
+function GetHotLists(pageIndex) {
+	let data = "{pageIndex: " + pageIndex + "}";
+	if (typeof keyword !== "undefined" && keyword !== "") {
+		data = "{pageIndex: " + pageIndex + ', keyword: "' + keyword + '"}';
+	} else {
+		data = "{pageIndex: " + pageIndex + ', keyword: "' + "" + '"}';
+	}
+	console.log("data:", data);
+	/*return false;*/
+	openWaitingModal();
+	$.ajax({
+		url: "/Api/GetHotListsAjax",
+		type: "POST",
+		data: data,
+		contentType: "application/json; charset=utf-8",
+		dataType: "json",
+		success: OnGetHotListSuccess,
+		error: onAjaxFailure,
+	});
+}
+function OnGetHotListSuccess(response) {
+	keyword = "";
+	closeWaitingModal();
+	console.log("response:", response);
+	var model = response;
+
+	console.log("modelhotlists:", model);
+
+	if (model.length > 0) {
+		let modelhotlistlist: Array<IHotList> = model.slice(0);
+		if (typeof hotlistlist !== "undefined" && hotlistlist.length > 0) {
+			let filteredmodelhotlistlist: Array<IHotList> = [];
+			$.each(modelhotlistlist, function (i, e: IHotList) {
+				let _hotlist = $.grep(hotlistlist, function (v, k) {
+					return e.Id == v.Id;
+				})[0];
+
+				if (typeof _hotlist === "undefined") {
+					filteredmodelhotlistlist.push(e);
+				}
+			});
+
+			hotlistlist = [...hotlistlist, ...filteredmodelhotlistlist];
+			console.log("hotlistlist after merge:", hotlistlist);
+		} else {
+			hotlistlist = model.slice(0);
+		}
+
+		var row = $("#tblHotList tr:last-child").removeAttr("style").clone(false);
+		$("#tblHotList tr").not($("#tblHotList tr:first-child")).remove();
+
+		$.each(modelhotlistlist, function () {
+			var hotlist = this;
+			row.addClass("hotid pointer").attr("data-id", hotlist.Id);
+			//console.log('hotlist:', hotlist);
+			$("td", row).eq(0).html(hotlist.hoName);
+			$("td", row).eq(1).html(hotlist.SalesPersonName);
+			$("td", row).eq(2).html(hotlist.hoDescription);
+			$("td", row).eq(3).html(hotlist.CreateTimeDisplay);
+			let modifytime = hotlist.ModifyTimeDisplay ?? "N/A";
+			$("td", row).eq(4).html(modifytime);
+
+			$("#tblHotList").append(row);
+			row = $("#tblHotList tr:last-child").clone(false);
+		});
+		$(".Pager").ASPSnippets_Pager({
+			ActiveCssClass: "current",
+			PagerCssClass: "pager",
+			PageIndex: model.PageIndex,
+			PageSize: model.PageSize,
+			RecordCount: model.RecordCount,
+		});
+		openHotListModal();
+	} else {
+		togglePaging("hotlist", false);
+	}
+}
+$(document).on("click", "#hotlistModal .Pager .page", function () {
+	pageindex = parseInt(<string>$(this).attr("page"));
+	GetHotLists(pageindex);
+});
+$(document).on("click", "#tblHotList th a", function () {
+	sortName = $(this).data("category");
+	sortDirection = sortDirection == "ASC" ? "DESC" : "ASC";
+	/* console.log('sortname:' + sortName + ';sortdir:' + sortDirection);*/
+	pageindex = 1;
+	GetHotLists(pageindex);
+});
+let eBlastHotListIds: { [Key: number]: number } = {};

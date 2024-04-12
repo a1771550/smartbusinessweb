@@ -105,7 +105,7 @@ new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
 <script src="~/Scripts/paginationjs/pagination.js"></script>
 
 <script>
-    $(document).ready(function () {
+    $(function () {
         initModals();
         initDatePickers(StartDayEnum.LastMonth, 'YYYY-MM-DD');
         $target = $('.pagination');
@@ -116,8 +116,8 @@ new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
             $('#txtKeyword').val(keyword);
         }
         $('.pagination li').addClass('page-item');
-        $('#txtKeyword').focus();
+        $('#txtKeyword').trigger("focus");
     });
 </script>
 
-<script src="~/Scripts/ts/js/crm/graphsettings/graphsettings.js?v=@rand"></script>
+<script src="~/Scripts/ts/js/customer/graphsettings/index.js?v=@rand"></script>

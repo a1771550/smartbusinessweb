@@ -208,7 +208,7 @@
 
 <div id="infoblk" data-uploadurl="/Enquiry/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@string.Join(",",Model.UploadFileList)" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]"></div>
 
-<script src="~/Scripts/ts/js/crm/enquiry/enquiry_edit.js?v=@rand"></script>
+<script src="~/Scripts/ts/js/customer/enquiry/edit.js?v=@rand"></script>
 
 @Html.Partial("_UploadFileModal", null, new ViewDataDictionary { { "uploadUrl", "/Enquiry/UploadFile" } })
 @Html.Partial("_ViewFileModal", null, new ViewDataDictionary { { "imglist", Model.ImgList }, { "filelist", Model.FileList } })

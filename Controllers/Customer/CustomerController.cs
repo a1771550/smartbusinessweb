@@ -177,6 +177,11 @@ namespace SmartBusinessWeb.Controllers.Customer
             return Json(msg);
         }
 
+        /// <summary>
+        /// Must not use [HttpGet]!!! (due to the parameter type)
+        /// </summary>
+        /// <param name="advSearchItems"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult AdvancedSearch(List<AdvSearchItem> advSearchItems)
         {
@@ -186,7 +191,7 @@ namespace SmartBusinessWeb.Controllers.Customer
 
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
-        public ActionResult Index(int SortCol = 4, string SortOrder = "desc", string Keyword = "", int PageNo = 1, int? CheckAll = 0, int SortCol_a = 0, string SortOrder_a = "desc", string Keyword_a = "", int PageNo_a = 1, string cusIds = null)
+        public ActionResult Index(int SortCol = 4, string SortOrder = "desc", string Keyword = "", int PageNo = 1, int CheckAll = 0, int SortCol_a = 0, string SortOrder_a = "desc", string Keyword_a = "", int PageNo_a = 1, string cusIds = null)
         {
             ViewBag.ParentPage = ViewBag.PageName = "customer";
             if (string.IsNullOrEmpty(Keyword))

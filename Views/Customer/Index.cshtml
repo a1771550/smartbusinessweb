@@ -9,6 +9,7 @@
 	var CusIdList = Model.CusIdList;
 	string idlist = string.Join(",", CusIdList);
 	bool nonabss = Model.NonABSS;
+	string checkall = Model.CheckAll==1 ? "checked" : "";
 }
 <link href="~/Content/customer/index.css?v=@rand" rel="stylesheet" type="text/css" />
 
@@ -25,11 +26,11 @@
 		<div class="form-inline mb-2 my-4">
 			<div class="form-group">
 				<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Model.Keyword" />
-				<button id="btnSearch" type="button" class="btn btn-success ml-3">@Resources.Resource.Search</button>
-				<button id="btnReload" type="button" class="btn btn-warning ml-3">@Resources.Resource.Reload</button>
-				<button id="btnAdvSearch" type="button" class="btn btn-danger ml-3">@Resources.Resource.AdvancedSearch</button>
-				@*<button id="btnHotList" type="button" class="btn btn-info ml-3">@Resources.Resource.AddContactsToHotList</button>
-					<button id="btnBlast" type="button" class="btn btn-primary ml-3">@Resources.Resource.AddContactsToEblast</button>*@
+				<button id="btnSearch" type="button" class="btn btn-success mx-1">@Resources.Resource.Search</button>
+				<button id="btnReload" type="button" class="btn btn-warning mx-1">@Resources.Resource.Reload</button>
+				<button id="btnAdvSearch" type="button" class="btn btn-danger mx-1">@Resources.Resource.AdvancedSearch</button>
+				<button id="btnHotList" type="button" class="btn btn-info mx-1">@addtohotlisttxt</button>
+				<button id="btnBlast" type="button" class="btn btn-primary mx-1">@addtoeblasttxt</button>
 			</div>
 		</div>
 
@@ -40,14 +41,14 @@
 					<th scope="col" class="text-center colheader" data-col="1" data-keyword="@Model.Keyword">@Resources.Resource.Contact</th>
 					<th scope="col" class="text-center colheader" data-col="2" data-keyword="@Model.Keyword">@Resources.Resource.Email</th>
 					<th class="text-center">@Resources.Resource.CustomAttributes</th>
-					@*<th scope="col" class="text-center colheader" data-col="3" data-keyword="@Model.Keyword">@Resources.Resource.CreateTime</th>*@
+
 					<th scope="col" class="text-center colheader" data-col="3" data-keyword="@Model.Keyword">@string.Format(Resources.Resource.FollowUpFormat, Resources.Resource.Status)</th>
 					<th scope="col" class="text-center colheader" data-col="4" data-keyword="@Model.Keyword">@Resources.Resource.FollowUpDate</th>
 					<th scope="col" class="text-center colheader" data-col="5" data-keyword="@Model.Keyword">ABSS</th>
 					<th scope="col"></th>
-					@*<th scope="col">
-							<input type="checkbox" id="chkall" />
-						</th>*@
+					<th scope="col">
+						<input type="checkbox" id="chkall" @checkall />
+					</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -65,18 +66,19 @@
 								@Html.Raw(customer.CustomAttributes.Trim())
 							}
 						</td>
-						@*<td class="text-center">@customer.CreateTimeDisplay</td>*@
+						
 						<td class="text-center">@customer.FollowUpStatusDisplay</td>
 						<td class="text-center">@customer.FollowUpDateDisplay</td>
 						<td class="text-center">@customer.AccountProfileName</td>
 
 						<td>
 							<a class="btn btn-info btnsmall" role="button" href="/Customer/Edit?cusCode=@customer.cusCode&referrer=Index">@Resources.Resource.Edit</a>
-							<a class="btn btn-danger btnsmall remove @disabled" role="button" href="#" data-id="@customer.cusCustomerID" data-apid="@customer.AccountProfileId">@Resources.Resource.Remove</a>
+							<a class="btn btn-danger btnsmall remove @disabled" role="button" href="#" data-code="@customer.cusCode" data-id="@customer.cusCustomerID" data-apid="@customer.AccountProfileId">@Resources.Resource.Remove</a>
 						</td>
-						@*<td>
-								<input type="checkbox" class="chk" data-id="@customer.cusCustomerID" />
-							</td>*@
+
+						<td>
+							<input type="checkbox" class="chk" data-code="@customer.cusCode" value="@customer.cusCode" />
+						</td>
 					</tr>
 				}
 			</tbody>
@@ -89,7 +91,7 @@
 
 		<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
 		<input type="hidden" id="sortcol" value="@Model.SortCol" />
- <!--no "name" attr in propose!-->
+		<!--no "name" attr in propose!-->
 		<div id="actionModal">
 
 			<table id="tblActionLog" class="table table-bordered  table-hover table-condensed">
@@ -131,10 +133,8 @@
 
 	}
 }
-else
-{
-	<div id="norecord" class="alert alert-warning">@Resources.Resource.NoDataFound</div>
-}
+
+@Html.Partial("_NoRecordFound")
 
 
 @Html.Partial("_DescModal")
@@ -142,7 +142,7 @@ else
 @Html.Partial("_AdvancedSearchModal", Model.GlobalAttrList)
 
 @Html.Partial("_WaitingModal")
-<div id="infoblk" class="hide" data-actionhistory="@Resources.Resource.ActionHistory" data-selectatleastonecustomertxt="@selectatleastonecustomertxt"></div>
+<div id="infoblk" data-codelist="@JsonSerializer.Serialize(Model.CodeList)" data-actionhistory="@Resources.Resource.ActionHistory" data-selectatleastonecustomertxt="@selectatleastonecustomertxt"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
-<script src="/Scripts/ts/js/customer/customer.js?v=@rand"></script>
+<script src="/Scripts/ts/js/customer/index.js?v=@rand"></script>

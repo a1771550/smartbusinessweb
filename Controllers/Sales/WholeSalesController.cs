@@ -138,15 +138,15 @@ namespace SmartBusinessWeb.Controllers.Sales
             return Json(new { msg, ws.wsCode, zerostockItemcodes = zerostockItemcodes.Length > 0 ? string.Join(",", zerostockItemcodes) : "" });
         }
 
-        [HandleError]
-        [CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
-        public ActionResult Delivery(int Id)
-        {
-            ViewBag.ParentPage = "wholesales";
-            ViewBag.PageName = "wholesales";
-            WholeSalesEditModel model = new WholeSalesEditModel(Id, null, 0, "delivery");
-            return View(model.WholeSales);
-        }
+        //[HandleError]
+        //[CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
+        //public ActionResult Delivery(int Id)
+        //{
+        //    ViewBag.ParentPage = "wholesales";
+        //    ViewBag.PageName = "wholesales";
+        //    WholeSalesEditModel model = new WholeSalesEditModel(Id, null, 0, "delivery");
+        //    return View(model);
+        //}
 
         [HandleError]
         [CustomAuthorize("wholesales", "boss", "admin", "superadmin")]

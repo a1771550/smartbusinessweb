@@ -15,7 +15,7 @@
 
 @using (Html.BeginForm("Index", "HotList", FormMethod.Get, new { @Id = "frmHotList" }))
 {
-	@Html.AntiForgeryToken()
+
 	<div class="form-inline mb-2 my-4">
 		<div class="form-group">
 			<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" />
@@ -40,21 +40,19 @@
 			@foreach (var item in Model.PagingHotListList)
 			{
 				<tr data-id="@item.Id" class="pointer">
-					<td>
+					<td class="text-center">
 						@Html.DisplayFor(modelItem => item.hoName)
 					</td>
-					<td>@Html.DisplayFor(modelItem => item.SalesPersonName)</td>
-					<td>
-						@Html.DisplayFor(modelItem => item.CreateTime)
+					<td class="text-center">@Html.DisplayFor(modelItem => item.SalesPersonName)</td>
+					<td class="text-center">
+						@Html.DisplayFor(modelItem => item.CreateTimeDisplay)
+					</td>
+					<td class="text-center">
+						@Html.DisplayFor(modelItem => item.ModifyTimeDisplay)
 					</td>
 					<td>
-						@Html.DisplayFor(modelItem => item.ModifyTime)
-					</td>
-					<td>
-						<a class="btn btn-primary detail" href="#" data-id="@item.Id" data-name="@item.hoName" data-salesmanname="@item.SalesPersonName" data-createtime="@item.CreateTimeDisplay" data-modifytime="@item.ModifyTimeDisplay" data-desc="@item.hoDescription" data-salesmanresponsible="@item.hoSalesmanResponsible" role="button">@Resources.Resource.Detail</a>
-						@Html.ActionLink(Resources.Resource.Edit, "Edit", new { id = item.Id }, new { @class = "btn btn-info", @role = "button" })
+						@Html.ActionLink(Resources.Resource.Edit, "Edit", new { item.Id }, new { @class = "btn btn-info", @role = "button" })
 						<a href="#" class="btn btn-danger remove" data-id="@item.Id" role="button">@Resources.Resource.Remove</a>
-
 					</td>
 				</tr>
 			}
@@ -67,8 +65,10 @@ new { PageNo, SortCol = Model.SortCol, SortOrder = Model.CurrentSortOrder, Keywo
 
 	<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
 	<input type="hidden" id="sortcol" value="@Model.SortCol" />
-	<!--no "name" attr in propose!-->
+ <!--no "name" attr in propose!-->
+
 }
+@Html.AntiForgeryToken()
 
 @Html.Partial("_WaitingModal")
 
@@ -76,6 +76,6 @@ new { PageNo, SortCol = Model.SortCol, SortOrder = Model.CurrentSortOrder, Keywo
 
 <div id="infoblk" data-referrer="index"></div>
 
-<script src="~/Scripts/ts/js/hotlist/index.js?v=@rand"></script>
+<script src="~/Scripts/ts/js/customer/hotlist/index.js?v=@rand"></script>
 
 

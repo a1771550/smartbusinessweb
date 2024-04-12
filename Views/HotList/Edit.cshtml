@@ -1,0 +1,63 @@
+﻿@model PPWLib.Models.HotListEditModel
+
+@{
+	HotListModel HotList = Model.HotList;
+	bool editmode = HotList.Id > 0;
+	ViewBag.Title = editmode ? string.Format(Resources.Resource.EditFormat, Resources.Resource.HotList) : string.Format(Resources.Resource.AddFormat, Resources.Resource.HotList);
+	int rand = CommonHelper.GetVersionRandomNo();
+}
+
+<h3>@ViewBag.Title</h3>
+
+@using (Html.BeginForm())
+{
+	@Html.AntiForgeryToken()
+
+
+	<input type="hidden" id="Id" value="@HotList.Id" />
+	<input type="hidden" id="CreateTimeDisplay" value="@HotList.CreateTimeDisplay" />
+	<input type="hidden" id="ModifyTimeDisplay" value="@HotList.ModifyTimeDisplay" />
+
+	<div class="form-group required">
+		<label for="hoName">@Resources.Resource.Name</label>
+
+		<input type="text" class="form-control" id="hoName" name="hoName" value="@HotList.hoName" title="@Resources.Resource.Name" />
+
+	</div>
+
+	<div class="form-group required" data-salesmanid="@HotList.hoSalesmanResponsible">
+		<label for="drpSalesmen">@string.Format(Resources.Resource.InChargeFormat, Resources.Resource.SalesPerson)</label>
+
+		<select class="form-control" id="drpSalesmen">
+			<option value="0">-- @Resources.Resource.Select --</option>
+
+			@foreach (var item in Model.SalesmanList)
+			{
+				var selected = HotList.hoSalesmanResponsible == item.surUID ? "selected" : "";
+				<option value="@item.surUID" @selected>@item.UserName</option>
+			}
+		</select>
+
+	</div>
+
+	<div class="form-group">
+		<label for="hoDescription">@Resources.Resource.Description</label>
+
+		<textarea id="hoDescription" name="hoDescription" rows="5" cols="50" class="form-control">@HotList.hoDescription</textarea>
+
+	</div>
+
+	<button id="btnSave" type="button" role="button" class="btn btn-success">@Resources.Resource.Save</button>
+
+}
+
+<div class="my-2">
+	@Html.ActionLink(Resources.Resource.BackToList, "Index")
+</div>
+
+@Html.Partial("_WaitingModal")
+
+<div id="infoblk" class="hide" data-honamerequiredtxt="@string.Format(Resources.Resource.Required, string.Format(Resources.Resource.NameFormat, Resources.Resource.HotList))" data-salesmanrequiredtxt="@string.Format(Resources.Resource.RequiredSelectTxt,string.Format(Resources.Resource.InChargeFormat, Resources.Resource.SalesPerson))"></div>
+
+<script src="~/Scripts/ts/js/customer/hotlist/edit.js?v=@rand"></script>
+

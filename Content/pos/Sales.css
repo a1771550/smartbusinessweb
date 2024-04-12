@@ -106,6 +106,10 @@ i.fa-plus, i.fa-minus {
 	width: 65px;
 }
 
+.productblk{
+	padding:.5rem;
+}
+
 .productset {
 	padding: .5rem;
 }
