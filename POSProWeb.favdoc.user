@@ -205,6 +205,11 @@
           <path>Scripts\ts\customer\index.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\customer\index.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>itemtransfer-index.ts</name>
+          <path>Scripts\ts\itemtransfer\index.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\itemtransfer\index.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

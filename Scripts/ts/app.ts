@@ -12,6 +12,19 @@ enum TriggerReferrer {
 	Row,
 	Modal
 }
+interface IReserveStock {
+	Id: number;
+	OrderNo: string;
+	itmCode: string;
+	cusCode: string;
+	itmSellingPrice: number;
+	Qty: number;
+	Canceled: boolean;
+	Remark: string | null;
+	PaidOut: boolean;
+}
+let ReserveStock: IReserveStock;
+let ReserveStockList: IReserveStock[] = [];
 interface IPaymentType {
 	Id: number;
 	pmtCode: string;

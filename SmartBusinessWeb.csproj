@@ -355,6 +355,7 @@
     <Compile Include="Controllers\Customer\HotListController.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Controllers\Item\InventoryAdjustmentController.cs" />
+    <Compile Include="Controllers\Item\ReserveController.cs" />
     <Compile Include="Controllers\SimpleContactController.cs" />
     <Compile Include="Controllers\Customer\eBlastController.cs" />
     <Compile Include="Controllers\Customer\EnquiryController.cs" />
@@ -4963,6 +4964,7 @@
     <Folder Include="Controllers\CRM\" />
     <Folder Include="Models\" />
     <Folder Include="Scripts\mean\" />
+    <Folder Include="Views\Reserve\" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\index.d.ts" />
