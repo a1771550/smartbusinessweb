@@ -1,12 +1,47 @@
 ﻿$infoblk = $("#infoblk");
 
+$(document).on("dblclick", ".hotid", function () {
+	closeHotListModal();
+	if (CodeList.length > 0) {
+		handleHotListCustomer(Number($(this).data('id')));
+	} 
+});
 
+function handleHotListCustomer(id) {
+	//console.log('CodeList:', CodeList);
+	if (CodeList.length > 0) {
+		openWaitingModal();
+		$.ajax({
+			type: "POST",
+			url: '/HotList/AddCustomers',
+			data: { __RequestVerificationToken: $('input[name=__RequestVerificationToken]').val(), cusCodes: CodeList, hotlistId: id },
+			success: function (data) {
+				if (data) {
+					$.fancyConfirm({
+						title: '',
+						message: data,
+						shownobtn: false,
+						okButton: oktxt,
+						noButton: notxt,
+						callback: function (value) {
+							if (value) {
+								closeWaitingModal();
+								$('#txtKeyword').trigger("focus");
+							}
+						}
+					});
+				}
+			},
+			dataType: 'json'
+		});
+	}
+}
 $(document).on('click', '#btnHotList', function () {
 	//console.log('codelist:', CodeList);
 	if (CodeList.length === 0) {
 		$.fancyConfirm({
 			title: '',
-			message: $infoblk.data('selectatleastonecontacttxt'),
+			message: $infoblk.data('selectatleastonecustomertxt'),
 			shownobtn: false,
 			okButton: oktxt,
 			noButton: notxt,
@@ -24,12 +59,12 @@ $(document).on('click', '#btnHotList', function () {
 $(document).on("click", "#btnBlast", function (e) {
 	e.preventDefault();
 	e.stopPropagation();
-	console.log('cusldlist:', IdList);
+	//console.log('CodeList:', CodeList);
 	//return false;
-	if (IdList.length === 0) {
+	if (CodeList.length === 0) {
 		$.fancyConfirm({
 			title: '',
-			message: $infoblk.data('selectatleastonecontacttxt'),
+			message: $infoblk.data('selectatleastonecustomertxt'),
 			shownobtn: false,
 			okButton: oktxt,
 			noButton: notxt,
@@ -40,65 +75,16 @@ $(document).on("click", "#btnBlast", function (e) {
 			}
 		});
 	} else {
-		console.log('IdList:', IdList);
-		console.log('dicEblastContacts:', dicEblastContacts);
-
-		let elbastaddedcontactIds: Array<number> = [];
-
-		for (const [key, value] of Object.entries(dicEblastContacts)) {
-			if (CurrentEblastId == parseInt(key)) {
-				$.each(IdList, function (i, e) {
-					if (value.includes(e)) {
-						elbastaddedcontactIds.push(e);
-					}
-				});
-				//remove id from idlist:
-				IdList = IdList.filter(function (e) { return !value.includes(e); });
-			}
-		}
-
-		console.log('elbastaddedcontactIds:', elbastaddedcontactIds);
-
-		if (elbastaddedcontactIds.length > 0) {
-			$.ajax({
-				type: "GET",
-				url: '/Api/GetContactNamesByIds',
-				data: { 'contactIds': elbastaddedcontactIds.join() },
-				success: function (data) {
-					console.log(data);
-					var html = `<h4>${$infoblk.data('contactaddedeblastmsg')}</h4><ol>`;
-					var namelist: Array<string> = data.split(',');
-					$.each(namelist, function (i, e) {
-						html += `<li>${e}</li>`;
-					});
-					html += '</ol>';
-					$.fancyConfirm({
-						title: '',
-						message: html,
-						shownobtn: false,
-						okButton: oktxt,
-						noButton: notxt,
-						callback: function (value) {
-							if (value) {
-								handleEblastContacts();
-							}
-						}
-					});
-				},
-				dataType: 'json'
-			});
-		} else {
-			handleEblastContacts();
-		}
+		handleEblastCustomers();
 	}
 });
 
-function handleEblastContacts() {
+function handleEblastCustomers() {
 	openWaitingModal();
 	$.ajax({
 		type: "POST",
-		url: '/Contact/AddToEblast',
-		data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val(), contactIds: IdList },
+		url: '/Customer/AddToEblast',
+		data: { __RequestVerificationToken: $('input[name=__RequestVerificationToken]').val(), cusCodes: CodeList },
 		success: function (data) {
 			closeWaitingModal();
 			if (data) {
@@ -271,6 +257,6 @@ $(function () {
 		});
 	}
 
-	$("#norecord").hide();
+	$("#norecord").addClass("hide"); //hide() methods not work!!!
 	$("#txtKeyword").trigger("focus");
 });

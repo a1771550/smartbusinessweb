@@ -1,14 +1,14 @@
-﻿#tblHotlist th:nth-child(1), #tblHotlist td:nth-child(1), #tblHotlist th:nth-child(2), #tblHotlist td:nth-child(2) {
+﻿#tblHotList th:nth-child(1), #tblHotList td:nth-child(1), #tblHotList th:nth-child(2), #tblHotList td:nth-child(2) {
     width: 220px !important;
 }
 
-#tblHotlist th:nth-child(3), #tblHotlist th:nth-child(4), #tblHotlist td:nth-child(3), #tblHotlist td:nth-child(4) {
+#tblHotList th:nth-child(3), #tblHotList th:nth-child(4), #tblHotList td:nth-child(3), #tblHotList td:nth-child(4) {
     width: 150px !important;
     /*max-width: 110px !important;*/
 }
 
 
-#tblHotlist th:last-child, #tblHotlist td:last-child {
+#tblHotList th:last-child, #tblHotList td:last-child {
     width: 120px !important;
     /*max-width: 120px !important;*/
 }

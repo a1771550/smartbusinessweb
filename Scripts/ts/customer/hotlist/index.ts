@@ -49,7 +49,7 @@ $(document).on("click", ".colheader", function () {
 $(function () {
     forhotlist = true;
     setFullPage();
-    gTblName = "tblHotlist";
+    gTblName = "tblHotList";
     triggerMenu(1, 3);
     initModals();
 

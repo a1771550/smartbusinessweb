@@ -1,25 +1,24 @@
 ﻿@{
 
 }
-<div id="hotlistModal">
-    <div id="norecord" class="alert alert-warning hide">@Resources.Resource.NoDataFound</div>
-    <table id="tblHotList" class="table table-bordered  table-hover table-condensed">
 
-        <tr class="gray-header">
-            <th class="text-left colheader" data-col="0"><span class="small">@string.Format(Resources.Resource.NameFormat, Resources.Resource.HotList)</span></th>
-            <th class="text-left colheader" data-col="1"><span class="small">@string.Format(Resources.Resource.NameFormat, Resources.Resource.SalesPerson)</span></th>
-            <th class="text-left colheader" data-col="2">@Resources.Resource.Description</th>
-            <th class="text-left colheader" data-col="3"><span class="small">@Resources.Resource.CreateTime</span></th>
-            <th class="text-left colheader" data-col="4"><span class="small">@Resources.Resource.ModifyTime</span></th>
-        </tr>
-        <tr style="display:none">
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-    </table>
-    <br />
-    <div class="Pager"></div>
+<div id="hotlistModal">
+	<table id="tblhotlist" class="table table-bordered table-hover table-condensed">
+		<thead class="gray-header">
+			<tr>
+				<th class="text-left" data-col="0">@string.Format(Resources.Resource.NameFormat, Resources.Resource.HotList)</th>
+				<th class="text-left" data-col="1">@string.Format(Resources.Resource.NameFormat, Resources.Resource.SalesPerson)</th>
+				<th class="text-left" data-col="2">@Resources.Resource.Description</th>
+				<th class="text-left" data-col="3">@Resources.Resource.CreateTime</th>
+			</tr>
+		</thead>
+
+		<tbody></tbody>
+	</table>
+	
+	<div class="Pager"></div>
+
+	@Html.Partial("_NoRecordFound")
 </div>
+
+

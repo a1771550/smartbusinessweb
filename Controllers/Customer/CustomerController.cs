@@ -35,8 +35,8 @@ namespace SmartBusinessWeb.Controllers.Customer
         [ValidateAntiForgeryToken]
         public JsonResult AddToEblast(List<string> cusCodes)
         {
-            var msg = string.Format(Resources.Resource.AreAddedToFormat, Resources.Resource.Contact, Resources.Resource.eBlast);
-            ContactEditModel model = new ContactEditModel();
+            var msg = string.Format(Resources.Resource.AreAddedToFormat, Resources.Resource.Customer, Resources.Resource.eBlast);
+            CustomerEditModel model = new CustomerEditModel();
             model.AddToEblast(cusCodes);
             return Json(msg);
         }

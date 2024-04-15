@@ -482,6 +482,11 @@
           <path>Controllers\Purchase\SupplierController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Purchase\SupplierController.cs</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>HotListController.cs</name>
+          <path>Controllers\Customer\HotListController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Customer\HotListController.cs</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

@@ -1,4 +1,4 @@
-﻿@model PPWLib.Models.HotListEditModel
+﻿@model PPWLib.Models.Customer.HotListEditModel
 @using PagedList.Mvc;
 @{
 	ViewBag.Title = string.Format(Resources.Resource.ListFormat, Resources.Resource.HotList);
@@ -25,7 +25,7 @@
 	</div>
 
 
-	<table id="tblHotlist" class="table table-bordered  table-hover table-condensed">
+	<table id="tblHotList" class="table table-bordered  table-hover table-condensed">
 		<thead class="gray-header">
 			<tr>
 				<th scope="col" class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">@Resources.Resource.Name</th>
@@ -37,7 +37,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (var item in Model.PagingHotListList)
+			@foreach (var item in Model.PagingHotLists)
 			{
 				<tr data-id="@item.Id" class="pointer">
 					<td class="text-center">
@@ -59,7 +59,7 @@
 		</tbody>
 	</table>
 	<div id="pagingblk" class="my-3">
-		@Html.PagedListPager(Model.PagingHotListList, PageNo => Url.Action("Index",
+		@Html.PagedListPager(Model.PagingHotLists, PageNo => Url.Action("Index",
 new { PageNo, SortCol = Model.SortCol, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
 	</div>
 

@@ -2,12 +2,12 @@
 
 function _validhotlist():boolean {
     let msg: string = '';
-    hotlist = initHotList(null);
-    console.log('hotlist#valid:', hotlist);
-    if (hotlist.hoName === '') {
+    HotList = initHotList(null);
+    console.log('HotList#valid:', HotList);
+    if (HotList.hoName === '') {
         msg += `${$infoblk.data('honamerequiredtxt')}<br>`;
     }
-    if (hotlist.hoSalesmanResponsible == 0) {
+    if (HotList.hoSalesmanResponsible == 0) {
         msg += `${$infoblk.data('salesmanrequiredtxt')}<br>`;
     }
 
@@ -20,10 +20,10 @@ function _validhotlist():boolean {
             noButton: notxt,
             callback: function (value) {
                 if (value) {
-                    if (hotlist.hoName === '') {
+                    if (HotList.hoName === '') {
                         $('#hoName').addClass('focus');
                     }
-                    if (hotlist.hoSalesmanResponsible == 0) {
+                    if (HotList.hoSalesmanResponsible == 0) {
                         $('#drpSalesmen').addClass('focus');
                     }
                 }
@@ -39,7 +39,7 @@ $(document).on('click', '#btnSave', function () {
         $.ajax({
             type: "POST",
             url: '/HotList/Edit',
-            data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val(),model:hotlist },
+            data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val(),model:HotList },
             success: function (data) {
                 if (data) {
                     window.location.href = '/HotList/Index';
@@ -54,6 +54,6 @@ $(function () {
     setFullPage();
     triggerMenu(1, 3);
     initModals();
-    hotlist = initHotList(null);
+    HotList = initHotList(null);
     $('#hoName').trigger("focus");
 });

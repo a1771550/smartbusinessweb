@@ -117,7 +117,7 @@ $(document).on("click", ".convert", function () {
 										noButton: notxt,
 										callback: function (value) {
 											if (value) {
-												window.location.href = `/Enquiry/AddToContact?enqId=${_id}&overwrite=1`;
+												window.location.href = `/Enquiry/AddToCustomer?enqId=${_id}&overwrite=1`;
 											} else {
 												_$ele.trigger("focus");
 											}
@@ -146,7 +146,7 @@ $(document).on("click", ".convert", function () {
 										noButton: notxt,
 										callback: function (value) {
 											if (value) {
-												window.location.href = `/Enquiry/AddToContact?enqId=${_id}&overwrite=1`;
+												window.location.href = `/Enquiry/AddToCustomer?enqId=${_id}&overwrite=1`;
 											} else {
 												_$ele.trigger("focus");
 											}
@@ -175,7 +175,7 @@ $(document).on("click", ".convert", function () {
 										noButton: notxt,
 										callback: function (value) {
 											if (value) {
-												window.location.href = `/Enquiry/AddToContact?enqId=${_id}&overwrite=1`;
+												window.location.href = `/Enquiry/AddToCustomer?enqId=${_id}&overwrite=1`;
 											} else {
 												_$ele.trigger("focus");
 											}
@@ -187,7 +187,7 @@ $(document).on("click", ".convert", function () {
 						});
 					}
 					else {
-						window.location.href = `/Enquiry/AddToContact?enqId=${_id}`;
+						window.location.href = `/Enquiry/AddToCustomer?enqId=${_id}`;
 					}
 				}
 			}

@@ -7,6 +7,7 @@ using Resources = CommonLib.App_GlobalResources;
 using System.Configuration;
 using SmartBusinessWeb.Infrastructure;
 using PPWLib.Models;
+using PPWLib.Models.Customer;
 
 namespace SmartBusinessWeb.Controllers.Customer
 {
@@ -19,7 +20,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         [HttpPost]
         public JsonResult AddCustomers(List<string> cusCodes, long hotlistId)
         {
-            var msg = string.Format(Resources.Resource.Saved, string.Format(Resources.Resource.AddTo, Resources.Resource.HotList));
+            var msg = string.Format(Resources.Resource.AddTo, Resources.Resource.HotList);
             msg = string.Concat(msg, "<br>", string.Format(Resources.Resource.WillFormat, Resources.Resource.Email, String.Format(Resources.Resource.SentToFormat, string.Format(Resources.Resource.InChargeFormat, Resources.Resource.SalesPerson))));
             HotListEditModel model = new HotListEditModel();
             model.AddCustomers(cusCodes, hotlistId);
@@ -62,7 +63,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                 SortCol = SortCol
             };
 
-            model.IdList = model.HotListList.Select(x => x.Id).ToList();
+            model.IdList = model.HotLists.Select(x => x.Id).ToList();
             model.SortOrder = SortOrder == "desc" ? "asc" : "desc";
             return View(model);
         }

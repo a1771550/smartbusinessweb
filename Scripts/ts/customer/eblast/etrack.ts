@@ -110,6 +110,6 @@ $(function () {
 
     let totalcount: number = Number($infoblk.data("count"));
     if (totalcount > 0) $("#norecord").show();
-    else $("#norecord").hide();
+    else $("#norecord").addClass("hide");
     $("#iPageSize").trigger("focus");
 });

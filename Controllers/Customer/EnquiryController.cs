@@ -12,6 +12,7 @@ using System.IO;
 using System.Web;
 using System;
 using CommonLib.Helpers;
+using PPWLib.Models.Customer;
 
 namespace SmartBusinessWeb.Controllers.Customer
 {
@@ -125,9 +126,9 @@ namespace SmartBusinessWeb.Controllers.Customer
 
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
-        public ActionResult AddToContact(string enqId, int overwrite = 0)
+        public ActionResult AddToCustomer(string enqId, int overwrite = 0)
         {
-            ContactEditModel model = new ContactEditModel();
+            CustomerEditModel model = new CustomerEditModel();
             model.ConvertFrmEnquiry(apId, enqId, overwrite == 1);
             return RedirectToAction("Index", "Customer");
         }

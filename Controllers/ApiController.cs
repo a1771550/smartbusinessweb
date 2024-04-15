@@ -42,12 +42,14 @@ using PPWLib.Models.Purchase;
 using ItemModel = PPWLib.Models.Item.ItemModel;
 using PPWLib.Models.User;
 using CommonLib.Models.MYOB;
+using DocumentFormat.OpenXml.Wordprocessing;
+using PPWLib.Models.Customer;
 
 namespace SmartBusinessWeb.Controllers
 {
     [AllowAnonymous]
     public class ApiController : Controller
-    {
+    {        
         private ComInfo ComInfo { get { return Session["ComInfo"] as ComInfo; } }
         private bool NonABSS { get { return ComInfo.DefaultCheckoutPortal.ToLower() == "nonabss"; } }
         private string ConnectionString { get { return string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ;", ComInfo.MYOBDriver, ComInfo.MYOBUID, ComInfo.MYOBPASS, ComInfo.MYOBDb, ComInfo.MYOBExe, ComInfo.MYOBKey); } }
@@ -66,24 +68,33 @@ namespace SmartBusinessWeb.Controllers
         private string ShopCode { get; set; }
 
         public List<string> ShopNames;
+        public ApiController() { }
 
-        public ApiController()
-        {
+        [HttpGet]
+        public JsonResult GetCustomerNamesByCodes(string cusCodes)
+        {            
+            if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();           
+            List<string> cusNames = SqlConnection.Query<string>("EXEC dbo.GetCustomerNamesByCodes @apId=@apId,@cusCodes=@cusCodes", new { apId, cusCodes }).ToList();           
+            return Json(cusNames, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpGet]
+        public JsonResult GetHotListsAjax(int pageIndex = 1, string keyword = "")
+        {
+            //GetHotListPaging
+            if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
+            int startIndex = CommonHelper.GetStartIndex(pageIndex, PageSize);
+            List<HotListModel> hotlists = SqlConnection.Query<HotListModel>("EXEC dbo.GetHotListPaging @apId=@apId,@startIndex=@startIndex,@pageSize=@pageSize,@keyword=@keyword", new { apId, startIndex, pageSize = PageSize,keyword }).ToList();
+            var model = new { hotlists, PageSize, RecordCount = hotlists.Count, PageIndex=pageIndex };
+            return Json(model, JsonRequestBehavior.AllowGet);
+        }
+
 
         [HttpGet]
         public JsonResult GetCustomersByHotListId(long hotlistId)
         {
-            //GetCustomersByHotListId
-            //using var context = new PPWDbContext(Session["DBName"].ToString());
-
-            //long?[] idListArray = context.GetContactIdsFrmHotList(hotlistId).ToArray();
-            //var idlist = string.Join(",", idListArray.ToList());
-            //var _contacts = context.GetContactListByIDs2(idlist).ToList();
-            //var contacts = new List<ContactModel>();
-            //ModelHelper.PopulateContactListByIDs2(_contacts, ref contacts, ModelHelper.GetAccountProfileId(context));
             if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
-            List<CustomerModel> customers = SqlConnection.Query<CustomerModel>("EXEC dbo.GetCustomersByHotListId @apId=@apId,@hotlistId=@hotlistId", new {apId,hotlistId}).ToList();
+            List<CustomerModel> customers = SqlConnection.Query<CustomerModel>("EXEC dbo.GetCustomersByHotListId @apId=@apId,@hotlistId=@hotlistId", new { apId, hotlistId }).ToList();
             return Json(customers, JsonRequestBehavior.AllowGet);
 
         }

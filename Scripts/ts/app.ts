@@ -941,7 +941,7 @@ function togglePaging(type: string = "item", show: boolean = true) {
 		case "Customer":
 			$target = $("#tblCus");
 			break;
-		case "hotlist":
+		case "HotList":
 			$target = $("#tblHotList");
 		case "contact":
 			$target = $("#tblContact");
@@ -6839,23 +6839,40 @@ $(".chk").on("input", function (e) {
 	e.stopPropagation();
 });
 $(document).on("change", ".chk", function (e) {
-	let _id: number = <number>$(this).data("id");
-	if ($(this).is(":checked")) {
-		IdList.push(_id);
-	} else {
-		let idx = -1;
-		$.each(IdList, function (i, e) {
-			if (e == _id) {
-				idx = i;
-				//IdList.splice(i, 1);
-				return false;
+	if (forcustomer) {
+		let code: string = $(this).data("code") as string;
+		if ($(this).is(":checked")) {
+			CodeList.push(code);
+		} else {
+			let codex = -1;
+			$.each(CodeList, function (i, e) {
+				if (e == code) {
+					codex = i;
+					return false;
+				}
+			});
+			if (codex >= 0) {
+				CodeList.splice(codex, 1);
 			}
-		});
-		if (idx >= 0) {
-			IdList.splice(idx, 1);
+		}
+	} else {
+		let _id: number = <number>$(this).data("id");
+		if ($(this).is(":checked")) {
+			IdList.push(_id);
+		} else {
+			let idx = -1;
+			$.each(IdList, function (i, e) {
+				if (e == _id) {
+					idx = i;
+					//IdList.splice(i, 1);
+					return false;
+				}
+			});
+			if (idx >= 0) {
+				IdList.splice(idx, 1);
+			}
 		}
 	}
-	//console.log("idlist:", IdList);
 });
 $(document).on("change", ".enqchk", function (e) {
 	let _id: string = <string>$(this).data("id");
@@ -6977,8 +6994,8 @@ interface ICallHistory {
 	chDateTimeDisplay: string;
 	ContactName: string | null;
 }
-let hotlist: IHotList;
-let hotlistlist: Array<IHotList>;
+let HotList: IHotList;
+let HotlLists: Array<IHotList>;
 function initHotList(ele: JQuery | null): IHotList {
 	return ele === null
 		? {
@@ -7518,8 +7535,8 @@ function changeCheckoutPortal(portal: string, direction: string) {
 	window.location.href = url;
 }
 
-let dicHotListContacts: { [Key: number]: number[] } = {};
-let dicEblastContacts: { [Key: number]: number[] } = {};
+let DicHotListCustomers: { [Key: number]: string[] } = {};
+let DicEblastCustomers: { [Key: number]: string[] } = {};
 let CurrentEblastId: number;
 
 let kCustomer: IKingdeeCustomer;
@@ -20081,7 +20098,7 @@ function confirmAdvancedSearch() {
 
 					$(`#${gTblName}`).show().find("tbody").empty().append(html);
 					$("#norecord").addClass("hide");
-					/*$("#norecord").hide();*/
+					/*$("#norecord").addClass("hide");*/
 					//if (foretrack) {
 					//	$("#totalrecord").text(data.length);
 					//	$("#contactcount").text(countUnique(data.map((x) => x.ContactName)));
@@ -22299,18 +22316,14 @@ function handlePaymentTypeSaved() {
 }
 
 function GetHotLists(pageIndex) {
-	let data = "{pageIndex: " + pageIndex + "}";
-	if (typeof keyword !== "undefined" && keyword !== "") {
-		data = "{pageIndex: " + pageIndex + ', keyword: "' + keyword + '"}';
-	} else {
-		data = "{pageIndex: " + pageIndex + ', keyword: "' + "" + '"}';
-	}
+	let data = `pageIndex=${pageIndex}`;
+	data += `&keyword=${keyword}`;
 	console.log("data:", data);
 	/*return false;*/
 	openWaitingModal();
 	$.ajax({
 		url: "/Api/GetHotListsAjax",
-		type: "POST",
+		type: "GET",
 		data: data,
 		contentType: "application/json; charset=utf-8",
 		dataType: "json",
@@ -22321,48 +22334,25 @@ function GetHotLists(pageIndex) {
 function OnGetHotListSuccess(response) {
 	keyword = "";
 	closeWaitingModal();
-	console.log("response:", response);
+	//console.log("response:", response);
 	var model = response;
+	HotlLists = model.hotlists.slice(0);
+	//console.log("hotlists:", HotlLists);
 
-	console.log("modelhotlists:", model);
-
-	if (model.length > 0) {
-		let modelhotlistlist: Array<IHotList> = model.slice(0);
-		if (typeof hotlistlist !== "undefined" && hotlistlist.length > 0) {
-			let filteredmodelhotlistlist: Array<IHotList> = [];
-			$.each(modelhotlistlist, function (i, e: IHotList) {
-				let _hotlist = $.grep(hotlistlist, function (v, k) {
-					return e.Id == v.Id;
-				})[0];
-
-				if (typeof _hotlist === "undefined") {
-					filteredmodelhotlistlist.push(e);
-				}
-			});
-
-			hotlistlist = [...hotlistlist, ...filteredmodelhotlistlist];
-			console.log("hotlistlist after merge:", hotlistlist);
-		} else {
-			hotlistlist = model.slice(0);
-		}
-
-		var row = $("#tblHotList tr:last-child").removeAttr("style").clone(false);
-		$("#tblHotList tr").not($("#tblHotList tr:first-child")).remove();
-
-		$.each(modelhotlistlist, function () {
-			var hotlist = this;
-			row.addClass("hotid pointer").attr("data-id", hotlist.Id);
-			//console.log('hotlist:', hotlist);
-			$("td", row).eq(0).html(hotlist.hoName);
-			$("td", row).eq(1).html(hotlist.SalesPersonName);
-			$("td", row).eq(2).html(hotlist.hoDescription);
-			$("td", row).eq(3).html(hotlist.CreateTimeDisplay);
-			let modifytime = hotlist.ModifyTimeDisplay ?? "N/A";
-			$("td", row).eq(4).html(modifytime);
-
-			$("#tblHotList").append(row);
-			row = $("#tblHotList tr:last-child").clone(false);
+	if (HotlLists.length > 0) {
+		hotlistModal.find("#norecord").addClass("hide");
+		let html = ``;
+		//row.addClass("hotid pointer").attr("data-id", hotlist.Id);
+		HotlLists.forEach((e) => {
+			html += `<tr class="hotid pointer" data-id="${e.Id}">
+			<td>${e.hoName}</td>
+			<td>${e.SalesPersonName}</td>
+			<td>${e.hoDescription}</td>
+			<td>${e.CreateTimeDisplay}</td>
+			</tr>`;
 		});
+		hotlistModal.find("#tblhotlist tbody").append(html);
+
 		$(".Pager").ASPSnippets_Pager({
 			ActiveCssClass: "current",
 			PagerCssClass: "pager",
@@ -22372,8 +22362,8 @@ function OnGetHotListSuccess(response) {
 		});
 		openHotListModal();
 	} else {
-		togglePaging("hotlist", false);
-	}
+		hotlistModal.find("#tblhotlist").hide();
+	} 
 }
 $(document).on("click", "#hotlistModal .Pager .page", function () {
 	pageindex = parseInt(<string>$(this).attr("page"));
