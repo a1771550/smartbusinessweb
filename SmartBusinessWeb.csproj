@@ -4675,6 +4675,8 @@
     <Content Include="Scripts\ts\js\purchase\index.js.map" />
     <Content Include="Scripts\ts\js\supplier\edit.js.map" />
     <Content Include="Scripts\ts\js\supplier\index.js.map" />
+    <Content Include="Views\Shared\_ItemPagesCheckBox.cshtml" />
+    <Content Include="Views\Reserve\Index.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4964,7 +4966,6 @@
     <Folder Include="Controllers\CRM\" />
     <Folder Include="Models\" />
     <Folder Include="Scripts\mean\" />
-    <Folder Include="Views\Reserve\" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\index.d.ts" />

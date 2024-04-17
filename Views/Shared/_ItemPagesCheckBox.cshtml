@@ -1,0 +1,20 @@
+﻿@{ 
+	var stockchecked = ViewData["stock"] == null ? "" : "checked";
+	var transferchecked = ViewData["transfer"] == null ? "" : "checked";
+	var reservechecked = ViewData["reserve"] == null ? "" : "checked";
+}
+
+<div class="form-inline mb-2 my-4 clearfix float-right">
+	<div class="form-check form-check-inline">
+		<input class="form-check-input stockmode" type="radio" name="stockmode" id="radStock" value="/Item/Stock" @stockchecked>
+		<label class="form-check-label" for="radStock">@Resources.Resource.Stock</label>
+	</div>
+	<div class="form-check form-check-inline">
+		<input class="form-check-input stockmode" type="radio" name="stockmode" id="radTransfer" value="/Transfer/Index" @transferchecked>
+		<label class="form-check-label" for="radTransfer">@Resources.Resource.Transfer</label>
+	</div>
+	<div class="form-check form-check-inline">
+		<input class="form-check-input stockmode" type="radio" name="stockmode" id="radReserve" value="/Reserve/Index" @reservechecked>
+		<label class="form-check-label" for="radReserve">@Resources.Resource.Reserve</label>
+	</div>
+</div>

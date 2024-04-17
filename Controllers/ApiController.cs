@@ -2907,7 +2907,7 @@ namespace SmartBusinessWeb.Controllers
             using var connection = new SqlConnection(DefaultConnection);
             connection.Open();
 
-            var stockinfo = context.GetStockInfo6(apId).ToList();
+            var stockinfo = context.GetStockInfo7(apId).ToList();
 
             List<SalesItem> itemlist = ModelHelper.GetItemList(apId, context, stockinfo, startIndex, model.PageSize, out model.RecordCount, keyword, location, type);
 

@@ -6,12 +6,12 @@
 }
 <h2>@ViewBag.Title</h2>
 <p class="my-3">
-	@Html.ActionLink(Resources.Resource.Add, "Edit", new { itemId = 0, referrer="Index" }, new { @class = "btn btn-info" })
+	@Html.ActionLink(Resources.Resource.Add, "Edit", new { itemId = 0, referrer = "Index" }, new { @class = "btn btn-info" })
 </p>
 
 @using (Html.BeginForm("Index", "Item", FormMethod.Get, new { @Id = "frmItem" }))
 {
-	@Html.AntiForgeryToken()
+
 	<div class="form-inline mb-2 my-4">
 		<div class="form-group">
 			<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" />
@@ -21,8 +21,8 @@
 		</div>
 	</div>
 
-	
-	<table id="tblItems" class="table table-bordered  table-hover table-condensed">
+
+	<table id="tblItems" class="table table-bordered table-hover table-condensed overflow-auto">
 		<thead class="gray-header">
 			<tr>
 				<th scope="col" class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">@Resources.Resource.ItemCode</th>
@@ -31,7 +31,6 @@
 				<th scope="col" class="text-center colheader" data-col="3" data-keyword="@Model.Keyword">@Resources.Resource.ModifyTime</th>
 				<th scope="col" class="text-center colheader" data-col="4" data-keyword="@Model.Keyword">ABSS</th>
 				<th scope="col"></th>
-
 			</tr>
 		</thead>
 
@@ -66,8 +65,10 @@ new { PageNo, SortCol = Model.SortCol, SortOrder = Model.CurrentSortOrder, Keywo
 	</div>
 
 	<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
-	<input type="hidden" id="sortcol" value="@Model.SortCol" /> <!--no "name" attr in propose!-->
+	<input type="hidden" id="sortcol" value="@Model.SortCol" />
+ <!--no "name" attr in propose!-->
 }
+@Html.AntiForgeryToken()
 
 @Html.Partial("_WaitingModal")
 

@@ -126,7 +126,6 @@ namespace SmartBusinessWeb.Controllers.Item
             int Size_Of_Page = (int)ComInfo.PageLength;
             TransferEditModel model = new();
             model.GetStockList(apId, (int)PageNo, Size_Of_Page, SortCol, SortOrder, Keyword);
-            //model.TransferNumber = model.GetTransferNumber();
             return View(model);
         }
 

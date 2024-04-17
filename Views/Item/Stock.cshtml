@@ -1,72 +1,63 @@
 ﻿@model PPWLib.Models.Item.StockModel
 
 @{
-    ViewBag.Title = Resources.Resource.Stock;
-    int rand = CommonHelper.GetVersionRandomNo();
-    SessUser user = HttpContext.Current.Session["User"] as SessUser;
-    var shop = user.shopCode ?? (HttpContext.Current.Session["ComInfo"] as ComInfo).Shop;
-    var device = user.dvcCode ?? (HttpContext.Current.Session["ComInfo"] as ComInfo).Device;
+	ViewBag.Title = Resources.Resource.Stock;
+	int rand = CommonHelper.GetVersionRandomNo();
+	SessUser user = HttpContext.Current.Session["User"] as SessUser;
+	var shop = user.shopCode ?? (HttpContext.Current.Session["ComInfo"] as ComInfo).Shop;
+	var device = user.dvcCode ?? (HttpContext.Current.Session["ComInfo"] as ComInfo).Device;
 }
 <link rel="stylesheet" href="~/Content/pos/Sales.css?v=@rand" />
 <h2>@ViewBag.Title</h2>
 
 @using (Html.BeginForm("Stock", "Item", FormMethod.Get, new { @Id = "frmStock" }))
 {
-    <div class="form-inline mb-2 my-4 clearfix float-right">
-        <div class="form-check form-check-inline">
-            <input class="form-check-input stockmode" type="radio" name="stockmode" id="radStock" value="s" checked>
-            <label class="form-check-label" for="radStock">@Resources.Resource.Stock</label>
-        </div>
-        <div class="form-check form-check-inline">
-            <input class="form-check-input stockmode" type="radio" name="stockmode" id="radTransfer" value="t">
-            <label class="form-check-label" for="radTransfer">@Resources.Resource.Transfer</label>
-        </div>
-    </div>
+	@Html.Partial("_ItemPagesCheckBox", null, new ViewDataDictionary { { "stock", true } })
 
 
-    <div class="form-inline mb-2 my-4 clearfix">
-        <div class="form-group">
-            <input type="text" class="form-control" id="txtStock" placeholder="@Resources.Resource.EnterItemCodeName" />
-            <button id="btnSearch" type="button" class="btn btn-primary ml-4">@Resources.Resource.Search</button>
-            <button id="btnReload" type="button" class="btn btn-warning ml-4">@Resources.Resource.Reload</button>
-            <a href="/Item/Edit?itemId=0&referrer=stock" role="button" class="btn btn-info ml-4">@string.Format(Resources.Resource.NewFormat, Resources.Resource.Item)</a>
-        </div>
-    </div>
+	<div class="form-inline mb-2 my-4 clearfix">
+		<div class="form-group">
+			<input type="text" class="form-control" id="txtStock" placeholder="@Resources.Resource.EnterItemCodeName" />
+			<button id="btnSearch" type="button" class="btn btn-primary ml-4">@Resources.Resource.Search</button>
+			<button id="btnReload" type="button" class="btn btn-warning ml-4">@Resources.Resource.Reload</button>
+			<a href="/Item/Edit?itemId=0&referrer=stock" role="button" class="btn btn-info ml-4">@string.Format(Resources.Resource.NewFormat, Resources.Resource.Item)</a>
+		</div>
+	</div>
 
-    <div class="row align-items-end small">
-        <div class="col col-sm-8 mt-5">
-            <span class="d-inline-block mr-2 text-success">@Resources.Resource.LastUpdateTime:</span> <span id="lastupdatetime" class="font-weight-bold">@Model.LastUpdateTime</span>
-            <span class="d-inline-block ml-4 mr-2 font-weight-bold">@Resources.Resource.Note:</span><span class="text-info">@Resources.Resource.AbssStockQtyNote</span>
-        </div>
-        
-        <div class="col col-sm-4">
-            @Html.Partial("_ItemOptionsBlk", null, new ViewDataDictionary{ { "showSaveBtn", true },{"alertcls","margin-bottom:.2rem!important;" } })
-        </div>
-    </div>
-   
-    <div id="norecord" class="alert alert-warning">@Resources.Resource.NoDataFound</div>
- 
-    <table id="tblStock" class="table table-bordered table-hover table-condensed small">
-        <thead class="gray-header">
-            <tr class="">
-                <th><input id="chkall" type="checkbox" class="form-check" /></th>
-                <th class="text-left colheader" data-col="0">@Resources.Resource.ItemCode <span class="small font-weight-bold"></span></th>
-                <th class="text-left">@Resources.Resource.Batch|@Resources.Resource.SerialNo|@Resources.Resource.ExpiryDate</th>
-                <th class="text-left">@Resources.Resource.ItemVariations</th>
-                <th class="text-left colheader" data-col="1">@Resources.Resource.ItemName</th>
-                <th class="text-right">@Resources.Resource.OnHandStock</th>
-                @foreach (var _shop in Model.ShopNames)
-                {
-                    <th class="text-right">@_shop.Trim()</th>
-                }
-                <th></th>
-            </tr>
-        </thead>
-        <tbody></tbody>
+	<div class="row align-items-end small">
+		<div class="col col-sm-8 mt-5">
+			<span class="d-inline-block mr-2 text-success">@Resources.Resource.LastUpdateTime:</span> <span id="lastupdatetime" class="font-weight-bold">@Model.LastUpdateTime</span>
+			<span class="d-inline-block ml-4 mr-2 font-weight-bold">@Resources.Resource.Note:</span><span class="text-info">@Resources.Resource.AbssStockQtyNote</span>
+		</div>
 
-    </table>
+		<div class="col col-sm-4">
+			@Html.Partial("_ItemOptionsBlk", null, new ViewDataDictionary { { "showSaveBtn", true }, { "alertcls", "margin-bottom:.2rem!important;" } })
+		</div>
+	</div>
 
-    <div class="Pager my-3"></div>
+	<div id="norecord" class="alert alert-warning">@Resources.Resource.NoDataFound</div>
+
+	<table id="tblStock" class="table table-bordered table-hover table-condensed">
+		<thead class="gray-header">
+			<tr class="">
+				<th><input id="chkall" type="checkbox" class="form-check" /></th>
+				<th class="text-left colheader" data-col="0">@Resources.Resource.ItemCode <span class="small font-weight-bold"></span></th>
+				<th class="text-left">@Resources.Resource.Batch|@Resources.Resource.SerialNo|@Resources.Resource.ExpiryDate</th>
+				<th class="text-left">@Resources.Resource.ItemVariations</th>
+				<th class="text-left colheader" data-col="1">@Resources.Resource.ItemName</th>
+				<th class="text-right">@Resources.Resource.OnHandStock</th>
+				@foreach (var _shop in Model.ShopNames)
+				{
+					<th class="text-right">@_shop.Trim()</th>
+				}
+				<th></th>
+			</tr>
+		</thead>
+		<tbody></tbody>
+
+	</table>
+
+	<div class="Pager my-3"></div>
 }
 
 @Html.Partial("_WaitingModal")
@@ -76,25 +67,25 @@
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script>
-    
-    var barcode = document.querySelector("#txtStock");
-    $('#txtStock').on({
-        keypress: function (e) {
-            if (e.key !== "Enter") {
-                barcode.value += e.key;
-            }
-            e.preventDefault();            
-        },
-        keyup: function () {
-            var $field = $(this);
-            setTimeout(function () {
-                keyword = $field.val();
-                GetStocks(1);
-            },500);
 
-        }
-        
-    });
+	var barcode = document.querySelector("#txtStock");
+	$('#txtStock').on({
+		keypress: function (e) {
+			if (e.key !== "Enter") {
+				barcode.value += e.key;
+			}
+			e.preventDefault();
+		},
+		keyup: function () {
+			var $field = $(this);
+			setTimeout(function () {
+				keyword = $field.val();
+				GetStocks(1);
+			}, 500);
+
+		}
+
+	});
 </script>
 <script src="~/Scripts/ts/js/item/stock.js?v=@rand"></script>
 

@@ -11684,11 +11684,7 @@ $(function () {
 }); // jquery end
 
 $(document).on("change", ".stockmode", function () {
-	if ($(this).val() == "s") {
-		window.location.href = "/Item/Stock";
-	} else {
-		window.location.href = "/Transfer/Index";
-	}
+	window.location.href = $(this).val();
 });
 
 function initStockTransfer(): IStockTransfer {
@@ -22376,7 +22372,7 @@ function OnGetHotListSuccess(response) {
 		openHotListModal();
 	} else {
 		hotlistModal.find("#tblhotlist").hide();
-	} 
+	}
 }
 $(document).on("click", "#hotlistModal .Pager .page", function () {
 	pageindex = parseInt(<string>$(this).attr("page"));

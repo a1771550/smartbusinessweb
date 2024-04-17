@@ -1,10 +1,10 @@
 ﻿@model PPWLib.Models.Item.TransferEditModel
 @{
-    ViewBag.Title = string.Format(Resources.Resource.InventoryFormat, Resources.Resource.Transfer);
-    int rand = CommonHelper.GetVersionRandomNo();
-    SessUser user = HttpContext.Current.Session["User"] as SessUser;
-    var shop = user.shopCode ?? (HttpContext.Current.Session["ComInfo"] as ComInfo).Shop;
-    var device = user.dvcCode ?? (HttpContext.Current.Session["ComInfo"] as ComInfo).Device;
+	ViewBag.Title = string.Format(Resources.Resource.InventoryFormat, Resources.Resource.Transfer);
+	int rand = CommonHelper.GetVersionRandomNo();
+	SessUser user = HttpContext.Current.Session["User"] as SessUser;
+	var shop = user.shopCode ?? (HttpContext.Current.Session["ComInfo"] as ComInfo).Shop;
+	var device = user.dvcCode ?? (HttpContext.Current.Session["ComInfo"] as ComInfo).Device;
 }
 <link href="~/Content/transfer.css?v=@rand" rel="stylesheet" type="text/css" />
 
@@ -12,59 +12,49 @@
 
 @using (Html.BeginForm("Transfer", "Purchase", FormMethod.Get, new { @Id = "frmTransfer" }))
 {
-    <div class="form-inline mb-2 my-4 clearfix float-right">
-        <div class="form-check form-check-inline">
-            <input class="form-check-input stockmode" type="radio" name="stockmode" id="radStock" value="s">
-            <label class="form-check-label" for="radStock">@Resources.Resource.Stock</label>
-        </div>
-        <div class="form-check form-check-inline">
-            <input class="form-check-input stockmode" type="radio" name="stockmode" id="radTransfer" value="t" checked>
-            <label class="form-check-label" for="radTransfer">@Resources.Resource.Transfer</label>
-        </div>
-    </div>
+	@Html.Partial("_ItemPagesCheckBox",null,new ViewDataDictionary { { "transfer",true} })
 
-    <div class="form-inline mb-2 my-4 clearfix">
-        <div class="form-group">
-            <input type="text" class="form-control" id="txtStock" placeholder="@Resources.Resource.EnterItemCodeName" />
-            <button id="btnSearch" type="button" class="btn btn-primary ml-4">@Resources.Resource.Search</button>
-            <button id="btnReload" type="button" class="btn btn-warning ml-4">@Resources.Resource.Reload</button>
-            <button id="btnList" type="button" class="btn btn-info ml-4" onclick="window.location.href = '/Transfer/List';">@Resources.Resource.List</button>
-        </div>
-    </div>
+	<div class="form-inline mb-2 my-4 clearfix">
+		<div class="form-group">
+			<input type="text" class="form-control" id="txtStock" placeholder="@Resources.Resource.EnterItemCodeName" />
+			<button id="btnSearch" type="button" class="btn btn-primary ml-4">@Resources.Resource.Search</button>
+			<button id="btnReload" type="button" class="btn btn-warning ml-4">@Resources.Resource.Reload</button>
+			<button id="btnList" type="button" class="btn btn-info ml-4" onclick="window.location.href = '/Transfer/List';">@Resources.Resource.List</button>
+		</div>
+	</div>
 
-    <div class="row justify-content-between small">
-        <div class="col-6">
-            <span class="font-weight-bold text-primary">@Resources.Resource.StockTransferNumber:</span> <span id="stCode">@Model.TransferNumber</span>
-        </div>
-        <div class="col-6">
-            <div class="float-right">
-                <span class="text-success font-weight-bold">@Resources.Resource.LastUpdateTime:</span>
-                <span id="lastupdatetime">@Model.LastUpdateTime</span>
-            </div>
-        </div>
-    </div>
+	
+	<span class="small font-weight-bold"><span class="text-primary">@Resources.Resource.StockTransferNumber:</span> <span id="stCode">@Model.TransferNumber</span></span>
+
+	
+		<span class="mx-3 small font-weight-bold">
+			<span class="text-success">@Resources.Resource.LastUpdateTime:</span>
+			<span id="lastupdatetime">@Model.LastUpdateTime</span>
+		</span>
+	
 
 
-    <div id="norecord" class="alert alert-warning">@Resources.Resource.NoDataFound</div>
-    <table id="tblTransfer" class="table table-bordered table-hover table-condensed overflow-auto small">
-        <thead class="gray-header">
-            <tr class="">
-                <th class="text-left colheader" data-col="0" data-order="@Model.CurrentSortOrder">@Resources.Resource.ItemCode</th>
-                <th class="text-left">@Resources.Resource.Batch|@Resources.Resource.SerialNo|@Resources.Resource.ExpiryDate</th>
-                <th class="text-left">@Resources.Resource.ItemVariations</th>
-                <th class="text-left colheader" data-col="1" data-order="@Model.CurrentSortOrder">@Resources.Resource.ItemName</th>
-                <th class="text-right"><span class="font-weight-bold">@Resources.Resource.OnHandStock</span></th>
-                @foreach (var _shop in Model.ShopNames)
-                {
-                    <th class="text-right">@_shop</th>
-                }
-                <th class="text-right"><span class="font-weight-bold">@Resources.Resource.OutOfBalance</span></th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-    <br />
-    <div class="Pager"></div>
+
+	<div id="norecord" class="alert alert-warning">@Resources.Resource.NoDataFound</div>
+	<table id="tblTransfer" class="table table-bordered table-hover table-condensed overflow-auto small">
+		<thead class="gray-header">
+			<tr class="">
+				<th class="text-left colheader" data-col="0" data-order="@Model.CurrentSortOrder">@Resources.Resource.ItemCode</th>
+				<th class="text-left">@Resources.Resource.Batch|@Resources.Resource.SerialNo|@Resources.Resource.ExpiryDate</th>
+				<th class="text-left">@Resources.Resource.ItemVariations</th>
+				<th class="text-left colheader" data-col="1" data-order="@Model.CurrentSortOrder">@Resources.Resource.ItemName</th>
+				<th class="text-right"><span class="font-weight-bold">@Resources.Resource.OnHandStock</span></th>
+				@foreach (var _shop in Model.ShopNames)
+				{
+					<th class="text-right">@_shop</th>
+				}
+				<th class="text-right"><span class="font-weight-bold">@Resources.Resource.OutOfBalance</span></th>
+			</tr>
+		</thead>
+		<tbody></tbody>
+	</table>
+	<br />
+	<div class="Pager"></div>
 }
 
 @Html.Partial("_WaitingModal")
@@ -74,7 +64,7 @@
 @Html.AntiForgeryToken()
 
 <div class="row justify-content-end mx-2">
-    <button type="button" class="btn btn-success" id="btnTransfer">@Resources.Resource.MoveItems</button>
+	<button type="button" class="btn btn-success" id="btnTransfer">@Resources.Resource.MoveItems</button>
 </div>
 
 <div id="infoblk" data-shop="@user.shopCode" data-shops="@string.Join(",",Model.Shops)" data-enablebuysellunits="@Model.EnableBuySellUnits" data-outofbalancewarningtxt="@Resources.Resource.OutOfBalanceWarning" data-jsondiciditemoptions="@Model.JsonDicIDItemOptions"></div>
