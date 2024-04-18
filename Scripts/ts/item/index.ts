@@ -9,22 +9,18 @@ $(document).on("click", ".colheader", function () {
 		name: "SortCol",
 		value: $(this).data("col"),
 	});
-	let $keyword = $("<input>").attr({
-		type: "hidden",
-		name: "Keyword",
-		value: $(this).data("keyword"),
-	});
+	$("#txtKeyword").val($(this).data("keyword"));	
 
-	$("#frmItem").append($sortcol).append($keyword).trigger("submit");
+	$("#frmItem").append($sortcol).trigger("submit");
 });
 
-$(function () {
+$(function () {	
 	forItem = true;
 	setFullPage();
 	gTblName = "tblItems";
 	let $sortorder = $("#sortorder");
 	let $sortcol = $("#sortcol");
-	//console.log("sortorder:" + $sortorder.val() + ";sortcol:" + $sortcol.val());
+	console.log("sortorder:" + $sortorder.val() + ";sortcol:" + $sortcol.val());
 	$target = $(".colheader").eq(<number>$sortcol.val());
 	let sortcls =
 		$sortorder.val() === "asc" ? "fa fa-sort-down" : "fa fa-sort-up";

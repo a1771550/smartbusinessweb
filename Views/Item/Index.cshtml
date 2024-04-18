@@ -11,7 +11,6 @@
 
 @using (Html.BeginForm("Index", "Item", FormMethod.Get, new { @Id = "frmItem" }))
 {
-
 	<div class="form-inline mb-2 my-4">
 		<div class="form-group">
 			<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" />
@@ -61,7 +60,7 @@
 	</table>
 	<div id="pagingblk" class="my-3">
 		@Html.PagedListPager(Model.PagingItemList, PageNo => Url.Action("Index",
-new { PageNo, SortCol = Model.SortCol, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
+new { PageNo, SortCol = Model.SortCol, SortOrder = Model.SortOrder, Keyword = Model.Keyword }))
 	</div>
 
 	<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />

@@ -12,19 +12,43 @@ enum TriggerReferrer {
 	Row,
 	Modal
 }
-interface IReserveStock {
+interface IReserve {
 	Id: number;
-	OrderNo: string;
-	itmCode: string;
+	riCode: string;
+	riSender: string;
 	cusCode: string;
+	itmCode: string;
 	itmSellingPrice: number;
-	Qty: number;
-	Canceled: boolean;
-	Remark: string | null;
+	riQty: number;
+	riCounted: number | null;
+	riVariance: number | null;
+	riSignedUp_Sender: boolean;
+	riShop: string;
+	riDate: string;
+	riRemark: string | null;
+	ivIdList: string | null;
+	poIvId: string;
+	Cancelled: boolean;
 	PaidOut: boolean;
 }
-let ReserveStock: IReserveStock;
-let ReserveStockList: IReserveStock[] = [];
+interface IReserveLn {
+	Id: number;
+	riCode: string;
+	riSender: string;
+	itmCode: string;
+	rilQty: number;
+	riCounted: number | null;
+	riVariance: number | null;
+	riSignedUp_Sender: boolean | null;
+	riShop: string;
+	riDate: string;
+	ivIdList: string;
+	poIvId: string;
+}
+let Reserve: IReserve;
+let ReserveLnList: IReserveLn[] = [];
+let JsStockList: Array<IJsStock> = [];
+let ReserveCode: string = "";
 interface IPaymentType {
 	Id: number;
 	pmtCode: string;
@@ -90,6 +114,8 @@ let SelectedCountry: number = 1;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
+//const searchcustxt:string = $txtblk.data("searchcustxt");
+const reserveitemtxt: string = $txtblk.data("reserveitemtxt");
 const paymenttypetxt: string = $txtblk.data("paymenttypetxt");
 const duplicatedemailalert: string = $txtblk.data("duplicatedemailalert");
 const duplicateditemnamewarning: string = $txtblk.data("duplicateditemnamewarning");
@@ -638,7 +664,8 @@ let waitingModal: any,
 	barcodeModal: any,
 	transferModal: any,
 	paymentTypeModal: any,
-	voidPaymentModal: any;
+	voidPaymentModal: any,
+	reserveModal: any;
 
 let sysdateformat: string = "yyyy-mm-dd";
 //let jsdateformat: string = "dd/mm/yy";
@@ -3411,12 +3438,41 @@ function closeVoidPaymentModal() {
 	NamesMatch = false;
 }
 function openPaymentTypeModal() {
+	setInput4NumberOnly("paytype");
 	paymentTypeModal.dialog("open");
 }
 function closePaymentTypeModal() {
 	paymentTypeModal.dialog("close");
 }
+
+function openReserveModal() {	
+	reserveModal.dialog("open");
+}
+function closeReserveModal() {
+	reserveModal.dialog("close");
+}
 function initModals() {
+	if ($("#reserveModal").length) {
+		reserveModal = $("#reserveModal").dialog({
+			width: 600,
+			title: reserveitemtxt,
+			autoOpen: false,
+			modal: true,
+			buttons: [
+				{
+					text: savetxt,
+					class: "savebtn",
+					click: handleReserveSaved,
+				},
+				{
+					class: "secondarybtn",
+					text: canceltxt,
+					click: closeReserveModal
+				},
+			],
+		});
+	}
+
 	if ($("#paymentTypeModal").length) {
 		paymentTypeModal = $("#paymentTypeModal").dialog({
 			width: 600,
@@ -11345,28 +11401,7 @@ function resetPage(partial: boolean = false) {
 	if (forreturn) {
 	}
 }
-$(document).on("click", ".colheader", function () {
-	let $sortcol = $("<input>").attr({
-		type: "hidden",
-		name: "SortCol",
-		value: $(this).data("col"),
-	});
-	let $sortorder = $("<input>").attr({
-		type: "hidden",
-		name: "SortOrder",
-		value: $(this).data("order"),
-	});
-	let $keyword = $("<input>").attr({
-		type: "hidden",
-		name: "Keyword",
-		value: $(this).data("keyword"),
-	});
-	$(`#frm${gFrmName}`)
-		.append($sortcol)
-		.append($sortorder)
-		.append($keyword)
-		.trigger("submit");
-});
+
 function GetStocks(pageIndex: number) {
 	//let data:IStockFilter = initStockFilter(pageIndex,stocklocation,keyword); //must not use json here!!!
 	let includenonstock: number = forsales ? 1 : 0;
@@ -11465,7 +11500,6 @@ function OnGetStocksOK(response) {
 			html += `<td class="itemdesc" data-desc="${item.NameDesc
 				}" title="${item.NameDesc}">${handleItemDesc(item.NameDesc)}</td>`;
 			html += `<td class="text-right">${onhandstock}<span class="text-info">(${item.AbssQty})</td>`;
-
 			//console.log("shops:", shops);
 			$.each(shops, function (i, e) {
 				//console.log("sbitem:", sbitem);
@@ -18424,6 +18458,7 @@ let forattendance: boolean = false;
 let forjob: boolean = false;
 let fortraining: boolean = false;
 let forcustomer: boolean = false;
+let forreserve: boolean = false;
 let forhotlist: boolean = false;
 let forrejectedcustomer: boolean = false;
 let forapprovedcustomer: boolean = false;
@@ -22386,3 +22421,19 @@ $(document).on("click", "#tblHotList th a", function () {
 	GetHotLists(pageindex);
 });
 let eBlastHotListIds: { [Key: number]: number } = {};
+
+function getBalance(this: any, onhandstock: number) {
+	let totalqty: number = 0;
+	$target = $(this).parent("td").parent("tr");
+	$target.find("td").each(function (i, e) {
+		let $input = $(e).find("input");
+		if ($input.hasClass("locqty")) {
+			totalqty += Number($input.val());
+		}
+	});
+	//console.log("qty:" + totalqty);
+	let balance: number = onhandstock - totalqty;
+	//console.log("balance:" + balance);
+	let $balance = $target.find("td:last").find(".balance");
+	return { $balance, balance };
+}

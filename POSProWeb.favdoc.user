@@ -210,6 +210,16 @@
           <path>Scripts\ts\itemtransfer\index.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\itemtransfer\index.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>transfer-index.ts</name>
+          <path>Scripts\ts\item\transfer\index.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\item\transfer\index.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>transfer.ts</name>
+          <path>Scripts\ts\item\transfer\transfer.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\item\transfer\transfer.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -603,6 +613,11 @@
           <name>customer-index.css</name>
           <path>Content\customer\index.css</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\customer\index.css</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>reserve.css</name>
+          <path>Content\item\reserve.css</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\item\reserve.css</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

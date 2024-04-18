@@ -15,13 +15,24 @@ namespace SmartBusinessWeb.Controllers.Item
     {
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        public ActionResult Print(int? start, int? end)
+        {
+            ViewBag.ParentPage = "item";
+            ViewBag.PageName = "print";
+            ReserveEditModel model = new ReserveEditModel();
+            model.PreparePrint(start, end);
+            return View(model);
+        }
+
+        [HandleError]
+        [CustomAuthorize("item", "boss", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult ProcessReserve(List<JsStock> JsStockList, List<ReserveModel> ReserveList)
+        public JsonResult ProcessReserve(List<JsStock> JsStockList, ReserveModel Reserve, List<ReserveLineModel> ReserveLnList)
         {
             var msg = string.Format(Resources.Resource.SavedOkFormat, Resources.Resource.Reserve);
             ReserveEditModel model = new ReserveEditModel();
-            model.ProcessReserve(JsStockList, ReserveList);
+            model.ProcessReserve(JsStockList, Reserve, ReserveLnList);
             return Json(new { msg });
         }
 
@@ -43,13 +54,18 @@ namespace SmartBusinessWeb.Controllers.Item
         // GET: Reserve
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
-        public ActionResult Index(int SortCol = 0, string SortOrder = "desc", string Keyword = null, int? PageNo = 1)
+        public ActionResult Index(int PageNo = 1, int SortCol = 0, string SortOrder = "desc", string Keyword = null)
         {
             ViewBag.ParentPage = "item";
             ViewBag.PageName = "transfer";
             int Size_Of_Page = (int)ComInfo.PageLength;
-            ReserveEditModel model = new();
-            model.GetStockList(apId, (int)PageNo, Size_Of_Page, SortCol, SortOrder, Keyword);
+            ReserveEditModel model = new()
+            {
+                SortCol = SortCol,
+                Keyword = Keyword,
+                SortOrder = (SortOrder == "desc") ? "asc" : "desc"
+            };
+            model.GetItemList(apId, PageNo, Size_Of_Page, SortCol, SortOrder, Keyword);
             return View(model);
         }
     }

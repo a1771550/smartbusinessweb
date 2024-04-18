@@ -1,0 +1,20 @@
+﻿@{
+	List<CustomerModel> CustomerList = ViewData["CustomerList"] as List<CustomerModel>;
+}
+<div id="reserveModal">
+	<form>
+		<div class="form-group">
+			<label for="drpCustomer">@Resources.Resource.Customer</label>
+			<select class="form-control" id="drpCustomer">
+				@foreach (var customer in CustomerList)
+				{
+					<option value="@customer.cusCode">@customer.cusName</option>
+				}
+			</select>
+		</div>		
+		<div class="form-group">
+			<label for="txtRemark">@Resources.Resource.Remark</label>
+			<textarea class="form-control" id="txtRemark" rows="3" cols="70"></textarea>
+		</div>
+	</form>
+</div>

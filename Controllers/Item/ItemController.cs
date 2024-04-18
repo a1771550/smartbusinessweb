@@ -28,13 +28,12 @@ namespace SmartBusinessWeb.Controllers.Item
             if (string.IsNullOrEmpty(Keyword))
                 Keyword = null;
 
-            ItemEditModel model = new ItemEditModel
+            ItemEditModel model = new()
             {
                 SortCol = SortCol,
-                Keyword = Keyword
+                Keyword = Keyword,
+                SortOrder = (SortOrder == "desc") ? "asc" : "desc"
             };
-
-            model.SortOrder = (SortOrder == "desc") ? "asc" : "desc";
 
             var itemlist = model.GetList(Keyword);
 

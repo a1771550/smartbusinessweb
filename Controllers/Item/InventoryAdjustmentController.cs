@@ -1,15 +1,6 @@
-using PPWDAL;
-using PagedList;
 using SmartBusinessWeb.Infrastructure;
-using PPWLib.Models;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
-using CommonLib.Helpers;
-using CommonLib.Models;
-using System;
-using ModelHelper = PPWLib.Helpers.ModelHelper;
 using PPWLib.Models.Item;
 
 namespace SmartBusinessWeb.Controllers.Item

@@ -119,13 +119,11 @@ namespace SmartBusinessWeb.Controllers.Item
 
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
-        public ActionResult Index(int SortCol = 0, string SortOrder = "desc", string Keyword = null, int? PageNo = 1)
+        public ActionResult Index()
         {
             ViewBag.ParentPage = "item";
-            ViewBag.PageName = "transfer";
-            int Size_Of_Page = (int)ComInfo.PageLength;
+            ViewBag.PageName = "transfer";       
             TransferEditModel model = new();
-            model.GetStockList(apId, (int)PageNo, Size_Of_Page, SortCol, SortOrder, Keyword);
             return View(model);
         }
 
