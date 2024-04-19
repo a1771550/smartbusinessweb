@@ -35,7 +35,7 @@ $(document).on("click", "#btnTransfer", function () {
                     //console.log('has class locqty?', $input.hasClass('locqty'));
                     if ($input.hasClass("locqty")) {
                         let jsstock: IJsStock = initJsStock();
-                        let Id: number = <number>$input.data("id");
+                        let Id: string = $input.data("id") as string;
                         let itmCode: string = $input.data("code") as string;
                         //console.log('id:' + Id);
                         //if (Id > 0) {
@@ -81,7 +81,6 @@ $(document).on("click", "#btnTransfer", function () {
                                 if (value) {
                                     window.location.reload();
                                     window.open("/Transfer/Print", "_blank");
-                                    //window.location.href = '/Transfer/Print';
                                 }
                             },
                         });
@@ -93,7 +92,7 @@ $(document).on("click", "#btnTransfer", function () {
     }
 });
 
-$(document).on("change", ".locqty", function () {
+$(document).on("change", "input.locqty", function () {
     let itmcode: string = $(this).data("code") as string;
     let shop: string = convertVarNumToString($(this).data("shop"));
 
@@ -113,6 +112,9 @@ $(document).on("change", ".locqty", function () {
 
     let originalqty: number = <number>$(this).data("oldval");
     let changeqty: number = <number>$(this).val();
+    $(this).data("oldval", changeqty);
+
+    //console.log("originalqty:" + originalqty + ";changeqty:" + changeqty);
 
     let diff: number = changeqty - originalqty;
     stocktransfer.stReceiver = diff > 0 ? shop : "";
@@ -211,6 +213,6 @@ $(function () {
 
     DicIDItemOptions = $infoblk.data("jsondiciditemoptions");
     GetStocks(1);
-    
+
     $("#txtStock").trigger("focus");
 });

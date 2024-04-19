@@ -7,7 +7,7 @@
 	var shop = user.shopCode ?? (HttpContext.Current.Session["ComInfo"] as ComInfo).Shop;
 	var device = user.dvcCode ?? (HttpContext.Current.Session["ComInfo"] as ComInfo).Device;
 }
-<link rel="stylesheet" href="~/Content/pos/Sales.css?v=@rand" />
+<link rel="stylesheet" href="~/Content/item/stock.css?v=@rand" />
 <h2>@ViewBag.Title</h2>
 
 @using (Html.BeginForm("Stock", "Item", FormMethod.Get, new { @Id = "frmStock" }))
@@ -15,7 +15,7 @@
 	@Html.Partial("_ItemPagesCheckBox", null, new ViewDataDictionary { { "stock", true } })
 
 
-	<div class="form-inline mb-2 my-4 clearfix">
+	<div class="form-inline my-4">
 		<div class="form-group">
 			<input type="text" class="form-control" id="txtStock" placeholder="@Resources.Resource.EnterItemCodeName" />
 			<button id="btnSearch" type="button" class="btn btn-primary ml-4">@Resources.Resource.Search</button>
@@ -24,27 +24,24 @@
 		</div>
 	</div>
 
-	<div class="row align-items-end small">
-		<div class="col col-sm-8 mt-5">
-			<span class="d-inline-block mr-2 text-success">@Resources.Resource.LastUpdateTime:</span> <span id="lastupdatetime" class="font-weight-bold">@Model.LastUpdateTime</span>
-			<span class="d-inline-block ml-4 mr-2 font-weight-bold">@Resources.Resource.Note:</span><span class="text-info">@Resources.Resource.AbssStockQtyNote</span>
-		</div>
-
-		<div class="col col-sm-4">
-			@Html.Partial("_ItemOptionsBlk", null, new ViewDataDictionary { { "showSaveBtn", true }, { "alertcls", "margin-bottom:.2rem!important;" } })
-		</div>
+	<div class="d-flex small">
+		@Html.Partial("_ItemOptionsBlk", null, new ViewDataDictionary { { "showSaveBtn", true } })
 	</div>
 
-	<div id="norecord" class="alert alert-warning">@Resources.Resource.NoDataFound</div>
-
+	<span class="font-weight-bold small">
+		<span class="text-success">@Resources.Resource.LastUpdateTime:</span>
+		<span id="lastupdatetime">@Model.LastUpdateTime</span>
+		<span class="d-inline-block ml-4 mr-2 font-weight-bold">@Resources.Resource.Note:</span><span class="text-info">@Resources.Resource.AbssStockQtyNote</span>
+	</span>
 	<table id="tblStock" class="table table-bordered table-hover table-condensed">
 		<thead class="gray-header">
 			<tr class="">
 				<th><input id="chkall" type="checkbox" class="form-check" /></th>
-				<th class="text-left colheader" data-col="0">@Resources.Resource.ItemCode <span class="small font-weight-bold"></span></th>
-				<th class="text-left">@Resources.Resource.Batch|@Resources.Resource.SerialNo|@Resources.Resource.ExpiryDate</th>
-				<th class="text-left">@Resources.Resource.ItemVariations</th>
-				<th class="text-left colheader" data-col="1">@Resources.Resource.ItemName</th>
+				<th class="text-center colheader" data-col="0">@Resources.Resource.ItemCode <span class="small font-weight-bold"></span></th>
+				<th class="text-center colheader" data-col="1">@Resources.Resource.ItemName</th>
+				<th class="text-center">@Resources.Resource.Batch|@Resources.Resource.SerialNo|@Resources.Resource.ExpiryDate</th>
+				<th class="text-center">@Resources.Resource.ItemVariations</th>
+
 				<th class="text-right">@Resources.Resource.OnHandStock</th>
 				@foreach (var _shop in Model.ShopNames)
 				{
@@ -59,7 +56,7 @@
 
 	<div class="Pager my-3"></div>
 }
-
+@Html.Partial("_NoRecordFound")
 @Html.Partial("_WaitingModal")
 @Html.Partial("_DescModal")
 @Html.AntiForgeryToken()

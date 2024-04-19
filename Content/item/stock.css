@@ -1,0 +1,21 @@
+﻿#tblStock th:nth-child(1), #tblStock td:nth-child(1){
+	width:20px;
+}
+#tblStock th:nth-child(2), #tblStock td:nth-child(2) {
+	width: 200px;
+}
+#tblStock th:nth-child(3), #tblStock td:nth-child(3) {
+	width: 200px;
+}
+#tblStock th:nth-child(4), #tblStock td:nth-child(4) {
+	width: 100px;
+}
+#tblStock th:nth-child(5), #tblStock td:nth-child(5) {
+	width: 80px;
+}
+#tblStock th:last-child{
+	width:60px;
+}
+#tblStock td.locqty{
+	width:80px;
+}

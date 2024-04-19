@@ -4,17 +4,20 @@
 	var reservechecked = ViewData["reserve"] == null ? "" : "checked";
 }
 
-<div class="form-inline mb-2 my-4 clearfix float-right small">
-	<div class="form-check form-check-inline">
-		<input class="form-check-input stockmode" type="radio" id="radStock" value="/Item/Stock" @stockchecked>
-		<label class="form-check-label" for="radStock">@Resources.Resource.Stock</label>
-	</div>
-	<div class="form-check form-check-inline">
-		<input class="form-check-input stockmode" type="radio" id="radTransfer" value="/Transfer/Index" @transferchecked>
-		<label class="form-check-label" for="radTransfer">@Resources.Resource.Transfer</label>
-	</div>
-	<div class="form-check form-check-inline">
-		<input class="form-check-input stockmode" type="radio" id="radReserve" value="/Reserve/Index" @reservechecked>
-		<label class="form-check-label" for="radReserve">@Resources.Resource.Reserve</label>
+<div class="cleafix">
+	<div class="form-inline my-4 float-right small">
+		<div class="form-check form-check-inline">
+			<input class="form-check-input stockmode" type="radio" id="radStock" value="/Item/Stock" @stockchecked>
+			<label class="form-check-label" for="radStock">@Resources.Resource.Stock</label>
+		</div>
+		<div class="form-check form-check-inline">
+			<input class="form-check-input stockmode" type="radio" id="radTransfer" value="/Transfer/Index" @transferchecked>
+			<label class="form-check-label" for="radTransfer">@Resources.Resource.Transfer</label>
+		</div>
+		<div class="form-check form-check-inline">
+			<input class="form-check-input stockmode" type="radio" id="radReserve" value="/Reserve/Index" @reservechecked>
+			<label class="form-check-label" for="radReserve">@Resources.Resource.Reserve</label>
+		</div>
 	</div>
 </div>
+

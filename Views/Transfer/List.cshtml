@@ -89,7 +89,7 @@ else
 
         
             @Html.PagedListPager(Model.TransferPagingList, PageNo => Url.Action("Index",
-    new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
+    new { PageNo, SortCol = Model.SortCol, SortOrder = Model.SortOrder, Keyword = Model.Keyword }))
        
     </div>
 }

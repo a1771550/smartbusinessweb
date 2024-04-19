@@ -67,8 +67,7 @@ namespace SmartBusinessWeb.Controllers.Item
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
         public ActionResult Print(int? start, int? end)
         {
-            ViewBag.ParentPage = "item";
-            ViewBag.PageName = "print";
+            ViewBag.ParentPage = "item";           
             TransferEditModel model = new TransferEditModel();
             model.PreparePrint(start, end);
             return View(model);

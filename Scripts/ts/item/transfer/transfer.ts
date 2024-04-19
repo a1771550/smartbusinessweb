@@ -44,7 +44,6 @@ $(document).on("click", "#btnSave", function () {
                             if (value) {
                                 window.location.href="/Transfer/Index";
                                 window.open("/Transfer/Print", "_blank");
-                                //window.location.href = '/Transfer/Print';
                             }
                         },
                     });

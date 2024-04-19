@@ -98,7 +98,7 @@ namespace SmartBusinessWeb.Controllers
                     }
                     else
                     {
-                        DeviceModel device = Helpers.ModelHelper.GetDevice(user.surUID, context);//don't move to below
+                        DeviceModel device = Helpers.ModelHelper.GetDevice(user.surUID);//don't move to below
                         if (device != null)
                         {
                             _login(user, isadmin, context, model, device);

@@ -38,7 +38,7 @@
 				<td class="servicecharge" data-servicecharge="@item.pmtServiceChargePercent">@item.pmtServiceChargePercent</td>
 				<td class="status" data-status="@item.pmtIsActive">@statustxt</td>
 				<td>
-					<button type="button" class="btn btn-info btnEdit mx-1" data-id="@item.Id">@Resources.Resource.Edit</button>
+					<button type="button" class="btn btn-info btnEdit mx-1" data-id="@item.Id" data-charge="@item.pmtServiceChargePercent">@Resources.Resource.Edit</button>
 					<button type="button" class="btn btn-danger btnDelete mx-1" data-id="@item.Id">@Resources.Resource.Remove</button>
 				</td>
 			</tr>

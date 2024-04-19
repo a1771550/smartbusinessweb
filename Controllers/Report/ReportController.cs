@@ -70,7 +70,7 @@ namespace SmartBusinessWeb.Controllers.Report
 
                     model.Frmtime = frmtime;
                     model.Totime = totime;
-                    model.Device = ModelHelper.GetDevice(user.surUID, context);
+                    model.Device = ModelHelper.GetDevice(user.surUID);
                 }
 
                 return View(model);
@@ -201,7 +201,7 @@ namespace SmartBusinessWeb.Controllers.Report
 
                     model.Frmtime = frmtime;
                     model.Totime = totime;
-                    model.Device = ModelHelper.GetDevice(user.surUID, context);
+                    model.Device = ModelHelper.GetDevice(user.surUID);
                 }
 
                 return View(model);
@@ -327,7 +327,7 @@ namespace SmartBusinessWeb.Controllers.Report
 
                     model.Frmtime = frmtime;
                     model.Totime = totime;
-                    model.Device = ModelHelper.GetDevice(user.surUID, context);
+                    model.Device = ModelHelper.GetDevice(user.surUID);
 
                     model.GroupedItemSales = model.SalesLnViews.GroupBy(x => x.rtlItemCode).ToList();
                     model.GroupedItemRefunds = model.RefundLnViews.GroupBy(x => x.rtlItemCode).ToList();

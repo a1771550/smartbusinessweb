@@ -15,35 +15,38 @@ enum TriggerReferrer {
 interface IReserve {
 	Id: number;
 	riCode: string;
-	riSender: string;
 	cusCode: string;
-	itmCode: string;
-	itmSellingPrice: number;
-	riQty: number;
-	riCounted: number | null;
-	riVariance: number | null;
-	riSignedUp_Sender: boolean;
-	riShop: string;
 	riDate: string;
-	riRemark: string | null;
-	ivIdList: string | null;
-	poIvId: string;
+	riRemark: string;
+	riCounted: number | null;
+	AllSignedUp: boolean;
 	Cancelled: boolean;
 	PaidOut: boolean;
+	ItemNames: string;
+	CustomerName: string;
+	ReserveDateDisplay: string;
 }
 interface IReserveLn {
 	Id: number;
 	riCode: string;
-	riSender: string;
+	rilSender: string;
 	itmCode: string;
+	itmSellingPrice: number;
 	rilQty: number;
-	riCounted: number | null;
-	riVariance: number | null;
-	riSignedUp_Sender: boolean | null;
-	riShop: string;
-	riDate: string;
+	rilSignedUp_Sender: boolean;
+	rilDate: string;
+	rilCounted: number | null;
+	rilVariance: number | null;
 	ivIdList: string;
 	poIvId: string;
+	ItemNameDesc: string;
+	cusCode: any;
+	riDate: string;
+	Cancelled: boolean;
+	riRemark: string;
+	PaidOut: boolean;
+	CustomerName: string;
+	SellingPriceDisplay: string;
 }
 let Reserve: IReserve;
 let ReserveLnList: IReserveLn[] = [];
@@ -3437,8 +3440,9 @@ function closeVoidPaymentModal() {
 	UserName = "";
 	NamesMatch = false;
 }
-function openPaymentTypeModal() {
+function openPaymentTypeModal(charge:number=0) {
 	setInput4NumberOnly("paytype");
+	if (charge) paymentTypeModal.find("#pmtSCR").val(charge);
 	paymentTypeModal.dialog("open");
 }
 function closePaymentTypeModal() {
@@ -11442,9 +11446,6 @@ function OnGetStocksOK(response) {
 
 	if (model.Items.length > 0) {
 		ItemList = model.Items.slice(0);
-		//console.log('itemlist:', itemlist);
-
-		const qtycolwidth: string = "150px";
 
 		let html = "";
 		$.each(ItemList, function () {
@@ -11463,7 +11464,7 @@ function OnGetStocksOK(response) {
 			//let _disabled = (itemoption) && itemoption.Disabled ? "disabled" : "";
 			let _disabled = _checked !== "" ? "disabled" : "";
 			if (forstock)
-				html += `<td style="width:10px;max-width:10px;"><input type="checkbox" class="form-check chk" data-id="${item.itmItemID}" ${_checked} ${_disabled}></td>`;
+				html += `<td><input type="checkbox" class="form-check chk" data-id="${item.itmItemID}" ${_checked} ${_disabled}></td>`;
 
 			if (!fortransfer && enablebuysellunits) {
 				html = html
@@ -11487,19 +11488,20 @@ function OnGetStocksOK(response) {
 					: "square-o"
 				: "square-o";
 
-			html += `<td>${itemcode}</td>`;
-			html += `<td><span class="text-success"><span class="fa fa-${fabatcls}"></span> <span class="fa fa-${fasncls}"></span> <span class="fa fa-${favtcls}"></span></span></td>`;
+			html += `<td class="text-center">${itemcode}</td>`;
+			html += `<td class="text-center itemdesc" data-desc="${item.NameDesc}" title="${item.NameDesc}">${handleItemDesc(item.NameDesc)}</td>`;
+
+			html += `<td class="text-center"><span class="text-success"><span class="fa fa-${fabatcls}"></span> <span class="fa fa-${fasncls}"></span> <span class="fa fa-${favtcls}"></span></span></td>`;
 			let facls = item.hasItemVari ? "check" : "xmark";
 			let displaycls = item.hasItemVari ? "text-success" : "text-danger";
-			html += `<td><span class="fa fa-${facls} ${displaycls}"></span></td>`;
+			html += `<td class="text-center"><span class="fa fa-${facls} ${displaycls}"></span></td>`;
 
 			const onhandstock: string =
 				item.OnHandStock <= 0
 					? `<span class="outofstock">${item.OnHandStock}</span>`
 					: item.OnHandStock.toString();
-			html += `<td class="itemdesc" data-desc="${item.NameDesc
-				}" title="${item.NameDesc}">${handleItemDesc(item.NameDesc)}</td>`;
-			html += `<td class="text-right">${onhandstock}<span class="text-info">(${item.AbssQty})</td>`;
+			
+			html += `<td class="text-right locqty">${onhandstock}<span class="text-info">(${item.AbssQty})</td>`;
 			//console.log("shops:", shops);
 			$.each(shops, function (i, e) {
 				//console.log("sbitem:", sbitem);
@@ -11510,7 +11512,7 @@ function OnGetStocksOK(response) {
 				st.stReceiver = "";
 				st.inQty = 0;
 				st.outQty = 0;
-				let Id: number = 0;
+				let Id: string = "";
 				$.each(item.JsStockList, function (k, v) {
 					//console.log('v.loccode:' + v.LocCode);
 					if (e == v.LocCode) {
@@ -11580,18 +11582,18 @@ function OnGetStocksOK(response) {
 
 				let _html = forstock
 					? `${locqtydisplay}`
-					: `<input type="number" class="${inputcls}" data-isprimary="${isprimary}" data-code="${item.itmCode}" style="width:70%;" data-shop="${e}" data-onhandstock="${item.OnHandStock}" data-id="${Id}" data-oldval="${locqty}" data-abssqty="${abssqty}" data-itemid="${item.itmItemID}" value="${locqty}" ${readonly} title="${transferdblclickhints}"/>`;
+					: `<input type="text" class="text-right form-control btnsmall ${inputcls}" data-isprimary="${isprimary}" data-code="${item.itmCode}" data-shop="${e}" data-onhandstock="${item.OnHandStock}" data-id="${Id}" data-oldval="${locqty}" data-abssqty="${abssqty}" data-itemid="${item.itmItemID}" value="${locqty}" ${readonly} title="${transferdblclickhints}"/>`;
 
-				html += `<td class="text-right" style="width:${qtycolwidth};max-width:${qtycolwidth}">${_html}</td>`;
+				html += `<td class="text-right locqty">${_html}</td>`;
 
 				DicStockTransferList[item.itmCode].push(st);
 			});
 			if (fortransfer) {
 				let bgcls = item.OutOfBalance >= 0 ? "okbalance" : "outofbalance";
-				let _html = `<input type="number" class="balance ${bgcls} btnsmall" style="width:70%;" value="${item.OutOfBalance ?? 0
+				let _html = `<input type="text" class="text-right form-control btnsmall balance ${bgcls} btnsmall" value="${item.OutOfBalance ?? 0
 					}" readonly />`;
 
-				html += `<td style="width:${qtycolwidth};max-width:${qtycolwidth}" class="text-right">${_html}</td>`;
+				html += `<td class="text-right locqty">${_html}</td>`;
 			}
 			if (forstock) {
 				let _html = `<button class="btn btn-info mr-2 edit btnsmall" type="button" data-id="${item.itmItemID}" onclick="editItem(${item.itmItemID});"><span class="">${edittxt}</span></button>`;
@@ -11601,6 +11603,7 @@ function OnGetStocksOK(response) {
 		});
 
 		$(`#tbl${gTblName} tbody`).empty().html(html);
+		
 
 		let $pager = $(".Pager");
 		$pager.ASPSnippets_Pager({
@@ -11610,10 +11613,11 @@ function OnGetStocksOK(response) {
 			PageSize: model.PageSize,
 			RecordCount: model.RecordCount,
 		});
+
+		setInput4NumberOnly("locqty");
 	}
 
-	$("#txtStock").trigger("focus");
-
+	
 	togglePaging(type, model.Items.length > 0);
 }
 function handleItemDesc(itemnamedesc: string): string {
@@ -11682,14 +11686,14 @@ function removeItem(itemId: number) {
 
 function initJsStock(): IJsStock {
 	return {
-		Id: 0,
+		Id: "",
 		itmCode: "",
 		LocCode: "",
 		Qty: 0,
 	};
 }
 interface IJsStock {
-	Id: number;
+	Id: string;
 	itmCode: string;
 	LocCode: string;
 	Qty: number;

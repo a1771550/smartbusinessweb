@@ -2,40 +2,85 @@
 
 enablebuysellunits = $infoblk.data("enablebuysellunits") == "True";
 
+$(document).on("change", "input.locqty", function () {
+	getRowCurrentY.call(this);	
+
+	let originalqty: number = Number($(this).data("oldval"));
+	let changeqty: number = Number($(this).val());
+	$(this).data("oldval", changeqty);
+	//console.log("originalqty:" + originalqty + ";changeqty:" + changeqty);
+	let diff: number = originalqty - changeqty;	
+	//console.log("diff:" + diff);
+	if (diff > 0) {
+		let itmcode: string = $(this).data("code") as string;
+		let shop: string = convertVarNumToString($(this).data("shop"));
+		let price: number = Number($tr.find("td.itemprice").find("input.itemprice").val());
+
+		var result = ReserveLnList.filter(function (v, i) {
+			return v.itmCode == itmcode && v.rilSender == shop;
+		});
+
+		let ReserveLn = {} as IReserveLn;
+		if (result.length == 0) {
+			ReserveLn.itmCode = itmcode;			
+			ReserveLn.rilSender = shop;
+		} else {
+			ReserveLn = structuredClone(result[0]);
+		}		
+		ReserveLn.itmSellingPrice = price;
+		ReserveLn.rilQty = diff;		
+
+		$tr.find(".rilqty").val(diff);
+
+		if (result.length == 0) {
+			ReserveLnList.push(ReserveLn);
+		} else {
+			$.each(ReserveLnList, function (i, e) {
+				if (e.itmCode == itmcode && e.rilSender == shop) {
+					e = structuredClone(ReserveLn);
+					return false;
+				}
+			});
+		}
+	}
+});
 function handleReserveSaved() {
-	$(`${gTblName} tbody tr`).each(function (i, e) {
+	Reserve = {} as IReserve;
+	Reserve.riCode = ReserveCode;
+	Reserve.cusCode = reserveModal.find("#drpCustomer").val() as string;
+	Reserve.riRemark = reserveModal.find("#txtRemark").val() as string;
+	closeReserveModal();
+	$(`#${gTblName} tbody tr`).each(function (i, e) {
 		$(e)
-			.find("td:gt(3)")
+			.find("td:gt(5)")
 			.each(function (k, v) {
-				let $input = $(v).find("input");
-				//console.log('has class locqty?', $input.hasClass('locqty'));
-				if ($input.hasClass("locqty")) {
+				let $input = $(v).find("input.locqty");
+				//console.log('$input length:', $input.length);
+				if ($input.length) {
 					let jsstock: IJsStock = initJsStock();
-					let Id: number = <number>$input.data("id");
+					let Id: string = $input.data("id") as string;
 					let itmCode: string = $input.data("code") as string;
-					//console.log('id:' + Id);
-					//if (Id > 0) {
+					
 					jsstock.Id = Id;
 					let shop: any = $input.data("shop");
 					if (!isNaN(shop)) {
 						shop = Number(shop).toString();
 					}
-					//   console.log("shop:" + shop);
+				
 					jsstock.LocCode = shop;
 					jsstock.itmCode = itmCode;
 					jsstock.Qty = Number($input.val());
-					//   console.log("qty:" + jsstock.Qty);
-					JsStockList.push(jsstock);
-					//}
+				
+					JsStockList.push(jsstock);					
 				}
 			});
 	});
 	console.log("JsStockList:", JsStockList);
 	console.log("Reserve:", Reserve);
 	console.log("ReserveLnList:", ReserveLnList);
-	return false;
+	//return false;
 
-	if (JsStockList.length > 0 && ReserveLnList.length > 0) {
+	if (JsStockList.length > 0 && Reserve && ReserveLnList.length > 0) {
 		$.ajax({
 			type: "POST",
 			url: "/Reserve/ProcessReserve",
@@ -43,7 +88,7 @@ function handleReserveSaved() {
 				__RequestVerificationToken: $(
 					"input[name=__RequestVerificationToken]"
 				).val(),
-				JsStockList,
+				JsStockList,	
 				Reserve,
 				ReserveLnList,
 			},
@@ -57,9 +102,8 @@ function handleReserveSaved() {
 						noButton: notxt,
 						callback: function (value) {
 							if (value) {
-								window.location.reload();
+							//	window.location.reload();
 								window.open("/Reserve/Print", "_blank");
-								//window.location.href = '/Reserve/Print';
 							}
 						},
 					});
@@ -74,9 +118,10 @@ function handleReserveSaved() {
 $(document).on("click", "#btnReserve", function () {
 	let qty = 0;
 
-	$(`${gTblName} tbody tr`).each(function (i, e) {
-		qty += Number($(e).find(".reserve").val());
+	$(`#${gTblName} tbody tr`).each(function (i, e) {
+		qty += Number($(e).find(".rilqty").val());
 	});
+	//console.log("qty:" + qty);
 
 	if (qty === 0) {
 		$.fancyConfirm({
@@ -136,12 +181,12 @@ $(function () {
 	forreserve = true;
 	gTblName = "tblReserve";
 	gFrmName = "frmReserve";
-	ReserveCode = <string>$("#rvCode").text();
+	ReserveCode = <string>$("#riCode").text();
 	shops = $infoblk.data("shops") ? (<string>$infoblk.data("shops")).split(",") : [];
 
 	let $sortorder = $("#sortorder");
 	let $sortcol = $("#sortcol");
-	console.log('sortorder:' + $sortorder.val() + ';sortcol:' + $sortcol.val());
+	//console.log('sortorder:' + $sortorder.val() + ';sortcol:' + $sortcol.val());
 	$target = $(".colheader").eq(Number($sortcol.val()));
 	let sortcls =
 		$sortorder.val() === "desc" ? "fa fa-sort-up" : "fa fa-sort-down";
@@ -164,6 +209,7 @@ $(function () {
 
 	DicIDItemOptions = $infoblk.data("jsondiciditemoptions");
 
-	$("#norecord").addClass("hide"); //hide() methods not work!!!
+	setInput4NumberOnly("locqty");
+	//$("#norecord").addClass("hide"); //hide() methods not work!!!
 	$("#txtKeyword").trigger("focus");
 });

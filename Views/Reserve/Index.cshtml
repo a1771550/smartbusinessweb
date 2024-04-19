@@ -23,13 +23,15 @@
 	</div>
 
 
-	<span class="small font-weight-bold"><span class="text-primary">@Resources.Resource.ReserveNumber:</span> <span id="rvCode">@Model.ReserveNumber</span></span>
+	<span class="small font-weight-bold"><span class="text-primary">@Resources.Resource.ReserveNumber:</span> <span id="riCode">@Model.ReserveNumber</span></span>
 
 
 	<span class="mx-3 small font-weight-bold">
 		<span class="text-success">@Resources.Resource.LastUpdateTime:</span>
 		<span id="lastupdatetime">@Model.LastUpdateTime</span>
 	</span>
+
+	
 
 	<table id="tblReserve" class="table table-bordered table-hover table-condensed overflow-auto" data-count="@Model.PagingItemList.Count">
 		<thead class="gray-header">
@@ -65,20 +67,25 @@
 				<td class="text-right onhandstock">@item.QuantityAvailable</td>
 
 				@foreach (var shop in Model.Shops)
-				{					
+				{
 					int isprimary = primaryLocation == shop ? 1 : 0;
 					int qty = 0;
+					string Id = "";
 					if (Model.DicCodeLocQty.ContainsKey(item.itmCode) && Model.DicCodeLocQty[item.itmCode].ContainsKey(shop))
 					{
 						qty = Model.DicCodeLocQty[item.itmCode][shop];
 					}
+					if (Model.DicCodeLocId.ContainsKey(item.itmCode) && Model.DicCodeLocId[item.itmCode].ContainsKey(shop))
+					{
+						Id = Model.DicCodeLocId[item.itmCode][shop];
+					}
 					<td class="text-right locqty">
-						<input type="number" class="form-control btnsmall locqty" data-shops="@shop" data-isprimary="@isprimary" data-code="@item.itmCode" data-shop="@primaryLocation" data-onhandstock="@qty" data-oldval="@qty" data-itemid="@item.itmItemID" value="@qty" title="@Resources.Resource.OnHandStock">					
+						<input type="text" class="form-control text-right btnsmall locqty" data-id="@Id" data-isprimary="@isprimary" data-code="@item.itmCode" data-shop="@shop" data-onhandstock="@qty" data-oldval="@qty" data-itemid="@item.itmItemID" value="@qty" title="@qty">
 					</td>
 				}
 
 				<td class="text-right">
-					<input type="number" class="reserve btnsmall form-control" readonly value="0">
+					<input type="text" class="rilqty text-right btnsmall form-control" readonly value="0">
 				</td>
 			</tr>
 		}
@@ -94,13 +101,11 @@ new { PageNo, SortCol = Model.SortCol, SortOrder = Model.SortOrder, Keyword = Mo
 	<!--no "name" attr in propose!-->
 }
 
-@Html.Partial("_NoRecordFound")
-
 @Html.Partial("_WaitingModal")
 
 @Html.Partial("_DescModal")
 
-@Html.Partial("_ReserveModal",null,new ViewDataDictionary { {"CustomerList",Model.CustomerList } })
+@Html.Partial("_ReserveModal", null, new ViewDataDictionary { { "CustomerList", Model.CustomerList } })
 
 @Html.AntiForgeryToken()
 

@@ -1,4 +1,5 @@
 ﻿using PPWDAL;
+using PPWLib.Models.Customer;
 using PPWLib.Models.Item;
 using SmartBusinessWeb.Infrastructure;
 using System;
@@ -15,12 +16,21 @@ namespace SmartBusinessWeb.Controllers.Item
     {
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
-        public ActionResult Print(int? start, int? end)
+        public ActionResult PrintByCode(string code)
         {
             ViewBag.ParentPage = "item";
-            ViewBag.PageName = "print";
             ReserveEditModel model = new ReserveEditModel();
-            model.PreparePrint(start, end);
+            model.PreparePrint(code);
+            return View("Print", model);
+        }
+
+        [HandleError]
+        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        public ActionResult Print(int? start, int? end)
+        {
+            ViewBag.ParentPage = "item";          
+            ReserveEditModel model = new ReserveEditModel();              
+            model.PreparePrint(start, end, (CustomerModel)Session["Customer"]);
             return View(model);
         }
 
@@ -28,7 +38,7 @@ namespace SmartBusinessWeb.Controllers.Item
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult ProcessReserve(List<JsStock> JsStockList, ReserveModel Reserve, List<ReserveLineModel> ReserveLnList)
+        public JsonResult ProcessReserve(List<JsStock> JsStockList, ReserveModel Reserve, List<ReserveLnModel> ReserveLnList)
         {
             var msg = string.Format(Resources.Resource.SavedOkFormat, Resources.Resource.Reserve);
             ReserveEditModel model = new ReserveEditModel();
@@ -38,14 +48,16 @@ namespace SmartBusinessWeb.Controllers.Item
 
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
-        public ActionResult List(int SortCol = 0, string SortOrder = "desc", string strfrmdate = "", string strtodate = "", string Keyword = null, int? PageNo = 1)
+        public ActionResult List(int PageNo = 1, int SortCol = 0, string SortOrder = "desc", string Keyword = null)
         {
             ViewBag.ParentPage = "item";
-            ViewBag.PageName = "transferlist";
-            //ViewBag.Title = string.Format(Resources.Resource.ListFormat, Resources.Resource.StockReserve);
-            int Size_Of_Page = (int)ComInfo.PageLength;
-            ReserveEditModel model = new ReserveEditModel();
-            model.GetReserveList(strfrmdate, strtodate, (int)PageNo, Size_Of_Page, SortCol, SortOrder, Keyword);
+            ReserveEditModel model = new()
+            {
+                SortCol = SortCol,
+                Keyword = Keyword,
+                SortOrder = (SortOrder == "desc") ? "asc" : "desc"
+            };
+            model.GetReserveList(PageNo, (int)ComInfo.PageLength, SortCol, SortOrder, Keyword);
             model.Keyword = Keyword;
             return View(model);
         }
@@ -57,15 +69,13 @@ namespace SmartBusinessWeb.Controllers.Item
         public ActionResult Index(int PageNo = 1, int SortCol = 0, string SortOrder = "desc", string Keyword = null)
         {
             ViewBag.ParentPage = "item";
-            ViewBag.PageName = "transfer";
-            int Size_Of_Page = (int)ComInfo.PageLength;
             ReserveEditModel model = new()
             {
                 SortCol = SortCol,
                 Keyword = Keyword,
                 SortOrder = (SortOrder == "desc") ? "asc" : "desc"
             };
-            model.GetItemList(apId, PageNo, Size_Of_Page, SortCol, SortOrder, Keyword);
+            model.GetItemList(PageNo, (int)ComInfo.PageLength, SortCol, SortOrder, Keyword);
             return View(model);
         }
     }

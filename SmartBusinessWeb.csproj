@@ -2784,12 +2784,12 @@
     <Content Include="Content\select2\custom.css" />
     <Content Include="Content\select2\select2.css" />
     <Content Include="Content\select2\select2.min.css" />
-    <Content Include="Content\stock.css" />
-    <Content Include="Content\stocktransfer.css" />
+    <Content Include="Content\item\stock.css" />
+    <Content Include="Content\item\stocktransfer.css" />
     <Content Include="Content\supplier\edit.css" />
     <Content Include="Content\supplier\index.css" />
     <Content Include="Content\training.css" />
-    <Content Include="Content\transfer.css" />
+    <Content Include="Content\item\transfer.css" />
     <Content Include="Content\wholesalesprint.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
@@ -3068,6 +3068,7 @@
     <Content Include="Scripts\ts\js\item\inventoryadjustment\edit.js" />
     <Content Include="Scripts\ts\js\item\inventoryadjustment\index.js" />
     <Content Include="Scripts\ts\js\item\reserve\index.js" />
+    <Content Include="Scripts\ts\js\item\reserve\list.js" />
     <Content Include="Scripts\ts\js\item\transfer\edit.js" />
     <Content Include="Scripts\ts\js\item\transfer\index.js" />
     <Content Include="Scripts\ts\js\item\transfer\list.js" />
@@ -4692,6 +4693,9 @@
     <Content Include="Scripts\ts\js\item\transfer\transferlist.js.map" />
     <Content Include="Scripts\ts\js\item\reserve\index.js.map" />
     <Content Include="Views\Shared\_ReserveModal.cshtml" />
+    <Content Include="Views\Reserve\Print.cshtml" />
+    <Content Include="Views\Reserve\List.cshtml" />
+    <Content Include="Scripts\ts\js\item\reserve\list.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -5085,6 +5089,7 @@
     <TypeScriptCompile Include="Scripts\ts\item\inventoryadjustment\edit.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\inventoryadjustment\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\reserve\index.ts" />
+    <TypeScriptCompile Include="Scripts\ts\item\reserve\list.ts" />
     <TypeScriptCompile Include="Scripts\ts\lang.ts" />
     <TypeScriptCompile Include="Scripts\ts\logout.ts" />
     <TypeScriptCompile Include="Scripts\ts\menu.ts" />

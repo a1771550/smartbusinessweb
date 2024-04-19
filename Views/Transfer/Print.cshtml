@@ -6,9 +6,8 @@
     Layout = null;
     string cssbsfile = HttpContext.Current.Session["CssBSFile"] == null ? @"Content/bs4" : HttpContext.Current.Session["CssBSFile"].ToString();
     string scriptbsfile = HttpContext.Current.Session["ScriptBSFile"] == null ? @"Scripts/bs4" : HttpContext.Current.Session["ScriptBSFile"].ToString();
-    var groupedtransferList = Model.GroupedTransferList;
-    //var printcss = $@"<link rel=""stylesheet"" type=""text/css"" media=""print"" href=""/Content/stocktransfer.css?v={CommonHelper.GetVersionRandomNo()}""";
-    var loadcsstxt = $"\"/Content/stockTransfer.css?v={CommonHelper.GetVersionRandomNo()}\"";
+    var groupedtransferList = Model.GroupedTransferList;   
+    var loadcsstxt = $"\"/Content/item/stocktransfer.css?v={CommonHelper.GetVersionRandomNo()}\"";
 }
 <!DOCTYPE html>
 <html>
@@ -50,8 +49,7 @@
                         <h4>@Resources.Resource.InStock <span class="badge badge-dark">@receiver</span></h4>
                     </div>
                     <div>
-                        <h4>@Resources.Resource.RunDate <span class="badge badge-dark">@CommonHelper.FormatDate(DateTime.Now.Date, true)</span></h4>
-                        <h4>@Resources.Resource.Page <span id="pageFooter" class="badge badge-dark"></span></h4>
+                        <h4>@Resources.Resource.RunDate <span class="badge badge-dark">@CommonHelper.FormatDate(DateTime.Now.Date, true)</span></h4>                       
                     </div>
                 </div>
 

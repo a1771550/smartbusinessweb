@@ -274,7 +274,7 @@ namespace SmartBusinessWeb.Controllers
                         if (isepay == 1)
                         {
                             #region ePayment
-                            var device = ModelHelper.GetDevice(user.surUID, context); //don't use session, as no new refundno will be retreived.				
+                            var device = ModelHelper.GetDevice(user.surUID); //don't use session, as no new refundno will be retreived.				
                             refundcode = ModelHelper.GetNewRefundCode(devicecode, device, context);
                             //totalamount *= -1;
                             int refundamt = (bool)ComInfo.ePayTest ? decimal.ToInt32(totalamount / 1000) : decimal.ToInt32(totalamount);
@@ -420,7 +420,7 @@ namespace SmartBusinessWeb.Controllers
 
             List<PaymentType> PaymentTypes = new List<PaymentType>();
             DeviceModel device = new DeviceModel();
-            device = ModelHelper.GetDevice(user.surUID, context); //don't use session, as no new refundno will be retreived.		
+            device = ModelHelper.GetDevice(user.surUID); //don't use session, as no new refundno will be retreived.		
             decimal totaldiscpc = 0;
             decimal totaldiscountamt = 0;
             decimal totalamount = 0;

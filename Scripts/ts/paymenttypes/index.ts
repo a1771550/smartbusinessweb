@@ -30,21 +30,14 @@ $(document).on('click', '.btnDelete', function () {
 
 $(document).on('click', '#btnAdd', function () {
 	ptmode = 0;
-	openPaymentTypeModal();
+	openPaymentTypeModal(0);
 });
 $(document).on('click', '.btnEdit', function () {
 	ptmode = 1;
 	let id = $(this).data('id');
 	let $tr = $(this).parent('td').parent('tr');
-	openPaymentTypeModal();
-	genPaytype(id, $tr);
-	fillForm();
-});
-$(document).on('dblclick', '#tblPay tbody tr', function () {
-	ptmode = 1;
-	let id = $(this).data('id');
-	let $tr = $(this);
-	openPaymentTypeModal();
+	let charge = Number($(this).data("charge"));
+	openPaymentTypeModal(charge);
 	genPaytype(id, $tr);
 	fillForm();
 });

@@ -1,0 +1,83 @@
+﻿@model PPWLib.Models.Item.ReserveEditModel
+@using PagedList.Mvc;
+@{
+	int rand = CommonHelper.GetVersionRandomNo();
+	var islistnull = Model.ReservePagingList == null;
+	ViewBag.Title = string.Format(Resources.Resource.OrderFormat, Resources.Resource.Reserve);
+}
+
+<h2>@ViewBag.Title</h2>
+
+
+@using (Html.BeginForm("List", "Reserve", FormMethod.Get, new { @Id = "frmReserveList" }))
+{
+	<div class="form-inline mb-2 my-4 clearfix">
+		<div class="form-group">
+			<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" />
+			<button id="btnSearch" type="button" class="btn btn-primary mx-1">@Resources.Resource.Search</button>
+			<button id="btnReload" type="button" class="btn btn-warning mx-1">@Resources.Resource.Reload</button>			
+		</div>
+	</div>
+	
+}
+@if (Model.ReservePagingList != null && Model.ReservePagingList.Count > 0)
+{
+	<table id="tblReserveList" class="table table-bordered  table-hover table-condensed">
+
+		<thead class="gray-header">
+			<tr>
+				<th class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">@Resources.Resource.ReserveNumber</th>
+				<th class="text-center colheader" data-col="1" data-keyword="@Model.Keyword">@Resources.Resource.Customer</th>
+				<th class="text-center">@Resources.Resource.Item</th>
+				<th class="text-center colheader" data-col="2" data-keyword="@Model.Keyword">@Resources.Resource.Date</th>
+				<th></th>
+			</tr>
+		</thead>
+
+		@foreach (var item in Model.ReservePagingList)
+		{
+			<tr>
+				<td class="text-center">
+					@item.riCode
+				</td>
+				<td class="text-center">
+					@item.CustomerName
+				</td>
+				<td class="text-center">
+					@item.ItemNames
+				</td>				
+				<td class="text-center">
+					@item.ReserveDateDisplay
+				</td>
+				<td>
+					<a class="btn btn-info edit mx-1" role="button" href="/Reserve/Edit?code=@item.riCode">@Resources.Resource.Edit</a>
+
+					<a class="btn btn-primary print mx-1" role="button" href="/Reserve/PrintByCode?code=@item.riCode" target="_blank">@Resources.Resource.Print</a>
+					<a class="btn btn-danger cancel mx-1" role="button" href="/Reserve/Cancel?code=@item.riCode">@Resources.Resource.Cancel</a>
+				</td>
+			</tr>
+		}
+
+	</table>
+
+	<div id="pagingblk" class="my-3">
+		@Html.PagedListPager(Model.ReservePagingList, PageNo => Url.Action("Index",
+	new { PageNo, SortCol = Model.SortCol, SortOrder = Model.SortOrder, Keyword = Model.Keyword }))
+		<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+		<input type="hidden" id="sortcol" value="@Model.SortCol" />
+		<!--no "name" attr in propose!-->
+	</div>
+}
+else
+{
+	@Html.Partial("_NoRecordFound")
+}
+
+@Html.Partial("_WaitingModal")
+
+<div id="infoblk"></div>
+<script src="~/Scripts/ts/js/item/reserve/list.js?v=@rand"></script>
+
+
+
+

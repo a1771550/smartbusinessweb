@@ -6,13 +6,13 @@
 	var shop = user.shopCode ?? (HttpContext.Current.Session["ComInfo"] as ComInfo).Shop;
 	var device = user.dvcCode ?? (HttpContext.Current.Session["ComInfo"] as ComInfo).Device;
 }
-<link href="~/Content/transfer.css?v=@rand" rel="stylesheet" type="text/css" />
+<link href="~/Content/item/transfer.css?v=@rand" rel="stylesheet" type="text/css" />
 
 <h2>@ViewBag.Title</h2>
 
 @using (Html.BeginForm("Transfer", "Purchase", FormMethod.Get, new { @Id = "frmTransfer" }))
 {
-	@Html.Partial("_ItemPagesCheckBox",null,new ViewDataDictionary { { "transfer",true} })
+	@Html.Partial("_ItemPagesCheckBox", null, new ViewDataDictionary { { "transfer", true } })
 
 	<div class="form-inline mb-2 my-4 clearfix">
 		<div class="form-group">
@@ -23,26 +23,24 @@
 		</div>
 	</div>
 
-	
+
 	<span class="small font-weight-bold"><span class="text-primary">@Resources.Resource.StockTransferNumber:</span> <span id="stCode">@Model.TransferNumber</span></span>
 
-	
-		<span class="mx-3 small font-weight-bold">
-			<span class="text-success">@Resources.Resource.LastUpdateTime:</span>
-			<span id="lastupdatetime">@Model.LastUpdateTime</span>
-		</span>
-	
 
-
+	<span class="mx-3 small font-weight-bold">
+		<span class="text-success">@Resources.Resource.LastUpdateTime:</span>
+		<span id="lastupdatetime">@Model.LastUpdateTime</span>
+	</span>
 
 	<div id="norecord" class="alert alert-warning">@Resources.Resource.NoDataFound</div>
 	<table id="tblTransfer" class="table table-bordered table-hover table-condensed overflow-auto small">
 		<thead class="gray-header">
 			<tr class="">
-				<th class="text-left colheader" data-col="0" data-order="@Model.CurrentSortOrder">@Resources.Resource.ItemCode</th>
-				<th class="text-left">@Resources.Resource.Batch|@Resources.Resource.SerialNo|@Resources.Resource.ExpiryDate</th>
-				<th class="text-left">@Resources.Resource.ItemVariations</th>
-				<th class="text-left colheader" data-col="1" data-order="@Model.CurrentSortOrder">@Resources.Resource.ItemName</th>
+				<th class="text-center colheader" data-col="0" data-order="@Model.CurrentSortOrder">@Resources.Resource.ItemCode</th>
+				<th class="text-center colheader" data-col="1" data-order="@Model.CurrentSortOrder">@Resources.Resource.ItemName</th>
+				<th class="text-center">@Resources.Resource.Batch|@Resources.Resource.SerialNo|@Resources.Resource.ExpiryDate</th>
+				<th class="text-center">@Resources.Resource.ItemVariations</th>
+
 				<th class="text-right"><span class="font-weight-bold">@Resources.Resource.OnHandStock</span></th>
 				@foreach (var _shop in Model.ShopNames)
 				{
