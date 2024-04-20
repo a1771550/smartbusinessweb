@@ -127,14 +127,14 @@ namespace SmartBusinessWeb.Controllers.Purchase
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UploadFile(string filecode)
+        public ActionResult UploadFile(string pstCode)
         {
             if (Request.Files.Count > 0)
             {
                 try
                 {
                     List<string> FileList = new List<string>();
-                    string filedir = string.Format(UploadsPODir, apId, filecode);//Uploads/PO/{0}/{1}
+                    string filedir = string.Format(UploadsPODir, apId, pstCode);//Cus/{0}/{1}
                     string dir = "";
                     string filename = string.Empty;
                     HttpFileCollectionBase files = Request.Files;
@@ -150,36 +150,30 @@ namespace SmartBusinessWeb.Controllers.Purchase
                         {
                             Directory.CreateDirectory(absdir);
                         }
-                        //string fname = Path.Combine(absdir, string.Format(file, ext));
                         string fname = Path.Combine(absdir, filename);
                         _file.SaveAs(fname);
                         FileList.Add(filename);
                     }
                     using (var context = new PPWDbContext(Session["DBName"].ToString()))
                     {
-                        PPWDAL.Purchase purchase = context.Purchases.FirstOrDefault(x => x.pstCode == filecode && x.AccountProfileId == apId);
-                        if (purchase != null)
+                        var pstInfo = context.PurchaseInfoes.FirstOrDefault(x => x.fileName == filename && x.AccountProfileId == apId && x.pstCode == pstCode);
+                        if (pstInfo == null)
                         {
-                            if (string.IsNullOrEmpty(purchase.UploadFileName)) purchase.UploadFileName = FileList.FirstOrDefault();
-                            else
+                            SessUser user = Session["User"] as SessUser;
+                            context.PurchaseInfoes.Add(new PurchaseInfo
                             {
-                                var fileList = purchase.UploadFileName.Split(',').ToList();
-                                if (!fileList.Any(x => x == FileList.FirstOrDefault()))
-                                {
-                                    fileList.Add(FileList.FirstOrDefault());
-                                    purchase.UploadFileName = string.Join(",", fileList);
-                                    FileList = fileList;
-                                }
-                            }
-                            purchase.ModifyTime = DateTime.Now;
+                                pstCode = pstCode,
+                                fileName = FileList.FirstOrDefault(),
+                                type = "file",
+                                CreateBy = user.UserCode,
+                                CreateTime = DateTime.Now,
+                                AccountProfileId = apId
+                            });
                             context.SaveChanges();
                         }
+                        FileList = context.PurchaseInfoes.Where(x => x.pstCode == pstCode && x.AccountProfileId == apId && x.type == "file").Select(x => x.fileName).Distinct().ToList();
                     }
-                    dir = string.Concat(@"/", filedir);
-                    //string filepath = Path.Combine(dir, string.Format(file, ext));
-                    string filepath = Path.Combine(dir, filename);
-
-                    return Json(new { msg = Resources.Resource.UploadOkMsg, filepath, FileList });
+                    return Json(new { msg = Resources.Resource.UploadOkMsg, FileList });
                 }
                 catch (Exception ex)
                 {
@@ -229,16 +223,15 @@ namespace SmartBusinessWeb.Controllers.Purchase
         // GET: Purchase
         [HandleError]
         [CustomAuthorize("purchase", "boss", "admin", "superadmin")]
-        public ActionResult Index(string strfrmdate = null, string strtodate = null, int SortCol = 4, string SortOrder = "desc", string Keyword = "", int? PageNo = 1)
+        public ActionResult Index(int PageNo = 1, int SortCol = 4, string SortOrder = "desc", string Keyword = "")
         {
             SessUser user = Session["User"] as SessUser;
-            ViewBag.ParentPage = "purchase";
-            ViewBag.PageName = "purchase";
+            ViewBag.ParentPage = "purchase";           
             PurchaseEditModel model = new PurchaseEditModel
             {
                 Keyword = Keyword == "" ? null : Keyword
             };
-            model.PSList = model.GetList(user, strfrmdate, strtodate, model.Keyword);
+            model.GetList(user, model.Keyword);
             DoList(SortCol, SortOrder, PageNo, model);
             ViewBag.Title = Resources.Resource.Purchase;
             return View(model);
@@ -249,8 +242,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
         [HttpGet]
         public ActionResult Edit(long Id, string type)
         {
-            ViewBag.ParentPage = "purchase";
-            ViewBag.PageName = type;
+            ViewBag.ParentPage = "purchase";          
             PurchaseEditModel model = new PurchaseEditModel(Id, type);
             return View(model);
         }

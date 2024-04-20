@@ -128,9 +128,9 @@ $(document).on("click", ".btnRequestApproval", function () {
 
 function updatePurchase() {
 	let purchaseitems: IPurchaseItem[] = Purchase.PurchaseItems.slice(0);
-	Purchase = fillInPurchase(Purchase.pstStatus);
-
+	FillInPurchase(Purchase.pstStatus);
 	Purchase.PurchaseItems = purchaseitems.slice(0);
+
 	let stockitem: IPurchaseItem;
 
 	if (Purchase.pstStatus !== "order" && Purchase.pstStatus !== "created" && Purchase.pstStatus !== "draft") {
@@ -406,7 +406,7 @@ $(document).on("change", "#drpSupplier", function () {
 			SelectedSupplier = structuredClone(data) as ISupplier;
 			//also trigger here:   $(document).on("change", ".form-control.card", function ()
 
-			if (!useForexAPI) {
+			if (!UseForexAPI) {
 				let currcode = GetForeignCurrencyFrmCode(Purchase.supCode!);
 				// console.log("currcode:" + currcode);
 				if (currcode !== "") {
@@ -474,13 +474,12 @@ function initPurchaseForm() {
 	let bgcls: string = status.toLowerCase().concat("statusbg");
 	$("body").addClass(bgcls);
 
-	Purchase = fillInPurchase();
+	FillInPurchase();
+	
 	if ($infoblk.data("uploadfilelist") !== "") {
-		Purchase.FileList = $infoblk.data("uploadfilelist").split(",");
-		//console.log("Purchase.FileList:", Purchase.FileList);	
-		populateFileList(Purchase.FileList);
+		Purchase.UploadFileList = ($infoblk.data("uploadfilelist").toString()).split(",");
+		populateFileList(Purchase.UploadFileList);
 	}
-	//console.log("#0 Purchase.JsPurchaseDate:" + Purchase.JsPurchaseDate + ";Purchase.JsPromisedDate:" + Purchase.JsPromisedDate);
 
 	editapproved =
 		getParameterByName("mode") != null &&
@@ -586,8 +585,8 @@ function populatePurchaseItems() {
 }
 
 function initForEx() {
-	useForexAPI = $("#UseForexAPI").val() === "True";
-	if (useForexAPI) {
+	UseForexAPI = $("#UseForexAPI").val() === "True";
+	if (UseForexAPI) {
 		//console.log("here");
 		$.ajax({
 			type: "GET",

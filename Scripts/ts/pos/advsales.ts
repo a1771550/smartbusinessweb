@@ -70,7 +70,7 @@ function getSessionStartDataOk(data) {
     enableTax = data.enableTax;
     DicCurrencyExRate = Object.assign({}, data.DicCurrencyExRate);
     //console.log(DicCurrencyExRate);
-    useForexAPI = data.UseForexAPI;
+    UseForexAPI = data.UseForexAPI;
 
     MyobJobList = data.JobList.slice(0);
 
@@ -86,7 +86,7 @@ function getSessionStartDataOk(data) {
         sessionstartdata.push(inclusivetaxrate);
         sessionstartdata.push(salesmanlist);
         sessionstartdata.push(DicCurrencyExRate);
-        sessionstartdata.push(useForexAPI);
+        sessionstartdata.push(UseForexAPI);
         sessionstartdata.push(MyobJobList);
         localStore.setItem("sessionstartdata", JSON.stringify(sessionstartdata));
     } catch (e) {

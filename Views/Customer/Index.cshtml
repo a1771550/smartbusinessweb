@@ -23,7 +23,7 @@
 	using (Html.BeginForm("Index", "Customer", FormMethod.Get, new { @Id = "frmCustomer" }))
 	{
 		@Html.AntiForgeryToken()
-		<div class="form-inline mb-2 my-4">
+		<div class="form-inline my-4">
 			<div class="form-group">
 				<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Model.Keyword" />
 				<button id="btnSearch" type="button" class="btn btn-success mx-1">@Resources.Resource.Search</button>

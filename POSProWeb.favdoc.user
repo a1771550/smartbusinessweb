@@ -21,16 +21,6 @@
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\sales.ts</absolutePath>
         </Favorite>
         <Favorite>
-          <name>wholesalesedit.ts</name>
-          <path>Scripts\ts\wholesales\wholesalesedit.ts</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\wholesales\wholesalesedit.ts</absolutePath>
-        </Favorite>
-        <Favorite>
-          <name>purchaseedit.ts</name>
-          <path>Scripts\ts\purchase\purchaseedit.ts</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\purchase\purchaseedit.ts</absolutePath>
-        </Favorite>
-        <Favorite>
           <name>itemedit.ts</name>
           <path>Scripts\ts\item\itemedit.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\item\itemedit.ts</absolutePath>
@@ -219,6 +209,16 @@
           <name>transfer.ts</name>
           <path>Scripts\ts\item\transfer\transfer.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\item\transfer\transfer.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>wholesales-edit.ts</name>
+          <path>Scripts\ts\wholesales\edit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\wholesales\edit.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>purchase-edit.ts</name>
+          <path>Scripts\ts\purchase\edit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\purchase\edit.ts</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

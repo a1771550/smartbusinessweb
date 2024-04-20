@@ -51,7 +51,7 @@ $(document).on("click", "#btnSaveGattr", function () {
 });
 
 $(document).on("click", "#btnEdit", function () {
-	fillInCustomer();
+	FillInCustomer();
 	if (validCusForm()) {
 		let _formdata: ICustomerFormData = initCustomerFormData(Customer);
 		_formdata.model = Customer;
@@ -162,7 +162,7 @@ $(function () {
 
 	initModals();
 
-	fillInCustomer();
+	FillInCustomer();
 
 	PhoneNameEmailList = $infoblk.data("phonenameemaillist");
 	approvalmode = $infoblk.data("approvalmode") === "True";

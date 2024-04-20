@@ -29,7 +29,7 @@
 @using (Html.BeginForm("Index", "CrmUser", FormMethod.Post, new { @id = "frmcrmuser" }))
 {
     <div class="container" style="width:105%;">
-        <div id="searchblk" class="row justify-content-center form-inline mb-2 my-4">
+        <div id="searchblk" class="row justify-content-center form-inline my-4">
             <div class="form-group">
                 <input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Model.Keyword" />
                 <button id="btnSearch" type="submit" role="button" class="btn btn-primary ml-4">@Resources.Resource.Search</button>

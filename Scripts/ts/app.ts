@@ -110,6 +110,7 @@ let forapprovedinvoice: boolean = false;
 let forrejectedpo: boolean = false;
 let forapprovedpo: boolean = false;
 let forpassedtomanager: boolean = false;
+let forpayments: boolean = false;
 let recreateOnVoid: number = 0;
 let UserName: string = "";
 let NamesMatch: boolean = false;
@@ -3440,7 +3441,7 @@ function closeVoidPaymentModal() {
 	UserName = "";
 	NamesMatch = false;
 }
-function openPaymentTypeModal(charge:number=0) {
+function openPaymentTypeModal(charge: number = 0) {
 	setInput4NumberOnly("paytype");
 	if (charge) paymentTypeModal.find("#pmtSCR").val(charge);
 	paymentTypeModal.dialog("open");
@@ -3449,7 +3450,7 @@ function closePaymentTypeModal() {
 	paymentTypeModal.dialog("close");
 }
 
-function openReserveModal() {	
+function openReserveModal() {
 	reserveModal.dialog("open");
 }
 function closeReserveModal() {
@@ -6211,33 +6212,7 @@ interface ISalesRefundBase {
 	rtlSn: string | null;
 	rtlStockLoc: string | null;
 }
-interface IPurchaseReturnBase {
-	pstcode: string;
-	itemcode: string | number;
-	seq: number;
-	namedesc: string;
-	batchList: Array<IBatch>;
-	qty: number;
-	price: number;
-	discamt: number;
-	discpc: number;
-	taxamt: number;
-	taxpc: number;
-	amt: number;
-	amtplustax: number;
-	date: string;
-	pricetxt: string;
-	disctxt: string;
-	taxtxt: string;
-	amttxt: string;
-	datetxt: string;
-	returnedQty: number;
-	returnedAmt: number;
-	returnedDates: string;
-	returnedqtyTxt: string;
-	returnedamtTxt: string;
-	serialNoList: Array<ISerialNo>;
-}
+
 function initSerialNo(): ISerialNo {
 	return {
 		snoUID: 0,
@@ -8276,9 +8251,11 @@ interface IPurchase {
 	pstCurrency: string;
 	pstExRate: number;
 	pstAllLoc: boolean;
-	FileList: string[];
 	pstAmount: number;
 	pstPartialAmt: number | null;
+	UploadFileList: string[];
+	ImgList: string[];
+	FileList: string[];
 }
 function initPurchaseItem(): IPurchaseItem {
 	return {
@@ -11337,7 +11314,7 @@ interface IStockInItem {
 	JsValidThru: string;
 }
 let Purchase: IPurchase;
-let Wholesales: IWholeSale;
+let Wholesales: IWholeSales;
 let DicExList: { [Key: string]: number } = {};
 let exRate: number = 1;
 let StockIn: IStockIn;
@@ -11500,7 +11477,7 @@ function OnGetStocksOK(response) {
 				item.OnHandStock <= 0
 					? `<span class="outofstock">${item.OnHandStock}</span>`
 					: item.OnHandStock.toString();
-			
+
 			html += `<td class="text-right locqty">${onhandstock}<span class="text-info">(${item.AbssQty})</td>`;
 			//console.log("shops:", shops);
 			$.each(shops, function (i, e) {
@@ -11603,7 +11580,7 @@ function OnGetStocksOK(response) {
 		});
 
 		$(`#tbl${gTblName} tbody`).empty().html(html);
-		
+
 
 		let $pager = $(".Pager");
 		$pager.ASPSnippets_Pager({
@@ -11617,7 +11594,7 @@ function OnGetStocksOK(response) {
 		setInput4NumberOnly("locqty");
 	}
 
-	
+
 	togglePaging(type, model.Items.length > 0);
 }
 function handleItemDesc(itemnamedesc: string): string {
@@ -11811,7 +11788,7 @@ function fancyMsg(
 		},
 	});
 }
-let $deliveryDateDisplay: JQuery;
+
 let $promisedDateDisplay: JQuery;
 let $purchaseDateDisplay: JQuery;
 let DicCurrencyExRate: { [Key: string]: number } = {};
@@ -11829,7 +11806,7 @@ function getExRate(currencyCode: string): number {
 function displayExRate(exrate: number) {
 	if (exrate) $("#exratedisplay").text(formatexrate(exrate.toString()));
 }
-function fillInWholeSale(): IWholeSale {
+function fillInWholeSales(): IWholeSales {
 	batchidx = 6;
 	snidx = batchidx + 1;
 	vtidx = snidx + 1;
@@ -11841,12 +11818,10 @@ function fillInWholeSale(): IWholeSale {
 		wsCustomerPO: $("#wsCustomerPO").val() as string,
 		wsCustomerTerms: $("#wsCustomerTerms").val() as string,
 		wsSalesLoc: $("#drpLocation").val() as string,
-		wsRemark: $("#wsRemark").val() as string,
-		AccountProfileId: 0,
-		CompanyId: 0,
+		wsRemark: $("#wsRemark").val() as string,		
 		wsDate: new Date(),
 		WsDateDisplay: <string>$("#WsDateDisplay").val(),
-		JsWholesalesDate: $wholesalesDateDisplay.val() as string,
+		JsWholesalesDate: $("#deliveryDate").val() as string,
 		wsStatus: ($("#WholeSales_wsStatus").val() as string).toLowerCase(),
 		wsCurrency: $("#wsCurrency").val() as string,
 		wsExRate: getExRate($("#wsCurrency").val() as string),
@@ -11875,26 +11850,20 @@ function fillInWholeSale(): IWholeSale {
 		wsDeliveryAddress3: "",
 		wsDeliveryAddress4: "",
 		DeliveryDateDisplay: <string>$("#WholeSales_DeliveryDateDisplay").val(),
-		JsDeliveryDate: <string>$deliveryDateDisplay.val(),
-		wsReturnDate: "",
-		wsSaleComment: "",
-		wsCheckout: false,
-		wsCheckoutPortal: "",
+		JsDeliveryDate: <string>$("#deliveryDate").val(),
+		wsReturnDate: "",	
 		WsTimeDisplay: "",
-		EnableTax: true,
-		InclusiveTax: false,
-		ireviewmode: reviewmode ? 1 : 0,
-		UseForexAPI: $("#WholeSales_UseForexAPI").val() === "True",
-		wsAllLoc: $("#chkAllLoc").is(":checked"),
-		UploadFileList: [],
+		wsAllLoc: $("#chkAllLoc").is(":checked"),		
 		wsChkManualDelAddr: $("#chkDelAddr").is(":checked"),
 		Customer: {} as ICustomer,
 		CustomerName: $("#txtCustomerName").val() == null ? null : $("#txtCustomerName").val()!.toString(),
 		TrimmedRemark: "",
-		CreateBy: ""
+		UploadFileList: [],
+		FileList: [],
+		ImgList:[]
 	};
 }
-interface IWholeSale {
+interface IWholeSales {
 	wsUID: number;
 	wsSalesLoc: string;
 	wsDvc: string;
@@ -11932,27 +11901,19 @@ interface IWholeSale {
 	wsReturnDate: string | null;
 	wsCurrency: string;
 	wsExRate: number | null;
-	wsCustomerTerms: string | null;
-	wsSaleComment: string;
-	wsCheckout: boolean;
-	wsCheckoutPortal: string;
-	AccountProfileId: number;
-	CompanyId: number;
+	wsCustomerTerms: string | null;	
 	JsWholesalesDate: string;
 	WsDateDisplay: string;
 	WsTimeDisplay: string;
-	EnableTax: boolean;
-	InclusiveTax: boolean;
 	wsDate: Date;
-	ireviewmode: number;
-	UseForexAPI: boolean;
-	wsAllLoc: boolean;
-	UploadFileList: string[];
+	wsAllLoc: boolean;	
 	wsChkManualDelAddr: boolean;
 	Customer: ICustomer;
 	CustomerName: string | null;
 	TrimmedRemark: string | null;
-	CreateBy: string | null;
+	UploadFileList: string[];
+	FileList: string[];
+	ImgList: string[];
 }
 let WholeSalesLns: IWholeSalesLn[] = [];
 function initWholeSalesLn(): IWholeSalesLn {
@@ -11972,10 +11933,6 @@ function initWholeSalesLn(): IWholeSalesLn {
 		wslStockLoc: "",
 		wslChkBch: false,
 		wslBatchCode: "",
-		wslItemColor: "",
-		rtIsConsignIn: false,
-		wslIsConsignOut: false,
-		wslIsNoCharge: false,
 		wslHasSerialNo: false,
 		wslHasSn: false,
 		wslChkSn: false,
@@ -11983,8 +11940,6 @@ function initWholeSalesLn(): IWholeSalesLn {
 		wslTaxCode: "",
 		wslTaxPc: 0,
 		wslSellUnit: "",
-		wslRrpTaxIncl: 0,
-		wslRrpTaxExcl: 0,
 		wslLineDiscAmt: 0,
 		wslLineDiscPc: 0,
 		wslDiscSpreadPc: 0,
@@ -11994,10 +11949,7 @@ function initWholeSalesLn(): IWholeSalesLn {
 		wslSalesAmt: 0,
 		wslType: "",
 		wslSellingPrice: 0,
-		wslCheckout: false,
 		wslSellingPriceMinusInclTax: 0,
-		AccountProfileId: 0,
-		CompanyId: 0,
 		CreateTimeDisplay: "",
 		ModifyTimeDisplay: "",
 		wslStatus: "",
@@ -12035,19 +11987,13 @@ interface IWholeSalesLn {
 	wslStockLoc: string;
 	wslChkBch: boolean | null;
 	wslBatchCode: string;
-	wslItemColor: string;
-	rtIsConsignIn: boolean | null;
-	wslIsConsignOut: boolean | null;
-	wslIsNoCharge: boolean | null;
 	wslHasSerialNo: boolean | null;
 	wslHasSn: boolean | null;
 	wslChkSn: boolean | null;
 	wslSnReusable: boolean | null;
 	wslTaxCode: string;
 	wslTaxPc: number | null;
-	wslSellUnit: string;
-	wslRrpTaxIncl: number | null;
-	wslRrpTaxExcl: number | null;
+	wslSellUnit: string;	
 	wslLineDiscAmt: number | null;
 	wslLineDiscPc: number | null;
 	wslDiscSpreadPc: number | null;
@@ -12057,17 +12003,12 @@ interface IWholeSalesLn {
 	wslSalesAmt: number | null;
 	wslType: string;
 	wslSellingPrice: number | null;
-	wslCheckout: boolean | null;
-	wslSellingPriceMinusInclTax: number | null;
-	AccountProfileId: number;
-	CompanyId: number;
+	wslSellingPriceMinusInclTax: number | null;	
 	CreateTimeDisplay: string;
 	ModifyTimeDisplay: string | null;
 	wslStatus: string;
 	itmName: string;
-	itmNameDesc: string;
-	//itmCode: string;
-	//itmDesc: string;
+	itmNameDesc: string;	
 	snbvlist: IBatSnVt[];
 	SerialNoList: Array<ISerialNo>;
 	wslValidThru: Date | null;
@@ -12309,7 +12250,7 @@ function setValidThruDatePicker() {
 	});
 }
 
-let $wholesalesDateDisplay: JQuery;
+
 let wholesaleslns: IWholeSalesLn[] = [];
 let wholesaleslnswosn: IWholeSalesLn[] = [];
 
@@ -14081,9 +14022,8 @@ function toggleBatSn() {
 		}
 	}
 }
-function fillInPurchase(
-	currentStatus: string = "",
-): IPurchase {
+function FillInPurchase(currentStatus: string = "") {
+
 	$purchaseDateDisplay = $("#purchaseDate");
 	$promisedDateDisplay = $("#promisedDate");
 
@@ -14098,7 +14038,8 @@ function fillInPurchase(
 	batchidx = 5;
 	snidx = batchidx + 1;
 	vtidx = snidx + 1;
-	return {
+
+	Purchase = {
 		Id: Number($("#Id").val()),
 		pstCode: <string>$("#pstCode").val(),
 		supCode: <string>$("#drpSupplier").val(),
@@ -14121,11 +14062,12 @@ function fillInPurchase(
 		pstPromisedDate: null,
 		PromisedDateDisplay: <string>$("#PromisedDateDisplay").val(),
 		JsPromisedDate: <string>$promisedDateDisplay.val(),
-
-		FileList: [],
 		pstAmount: Number($("#pstAmount").val()),
-		pstPartialAmt: Number($("#pstPartialAmt").val())
-	};
+		pstPartialAmt: Number($("#pstPartialAmt").val()),
+		FileList: [],
+		ImgList:[],
+		UploadFileList:[],
+	} as IPurchase;
 }
 
 let dicItemVtQty: { [Key: string]: Array<IVtQty> } = {};
@@ -16749,7 +16691,7 @@ let forPGItem: boolean = false;
 let forMyobItem: boolean = false;
 
 function setExRateDropDown() {
-	if (useForexAPI) {
+	if (UseForexAPI) {
 		if (localStore.getItem("apicurrencydata") === null) {
 			$.ajax({
 				type: "GET",
@@ -16801,7 +16743,7 @@ function setExRateDropDown() {
 }
 
 const fillInCurrencyModal = (currcode: string = "") => {
-	if (useForexAPI) {
+	if (UseForexAPI) {
 		// console.log("use api");
 		$.ajax({
 			type: "GET",
@@ -17268,7 +17210,7 @@ function validCusForm() {
 	return msg === "";
 }
 
-function fillInCustomer() {
+function FillInCustomer() {
 	Customer = {} as ICustomer;
 	Customer.cusCustomerID = Number($("#cusCustomerID").val());
 	Customer.cusCode = $("#cusPhone").val() as string; //NOT #cusCode!!!
@@ -17594,10 +17536,10 @@ function setupForexInfo() {
 	if (!comInfo) comInfo = $infoblk.data("cominfo");
 	if ($.isEmptyObject(DicCurrencyExRate))
 		DicCurrencyExRate = $infoblk.data("diccurrencyexrate");
-	useForexAPI = comInfo.UseForexAPI;
+	UseForexAPI = comInfo.UseForexAPI;
 	exRate = 1;
 	let currcode = "";
-	if (!useForexAPI) currcode = GetForeignCurrencyFrmCode(selectedCus.cusCode!);
+	if (!UseForexAPI) currcode = GetForeignCurrencyFrmCode(selectedCus.cusCode!);
 	//console.log("currcode:" + currcode);
 	if (currcode !== "") {
 		$("#rtsCurrency").val(currcode).prop("readonly", true);
@@ -17663,7 +17605,7 @@ function selectcus() {
 
 			$(".cuscode").text(selectedCus.cusCode);
 
-			if (!useForexAPI && selectedCus.ExchangeRate)
+			if (!UseForexAPI && selectedCus.ExchangeRate)
 				exRate = selectedCus.ExchangeRate!;
 		}
 	}
@@ -18898,9 +18840,9 @@ function handleRecurOrderList(this: any) {
 		url: "/Api/GetRecurOrder",
 		data: { orderId },
 		success: function (data) {
-			let ws = data.sales as IWholeSale;
+			let ws = data.sales as IWholeSales;
 			//console.log("recurorder data:", data);
-			Wholesales = fillInWholeSale();
+			Wholesales = fillInWholeSales();
 			Wholesales.wsCode = ws.wsCode;
 			Wholesales.wsCusID = ws.wsCusID;
 			Wholesales.wsDvc = ws.wsDvc;
@@ -19094,7 +19036,7 @@ $(document).on("change", "#cusCountry", function () {
 $(document).on("dblclick", ".orderId", function () {
 	handleRecurOrderList.call(this);
 });
-let useForexAPI: boolean = false;
+let UseForexAPI: boolean = false;
 let codelist: string[] = [];
 
 function handleCardEmailChange(this: any) {
@@ -22022,7 +21964,7 @@ function populateFileList(files: string[]) {
 		files.forEach((x) => {
 			let removefilelnk = "", filelnk = "";
 			if (forpurchase) {
-				removefilelnk = getRemoveFileLnk(x, Purchase.pstCode);
+				removefilelnk = getRemoveFileLnk(x, Purchase.pstCode);				
 				filelnk = `<a href="#" class="filelnk" data-lnk="/Purchase/${apId}/${Purchase.pstCode}/${x}">${pdfthumbnail}${x}</a> ${removefilelnk}`;
 			}
 			if (forenquiry) {
@@ -22040,8 +21982,9 @@ function populateFileList(files: string[]) {
 			html += `<li>${filelnk}</li>`;
 		});
 
-		if (forpurchasepayments)
+		if (forpurchase || forpurchasepayments) {
 			$(".viewfileblk").find(".file").empty().append(html);
+		}			
 		else
 			viewFileModal.find(".file").empty().append(html);
 	}
@@ -22050,6 +21993,10 @@ function handleUploadedFile(result: any) {
 	closeWaitingModal();
 	closeViewFileModal();
 	UploadedFileList = structuredClone(result.FileList);
+	if (forpurchase) {
+		if (Purchase) Purchase.UploadFileList = structuredClone(UploadedFileList);
+		populateFileList(UploadedFileList);
+	}
 	closeUploadFileModal();
 }
 

@@ -1,26 +1,5 @@
 ﻿$infoblk = $("#infoblk");
 enableSN = true;
-enableTax = $infoblk.data("enabletax") === "True";
-
-$wholesalesDateDisplay = $("#wholesalesDate");
-$deliveryDateDisplay = $("#deliveryDate");
-
-DicBatTotalQty = $infoblk.data("jsondicbattotalqty");
-DicItemBatchQty = $infoblk.data("jsondicitembatchqty");
-DicItemBatDelQty = $infoblk.data("jsondicitembatdelqty");
-
-PoItemBatVQList = $infoblk.data("jsonpoitembatvqlist");
-
-DicItemBatSnVt = $infoblk.data("jsondicitembatsnvt");
-
-DicItemBatSnVtList = $infoblk.data("jsondicitembatsnvtlist");
-DicItemSnVtList = $infoblk.data("jsondicitemsnvtlist");
-
-DicItemVtQtyList = $infoblk.data("jsondicitemvtqtylist");
-DicItemVtDelQtyList = $infoblk.data("jsondicitemvtdelqtylist");
-
-DicItemOptions = $infoblk.data("jsondicitemoptions");
-
 let recurOrderList: IRecurOrder[] = [];
 
 $(document).on("change", "#chkDelAddr", function () {
@@ -207,7 +186,7 @@ $(document).on("click", ".btnSaveRecur", function () {
 	if (validateWSIForm()) {
 		recurOrder = initRecurOrder();
 		recurOrder.Mode = "save";
-		$deliveryDateDisplay.val("");
+		$("#deliveryDate").val("");
 		openRecurOrderModal();
 	}
 });
@@ -703,7 +682,7 @@ function handleSubmit4Wholesales(forRecurOrder: boolean = false) {
 			}
 		}
 		else {
-			Wholesales = fillInWholeSale();
+			Wholesales = fillInWholeSales();
 			updateWholesales();
 			//console.log("Wholesales:", Wholesales);
 			// console.log("recurOrder:", recurOrder);
@@ -817,12 +796,13 @@ $(document).on("dblclick", "#wsCustomerTerms", function () {
 	openCustomerTermsModal();
 });
 
-$wholesalesDateDisplay.on("change", function () {
+$(document).on("change", "#wholesalesDate", function () {
 	Wholesales.JsWholesalesDate = <string>$(this).val();
 });
-$deliveryDateDisplay.on("change", function () {
+$(document).on("change", "#deliveryDate", function () {
 	Wholesales.JsDeliveryDate = <string>$(this).val();
 });
+
 $(document).on("change", "#drpCustomer", function () {
 	Wholesales.wsCusCode = <string>$(this).val();
 	if (Wholesales.wsCusCode) {
@@ -845,14 +825,14 @@ $(document).on("change", "#drpCustomer", function () {
 					$drpaddr.val() as number;
 
 				let currcode = "";
-				if (!useForexAPI)
+				if (!UseForexAPI)
 					currcode = GetForeignCurrencyFrmCode(Wholesales.wsCusCode!);
 				// console.log("currcode:" + currcode);
 				if (currcode !== "") {
 					$("#wsCurrency").val(currcode).prop("readonly", true);
 					fillInCurrencyModal(currcode);
 				}
-				if (!useForexAPI && selectedCus.ExchangeRate)
+				if (!UseForexAPI && selectedCus.ExchangeRate)
 					exRate = selectedCus.ExchangeRate;
 
 				//console.log("exRate#drpcustomer change:" + exRate);
@@ -936,22 +916,37 @@ function fillInDeliveryItems() {
 		}
 	});
 }
-
-$(function () {
-	forwholesales = true;
-	approvalmode = $infoblk.data("approvalmode") == "True";
-	setFullPage();
-
+function initVariablesFrmInfoblk() {
 	DicLocation = $infoblk.data("jsondiclocation");
 	//console.log("diclocation:", DicLocation);
 	MyobJobList = $infoblk.data("jsonjoblist");
+	enableTax = $infoblk.data("enabletax") === "True";
+	
+	DicBatTotalQty = $infoblk.data("jsondicbattotalqty");
+	DicItemBatchQty = $infoblk.data("jsondicitembatchqty");
+	DicItemBatDelQty = $infoblk.data("jsondicitembatdelqty");
+	PoItemBatVQList = $infoblk.data("jsonpoitembatvqlist");
+	DicItemBatSnVt = $infoblk.data("jsondicitembatsnvt");
+	DicItemBatSnVtList = $infoblk.data("jsondicitembatsnvtlist");
+	DicItemSnVtList = $infoblk.data("jsondicitemsnvtlist");
+	DicItemVtQtyList = $infoblk.data("jsondicitemvtqtylist");
+	DicItemVtDelQtyList = $infoblk.data("jsondicitemvtdelqtylist");
+	DicItemOptions = $infoblk.data("jsondicitemoptions");
 	uploadsizelimit = Number($infoblk.data("uploadsizelimit"));
 	//console.log("uploadsizelimit:" + uploadsizelimit);
 	uploadsizelimitmb = Number($infoblk.data("uploadsizelimitmb"));
 	shop = $infoblk.data("shop") as string;
+	UseForexAPI = $infoblk.data("useforexapi") === "True";
+	approvalmode = $infoblk.data("approvalmode") == "True";
+}
+$(function () {
+	forwholesales = true;
+	initVariablesFrmInfoblk();
+	
+	setFullPage();
 	initModals();
 	triggerMenu(4, 0);
-
+	
 	gTblName = "tblWSI";
 	itotalamt = 0;
 	$(".datepicker").datepicker({
@@ -988,7 +983,7 @@ $(function () {
 		$("#WholeSales_wsExRate").val(1);
 
 	if (reviewmode || editmode || editapproved) {
-		Wholesales = fillInWholeSale();
+		Wholesales = fillInWholeSales();
 		wholesaleslns = $infoblk.data("jsonwholesaleslns");
 		//console.log("wholesaleslns:", wholesaleslns);
 		DicIvInfo = $infoblk.data("jsondicivinfo");
@@ -1109,8 +1104,8 @@ $(function () {
 			convertCsharpDateStringToJsDate(Wholesales.WsDateDisplay)
 		);
 
-		Wholesales.JsWholesalesDate = <string>$wholesalesDateDisplay.val();
-		Wholesales.JsDeliveryDate = <string>$deliveryDateDisplay.val();
+		Wholesales.JsWholesalesDate = <string>$("#wholesalesDate").val();
+		Wholesales.JsDeliveryDate = <string>$("#deliveryDate").val();
 		selectedCus = $infoblk.data("jscustomer");
 		//console.log(selectedCus);
 		fillInAddressList();
@@ -1145,7 +1140,7 @@ $(function () {
 		if (getParameterByName("status") && getParameterByName("status") == "invoice")
 			$("#btnInvoice").trigger("click");
 	} else {
-		Wholesales = fillInWholeSale();
+		Wholesales = fillInWholeSales();
 
 		$("#drpLocation").val(shop);
 		initDatePicker("deliveryDate", tomorrow, false, "", true, true);
@@ -1162,9 +1157,8 @@ $(function () {
 	$("#drpCustomer").select2().trigger("focus");
 
 	backUpCardDrpOptions();
-	useForexAPI = Wholesales.UseForexAPI;
 
-	if (useForexAPI) {
+	if (UseForexAPI) {
 		$.ajax({
 			type: "GET",
 			url: "https://api.freecurrencyapi.com/v1/latest?apikey=HDs6UlKfcrhu5qov6S1YSjtIF5xlPHeWK7zUw08p&currencies=USD%2CCNY%2CEUR%2CGBP%2CAUD%2CHKD&base_currency=HKD",
@@ -1193,3 +1187,5 @@ $(function () {
 		DicCurrencyExRate = $infoblk.data("jsondiccurrencyexrate");
 	}
 });
+
+

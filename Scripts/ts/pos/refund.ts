@@ -1343,7 +1343,7 @@ $(function () {
 	comInfo = $infoblk.data("cominfo");
 	exRate = 1;
 	DicCurrencyExRate = $infoblk.data("diccurrencyexrate");
-	useForexAPI = comInfo.UseForexAPI;
+	UseForexAPI = comInfo.UseForexAPI;
 	$("#rtsExRate").val(1);
 	displayExRate(1);
 

@@ -16,7 +16,7 @@
         @Html.Partial("_DatesRange", null, new ViewDataDictionary { { "DateFromTxt", Model.DateFromTxt }, { "DateToTxt", Model.DateToTxt } })
     </div>
 
-    <div class="d-flex justify-content-center form-inline mb-2 my-4" data-paginglist="@islistnull">
+    <div class="d-flex justify-content-center form-inline my-4" data-paginglist="@islistnull">
         <div class="form-group">
             <input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Model.Keyword" />
             <button id="btnSearch" type="submit" class="btn btn-primary ml-4">@Resources.Resource.Search</button>

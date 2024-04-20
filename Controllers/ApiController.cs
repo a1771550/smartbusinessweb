@@ -1082,7 +1082,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public JsonResult GetRecurOrder(long orderId)
         {
-            WholeSalesView sales = null;
+            WholeSalesModel sales = null;
             List<WholeSalesLnModel> wslns = null;
             using var context = new PPWDbContext(Session["DBName"].ToString());
             var s = context.WholeSales.Find(orderId);
@@ -1094,7 +1094,7 @@ namespace SmartBusinessWeb.Controllers
                 Device device = context.Devices.Find(dev.dvcUID);
                 //$"{device.dvcNextPurchaseNo:000000}"
                 string nextsalescode = ModelHelper.GetNewSalesCode(user, context);
-                sales = new WholeSalesView
+                sales = new WholeSalesModel
                 {
                     wsUID = s.wsUID,
                     wsSalesLoc = s.wsSalesLoc,

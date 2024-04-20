@@ -12,7 +12,7 @@
 
 @using (Html.BeginForm("Index", "ItemCategory", FormMethod.Get, new { @Id = "frmCategory" }))
 {
-    <div class="form-inline mb-2 my-4">
+    <div class="form-inline my-4">
         <div class="form-group">
             <input type="text" class="form-control" id="txtKeyword" name="Keyword" value="@Model.Keyword" placeholder="@Resources.Resource.KeywordRequired" />
             <button id="btnSearch" type="submit" class="btn btn-success ml-4">@Resources.Resource.Search</button>

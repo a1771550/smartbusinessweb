@@ -19,19 +19,15 @@ namespace SmartBusinessWeb.Controllers.Sales
     {
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UploadFile(string filecode)
+        public ActionResult UploadFile(string wsCode)
         {
             if (Request.Files.Count > 0)
             {
                 try
                 {
-                    List<string> filenamelist = new List<string>();
-                    //string wscode = "WS100054";
-                    string filedir = string.Format(UploadsWSDir, apId, filecode);//Uploads/WS/{0}/{1}
+                    List<string> FileList = new List<string>();
+                    string filedir = string.Format(UploadsWSDir, apId, wsCode);//Cus/{0}/{1}
                     string dir = "";
-                    //string ext = "";
-                    //string rand = CommonHelper.GenerateNonce(10);
-                    //string file = string.Format("{0}",rand);
                     string filename = string.Empty;
                     HttpFileCollectionBase files = Request.Files;
                     for (int i = 0; i < files.Count; i++)
@@ -46,35 +42,30 @@ namespace SmartBusinessWeb.Controllers.Sales
                         {
                             Directory.CreateDirectory(absdir);
                         }
-                        //string fname = Path.Combine(absdir, string.Format(file, ext));
                         string fname = Path.Combine(absdir, filename);
                         _file.SaveAs(fname);
-                        filenamelist.Add(filename);
+                        FileList.Add(filename);
                     }
                     using (var context = new PPWDbContext(Session["DBName"].ToString()))
                     {
-                        WholeSale wholeSale = context.WholeSales.FirstOrDefault(x => x.wsCode == filecode && x.AccountProfileId == apId);
-                        if (wholeSale != null)
+                        var wsInfo = context.WholeSalesInfoes.FirstOrDefault(x => x.fileName == filename && x.AccountProfileId == apId && x.wsCode == wsCode);
+                        if (wsInfo == null)
                         {
-                            if (string.IsNullOrEmpty(wholeSale.UploadFileName))
+                            SessUser user = Session["User"] as SessUser;
+                            context.WholeSalesInfoes.Add(new WholeSalesInfo
                             {
-                                wholeSale.UploadFileName = filenamelist.FirstOrDefault();
-                            }
-                            else
-                            {
-                                if (!wholeSale.UploadFileName.Split(',').Any(x => x == filenamelist.FirstOrDefault()))
-                                {
-                                    filenamelist.Add(wholeSale.UploadFileName);
-                                    wholeSale.UploadFileName = string.Join(",", filenamelist);
-                                }
-                            }
+                                wsCode = wsCode,
+                                fileName = FileList.FirstOrDefault(),
+                                type = "file",
+                                CreateBy = user.UserCode,
+                                CreateTime = DateTime.Now,
+                                AccountProfileId = apId
+                            });
+                            context.SaveChanges();
                         }
-                        context.SaveChanges();
+                        FileList = context.WholeSalesInfoes.Where(x => x.wsCode == wsCode && x.AccountProfileId == apId && x.type == "file").Select(x => x.fileName).Distinct().ToList();
                     }
-                    dir = string.Concat(@"/", filedir);
-                    //string filepath = Path.Combine(dir, string.Format(file, ext));
-                    string filepath = Path.Combine(dir, filename);
-                    return Json(new { msg = Resources.Resource.UploadOkMsg, filepath });
+                    return Json(new { msg = Resources.Resource.UploadOkMsg, FileList });
                 }
                 catch (Exception ex)
                 {
@@ -92,11 +83,11 @@ namespace SmartBusinessWeb.Controllers.Sales
         [CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
         [HttpGet]
         ///WholeSales/Review?mode=edit&receiptno=
-        public ActionResult Review(string receiptno, int? ireadonly = 1)
+        public ActionResult Review(string receiptno)
         {
             ViewBag.ParentPage = "wholesales";
             ViewBag.PageName = "edit";
-            WholeSalesEditModel model = new WholeSalesEditModel(receiptno, ireadonly);
+            WholeSalesEditModel model = new WholeSalesEditModel(receiptno);
             return View("Edit", model);
         }
 
@@ -127,7 +118,7 @@ namespace SmartBusinessWeb.Controllers.Sales
         [CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult Delivery(List<DeliveryItemModel> model, WholeSalesView ws, List<WholeSalesLnModel> wslnList)
+        public JsonResult Delivery(List<DeliveryItemModel> model, WholeSalesModel ws, List<WholeSalesLnModel> wslnList)
         {
             ViewBag.ParentPage = "wholesales";
             ViewBag.PageName = "wholesales";
@@ -137,24 +128,14 @@ namespace SmartBusinessWeb.Controllers.Sales
             string[] zerostockItemcodes = wemodel.OutOfStockWholeSalesLns.Select(x => x.itmCode).ToArray();
             return Json(new { msg, ws.wsCode, zerostockItemcodes = zerostockItemcodes.Length > 0 ? string.Join(",", zerostockItemcodes) : "" });
         }
-
-        //[HandleError]
-        //[CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
-        //public ActionResult Delivery(int Id)
-        //{
-        //    ViewBag.ParentPage = "wholesales";
-        //    ViewBag.PageName = "wholesales";
-        //    WholeSalesEditModel model = new WholeSalesEditModel(Id, null, 0, "delivery");
-        //    return View(model);
-        //}
-
+       
         [HandleError]
         [CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
         public ActionResult Print(int Id, string type)
         {
             ViewBag.ParentPage = "wholesales";
             ViewBag.PageName = "wholesales";
-            WholeSalesEditModel model = new WholeSalesEditModel(Id, null, 0, type, true);
+            WholeSalesEditModel model = new WholeSalesEditModel(Id, null, type, true);
             return View(model);
         }
 
@@ -181,8 +162,7 @@ namespace SmartBusinessWeb.Controllers.Sales
         {
             ViewBag.ParentPage = "wholesales";
             ViewBag.PageName = "edit";
-            WholeSalesEditModel model = new WholeSalesEditModel(Id, null, 0, type);
-            //WholeSalesEditModel.Get(Id, null, 0, type);
+            WholeSalesEditModel model = new WholeSalesEditModel(Id, null, type);
             return View(model);
         }
 
@@ -191,7 +171,7 @@ namespace SmartBusinessWeb.Controllers.Sales
         [CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult Edit(WholeSalesView model, List<WholeSalesLnModel> wslnList, RecurOrder recurOrder)
+        public JsonResult Edit(WholeSalesModel model, List<WholeSalesLnModel> wslnList, RecurOrder recurOrder)
         {
             ViewBag.ParentPage = "wholesalesedit";
             ViewBag.PageName = "wholesales";
