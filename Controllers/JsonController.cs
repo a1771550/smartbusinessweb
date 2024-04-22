@@ -137,7 +137,7 @@ namespace SmartBusinessWeb.Controllers
                 HandleDateRanges(strfrmdate, strtodate, out frmdate, out todate);
                 #endregion               
 
-                data.sqllist = WholeSalesEditModel.GetUploadSqlList(dmodel.includeUploaded, 2, comInfo, apId, context, connection, frmdate, todate, ref dmodel);
+                data.sqllist = WholeSalesEditModel.GetUploadSqlList4WS(dmodel.includeUploaded, 2, comInfo, apId, context, connection, frmdate, todate, ref dmodel);
                 data.checkoutIds = dmodel.CheckOutIds_WS;
             }
             return System.Text.Json.JsonSerializer.Serialize(data);

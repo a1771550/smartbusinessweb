@@ -137,7 +137,7 @@
 						<td title="@Resources.Resource.ExpiryDate" style="text-align: center; width: 100px;">@Resources.Resource.ExpiryDate</td>
 						<td title="@Resources.Resource.ItemVariations" style="text-align: center; width: 100px;">@Resources.Resource.ItemVariations</td>
 					}
-					<td style="text-align: right; width: 100px;">@Resources.Resource.UnitPrice (@Purchase.Currency)</td>
+					<td style="text-align: right; width: 100px;">@Resources.Resource.UnitPrice (@Model.Currency)</td>
 					<td title="@Resources.Resource.DiscPc" style="text-align: right; width: 100px;">@Resources.Resource.DiscPc</td>
 					@if (Model.EnableTax && !Model.InclusiveTax)
 					{
@@ -145,7 +145,7 @@
 					}
 					<td class="text-center" style="width: 100px;">@Resources.Resource.Location</td>
 					<td class="text-center" style="width: 100px;">@Resources.Resource.Job4Myob</td>
-					<td title="@Resources.Resource.Amount" style="text-align: right; width: 100px;">@Resources.Resource.Amount (@Purchase.Currency)</td>
+					<td title="@Resources.Resource.Amount" style="text-align: right; width: 100px;">@Resources.Resource.Amount (@Model.Currency)</td>
 					@if (Purchase.pstStatus == PurchaseStatus.opened.ToString() || Purchase.pstStatus == PurchaseStatus.partialreceival.ToString())
 					{
 						<td title="@Resources.Resource.ReceivedQty" style="text-align: right;width:90px!important;">@Resources.Resource.ReceivedQty</td>
@@ -155,6 +155,7 @@
 			<tbody class="@tbodycls"></tbody>
 		</table>
 	</div>
+
 
 	var decimaltotal = CommonHelper.FormatNumber(Purchase.Total);
 
@@ -174,7 +175,7 @@
 						<th class="text-center">@Resources.Resource.ReceiptNo</th>
 						<th class="text-center">@Resources.Resource.AccountClassification</th>
 						<th class="text-center">@Resources.Resource.CollectionAccount (@Resources.Resource.AccountNo)</th>
-						<th class="text-right" style="width:120px;max-width:120px;">@Resources.Resource.Amount (@Purchase.Currency)</th>
+						<th class="text-right" style="width:120px;max-width:120px;">@Resources.Resource.Amount (@Model.Currency)</th>
 						<th class="text-right" style="width:120px;max-width:120px;">@string.Format(Resources.Resource.DateFormat, Resources.Resource.Payment)</th>
 						<th class="text-center">@Resources.Resource.File</th>
 						<th class="text-right">@Resources.Resource.OperationTime</th>
@@ -198,6 +199,7 @@
 						string selectedOI = payment.AcClfID == "OI" ? "selected" : "";
 						string selectedOEXP = payment.AcClfID == "OEXP" ? "selected" : "";
 
+						string disabled = payment.Amount > 0 ? "disabled" : "";
 						<tr data-id="@payment.Id">
 							<td class="text-center">@idx</td>
 							<td class="text-center"><input type="text" class="form-control chequeno text-center" maxlength="8" value="@payment.ChequeNo" /></td>
@@ -221,13 +223,9 @@
 								<input type="datetime" class="form-control datepicker ppdate" name="ppDate" value="@payment.DateDisplay" />
 								<input type="hidden" class="datedisplay" value="@payment.DateDisplay" />
 							</td>
-							<td class="text-center text-wrap viewfile pointer">
+							<td class="text-center text-wrap viewfile pointer" data-filename="@payment.fileName">
 								@if (!string.IsNullOrEmpty(payment.fileName))
 								{
-									/*
-									<a href="#" class="filelnk" data-lnk="/Purchase/1/KP100001/sample3.pdf"><img src="/images/pdf.jpg" class=" thumbnail">sample3.pdf</a> <i class="fa fa-trash removefile" data-file="sample3.pdf" data-code="KP100001"></i>
-									*/
-
 									string pdfthumbnail = "<img src=\"/images/pdf.jpg\" class=\"thumbnail\">";
 									var filelist = payment.fileName.Split(',').ToList();
 
@@ -244,8 +242,8 @@
 							<td class="text-right">@payment.CreateTimeDisplay</td>
 							<td class="text-center">@payment.CreateByDisplay</td>
 							<td>
-								<button type="button" class="btn btn-success btnsmall80 btnSave mr-1" data-id="@payment.Id" title="@string.Format(Resources.Resource.SaveFormat, Resources.Resource.Payment)"><i class="fa fa-save"></i></button>
-								<button type="button" class="btn btn-warning btnsmall80 btnUpload mr-1" data-id="@payment.Id" title="@Resources.Resource.UploadFile"><i class="fa fa-upload"></i></button>
+								<button type="button" class="btn btn-success btnsmall80 btnSave mr-1" data-id="@payment.Id" title="@string.Format(Resources.Resource.SaveFormat, Resources.Resource.Payment)" @disabled><i class="fa fa-save"></i></button>
+								<button type="button" class="btn btn-warning btnsmall80 btnUpload mr-1" data-id="@payment.Id" title="@Resources.Resource.UploadFile" data-forpurchasepayments="1"><i class="fa fa-upload"></i></button>
 								<button type="button" class="btn btn-danger btnsmall80 btnVoid mr-1" data-id="@payment.Id" title="@Resources.Resource.UploadFile"><i class="fa fa-trash"></i></button>
 							</td>
 						</tr>
@@ -264,7 +262,7 @@
 							}
 							<form class="form-inline" style="font-size:1.15em;">
 								<label for="totalowed" class="mx-2">@string.Format(Resources.Resource.TotalFormat, Resources.Resource.Owed):</label>
-								<span class="font-weight-bold">@Purchase.Currency<span class="@amtcls" id="totalowed" data-num="@totalowed">@totalowedtxt</span></span>
+								<span class="font-weight-bold">@Model.Currency<span class="@amtcls" id="totalowed" data-num="@totalowed">@totalowedtxt</span></span>
 
 							</form>
 						</td>
@@ -282,7 +280,7 @@
 			<div class="clearfix">
 				<div class="float-right">
 					<div class="form-group text-left">
-						<label for="txtTotal" class="">@Resources.Resource.TotalAmount (@Purchase.Currency)</label>
+						<label for="txtTotal" class="">@Resources.Resource.TotalAmount (@Model.Currency)</label>
 						<input type="number" class="form-control text-left" id="txtTotal" readonly name="TotalAmount" value="@decimaltotal" />
 					</div>
 					<div class="form-group text-left">
@@ -386,7 +384,7 @@
 
 @Html.Partial("_AccountModal")
 
-@Html.Partial("_ItemModal", null, new ViewDataDictionary { { "currency", Purchase.Currency }, { "priceheader", Resources.Resource.UnitPrice }, { "forpurchase", true } })
+@Html.Partial("_ItemModal", null, new ViewDataDictionary { { "currency", Model.Currency }, { "priceheader", Resources.Resource.UnitPrice }, { "forpurchase", true } })
 
 @Html.Partial("_DescModal")
 

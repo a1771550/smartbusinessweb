@@ -41,11 +41,6 @@
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\itemtransfer\transfer.ts</absolutePath>
         </Favorite>
         <Favorite>
-          <name>supplieredit.ts</name>
-          <path>Scripts\ts\purchase\supplieredit.ts</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\purchase\supplieredit.ts</absolutePath>
-        </Favorite>
-        <Favorite>
           <name>uploadfile.js</name>
           <path>Scripts\uploadfile.js</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\uploadfile.js</absolutePath>
@@ -166,11 +161,6 @@
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\records\training.ts</absolutePath>
         </Favorite>
         <Favorite>
-          <name>supplier.ts</name>
-          <path>Scripts\ts\purchase\supplier.ts</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\purchase\supplier.ts</absolutePath>
-        </Favorite>
-        <Favorite>
           <name>excludedinvoices.ts</name>
           <path>Scripts\ts\pos\excludedinvoices.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\excludedinvoices.ts</absolutePath>
@@ -219,6 +209,16 @@
           <name>purchase-edit.ts</name>
           <path>Scripts\ts\purchase\edit.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\purchase\edit.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>supplier-edit.ts</name>
+          <path>Scripts\ts\supplier\edit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\supplier\edit.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>supplier-index.ts</name>
+          <path>Scripts\ts\supplier\index.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\supplier\index.ts</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

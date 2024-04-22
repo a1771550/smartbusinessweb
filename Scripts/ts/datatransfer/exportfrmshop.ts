@@ -40,7 +40,7 @@ $(document).on("click", ".export", function () {
 						//console.log("returned data:", data);
 						$.fancyConfirm({
 							title: "",
-							message: $infoblk.data("importdonemsg"),
+							message: data.msg,
 							shownobtn: false,
 							okButton: oktxt,
 							noButton: canceltxt,
@@ -49,12 +49,13 @@ $(document).on("click", ".export", function () {
 									if (data.PendingInvoices == 1) {
 										window.location.href = "/POSFunc/PendingInvoices";
 									}
-									if (data.ExcludedInvoices == 1) {
+									if (data.ExcludedInvoices == 1 || data.ExcludedWS == 1) {
 										window.location.href = "/POSFunc/ExcludedInvoices";
 									}
-									if (data.ExcludedPOs == 1) {
+									if (data.ExcludedPO == 1) {
 										window.location.href = "/Purchase/ExcludedOrders";
 									}
+								
 									else {
 										if (data.PendingInvoices == 1) {
 											url = "/POSFunc/PendingInvoices";

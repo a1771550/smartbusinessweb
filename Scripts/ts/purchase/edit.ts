@@ -26,6 +26,8 @@ $(document).on("click", ".btnSave", function () {
 					noButton: notxt,
 					callback: function (value) {
 						if (value) {
+							forpurchasepayments = false; //reset the flag
+							forpurchase = true;
 							$tr.find(".disabled").removeClass("disabled");
 							let totalowed: number = Number($("#totalowed").text());
 							if (totalowed > 0) {
@@ -438,7 +440,7 @@ $(document).on("change", "#pstRemark", function () {
 
 
 
-function initPurchaseForm() {
+function initPurchaseForm():boolean {
 	approvalmode = $infoblk.data("approvalmode") == "True";
 	setFullPage();
 	apId = Number($infoblk.data("apid"));
@@ -655,9 +657,7 @@ $(function () {
 			$("#btnBill").trigger("click");
 
 		if (Purchase.pstStatus === "opened" || Purchase.pstStatus == "partialreceival") {
-
-			forpurchasepayments = true;
-
+			//forpurchasepayments = true;
 			gTblName = "tblPayment";
 
 			disableEntries();
@@ -669,7 +669,7 @@ $(function () {
 			}
 
 			DicAcAccounts = $infoblk.data("dicacaccounts");
-
+			//console.log("DicAcAccounts:", DicAcAccounts);
 			if (!reviewmode && (Purchase.pstStatus.toLowerCase() == "order" || Purchase.pstStatus.toLowerCase() == "created")) addRow();
 
 			if (editmode) {

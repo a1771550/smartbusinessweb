@@ -486,7 +486,7 @@ function updateWholesales() {
 		}
 
 		selectedWholesalesLn.wslHasSn =
-			selectedWholesalesLn.snvtList&&selectedWholesalesLn.snvtList.length > 0;
+			selectedWholesalesLn.snvtList && selectedWholesalesLn.snvtList.length > 0;
 
 		let idx = isInvoice ? PriceIdx4WsInvoice : PriceIdx4WsOrder;
 		let _price: number = Number($tr.find("td").eq(idx).find(".price").val());
@@ -583,56 +583,48 @@ function handleSubmit4Wholesales(forRecurOrder: boolean = false) {
 					$(`#${gTblName} tbody tr`).each(function (i, e) {
 						const itemcode: string = $(e).find("td").eq(1).find(".itemcode").val()!.toString();
 						if (!(itemcode in DicIvInfo) || DicIvInfo[itemcode].length === 0) {
-							let nonitemoptions = 0;
-							for (let i = 6; i <= 8; i++) {
-								if ($(e).find("td").eq(i).find(".nonitemoptions").length)
-									nonitemoptions++;
-							}
+
+							let nonitemoptions = $(e).find(".nonitemoptions").length;
+
 							if (nonitemoptions > 0) {
 								let deliveryItem: IDeliveryItem = initDeliveryItem();
 								deliveryItem.dlCode = `noio${i}`;
-								let idx = 0;
-								deliveryItem.seq = Number($(e).find("td").eq(idx).text());
-								idx++;
-								deliveryItem.itmCode = $(e)
-									.find("td")
-									.eq(idx)
+						
+								deliveryItem.seq = Number($(e).find("td").first().text());
+							
+								deliveryItem.itmCode = $(e)									
 									.find(".itemcode")
 									.val() as string;
-								idx = 3;
-								deliveryItem.dlBaseUnit = $(e)
-									.find("td")
-									.eq(idx)
+								
+								deliveryItem.dlBaseUnit = $(e)									
 									.find(".sellunit")
 									.val() as string;
-								idx = 5;
+								
 								deliveryItem.dlQty = Number(
-									$(e).find("td").eq(idx).find(".delqty").val()
+									$(e).find(".delqty").val()
 								);
-								idx = PriceIdx4WsInvoice;
-								deliveryItem.SellingPrice = Number(
-									$(e).find("td").eq(idx).find(".price").val()
+								
+								deliveryItem.dlUnitPrice = Number(
+									$(e).find(".price").val()
 								);
-								idx++;
+							
 								deliveryItem.dlDiscPc = Number(
-									$(e).find("td").eq(idx).find(".discpc").val()
+									$(e).find(".discpc").val()
 								);
-								idx++;
+								
 								if (enableTax && !inclusivetax) {
 									deliveryItem.dlTaxPc = Number(
-										$(e).find("td").eq(idx).find(".taxpc").val()
+										$(e).find(".taxpc").val()
 									);
-									idx++;
+									
 								}
 
-								deliveryItem.dlStockLoc = $(e).find("td").eq(idx).find(".location").val() as string;
-								idx++;
+								deliveryItem.dlStockLoc = $(e).find(".location").val() as string;							
 
-								deliveryItem.JobID = Number($(e).find("td").eq(idx).find(".job").val());
-								idx++;
+								deliveryItem.JobID = Number($(e).find(".job").val());							
 
 								deliveryItem.dlAmt = deliveryItem.dlAmtPlusTax = Number(
-									$(e).find("td").eq(idx).find(".amount").val()
+									$(e).find("td").last().find(".amount").val()
 								);
 								DeliveryItems.push(deliveryItem);
 							}
@@ -883,7 +875,7 @@ function fillInDeliveryItems() {
 
 		itemOptions = DicItemOptions[itemcode];
 		if (!itemOptions) return false;
-		
+
 		idx = 8;
 		if (itemOptions.WillExpire) {
 			$target = $(e)
@@ -921,7 +913,7 @@ function initVariablesFrmInfoblk() {
 	//console.log("diclocation:", DicLocation);
 	MyobJobList = $infoblk.data("jsonjoblist");
 	enableTax = $infoblk.data("enabletax") === "True";
-	
+
 	DicBatTotalQty = $infoblk.data("jsondicbattotalqty");
 	DicItemBatchQty = $infoblk.data("jsondicitembatchqty");
 	DicItemBatDelQty = $infoblk.data("jsondicitembatdelqty");
@@ -942,11 +934,11 @@ function initVariablesFrmInfoblk() {
 $(function () {
 	forwholesales = true;
 	initVariablesFrmInfoblk();
-	
+
 	setFullPage();
 	initModals();
 	triggerMenu(4, 0);
-	
+
 	gTblName = "tblWSI";
 	itotalamt = 0;
 	$(".datepicker").datepicker({

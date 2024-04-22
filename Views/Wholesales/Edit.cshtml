@@ -20,6 +20,8 @@
 <link rel="stylesheet" type="text/css" href="~/Scripts/jspreadsheet/dist/jexcel.css" />
 <link rel="stylesheet" type="text/css" href="~/Scripts/jsuites/dist/jsuites.css" />
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="~/Content/pos/Sales.css?v=@rand" />
+
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <h2 class="mb-4">@ViewBag.Title</h2>
@@ -160,7 +162,7 @@
 
     <div class="d-flex justify-content-center my-4" data-status="@WholeSales.wsStatus" data-enabletax="@Model.EnableTax" data-inclusivetax="@Model.InclusiveTax">
         @{ var colcls = (WholeSales.wsStatus == WholeSalesStatus.invoice.ToString() || WholeSales.wsStatus == WholeSalesStatus.deliver.ToString() || WholeSales.wsStatus == WholeSalesStatus.partialdeliver.ToString()) ? "" : "hide";}
-        <table id="tblWSI" class="jexcel jexcel_overflow" cellpadding="0" cellspacing="0" style="width:100%;">
+        <table id="tblWSI" class="jexcel jexcel_overflow small" cellpadding="0" cellspacing="0" style="width:100%;">
             <thead class="resizable">
                 <tr>
                     <td class="" style="width:50px;max-width:50px;"></td>

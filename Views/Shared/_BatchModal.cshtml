@@ -14,7 +14,7 @@
                     <th>@Resources.Resource.SerialNo (@Resources.Resource.ExpiryDate) @poqtylbl</th>
                     <th class="text-right">@Resources.Resource.ExpiryDate @poqtylbl</th>
                     <th>@Resources.Resource.ItemVariations</th>
-                    @if (!isdeliver)
+                    @if ((!isdeliver)|| status.ToLower()== WholeSalesStatus.created.ToString())
                     {
                         <th class="text-right">@Resources.Resource.DeliveredQty</th>
                         <th class="text-right">@Resources.Resource.CurrentBatchTypeSellableQty/@string.Format(Resources.Resource.TotalFormat, Resources.Resource.Qty)</th>

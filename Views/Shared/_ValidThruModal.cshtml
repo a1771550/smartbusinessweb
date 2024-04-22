@@ -6,38 +6,38 @@
 <div id="validthruModal">
     <div class="container">
         <h4 id="validthruLocItem"></h4>
-        <table id="tblVt" class="table table-bordered  table-hover table-condensed">
-            <thead class="gray-header">
-                <tr>
-                    <th class="text-right">@Resources.Resource.ExpiryDate (@Resources.Resource.PurchaseOrder)</th>
-                    @if (!isdeliver)
-                    {
-                        <th class="text-right">@Resources.Resource.DeliveredQty</th>
+		<table id="tblVt" class="table table-bordered  table-hover table-condensed">
+			<thead class="gray-header">
+				<tr>
+					<th class="text-right">@Resources.Resource.ExpiryDate (@Resources.Resource.PurchaseOrder)</th>
+					@if ((!isdeliver) || status.ToLower() == WholeSalesStatus.created.ToString())
+					{
+						<th class="text-right">@Resources.Resource.DeliveredQty</th>
 
-                        <th class="text-right">@Resources.Resource.CurrentBatchTypeSellableQty/@string.Format(Resources.Resource.TotalFormat, Resources.Resource.Qty)</th>
-                    }
+						<th class="text-right">@Resources.Resource.CurrentBatchTypeSellableQty/@string.Format(Resources.Resource.TotalFormat, Resources.Resource.Qty)</th>
+					}
 
-                </tr>
-            </thead>
-            <tbody></tbody>
+				</tr>
+			</thead>
+			<tbody></tbody>
 
-            @if (!isdeliver)
-            {
-                <tfoot>
-                    <tr class="my-auto">
-                        <td colspan="3">
-                            <div class="form-group row justify-content-end my-auto">
-                                <label for="totalvtdelqty" class="col-form-label">@string.Format(Resources.Resource.DeliveryFormat, Resources.Resource.Qty)</label>
+			@if ((!isdeliver) || status.ToLower() == WholeSalesStatus.created.ToString())
+			{
+				<tfoot>
+					<tr class="my-auto">
+						<td colspan="3">
+							<div class="form-group row justify-content-end my-auto">
+								<label for="totalvtdelqty" class="col-form-label">@string.Format(Resources.Resource.DeliveryFormat, Resources.Resource.Qty)</label>
 
-                                <input type="number" class="form-control mx-3" readonly id="totalvtdelqty" />
+								<input type="number" class="form-control mx-3" readonly id="totalvtdelqty" />
 
-                            </div>
+							</div>
 
-                        </td>
-                    </tr>
-                </tfoot>
-            }
+						</td>
+					</tr>
+				</tfoot>
+			}
 
-        </table>
+		</table>
     </div>
 </div>

@@ -99,6 +99,7 @@ $(function () {
     uploadsizelimitmb = parseInt($infoblk.data("uploadsizelimitmb"));
     if ($infoblk.data("uploadfilelist") !== "") {
         Supplier.UploadFileList = ($infoblk.data("uploadfilelist").toString()).split(",");
+        //console.log("Supplier.UploadFileList:", Supplier.UploadFileList);
         $("#btnViewFile").removeClass("hide");
     }
 

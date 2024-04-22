@@ -133,8 +133,7 @@ namespace SmartBusinessWeb.Controllers.Sales
         [CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
         public ActionResult Print(int Id, string type)
         {
-            ViewBag.ParentPage = "wholesales";
-            ViewBag.PageName = "wholesales";
+            ViewBag.ParentPage = "wholesales";            
             WholeSalesEditModel model = new WholeSalesEditModel(Id, null, type, true);
             return View(model);
         }

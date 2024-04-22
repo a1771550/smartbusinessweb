@@ -3157,7 +3157,7 @@ function openViewFileModal() {
 	if (forpurchasepayments) {
 		populateFileList4PurchasePayments(UploadedFileList);
 	} else {
-		//console.log("UploadedFileList:", UploadedFileList);
+		//console.log("UploadedFileList#open:", UploadedFileList);
 		populateFileList(UploadedFileList);
 	}
 	viewFileModal.dialog("open");
@@ -11818,7 +11818,7 @@ function fillInWholeSales(): IWholeSales {
 		wsCustomerPO: $("#wsCustomerPO").val() as string,
 		wsCustomerTerms: $("#wsCustomerTerms").val() as string,
 		wsSalesLoc: $("#drpLocation").val() as string,
-		wsRemark: $("#wsRemark").val() as string,		
+		wsRemark: $("#wsRemark").val() as string,
 		wsDate: new Date(),
 		WsDateDisplay: <string>$("#WsDateDisplay").val(),
 		JsWholesalesDate: $("#deliveryDate").val() as string,
@@ -11851,16 +11851,16 @@ function fillInWholeSales(): IWholeSales {
 		wsDeliveryAddress4: "",
 		DeliveryDateDisplay: <string>$("#WholeSales_DeliveryDateDisplay").val(),
 		JsDeliveryDate: <string>$("#deliveryDate").val(),
-		wsReturnDate: "",	
+		wsReturnDate: "",
 		WsTimeDisplay: "",
-		wsAllLoc: $("#chkAllLoc").is(":checked"),		
+		wsAllLoc: $("#chkAllLoc").is(":checked"),
 		wsChkManualDelAddr: $("#chkDelAddr").is(":checked"),
 		Customer: {} as ICustomer,
 		CustomerName: $("#txtCustomerName").val() == null ? null : $("#txtCustomerName").val()!.toString(),
 		TrimmedRemark: "",
 		UploadFileList: [],
 		FileList: [],
-		ImgList:[]
+		ImgList: []
 	};
 }
 interface IWholeSales {
@@ -11901,12 +11901,12 @@ interface IWholeSales {
 	wsReturnDate: string | null;
 	wsCurrency: string;
 	wsExRate: number | null;
-	wsCustomerTerms: string | null;	
+	wsCustomerTerms: string | null;
 	JsWholesalesDate: string;
 	WsDateDisplay: string;
 	WsTimeDisplay: string;
 	wsDate: Date;
-	wsAllLoc: boolean;	
+	wsAllLoc: boolean;
 	wsChkManualDelAddr: boolean;
 	Customer: ICustomer;
 	CustomerName: string | null;
@@ -11993,7 +11993,7 @@ interface IWholeSalesLn {
 	wslSnReusable: boolean | null;
 	wslTaxCode: string;
 	wslTaxPc: number | null;
-	wslSellUnit: string;	
+	wslSellUnit: string;
 	wslLineDiscAmt: number | null;
 	wslLineDiscPc: number | null;
 	wslDiscSpreadPc: number | null;
@@ -12003,12 +12003,12 @@ interface IWholeSalesLn {
 	wslSalesAmt: number | null;
 	wslType: string;
 	wslSellingPrice: number | null;
-	wslSellingPriceMinusInclTax: number | null;	
+	wslSellingPriceMinusInclTax: number | null;
 	CreateTimeDisplay: string;
 	ModifyTimeDisplay: string | null;
 	wslStatus: string;
 	itmName: string;
-	itmNameDesc: string;	
+	itmNameDesc: string;
 	snbvlist: IBatSnVt[];
 	SerialNoList: Array<ISerialNo>;
 	wslValidThru: Date | null;
@@ -12527,8 +12527,7 @@ function initDeliveryItem(
 			vttotalqty: 0,
 			newvtqty: 0,
 			vtdelqty: 0,
-			currentvdq: 0,
-			SellingPrice: 0,
+			currentvdq: 0,		
 			dlBatId: null,
 			dlVtId: null,
 			dlStockLoc: $td.eq(lidx).find(".location").val() as string,
@@ -12576,8 +12575,7 @@ function initDeliveryItem(
 			vttotalqty: 0,
 			newvtqty: 0,
 			vtdelqty: 0,
-			currentvdq: 0,
-			SellingPrice: 0,
+			currentvdq: 0,			
 			dlBatId: null,
 			dlVtId: null,
 			dlStockLoc: "",
@@ -12626,8 +12624,7 @@ interface IDeliveryItem {
 	vttotalqty: number;
 	newvtqty: number;
 	vtdelqty: number;
-	currentvdq: number;
-	SellingPrice: number;
+	currentvdq: number;	
 	dlBatId: number | null;
 	dlVtId: number | null;
 	dlStockLoc: string;
@@ -14065,8 +14062,8 @@ function FillInPurchase(currentStatus: string = "") {
 		pstAmount: Number($("#pstAmount").val()),
 		pstPartialAmt: Number($("#pstPartialAmt").val()),
 		FileList: [],
-		ImgList:[],
-		UploadFileList:[],
+		ImgList: [],
+		UploadFileList: [],
 	} as IPurchase;
 }
 
@@ -15379,12 +15376,23 @@ $(document).on("click", ".btnPayment", function () {
 });
 
 $(document).on("change", ".itemdesc", function () {
-	seq = parseInt($(this).parent("td").parent("tr").find("td:eq(0)").text());
-	selectedSalesLn = $.grep(SalesLnList, function (e: ISalesLn, i) {
-		return e.rtlSeq == seq;
-	})[0];
-	//console.log('selectedsalesitem:', selectedSalesLn);
-	selectedSalesLn.Item.itmDesc = <string>$(this).val();
+	getRowCurrentY.call(this);
+	seq = currentY + 1;
+	//console.log("seq:", seq);
+	//seq = parseInt($(this).parent("td").parent("tr").find("td:eq(0)").text());
+	if (selectedSalesLn) {
+		selectedSalesLn = $.grep(SalesLnList, function (e: ISalesLn, i) {
+			return e.rtlSeq == seq;
+		})[0];
+		//console.log('selectedsalesitem:', selectedSalesLn);
+		selectedSalesLn.Item.itmDesc = <string>$(this).val();
+	}
+	if (Purchase && Purchase.PurchaseItems.length > 0) {
+		selectedPurchaseItem = $.grep(Purchase.PurchaseItems, function (e: IPurchaseItem, i) {
+			return e.piSeq == seq;
+		})[0];
+		selectedPurchaseItem.itmNameDesc = <string>$(this).val();
+	}
 });
 
 $(document).on("change", "#drpSalesman", function () {
@@ -20430,7 +20438,7 @@ $(document).on("change", ".validthru", function () {
 	}
 
 	if (forwholesales) {
-		$target = $tr.find("td").eq(5).find(".delqty");
+		$target = $tr.find(".delqty");
 		let delqty = Number($target.val());
 		//console.log('received:' + $target.val());
 		if (delqty == 0) {
@@ -20469,52 +20477,44 @@ $(document).on("change", ".validthru", function () {
 			if (idx < 0) {
 				let deliveryItem: IDeliveryItem = initDeliveryItem();
 				deliveryItem.dlCode = `vt${seq}`;
-				let idx = 0;
+				
 				deliveryItem.seq = seq;
-				idx++;
-				deliveryItem.itmCode = $tr
-					.find("td")
-					.eq(idx)
+				
+				deliveryItem.itmCode = $tr					
 					.find(".itemcode")
 					.val() as string;
-				idx = 3;
-				deliveryItem.dlBaseUnit = $tr
-					.find("td")
-					.eq(idx)
+			
+				deliveryItem.dlBaseUnit = $tr					
 					.find(".sellunit")
 					.val() as string;
-				idx = 5;
+				
 				deliveryItem.dlQty = Number(
-					$tr.find("td").eq(idx).find(".delqty").val()
+					$tr.find(".delqty").val()
 				);
-				idx = 9;
-				deliveryItem.SellingPrice = Number(
-					$tr.find("td").eq(idx).find(".price").val()
+			
+				deliveryItem.dlUnitPrice = Number(
+					$tr.find(".price").val()
 				);
-				idx++;
+				
 				deliveryItem.dlDiscPc = Number(
-					$tr.find("td").eq(idx).find(".discpc").val()
+					$tr.find(".discpc").val()
 				);
-				idx++;
+			
 				if (enableTax && !inclusivetax) {
 					deliveryItem.dlTaxPc = Number(
-						$tr.find("td").eq(idx).find(".taxpc").val()
-					);
-					idx++;
+						$tr.find(".taxpc").val()
+					);					
 				}
 
-				deliveryItem.dlStockLoc = $tr
-					.find("td")
-					.eq(idx)
+				deliveryItem.dlStockLoc = $tr					
 					.find(".location")
-					.val() as string;
-				idx++;
+					.val() as string;				
 
-				deliveryItem.JobID = Number($tr.find("td").eq(idx).find(".job").val());
-				idx++;
+				deliveryItem.JobID = Number($tr.find(".job").val());
+				
 
 				deliveryItem.dlAmt = deliveryItem.dlAmtPlusTax = Number(
-					$tr.find("td").eq(idx).find(".amount").val()
+					$tr.find(".amount").val()
 				);
 
 				deliveryItem.JsVt = validthru;
@@ -21772,15 +21772,13 @@ $(document).on("click", ".btnVoid", function () {
 });
 
 $(document).on("click", ".btnUpload", function () {
-	if (forpurchase) {
+	forpurchasepayments = $(this).data("forpurchasepayments") == "1";
+	if (forpurchasepayments) {
+		forpurchase = false;
+		triggerReferrer = ($(this).parent("td").length) ? TriggerReferrer.Row : TriggerReferrer.Modal;
 		ppId = Number($(this).data("id"));
 		getPurchasePayment();
-
-		if (purchasePayment) {
-			triggerReferrer = ($(this).parent("td").length) ? TriggerReferrer.Row : TriggerReferrer.Modal;
-			openUploadFileModal();
-		}
-
+		openUploadFileModal();
 	}
 });
 
@@ -21955,16 +21953,30 @@ function setAccName(tr: JQuery<Element>, acno: string, acname: string) {
 }
 
 let UploadedFileList: string[] = [];
+
+function handleUploadedFile(result: any) {
+	closeWaitingModal();
+	closeUploadFileModal();
+	closeViewFileModal();
+	UploadedFileList = structuredClone(result.FileList);
+	//console.log("UploadedFileList:", UploadedFileList);
+	if (forpurchase) {
+		if (Purchase) Purchase.UploadFileList = structuredClone(UploadedFileList);
+	}
+
+	if (forpurchasepayments) populateFileList4PurchasePayments(UploadedFileList);
+	else populateFileList(UploadedFileList);
+}
 function populateFileList(files: string[]) {
-	//F:\SmartPOSPro\Uploads\PO\1\KP100003
-	//https://localhost:7777/Purchase/1/KP100003/sample.pdf
 	if (files.length > 0) {
 		let html = "";
 		const pdfthumbnail = getPdfThumbnail();
+		console.log("pdfthumbnail:", pdfthumbnail);
+		console.log("files:", files);
 		files.forEach((x) => {
 			let removefilelnk = "", filelnk = "";
 			if (forpurchase) {
-				removefilelnk = getRemoveFileLnk(x, Purchase.pstCode);				
+				removefilelnk = getRemoveFileLnk(x, Purchase.pstCode);
 				filelnk = `<a href="#" class="filelnk" data-lnk="/Purchase/${apId}/${Purchase.pstCode}/${x}">${pdfthumbnail}${x}</a> ${removefilelnk}`;
 			}
 			if (forenquiry) {
@@ -21984,22 +21996,14 @@ function populateFileList(files: string[]) {
 
 		if (forpurchase || forpurchasepayments) {
 			$(".viewfileblk").find(".file").empty().append(html);
-		}			
-		else
+		}
+		else {
+			//console.log("here");
 			viewFileModal.find(".file").empty().append(html);
-	}
-}
-function handleUploadedFile(result: any) {
-	closeWaitingModal();
-	closeViewFileModal();
-	UploadedFileList = structuredClone(result.FileList);
-	if (forpurchase) {
-		if (Purchase) Purchase.UploadFileList = structuredClone(UploadedFileList);
-		populateFileList(UploadedFileList);
-	}
-	closeUploadFileModal();
-}
+		}
 
+	}
+}
 function populateFileList4PurchasePayments(fileList: string[]) {
 	$("#uploadmsg").fadeIn("slow");
 
@@ -22010,7 +22014,7 @@ function populateFileList4PurchasePayments(fileList: string[]) {
 	fileList.forEach((x) => {
 		html += `<li class="p-2" data-file="${x}"><a href="#" class="filelnk" data-lnk="/Purchase/${paymentId}/${x}"><img src="/images/pdf.jpg" class="thumbnail">${x}</a> <i class="fa fa-trash removefile" data-file="${x}" data-payid="${paymentId}"></i></li>`;
 	});
-	viewFileModal.find(".filelist").empty().append(html);
+	viewFileModal.find(".file").empty().append(html);
 }
 
 function setInputFilter(textbox: Element, inputFilter: (value: string) => boolean, errMsg: string): void {

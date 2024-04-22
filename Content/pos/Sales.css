@@ -149,7 +149,7 @@ i.fa-plus, i.fa-minus {
 	min-width:20%!important;
 }
 
-.form-control {
+.form-control:not(textarea) {
 	padding: 0 .75rem !important;
 	height: calc(1.5rem + 2px) !important;
 }
