@@ -1,0 +1,218 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "F:\\repos\\PPWProject\\SmartBusinessWeb\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|F:\\repos\\PPWProject\\SmartBusinessWeb\\views\\wholesales\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|solutionrelative:views\\wholesales\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E6585784-6922-4BAD-A92F-3EE21E5BC33D}|..\\PPWLib\\PPWLib.csproj|f:\\repos\\ppwproject\\ppwlib\\helpers\\modelhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E6585784-6922-4BAD-A92F-3EE21E5BC33D}|..\\PPWLib\\PPWLib.csproj|f:\\repos\\ppwproject\\ppwlib\\models\\wholesales\\wholesaleseditmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|F:\\repos\\PPWProject\\SmartBusinessWeb\\controllers\\datatransfercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|solutionrelative:controllers\\datatransfercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|F:\\repos\\PPWProject\\SmartBusinessWeb\\controllers\\sales\\wholesalescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|solutionrelative:controllers\\sales\\wholesalescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|F:\\repos\\PPWProject\\SmartBusinessWeb\\views\\posfunc\\advsales.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|solutionrelative:views\\posfunc\\advsales.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E6585784-6922-4BAD-A92F-3EE21E5BC33D}|..\\PPWLib\\PPWLib.csproj|f:\\repos\\ppwproject\\ppwlib\\models\\customer\\customereditmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|F:\\repos\\PPWProject\\SmartBusinessWeb\\scripts\\ts\\app.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|solutionrelative:scripts\\ts\\app.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|F:\\repos\\PPWProject\\SmartBusinessWeb\\scripts\\ts\\wholesales\\edit.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|solutionrelative:scripts\\ts\\wholesales\\edit.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 1,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedHeight": 300,
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{13b12e3e-c1b4-4539-9371-4fe9a0d523fc}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ModelHelper.cs",
+              "DocumentMoniker": "F:\\repos\\PPWProject\\PPWLib\\Helpers\\ModelHelper.cs",
+              "RelativeDocumentMoniker": "..\\PPWLib\\Helpers\\ModelHelper.cs",
+              "ToolTip": "F:\\repos\\PPWProject\\PPWLib\\Helpers\\ModelHelper.cs",
+              "RelativeToolTip": "..\\PPWLib\\Helpers\\ModelHelper.cs",
+              "ViewState": "AQIAADkBAAAAAAAAAAAuwEMBAAAEAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-22T09:46:27.254Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "DataTransferController.cs",
+              "DocumentMoniker": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Controllers\\DataTransferController.cs",
+              "RelativeDocumentMoniker": "Controllers\\DataTransferController.cs",
+              "ToolTip": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Controllers\\DataTransferController.cs",
+              "RelativeToolTip": "Controllers\\DataTransferController.cs",
+              "ViewState": "AQIAABUEAAAAAAAAAAASwBoEAAA1AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-22T09:43:10.254Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Edit.cshtml",
+              "DocumentMoniker": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Views\\Wholesales\\Edit.cshtml",
+              "RelativeDocumentMoniker": "Views\\Wholesales\\Edit.cshtml",
+              "ToolTip": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Views\\Wholesales\\Edit.cshtml",
+              "RelativeToolTip": "Views\\Wholesales\\Edit.cshtml",
+              "ViewState": "AQIAABsAAAAAAAAAAAAAACEAAAAyAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-04-22T09:38:29.824Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "AdvSales.cshtml",
+              "DocumentMoniker": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Views\\POSFunc\\AdvSales.cshtml",
+              "RelativeDocumentMoniker": "Views\\POSFunc\\AdvSales.cshtml",
+              "ToolTip": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Views\\POSFunc\\AdvSales.cshtml",
+              "RelativeToolTip": "Views\\POSFunc\\AdvSales.cshtml",
+              "ViewState": "AQIAADMAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-04-22T09:08:08.243Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "app.ts",
+              "DocumentMoniker": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Scripts\\ts\\app.ts",
+              "RelativeDocumentMoniker": "Scripts\\ts\\app.ts",
+              "ToolTip": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Scripts\\ts\\app.ts",
+              "RelativeToolTip": "Scripts\\ts\\app.ts",
+              "ViewState": "AQIAAC1QAAAAAAAAAIA0wDtQAAAUAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2024-04-22T08:44:15.666Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "WholeSalesEditModel.cs",
+              "DocumentMoniker": "F:\\repos\\PPWProject\\PPWLib\\Models\\WholeSales\\WholeSalesEditModel.cs",
+              "RelativeDocumentMoniker": "..\\PPWLib\\Models\\WholeSales\\WholeSalesEditModel.cs",
+              "ToolTip": "F:\\repos\\PPWProject\\PPWLib\\Models\\WholeSales\\WholeSalesEditModel.cs",
+              "RelativeToolTip": "..\\PPWLib\\Models\\WholeSales\\WholeSalesEditModel.cs",
+              "ViewState": "AQIAABkEAAAAAAAAAAAywCIEAABAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-22T08:28:12.325Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "WholeSalesController.cs",
+              "DocumentMoniker": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Controllers\\Sales\\WholeSalesController.cs",
+              "RelativeDocumentMoniker": "Controllers\\Sales\\WholeSalesController.cs",
+              "ToolTip": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Controllers\\Sales\\WholeSalesController.cs",
+              "RelativeToolTip": "Controllers\\Sales\\WholeSalesController.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAJ8AAAAZAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-22T08:27:59.419Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "edit.ts",
+              "DocumentMoniker": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Scripts\\ts\\wholesales\\edit.ts",
+              "RelativeDocumentMoniker": "Scripts\\ts\\wholesales\\edit.ts",
+              "ToolTip": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Scripts\\ts\\wholesales\\edit.ts",
+              "RelativeToolTip": "Scripts\\ts\\wholesales\\edit.ts",
+              "ViewState": "AQIAAEICAAAAAAAAAAAnwF4CAAAgAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2024-04-22T08:38:38.239Z"
+            }
+          ]
+        },
+        {
+          "DockedHeight": 119,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "CustomerEditModel.cs",
+              "DocumentMoniker": "F:\\repos\\PPWProject\\PPWLib\\Models\\Customer\\CustomerEditModel.cs",
+              "RelativeDocumentMoniker": "..\\PPWLib\\Models\\Customer\\CustomerEditModel.cs",
+              "ToolTip": "F:\\repos\\PPWProject\\PPWLib\\Models\\Customer\\CustomerEditModel.cs",
+              "RelativeToolTip": "..\\PPWLib\\Models\\Customer\\CustomerEditModel.cs",
+              "ViewState": "AQIAANYBAAAAAAAAAAAxwNcBAAAuAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-22T08:52:17.957Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedHeight": 342,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{0ad07096-bba9-4900-a651-0598d26f6d24}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{004be353-6879-467c-9d1e-9ac23cdf6d49}"
+            }
+          ]
+        },
+        {
+          "DockedHeight": 49,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{4a9b7e51-aa16-11d0-a8c5-00a0c921a4d2}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{a80febb4-e7e0-4147-b476-21aaf2453969}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
