@@ -12,6 +12,7 @@ using System;
 using ModelHelper = PPWLib.Helpers.ModelHelper;
 using PPWLib.Models.Item;
 using PPWLib.Models.Sales;
+using DocumentFormat.OpenXml.EMMA;
 
 namespace SmartBusinessWeb.Controllers.Item
 {
@@ -77,16 +78,7 @@ namespace SmartBusinessWeb.Controllers.Item
             return Json(msg);
         }
 
-        //[HandleError]
-        //[CustomAuthorize("stock", "boss", "admin", "superadmin")]
-        //public ActionResult ZeroStocks(string salescode="", int? PageNo = 1)
-        //{
-        //    ViewBag.ParentPage = "item";
-        //    ViewBag.PageName = "zerostocks";
-        //    PendingInvoice model = new PendingInvoice();
-        //    model.GetZeroStockList(salescode, PageNo);
-        //    return View(model);
-        //}
+       
 
         [HandleError]
         [CustomAuthorize("stock", "boss", "admin", "superadmin")]
@@ -125,6 +117,12 @@ namespace SmartBusinessWeb.Controllers.Item
         }
 
 
+        public JsonResult SaveAttr(ItemModel model)
+        {
+			ItemEditModel.SaveAttr(model);			
+			return Json(Resources.Resource.ItemSaved);
+		}
+
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
         [HttpPost]
@@ -132,17 +130,11 @@ namespace SmartBusinessWeb.Controllers.Item
         public JsonResult EditIV(ItemModel Item = null, ItemVariModel ItemVari = null, List<ItemAttributeModel> AttrList = null)
         {
             ViewBag.ParentPage = "item";
-            ViewBag.PageName = "item";
-            if (Item != null)
-            {
-                ItemEditModel.EditIV(Item, null, AttrList);
-            }
-            else
-            {
-                ItemEditModel.EditIV(null, ItemVari, AttrList);
-            }
-            string msg = Resources.Resource.ItemSaved;
-            return Json(msg);
+           
+            if (Item != null) ItemEditModel.EditIV(Item, null, AttrList);			
+            else ItemEditModel.EditIV(null, ItemVari, AttrList);
+          
+            return Json(Resources.Resource.ItemSaved);
         }
 
 

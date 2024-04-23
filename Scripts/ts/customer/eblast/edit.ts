@@ -22,8 +22,7 @@ $(document).on('change', '.format', function () {
     toggleContentBlk();
 });
 
-$(function () {   
-    AccountProfileId = parseInt(<string>$infoblk.data('accountprofileid'));
+$(function () {       
     initModals();   
     editmode = $('#Id').length == 1;
     if (editmode) {

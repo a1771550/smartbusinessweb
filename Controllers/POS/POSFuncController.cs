@@ -649,17 +649,14 @@ namespace SmartBusinessWeb.Controllers
         [CustomAuthorize("retail", "boss", "admin", "superadmin")]
         public ActionResult AdvSales(string receiptno = "", string mode = "", string type = "")
         {
-            string defaultcheckoutportal = ModelHelper.HandleCheckoutPortal();
             Session["ImportFrmShopPageTitle"] = Resources.Resource.DayendsImportFrmShop;
             Session["ImportFrmCentralPageTitle"] = Resources.Resource.DayendsImportFrmCentral;
             Session["SBToABSSOK"] = Resources.Resource.SBToABSSOK;
             Session["ABSSToSBOK"] = Resources.Resource.ABSSToSBOK;
-            ViewBag.DefaultCheckoutPortal = defaultcheckoutportal;
+            ViewBag.DefaultCheckoutPortal = ModelHelper.HandleCheckoutPortal();
 
-            ViewBag.ParentPage = "sales";
-            ViewBag.PageName = "advsales";
-            SessUser user = Session["User"] as SessUser;
-            SalesModel model = new SalesModel(user, receiptno, mode, type);
+			ViewBag.ParentPage = "sales";           
+            SalesEditModel model = new SalesEditModel(receiptno, mode, type);
             return View(model);
         }
 
@@ -673,9 +670,7 @@ namespace SmartBusinessWeb.Controllers
             Session["ABSSToSBOK"] = Resources.Resource.ABSSToSBOK;
 
             ViewBag.ParentPage = "sales";
-            ViewBag.PageName = "sales";
-           
-            SalesModel model = new SalesModel(true);
+            SalesEditModel model = new SalesEditModel(true);
             return View(model);
         }
 

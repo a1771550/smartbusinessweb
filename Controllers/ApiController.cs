@@ -1736,11 +1736,7 @@ namespace SmartBusinessWeb.Controllers
                                      Lang = lang,
                                  }
                                 ).ToList();
-                    foreach (var sales in SalesList)
-                    {
-                        sales.DicPayTypes = DicPayTypes;
-                    }
-
+                   
                     PayList = (from p in context.RtlPays
                                where p.rtpDate >= frmdate && p.rtpDate <= todate && p.rtpDvc.ToLower() == device && p.rtpSalesLoc.ToLower() == shop
                                && p.AccountProfileId == accountProfileId
@@ -2909,63 +2905,63 @@ namespace SmartBusinessWeb.Controllers
 
             var stockinfo = context.GetStockInfo7(apId).ToList();
 
-            List<SalesItem> itemlist = ModelHelper.GetItemList(apId, context, stockinfo, startIndex, model.PageSize, out model.RecordCount, keyword, location, type);
+            List<SalesItem> itemlist = ModelHelper.GetItemList(context, stockinfo, startIndex, model.PageSize, out model.RecordCount, keyword, location, type);
 
             ModelHelper.GetItemPriceLevelList(ref itemlist);
             model.Items = itemlist;
 
-            var itemcodelist = model.Items.Select(x => x.itmCode).Distinct().ToHashSet();
-            if (forsales || forpreorder || forwholesales || forpurchase)
-            {
-                ModelHelper.GetItemOptionsVariInfo(apId, location, context, itemcodelist, model);
-            }
-            if (forstock || fortransfer)
-            {
-                model.LatestUpdateTime = CommonHelper.FormatDateTime(stockinfo.Where(x => x.lstModifyTime != null).Select(x => (DateTime)x.lstModifyTime).FirstOrDefault());
-                var salesInfos = context.GetSalesInfoByItemCodes1(apId, string.Join(",", itemcodelist)).ToList();
+            //var itemcodelist = model.Items.Select(x => x.itmCode).Distinct().ToHashSet();
+            //if (forsales || forpreorder || forwholesales || forpurchase)
+            //{
+            //    ModelHelper.GetItemOptionsVariInfo(apId, location, context, itemcodelist, model);
+            //}
+            //if (forstock || fortransfer)
+            //{
+            //    model.LatestUpdateTime = CommonHelper.FormatDateTime(stockinfo.Where(x => x.lstModifyTime != null).Select(x => (DateTime)x.lstModifyTime).FirstOrDefault());
+            //    var salesInfos = context.GetSalesInfoByItemCodes1(apId, string.Join(",", itemcodelist)).ToList();
 
-                HashSet<string> locationlist = stockinfo.Select(x => x.lstStockLoc).Distinct().ToHashSet();
-                foreach (var loc in locationlist)
-                {
-                    model.DicLocItemList[loc] = new List<DistinctItem>();
-                    //model.DicLocItemQty[loc] = new Dictionary<string, int>();
-                }
-                foreach (var item in itemlist)
-                {
-                    var ditem = new DistinctItem
-                    {
-                        ItemCode = item.itmCode.Trim(),
-                        ItemName = item.itmName,
-                        ItemDesc = item.itmDesc,
-                        ItemTaxRate = item.itmTaxPc == null ? 0 : (double)item.itmTaxPc,
-                        IsNonStock = item.itmIsNonStock,
-                        ItemSupCode = item.itmSupCode,                       
-                        chkBat = item.chkBat,
-                        chkSN = item.chkSN,
-                        chkVT = item.chkVT
-                    };
-                    foreach (var loc in locationlist)
-                    {
-                        if (model.DicLocItemList.Keys.Contains(loc))
-                        {
-                            model.DicLocItemList[loc].Add(ditem);
-                        }
-                    }
-                }
+            //    HashSet<string> locationlist = stockinfo.Select(x => x.lstStockLoc).Distinct().ToHashSet();
+            //    foreach (var loc in locationlist)
+            //    {
+            //        model.DicLocItemList[loc] = new List<DistinctItem>();
+            //        //model.DicLocItemQty[loc] = new Dictionary<string, int>();
+            //    }
+            //    foreach (var item in itemlist)
+            //    {
+            //        var ditem = new DistinctItem
+            //        {
+            //            ItemCode = item.itmCode.Trim(),
+            //            ItemName = item.itmName,
+            //            ItemDesc = item.itmDesc,
+            //            ItemTaxRate = item.itmTaxPc == null ? 0 : (double)item.itmTaxPc,
+            //            IsNonStock = item.itmIsNonStock,
+            //            ItemSupCode = item.itmSupCode,                       
+            //            chkBat = item.chkBat,
+            //            chkSN = item.chkSN,
+            //            chkVT = item.chkVT
+            //        };
+            //        foreach (var loc in locationlist)
+            //        {
+            //            if (model.DicLocItemList.Keys.Contains(loc))
+            //            {
+            //                model.DicLocItemList[loc].Add(ditem);
+            //            }
+            //        }
+            //    }
 
-                model.PrimaryLocation = ModelHelper.GetShops(connection, ref Shops, ref ShopNames, apId);
-                ModelHelper.GetItemOptionsInfo(context, ref model.DicLocItemList, itemcodelist, Shops, connection);
-            }
+            //    model.PrimaryLocation = ModelHelper.GetShops(connection, ref Shops, ref ShopNames, apId);
+            //    ModelHelper.GetItemOptionsInfo(context, ref model.DicLocItemList, itemcodelist, Shops, connection);
+            //}
 
-            var itemcodes = string.Join(",", itemcodelist);
-            foreach (var itemcode in itemcodelist)
-            {
-                model.DicIvInfo[itemcode] = new List<PoItemVariModel>();
-            }
+            //var itemcodes = string.Join(",", itemcodelist);
+            //foreach (var itemcode in itemcodelist)
+            //{
+            //    model.DicIvInfo[itemcode] = new List<PoItemVariModel>();
+            //}
 
             //GetPoItemVariInfo
-            model.PoIvInfo = connection.Query<PoItemVariModel>(@"EXEC dbo.GetPoItemVariInfo @apId=@apId,@itemcodes=@itemcodes", new { apId, itemcodes }).ToList();
-            ModelHelper.GetDicIvInfo(context, model.PoIvInfo, ref model.DicIvInfo);
+            //model.PoIvInfo = connection.Query<PoItemVariModel>(@"EXEC dbo.GetPoItemVariInfo @apId=@apId,@itemcodes=@itemcodes", new { apId, itemcodes }).ToList();
+            //ModelHelper.GetDicIvInfo(context, model.PoIvInfo, ref model.DicIvInfo);
 
             model.DicItemOptions = ModelHelper.GetDicItemOptions(apId, context);
 

@@ -1,29 +1,14 @@
-﻿@model PPWLib.Models.SalesModel
+﻿@model PPWLib.Models.POS.Sales.SalesEditModel
 @{
 	ViewBag.Title = Resources.Resource.Sales;
 	int rand = new Random().Next(10000, 100000);
-	int enablecashdrawer = (bool)System.Web.HttpContext.Current.Session["EnableCashDrawer"] ? 1 : 0;
-	int checkedcashdrawer = 1;
-	if (enablecashdrawer == 1)
-	{
-		checkedcashdrawer = Session["CheckedCashDrawer"] == null ? 1 : (bool)System.Web.HttpContext.Current.Session["CheckedCashDrawer"] ? 1 : 0;
-	}
 	bool enableEpay = (bool)Model.ComInfo.enableEpay;
-	string defaultcheckoutportal = ViewBag.DefaultCheckoutPortal.ToLower();
-	bool nonabss = defaultcheckoutportal == "nonabss";
-	string absschecked = "";
-	string kingdeechecked = "";
-	if (!nonabss)
-	{
-		absschecked = defaultcheckoutportal == "abss" ? "checked" : "";
-		kingdeechecked = defaultcheckoutportal == "kingdee" ? "checked" : "";
-	}
-	//bool approvalmode = (bool)Model.ComInfo.ApprovalMode;
-	var currency = Model.ComInfo.Currency;
+
+	var currency = Model.Currency;
 	bool showrecur = false;
 	SessUser user = System.Web.HttpContext.Current.Session["User"] as SessUser;
 	//bool isadmin = user.Roles.Any(x => x == RoleType.Admin);
-	bool NonABSS = Model.ComInfo.DefaultCheckoutPortal != "abss";
+	var Sales = Model.Sales;
 	bool editmode = !string.IsNullOrEmpty(Model.Mode) && Model.Mode == "edit";
 	string subtitle = Resources.Resource.MakeSales;
 
@@ -35,23 +20,6 @@
 <link rel="stylesheet" type="text/css" href="~/Content/pos/Sales.css?v=@rand" />
 <h3>@subtitle</h3>
 
-@if (!nonabss)
-{
-	if (ConfigurationManager.AppSettings["HideAbssKingdeeOptions"] == "0")
-	{
-		<div class="row justify-content-end mx-1 ">
-			<div class="form-check form-check-inline">
-				<input class="form-check-input checkoutportal" type="radio" id="abss" value="abss" disabled @absschecked>
-				<label class="form-check-label" for="abss">ABSS</label>
-			</div>
-			<div class="form-check form-check-inline">
-				<input class="form-check-input checkoutportal" type="radio" id="kingdee" value="kingdee" disabled @kingdeechecked>
-				<label class="form-check-label" for="kingdee">@Resources.Resource.Kingdee</label>
-			</div>
-		</div>
-	}
-}
-
 @if (showrecur)
 {
 	<div class="row justify-content-start my-4">
@@ -62,9 +30,10 @@
 	</div>
 }
 
-@Html.Partial("_SalesBlk", null, new ViewDataDictionary { { "Currency", Model.Currency }, { "rtsCurrency", Model.rtsCurrency }, { "LocationList", Model.LocationList }, { "showrecur", showrecur }, { "Device", Model.ComInfo.Device }, { "Devices", Model.ComInfo.Devices },{"NextSalesCode",Model.NextSalesCode },{ "DefaultSalesNotesTxt",Model.DefaultSalesNotesTxt } })
+@Html.Partial("_SalesBlk", null, new ViewDataDictionary { { "Currency", Model.Currency }, { "rtsCurrency", Sales.rtsCurrency }, { "LocationList", Model.LocationList }, { "showrecur", showrecur }, { "Device", Model.ComInfo.Device }, { "Devices", Model.ComInfo.Devices },{"NextSalesCode",Model.NextSalesCode },{ "DefaultSalesNotesTxt",Model.DefaultSalesNotesTxt } })
 
-@Html.HiddenFor(model => model.rtsExRate)
+<input type="hidden" id="rtsExRate" value="@Sales.rtsExRate" />
+
 @Html.Partial("_CurrencyModal")
 
 @Html.Partial("_ItemModal", null, new ViewDataDictionary { { "currency", Model.Currency }, { "priceheader", Resources.Resource.SellingPrice }, { "forsales", true } })
@@ -100,7 +69,7 @@
 
 
 
-<div id="infoblk" data-enablecashdrawer="@enablecashdrawer" data-checkedcashdrawer="@checkedcashdrawer" data-currency="@Model.Currency" data-priceeditable="@Model.PriceEditable" data-disceditable="@Model.DiscEditable" data-enabletax="@Model.TaxModel.EnableTax" data-enablelogo="@Model.EnableLogo" data-inclusivetaxrate="@Model.TaxModel.TaxRate" data-accountprofileid="@Model.AccountProfileId" data-checkoutportal="@ViewBag.DefaultCheckoutPortal.ToLower()" data-salesmanrequiredtxt="@string.Format(Resources.Resource.PleaseFormat,string.Format(Resources.Resource.SelectFormat,Resources.Resource.SalesPerson))" data-jsondiclocation="@Model.JsonDicLocation" data-jsondicbattotalqty="@Model.JsonDicBatTotalQty" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)"></div>
+<div id="infoblk" data-currency="@Model.Currency" data-priceeditable="@Model.PriceEditable" data-disceditable="@Model.DiscEditable" data-enabletax="@Model.TaxModel.EnableTax" data-enablelogo="@Model.EnableLogo" data-inclusivetaxrate="@Model.TaxModel.TaxRate" data-accountprofileid="@Model.AccountProfileId" data-checkoutportal="@ViewBag.DefaultCheckoutPortal.ToLower()" data-salesmanrequiredtxt="@string.Format(Resources.Resource.PleaseFormat,string.Format(Resources.Resource.SelectFormat,Resources.Resource.SalesPerson))" data-jsondiclocation="@Model.JsonDicLocation" data-jsondicbattotalqty="@JsonSerializer.Serialize(Model.DicBatTotalQty)" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicitemsns="@JsonSerializer.Serialize(Model.DicItemSNs)" data-dicitemoptions="@JsonSerializer.Serialize(Model.DicItemOptions)" data-jsonpoitembatvqlist="@JsonSerializer.Serialize(Model.PoItemBatVQList)" data-jsondicitembatsnvtlist="@JsonSerializer.Serialize(Model.DicItemBatSnVtList)" data-jsondicitemvtqtylist="@JsonSerializer.Serialize(Model.DicItemVtQtyList)" data-jsondicitembatchqty="@JsonSerializer.Serialize(Model.DicItemBatchQty)" data-jsondicitemsnvtlist="@JsonSerializer.Serialize(Model.DicItemSnVtList)" data-jsondicitembatdelqty="@JsonSerializer.Serialize(Model.DicItemBatDelQty)" data-jsondicitemvtdelqtylist="@JsonSerializer.Serialize(Model.DicItemVtDelQtyList)" data-jsondicseqdeliveryitems="@JsonSerializer.Serialize(Model.DicSeqDeliveryItems)" data-jsondicitembatsnvt="@JsonSerializer.Serialize(Model.DicItemBatSnVt)" data-jsonpoivinfo="@JsonSerializer.Serialize(Model.PoIvInfo)" data-jsondicivinfo="@JsonSerializer.Serialize(Model.DicIvInfo)" data-dicitemgroupedvariations="@JsonSerializer.Serialize(Model.DicItemGroupedVariations)" data-dicivqtylist="@JsonSerializer.Serialize(Model.DicIvQtyList)" data-dicivdelqtylist="@JsonSerializer.Serialize(Model.DicIvDelQtyList)"></div>
 
 <link rel="stylesheet" type="text/css" href="~/Scripts/jspreadsheet/dist/jexcel.css" />
 <link rel="stylesheet" type="text/css" href="~/Scripts/jsuites/dist/jsuites.css" />

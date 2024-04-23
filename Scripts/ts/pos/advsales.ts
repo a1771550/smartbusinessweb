@@ -6,18 +6,8 @@ priceeditable = $infoblk.data("priceeditable") === "True";
 disceditable = $infoblk.data("disceditable") === "True";
 //printfields = $infoblk.data('printfields');
 device = $infoblk.data("devicecode");
-enablecashdrawer = $infoblk.data("enablecashdrawer") == "1";
 
 let zerostockItemList: Array<IItem> = [];
-
-checkoutportal = $infoblk.data("checkoutportal");
-
-checkedcashdrawer = $infoblk.data("checkedcashdrawer")
-    ? $infoblk.data("checkedcashdrawer") == "1"
-    : false;
-
-DicBatTotalQty = $infoblk.data("jsondicbattotalqty");
-
 
 $(document).on("click", ".btnRequestApproval", function () {
     if (validSalesForm()) {
@@ -45,8 +35,6 @@ $(document).on("click", ".btnNewSales", function () {
         window.location.href = "/PosFunc/AdvSales";
     }
 });
-
-
 
 let sessionstartdata: Array<any> = [];
 
@@ -109,15 +97,16 @@ function getSessionStartDataOk(data) {
 $(document).on("dblclick", ".nopo", function () {
     $("#txtCustomerPO").val("N/A");
 });
+
+
 $(function () {
     forsales = true;
     salesType = SalesType.retail;
     setFullPage();
     triggerMenu(0, 1);
 
-    DicLocation = $infoblk.data("jsondiclocation");
-
-    comInfo = $infoblk.data("cominfo");
+    initVariablesFrmInfoblk();
+   
     shop = comInfo.Shop;
     device = comInfo.Device;
     shops = comInfo.Shops.split(",");
@@ -141,20 +130,13 @@ $(function () {
         //console.log('ready to open new window...');
         window.open(_url, "_blank");
     }
-
-    AccountProfileId = parseInt(<string>$infoblk.data("accountprofileid"));
+ 
     initModals();
 
-    if (forsales) {
-        if (enablecashdrawer && !checkedcashdrawer) {
-            openCashDrawerModal();
-        }
+    if (forsales) {      
 
         editmode = $("#mode").val() === "edit";
-        let _receiptno = getParameterByName("receiptno");
-        let _readonly: boolean =
-            getParameterByName("readonly") !== null &&
-            getParameterByName("readonly") == "1";
+        let _receiptno = getParameterByName("receiptno");        
 
         let _mode: string = getParameterByName("mode") ?? "";
         // console.log("_mode:" + _mode);
@@ -203,9 +185,6 @@ $(function () {
                 Sales = initSales();
                 /*console.log("Sales@loadpostback:", Sales);*/
                 Sales.rtsCusCode = selectedCus.cusCode;
-                //Sales.rtsDvc = $infoblk.data("device");
-                //Sales.rtsSalesLoc = $infoblk.data("shop");
-                Sales.rtsGiftOption = 0;
                 Sales.rtsRefCode = "";
 
                 selectedCusCodeName = defaultcustomer.cusCode;

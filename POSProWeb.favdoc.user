@@ -386,6 +386,11 @@
           <path>Views\HotList\Index.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\HotList\Index.cshtml</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>AdvSales.cshtml</name>
+          <path>Views\POSFunc\AdvSales.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\POSFunc\AdvSales.cshtml</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -548,6 +553,10 @@
         <Favorite>
           <name>SupplierEditModel.cs</name>
           <absolutePath>F:\repos\PPWProject\PPWLib\Models\Purchase\Supplier\SupplierEditModel.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>SalesEditModel.cs</name>
+          <absolutePath>F:\repos\PPWProject\PPWLib\Models\Sales\SalesEditModel.cs</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

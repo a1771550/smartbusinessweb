@@ -447,11 +447,12 @@
 
 	<div id="itemattrblk">
 		<h5>@Resources.Resource.CustomAttributes</h5> <i class="btn btn-primary small fa fa-plus open"></i>
-		<div style="overflow-y:auto;">
+		<div class="py-2" style="overflow-y:auto;">
 			<div id="itemAttr" class="my-2"></div>
 
 			@{ string hidecls = editmode && ItemAttrList == null ? "hide" : "hide";}
 			<button type="button" id="btnSaveItemAttr" class="btn btn-outline-primary @hidecls">@string.Format(Resources.Resource.SaveFormat, Resources.Resource.Attribute)</button>
+			@*<span id="saveattrmsg" class="alert alert-info hide">@Resources.Resource.Saved</span>*@
 		</div>
 
 		@Html.Partial("_ItemAttrModal")

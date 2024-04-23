@@ -1,6 +1,6 @@
 ﻿@{ 
     string status = ViewData["status"] == null ? "" : (string)ViewData["status"];
-    bool isdeliver = (!string.IsNullOrEmpty(status) && (status == "deliver" || status == "partialdeliver" || status.ToLower() == SalesStatus.created.ToString()||status.ToLower()==SalesStatus.presettled.ToString()));
+    bool isdeliver = (!string.IsNullOrEmpty(status) && (status == "deliver" || status == "partialdeliver" || status.ToLower() == SalesStatus.presettled.ToString() || status.ToLower() == SalesStatus.created.ToString()));
 }
 <div id="itemVariModal" style="background-color: #eae3fc;">
     <div class="container">
@@ -11,7 +11,7 @@
                 <tr>
                     <th class="text-center">@Resources.Resource.PurchaseOrder</th>
                     <th>@Resources.Resource.ItemVariations</th>
-                    @if (!isdeliver)
+                    @if (!isdeliver || status.ToLower() == WholeSalesStatus.created.ToString())
                     {
                         <th class="text-right">@Resources.Resource.DeliveredQty</th>
                         <th class="text-right">@Resources.Resource.CurrentIvTypeSellableQty/@string.Format(Resources.Resource.TotalFormat, Resources.Resource.Qty)</th>
@@ -26,7 +26,7 @@
                         <div class="form-group row justify-content-end my-auto">
                             <label for="totalivdelqty" class="col-form-label">@string.Format(Resources.Resource.DeliveryFormat, Resources.Resource.Qty)</label>
 
-                            <input type="number" class="form-control mx-3" readonly id="totalivdelqty" />
+                            <input type="number" class="form-control mx-3 larger" readonly id="totalivdelqty" />
 
                         </div>
 

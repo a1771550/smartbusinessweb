@@ -29,7 +29,7 @@
 @if (isItemABSS && (ItemAttrList != null && ItemAttrList.Count > 0 && ItemAttrList.Any(x => (bool)x.iaUsed4Variation)))
 {
     
-<div class="container">
+<div class="container-fluid">
     @Html.Partial("___itemeditform", null, new ViewDataDictionary { { "ItemAttrList", ItemAttrList }, { "Item", Item }, { "editmode", editmode }, { "readonly", _readonly }, { "nonabss", nonabss }, { "apId", AccountProfileId }, { "maxcodelength", MaxCodeLength }, { "maxnamelength", MaxNameLength }, { "currency", Currency }, { "lang", lang }, { "ACList", ACList }, { "EnableBuySellUnits", EnableBuySellUnits }, { "CategoryList", CategoryList }, { "EditItem", EditItem } })
 </div>
         @*</div>

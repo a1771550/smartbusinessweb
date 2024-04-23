@@ -908,29 +908,7 @@ function fillInDeliveryItems() {
 		}
 	});
 }
-function initVariablesFrmInfoblk() {
-	DicLocation = $infoblk.data("jsondiclocation");
-	//console.log("diclocation:", DicLocation);
-	MyobJobList = $infoblk.data("jsonjoblist");
-	enableTax = $infoblk.data("enabletax") === "True";
 
-	DicBatTotalQty = $infoblk.data("jsondicbattotalqty");
-	DicItemBatchQty = $infoblk.data("jsondicitembatchqty");
-	DicItemBatDelQty = $infoblk.data("jsondicitembatdelqty");
-	PoItemBatVQList = $infoblk.data("jsonpoitembatvqlist");
-	DicItemBatSnVt = $infoblk.data("jsondicitembatsnvt");
-	DicItemBatSnVtList = $infoblk.data("jsondicitembatsnvtlist");
-	DicItemSnVtList = $infoblk.data("jsondicitemsnvtlist");
-	DicItemVtQtyList = $infoblk.data("jsondicitemvtqtylist");
-	DicItemVtDelQtyList = $infoblk.data("jsondicitemvtdelqtylist");
-	DicItemOptions = $infoblk.data("jsondicitemoptions");
-	uploadsizelimit = Number($infoblk.data("uploadsizelimit"));
-	//console.log("uploadsizelimit:" + uploadsizelimit);
-	uploadsizelimitmb = Number($infoblk.data("uploadsizelimitmb"));
-	shop = $infoblk.data("shop") as string;
-	UseForexAPI = $infoblk.data("useforexapi") === "True";
-	approvalmode = $infoblk.data("approvalmode") == "True";
-}
 $(function () {
 	forwholesales = true;
 	initVariablesFrmInfoblk();
@@ -977,14 +955,7 @@ $(function () {
 	if (reviewmode || editmode || editapproved) {
 		Wholesales = fillInWholeSales();
 		wholesaleslns = $infoblk.data("jsonwholesaleslns");
-		//console.log("wholesaleslns:", wholesaleslns);
-		DicIvInfo = $infoblk.data("jsondicivinfo");
-		//console.log("DicIvInfo:", DicIvInfo);
-		//dicitemgroupedvariations
-		DicItemGroupedVariations = $infoblk.data("dicitemgroupedvariations");
-		//console.log("DicItemGroupedVariations", DicItemGroupedVariations);
-		DicIvQtyList = $infoblk.data("dicivqtylist");
-		DicIvDelQtyList = $infoblk.data("dicivdelqtylist");
+		
 
 		if (Wholesales.wsStatus.toLowerCase() === "deliver" || Wholesales.wsStatus.toLowerCase() === "partialdeliver") {
 			$("#btnInvoice").trigger("click");

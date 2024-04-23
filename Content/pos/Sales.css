@@ -154,9 +154,9 @@ i.fa-plus, i.fa-minus {
 	height: calc(1.5rem + 2px) !important;
 }
 
-	.form-control:not(.flex) {
-		font-size: 80% !important;
-	}
+.form-control:not(.flex):not(.larger):not(.ivdelqty) {
+	font-size: 80% !important;
+}
 
 	.form-control.flex {
 		font-size: .9rem !important;

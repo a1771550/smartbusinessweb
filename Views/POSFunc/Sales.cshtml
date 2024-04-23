@@ -1,9 +1,12 @@
-﻿@model PPWLib.Models.SalesModel
+﻿@model PPWLib.Models.POS.Sales.SalesEditModel
 @{
 	ViewBag.Title = Resources.Resource.Sales;
 	int rand = new Random().Next(10000, 100000);
 	var defaultCat = Model.CategoryList.FirstOrDefault();
+	var Sales = Model.Sales;
 	List<SimpleItem> FilteredItemList = Model.SimpleItemList.Where(x=>x.catId==defaultCat.Id).ToList();
+	//Response.Write("defaultCat id:" + defaultCat.Id);
+	//return;
 }
 <link rel="stylesheet" href="~/Content/pos/pos.css?v=@rand">
 <link rel="stylesheet" href="~/Content/pos/Sales.css?v=@rand">
@@ -114,7 +117,7 @@
 							</div>
 
 							<div class="col-12 col-md-4">
-								<input type="text" class="form-control exrate" id="rtsCurrency" name="rtsCurrency" value="@Model.rtsCurrency" placeholder="@Resources.Resource.Currency" readonly />
+								<input type="text" class="form-control exrate" id="rtsCurrency" name="rtsCurrency" value="@Model.ComInfo.DefaultCurrencyCode" placeholder="@Resources.Resource.Currency" readonly />
 							</div>
 						</div>
 
@@ -177,8 +180,9 @@
 <input type="hidden" id="lang" value="@CultureHelper.CurrentCulture" />
 <input type="hidden" id="drpLocation" value="@Model.ComInfo.Shop"/>
 <input type="hidden" id="drpDevice" value="@Model.ComInfo.Device"/>
+<input type="hidden" id="rtsExRate" value="@Model.ComInfo.DefaultExchangeRate"/>
 
-@Html.HiddenFor(model => model.rtsExRate)
+
 @Html.Partial("_CurrencyModal")
 
 @Html.Partial("_DescModal")

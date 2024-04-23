@@ -63,9 +63,7 @@ $(function () {
 
 		DicIvInfo = $infoblk.data("jsondicivinfo");
 
-		DicSeqDeliveryItems = $infoblk.data(
-			"jsondicseqdeliveryitems"
-		) as typeof DicSeqDeliveryItems;
+		DicSeqDeliveryItems = $infoblk.data("jsondicseqdeliveryitems");
 
 		itemsnlist = [];
 		$.each(SimpleSalesLns, function (i, e:ISimpleSalesLn) {

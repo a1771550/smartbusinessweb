@@ -6,7 +6,6 @@ let actualamt = 0; //actual amt
 let checkamt = false;
 let cashdrawamtstart = 0;
 let cashdrawamtstarttxt = $infoblk.data("cashdrawamtstarttxt");
-enablecashdrawer = $infoblk.data("enablecashdrawer") === "True";
 let nothingtocount = false;
 let dicCountPay: { [Key: string]: IDayendCountPay } = {};
 
@@ -78,13 +77,6 @@ function getDayendPaymentsOk(data) {
 	} else {
 		/* $('#btnSubmit').prop('disabled', false);*/
 		nothingtocount = false;
-	}
-
-	if (enablecashdrawer) {
-		$target = $("#staticCash").parent("td");
-		let $cashdraweramtstart =
-			'(<span class="small">' + cashdrawamtstarttxt + "</span>)";
-		$target.append($cashdraweramtstart);
 	}
 
 	$("#Cash").trigger("focus");
