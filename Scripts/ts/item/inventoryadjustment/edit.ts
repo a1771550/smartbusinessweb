@@ -21,7 +21,7 @@ function UpdateIA() {
 			noButton: notxt,
 			callback: function (value) {
 				if (value) {
-					$(`#${gTblName} tbody tr`).last().find(".itemcode").trigger("focus");
+					$(`#${gTblId} tbody tr`).last().find(".itemcode").trigger("focus");
 				}
 			}
 		});
@@ -70,7 +70,7 @@ $(document).on("change", ".job", function () {
 
 function fillInIALs() {
 	var IALs: IIAL[] = [];
-	$(`#${gTblName} tbody tr`).each(function (i, e) {
+	$(`#${gTblId} tbody tr`).each(function (i, e) {
 		let itemcode = $(e).find(".itemcode").val() as string;
 		let strqty = $(e).find(".qty").val();
 		let qty = Number(strqty);
@@ -112,13 +112,13 @@ function addIALRow() {
 						</tr>`;
 
 
-	$(`#${gTblName} tbody`).append(html).find("tr").last().find(".itemcode").trigger("focus");
+	$(`#${gTblId} tbody`).append(html).find("tr").last().find(".itemcode").trigger("focus");
 
 	setInputs4NumberOnly(["qty","unitcost","amt"]);
 }
 
 function populateAccount4IA(acno: string, acname: string) {
-	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
+	$tr = $(`#${gTblId} tbody tr`).eq(currentY);
 
 	setAccName($tr, acno, acname);
 
@@ -136,7 +136,7 @@ $(function () {
 	setFullPage();
 	initModals();
 	forIA = true;
-	gTblName = "tblIAL";
+	gTblId = "tblIAL";
 
 	MyobJobList = $infoblk.data("joblist");
 	DicAcAccounts = $infoblk.data("dicacaccounts");

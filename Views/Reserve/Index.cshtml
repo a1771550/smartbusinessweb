@@ -5,7 +5,7 @@
 	int rand = CommonHelper.GetVersionRandomNo();
 	string primaryLocation = Model.PrimaryLocation;
 }
-<link href="~/Content/item/reserve.css?v=@rand" rel="stylesheet" type="text/css" />
+<link href="~/Content/item/reserve/index.css?v=@rand" rel="stylesheet" type="text/css" />
 
 <h2>@ViewBag.Title</h2>
 
@@ -25,20 +25,17 @@
 
 	<span class="small font-weight-bold"><span class="text-primary">@Resources.Resource.ReserveNumber:</span> <span id="riCode">@Model.ReserveNumber</span></span>
 
-
 	<span class="mx-3 small font-weight-bold">
 		<span class="text-success">@Resources.Resource.LastUpdateTime:</span>
 		<span id="lastupdatetime">@Model.LastUpdateTime</span>
 	</span>
 
-	
-
 	<table id="tblReserve" class="table table-bordered table-hover table-condensed overflow-auto" data-count="@Model.PagingItemList.Count">
 		<thead class="gray-header">
 			<tr class="">
-				<th class="text-center colheader itemcode" data-col="0" data-keyword="@Model.Keyword">@Resources.Resource.ItemCode</th>
-				<th class="text-center colheader itemdesc" data-col="1" data-keyword="@Model.Keyword">@Resources.Resource.Name/@Resources.Resource.Description</th>
-				<th class="text-center colheader itemprice" data-col="2" data-keyword="@Model.Keyword">@Resources.Resource.SellingPrice (@Model.Currency)</th>
+				<th class="text-center colheader itemcode" data-col="0">@Resources.Resource.ItemCode</th>
+				<th class="text-center colheader itemdesc" data-col="1">@Resources.Resource.Name/@Resources.Resource.Description</th>
+				<th class="text-center colheader itemprice" data-col="2">@Resources.Resource.SellingPrice (@Model.Currency)</th>
 				<th class="text-center itemoptions">@Resources.Resource.Batch|@Resources.Resource.SerialNo|@Resources.Resource.ExpiryDate</th>
 				<th class="text-center itemvari">@Resources.Resource.ItemVariations</th>
 
@@ -50,50 +47,53 @@
 				<th class="text-right"><span class="font-weight-bold">@Resources.Resource.ReservedQty</span></th>
 			</tr>
 		</thead>
-		@foreach (var item in Model.PagingItemList)
-		{
-			var namedesctxt = item.NameDesc.Length > 40 ? item.NameDesc.Substring(0, 40) + "..." : item.NameDesc;
+		<tbody>
+			@foreach (var item in Model.PagingItemList)
+			{
+				var namedesctxt = item.NameDesc.Length > 40 ? item.NameDesc.Substring(0, 40) + "..." : item.NameDesc;
 
-			<tr>
-				<td class="text-center itemcode" title="@item.itmCode">@item.itmCode</td>
-				<td class="text-center itemdesc" data-desc="@item.NameDesc" title="@item.NameDesc">@namedesctxt</td>
-				<td class="text-right itemprice">
-					<input type="number" class="itemprice form-control btnsmall" value="@item.itmBaseSellingPrice" />
-				</td>
-				<td class="text-center itemoptions">@Html.Raw(item.ItemOptionsDisplay)</td>
-				<td class="text-center itemvari">@Html.Raw(item.ItemVariationsDisplay)</td>
-
-
-				<td class="text-right onhandstock">@item.QuantityAvailable</td>
-
-				@foreach (var shop in Model.Shops)
-				{
-					int isprimary = primaryLocation == shop ? 1 : 0;
-					int qty = 0;
-					string Id = "";
-					if (Model.DicCodeLocQty.ContainsKey(item.itmCode) && Model.DicCodeLocQty[item.itmCode].ContainsKey(shop))
-					{
-						qty = Model.DicCodeLocQty[item.itmCode][shop];
-					}
-					if (Model.DicCodeLocId.ContainsKey(item.itmCode) && Model.DicCodeLocId[item.itmCode].ContainsKey(shop))
-					{
-						Id = Model.DicCodeLocId[item.itmCode][shop];
-					}
-					<td class="text-right locqty">
-						<input type="text" class="form-control text-right btnsmall locqty" data-id="@Id" data-isprimary="@isprimary" data-code="@item.itmCode" data-shop="@shop" data-onhandstock="@qty" data-oldval="@qty" data-itemid="@item.itmItemID" value="@qty" title="@qty">
+				<tr>
+					<td class="text-center itemcode" title="@item.itmCode">@item.itmCode</td>
+					<td class="text-center itemdesc" data-desc="@item.NameDesc" title="@item.NameDesc">@namedesctxt</td>
+					<td class="text-right itemprice">
+						<input type="number" class="itemprice form-control btnsmall" value="@item.itmBaseSellingPrice" />
 					</td>
-				}
+					<td class="text-center itemoptions">@Html.Raw(item.ItemOptionsDisplay)</td>
+					<td class="text-center itemvari">@Html.Raw(item.ItemVariationsDisplay)</td>
 
-				<td class="text-right">
-					<input type="text" class="rilqty text-right btnsmall form-control" readonly value="0">
-				</td>
-			</tr>
-		}
+
+					<td class="text-right onhandstock">@item.QuantityAvailable</td>
+
+					@foreach (var shop in Model.Shops)
+					{
+						int isprimary = primaryLocation == shop ? 1 : 0;
+						int qty = 0;
+						string Id = "";
+						if (Model.DicCodeLocQty.ContainsKey(item.itmCode) && Model.DicCodeLocQty[item.itmCode].ContainsKey(shop))
+						{
+							qty = Model.DicCodeLocQty[item.itmCode][shop];
+						}
+						if (Model.DicCodeLocId.ContainsKey(item.itmCode) && Model.DicCodeLocId[item.itmCode].ContainsKey(shop))
+						{
+							Id = Model.DicCodeLocId[item.itmCode][shop];
+						}
+						<td class="text-right locqty">
+							<input type="text" class="form-control text-right btnsmall locqty" data-id="@Id" data-isprimary="@isprimary" data-code="@item.itmCode" data-shop="@shop" data-onhandstock="@qty" data-oldval="@qty" data-itemid="@item.itmItemID" value="@qty" title="@qty">
+						</td>
+					}
+
+					<td class="text-right">
+						<input type="text" class="rilqty text-right btnsmall form-control" readonly value="0">
+					</td>
+				</tr>
+			}
+		</tbody>
+		
 	</table>
 
 	<div id="pagingblk" class="my-3">
 		@Html.PagedListPager(Model.PagingItemList, PageNo => Url.Action("Index",
-new { PageNo, SortCol = Model.SortCol, SortOrder = Model.SortOrder, Keyword = Model.Keyword }))
+new { PageNo, SortCol = Model.SortCol, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
 	</div>
 
 	<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />

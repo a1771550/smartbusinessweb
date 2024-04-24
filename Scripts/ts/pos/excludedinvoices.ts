@@ -1,16 +1,11 @@
 ﻿$infoblk = $("#infoblk");
 
-$(document).on("click", "#btnReload", function () {
-	window.location.href = "/POSFunc/ExcludedInvoices";
-});
-$(document).on("click", ".colheader", function () {
-	$("#frmOrder").trigger("submit");
-});
 
 $(function () {
 	forItem = true;
 	setFullPage();
-	gTblName = "tblOrder";
+	gTblId = "tblOrder";
+	gFrmId = "frmOrder";
 	let $sortorder = $("#sortorder");
 	let $sortcol = $("#sortcol");
 	//console.log("sortorder:" + $sortorder.val() + ";sortcol:" + $sortcol.val());

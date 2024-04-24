@@ -148,9 +148,7 @@ $(document).on("click", ".remove", function () {
 	});
 });
 
-$(document).on("click", "#btnReload", function () {
-	window.location.href = "/Supplier/Index";
-});
+
 
 $(function () {
 	triggerMenu(5, 2);

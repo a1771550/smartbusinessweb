@@ -1,16 +1,13 @@
 ﻿$infoblk = $("#infoblk");
 
-$(document).on("click", "#btnReload", function () {
-	window.location.href = "/Purchase/ExcludedOrders";
-});
-$(document).on("click", ".colheader", function () {
-	$("#frmOrder").trigger("submit");
-});
+
+
 
 $(function () {
 	forItem = true;
+	gFrmId = "frmOrder";
 	setFullPage();
-	gTblName = "tblOrder";
+	gTblId = "tblOrder";
 	let $sortorder = $("#sortorder");
 	let $sortcol = $("#sortcol");
 	//console.log("sortorder:" + $sortorder.val() + ";sortcol:" + $sortcol.val());

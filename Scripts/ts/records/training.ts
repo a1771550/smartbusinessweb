@@ -46,9 +46,7 @@ $(document).on("click", "#btnFilter", function (e) {
     handleMGTmails();
 });
 
-$(document).on("click", "#btnReload", function () {
-    window.location.href = "/Training/Index";
-});
+
 
 
 function saveTrainings(traininglist: ITraining[]) {

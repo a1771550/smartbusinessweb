@@ -28,34 +28,11 @@ $(document).on("click", ".remove", function () {
 	});
 });
 
-$(document).on("click", "#btnReload", function () {
-	window.location.href = "/ItemQtyPromotion/Index";
-});
 
-// $(document).on('click', '#btnSearch', function () {
-// 	keyword = <string>$('#txtKeyword').val();
-// 	if (keyword !== '') {
-// 		getItemQtyPromotions();
-// 	}
-// });
-
-$(document).on("click", ".colheader", function () {
-	let $sortcol = $("<input>").attr({
-		type: "hidden",
-		name: "SortCol",
-		value: $(this).data("col"),
-	});
-	let $keyword = $("<input>").attr({
-		type: "hidden",
-		name: "Keyword",
-		value: $(this).data("keyword"),
-	});
-
-	$("#frmItemQtyPromotion").append($sortcol).append($keyword).trigger("submit");
-});
 
 $(function () {
 	setFullPage();
+	gFrmId = "frmItemQtyPromotion";
 	let $sortorder = $("#sortorder");
 	let $sortcol = $("#sortcol");
 	//console.log('sortorder:' + $sortorder.val() + ';sortcol:' + $sortcol.val());

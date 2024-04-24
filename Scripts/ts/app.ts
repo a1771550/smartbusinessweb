@@ -1,4 +1,5 @@
-﻿abstract class SimpleForm {
+﻿//import * as globals from "./globals";
+abstract class SimpleForm {
 	edit = false;
 	constructor(edit) {
 		this.edit = edit;
@@ -87,7 +88,6 @@ let triggerReferrer: TriggerReferrer;
 let $appInfo = $("#appInfo");
 let $txtblk = $("#txtblk");
 
-
 let isEpay: boolean = false;
 let salesman: ICrmUser;
 let checkoutportal: string =
@@ -102,7 +102,7 @@ let enableWhatsappLnk: boolean = $appInfo.data("enablewhatsapplnk")
 	: false;
 let uploadsizelimit: number = 0;
 let uploadsizelimitmb: number = 0;
-let gTblName: string = "";
+let gTblId: string = "";
 let wstype: string = "";
 let psttype: string = "";
 let forrejectedinvoice: boolean = false;
@@ -819,6 +819,29 @@ let ItemAccountNumber: string = "";
 let dicItemAccount: { [Key: string]: string } = {};
 let dicDefaultAttrRequiredTxt: { [Key: string]: string } = {};
 
+$(document).on("click", "#btnReload", function () {
+	window.location.href = window.location.pathname;
+});
+$(document).on("click", ".colheader", function () {
+	let $sortcol = $("<input>").attr({
+		type: "hidden",
+		name: "SortCol",
+		value: $(this).data("col"),
+	});
+
+	if(gFrmId)
+		$(`#${gFrmId}`).append($sortcol).trigger("submit");
+});
+$(document).on("click", "#btnSearch", function (e) {
+	e.preventDefault();
+	let $sortcol = $("<input>").attr({
+		type: "hidden",
+		name: "SortCol",
+		value: $("#sortcol").val(),
+	});
+	if(gFrmId)
+		$(`#${gFrmId}`).append($sortcol).trigger("submit");
+});
 function handleOutOfStocks(
 	zerostockItemcodes: string,
 	salescode: string | null = null
@@ -1553,7 +1576,7 @@ function closeCusModal() {
 function updateRows() {
 	if (selectedCus || SelectedSupplier) {
 		//console.log("here");
-		$(`#${gTblName} tbody tr`).each(function (i, e) {
+		$(`#${gTblId} tbody tr`).each(function (i, e) {
 			if ($(e).find("td").eq(1).find(".itemcode").val() !== "") {
 				//todo: to be verified updaterows
 				const taxidx = forpurchase && Purchase.pstStatus !== "order" ? -5 : -4;
@@ -2280,7 +2303,7 @@ $(document).on("change", ".pay", function () {
 			}
 
 			let totalamt: number = 0;
-			$(`#${gTblName} tbody tr`).each(function (i, e) {
+			$(`#${gTblId} tbody tr`).each(function (i, e) {
 				$amt = $(e).find("td").eq(4).find(".pay");
 				let amt: number = Number($amt.val());
 				totalamt += amt;
@@ -3217,7 +3240,7 @@ function addPoItemVariRow(hasFocusCls: boolean) {
 		//console.log("purchaseItem:", purchaseItem);
 		//console.log("purchaseItem.poItemVariList:", purchaseItem!.poItemVariList);
 
-		let batcode: string = $(`#${gTblName} tbody tr`)
+		let batcode: string = $(`#${gTblId} tbody tr`)
 			.eq(currentY)
 			.find(".pobatch")
 			.data("batcode");
@@ -3464,7 +3487,7 @@ function initModals() {
 						}
 						if (stockTransferEditMode) {
 
-							$target = $(`#tbl${gTblName} tbody tr`)
+							$target = $(`#tbl${gTblId} tbody tr`)
 								.eq(currentY)
 								.find(".remark");
 							$target.data("remark", remark);
@@ -8326,7 +8349,7 @@ function handleQtyChange(this: any) {
 	}
 
 	if (forsales || forpreorder) {
-		let $rows = $(`#${gTblName} tbody tr`);
+		let $rows = $(`#${gTblId} tbody tr`);
 		$tr = $rows.eq(currentY);
 		const $price = $tr.find("td").eq(9).find(".price");
 		const $discount = $tr.find("td").eq(10).find(".discpc");
@@ -8369,7 +8392,7 @@ function handleQtyChange(this: any) {
 		} else {
 			if (_qty === 0) {
 				$tr.remove();
-				$rows = $(`#${gTblName} tbody tr`);
+				$rows = $(`#${gTblId} tbody tr`);
 				//console.log(`rows length after remove:${$rows.length}`);
 				selectedItemCode = "";
 				selectedSalesLn = {} as ISalesLn;
@@ -8621,7 +8644,7 @@ function GetSetSelectedIAL(): IIAL {
 		)!;
 		IAL = {
 			JounralNumber: IA.JournalNumber,
-			Seq: $(`#${gTblName} tbody tr`).last().index() + 1,
+			Seq: $(`#${gTblId} tbody tr`).last().index() + 1,
 			itmCode: selectedItemCode,
 			NameDesc: item.NameDesc,
 			UnitCost: item.itmSellUnitAvgCost ?? 0,
@@ -8637,7 +8660,7 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 	//console.log("selectedItemCode#popu:" + selectedItemCode);
 	if (!selectedItemCode) return false;
 
-	let $rows = $(`#${gTblName} tbody tr`);
+	let $rows = $(`#${gTblId} tbody tr`);
 	let $target = $rows.eq(currentY);
 	//console.log($target);
 	seq = currentY + 1;
@@ -9188,7 +9211,7 @@ function getItemPromotion(item: IItem | ISimpleItem, proId: number) {
 	}
 }
 function addRow() {
-	$target = $(`#${gTblName} tbody`);
+	$target = $(`#${gTblId} tbody`);
 	let idx = $target.find("tr").length;
 	let i = idx + 1;
 	let html = "";
@@ -9399,7 +9422,7 @@ function setJobListOptions(selectedJobId: number = 0) {
 }
 function focusItemCode(idx: number = -1) {
 	//console.log('optional idx#focusitemcode:' + idx);
-	$target = $(`#${gTblName} tbody tr`);
+	$target = $(`#${gTblId} tbody tr`);
 	if (typeof idx === "undefined") {
 		$target.each(function (i, e) {
 			let $itemcode = $(e).find("td:eq(1)").find(".itemcode");
@@ -9456,7 +9479,7 @@ $(document).on("dblclick", ".serialno.pointer", function () {
 			noButton: canceltxt,
 			callback: function (value) {
 				if (value) {
-					$(`#${gTblName} tbody tr`)
+					$(`#${gTblId} tbody tr`)
 						.eq(currentY)
 						.find("td:eq(1)")
 						.find(".itemcode")
@@ -9968,7 +9991,7 @@ function checkIfDuplicatedSNOk(data) {
 				noButton: canceltxt,
 				callback: function (value) {
 					if (value) {
-						$(`#${gTblName} tbody tr`).each(function (i, e) {
+						$(`#${gTblId} tbody tr`).each(function (i, e) {
 							$target = $(e).find("td:eq(6)").find(".serialno");
 							if ($target.val() == sn) {
 								$target.val("").trigger("focus");
@@ -10094,7 +10117,7 @@ function confirmSNs() {
 	//console.log("selecteditemcode:" + selectedItemCode + ";seq:" + seq);
 	lnqty = getSerialNoLnQty();
 	//console.log("lnqty#confirmsns:", lnqty);
-	let $qty = $(`#${gTblName} tbody tr`)
+	let $qty = $(`#${gTblId} tbody tr`)
 		.eq(currentY)
 		.find("td")
 		.eq(4)
@@ -10283,7 +10306,7 @@ function getToDelQty(): number {
 	let idx = forwholesales ? 5 : 4;
 	let qtycls = forwholesales ? ".delqty" : ".qty";
 	return Number(
-		$(`#${gTblName} tbody tr`)
+		$(`#${gTblId} tbody tr`)
 			.eq(currentY)
 			.find("td")
 			.eq(idx)
@@ -10379,7 +10402,7 @@ function _removeSN(_sn: string) {
 }
 
 function setIvMark() {
-	let $tr = $(`#${gTblName} tbody tr`);
+	let $tr = $(`#${gTblId} tbody tr`);
 	let ivcls = ".vari";
 	let idx = forwholesales ? 9 : 8;
 	$tr
@@ -10392,7 +10415,7 @@ function setIvMark() {
 }
 function setBatchMark() {
 	//console.log("batchidx:", batchidx);//ok
-	let $tr = $(`#${gTblName} tbody tr`);
+	let $tr = $(`#${gTblId} tbody tr`);
 	let batcls = forpurchase ? ".pobatch" : ".batch";
 	$tr
 		.eq(currentY)
@@ -10405,7 +10428,7 @@ function setBatchMark() {
 
 function setExpiryDateMark() {
 	//console.log("here");
-	let $tr = $(`#${gTblName} tbody tr`);
+	let $tr = $(`#${gTblId} tbody tr`);
 	if (itemOptions && (itemOptions.ChkBatch || itemOptions.ChkSN))
 		$tr
 			.eq(currentY)
@@ -10427,7 +10450,7 @@ function setExpiryDateMark() {
 }
 
 function removeExpiryDateMark() {
-	let $tr = $(`#${gTblName} tbody tr`);
+	let $tr = $(`#${gTblId} tbody tr`);
 	if (forwholesales) {
 		$tr
 			.eq(currentY)
@@ -10452,7 +10475,7 @@ function removeExpiryDateMark() {
 }
 
 function setSNmark(remove = false) {
-	let $tr = $(`#${gTblName} tbody tr`);
+	let $tr = $(`#${gTblId} tbody tr`);
 	if (forwholesales || forsales || forpreorder) {
 		if (itemOptions && itemOptions.ChkBatch && itemOptions.ChkSN)
 			$tr
@@ -10576,7 +10599,7 @@ function resetRow() {
 		// console.log("updatedpurchaseitems#resetrow:", Purchase.PurchaseItems);
 	}
 
-	$target = $(`#${gTblName} tbody tr`);
+	$target = $(`#${gTblId} tbody tr`);
 
 	$target.eq(currentY).find("td:eq(2)").find(".itemdesc").val("");
 
@@ -10662,7 +10685,7 @@ function resetRow() {
 	//amount = Number($amount.val());
 	$amount.val("");
 
-	$(`#${gTblName} tbody`).empty();
+	$(`#${gTblId} tbody`).empty();
 	if (forsales) {
 		if (SalesLnList.length === 0) {
 			addRow();
@@ -10672,7 +10695,7 @@ function resetRow() {
 				selectedSalesLn = structuredClone(x);
 				selectedItemCode = x.rtlItemCode;
 				currentY = i;
-				$(`#${gTblName} tbody tr`)
+				$(`#${gTblId} tbody tr`)
 					.eq(currentY)
 					.find("td")
 					.eq(1)
@@ -10693,7 +10716,7 @@ function resetRow() {
 				selectedPreSalesLn = structuredClone(x);
 				selectedItemCode = x.rtlItemCode;
 				currentY = i;
-				$(`#${gTblName} tbody tr`)
+				$(`#${gTblId} tbody tr`)
 					.eq(currentY)
 					.find("td")
 					.eq(1)
@@ -10714,7 +10737,7 @@ function resetRow() {
 				selectedWholesalesLn = structuredClone(x);
 				selectedItemCode = x.wslItemCode;
 				currentY = i;
-				$(`#${gTblName} tbody tr`)
+				$(`#${gTblId} tbody tr`)
 					.eq(currentY)
 					.find("td")
 					.eq(1)
@@ -10735,7 +10758,7 @@ function resetRow() {
 				selectedPurchaseItem = structuredClone(x);
 				selectedItemCode = x.itmCode;
 				currentY = i;
-				$(`#${gTblName} tbody tr`)
+				$(`#${gTblId} tbody tr`)
 					.eq(currentY)
 					.find("td")
 					.eq(1)
@@ -10757,9 +10780,9 @@ function resetRow() {
 function checkPurchaseItems(): boolean {
 	//console.log("here");
 	let msg = "";
-	let currentItemCount = $(`#${gTblName} tbody tr`).length;
+	let currentItemCount = $(`#${gTblId} tbody tr`).length;
 	//console.log("currentitemcount:" + currentItemCount);
-	$(`#${gTblName} tbody tr`).each(function (i, e) {
+	$(`#${gTblId} tbody tr`).each(function (i, e) {
 		if (i < currentItemCount) {
 			selectedItemCode = $(e)
 				.find("td:eq(1)")
@@ -10795,7 +10818,7 @@ function checkPurchaseItems(): boolean {
 	selectedItemCode = "";
 
 	if (msg !== "") {
-		$(`#${gTblName} tbody tr:first`)
+		$(`#${gTblId} tbody tr:first`)
 			.find("td:last")
 			.find(".received")
 			.removeClass("focus");
@@ -10832,11 +10855,11 @@ function handleLocationChange(event: any) {
 }
 
 function getRowDiscPc(): number {
-	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
+	$tr = $(`#${gTblId} tbody tr`).eq(currentY);
 	return Number($tr.find(".discpc").val());
 }
 function getRowPrice(): number {
-	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
+	$tr = $(`#${gTblId} tbody tr`).eq(currentY);
 	return Number($tr.find(".price").val());
 }
 
@@ -10853,7 +10876,7 @@ function handlePriceChange(event: any) {
 		$(event.target).val(price * -1);
 	}
 	currentY = getCurrentY(event.target);
-	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
+	$tr = $(`#${gTblId} tbody tr`).eq(currentY);
 
 	let _discpc: number = Number($tr.find(".discpc").val());
 	//console.log("price#p change:" + price + ";discpc#p change:" + _discpc);
@@ -10863,7 +10886,7 @@ function handleDiscChange(event: any) {
 	currentY = getCurrentY(event.target);
 	let _discpc: number = Number($(event.target).val());
 	//console.log("_discpc#change:" + _discpc);
-	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
+	$tr = $(`#${gTblId} tbody tr`).eq(currentY);
 	let _price: number = 0;
 
 	if (_discpc < 0) {
@@ -10890,7 +10913,7 @@ function handleDiscChange(event: any) {
 
 function updateRow(_price: number = 0, _discount: number = 0) {
 	//console.log("_price#updaterow:" + _price + ";_disc:" + _discount);
-	$target = $(`#${gTblName} tbody tr`).eq(currentY);
+	$target = $(`#${gTblId} tbody tr`).eq(currentY);
 	seq = currentY + 1;
 
 	let qty: number = 0;
@@ -11238,7 +11261,7 @@ let enablebuysellunits: boolean = false;
 let forrefund: boolean = false;
 let forreturn: boolean = false;
 let returnLns: Array<IReturnItem> = [];
-let gFrmName: string;
+let gFrmId: string;
 
 let StockTransferList: Array<IStockTransfer> = [];
 let DicStockTransferList: { [Key: string]: Array<IStockTransfer> } = {};
@@ -11489,7 +11512,7 @@ function OnGetStocksOK(response) {
 			html += "</tr>";
 		});
 
-		$(`#tbl${gTblName} tbody`).empty().html(html);
+		$(`#tbl${gTblId} tbody`).empty().html(html);
 
 
 		let $pager = $(".Pager");
@@ -12829,7 +12852,7 @@ function confirmPoSn() {
 						okButton: oktxt,
 						noButton: notxt,
 						callback: function (value) {
-							$target = $(`#${gTblName} tbody tr`)
+							$target = $(`#${gTblId} tbody tr`)
 								.eq(currentY)
 								.find("td:last")
 								.find(".received");
@@ -12959,7 +12982,7 @@ function updateUniqueSerial(serial: ISnBatSeqVt, itemcode: string) {
 }
 
 function setPoSnMark() {
-	let $tr = $(`#${gTblName} tbody tr`);
+	let $tr = $(`#${gTblId} tbody tr`);
 	$tr
 		.eq(currentY)
 		.find("td")
@@ -13080,7 +13103,7 @@ function setBatchFocus() {
 }
 
 function checkBatQty(): boolean {
-	let qty = $(`#${gTblName} tbody tr`)
+	let qty = $(`#${gTblId} tbody tr`)
 		.eq(currentY)
 		.find("td:eq(4)")
 		.find(".qty")
@@ -13140,14 +13163,14 @@ function confirmPoBatch() {
 		}
 
 		setBatchMark();
-		$(`#${gTblName} tbody tr`)
+		$(`#${gTblId} tbody tr`)
 			.eq(currentY)
 			.find("td:eq(5)")
 			.find(".pobatch")
 			.removeClass("focus");
 		if (!itemOptions.ChkSN && itemOptions.WillExpire) {
 			setExpiryDateMark();
-			$(`#${gTblName} tbody tr`)
+			$(`#${gTblId} tbody tr`)
 				.eq(currentY)
 				.find("td:eq(7)")
 				.find(".validthru")
@@ -13212,7 +13235,7 @@ function _confirmPoBatch($tr: JQuery): string {
 			}
 		} else {
 			batch.batQty = Number(
-				$(`#${gTblName} tbody tr`)
+				$(`#${gTblId} tbody tr`)
 					.eq(currentY)
 					.find("td")
 					.eq(4)
@@ -13296,7 +13319,7 @@ function confirmIvQty() {
 	//console.log("DeliveryItems#confirmivqty:", DeliveryItems);
 	//$("#totalivdelqty").data("totalivdelqty", lnqty).val(lnqty);
 
-	let $qty = $(`#${gTblName} tbody tr`)
+	let $qty = $(`#${gTblId} tbody tr`)
 		.eq(currentY)
 		.find("td")
 		.eq(4)
@@ -13365,7 +13388,7 @@ function confirmPoItemVariQty() {
 			: poItemVariModal.find("#batcode").val();
 
 	if (selectedIvIdList.length > 0) {
-		$tr = $(`#${gTblName} tbody tr`).eq(currentY);
+		$tr = $(`#${gTblId} tbody tr`).eq(currentY);
 		$tr.find("td").eq(8).find(".povari").removeClass("focus").val("...");
 		const itemcode: string = $tr
 			.find("td")
@@ -13554,7 +13577,7 @@ function confirmVtQty() {
 	//console.log("DeliveryItems#confirmvtqty:", DeliveryItems);
 	//$("#totalvtdelqty").data("totalvtdelqty", lnqty).val(lnqty);
 
-	let $qty = $(`#${gTblName} tbody tr`)
+	let $qty = $(`#${gTblId} tbody tr`)
 		.eq(currentY)
 		.find("td")
 		.eq(4)
@@ -13745,7 +13768,7 @@ function confirmBatchSnQty() {
 		if (x.dlHasSN && x.seq == seq) lnqty++;
 	});
 
-	let $qty = $(`#${gTblName} tbody tr`)
+	let $qty = $(`#${gTblId} tbody tr`)
 		.eq(currentY)
 		.find("td")
 		.eq(5)
@@ -13859,7 +13882,7 @@ function confirmBatchSnQty() {
 }
 
 function getItemInfo4BatSnVtIv(sn: string | null = null) {
-	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
+	$tr = $(`#${gTblId} tbody tr`).eq(currentY);
 	let idx: number = 2;
 	deliveryItem!.itmNameDesc = $tr
 		.find("td")
@@ -15266,7 +15289,7 @@ $(document).on("click", "#transactionEpay", function () {
 
 $(document).on("click", ".btnPayment", function () {
 	if (forsales) {
-		if (SalesLnList.length === 0 || $(`#${gTblName} .focus`).length > 0) {
+		if (SalesLnList.length === 0 || $(`#${gTblId} .focus`).length > 0) {
 			falert(salesinfonotenough, oktxt);
 		} else {
 			openPayModal();
@@ -15442,7 +15465,7 @@ $(document).on("change", ".chkbatsnvt", function () {
 	let idx = forwholesales ? 5 : 4;
 	let qtycls = forwholesales ? ".delqty" : ".qty";
 	let todelqty: number = Number(
-		$(`#${gTblName} tbody tr`)
+		$(`#${gTblId} tbody tr`)
 			.eq(currentY)
 			.find("td")
 			.eq(idx)
@@ -15714,7 +15737,7 @@ function setInputs4NumberOnly(clsnames: string[]) {
 
 function getTotalAmt4Order(): number {
 	let totalamt = 0;
-	$(`#${gTblName} tbody tr`).each(function (i, e) {
+	$(`#${gTblId} tbody tr`).each(function (i, e) {
 		if ($(e).find("td").eq(1).find(".itemcode").val() !== "")
 			totalamt += Number($(e).find("td").last().find(".amount").val());
 	});
@@ -16806,7 +16829,7 @@ $(document).on("change", ".exrate", function (e) {
 
 function handleExRateChange(cardcode: string, triggerCardChange: boolean) {
 	//let cardcode: string = <string>$(event.target).val();
-	$target = $(`#${gTblName} tbody tr`);
+	$target = $(`#${gTblId} tbody tr`);
 
 	let cardcount: number = 0;
 	DicFilteredCards = {};
@@ -17369,7 +17392,7 @@ function selectCus() {
 	setupForexInfo();
 
 	if (!forsimplesales) {
-		let $rows = $(`#${gTblName} tbody tr`);
+		let $rows = $(`#${gTblId} tbody tr`);
 		//console.log('rows length:' + $rows.length + ';currentY:' + currentY);
 		if ($rows.length === 0) {
 			addRow();
@@ -17622,7 +17645,7 @@ function updatePreSales() {
 	//PreSales.rtsServiceChargeAmt = ServiceChargeAmt;
 
 	let totalamt = 0;
-	let $rows = $(`#${gTblName} tbody tr`);
+	let $rows = $(`#${gTblId} tbody tr`);
 	$rows.each(function (i, e) {
 		let _seq = i + 1;
 		let itemcode: string = $(e)
@@ -18286,7 +18309,8 @@ let forattendance: boolean = false;
 let forjob: boolean = false;
 let fortraining: boolean = false;
 let forcustomer: boolean = false;
-let forreserve: boolean = false;
+let forCreateReserve: boolean = false;
+let forEditReserve: boolean = false;
 let forhotlist: boolean = false;
 let forrejectedcustomer: boolean = false;
 let forapprovedcustomer: boolean = false;
@@ -18688,7 +18712,7 @@ function validSalesForm(): boolean {
 	if (forpreorder && (!PreSalesLnList || PreSalesLnList!.length === 0))
 		msg += `${salesinfonotenough}<br>`;
 
-	if ($(`#${gTblName} .focus`).length > 0) {
+	if ($(`#${gTblId} .focus`).length > 0) {
 		msg += `${salesinfonotenough}<br>`;
 	}
 	if (msg !== "") {
@@ -19033,14 +19057,14 @@ function handleCardNameChange(this: any) {
 $(document).on("change", "#chkAllLoc", function () {
 	if ($(this).is(":checked")) {
 		const location = $("#drpLocation").val() as string;
-		$(`#${gTblName} tbody tr`)
+		$(`#${gTblId} tbody tr`)
 			.find("td")
 			.find(".location")
 			.val(location)
 			.addClass("disabled")
 			.prop("disabled", true);
 	} else {
-		$(`#${gTblName} tbody tr`)
+		$(`#${gTblId} tbody tr`)
 			.find("td")
 			.find(".location")
 			.removeClass("disabled")
@@ -19927,7 +19951,7 @@ function confirmAdvancedSearch() {
 					? (data as ICustomer[]).map((x) => x.cusCustomerID)
 					: (data as IeTrack[]).map((x) => Number(x.ContactId));
 				console.log("idlist:", IdList);
-				$(`#${gTblName}`).data("idlist", IdList.join(","));
+				$(`#${gTblId}`).data("idlist", IdList.join(","));
 				$("#pagingblk").hide();
 				if (data.length > 0) {
 					let html = "";
@@ -19968,7 +19992,7 @@ function confirmAdvancedSearch() {
 						});
 					}
 
-					$(`#${gTblName}`).show().find("tbody").empty().append(html);
+					$(`#${gTblId}`).show().find("tbody").empty().append(html);
 					$("#norecord").addClass("hide");
 					/*$("#norecord").addClass("hide");*/
 					//if (foretrack) {
@@ -19978,7 +20002,7 @@ function confirmAdvancedSearch() {
 					//}					
 				}
 				else {
-					$(`#${gTblName}`).hide();
+					$(`#${gTblId}`).hide();
 					$("#norecord").show();
 				}
 			},
@@ -20239,7 +20263,7 @@ $(document).on("dblclick", ".posn.pointer", function () {
 			noButton: notxt,
 			callback: function (value) {
 				if (value) {
-					$(`#${gTblName} tbody tr`)
+					$(`#${gTblId} tbody tr`)
 						.eq(currentY)
 						.find("td:eq(5)")
 						.find(".pobatch")
@@ -20524,7 +20548,7 @@ function isNumber(evt) {
 }
 
 function getItemCodeBySeq(): string {
-	return $(`#${gTblName} tbody tr`)
+	return $(`#${gTblId} tbody tr`)
 		.eq(seq - 1)
 		.find("td:eq(1)")
 		.find(".itemcode")
@@ -20551,11 +20575,7 @@ function formatEmail(email: string, username: string | null = ""): string {
 		}</a>`;
 }
 
-$(document).on("click", "#btnReload", function () {
-	if ($(this).data("reloadurl"))
-		window.location.href = $(this).data("reloadurl");
-	else window.location.reload();
-});
+
 
 $(document).on("dblclick", ".validthru.pointer", function () {
 	//console.log("here");
@@ -21605,9 +21625,11 @@ $(document).on("dblclick", ".vari.pointer", function () {
 	setTotalQty4IvModal();
 });
 function removeEmptyRow() {
-	$tr = $(`#${gTblName} tbody tr`).last();
+	$tr = $(`#${gTblId} tbody tr`).last();
 	if ($tr.find("td").eq(1).find(".itemcode").val() === "") $tr.remove();
 }
+
+
 function showMsg(Id: string, msg: string, alertCls: string, timeout: number = 3000, fadeout: number = 1000) {
 	$(`#${Id}`).addClass(`small alert alert-${alertCls}`).html(msg);
 	setTimeout(function () {
@@ -21663,7 +21685,7 @@ $(document).on("click", ".btnUpload", function () {
 
 function addPayRow() {
 	let Id: number = lastppId + 1;
-	$tr = $(`#${gTblName} tbody tr`).last();
+	$tr = $(`#${gTblId} tbody tr`).last();
 	let lastseq = ($tr.length) ? Number($tr.find("td").first().text()) + 1 : 1;
 	//console.log("Id:", Id);
 	let strdate: string = formatDate();
@@ -21688,7 +21710,7 @@ function addPayRow() {
 	`;
 	html += `</tr>`;
 
-	$(`#${gTblName} tbody`).append(html);
+	$(`#${gTblId} tbody`).append(html);
 
 	initDatePicker("ppdate", today, true, "", true, false, true);
 
@@ -21703,7 +21725,7 @@ function updateSelectedPayment() {
 		if (!purchasePayment) {
 			validPayment = false; return;
 		}
-		$(`#${gTblName} tbody tr`).each(function (i, e) {
+		$(`#${gTblId} tbody tr`).each(function (i, e) {
 			let Id: number = Number($(e).data("id"));
 			//console.log("Id:" + Id);
 			let chequeno: string = $(e).find(".chequeno").val() as string;
@@ -22301,5 +22323,122 @@ function initVariablesFrmInfoblk() {
 	UseForexAPI = $infoblk.data("useforexapi") === "True";
 	approvalmode = $infoblk.data("approvalmode") == "True";
 	comInfo = $infoblk.data("cominfo");
+}
 
+function ConfigSimpleSortingHeaders() {
+	let $sortorder = $("#sortorder");
+	let $sortcol = $("#sortcol");
+	//console.log('sortorder:' + $sortorder.val() + ';sortcol:' + $sortcol.val());
+	$target = $(".colheader").eq(Number($sortcol.val()));
+	let sortcls =
+		$sortorder.val() === "desc" ? "fa fa-sort-up" : "fa fa-sort-down";
+	$target.addClass(sortcls);
+
+	$target = $(".pagination");
+	$target
+		.wrap('<nav aria-label="Page navigation"></nav>')
+		.find("li")
+		.addClass("page-item")
+		.find("a")
+		.addClass("page-link");
+
+	let keyword = getParameterByName("Keyword");
+	if (keyword !== null) {
+		$("#txtKeyword").val(keyword);
+	}
+	$(".pagination li").addClass("page-item");
+
+	if($("#txtKeyword").length)
+		$("#txtKeyword").trigger("focus");
+}
+
+function handleReserveSaved() {
+	if (forCreateReserve) {
+		Reserve = {} as IReserve;
+		Reserve.riCode = ReserveCode;
+		Reserve.cusCode = reserveModal.find("#drpCustomer").val() as string;
+		Reserve.riRemark = reserveModal.find("#txtRemark").val() as string;
+		closeReserveModal();
+		$(`#${gTblId} tbody tr`).each(function (i, e) {
+			$(e)
+				.find("td:gt(5)")
+				.each(function (k, v) {
+					let $input = $(v).find("input.locqty");
+					//console.log('$input length:', $input.length);
+					if ($input.length) {
+						let jsstock: IJsStock = initJsStock();
+						let Id: string = $input.data("id") as string;
+						let itmCode: string = $input.data("code") as string;
+
+						jsstock.Id = Id;
+						let shop: any = $input.data("shop");
+						if (!isNaN(shop)) {
+							shop = Number(shop).toString();
+						}
+
+						jsstock.LocCode = shop;
+						jsstock.itmCode = itmCode;
+						jsstock.Qty = Number($input.val());
+
+						JsStockList.push(jsstock);
+					}
+				});
+		});
+		console.log("JsStockList:", JsStockList);
+		console.log("Reserve:", Reserve);
+		console.log("ReserveLnList:", ReserveLnList);
+		//return false;
+
+		if (JsStockList.length > 0 && Reserve && ReserveLnList.length > 0) {
+			$.ajax({
+				type: "POST",
+				url: "/Reserve/ProcessReserve",
+				data: {
+					__RequestVerificationToken: $(
+						"input[name=__RequestVerificationToken]"
+					).val(),
+					JsStockList,
+					Reserve,
+					ReserveLnList,
+				},
+				success: function (data) {
+					if (data) {
+						$.fancyConfirm({
+							title: "",
+							message: data.msg,
+							shownobtn: false,
+							okButton: oktxt,
+							noButton: notxt,
+							callback: function (value) {
+								if (value) {
+									//	window.location.reload();
+									window.open("/Reserve/Print", "_blank");
+								}
+							},
+						});
+					}
+				},
+				dataType: "json",
+			});
+		}
+	}
+	
+	if (forEditReserve) {	
+		Reserve.cusCode = reserveModal.find("#drpCustomer").val() as string;
+		Reserve.riRemark = reserveModal.find("#txtRemark").val() as string;
+		closeReserveModal();
+
+		$.ajax({
+			//contentType: 'application/json; charset=utf-8',
+			type: "POST",
+			url: "/Reserve/EditOrder",
+			data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), Reserve },
+			success: function (data) {
+				if (data) {
+					showMsg("saveMsg", data, "warning", 2000, 2000);					
+				}
+			},
+			dataType: "json"
+		});
+	}
 }

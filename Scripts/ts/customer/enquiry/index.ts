@@ -8,7 +8,9 @@ isassignor = $infoblk.data("isassignor") === "True";
 pagesize = Number($infoblk.data("pagesize"));
 //from/emailAddress/address ne 'noreply@abssasia.com.hk'
 //resource = `/users/{2}/mailFolders/Inbox/messages?$filter=receivedDateTime ge {0}T00:00:00Z and receivedDateTime lt {1}T23:59:59Z and from/emailAddress/address ne 'autoreply@abssasia.com.hk' and from/emailAddress/address ne 'enquiry@united.com.hk' and from/emailAddress/name ne 'United Technologies (Int''l) Ltd.' and from/emailAddress/name ne 'Kobee Ho' and from/emailAddress/name ne 'Eddy Mok' and from/emailAddress/name ne 'Kim LEUNG' and from/emailAddress/address ne 'lung@united.com.hk' and from/emailAddress/address ne 'sunnyy@united.com.hk' and sender/emailAddress/address eq 'autoreply@united.com.hk'&$count=true&$ConsistencyLevel=eventual&$orderby=receivedDateTime desc`;
-resource = `/users/{0}/mailFolders/Inbox/messages?$filter=from/emailAddress/address ne 'autoreply@abssasia.com.hk' and from/emailAddress/address ne 'enquiry@united.com.hk' and from/emailAddress/name ne 'United Technologies (Int''l) Ltd.' and from/emailAddress/name ne 'Kobee Ho' and from/emailAddress/name ne 'Eddy Mok' and from/emailAddress/name ne 'Kim LEUNG' and from/emailAddress/address ne 'lung@united.com.hk' and from/emailAddress/address ne 'sunnyy@united.com.hk' and sender/emailAddress/address eq 'autoreply@united.com.hk'&$count=true&$ConsistencyLevel=eventual&$orderby=receivedDateTime desc`;
+/*resource = `/users/{0}/mailFolders/Inbox/messages?$filter=from/emailAddress/address ne 'autoreply@abssasia.com.hk' and from/emailAddress/address ne 'enquiry@united.com.hk' and from/emailAddress/name ne 'United Technologies (Int''l) Ltd.' and from/emailAddress/name ne 'Kobee Ho' and from/emailAddress/name ne 'Eddy Mok' and from/emailAddress/name ne 'Kim LEUNG' and from/emailAddress/address ne 'lung@united.com.hk' and from/emailAddress/address ne 'sunnyy@united.com.hk' and sender/emailAddress/address eq 'autoreply@united.com.hk'&$count=true&$ConsistencyLevel=eventual&$orderby=receivedDateTime desc`;*/
+resource = `/users/{0}/mailFolders/Inbox/messages?$filter=from/emailAddress/address ne 'autoreply@abssasia.com.hk' and from/emailAddress/address ne 'enquiry@united.com.hk' and sender/emailAddress/address eq 'autoreply@united.com.hk'&$count=true&$ConsistencyLevel=eventual&$orderby=from/emailAddress/address,sender/emailAddress/address,receivedDateTime desc`;
+
 enqIdList = $infoblk.data("enqidlist") as string[];
 let DicAssignedSalesEnqId: { [Key: string]: number } = {};
 
@@ -260,20 +262,17 @@ $(document).on("click", "#btnFilter", function (e) {
 	//handleMGTmails(frmdate, todate);
 	GetEnquiries(1);
 });
-
-$(document).on("click", "#btnReload", function () {
-	window.location.href = "/Enquiry/Index";
-});
-
 function filterEnquiries(enquiryies: IEnquiry[]): IEnquiry[] {
 	let uniqueEmailSubjects: string[] = [];
 	let filterlist: IEnquiry[] = [];
 	enquiryies.forEach((x) => {
-		let emailsubject = x.email.trim() + x.subject.trim();
-		if (!uniqueEmailSubjects.includes(emailsubject)) {
-			uniqueEmailSubjects.push(emailsubject);
-			filterlist.push(x);
-		}
+		if (x.email && x.subject) {
+			let emailsubject = x.email.trim() + x.subject.trim();
+			if (!uniqueEmailSubjects.includes(emailsubject)) {
+				uniqueEmailSubjects.push(emailsubject);
+				filterlist.push(x);
+			}
+		}		
 	});
 
 	filterlist.sort((a, b) => Date.parse(b.receiveddate) - Date.parse(a.receiveddate));
@@ -310,7 +309,7 @@ function enqTemplate(data: IEnquiry[]): string {
 
 		let trcls = converted ? "disabled" : "";
 
-		if (x.Id == "KxnihjS3rbNSPgqnSRJwasVn4SE5Nq7evbojjlhOaLCUNCw0t6Bp8AYRSydEUMe0TiVnq74giuMEf0PrVEBHeHWk2NGj7StDgC0ef88m1U6DmKlSYliGBNKCBjlTpJYG09XT0kBM5OFABJxhbnALjc1J") console.log("statuscls:" + x.statuscls);
+		/*if (x.Id == "KxnihjS3rbNSPgqnSRJwasVn4SE5Nq7evbojjlhOaLCUNCw0t6Bp8AYRSydEUMe0TiVnq74giuMEf0PrVEBHeHWk2NGj7StDgC0ef88m1U6DmKlSYliGBNKCBjlTpJYG09XT0kBM5OFABJxhbnALjc1J") */
 		//let statuscls = (x.FollowUpStatus)&&x.FollowUpStatus!=="need"&&? x.FollowUpStatus!.concat("statusbg"):"";
 		// string statuscls = string.Concat(customer.FollowUpStatus, "statusbg");
 		html += `<tr class="enquiry ${trcls} ${x.statuscls}" role="button" data-Id="${Id}">`;

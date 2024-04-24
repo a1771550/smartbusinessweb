@@ -134,7 +134,7 @@ $(document).on("click", "#btnSave", function () {
 function populateAccount4Journal(acno: string, acname: string) {
 	//console.log("acno:" + acno + ";acname:" + acname);
 	//console.log("currentY:" + currentY);
-	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
+	$tr = $(`#${gTblId} tbody tr`).eq(currentY);
 
 	setAccName($tr, acno, acname);
 
@@ -144,7 +144,7 @@ function populateAccount4Journal(acno: string, acname: string) {
 }
 
 function toggleJournalAmt(idx: number, enabled: boolean) {
-	$tr = $(`#${gTblName} tbody tr`).eq(idx);
+	$tr = $(`#${gTblId} tbody tr`).eq(idx);
 	if (enabled) {
 		$tr.find("td").find(".amt").prop("readonly", !enabled);
 	} else {
@@ -153,11 +153,11 @@ function toggleJournalAmt(idx: number, enabled: boolean) {
 		else $tr.find("td").eq(2).find(".amt").prop("disabled", true);
 
 		if (idx % 2 == 0) {
-			$tr = $(`#${gTblName} tbody tr`).eq(idx + 1);
+			$tr = $(`#${gTblId} tbody tr`).eq(idx + 1);
 			if (isDebit) $tr.find("td").eq(2).find(".amt").prop("disabled", true);
 			else $tr.find("td").eq(3).find(".amt").prop("disabled", true);
 		} else {
-			$tr = $(`#${gTblName} tbody tr`).eq(idx - 1);
+			$tr = $(`#${gTblId} tbody tr`).eq(idx - 1);
 			if (isDebit) $tr.find("td").eq(2).find(".amt").prop("disabled", true);
 			else $tr.find("td").eq(3).find(".amt").prop("disabled", true);
 		}
@@ -217,7 +217,7 @@ function addJournalRow() {
 		html += "</tr>";
 	}
 
-	$(`#${gTblName} tbody`).append(html);
+	$(`#${gTblId} tbody`).append(html);
 }
 
 $(document).on("dblclick", ".acno", function () {
@@ -234,7 +234,7 @@ $(document).on("dblclick", ".acno", function () {
 		});
 	}
 	//console.log("AcClfID:" + AcClfID);	
-	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
+	$tr = $(`#${gTblId} tbody tr`).eq(currentY);
 	let $td = $tr.find("td").first();
 	$td.find(".acno").remove();
 	$td.html(populateDrpAccount());
@@ -245,7 +245,7 @@ $(document).on("click", "#btnAdd", function () {
 	if (JournalLns.length === 0) return false;
 	addMode = true;
 	addJournalRow();
-	currentY = $(`#${gTblName} tbody tr`).length - 2;
+	currentY = $(`#${gTblId} tbody tr`).length - 2;
 	//console.log("currentY#btnadd:" + currentY);
 	selectedJournalLn1 = null;
 	selectedJournalLn2 = null;
@@ -255,7 +255,7 @@ $(document).on("click", "#btnAdd", function () {
 $(function () {
 	forjournal = true;
 	setFullPage();
-	gTblName = "tblJournal";
+	gTblId = "tblJournal";
 	initModals();
 	triggerMenu(10, 0);
 
@@ -280,7 +280,7 @@ $(function () {
 		let totalCredit = 0;
 		JournalLns.forEach((x, i) => {
 			currentY = i;
-			$tr = $(`#${gTblName} tbody tr`).eq(currentY);
+			$tr = $(`#${gTblId} tbody tr`).eq(currentY);
 			setAccName($tr, x.AccountNumber, x.AccountName);
 			let idx = 2;
 			$tr.find("td").eq(idx).find(".amt").prop("readonly", (x.DebitExTaxAmount!) == 0).val(formatnumber(x.DebitExTaxAmount!));

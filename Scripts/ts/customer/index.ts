@@ -201,7 +201,7 @@ $(document).on("click", ".colheader", function () {
 $(function () {
 	forcustomer = true;
 	setFullPage();
-	gTblName = "tblCustomer";
+	gTblId = "tblCustomer";
 	triggerMenu(1, 0);
 	initModals();
 

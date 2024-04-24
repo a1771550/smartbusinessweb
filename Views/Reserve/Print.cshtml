@@ -7,7 +7,7 @@
 	string cssbsfile = HttpContext.Current.Session["CssBSFile"] == null ? @"Content/bs4" : HttpContext.Current.Session["CssBSFile"].ToString();
 	string scriptbsfile = HttpContext.Current.Session["ScriptBSFile"] == null ? @"Scripts/bs4" : HttpContext.Current.Session["ScriptBSFile"].ToString();
 	var groupedreserveList = Model.GroupedReserveList;
-	var loadcsstxt = $"\"/Content/item/reserve.css?v={CommonHelper.GetVersionRandomNo()}\"";
+	var loadcsstxt = $"\"/Content/item/reserve/index.css?v={CommonHelper.GetVersionRandomNo()}\"";
 }
 <!DOCTYPE html>
 <html>

@@ -32,7 +32,7 @@ $(document).on("click", ".btnSave", function () {
 							let totalowed: number = Number($("#totalowed").text());
 							if (totalowed > 0) {
 								addPayRow();
-								$(`#${gTblName} tbody tr`).last().find(".chequeno").trigger("focus");
+								$(`#${gTblId} tbody tr`).last().find(".chequeno").trigger("focus");
 							}
 						}
 					}
@@ -49,7 +49,7 @@ $(document).on("click", ".btnSave", function () {
 			noButton: notxt,
 			callback: function (value) {
 				if (value) {
-					$(`#${gTblName} tbody tr`).last().find(".chequeno").trigger("focus");
+					$(`#${gTblId} tbody tr`).last().find(".chequeno").trigger("focus");
 				}
 			}
 		});
@@ -70,7 +70,7 @@ $(document).on("click", "#btnAdd", function () {
 });
 
 function populateAccount4Purchase(acno: string, acname: string) {
-	$tr = $(`#${gTblName} tbody tr`).eq(currentY);
+	$tr = $(`#${gTblId} tbody tr`).eq(currentY);
 	setAccName($tr, acno, acname);
 }
 function toggleDblDisabled(this: any) {
@@ -302,7 +302,7 @@ $(document).on("click", "#btnBill", function () {
 	$("#status").text("BILL");
 	$(this).addClass("disabled").off("click");
 
-	$target = $(`#${gTblName}`);
+	$target = $(`#${gTblId}`);
 	//remove last row:
 	$target.find("tbody tr:last").remove();
 
@@ -453,7 +453,7 @@ function initPurchaseForm():boolean {
 	initModals();
 	triggerMenu(5, 0);
 
-	gTblName = "tblPSI";
+	gTblId = "tblPSI";
 	itotalamt = 0;
 
 	$(".datepicker").datepicker({
@@ -658,7 +658,7 @@ $(function () {
 
 		if (Purchase.pstStatus === "opened" || Purchase.pstStatus == "partialreceival") {
 			//forpurchasepayments = true;
-			gTblName = "tblPayment";
+			gTblId = "tblPayment";
 
 			disableEntries();
 

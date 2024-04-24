@@ -16,7 +16,7 @@ $(function () {
 	//console.log("PreSales:", PreSales);
 	editmode = PreSales.rtsUID > 0;
 	
-	gTblName = "tblSales";
+	gTblId = "tblSales";
 
 	cpplList = $infoblk.data("customerpointpricelevels");
 
@@ -90,7 +90,7 @@ $(function () {
 			depositamt = PreSales.rtsFinalTotal! - PreSales.PayAmt;			
 			itotalremainamt = PreSales.PayAmt!;
 
-			$target = $(`#${gTblName} tbody tr`);
+			$target = $(`#${gTblId} tbody tr`);
 			$target.find("input").prop("disabled", true).prop("readonly", true);			
 			$target.find("select").prop("disabled", true).prop("readonly", true);
 			$("textarea").prop("disabled", true).prop("readonly", true);

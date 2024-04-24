@@ -1,0 +1,87 @@
+﻿@model PPWLib.Models.Item.ReserveEditModel
+
+@{
+	ViewBag.Title = string.Format(Resources.Resource.EditFormat, string.Format(Resources.Resource.OrderFormat, Resources.Resource.Reserve));
+	int rand = CommonHelper.GetVersionRandomNo();
+	var Reserve = Model.ReserveLnList.FirstOrDefault();
+}
+<link href="~/Content/item/reserve/edit.css?v=@rand" rel="stylesheet" type="text/css" />
+
+<h2 class="mb-4">@ViewBag.Title</h2>
+
+
+@Html.AntiForgeryToken()
+
+<div class="clearfix">
+	<div class="float-right">
+		<span>@Resources.Resource.ReserveNumber <span class="badge badge-dark">@Reserve.riCode</span></span>
+		<span>@Resources.Resource.Date <span class="badge badge-dark">@Reserve.ReserveDateDisplay</span></span>
+	</div>
+</div>
+
+<form class="form-inline">
+	<div class="form-group">
+		<label class="mx-2">@Resources.Resource.Customer</label>
+		<input id="txtCustomerName" class="form-control" readonly value="@Reserve.CustomerName" title="@Reserve.CustomerName">
+	</div>
+	<div class="form-group mx-2">
+		<label class="mx-2">@Resources.Resource.Remark</label>
+		<input id="txtRemark" class="form-control" readonly value="@Reserve.RemarkDisplay" data-remark="@Reserve.riRemark" title="@Reserve.riRemark">
+	</div>
+	<a id="btnEdit" href="#" role="button" class="btn btn-warning mx-1" data-orderid="@Reserve.OrderId">@Resources.Resource.Edit</a>
+</form>
+<span id="saveMsg" class=""></span>
+
+@Html.Partial("_ReserveModal", null, new ViewDataDictionary { { "CustomerList", Model.CustomerList }, { "Reserve",Reserve } })
+
+<div class="d-flex justify-content-center my-2">
+	<table id="tblEdit" class="table table-bordered table-hover overflow-auto">
+		<thead class="gray-header">
+			<tr>
+				<th class="text-center sender">@Resources.Resource.Warehouse</th>
+				<th class="text-center itemcode">@Resources.Resource.ItemNumber</th>
+				<th class="text-center itemdesc">@Resources.Resource.ItemName</th>
+				<th class="text-right itemprice">@Resources.Resource.SellingPrice (@Model.Currency)</th>
+				<th class="text-right locqty">@Resources.Resource.Qty</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model.ReserveLnList)
+			{
+				<tr>
+					<td class="text-center sender">@item.rilSender</td> 
+					<td class="text-center itemcode">
+						@item.itmCode
+					</td>
+					<td class="text-center pointer itemdesc">
+						@item.ItemNameDesc
+					</td>
+					<td class="text-right itemprice">
+
+						@item.SellingPriceDisplay
+					</td>
+					<td class="text-right locqty">
+						@item.rilQty
+					</td>
+					<td class="text-center">
+						<button type="button" class="btn btn-warning edit" data-id="@item.Id">@Resources.Resource.Edit</button>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>
+
+<div class="clearfix">
+	<button id="btnPaidOut" class="btn btn-primary float-right" data-orderid="@Reserve.OrderId">@Resources.Resource.PayNow</button>
+</div>
+
+@Html.Partial("_WaitingModal")
+@Html.Partial("_TextAreaModal")
+
+<div id="infoblk"></div>
+
+<script src="~/Scripts/ts/js/item/reserve/edit.js?v=@rand"></script>
+
+

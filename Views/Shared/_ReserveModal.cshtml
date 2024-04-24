@@ -1,5 +1,7 @@
 ﻿@{
 	List<CustomerModel> CustomerList = ViewData["CustomerList"] as List<CustomerModel>;
+	ReserveLnModel Reserve = ViewData["Reserve"] == null ? null : (ReserveLnModel)ViewData["Reserve"];
+	string remark = Reserve == null ? "" : Reserve.riRemark;
 }
 <div id="reserveModal">
 	<form>
@@ -8,13 +10,15 @@
 			<select class="form-control" id="drpCustomer">
 				@foreach (var customer in CustomerList)
 				{
-					<option value="@customer.cusCode">@customer.cusName</option>
+					string selected = "";
+					if (Reserve!=null && Reserve.cusCode == customer.cusCode) { selected = "selected"; }
+					<option value="@customer.cusCode" @selected>@customer.cusName</option>
 				}
 			</select>
 		</div>		
 		<div class="form-group">
 			<label for="txtRemark">@Resources.Resource.Remark</label>
-			<textarea class="form-control" id="txtRemark" rows="3" cols="70"></textarea>
+			<textarea class="form-control" id="txtRemark" rows="3" cols="70" data-remark="@remark">@remark</textarea>
 		</div>
 	</form>
 </div>

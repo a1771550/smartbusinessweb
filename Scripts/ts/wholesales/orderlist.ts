@@ -130,9 +130,7 @@ $(document).on("click", ".copy", function () {
 	openRecurOrderModal();
 });
 
-$(document).on("click", "#btnReload", function () {
-	window.location.href = "/WholeSales/SalesOrderList";
-});
+
 
 $(document).on("click", ".colheader", function () {
 	let $sortorder = $("#sortorder").val($(this).data("order"));

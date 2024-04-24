@@ -55,7 +55,7 @@ $(document).on("change", ".chkall", function () {
 $(document).ready(function () {
 	initModals();
 	DicCurrencyExRate = $infoblk.data("jsondiccurrencyexrate");
-	gTblName = "tblWSI";
+	gTblId = "tblWSI";
 	fordelivery = true;
 	itotalamt = 0;
 	$(".datepicker").datepicker({

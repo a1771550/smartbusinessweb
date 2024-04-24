@@ -251,9 +251,9 @@ function fillinForm_De() {
 	});
 	//console.log("salesitemlist:", salesitemlist);
 
-	$(`#${gTblName} tbody`).empty().append(html);
+	$(`#${gTblId} tbody`).empty().append(html);
 
-	$(`#${gTblName} tbody tr`).each(function (i, e) {
+	$(`#${gTblId} tbody tr`).each(function (i, e) {
 		$(e)
 			.find("td")
 			.each(function (idx, ele) {
@@ -279,7 +279,7 @@ $(function () {
 	vtidx = snidx + 1;
 
 	//Deposit = $infoblk.data("sales");
-	gTblName = "tblDeposit";
+	gTblId = "tblDeposit";
 
 	$("#txtReceiptNo").trigger("focus");
 

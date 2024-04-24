@@ -109,15 +109,6 @@ $(document).on("click", ".remove", function () {
   });
 });
 
-$(document).on("click", "#btnReload", function () {
-  $("#frmAttribute").trigger("reset");
-  window.location.href =
-    "/CustomerAttribute/Index?contactId=" +
-    $("#contactId").val() +
-    "&accountProfileId=" +
-    $("#apId").val();
-});
-
 $(document).on("click", ".colheader", function () {
   let $sortcol = $("<input>").attr({
     type: "hidden",

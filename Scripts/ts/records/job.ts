@@ -43,9 +43,6 @@ $(document).on("click", "#btnFilter", function (e) {
     handleMGTmails();
 });
 
-$(document).on("click", "#btnReload", function () {
-    window.location.href = "/Job/Index";
-});
 
 
 function saveJobs(joblist: IJob[]) {

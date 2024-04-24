@@ -214,7 +214,7 @@ $(document).on("click", "#btnInvoice", function () {
 		$(this).addClass("disabled").off("click");
 	}
 
-	$target = $(`#${gTblName}`);
+	$target = $(`#${gTblId}`);
 
 	let isInvoice: boolean = Wholesales.wsStatus.toLowerCase() === "invoice";
 	if (isInvoice) {
@@ -440,7 +440,7 @@ function updateWholesales() {
 	Wholesales.wsSalesLoc = $("#drpLocation").val() as string;
 	Wholesales.wsAllLoc = $("#chkAllLoc").is(":checked");
 
-	const $selector = $(`#${gTblName} tbody tr`);
+	const $selector = $(`#${gTblId} tbody tr`);
 	let salesamt: number = 0;
 	$selector.each(function (i, e) {
 		$tr = $(e);
@@ -569,7 +569,7 @@ function handleSubmit4Wholesales(forRecurOrder: boolean = false) {
 		if (Wholesales.wsStatus == "invoice") {
 			//console.log("ready to updatewholesales#invoice");
 			updateWholesales();
-			if ($(`#${gTblName} .focus`).length > 0) {
+			if ($(`#${gTblId} .focus`).length > 0) {
 				let msg = `${salesinfonotenough}<br>`;
 				$.fancyConfirm({
 					title: "",
@@ -579,8 +579,8 @@ function handleSubmit4Wholesales(forRecurOrder: boolean = false) {
 					noButton: notxt,
 				});
 			} else {
-				if ($(`#${gTblName} tbody tr`).length > 0) {
-					$(`#${gTblName} tbody tr`).each(function (i, e) {
+				if ($(`#${gTblId} tbody tr`).length > 0) {
+					$(`#${gTblId} tbody tr`).each(function (i, e) {
 						const itemcode: string = $(e).find("td").eq(1).find(".itemcode").val()!.toString();
 						if (!(itemcode in DicIvInfo) || DicIvInfo[itemcode].length === 0) {
 
@@ -917,7 +917,7 @@ $(function () {
 	initModals();
 	triggerMenu(4, 0);
 
-	gTblName = "tblWSI";
+	gTblId = "tblWSI";
 	itotalamt = 0;
 	$(".datepicker").datepicker({
 		dateFormat: jsdateformat,
@@ -1050,7 +1050,7 @@ $(function () {
 
 		WholeSalesLns = structuredClone(wholesaleslns);
 		// console.log("html:" + html);
-		$target = $(`#${gTblName} tbody`);
+		$target = $(`#${gTblId} tbody`);
 		$target.empty().html(html);
 
 		$target = $("#deliveryDate").datepicker();

@@ -55,22 +55,23 @@ $(document).on('dblclick', '.remark', function () {
 $(document).on('click', '#btnPrint', function () {
     window.open('/Transfer/PrintByCode?code=' + $(this).data('code'), '_blank');
 })
-
-$(document).ready(function () {    
-	stockTransferEditMode = true;
-	gTblName = 'TransferEdit';
-    initModals();
-});
-
-function fillInStockTransfer(ele) {	
+function fillInStockTransfer(ele) {
 	$target = $(ele).parent('td').parent('tr');
 	let Id: number = <number>$target.data('id');
 	stocktransfer = initStockTransfer();
-    stocktransfer.Id = Id;
-    stocktransfer.stSignedUp_Sender = $target.find('td:first').find('.signedbyshipper').is(':checked');
-    stocktransfer.stCounted = Number($target.find('td').eq(6).find('.counted').val());
-    stocktransfer.stVariance = Number($target.find('td').eq(7).find('.variance').val());
+	stocktransfer.Id = Id;
+	stocktransfer.stSignedUp_Sender = $target.find('td:first').find('.signedbyshipper').is(':checked');
+	stocktransfer.stCounted = Number($target.find('td').eq(6).find('.counted').val());
+	stocktransfer.stVariance = Number($target.find('td').eq(7).find('.variance').val());
 	stocktransfer.stSignedUp_Receiver = $target.find('td').eq(8).find('.signedbyreceiver').is(':checked');
 	stocktransfer.stRemark = $target.find('td').eq(9).find('.remark').data('remark') as string;
 	stocktransfer.stChecked = true;
 }
+$(function () {    
+	stockTransferEditMode = true;
+	gFrmId = "StockTransfer";
+	gTblId = 'tblTransferEdit';
+	setFullPage();
+	triggerMenu(2, 3);
+    initModals();
+});

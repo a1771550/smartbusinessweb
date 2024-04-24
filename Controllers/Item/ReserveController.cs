@@ -14,7 +14,36 @@ namespace SmartBusinessWeb.Controllers.Item
     [CustomAuthenticationFilter]
     public class ReserveController : BaseController
     {
-        [HandleError]
+		[HandleError]
+		[CustomAuthorize("item", "boss", "admin", "superadmin")]
+		public ActionResult Edit(string code)
+		{
+			ReserveEditModel model = new(code);
+			return View(model);
+		}
+
+		[HandleError]
+		[CustomAuthorize("item", "boss", "admin", "superadmin")]
+		[ValidateAntiForgeryToken]
+		[HttpPost]
+		public JsonResult EditOrder(ReserveModel Reserve)
+		{			
+			ReserveEditModel.EditOrder(Reserve);
+			return Json(string.Format(Resources.Resource.SavedOkFormat, Resources.Resource.Reserve));
+		}
+
+		[HandleError]
+		[CustomAuthorize("item", "boss", "admin", "superadmin")]
+		[ValidateAntiForgeryToken]
+		[HttpPost]
+		public JsonResult EditLine(ReserveLnModel ReserveLn)
+		{	
+			ReserveEditModel.EditLine(ReserveLn);
+			return Json(string.Format(Resources.Resource.SavedOkFormat, Resources.Resource.Reserve));
+		}
+
+
+		[HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
         public ActionResult PrintByCode(string code)
         {
@@ -54,8 +83,8 @@ namespace SmartBusinessWeb.Controllers.Item
             ReserveEditModel model = new()
             {
                 SortCol = SortCol,
-                Keyword = Keyword,
-                SortOrder = (SortOrder == "desc") ? "asc" : "desc"
+				SortOrder = (SortOrder == "desc") ? "asc" : "desc",
+				Keyword = Keyword,                
             };
             model.GetReserveList(PageNo, (int)ComInfo.PageLength, SortCol, SortOrder, Keyword);
             model.Keyword = Keyword;
@@ -72,8 +101,8 @@ namespace SmartBusinessWeb.Controllers.Item
             ReserveEditModel model = new()
             {
                 SortCol = SortCol,
-                Keyword = Keyword,
-                SortOrder = (SortOrder == "desc") ? "asc" : "desc"
+				SortOrder = (SortOrder == "desc") ? "asc" : "desc",
+				Keyword = Keyword,                
             };
             model.GetItemList(PageNo, (int)ComInfo.PageLength, SortCol, SortOrder, Keyword);
             return View(model);

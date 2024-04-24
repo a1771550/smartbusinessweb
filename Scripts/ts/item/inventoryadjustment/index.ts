@@ -1,25 +1,7 @@
 ﻿$infoblk = $("#infoblk");
-
-$(document).on("click", "#btnReload", function () {
-	window.location.href = "/InventoryAdjustment/Index";
-});
-$(document).on("click", ".colheader", function () {
-	let $sortcol = $("<input>").attr({
-		type: "hidden",
-		name: "SortCol",
-		value: $(this).data("col"),
-	});
-	let $keyword = $("<input>").attr({
-		type: "hidden",
-		name: "Keyword",
-		value: $(this).data("keyword"),
-	});
-
-	$("#frmInventoryAdjustment").append($sortcol).append($keyword).trigger("submit");
-});
-
 $(function () {
 	forItem = true;
+	gFrmId = "frmInventoryAdjustment";
 	setFullPage();
 	
 	let $sortorder = $("#sortorder");

@@ -7,10 +7,6 @@ $(document).on("change", "#drpLocation", function () {
     GetStocks(1);
 });
 
-$(document).on("click", "#btnReload", function () {
-    window.location.href = "/Item/Stock";
-});
-
 $(document).on("click", "#btnSearch", function () {
     $("#txtStock").trigger("change");
 });
@@ -18,7 +14,7 @@ $(document).on("click", "#btnSearch", function () {
 $(function () {
     setFullPage();
     forstock = true;
-    gTblName = gFrmName = "Stock";
+    gTblId = gFrmId = "Stock";
     shops = (<string>$infoblk.data("shops")).split(",");
     //console.log('sortorder:' + $('#sortorder').val() + ';sortcol:' + $('#sortcol').val());
     $target = $(".colheader").eq(parseInt(<string>$("#sortcol").val()));

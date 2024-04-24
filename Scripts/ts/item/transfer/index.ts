@@ -157,11 +157,6 @@ $(document).on("change", "input.locqty", function () {
     }
 });
 
-
-$(document).on("click", "#btnReload", function () {
-    window.location.href = "/Transfer/Index";
-});
-
 $(document).on("change", "#txtStock", function () {
     keyword = <string>$(this).val();
     if (keyword !== "") {
@@ -187,7 +182,7 @@ $(function () {
     setFullPage();
     triggerMenu(2, 2);
     fortransfer = true;
-    gTblName = gFrmName = "Transfer";
+    gTblId = gFrmId = "Transfer";
     stockTransferCode = <string>$("#stCode").text();
     shops = $infoblk.data("shops")? (<string>$infoblk.data("shops")).split(","):[];
 

@@ -1,18 +1,12 @@
 ﻿$infoblk = $("#infoblk");
 
-$(document).on("click", "#btnReload", function () {
-  window.location.href = "/Transfer/List";
-});
 
-$(document).on("click", ".colheader", function () {
-  let $sortorder = $("#sortorder").val($(this).data("order"));
-  let $sortcol = $("#sortcol").val($(this).data("col"));
-  $("#frmTransferList").append($sortorder).append($sortcol).trigger("submit");
-});
+
 $(function () {
   setFullPage();
   fortransfer = true;
-  gTblName = gFrmName = "TransferList";
+    gTblId = "TransferList";
+    gFrmId = "frmTransferList";
     triggerMenu(2, 3);
 
   $target = $(".colheader").eq(parseInt(<string>$("#sortcol").val()));

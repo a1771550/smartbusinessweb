@@ -32,43 +32,9 @@ $(document).on("click", ".remove", function () {
 	});
 });
 
-$(document).on("click", "#btnReload", function () {
-	window.location.href = "/Wholesales/Index";
-});
-
-$(document).on("click", ".colheader", function () {
-	let $sortcol = $("<input>").attr({
-		type: "hidden",
-		name: "SortCol",
-		value: $(this).data("col"),
-	});
-	let $keyword = $("<input>").attr({
-		type: "hidden",
-		name: "Keyword",
-		value: $(this).data("keyword"),
-	});
-	$("#frmWholeSales").append($sortcol).append($keyword).trigger("submit");
-});
-
-$(document).on("change", "#txtKeyword", function () {
-	keyword = <string>$(this).val();
-	if (keyword !== "") {
-		openWaitingModal();
-		let $sortcol = $("<input>").attr({
-			type: "hidden",
-			name: "Keyword",
-			value: keyword.trim(),
-		});
-		$("#frmWholeSales").append($sortcol).trigger("submit");
-	}
-});
-
-$(document).on("click", "#btnSearch", function () {
-	$("#txtKeyword").trigger("change");
-});
-
 $(function () {
 	setFullPage();
+	gFrmId = "frmWholeSales";
 	let $sortorder = $("#sortorder");
 	let $sortcol = $("#sortcol");
 	console.log("sortorder:" + $sortorder.val() + ";sortcol:" + $sortcol.val());

@@ -77,7 +77,7 @@ $('#btnReload').on('click', function () {
 $(function () {
     foretrack = true;
     setFullPage();
-    gTblName = "tblTrack";
+    gTblId = "tblTrack";
     eTrackToken = $infoblk.data("token");
     initModals();   
 

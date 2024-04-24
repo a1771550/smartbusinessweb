@@ -341,7 +341,7 @@ td {
   max-width: 280px;
 }
 
-span.alert {
+span.alert:not(.alert-warning) {
   color: red;
 }
 

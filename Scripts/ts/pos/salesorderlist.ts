@@ -101,31 +101,10 @@ $(document).on("click", ".copy", function () {
 	selectedCus.cusName = $target.data("name");
 	openRecurOrderModal();
 });
-
-$(document).on("click", "#btnReload", function () {
-	window.location.href = "/SalesOrder/Index";
-});
-
-$(document).on("click", ".colheader", function () {
-	let $sortcol = $("<input>").attr({
-		type: "hidden",
-		name: "SortCol",
-		value: $(this).data("col"),
-	});
-	let $keyword = $("<input>").attr({
-		type: "hidden",
-		name: "Keyword",
-		value: $(this).data("keyword"),
-	});
-	$("#frmSalesOrder")
-		.append($keyword)
-		.append($sortcol)
-		.trigger("submit");
-});
-
 $(function () {
 	forsales = true;
 	isapprover = $infoblk.data("isapprover") === "True";
+	gFrmId = "frmSalesOrder";
 	setFullPage();
 	triggerMenu(0, 3);
 

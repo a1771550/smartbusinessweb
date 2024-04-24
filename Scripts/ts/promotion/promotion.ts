@@ -28,31 +28,8 @@ $(document).on("click", ".remove", function () {
 	});
 });
 
-$(document).on("click", "#btnReload", function () {
-	window.location.href = "/Promotion/Index";
-});
 
-// $(document).on('click', '#btnSearch', function () {
-// 	keyword = <string>$('#txtKeyword').val();
-// 	if (keyword !== '') {
-// 		getPromotions();
-// 	}
-// });
 
-$(document).on("click", ".colheader", function () {
-	let $sortcol = $("<input>").attr({
-		type: "hidden",
-		name: "SortCol",
-		value: $(this).data("col"),
-	});
-	let $keyword = $("<input>").attr({
-		type: "hidden",
-		name: "Keyword",
-		value: $(this).data("keyword"),
-	});
-
-	$("#frmPromotion").append($sortcol).append($keyword).trigger("submit");
-});
 
 $(document).on("dblclick", "#tblPromotion tbody tr", function () {
 	window.location.href = `/Promotion/Edit?Id=${$(this).data("id")}`;
@@ -60,6 +37,7 @@ $(document).on("dblclick", "#tblPromotion tbody tr", function () {
 
 $(function () {
 	setFullPage();
+	gFrmId = "frmPromotion";
 	let $sortorder = $("#sortorder");
 	let $sortcol = $("#sortcol");
 	//console.log('sortorder:' + $sortorder.val() + ';sortcol:' + $sortcol.val());

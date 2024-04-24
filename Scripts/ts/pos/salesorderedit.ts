@@ -12,7 +12,7 @@ $(function () {
 
 	SalesOrder = $infoblk.data("sales");
 	//console.log("SalesOrder:", SalesOrder);
-	gTblName = "tblSales";
+	gTblId = "tblSales";
 
 	cpplList = $infoblk.data("customerpointpricelevels");
 
@@ -88,7 +88,7 @@ $(function () {
 			depositamt = SalesOrder.rtsFinalTotal! - SalesOrder.PayAmt;
 			itotalremainamt = SalesOrder.PayAmt!;
 
-			$target = $(`#${gTblName} tbody tr`);
+			$target = $(`#${gTblId} tbody tr`);
 			$target.find("input").prop("disabled", true).prop("readonly", true);
 			$target.find("select").prop("disabled", true).prop("readonly", true);
 			$("textarea").prop("disabled", true).prop("readonly", true);

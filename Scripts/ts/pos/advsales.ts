@@ -123,7 +123,7 @@ $(function () {
     vtidx = snidx + 1;
     //exRate = 1;
     //DicCurrencyExRate = $infoblk.data('jsondiccurrencyexrate');
-    gTblName = "tblSales";
+    gTblId = "tblSales";
     let _url = getParameterByName("url");
     //console.log('_url:' + _url);
     if (_url !== null) {

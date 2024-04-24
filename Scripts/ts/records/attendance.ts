@@ -44,9 +44,7 @@ $(document).on("click", "#btnFilter", function (e) {
 	handleMGTmails();
 });
 
-$(document).on("click", "#btnReload", function () {
-	window.location.href = "/Attendance/Index";
-});
+
 
 
 function saveAttendances(attdlist: IAttendance[]) {

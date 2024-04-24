@@ -41,24 +41,6 @@ $(document).on("click", ".remove", function () {
 	});
 });
 
-$(document).on("click", "#btnReload", function () {
-	window.location.href = "/Purchase/Index";
-});
-
-$(document).on("click", ".colheader", function () {
-	let $sortcol = $("<input>").attr({
-		type: "hidden",
-		name: "SortCol",
-		value: $(this).data("col"),
-	});
-	let $keyword = $("<input>").attr({
-		type: "hidden",
-		name: "Keyword",
-		value: $(this).data("keyword"),
-	});
-	$("#frmPurchaseStock").append($sortcol).append($keyword).trigger("submit");
-});
-
 $(document).on("change", "#txtKeyword", function () {
 	keyword = <string>$(this).val();
 	if (keyword !== "") {
@@ -77,6 +59,7 @@ $(document).on("click", "#btnSearch", function () {
 });
 
 $(function () {
+	gFrmId = "frmPurchaseStock";
 	setFullPage();
 	let $sortorder = $("#sortorder");
 	let $sortcol = $("#sortcol");

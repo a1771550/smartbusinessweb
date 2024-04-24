@@ -2708,7 +2708,8 @@
     <Content Include="Content\images\X-office-calendar.svg" />
     <Content Include="Content\Item.css" />
     <Content Include="Content\item\iaedit.css" />
-    <Content Include="Content\item\reserve.css" />
+    <Content Include="Content\item\reserve\edit.css" />
+    <Content Include="Content\item\reserve\index.css" />
     <Content Include="Content\job.css" />
     <Content Include="Content\jquery-ui.css" />
     <Content Include="Content\login.css" />
@@ -3068,6 +3069,7 @@
     <Content Include="Scripts\ts\js\item\index.js" />
     <Content Include="Scripts\ts\js\item\inventoryadjustment\edit.js" />
     <Content Include="Scripts\ts\js\item\inventoryadjustment\index.js" />
+    <Content Include="Scripts\ts\js\item\reserve\edit.js" />
     <Content Include="Scripts\ts\js\item\reserve\index.js" />
     <Content Include="Scripts\ts\js\item\reserve\list.js" />
     <Content Include="Scripts\ts\js\item\transfer\edit.js" />
@@ -4697,6 +4699,8 @@
     <Content Include="Views\Reserve\Print.cshtml" />
     <Content Include="Views\Reserve\List.cshtml" />
     <Content Include="Scripts\ts\js\item\reserve\list.js.map" />
+    <Content Include="Views\Reserve\Edit.cshtml" />
+    <Content Include="Scripts\ts\js\item\reserve\edit.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -5087,8 +5091,10 @@
     <TypeScriptCompile Include="Scripts\ts\customer\attributes\globalattribute.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\hotlist\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\hotlist\edit.ts" />
+    <TypeScriptCompile Include="Scripts\ts\globals.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\inventoryadjustment\edit.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\inventoryadjustment\index.ts" />
+    <TypeScriptCompile Include="Scripts\ts\item\reserve\edit.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\reserve\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\reserve\list.ts" />
     <TypeScriptCompile Include="Scripts\ts\lang.ts" />
