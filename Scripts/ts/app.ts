@@ -53,6 +53,7 @@ let Reserve: IReserve;
 let ReserveLnList: IReserveLn[] = [];
 let JsStockList: Array<IJsStock> = [];
 let ReserveCode: string = "";
+let sortByName: boolean = false;
 interface IPaymentType {
 	Id: number;
 	pmtCode: string;
@@ -819,29 +820,7 @@ let ItemAccountNumber: string = "";
 let dicItemAccount: { [Key: string]: string } = {};
 let dicDefaultAttrRequiredTxt: { [Key: string]: string } = {};
 
-$(document).on("click", "#btnReload", function () {
-	window.location.href = window.location.pathname;
-});
-$(document).on("click", ".colheader", function () {
-	let $sortcol = $("<input>").attr({
-		type: "hidden",
-		name: "SortCol",
-		value: $(this).data("col"),
-	});
 
-	if(gFrmId)
-		$(`#${gFrmId}`).append($sortcol).trigger("submit");
-});
-$(document).on("click", "#btnSearch", function (e) {
-	e.preventDefault();
-	let $sortcol = $("<input>").attr({
-		type: "hidden",
-		name: "SortCol",
-		value: $("#sortcol").val(),
-	});
-	if(gFrmId)
-		$(`#${gFrmId}`).append($sortcol).trigger("submit");
-});
 function handleOutOfStocks(
 	zerostockItemcodes: string,
 	salescode: string | null = null
@@ -11411,7 +11390,7 @@ function OnGetStocksOK(response) {
 					? `<span class="outofstock">${item.OnHandStock}</span>`
 					: item.OnHandStock.toString();
 
-			html += `<td class="text-right locqty">${onhandstock}<span class="text-info">(${item.AbssQty})</td>`;
+			html += `<td class="text-right locqty">${onhandstock}</td>`;
 			//console.log("shops:", shops);
 			$.each(shops, function (i, e) {
 				//console.log("sbitem:", sbitem);
@@ -11449,9 +11428,9 @@ function OnGetStocksOK(response) {
 				//}
 
 				if (locqty <= 0) {
-					locqtydisplay = `<span class="danger">${locqty}<span class="text-info">(${abssqty})</span></span>`;
+					locqtydisplay = `<span class="danger">${locqty}</span>`;
 				} else {
-					locqtydisplay = `<span>${locqty}<span class="text-info">(${abssqty})</span></span>`;
+					locqtydisplay = `<span>${locqty}</span>`;
 				}
 
 				//if (itemcode == "ABSSPP23-1U") {
@@ -13796,7 +13775,7 @@ function confirmBatchSnQty() {
 					console.log("price:" + price);
 					updateRow(price, getRowDiscPc());
 				} else {
-					lnqty = 0;					
+					lnqty = 0;
 					$("#totalbatdelqty").data("totalbatdelqty", lnqty).val(lnqty);
 					$(".batdelqty").val(0).addClass("focus");
 
@@ -22279,17 +22258,19 @@ $(document).on("click", "#tblHotList th a", function () {
 let eBlastHotListIds: { [Key: number]: number } = {};
 
 function getBalance(this: any, onhandstock: number) {
+	console.log("onhandstock:" + onhandstock);
 	let totalqty: number = 0;
 	$target = $(this).parent("td").parent("tr");
-	$target.find("td").each(function (i, e) {
+	$target.find("td.locqty").each(function (i, e) {
 		let $input = $(e).find("input");
 		if ($input.hasClass("locqty")) {
+			//console.log("inputval:" + $input.val());
 			totalqty += Number($input.val());
 		}
 	});
 	//console.log("qty:" + totalqty);
 	let balance: number = onhandstock - totalqty;
-	//console.log("balance:" + balance);
+	console.log("balance:" + balance);
 	let $balance = $target.find("td:last").find(".balance");
 	return { $balance, balance };
 }
@@ -22325,13 +22306,51 @@ function initVariablesFrmInfoblk() {
 	comInfo = $infoblk.data("cominfo");
 }
 
+$(document).on("click", "#btnReload", function () {
+	window.location.href = window.location.pathname;
+});
+
+$(document).on("click", "#btnSearch", function (e) {
+	e.preventDefault();
+	let $sortcol = $("<input>").attr({
+		type: "hidden",
+		name: "SortCol",
+		value: $("#sortcol").val(),
+	});
+	if (gFrmId)
+		$(`#${gFrmId}`).append($sortcol).trigger("submit");
+});
+
+$(document).on("click", ".colheader", function () {
+	let $sortcol = $("<input>").attr({
+		type: "hidden",
+		name: sortByName ? "SortName" : "SortCol",
+		value: $(this).data("col"),
+	});
+
+	if (gFrmId)
+		$(`#${gFrmId}`).append($sortcol).trigger("submit");
+});
 function ConfigSimpleSortingHeaders() {
 	let $sortorder = $("#sortorder");
-	let $sortcol = $("#sortcol");
-	//console.log('sortorder:' + $sortorder.val() + ';sortcol:' + $sortcol.val());
-	$target = $(".colheader").eq(Number($sortcol.val()));
-	let sortcls =
-		$sortorder.val() === "desc" ? "fa fa-sort-up" : "fa fa-sort-down";
+	
+	if (sortByName) {
+		let sortname = $("#sortname").val() as string;
+		//console.log("sortname:" + sortname);
+		$(".colheader").each(function (i, e) {
+			if ($(e).data("col") as string == sortname) {
+				$target = $(e);
+				return false;
+			}
+		});	
+	} 
+	else {
+		let $sortcol = $("#sortcol");
+		$target = $(".colheader").eq(Number($sortcol.val()));
+		//console.log('sortorder:' + $sortorder.val() + ';sortcol:' + $sortcol.val());
+	}
+
+	let sortcls = $sortorder.val() === "desc" ? "fa fa-sort-up" : "fa fa-sort-down";
 	$target.addClass(sortcls);
 
 	$target = $(".pagination");
@@ -22348,7 +22367,7 @@ function ConfigSimpleSortingHeaders() {
 	}
 	$(".pagination li").addClass("page-item");
 
-	if($("#txtKeyword").length)
+	if ($("#txtKeyword").length)
 		$("#txtKeyword").trigger("focus");
 }
 
@@ -22384,9 +22403,9 @@ function handleReserveSaved() {
 					}
 				});
 		});
-		console.log("JsStockList:", JsStockList);
-		console.log("Reserve:", Reserve);
-		console.log("ReserveLnList:", ReserveLnList);
+		//console.log("JsStockList:", JsStockList);
+		//console.log("Reserve:", Reserve);
+		//console.log("ReserveLnList:", ReserveLnList);
 		//return false;
 
 		if (JsStockList.length > 0 && Reserve && ReserveLnList.length > 0) {
@@ -22411,7 +22430,7 @@ function handleReserveSaved() {
 							noButton: notxt,
 							callback: function (value) {
 								if (value) {
-									//	window.location.reload();
+									window.location.reload();
 									window.open("/Reserve/Print", "_blank");
 								}
 							},
@@ -22422,9 +22441,11 @@ function handleReserveSaved() {
 			});
 		}
 	}
-	
-	if (forEditReserve) {	
-		Reserve.cusCode = reserveModal.find("#drpCustomer").val() as string;
+
+	if (forEditReserve) {
+		let $drp = reserveModal.find("#drpCustomer");
+		Reserve.cusCode = $drp.val() as string;
+		Reserve.CustomerName = $drp.find("option:selected").text();
 		Reserve.riRemark = reserveModal.find("#txtRemark").val() as string;
 		closeReserveModal();
 
@@ -22435,10 +22456,22 @@ function handleReserveSaved() {
 			data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), Reserve },
 			success: function (data) {
 				if (data) {
-					showMsg("saveMsg", data, "warning", 2000, 2000);					
+					//showMsg("saveMsg", data, "warning", 2000, 2000);					
+					$("#txtCustomerName").val(Reserve.CustomerName);
+					$("#txtRemark").val(GetReserveRemarkDisplay(Reserve.riRemark));
 				}
 			},
 			dataType: "json"
 		});
 	}
+}
+
+function GetReserveRemarkDisplay(remark: string): string {
+	/*
+	if (string.IsNullOrEmpty(riRemark)) return "";
+				if(riRemark.Length>30)riRemark=string.Concat(riRemark.Substring(0,25),"...");
+	*/
+	if (!remark) return "";
+	if (remark.length > 30) remark = remark.substring(0, 25).concat("...");
+	return remark;
 }

@@ -92,12 +92,11 @@ $(function () {
 	gFrmId = "frmReserve";
 	ReserveCode = <string>$("#riCode").text();
 	shops = $infoblk.data("shops") ? (<string>$infoblk.data("shops")).split(",") : [];
-
+	sortByName = true;
 	ConfigSimpleSortingHeaders();
-
 
 	DicIDItemOptions = $infoblk.data("jsondiciditemoptions");
 
-	setInput4NumberOnly("locqty");	
+	setInput4NumberOnly("number");	
 	
 });

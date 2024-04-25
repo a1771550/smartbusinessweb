@@ -7,7 +7,7 @@
     string cssbsfile = HttpContext.Current.Session["CssBSFile"] == null ? @"Content/bs4" : HttpContext.Current.Session["CssBSFile"].ToString();
     string scriptbsfile = HttpContext.Current.Session["ScriptBSFile"] == null ? @"Scripts/bs4" : HttpContext.Current.Session["ScriptBSFile"].ToString();
     var groupedtransferList = Model.GroupedTransferList;   
-    var loadcsstxt = $"\"/Content/item/stocktransfer.css?v={CommonHelper.GetVersionRandomNo()}\"";
+    var loadcsstxt = $"\"/Content/item/transfer/print.css?v={CommonHelper.GetVersionRandomNo()}\"";
 }
 <!DOCTYPE html>
 <html>

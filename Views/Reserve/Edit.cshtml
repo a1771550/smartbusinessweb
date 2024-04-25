@@ -14,7 +14,7 @@
 
 <div class="clearfix">
 	<div class="float-right">
-		<span>@Resources.Resource.ReserveNumber <span class="badge badge-dark">@Reserve.riCode</span></span>
+		<span>@Resources.Resource.OrderNo <span class="badge badge-dark">@Reserve.riCode</span></span>
 		<span>@Resources.Resource.Date <span class="badge badge-dark">@Reserve.ReserveDateDisplay</span></span>
 	</div>
 </div>
@@ -39,33 +39,66 @@
 		<thead class="gray-header">
 			<tr>
 				<th class="text-center sender">@Resources.Resource.Warehouse</th>
-				<th class="text-center itemcode">@Resources.Resource.ItemNumber</th>
-				<th class="text-center itemdesc">@Resources.Resource.ItemName</th>
+				<th class="text-center itemcode">@Resources.Resource.ItemCode</th>
+				<th class="text-center itemdesc">@Resources.Resource.Name/@Resources.Resource.Description</th>
 				<th class="text-right itemprice">@Resources.Resource.SellingPrice (@Model.Currency)</th>
-				<th class="text-right locqty">@Resources.Resource.Qty</th>
+				<th class="text-center itemoptions">@Resources.Resource.Batch|@Resources.Resource.SerialNo|@Resources.Resource.ExpiryDate</th>
+				<th class="text-center itemvari">@Resources.Resource.ItemVariations</th>
+
+				<th class="text-right"><span class="font-weight-bold onhandstock">@Resources.Resource.OnHandStock</span></th>
+				@foreach (var _shop in Model.ShopNames)
+				{
+					<th class="text-right locqty">@_shop</th>
+				}
+				<th class="text-right rqty"><span class="font-weight-bold">@Resources.Resource.ReservedQty</span></th>
 				<th></th>
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (var item in Model.ReserveLnList)
+			@foreach (var line in Model.ReserveLnList)
 			{
+				var namedesctxt = line.ItemNameDesc.Length > 40 ? line.ItemNameDesc.Substring(0, 40) + "..." : line.ItemNameDesc;
+				var item = Model.ItemList.FirstOrDefault(x => x.itmCode == line.itmCode);
 				<tr>
-					<td class="text-center sender">@item.rilSender</td> 
-					<td class="text-center itemcode">
-						@item.itmCode
+					<td class="text-center sender" title="@line.rilSender">@line.rilSender</td>
+					<td class="text-center linecode" title="@line.itmCode">
+						@line.itmCode
 					</td>
-					<td class="text-center pointer itemdesc">
-						@item.ItemNameDesc
+					<td class="text-center linedesc" title="@line.ItemNameDesc">
+						@namedesctxt
 					</td>
-					<td class="text-right itemprice">
+					<td class="text-right lineprice">
+						<input type="text" class="form-control number text-right lineprice" value="@line.SellingPriceDisplay" />
+					</td>
+					<td class="text-center itemoptions">@Html.Raw(item.ItemOptionsDisplay)</td>
+					<td class="text-center itemvari">@Html.Raw(item.ItemVariationsDisplay)</td>
 
-						@item.SellingPriceDisplay
-					</td>
+
+					<td class="text-right onhandstock @item.OutOfStockCls" title="@item.QuantityAvailable">@item.QuantityAvailable</td>
+
+					@foreach (var shop in Model.Shops)
+					{
+						int isprimary = Model.PrimaryLocation == shop ? 1 : 0;
+						int qty = 0;
+						string Id = "";
+						if (Model.DicCodeLocQty.ContainsKey(item.itmCode) && Model.DicCodeLocQty[item.itmCode].ContainsKey(shop))
+						{
+							qty = Model.DicCodeLocQty[item.itmCode][shop];
+						}
+						if (Model.DicCodeLocId.ContainsKey(item.itmCode) && Model.DicCodeLocId[item.itmCode].ContainsKey(shop))
+						{
+							Id = Model.DicCodeLocId[item.itmCode][shop];
+						}
+						<td class="text-right locqty">
+							<input type="text" class="form-control text-right btnsmall locqty number" data-id="@Id" data-isprimary="@isprimary" data-code="@item.itmCode" data-shop="@shop" data-onhandstock="@qty" data-oldval="@qty" data-itemid="@item.itmItemID" value="@qty" title="@qty">
+						</td>
+					}
+				
 					<td class="text-right locqty">
-						@item.rilQty
+						<input type="number" class="form-control btnsmall text-right rilqty" value="@line.rilQty" />					
 					</td>
 					<td class="text-center">
-						<button type="button" class="btn btn-warning edit" data-id="@item.Id">@Resources.Resource.Edit</button>
+						<button type="button" class="btn btn-success save" data-id="@line.Id">@Resources.Resource.Save</button>
 					</td>
 				</tr>
 			}

@@ -38,20 +38,17 @@ using System.Web;
 using System.Data.Entity.Core.Objects;
 using PPWLib.Models.Purchase.Supplier;
 using PPWCommonLib.BaseModels;
-using PPWLib.Models.Purchase;
 using ItemModel = PPWLib.Models.Item.ItemModel;
 using PPWLib.Models.User;
 using CommonLib.Models.MYOB;
-using DocumentFormat.OpenXml.Wordprocessing;
 using PPWLib.Models.Customer;
 
 namespace SmartBusinessWeb.Controllers
 {
-    [AllowAnonymous]
+	[AllowAnonymous]
     public class ApiController : Controller
     {        
         private ComInfo ComInfo { get { return Session["ComInfo"] as ComInfo; } }
-        private bool NonABSS { get { return ComInfo.DefaultCheckoutPortal.ToLower() == "nonabss"; } }
         private string ConnectionString { get { return string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ;", ComInfo.MYOBDriver, ComInfo.MYOBUID, ComInfo.MYOBPASS, ComInfo.MYOBDb, ComInfo.MYOBExe, ComInfo.MYOBKey); } }
         private string CentralBaseUrl { get { return UriHelper.GetAppUrl(); } }
         private string CentralApiUrl { get { return ConfigurationManager.AppSettings["CentralApiUrl"]; } }
@@ -2888,7 +2885,7 @@ namespace SmartBusinessWeb.Controllers
 
         //[HttpPost]
         [HttpGet]
-        public JsonResult GetItemsAjax(int pageIndex = 1, string keyword = "", string location = "", bool forsales = false, bool forwholesales = false, bool forpurchase = false, bool forstock = false, bool fortransfer = false, bool forpreorder = false, string type = "")
+        public JsonResult GetItemsAjax(int pageIndex = 1, string keyword = "", string location = "", string type = "")
         {
             ItemViewModel model = new ItemViewModel();
 
@@ -2908,60 +2905,7 @@ namespace SmartBusinessWeb.Controllers
             List<SalesItem> itemlist = ModelHelper.GetItemList(context, stockinfo, startIndex, model.PageSize, out model.RecordCount, keyword, location, type);
 
             ModelHelper.GetItemPriceLevelList(ref itemlist);
-            model.Items = itemlist;
-
-            //var itemcodelist = model.Items.Select(x => x.itmCode).Distinct().ToHashSet();
-            //if (forsales || forpreorder || forwholesales || forpurchase)
-            //{
-            //    ModelHelper.GetItemOptionsVariInfo(apId, location, context, itemcodelist, model);
-            //}
-            //if (forstock || fortransfer)
-            //{
-            //    model.LatestUpdateTime = CommonHelper.FormatDateTime(stockinfo.Where(x => x.lstModifyTime != null).Select(x => (DateTime)x.lstModifyTime).FirstOrDefault());
-            //    var salesInfos = context.GetSalesInfoByItemCodes1(apId, string.Join(",", itemcodelist)).ToList();
-
-            //    HashSet<string> locationlist = stockinfo.Select(x => x.lstStockLoc).Distinct().ToHashSet();
-            //    foreach (var loc in locationlist)
-            //    {
-            //        model.DicLocItemList[loc] = new List<DistinctItem>();
-            //        //model.DicLocItemQty[loc] = new Dictionary<string, int>();
-            //    }
-            //    foreach (var item in itemlist)
-            //    {
-            //        var ditem = new DistinctItem
-            //        {
-            //            ItemCode = item.itmCode.Trim(),
-            //            ItemName = item.itmName,
-            //            ItemDesc = item.itmDesc,
-            //            ItemTaxRate = item.itmTaxPc == null ? 0 : (double)item.itmTaxPc,
-            //            IsNonStock = item.itmIsNonStock,
-            //            ItemSupCode = item.itmSupCode,                       
-            //            chkBat = item.chkBat,
-            //            chkSN = item.chkSN,
-            //            chkVT = item.chkVT
-            //        };
-            //        foreach (var loc in locationlist)
-            //        {
-            //            if (model.DicLocItemList.Keys.Contains(loc))
-            //            {
-            //                model.DicLocItemList[loc].Add(ditem);
-            //            }
-            //        }
-            //    }
-
-            //    model.PrimaryLocation = ModelHelper.GetShops(connection, ref Shops, ref ShopNames, apId);
-            //    ModelHelper.GetItemOptionsInfo(context, ref model.DicLocItemList, itemcodelist, Shops, connection);
-            //}
-
-            //var itemcodes = string.Join(",", itemcodelist);
-            //foreach (var itemcode in itemcodelist)
-            //{
-            //    model.DicIvInfo[itemcode] = new List<PoItemVariModel>();
-            //}
-
-            //GetPoItemVariInfo
-            //model.PoIvInfo = connection.Query<PoItemVariModel>(@"EXEC dbo.GetPoItemVariInfo @apId=@apId,@itemcodes=@itemcodes", new { apId, itemcodes }).ToList();
-            //ModelHelper.GetDicIvInfo(context, model.PoIvInfo, ref model.DicIvInfo);
+            model.Items = itemlist;            
 
             model.DicItemOptions = ModelHelper.GetDicItemOptions(apId, context);
 

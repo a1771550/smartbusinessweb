@@ -95,9 +95,7 @@ $(document).on("click", "#btnTransfer", function () {
 $(document).on("change", "input.locqty", function () {
     let itmcode: string = $(this).data("code") as string;
     let shop: string = convertVarNumToString($(this).data("shop"));
-
     //console.log('itemcode:' + itmcode + ';shop:' + shop);
-
     var result = TransferList.filter(function (v, i) {
         return v.itmCode == itmcode && v.stShop == shop;
     });
@@ -110,10 +108,9 @@ $(document).on("change", "input.locqty", function () {
         stocktransfer = result[0];
     }
 
-    let originalqty: number = <number>$(this).data("oldval");
-    let changeqty: number = <number>$(this).val();
+    let originalqty: number = Number($(this).data("oldval"));
+    let changeqty: number = Number($(this).val());
     $(this).data("oldval", changeqty);
-
     //console.log("originalqty:" + originalqty + ";changeqty:" + changeqty);
 
     let diff: number = changeqty - originalqty;
@@ -129,8 +126,8 @@ $(document).on("change", "input.locqty", function () {
         stocktransfer.outQty = -1 * diff;
     }
 
-    let onhandstock: number = <number>$(this).data("onhandstock");
-    //console.log("onhandstock:" + onhandstock);
+    let onhandstock: number = Number($(this).data("onhandstock"));
+    console.log("onhandstock:" + onhandstock);
     let {
         $balance,
         balance,
@@ -157,19 +154,6 @@ $(document).on("change", "input.locqty", function () {
     }
 });
 
-$(document).on("change", "#txtStock", function () {
-    keyword = <string>$(this).val();
-    if (keyword !== "") {
-        GetStocks(1);
-    }
-});
-
-$(document).on("click", "#btnSearch", function () {
-    $("#txtStock").trigger("change");
-});
-
-
-
 $(document).on("dblclick", ".itemoption.locqty", function () {
     openWaitingModal();
     window.location.href = "/Transfer/Transfer?hasItemOption=1&hasIvOnly=0&itemId=" + $(this).data("itemid")+"&location="+$(this).data("shop")+"&qty="+$(this).val()+"&stcode="+$("#stCode").text();
@@ -181,33 +165,16 @@ $(document).on("dblclick", ".vari.locqty", function () {
 $(function () {
     setFullPage();
     triggerMenu(2, 2);
-    fortransfer = true;
-    gTblId = gFrmId = "Transfer";
-    stockTransferCode = <string>$("#stCode").text();
-    shops = $infoblk.data("shops")? (<string>$infoblk.data("shops")).split(","):[];
-
-    //console.log('sortorder:' + $('#sortorder').val() + ';sortcol:' + $('#sortcol').val());
-    $target = $(".colheader").eq(parseInt(<string>$("#sortcol").val()));
-    let sortcls =
-        $("#sortorder").val() === "asc" ? "fa fa-sort-up" : "fa fa-sort-down";
-    $target.addClass(sortcls);
-
     initModals();
+    fortransfer = true;
+    gTblId = "tblTransfer";
+    gFrmId = "frmTransfer";
+    stockTransferCode = <string>$("#stCode").text();
+    shops = $infoblk.data("shops") ? (<string>$infoblk.data("shops")).split(",") : [];
 
-    $target = $(".pagination");
-    $target
-        .wrap('<nav aria-label="Page navigation"></nav>')
-        .find("li")
-        .addClass("page-item")
-        .find("a")
-        .addClass("page-link");
+    sortByName = true;
+    ConfigSimpleSortingHeaders();
 
-    keyword = "";
-    $("#drpWarehouse").val($infoblk.data("shop"));
-    stocklocation = <string>$("#drpLocation").val();
-
-    DicIDItemOptions = $infoblk.data("jsondiciditemoptions");
-    GetStocks(1);
-
-    $("#txtStock").trigger("focus");
+    DicIDItemOptions = $infoblk.data("jsondiciditemoptions"); 
+    setInput4NumberOnly("number");
 });

@@ -6,8 +6,8 @@
 	Layout = null;
 	string cssbsfile = HttpContext.Current.Session["CssBSFile"] == null ? @"Content/bs4" : HttpContext.Current.Session["CssBSFile"].ToString();
 	string scriptbsfile = HttpContext.Current.Session["ScriptBSFile"] == null ? @"Scripts/bs4" : HttpContext.Current.Session["ScriptBSFile"].ToString();
-	var groupedreserveList = Model.GroupedReserveList;
 	var loadcsstxt = $"\"/Content/item/reserve/index.css?v={CommonHelper.GetVersionRandomNo()}\"";
+	var reserve = Model.ReserveLnList.FirstOrDefault();
 }
 <!DOCTYPE html>
 <html>
@@ -15,84 +15,78 @@
 
 <body style="padding-top:0!important;">
 
-
-	@foreach (var g in groupedreserveList)
-	{
-		var outtxt = $"({Resources.Resource.ItemOut})";
-		var reserve = g.FirstOrDefault();
-
-		<div id="printblk" style="">
-			<div class="d-flex justify-content-center">
-				<h1>@Resources.Resource.CompanyName</h1>
-			</div>
-			<div class="d-flex justify-content-center my-3">
-				<div class="card" style="border: 1px solid black !important; border-radius: 0.75rem !important;">
-					<div class="card-body" style="padding: 10px 30px !important;">
-						<h4 class="card-title">@string.Format(Resources.Resource.OrderFormat, Resources.Resource.Reserve)</h4>
-					</div>
+	<div id="printblk" style="">
+		<div class="d-flex justify-content-center">
+			<h1>@Resources.Resource.CompanyName</h1>
+		</div>
+		<div class="d-flex justify-content-center my-3">
+			<div class="card" style="border: 1px solid black !important; border-radius: 0.75rem !important;">
+				<div class="card-body" style="padding: 10px 30px !important;">
+					<h4 class="card-title">@string.Format(Resources.Resource.OrderFormat, Resources.Resource.Reserve)</h4>
 				</div>
 			</div>
-
-			<div class="d-flex justify-content-between">
-				<div>
-					<h4>@Resources.Resource.ReserveNumber <span class="badge badge-dark">@Model.ReserveNumber</span></h4>
-					<h4>@string.Format(Resources.Resource.DateFormat, Resources.Resource.Reserve) <span class="badge badge-dark">@Model.ReserveDateDisplay</span></h4>
-					<h4>@Resources.Resource.OutStock <span class="badge badge-dark">@reserve.rilSender</span></h4>
-					<h4>@Resources.Resource.Customer <span class="badge badge-dark">@reserve.CustomerName</span></h4>
-				</div>
-				<div>
-					<h4>@Resources.Resource.RunDate <span class="badge badge-dark">@CommonHelper.FormatDate(DateTime.Now.Date, true)</span></h4>
-				</div>
-			</div>
-			
-			<table class="table table-bordered my-4">
-				<thead class="resizable">
-					<tr>
-						<td style="text-align: center; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.ItemNumber</td>
-						<td style="text-align: center; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.ItemName</td>
-						<td style="text-align: center; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.UnitPrice (@Model.Currency)</td>
-						<td style="text-align: right; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.Qty</td>
-						<td style="text-align: center; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.PersonInCharge</td>
-					</tr>
-				</thead>
-				
-				@foreach (var v in g)
-				{
-					if (v.rilSender == reserve.rilSender)
-					{
-						
-						<tr>
-							<td class="text-center" style="border: 1px solid black !important; width:140px;min-width:140px;">
-								@v.itmCode
-							</td>
-							<td class="text-center" style="border: 1px solid black !important; width: 140px; min-width: 140px;">
-								@v.ItemNameDesc
-							</td>
-							<td class="text-right" style="border: 1px solid black !important; width: 120px !important; max-width: 120px !important;">
-								@v.SellingPriceDisplay
-							</td>
-							<td class="text-right" style="border: 1px solid black !important; width: 120px !important; max-width: 120px !important;">
-								@v.rilQty
-							</td>							
-							<td style="border: 1px solid black !important; width: 120px !important; min-width: 120px !important;">
-							</td>
-						</tr>
-					}
-				}
-			</table>
-
-			<div id="remarkblk">
-				<h4>@Resources.Resource.Remark</h4>
-				<div style="border:1px solid black!important; height:100px;">@reserve.riRemark</div>
-			</div>
-
 		</div>
 
+		<div class="d-flex justify-content-between">
+			<div>
+				<h4>@Resources.Resource.ReserveNumber <span class="badge badge-dark">@Model.ReserveNumber</span></h4>
+				<h4>@string.Format(Resources.Resource.DateFormat, Resources.Resource.Reserve) <span class="badge badge-dark">@Model.ReserveDateDisplay</span></h4>
+				<h4>@Resources.Resource.Customer <span class="badge badge-dark">@reserve.CustomerName</span></h4>
+			</div>
+			<div>
+				<h4>@Resources.Resource.RunDate <span class="badge badge-dark">@CommonHelper.FormatDate(DateTime.Now.Date, true)</span></h4>
+			</div>
+		</div>
 
-		<div class="display" id="break_page" style='page-break-after: always;'></div>
+		<table class="table table-bordered my-4">
+			<thead class="resizable">
+				<tr>
+					<td style="text-align: center; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.ItemNumber</td>
+					<td style="text-align: center; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.ItemName</td>
+					<td style="text-align: right; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.UnitPrice (@Model.Currency)</td>
+					<td style="text-align: right; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.Qty</td>
+					<td style="text-align: center; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.Warehouse</td>
+					<td style="text-align: center; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.PersonInCharge</td>
+				</tr>
+			</thead>
+
+			@foreach (var v in Model.ReserveLnList)
+			{
+				<tr>
+					<td class="text-center" style="border: 1px solid black !important; width:140px;min-width:140px;">
+						@v.itmCode
+					</td>
+					<td class="text-center" style="border: 1px solid black !important; width: 140px; min-width: 140px;">
+						@v.ItemNameDesc
+					</td>
+					<td class="text-right" style="border: 1px solid black !important; width: 120px !important; max-width: 120px !important;">
+						@v.SellingPriceDisplay
+					</td>
+					<td class="text-right" style="border: 1px solid black !important; width: 120px !important; max-width: 120px !important;">
+						@v.rilQty
+					</td>
+					<td class="text-center" style="border: 1px solid black !important; width: 120px !important; max-width: 120px !important;">
+						@v.rilSender
+					</td>
+					<td style="border: 1px solid black !important; width: 120px !important; min-width: 120px !important;">
+					</td>
+				</tr>
+
+			}
+		</table>
+
+		<div id="remarkblk">
+			<h4>@Resources.Resource.Remark</h4>
+			<div style="border:1px solid black!important; height:100px;">@reserve.riRemark</div>
+		</div>
+
+	</div>
 
 
-	}
+	<div class="display" id="break_page" style='page-break-after: always;'></div>
+
+
+
 	<script src="~/Scripts/printthis/printThis.js"></script>
 	<script>
         $(function () {

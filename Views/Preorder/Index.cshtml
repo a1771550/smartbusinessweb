@@ -165,7 +165,7 @@ else
 		<div id="pagingblk" class="my-3">
 			
 				@Html.PagedListPager(Model.PagingOrderList, PageNo => Url.Action("Index",
-		new { PageNo, SortOrder = Model.SortOrder, SortName = Model.SortName, Keyword = Model.Keyword, strfrmdate = Model.DateFromTxt, strtodate = Model.DateToTxt }))
+		new { PageNo, SortOrder = Model.CurrentSortOrder, SortName = Model.SortName, Keyword = Model.Keyword, strfrmdate = Model.DateFromTxt, strtodate = Model.DateToTxt }))
 			
 		</div>
 	</div>

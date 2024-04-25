@@ -51,5 +51,7 @@ $(function () {
 	setFullPage();
 	triggerMenu(2, 6);
 	initModals();
+
+	setInput4NumberOnly("number");
 });
 

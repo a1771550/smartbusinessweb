@@ -4,6 +4,7 @@
 	ViewBag.Title = string.Format(Resources.Resource.ListFormat, Resources.Resource.Item);
 	int rand = CommonHelper.GetVersionRandomNo();
 }
+<link href="~/Content/item/index.css?v=@rand" rel="stylesheet" type="text/css" />
 <h2>@ViewBag.Title</h2>
 <p class="my-3">
 	@Html.ActionLink(Resources.Resource.Add, "Edit", new { itemId = 0, referrer = "Index" }, new { @class = "btn btn-info" })
@@ -15,56 +16,56 @@
 		<div class="form-group">
 			<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" />
 			<button id="btnSearch" type="submit" class="btn btn-success ml-4">@Resources.Resource.Search</button>
-
 			<button id="btnReload" type="button" class="btn btn-warning ml-4">@Resources.Resource.Reload</button>
 		</div>
 	</div>
 
 
-	<table id="tblItems" class="table table-bordered table-hover table-condensed overflow-auto">
+	<table id="tblItems" class="tblList table table-bordered table-hover table-condensed overflow-auto">
 		<thead class="gray-header">
 			<tr>
-				<th scope="col" class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">@Resources.Resource.ItemCode</th>
-				<th scope="col" class="text-center colheader" data-col="1" data-keyword="@Model.Keyword">@Resources.Resource.Name/@Resources.Resource.Description</th>
-				<th scope="col" class="text-center colheader" data-col="2" data-keyword="@Model.Keyword">@Resources.Resource.CreateTime</th>
-				<th scope="col" class="text-center colheader" data-col="3" data-keyword="@Model.Keyword">@Resources.Resource.ModifyTime</th>
-				<th scope="col" class="text-center colheader" data-col="4" data-keyword="@Model.Keyword">ABSS</th>
-				<th scope="col"></th>
+				<th class="text-center colheader itemcode" data-col="code">@Resources.Resource.ItemCode</th>
+				<th class="text-center colheader itemdesc" data-col="namedesc">@Resources.Resource.Name/@Resources.Resource.Description</th>
+				<th class="text-right colheader itemprice" data-col="price">@Resources.Resource.SellingPrice (@Model.Currency)</th>
+				<th class="text-center itemoptions">@Resources.Resource.Batch|@Resources.Resource.SerialNo|@Resources.Resource.ExpiryDate</th>
+				<th class="text-center itemvari">@Resources.Resource.ItemVariations</th>
+				<th class="text-center abss colheader" data-col="abss">ABSS</th>
+				<th class="action"></th>
 			</tr>
 		</thead>
 
-
-		@foreach (var item in Model.PagingItemList)
-		{
-			var namedesctxt = item.NameDesc.Length > 40 ? item.NameDesc.Substring(0, 40) + "..." : item.NameDesc;
+		@foreach (var item in Model.ItemPagingList)
+		{			
 			var abssdisplay = (bool)item.itmCheckout ? Resources.Resource.Yes : Resources.Resource.No;
 			var disabled = (bool)item.itmCheckout ? "disabled" : "";
 			var trcls = (bool)item.itmCheckout ? "" : "nonabss";
 			<tr class="@trcls">
 
-				<td class="text-center">@item.itmCode</td>
-				<td class="text-center itemdesc" data-desc="@item.NameDesc">@namedesctxt</td>
+				<td class="text-center itemcode" title="@item.itmCode">@item.itmCode</td>
+				<td class="text-center itemdesc" data-desc="@item.NameDesc" title="@item.NameDesc">@item.NameDescDisplay</td>
+				<td class="text-right itemprice">
+					<input type="text" class="itemprice form-control btnsmall number" readonly value="@item.itmBaseSellingPrice" />
+				</td>
+				<td class="text-center itemoptions">@Html.Raw(item.ItemOptionsDisplay)</td>
+				<td class="text-center itemvari">@Html.Raw(item.ItemVariationsDisplay)</td>
 
-				<td class="text-center">@item.CreateTimeDisplay</td>
-				<td class="text-center">@item.ModifyTimeDisplay</td>
+				<td class="text-center abss">@abssdisplay</td>
 
-				<td class="text-center">@abssdisplay</td>
-
-				<td>
-					<a class="btn btn-info" role="button" href="/Item/Edit?itemId=@item.itmItemID&referrer=Index">@Resources.Resource.Edit</a>
-					<a class="btn btn-outline-danger itemremove @disabled" role="button" href="#" data-id="@item.itmItemID">@Resources.Resource.Remove</a>
+				<td class="action">
+					<a class="btn btn-info mx-1" role="button" href="/Item/Edit?itemId=@item.itmItemID&referrer=Index">@Resources.Resource.Edit</a>
+					<a class="btn btn-outline-danger itemremove mx-1 @disabled" role="button" href="#" data-id="@item.itmItemID">@Resources.Resource.Remove</a>
 				</td>
 			</tr>
 		}
 
 	</table>
 	<div id="pagingblk" class="my-3">
-		@Html.PagedListPager(Model.PagingItemList, PageNo => Url.Action("Index",
-new { PageNo, SortCol = Model.SortCol, SortOrder = Model.SortOrder, Keyword = Model.Keyword }))
+		@Html.PagedListPager(Model.ItemPagingList, PageNo => Url.Action("Index",
+new { PageNo, SortName = Model.SortName, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
 	</div>
 
 	<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
-	<input type="hidden" id="sortcol" value="@Model.SortCol" />
+	<input type="hidden" id="sortname" value="@Model.SortName" />
  <!--no "name" attr in propose!-->
 }
 @Html.AntiForgeryToken()

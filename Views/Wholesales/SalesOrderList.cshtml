@@ -214,7 +214,7 @@ else
         <div id="pagingblk" class="my-3">
             
                 @Html.PagedListPager(Model.PagingWholeSalesOrderList, PageNo => Url.Action("SalesOrderList",
-        new { PageNo, SortOrder = Model.SortOrder, SortName = Model.SortName, Keyword = Model.Keyword, strfrmdate = Model.DateFromTxt, strtodate = Model.DateToTxt }))
+        new { PageNo, SortOrder = Model.CurrentSortOrder, SortName = Model.SortName, Keyword = Model.Keyword, strfrmdate = Model.DateFromTxt, strtodate = Model.DateToTxt }))
           
         </div>
     </div>

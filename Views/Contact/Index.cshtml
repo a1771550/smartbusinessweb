@@ -222,7 +222,7 @@
 				<div id="pagingblk" class="mx-4">
 					<div class="row">
 						@Html.PagedListPager(Model.PagingCustomAttributes, PageNo => Url.Action("Index",
-new { PageNo, SortOrder = Model.SortOrder, Keyword = Model.Keyword }))
+new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
 					</div>
 				</div>
 			}

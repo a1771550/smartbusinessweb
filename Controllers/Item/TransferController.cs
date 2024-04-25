@@ -118,12 +118,17 @@ namespace SmartBusinessWeb.Controllers.Item
 
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
-        public ActionResult Index()
+        public ActionResult Index(int PageNo = 1, string SortName = "code", string SortOrder = "desc", string Keyword = null)
         {
-            ViewBag.ParentPage = "item";
-            ViewBag.PageName = "transfer";       
-            TransferEditModel model = new();
-            return View(model);
+            ViewBag.ParentPage = "item";  
+            TransferEditModel model = new()
+			{
+				SortName = SortName,
+				SortOrder = (SortOrder == "desc") ? "asc" : "desc",
+				Keyword = Keyword,
+			};
+			model.GetItemList(PageNo, (int)ComInfo.PageLength, SortName, SortOrder, Keyword);
+			return View(model);
         }
 
     }

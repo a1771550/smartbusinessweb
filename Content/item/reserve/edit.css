@@ -7,8 +7,8 @@
 }
 
 #tblEdit th.sender, #tblEdit td.sender {
-	width: 220px;
-	max-width: 220px !important;
+	width: 100px;
+	max-width: 100px !important;
 }
 #tblEdit th.itemcode, #tblEdit td.itemcode {
 	width: 220px;

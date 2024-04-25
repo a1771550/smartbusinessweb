@@ -62,7 +62,7 @@
 
 		<div id="pagingblk" class="my-3">
 			@Html.PagedListPager(Model.ReservePagingList, PageNo => Url.Action("Index",
-		new { PageNo, SortCol = Model.SortCol, SortOrder = Model.SortOrder, Keyword = Model.Keyword }))
+		new { PageNo, SortCol = Model.SortCol, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
 		</div>
 
 		<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />

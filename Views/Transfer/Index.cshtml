@@ -1,58 +1,97 @@
 ﻿@model PPWLib.Models.Item.TransferEditModel
+@using PagedList.Mvc;
 @{
 	ViewBag.Title = string.Format(Resources.Resource.InventoryFormat, Resources.Resource.Transfer);
 	int rand = CommonHelper.GetVersionRandomNo();
 	SessUser user = HttpContext.Current.Session["User"] as SessUser;
-	var shop = user.shopCode ?? (HttpContext.Current.Session["ComInfo"] as ComInfo).Shop;
-	var device = user.dvcCode ?? (HttpContext.Current.Session["ComInfo"] as ComInfo).Device;
 }
-<link href="~/Content/item/transfer.css?v=@rand" rel="stylesheet" type="text/css" />
+<link href="~/Content/item/index.css?v=@rand" rel="stylesheet" type="text/css" />
+<link href="~/Content/item/transfer/index.css?v=@rand" rel="stylesheet" type="text/css" />
 
 <h2>@ViewBag.Title</h2>
 
-@using (Html.BeginForm("Transfer", "Purchase", FormMethod.Get, new { @Id = "frmTransfer" }))
+@using (Html.BeginForm("Index", "Transfer", FormMethod.Get, new { @Id = "frmTransfer" }))
 {
 	@Html.Partial("_ItemPagesCheckBox", null, new ViewDataDictionary { { "transfer", true } })
 
 	<div class="form-inline my-4 clearfix">
 		<div class="form-group">
-			<input type="text" class="form-control" id="txtStock" placeholder="@Resources.Resource.EnterItemCodeName" />
+			<input type="text" class="form-control" id="txtKeyword" name="txtKeyword" placeholder="@Resources.Resource.EnterItemCodeName" />
 			<button id="btnSearch" type="button" class="btn btn-primary ml-4">@Resources.Resource.Search</button>
 			<button id="btnReload" type="button" class="btn btn-warning ml-4">@Resources.Resource.Reload</button>
 			<button id="btnList" type="button" class="btn btn-info ml-4" onclick="window.location.href = '/Transfer/List';">@Resources.Resource.List</button>
 		</div>
 	</div>
 
-
 	<span class="small font-weight-bold"><span class="text-primary">@Resources.Resource.StockTransferNumber:</span> <span id="stCode">@Model.TransferNumber</span></span>
 
-
-	<span class="mx-3 small font-weight-bold">
-		<span class="text-success">@Resources.Resource.LastUpdateTime:</span>
-		<span id="lastupdatetime">@Model.LastUpdateTime</span>
-	</span>
-
-	<div id="norecord" class="alert alert-warning">@Resources.Resource.NoDataFound</div>
-	<table id="tblTransfer" class="table table-bordered table-hover table-condensed overflow-auto small">
+	<table id="tblTransfer" class="tblList table table-bordered table-hover table-condensed overflow-auto small">
 		<thead class="gray-header">
 			<tr class="">
-				<th class="text-center colheader" data-col="0" data-order="@Model.CurrentSortOrder">@Resources.Resource.ItemCode</th>
-				<th class="text-center colheader" data-col="1" data-order="@Model.CurrentSortOrder">@Resources.Resource.ItemName</th>
-				<th class="text-center">@Resources.Resource.Batch|@Resources.Resource.SerialNo|@Resources.Resource.ExpiryDate</th>
-				<th class="text-center">@Resources.Resource.ItemVariations</th>
+				<th class="text-center colheader itemcode" data-col="code">@Resources.Resource.ItemCode</th>
+				<th class="text-center colheader itemdesc" data-col="namedesc">@Resources.Resource.Name/@Resources.Resource.Description</th>
+				<th class="text-right colheader itemprice" data-col="price">@Resources.Resource.SellingPrice (@Model.Currency)</th>
+				<th class="text-center itemoptions">@Resources.Resource.Batch|@Resources.Resource.SerialNo|@Resources.Resource.ExpiryDate</th>
+				<th class="text-center itemvari">@Resources.Resource.ItemVariations</th>
 
-				<th class="text-right"><span class="font-weight-bold">@Resources.Resource.OnHandStock</span></th>
-				@foreach (var _shop in Model.ShopNames)
+				<th class="text-right colheader font-weight-bold onhandstock qty" data-col="5">@Resources.Resource.OnHandStock</th>
+				@foreach (var shop in Model.ShopNames)
 				{
-					<th class="text-right">@_shop</th>
+					<th class="text-right locqty qty">@shop</th>
 				}
-				<th class="text-right"><span class="font-weight-bold">@Resources.Resource.OutOfBalance</span></th>
+				<th class="text-right outofbalance qty font-weight-bold">@Resources.Resource.OutOfBalance</th>
 			</tr>
 		</thead>
-		<tbody></tbody>
+		<tbody>
+			@foreach (var item in Model.PagingItemList)
+			{				
+				<tr>
+					<td class="text-center itemcode" title="@item.itmCode">@item.itmCode</td>
+					<td class="text-center itemdesc" data-desc="@item.NameDesc" title="@item.NameDesc">@item.NameDescDisplay</td>
+					<td class="text-right itemprice">
+						<input type="text" class="itemprice form-control btnsmall number" readonly value="@item.itmBaseSellingPrice" />
+					</td>
+					<td class="text-center itemoptions">@Html.Raw(item.ItemOptionsDisplay)</td>
+					<td class="text-center itemvari">@Html.Raw(item.ItemVariationsDisplay)</td>
+
+
+					<td class="text-right onhandstock @item.OutOfStockCls">@item.QuantityAvailable</td>
+
+					@foreach (var shop in Model.Shops)
+					{
+						int isprimary = Model.PrimaryLocation == shop ? 1 : 0;
+						int qty = 0;
+						string Id = "";
+						if (Model.DicCodeLocQty.ContainsKey(item.itmCode) && Model.DicCodeLocQty[item.itmCode].ContainsKey(shop))
+						{
+							qty = Model.DicCodeLocQty[item.itmCode][shop];
+						}
+						if (Model.DicCodeLocId.ContainsKey(item.itmCode) && Model.DicCodeLocId[item.itmCode].ContainsKey(shop))
+						{
+							Id = Model.DicCodeLocId[item.itmCode][shop];
+						}
+
+						<td class="text-right locqty">
+							<input type="text" class="form-control text-right btnsmall locqty" data-id="@Id" data-isprimary="@isprimary" data-code="@item.itmCode" data-shop="@shop" data-onhandstock="@item.QuantityAvailable" data-oldval="@qty" data-itemid="@item.itmItemID" value="@qty" title="@qty">
+						</td>
+					}
+
+					<td class="text-right rqty">
+						<input type="text" class="text-right btnsmall form-control okbalance balance" readonly value="0">
+					</td>
+				</tr>
+			}
+		</tbody>
 	</table>
-	<br />
-	<div class="Pager"></div>
+
+	<div id="pagingblk" class="my-3">
+		@Html.PagedListPager(Model.PagingItemList, PageNo => Url.Action("Index",
+new { PageNo, SortName = Model.SortName, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
+	</div>
+
+	<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+	<input type="hidden" id="sortname" value="@Model.SortName" />
+	<!--no "name" attr in propose!-->
 }
 
 @Html.Partial("_WaitingModal")
@@ -67,5 +106,5 @@
 
 <div id="infoblk" data-shop="@user.shopCode" data-shops="@string.Join(",",Model.Shops)" data-enablebuysellunits="@Model.EnableBuySellUnits" data-outofbalancewarningtxt="@Resources.Resource.OutOfBalanceWarning" data-jsondiciditemoptions="@Model.JsonDicIDItemOptions"></div>
 
-<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+
 <script src="~/Scripts/ts/js/item/transfer/index.js?v=@rand"></script>

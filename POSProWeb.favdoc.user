@@ -624,9 +624,19 @@
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\customer\index.css</absolutePath>
         </Favorite>
         <Favorite>
-          <name>reserve.css</name>
-          <path>Content\item\reserve.css</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\item\reserve.css</absolutePath>
+          <name>reserve-index.css</name>
+          <path>Content\item\reserve\index.css</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\item\reserve\index.css</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>reserve-edit.css</name>
+          <path>Content\item\reserve\edit.css</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\item\reserve\edit.css</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>transfer-index.css</name>
+          <path>Content\item\transfer\index.css</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\item\transfer\index.css</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

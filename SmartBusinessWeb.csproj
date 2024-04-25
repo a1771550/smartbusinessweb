@@ -2708,6 +2708,7 @@
     <Content Include="Content\images\X-office-calendar.svg" />
     <Content Include="Content\Item.css" />
     <Content Include="Content\item\iaedit.css" />
+    <Content Include="Content\item\index.css" />
     <Content Include="Content\item\reserve\edit.css" />
     <Content Include="Content\item\reserve\index.css" />
     <Content Include="Content\job.css" />
@@ -2787,11 +2788,11 @@
     <Content Include="Content\select2\select2.css" />
     <Content Include="Content\select2\select2.min.css" />
     <Content Include="Content\item\stock.css" />
-    <Content Include="Content\item\stocktransfer.css" />
+    <Content Include="Content\item\transfer\print.css" />
     <Content Include="Content\supplier\edit.css" />
     <Content Include="Content\supplier\index.css" />
     <Content Include="Content\training.css" />
-    <Content Include="Content\item\transfer.css" />
+    <Content Include="Content\item\transfer\index.css" />
     <Content Include="Content\wholesalesprint.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />

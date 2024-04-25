@@ -1,0 +1,52 @@
+﻿.form-control:not(textarea):not(#txtKeyword) {
+	padding: 0 .75rem !important;
+	height: calc(1.5rem + 2px) !important;
+}
+.tblList th.itemcode, .tblList td.itemcode {
+	width: 250px;
+	/*max-width: 220px !important;*/
+}
+
+.tblList th.itemdesc, .tblList td.itemdesc {
+	width: 350px;
+	/*max-width: 300px !important;*/
+}
+
+.tblList th.itemprice, .tblList td.itemprice {
+	width: 140px;
+}
+
+.tblList th.itemoptions, .tblList td.itemoptions {
+	width: 200px;
+}
+
+.tblList th.itemvari, .tblList td.itemvari {
+	width: 80px;
+	min-width:80px;
+}
+
+.tblList th.onhandstock, .tblList td.onhandstock {
+	width: 80px;
+}
+
+.tblList th.locqty, .tblList td.locqty, .tblList th.rqty, .tblList td.rqty {
+	width: 100px;
+	min-width:100px!important;
+}
+
+.tblList th.tqty, .tblList td.tqty {
+	width: 80px;
+}
+
+.tblList th.rqty, .tblList td.rqty {
+	width: 100px;
+}
+.tblList th.abss, .tblList td.abss {
+	width: 80px;
+}
+.tblList th.action,.tblList td.action{
+	width:140px;
+}
+.itemprice{
+	text-align:right;
+}

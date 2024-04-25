@@ -22,49 +22,19 @@ namespace SmartBusinessWeb.Controllers.Item
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
         [HttpGet]
-        public ActionResult Index(int SortCol = 2, string SortOrder = "desc", string Keyword = "", int? PageNo = 1)
+        public ActionResult Index(int PageNo = 1, string SortName = "code", string SortOrder = "desc", string Keyword = null)
         {
-            ViewBag.ParentPage = "Item";
-            ViewBag.PageName = "list";
-            if (string.IsNullOrEmpty(Keyword))
-                Keyword = null;
-
+            ViewBag.ParentPage = "Item";           
+         
             ItemEditModel model = new()
             {
-                SortCol = SortCol,
-                Keyword = Keyword,
-                SortOrder = (SortOrder == "desc") ? "asc" : "desc"
-            };
+				SortName = SortName,
+				SortOrder = (SortOrder == "desc") ? "asc" : "desc",
+				CurrentSortOrder = SortOrder,
+				Keyword = Keyword,
+			};
 
-            var itemlist = model.GetList(Keyword);
-
-            int Size_Of_Page = PageSize;
-            int No_Of_Page = (PageNo ?? 1);
-            var sortColumnIndex = SortCol;
-            var sortDirection = SortOrder;
-
-            if (sortColumnIndex == 0)
-            {
-                itemlist = sortDirection == "asc" ? itemlist.OrderBy(c => c.itmCode).ToList() : itemlist.OrderByDescending(c => c.itmCode).ToList();
-            }
-            else if (sortColumnIndex == 1)
-            {
-                itemlist = sortDirection == "asc" ? itemlist.OrderBy(c => c.NameDesc).ToList() : itemlist.OrderByDescending(c => c.NameDesc).ToList();
-            }
-            else if (sortColumnIndex == 2)
-            {
-                itemlist = sortDirection == "asc" ? itemlist.OrderBy(c => c.itmCreateTime).ToList() : itemlist.OrderByDescending(c => c.itmCreateTime).ToList();
-            }
-            else if (sortColumnIndex == 3)
-            {
-                itemlist = sortDirection == "asc" ? itemlist.OrderBy(c => c.itmModifyTime).ToList() : itemlist.OrderByDescending(c => c.itmModifyTime).ToList();
-            }
-            else if (sortColumnIndex == 4)
-            {
-                itemlist = sortDirection == "asc" ? itemlist.OrderBy(c => c.itmCheckout).ToList() : itemlist.OrderByDescending(c => c.itmCheckout).ToList();
-            }
-
-            model.PagingItemList = itemlist.ToPagedList(No_Of_Page, Size_Of_Page);
+            model.GetList(PageNo, (int)ComInfo.PageLength, SortName, SortOrder, Keyword);
             return View(model);
         }
 
