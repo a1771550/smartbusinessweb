@@ -1,10 +1,10 @@
 ﻿$infoblk = $("#infoblk");
-debug = $infoblk.data("debug") === "True";
-isLocal = $infoblk.data("islocal") === "True";
+
 
 $(function () {
     localStorage.removeItem("sessionstartdata");
     $(".noncentral").show();
+    isLocal = $infoblk.data("islocal") === "True";
     initModals();
 
     $("#RedirectUrl").val(getParameterByName("redirectUrl") as string);
@@ -20,7 +20,7 @@ $(function () {
            $("#Email").val("utservice@united.com.hk");
            // $("#Email").val("enquiry@united.com.hk");     
             $("#Password").val("Pos123456");
-            $("#btnLogin").trigger("focus");
+            $("#btnLogin").trigger("click");
         } else {
             $("#Email").trigger("focus");
         }
@@ -33,7 +33,7 @@ $(function () {
                 salesmanId === 6 ? "sunnyy@united.com.hk" : "utservice@united.com.hk"
             );
         }
-        if (debug) $("#Password").val("Pos123456");
+        if (isLocal) $("#Password").val("Pos123456");
 
         $("#btnLogin").trigger("focus");
     }
@@ -46,20 +46,7 @@ $(document).on("change", "input", function () {
 });
 
 $(document).on("change", "#Email", function () {
-    if (debug) {
-        // if (
-        //   $(this).val() == "sunnyy@united.com.hk" ||
-        //   $(this).val() == "enquiry@proview-med.com.hk" ||
-        //   $(this).val() == "kevinlau@united.com.hk"
-        // ) {
-        $("#Password").val("Pos123456");
-        // } else {
-        //   $("#Password").val("123456").trigger("focus");
-        // }
-        /*  if ($(this).val() !== "") {*/
-        $("#btnLogin").trigger("focus");
-        //}
-    }
+    if (isLocal) $("#Password").val("Pos123456");
     $("#btnLogin").trigger("focus");
 });
 

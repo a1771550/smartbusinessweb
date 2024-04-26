@@ -478,6 +478,7 @@ tr.code {
 .okbalance {
   background-color: #e7f5c6 !important;
 }
+.selectedshop,
 .noneedstatusbg,
 .outofbalance {
   background-color: #fe9b9b !important;

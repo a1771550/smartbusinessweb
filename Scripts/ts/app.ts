@@ -50,10 +50,14 @@ interface IReserveLn {
 	SellingPriceDisplay: string;
 }
 let Reserve: IReserve;
+let ReserveLn: IReserveLn;
 let ReserveLnList: IReserveLn[] = [];
 let JsStockList: Array<IJsStock> = [];
 let ReserveCode: string = "";
 let sortByName: boolean = false;
+let DicCodeLocQty: { [Key: string]: { [Key: string]: number } }; //Dictionary<string, Dictionary < string, int >> DicCodeLocQty;
+let DicCodeLocId: { [Key: string]: { [Key: string]: string } };
+//let DicLocCodeResQty: { [Key: string]: { [Key: string]: number } };
 interface IPaymentType {
 	Id: number;
 	pmtCode: string;
@@ -1206,8 +1210,7 @@ function GetItems(pageIndex) {
 
 	openWaitingModal();
 	$.ajax({
-		url:
-			checkoutportal == "kingdee" ? "/Api/GetKItemsAjax" : "/Api/GetItemsAjax",
+		url: "/Api/GetItemsAjax",
 		type: "GET",
 		data: data,
 		contentType: "application/json; charset=utf-8",
@@ -1252,11 +1255,13 @@ function OnSuccess(response) {
 				selectedPurchaseItem!.Item = structuredClone(ItemList[0]);
 			}
 
-			if (forsales || forpurchase || forwholesales || forpreorder || forIA) {
+			if (forsales || forpurchase || forwholesales || forpreorder || forIA || forEditReserve) {
 				$(".itemcode").off("change");
-				populateItemRow();
+				if (forEditReserve) populateReserveRow();
+				else populateItemRow();
 				$(".itemcode").on("change", handleItemCodeChange);
-			} else {
+			}
+			else {
 				copiedItem = structuredClone(ItemList[0]);
 			}
 		} else {
@@ -8529,6 +8534,7 @@ function handleItmCodeSelected() {
 		//console.log("here");
 		GetSetSelectedLns(null);
 	}
+	if (forEditReserve) toggleItemCodeChange();
 	else {
 		copiedItem = $.grep(ItemList, function (e: IItem, i: number) {
 			return (
@@ -8557,7 +8563,8 @@ $(document).on("click", ".proItem", function (e) {
 
 function toggleItemCodeChange(proId: number | null = 0) {
 	$(".itemcode").off("change");
-	populateItemRow(proId);
+	if (forEditReserve) populateReserveRow();
+	else populateItemRow(proId);
 	$(".itemcode").on("change", handleItemCodeChange);
 }
 
@@ -10823,7 +10830,8 @@ $(document).on("dblclick", ".itemcode", function () {
 		if (Purchase.pstStatus == "order" || Purchase.pstStatus == "created") {
 			GetItems(1);
 		}
-	} else {
+	}
+	else {
 		GetItems(1);
 	}
 });
@@ -21609,7 +21617,7 @@ function removeEmptyRow() {
 }
 
 
-function showMsg(Id: string, msg: string, alertCls: string, timeout: number = 3000, fadeout: number = 1000) {
+function showMsg(Id: string, msg: string, alertCls: string = "info", timeout: number = 3000, fadeout: number = 1000) {
 	$(`#${Id}`).addClass(`small alert alert-${alertCls}`).html(msg);
 	setTimeout(function () {
 		$(`#${Id}`).fadeOut(fadeout);
@@ -22333,7 +22341,7 @@ $(document).on("click", ".colheader", function () {
 });
 function ConfigSimpleSortingHeaders() {
 	let $sortorder = $("#sortorder");
-	
+
 	if (sortByName) {
 		let sortname = $("#sortname").val() as string;
 		//console.log("sortname:" + sortname);
@@ -22342,8 +22350,8 @@ function ConfigSimpleSortingHeaders() {
 				$target = $(e);
 				return false;
 			}
-		});	
-	} 
+		});
+	}
 	else {
 		let $sortcol = $("#sortcol");
 		$target = $(".colheader").eq(Number($sortcol.val()));
@@ -22373,8 +22381,6 @@ function ConfigSimpleSortingHeaders() {
 
 function handleReserveSaved() {
 	if (forCreateReserve) {
-		Reserve = {} as IReserve;
-		Reserve.riCode = ReserveCode;
 		Reserve.cusCode = reserveModal.find("#drpCustomer").val() as string;
 		Reserve.riRemark = reserveModal.find("#txtRemark").val() as string;
 		closeReserveModal();
@@ -22475,3 +22481,65 @@ function GetReserveRemarkDisplay(remark: string): string {
 	if (remark.length > 30) remark = remark.substring(0, 25).concat("...");
 	return remark;
 }
+
+$(document).on("change", ".reserve.locqty", function () {
+	getRowCurrentY.call(this);
+	let changeqty: number = Number($(this).val());
+	console.log("changeqty:" + changeqty);
+	if (changeqty <= 0) return false;
+
+	let oldstockqty: number = Number($(this).data("oldstockqty"));
+	$(this).data("oldstockqty", changeqty);
+	console.log("oldstockqty:" + oldstockqty + ";changeqty:" + changeqty);
+	let diff: number = oldstockqty - changeqty;
+	$(this).data("diff", diff);
+	console.log("diff:" + diff);
+	if (diff > 0) {
+		let itmcode: string = $(this).data("code") as string;
+		let shop: string = convertVarNumToString($(this).data("shop"));
+		let price: number = Number($tr.find("td.itemprice").find("input.itemprice").val());
+
+		if (forCreateReserve) {
+			let totalResQty = Number($tr.find(".rilqty").val());
+			totalResQty += diff;
+			$tr.find(".rilqty").val(totalResQty);
+
+			ReserveLn = { riCode: Reserve.riCode, itmCode: itmcode, rilSender: shop, itmSellingPrice: price, rilQty: diff } as IReserveLn;
+
+			if (ReserveLnList.length == 0) ReserveLnList.push(ReserveLn);
+			handleReserveLnList(itmcode, shop);
+		}
+		if (forEditReserve) {
+			let totalResQty = Number($tr.find(".rilqty").data("totalreservedqty")); //MUST NOT use val()!!!
+			console.log("totalResQty#before adding:", totalResQty);
+			let currentReservedQty = Number($(this).data("currentreservedqty"));
+			console.log("currentReservedQty:" + currentReservedQty);
+
+			let newReservedQty = diff + currentReservedQty;
+			console.log("newReservedQty:", newReservedQty);
+
+			totalResQty += diff;
+			console.log("totalResQty#after adding:", totalResQty);
+			$tr.find(".rilqty").data("totalreservedqty", totalResQty);
+
+			$tr.find(".rilqty").val(totalResQty);
+
+			ReserveLn = { riCode: Reserve.riCode, itmCode: itmcode, rilSender: shop, itmSellingPrice: price, rilQty: newReservedQty } as IReserveLn;
+			console.log("ReserveLn:", ReserveLn);
+
+			handleReserveLnList(itmcode, shop);
+		}
+
+	}
+	console.log("ReserveLnList#2:", ReserveLnList);
+
+    function handleReserveLnList(itmcode: string, shop: string) {
+        let idx = ReserveLnList.findIndex(x => x.itmCode == itmcode && x.rilSender == shop);
+        if (idx >= 0) {
+            ReserveLnList[idx] = structuredClone(ReserveLn);
+            //console.log("ReserveLnList#1:", ReserveLnList);
+        } else {
+            ReserveLnList.push(ReserveLn);
+        }
+    }
+});

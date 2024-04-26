@@ -36,12 +36,11 @@ namespace SmartBusinessWeb.Controllers.Item
 		[CustomAuthorize("item", "boss", "admin", "superadmin")]
 		[ValidateAntiForgeryToken]
 		[HttpPost]
-		public JsonResult EditLine(ReserveLnModel ReserveLn)
+		public JsonResult EditLines(List<ReserveLnModel> ReserveLnList)
 		{	
-			ReserveEditModel.EditLine(ReserveLn);
-			return Json(string.Format(Resources.Resource.SavedOkFormat, Resources.Resource.Reserve));
+			ReserveEditModel.EditLines(ReserveLnList);
+			return Json(Resources.Resource.Saved);
 		}
-
 
 		[HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]

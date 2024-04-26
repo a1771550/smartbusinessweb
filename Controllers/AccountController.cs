@@ -34,8 +34,7 @@ namespace SmartBusinessWeb.Controllers
         public ActionResult Login(LoginUserModel model)
         {
             SysUser user = null;
-            string msg = string.Empty;
-            int apId = model.apId;
+            string msg = string.Empty;           
             string hash = string.Empty;
             GetUserByEmail3_Result _user = null;
 
@@ -50,20 +49,23 @@ namespace SmartBusinessWeb.Controllers
 
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
-                model.UserCode = _user.UserCode;
-                model.CompanyCode = _user.CompanyCode;
-                model.SelectedShop = _user.shopCode;
-                model.SelectedDevice = _user.dvcCode;
-                model.AccountProfileId = _user.AccountProfileId;
-                model.IsCentral = _user.IsCentral;
-
-                ComInfo comInfo = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == apId);
-
-                var _roleuser = context.LoginPCUser8(model.Email, hash, model.SelectedDevice, model.SelectedShop).ToList();//because of multi-roles!
+				ComInfo comInfo = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == _user.AccountProfileId);
+				
+				var _roleuser = context.LoginPCUser8(model.Email, hash, model.SelectedDevice, model.SelectedShop).ToList();//because of multi-roles!
                 var roles = _roleuser.Select(x => x.rlCode).Distinct().ToList();
                 if (_roleuser != null && _roleuser.Count >= 1)
                 {
-                    var __user = _roleuser.FirstOrDefault();
+					Session["AccountProfileId"] = _user.AccountProfileId;
+					Session["ComInfo"] = comInfo;
+
+					model.UserCode = _user.UserCode;
+					model.CompanyCode = _user.CompanyCode;
+					model.SelectedShop = _user.shopCode;
+					model.SelectedDevice = _user.dvcCode;
+					model.AccountProfileId = _user.AccountProfileId;
+					model.IsCentral = _user.IsCentral;
+
+					var __user = _roleuser.FirstOrDefault();
                     user = new SysUser
                     {
                         surUID = __user.surUID,
@@ -84,7 +86,7 @@ namespace SmartBusinessWeb.Controllers
                         surCreateTime = __user.surCreateTime,
                         surModifyTime = __user.surModifyTime,
                     };
-                    Session["ComInfo"] = comInfo;
+                    
 
                     var Roles = UserHelper.GetUserRoles(user);
                     bool isadmin = UserHelper.CheckIfAdmin(Roles);
@@ -130,7 +132,7 @@ namespace SmartBusinessWeb.Controllers
             string token = CommonHelper.GenSessionToken();
             DateTime currDate = DateTime.Now.Date;
             DateTime currTime = DateTime.Now;
-            int apId = model.apId;
+            int apId = model.AccountProfileId;
 
             Session session;
 
@@ -140,36 +142,18 @@ namespace SmartBusinessWeb.Controllers
 
             var lastsess = context.GetLastPCSession1(apId, user.UserName, model.SelectedDevice, model.SelectedShop).FirstOrDefault();
 
-            var appparams = context.GetLoginDataFrmAppParam(apId).ToList();
-
-            var enablecashdrawer = appparams[0].ToString() == "1";
-            Session["EnableCashDrawer"] = enablecashdrawer;
-            //bool enablecheckdayends = context.AppParams.FirstOrDefault(x => x.appParam == "EnableDayendsCheckOnLogout").appVal == "1";
-            bool enablecheckdayends = appparams[1].ToString() == "1";
-
             int seq;
             if (lastsess != null)
-            {
-                if (enablecashdrawer)
-                {
-                    Session["CheckedCashDrawer"] = false;
-                    Session["CashDrawerAmt"] = lastsess.sesCashAmtStart;
-                }
+            {  
                 int lastseq = lastsess.sesDvcSeq;
                 if (lastseq < 3)
                 {
                     lastseq++;
                     seq = lastseq;
                 }
-                else
-                {
-                    seq = 1;
-                }
+                else seq = 1;				
             }
-            else
-            {
-                seq = 1;
-            }
+            else seq = 1;			
 
             session = new Session
             {
@@ -195,8 +179,7 @@ namespace SmartBusinessWeb.Controllers
             };
             context.Sessions.Add(session);
             context.SaveChanges();
-            //string printername = context.AppParams.FirstOrDefault(x => x.appParam == "PriorityPrinter").appVal;
-            var printername = appparams[2].ToString();
+           
 
             SessUser sessUser = new SessUser
             {
@@ -204,9 +187,9 @@ namespace SmartBusinessWeb.Controllers
                 UserCode = user.UserCode,
                 surUID = user.surUID,
                 surIsActive = user.surIsActive,
-                EnableCheckDayends = enablecheckdayends,
+                EnableCheckDayends = true,
                 NetworkName = user.surNetworkName,
-                PrinterName = printername,
+                PrinterName = "",
                 Roles = UserHelper.GetUserRoles(user),
                 AccountProfileId = apId,
                 ManagerId = user.ManagerId,
@@ -221,8 +204,7 @@ namespace SmartBusinessWeb.Controllers
             Session["Device"] = device;
             Session["SessionToken"] = token;
             Session["IsCentral"] = model.IsCentral;
-            Session["eBlastId"] = 0;
-            Session["AccountProfileId"] = apId;
+            Session["eBlastId"] = 0;           
             Session["IsAdmin"] = isadmin;
             MenuHelper.UpdateMenus(context);
         }
@@ -306,10 +288,7 @@ namespace SmartBusinessWeb.Controllers
                 Session["Reports"] = null;
                 Session["ExImViews"] = null;
                 Session["CurrentCulture"] = null;
-                Session["Menus"] = null;
-                Session["EnableCashDrawer"] = null;
-                Session["CashDrawerAmt"] = null;
-                Session["CheckedCashDrawer"] = null;
+                Session["Menus"] = null; 
                 Session["PendingInvoices"] = null;
                 Session["IsCentral"] = null;
                 Session["eBlastId"] = null;

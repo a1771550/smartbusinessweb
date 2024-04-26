@@ -56,23 +56,9 @@
 
 @Html.Partial("_WaitingModal")
 
-<div id="cashdrawerModal">
-	@Html.AntiForgeryToken()
-	<div class="row justify-content-center">
-		<div class="form-inline mt-4">
-			<input type="number" class="form-control" id="txtCashDrawerAmt" />
-		</div>
-	</div>
-
-	<p class="warning"></p>
-</div>
-
-
 
 <div id="infoblk" data-currency="@Model.Currency" data-priceeditable="@Model.PriceEditable" data-disceditable="@Model.DiscEditable" data-enabletax="@Model.TaxModel.EnableTax" data-enablelogo="@Model.EnableLogo" data-inclusivetaxrate="@Model.TaxModel.TaxRate" data-accountprofileid="@Model.AccountProfileId" data-checkoutportal="@ViewBag.DefaultCheckoutPortal.ToLower()" data-salesmanrequiredtxt="@string.Format(Resources.Resource.PleaseFormat,string.Format(Resources.Resource.SelectFormat,Resources.Resource.SalesPerson))" data-jsondiclocation="@Model.JsonDicLocation" data-jsondicbattotalqty="@JsonSerializer.Serialize(Model.DicBatTotalQty)" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicitemsns="@JsonSerializer.Serialize(Model.DicItemSNs)" data-dicitemoptions="@JsonSerializer.Serialize(Model.DicItemOptions)" data-jsonpoitembatvqlist="@JsonSerializer.Serialize(Model.PoItemBatVQList)" data-jsondicitembatsnvtlist="@JsonSerializer.Serialize(Model.DicItemBatSnVtList)" data-jsondicitemvtqtylist="@JsonSerializer.Serialize(Model.DicItemVtQtyList)" data-jsondicitembatchqty="@JsonSerializer.Serialize(Model.DicItemBatchQty)" data-jsondicitemsnvtlist="@JsonSerializer.Serialize(Model.DicItemSnVtList)" data-jsondicitembatdelqty="@JsonSerializer.Serialize(Model.DicItemBatDelQty)" data-jsondicitemvtdelqtylist="@JsonSerializer.Serialize(Model.DicItemVtDelQtyList)" data-jsondicseqdeliveryitems="@JsonSerializer.Serialize(Model.DicSeqDeliveryItems)" data-jsondicitembatsnvt="@JsonSerializer.Serialize(Model.DicItemBatSnVt)" data-jsonpoivinfo="@JsonSerializer.Serialize(Model.PoIvInfo)" data-jsondicivinfo="@JsonSerializer.Serialize(Model.DicIvInfo)" data-dicitemgroupedvariations="@JsonSerializer.Serialize(Model.DicItemGroupedVariations)" data-dicivqtylist="@JsonSerializer.Serialize(Model.DicIvQtyList)" data-dicivdelqtylist="@JsonSerializer.Serialize(Model.DicIvDelQtyList)"></div>
 
-<link rel="stylesheet" type="text/css" href="~/Scripts/jspreadsheet/dist/jexcel.css" />
-<link rel="stylesheet" type="text/css" href="~/Scripts/jsuites/dist/jsuites.css" />
-<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+
 
 <script src="~/Scripts/ts/js/pos/advsales.js?v=@rand"></script>

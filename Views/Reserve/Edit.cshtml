@@ -32,13 +32,20 @@
 </form>
 <span id="saveMsg" class=""></span>
 
-@Html.Partial("_ReserveModal", null, new ViewDataDictionary { { "CustomerList", Model.CustomerList }, { "Reserve",Reserve } })
+@Html.Partial("_ReserveModal", null, new ViewDataDictionary { { "CustomerList", Model.CustomerList }, { "Reserve", Reserve } })
 
+
+<div class="clearfix">
+	<div class="float-right">
+		<button id="btnAdd" type="button" class="btn btn-info mx-1 btnsmall60" title="@string.Format(Resources.Resource.AddFormat, Resources.Resource.Row)"><i class="fa fa-plus"></i></button>
+		<a role="button" href="/Reserve/Index" class="btn btn-secondary mx-1 btnsmall60" title="@Resources.Resource.ReserveItems"><i class="fa fa-cube"></i></a>
+	</div>
+</div>
 <div class="d-flex justify-content-center my-2">
 	<table id="tblEdit" class="table table-bordered table-hover overflow-auto">
 		<thead class="gray-header">
 			<tr>
-				<th class="text-center sender">@Resources.Resource.Warehouse</th>
+				@*	<th class="text-center sender">@Resources.Resource.Warehouse</th>*@
 				<th class="text-center itemcode">@Resources.Resource.ItemCode</th>
 				<th class="text-center itemdesc">@Resources.Resource.Name/@Resources.Resource.Description</th>
 				<th class="text-right itemprice">@Resources.Resource.SellingPrice (@Model.Currency)</th>
@@ -55,26 +62,29 @@
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (var line in Model.ReserveLnList)
+			@foreach (var group in Model.GroupedReserveLnlist)
 			{
-				var namedesctxt = line.ItemNameDesc.Length > 40 ? line.ItemNameDesc.Substring(0, 40) + "..." : line.ItemNameDesc;
+				int totalReservedQty = group.Sum(x => x.rilQty);
+				var line = group.FirstOrDefault();
+
+				string msgId = $"msg{line.Id}";
 				var item = Model.ItemList.FirstOrDefault(x => x.itmCode == line.itmCode);
+				string disabled = "";
 				<tr>
-					<td class="text-center sender" title="@line.rilSender">@line.rilSender</td>
-					<td class="text-center linecode" title="@line.itmCode">
+					<td class="text-center itemcode resetable" title="@line.itmCode">
 						@line.itmCode
 					</td>
-					<td class="text-center linedesc" title="@line.ItemNameDesc">
-						@namedesctxt
+					<td class="text-center itemdesc resetable" title="@line.ItemNameDesc">
+						@line.ItemNameDescDisplay
 					</td>
-					<td class="text-right lineprice">
-						<input type="text" class="form-control number text-right lineprice" value="@line.SellingPriceDisplay" />
+					<td class="text-right itemprice">
+						<input type="text" class="form-control number text-right itemprice" value="@line.SellingPriceDisplay" />
 					</td>
-					<td class="text-center itemoptions">@Html.Raw(item.ItemOptionsDisplay)</td>
-					<td class="text-center itemvari">@Html.Raw(item.ItemVariationsDisplay)</td>
+					<td class="text-center itemoptions resetable">@Html.Raw(item.ItemOptionsDisplay)</td>
+					<td class="text-center itemvari resetable">@Html.Raw(item.ItemVariationsDisplay)</td>
 
 
-					<td class="text-right onhandstock @item.OutOfStockCls" title="@item.QuantityAvailable">@item.QuantityAvailable</td>
+					<td class="text-right onhandstock resetable @item.OutOfStockCls" title="@item.QuantityAvailable">@item.QuantityAvailable</td>
 
 					@foreach (var shop in Model.Shops)
 					{
@@ -89,18 +99,34 @@
 						{
 							Id = Model.DicCodeLocId[item.itmCode][shop];
 						}
-						<td class="text-right locqty">
-							<input type="text" class="form-control text-right btnsmall locqty number" data-id="@Id" data-isprimary="@isprimary" data-code="@item.itmCode" data-shop="@shop" data-onhandstock="@qty" data-oldval="@qty" data-itemid="@item.itmItemID" value="@qty" title="@qty">
-						</td>
+						if (qty <= 0) { disabled = "disabled"; }
+
+						var _line = Model.ReserveLnList.FirstOrDefault(x => x.itmCode == line.itmCode && x.rilSender == shop);
+						if (_line != null)
+						{
+							<td class="text-right locqty selectedshop pointer" title="@Resources.Resource.SenderWarehouse">
+								<input type="text" class="form-control text-right btnsmall locqty number reserve" data-id="@Id" data-isprimary="@isprimary" data-code="@item.itmCode" data-shop="@shop" data-onhandstock="@qty" data-oldstockqty="@qty" data-itemid="@item.itmItemID" @disabled data-totalreservedqty="@totalReservedQty" data-currentreservedqty="@(Model.DicLocCodeResQty[shop][_line.itmCode])" value="@qty" title="@qty">
+							</td>
+						}
+						else
+						{
+							<td class="text-right locqty">
+								<input type="text" class="form-control text-right btnsmall locqty number reserve" data-id="@Id" data-isprimary="@isprimary" data-code="@item.itmCode" data-shop="@shop" data-onhandstock="@qty" data-oldstockqty="@qty" data-itemid="@item.itmItemID" data-currentreservedqty="0" @disabled value="@qty" title="@qty">
+							</td>
+						}
+
 					}
-				
+
 					<td class="text-right locqty">
-						<input type="number" class="form-control btnsmall text-right rilqty" value="@line.rilQty" />					
+						<input type="number" class="form-control btnsmall text-right rilqty" data-totalreservedqty="@totalReservedQty" readonly value="@totalReservedQty" />
 					</td>
 					<td class="text-center">
-						<button type="button" class="btn btn-success save" data-id="@line.Id">@Resources.Resource.Save</button>
+						<button type="button" class="btn btn-success save" data-id="@line.Id" data-msgid="@msgId">@Resources.Resource.Save</button>
+						<span id="@msgId"></span>
 					</td>
 				</tr>
+
+
 			}
 		</tbody>
 	</table>
@@ -111,9 +137,9 @@
 </div>
 
 @Html.Partial("_WaitingModal")
-@Html.Partial("_TextAreaModal")
+@Html.Partial("_ItemModal", null, new ViewDataDictionary { { "currency", Model.Currency }, { "priceheader", Resources.Resource.SellingPrice }, { "forreserve", true } })
 
-<div id="infoblk"></div>
+<div id="infoblk" data-linelist="@JsonSerializer.Serialize(Model.ReserveLnList)" data-diccodelocresqty="@JsonSerializer.Serialize(Model.DicLocCodeResQty)"></div>
 
 <script src="~/Scripts/ts/js/item/reserve/edit.js?v=@rand"></script>
 

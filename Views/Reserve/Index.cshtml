@@ -44,7 +44,12 @@
 		</thead>
 		<tbody>
 			@foreach (var item in Model.PagingItemList)
-			{				
+			{
+				int totalReservedQty = 0; if (Model.DicItemReservedQty.ContainsKey(item.itmCode))
+				{
+					totalReservedQty = Model.DicItemReservedQty[item.itmCode];
+				}
+				string disabled = "";
 				<tr>
 					<td class="text-center itemcode" title="@item.itmCode">@item.itmCode</td>
 					<td class="text-center itemdesc" data-desc="@item.NameDesc" title="@item.NameDesc">@item.NameDescDisplay</td>
@@ -70,18 +75,17 @@
 						{
 							Id = Model.DicCodeLocId[item.itmCode][shop];
 						}
+						if (qty <= 0) { disabled = "disabled"; }
 						<td class="text-right locqty">
-							<input type="text" class="form-control text-right btnsmall locqty" data-id="@Id" data-isprimary="@isprimary" data-code="@item.itmCode" data-shop="@shop" data-onhandstock="@qty" data-oldval="@qty" data-itemid="@item.itmItemID" value="@qty" title="@qty">
+							<input type="text" class="form-control text-right btnsmall locqty number reserve" data-id="@Id" data-isprimary="@isprimary" data-code="@item.itmCode" data-shop="@shop" data-onhandstock="@qty" data-oldstockqty="@qty" data-itemid="@item.itmItemID" @disabled data-currentreservedqty="0" value="@qty" title="@qty">
 						</td>
 					}
 
-					@{ int totalReservedQty = 0; if (Model.DicItemReservedQty.ContainsKey(item.itmCode)) { totalReservedQty = Model.DicItemReservedQty[item.itmCode]; } }
-
-					<td class="text-right tqty">
+					<td class="text-right locqty">
 						@totalReservedQty
 					</td>
 					<td class="text-right rqty">
-						<input type="text" class="rilqty text-right btnsmall form-control" readonly value="0">
+						<input type="text" class="rilqty text-right btnsmall form-control" data-totalreservedqty="@totalReservedQty" readonly value="0">
 					</td>
 				</tr>
 			}

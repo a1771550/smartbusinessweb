@@ -2883,6 +2883,18 @@ namespace SmartBusinessWeb.Controllers
             }
         }
 
+        [HttpGet]
+        public JsonResult GetItem4Reserve(string selectedItemCode)
+        {
+			var DicCodeLocQty = new Dictionary<string, Dictionary<string, int>>();
+			var DicCodeLocId = new Dictionary<string, Dictionary<string, string>>();
+            var ItemList = new List<ItemModel>();
+			ReserveEditModel model = new ReserveEditModel();
+			ModelHelper.GetShops(SqlConnection, ref Shops, ref ShopNames, apId);
+			model.HandleReserveItems(selectedItemCode, ref ItemList, ref DicCodeLocQty, ref DicCodeLocId, Shops);
+            return Json(new { ItemList, DicCodeLocQty, DicCodeLocId }, JsonRequestBehavior.AllowGet);
+        }
+
         //[HttpPost]
         [HttpGet]
         public JsonResult GetItemsAjax(int pageIndex = 1, string keyword = "", string location = "", string type = "")

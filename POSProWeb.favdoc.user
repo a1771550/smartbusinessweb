@@ -181,11 +181,6 @@
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\customer\index.ts</absolutePath>
         </Favorite>
         <Favorite>
-          <name>itemtransfer-index.ts</name>
-          <path>Scripts\ts\itemtransfer\index.ts</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\itemtransfer\index.ts</absolutePath>
-        </Favorite>
-        <Favorite>
           <name>transfer-index.ts</name>
           <path>Scripts\ts\item\transfer\index.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\item\transfer\index.ts</absolutePath>
@@ -219,6 +214,16 @@
           <name>enquiry-index.ts</name>
           <path>Scripts\ts\customer\enquiry\index.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\customer\enquiry\index.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>reserve-edit.ts</name>
+          <path>Scripts\ts\item\reserve\edit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\item\reserve\edit.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>reserve-index.ts</name>
+          <path>Scripts\ts\item\reserve\index.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\item\reserve\index.ts</absolutePath>
         </Favorite>
       </favorites>
     </Folder>
@@ -390,6 +395,11 @@
           <name>AdvSales.cshtml</name>
           <path>Views\POSFunc\AdvSales.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\POSFunc\AdvSales.cshtml</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>reserve-Index.cshtml</name>
+          <path>Views\Reserve\Index.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Reserve\Index.cshtml</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

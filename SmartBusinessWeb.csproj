@@ -4924,7 +4924,6 @@
     <Content Include="Views\Shared\_ItemModal.cshtml" />
     <Content Include="Views\Shared\_ItemOptionsBlk.cshtml" />
     <Content Include="Views\Shared\_LangPartial.cshtml" />
-    <Content Include="Views\Shared\_LoginPage.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_MailTrackSummary.cshtml" />
     <Content Include="Views\Shared\_NormalRetailPaymentBtnBlock.cshtml" />
@@ -4942,7 +4941,6 @@
     <Content Include="Views\Shared\_SalesmenModal.cshtml" />
     <Content Include="Views\Shared\_SerialNoModal.cshtml" />
     <Content Include="Views\Shared\_StockQty.cshtml" />
-    <Content Include="Views\Shared\_tblItem.cshtml" />
     <Content Include="Views\Shared\_TextAreaModal.cshtml" />
     <Content Include="Views\Shared\_TxtBlk.cshtml" />
     <Content Include="Views\Shared\_UploadFileModal.cshtml" />
