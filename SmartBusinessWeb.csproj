@@ -2757,6 +2757,7 @@
     <Content Include="Content\othersettings.css" />
     <Content Include="Content\PagedList.css" />
     <Content Include="Content\PaymentTypes.css" />
+    <Content Include="Content\pos\advsales.css" />
     <Content Include="Content\pos\animate.css" />
     <Content Include="Content\pos\bootstrap-datetimepicker.min.css" />
     <Content Include="Content\pos\bootstrap.min.css" />
@@ -2794,6 +2795,7 @@
     <Content Include="Content\training.css" />
     <Content Include="Content\item\transfer\index.css" />
     <Content Include="Content\wholesalesprint.css" />
+    <Content Include="Content\wholesales\edit.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -5090,7 +5092,6 @@
     <TypeScriptCompile Include="Scripts\ts\customer\attributes\globalattribute.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\hotlist\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\hotlist\edit.ts" />
-    <TypeScriptCompile Include="Scripts\ts\globals.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\inventoryadjustment\edit.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\inventoryadjustment\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\reserve\edit.ts" />

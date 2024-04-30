@@ -86,7 +86,7 @@ namespace SmartBusinessWeb.Controllers.Report
 				inventories = inventories.Where(x => x.ItemName.ToLower().Contains(param.sSearch.ToLower()) || x.ItemNumber.ToLower().Contains(param.sSearch.ToLower())	
 											 || x.SellOnOrder.ToString().Contains(param.sSearch.ToLower())
 											 || x.PurchaseOnOrder.ToString().Contains(param.sSearch.ToLower())
-											 || x.QuantityAvailable.ToString().Contains(param.sSearch.ToLower())
+											 || x.lstQtyAvailable.ToString().Contains(param.sSearch.ToLower())
 											 || x.LocationName.ToLower().Contains(param.sSearch.ToLower())
 											 ).ToList();
 			}
@@ -119,7 +119,7 @@ namespace SmartBusinessWeb.Controllers.Report
 			}
 			else if (sortColumnIndex == 5)
 			{
-				inventories = sortDirection == "asc" ? inventories.OrderBy(c => c.QuantityAvailable).ToList() : inventories.OrderByDescending(c => c.QuantityAvailable).ToList();
+				inventories = sortDirection == "asc" ? inventories.OrderBy(c => c.lstQtyAvailable).ToList() : inventories.OrderByDescending(c => c.lstQtyAvailable).ToList();
 			}
 			#endregion
 
@@ -151,7 +151,7 @@ namespace SmartBusinessWeb.Controllers.Report
 											 || x.QuantityOnHand.ToString().Contains(param.sSearch.ToLower())
 											 || x.SellOnOrder.ToString().Contains(param.sSearch.ToLower())
 											 || x.PurchaseOnOrder.ToString().Contains(param.sSearch.ToLower())
-											 || x.QuantityAvailable.ToString().Contains(param.sSearch.ToLower())
+											 || x.lstQtyAvailable.ToString().Contains(param.sSearch.ToLower())
 											 || x.LocationName.ToLower().Contains(param.sSearch.ToLower())
 											 ).ToList();
 			}
@@ -177,7 +177,7 @@ namespace SmartBusinessWeb.Controllers.Report
 			}
 			else if (sortColumnIndex == 2)
 			{
-				inventories = sortDirection == "asc" ? inventories.OrderBy(c => c.QuantityAvailable).ToList() : inventories.OrderByDescending(c => c.QuantityAvailable).ToList();
+				inventories = sortDirection == "asc" ? inventories.OrderBy(c => c.lstQtyAvailable).ToList() : inventories.OrderByDescending(c => c.lstQtyAvailable).ToList();
 			}
 
 			//Paging

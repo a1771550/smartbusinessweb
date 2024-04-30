@@ -52,10 +52,10 @@
 						<input type="text" class="itemprice form-control btnsmall number" readonly value="@item.itmBaseSellingPrice" />
 					</td>
 					<td class="text-center itemoptions">@Html.Raw(item.ItemOptionsDisplay)</td>
-					<td class="text-center itemvari">@Html.Raw(item.ItemVariationsDisplay)</td>
+					<td class="text-center itemvari">@Html.Raw(item.ItemVariDisplay)</td>
 
 
-					<td class="text-right onhandstock @item.OutOfStockCls">@item.QuantityAvailable</td>
+					<td class="text-right onhandstock @item.OutOfStockCls">@item.lstQtyAvailable</td>
 
 					@foreach (var shop in Model.Shops)
 					{
@@ -72,7 +72,7 @@
 						}
 
 						<td class="text-right locqty">
-							<input type="text" class="form-control text-right btnsmall locqty" data-id="@Id" data-isprimary="@isprimary" data-code="@item.itmCode" data-shop="@shop" data-onhandstock="@item.QuantityAvailable" data-oldval="@qty" data-itemid="@item.itmItemID" value="@qty" title="@qty">
+							<input type="text" class="form-control text-right btnsmall locqty" data-id="@Id" data-isprimary="@isprimary" data-code="@item.itmCode" data-shop="@shop" data-onhandstock="@item.lstQtyAvailable" data-oldval="@qty" data-itemid="@item.itmItemID" value="@qty" title="@qty">
 						</td>
 					}
 

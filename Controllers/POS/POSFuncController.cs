@@ -51,7 +51,7 @@ namespace SmartBusinessWeb.Controllers
                                             on st.lstItemCode equals sl.rtlItemCode
                                             join s in context.RtlSales
                                             on sl.rtlCode equals s.rtsCode
-                                            where st.lstQuantityAvailable <= 0 && st.AccountProfileId == ComInfo.AccountProfileId
+                                            where st.lstQtyAvailable <= 0 && st.AccountProfileId == ComInfo.AccountProfileId
                                             select new SalesLnView
                                             {
                                                 rtlCode = sl.rtlCode,
@@ -60,7 +60,7 @@ namespace SmartBusinessWeb.Controllers
                                                 Item = new ItemModel
                                                 {
                                                     itmCode = st.lstItemCode,
-                                                    QuantityAvailable = (int)st.lstQuantityAvailable
+                                                    lstQtyAvailable = (int)st.lstQtyAvailable
                                                 }
                                             }
                                    ).ToList();
@@ -259,7 +259,7 @@ namespace SmartBusinessWeb.Controllers
             string CusCode = Refund.rtsCusCode;
             string Notes = Refund.rtsRmks;
             int Change = (int)Refund.Change;
-            string salescode = Refund.salescode;
+            string salescode = Refund.rtsCode;
             string devicecode = Refund.SelectedDevice;
             string epaytype = Refund.epaytype;
             decimal totalamount = (decimal)Refund.rtsFinalTotal;
@@ -572,7 +572,7 @@ namespace SmartBusinessWeb.Controllers
                     SalesEditModel.HandleStockQty(context, dicItemLocQty, false);
                     SalesModel sale = new SalesModel
                     {
-                        salescode = refundcode,
+                        rtsCode = refundcode,
                         rtsDvc = devicecode,
                         rtsSalesLoc = device.dvcShop
                     };
@@ -647,7 +647,7 @@ namespace SmartBusinessWeb.Controllers
 
         [HandleError]
         [CustomAuthorize("retail", "boss", "admin", "superadmin")]
-        public ActionResult AdvSales(string receiptno = "", string mode = "", string type = "")
+        public ActionResult AdvSales(int? reserveId)
         {
             Session["ImportFrmShopPageTitle"] = Resources.Resource.DayendsImportFrmShop;
             Session["ImportFrmCentralPageTitle"] = Resources.Resource.DayendsImportFrmCentral;
@@ -656,7 +656,7 @@ namespace SmartBusinessWeb.Controllers
             ViewBag.DefaultCheckoutPortal = ModelHelper.HandleCheckoutPortal();
 
 			ViewBag.ParentPage = "sales";           
-            SalesEditModel model = new SalesEditModel(receiptno, mode, type);
+            SalesEditModel model = new SalesEditModel(false, reserveId);
             return View(model);
         }
 

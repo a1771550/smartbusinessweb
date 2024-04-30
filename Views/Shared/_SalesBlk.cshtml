@@ -1,41 +1,52 @@
 ﻿@{
 	bool editmode = ViewData["editmode"] == null ? true : (bool)ViewData["editmode"];
 	string Currency = ViewData["Currency"].ToString();
-	var rtsCurrency = ViewData["rtsCurrency"] ==null ? "HKD" : (string)ViewData["rtsCurrency"];
+	var rtsCurrency = ViewData["rtsCurrency"] == null ? "HKD" : (string)ViewData["rtsCurrency"];
 	List<SelectListItem> LocationList = (List<SelectListItem>)ViewData["LocationList"];
+	List<PPWLib.Models.MYOB.MyobJobModel> JobList = (List<PPWLib.Models.MYOB.MyobJobModel>)ViewData["JobList"];
 	bool showrecur = ViewData["showrecur"] == null ? false : (bool)ViewData["showrecur"];
 	string Device = ViewData["Device"].ToString();
 	string Devices = ViewData["Devices"].ToString();
 	string nextsalescode = ViewData["NextSalesCode"].ToString();
-	string DefaultSalesNotesTxt = ViewData["DefaultSalesNotesTxt"]==null?"": ViewData["DefaultSalesNotesTxt"].ToString();
+	string DefaultSalesNotesTxt = ViewData["DefaultSalesNotesTxt"] == null ? "" : ViewData["DefaultSalesNotesTxt"].ToString();
 	bool forpreorder = ViewData["forpreorder"] == null ? false : (bool)ViewData["forpreorder"];
+	List<SalesLnView> SalesLnList = ViewData["SalesLnList"] == null ? null : (List<SalesLnView>)ViewData["SalesLnList"];
+	bool forreserve = ViewData["SalesLnList"] != null;
+	CustomerModel Customer = forreserve ? (CustomerModel)ViewData["SelectedCustomer"] : null;
+	string cusname = forreserve ? Customer.cusName : "";
+	int points = forreserve ? Customer.cusPointsActive:0;
+	string pricelevel = forreserve ? Customer.cusPriceLevelDescription : "";
+	string phone = forreserve ? Customer.cusPhone : "";
+	string cusCode = forreserve ? Customer.cusCode : "";
+	decimal totalamt = 0;
 }
 <div id="salesColblk" class="my-4" data-debug="">
 	<form class="form-inline">
 		<div class="form-group">
 			<label for="txtCustomerName" class="col-form-label mx-sm-2">@Resources.Resource.Customer</label>
-			<input type="text" class="form-control" id="txtCustomerName" placeholder="@Resources.Resource.Customer" />
+			<input type="text" class="form-control" id="txtCustomerName" placeholder="@Resources.Resource.Customer" value="@cusname" />
 			<span class="ml-2 my-auto small cuscode font-weight-bold text-primary"></span>
+			<input type="hidden" id="cusCode" value="@cusCode" />
 		</div>
 
 		<div class="form-group">
 			<label for="txtPoints" class="col-form-label mx-sm-2">@Resources.Resource.Points</label>
-			<input type="number" readonly class="form-control" id="txtPoints">
+			<input type="number" readonly class="form-control" id="txtPoints" value="@points">
 		</div>
 		<div class="form-group">
 			<label for="txtPriceLevel" class="col-form-label mx-sm-2">@Resources.Resource.PriceLevel</label>
-			<input type="text" readonly class="form-control" id="txtPriceLevel">
+			<input type="text" readonly class="form-control" id="txtPriceLevel" value="@pricelevel">
 		</div>
 		<div class="form-group">
 			<label for="txtPhone" class="col-form-label mx-sm-2">@Resources.Resource.PhoneNo</label>
-			<input type="text" readonly class="form-control" id="txtPhone" />
+			<input type="text" readonly class="form-control" id="txtPhone" value="@phone" />
 		</div>
 
 		<div class="form-group">
 			<label for="" class="col-form-label mx-sm-2">@Resources.Resource.InvoiceNo</label>
 			<input type="text" readonly class="form-control NextSalesInvoice" id="" value="@nextsalescode">
 		</div>
-		
+
 
 		@Html.Partial("_ExRateModal", null, new ViewDataDictionary { { "fieldname", "rtsCurrency" }, { "currency", rtsCurrency }, { "lblcls", "col-form-label mx-sm-2" }, { "exratecls", "d-block ml-2 hide" }, { "txtboxattr", "readonly" }, { "txtboxstyle", "width:60px;" }, { "txtboxcls", "disabled" } })
 
@@ -43,7 +54,7 @@
 			<label for="drpLocation" class="col-form-label mx-sm-2">@Resources.Resource.Shop</label>
 			<select id="drpLocation" name="pstLocStock" class="form-control" disabled>
 				@foreach (var item in LocationList)
-				{
+				{					
 					<option value="@item.Value">@item.Text</option>
 				}
 			</select>
@@ -54,7 +65,7 @@
 				<select class="form-control" id="drpDevice">
 					@foreach (var device in Devices.Split(','))
 					{
-						string _selected = editmode?"": device == Device ? "selected" : "";//the device will be selected via js on editmode
+						string _selected = editmode ? "" : device == Device ? "selected" : "";//the device will be selected via js on editmode
 						<option value="@device" @_selected>@device</option>
 					}
 				</select>
@@ -63,66 +74,92 @@
 	</form>
 </div>
 
-<div class="d-flex justify-content-center">
-	<div class="overflow-auto">
+
+	<div class="auto">
 		<span class="alert alert-danger small d-inline-block">@Resources.Resource.NegativeAmtByNegativeQty</span>
-		<table id="tblSales" class="jexcel jexcel_overflow small" cellpadding="0" cellspacing="0" unselectable="yes">
-			<colgroup>
-				<col width="50">
-				<col width="150">
-				<col width="200">
-				<col width="90">
-				<col width="90">
-
-				@*@if (editmode)
-		{*@
-				<col width="90">
-				<col width="90">
-				<col width="90">
-				@*}  *@
-
-				<col width="240" />
-
-				<col width="100">
-				<col width="60">
-
-				<col width="60">
-
-				<col width="100">
-				<col width="100" />
-				<col width="120">
-			</colgroup>
-			<thead class="resizable">
+		<table id="tblSales" class="table table-hover table-bordered table-condensed">			
+			<thead class="gray-header">
 				<tr>
-					<td class="jexcel_selectall"></td>
-					<td title="@Resources.Resource.ItemCode" style="text-align: center;">@Resources.Resource.ItemCode</td>
-					<td title="@Resources.Resource.Description" style="text-align: center;">@Resources.Resource.Description</td>
-					<td title="@Resources.Resource.BaseUnit" style="text-align: right;">@Resources.Resource.BaseUnit</td>
-					<td title="@Resources.Resource.Qty" style="text-align: right;">@Resources.Resource.Qty</td>
+					<th class="seq"></th>
+					<th title="@Resources.Resource.ItemCode" class="code text-center">@Resources.Resource.ItemCode</th>
+					<th title="@Resources.Resource.Name" class="namedesc text-center">@Resources.Resource.Name/@Resources.Resource.Description</th>
+					<th title="@Resources.Resource.BaseUnit" class="unit text-right">@Resources.Resource.BaseUnit</th>
+					<th title="@Resources.Resource.Qty" class="sellqty text-right">@Resources.Resource.Qty</th>
 
-					@*@if (editmode)
-		{*@
-					<td title="@Resources.Resource.Batch" style="text-align: center;">@Resources.Resource.Batch</td>
-					<td title="@Resources.Resource.SerialNo" style="text-align: center;">@Resources.Resource.SerialNoItemHeader</td>
-					<td title="@Resources.Resource.ExpiryDate" style="text-align: center;">@Resources.Resource.ExpiryDate</td>
-					@* } *@
+					<th title="@Resources.Resource.Batch" class="sellbat text-center">@Resources.Resource.Batch</th>
+					<th title="@Resources.Resource.SerialNo" class="sellsn text-center">@Resources.Resource.SerialNoItemHeader</th>
+					<th title="@Resources.Resource.ExpiryDate" class="sellvt text-center">@Resources.Resource.ExpiryDate</th>
 
-					<td title="@Resources.Resource.ItemVariations" style="text-align: center;">@Resources.Resource.ItemVariations</td>
+					<th title="@Resources.Resource.ItemVariations" class="selliv text-center">@Resources.Resource.ItemVariations</th>
 
-					<td title="@Resources.Resource.Price" style="text-align: right;">@Resources.Resource.Price (@Currency)</td>
-					<td title="@Resources.Resource.DiscPc" style="text-align: right;">@Resources.Resource.DiscPc</td>
+					<th title="@Resources.Resource.Price" class="sellprice text-right">@Resources.Resource.Price (@Currency)</th>
+					<th title="@Resources.Resource.DiscPc" class="selldiscpc text-right">@Resources.Resource.DiscPc</th>
 
-					<td title="@Resources.Resource.Tax" style="text-align: right;">@Resources.Resource.TaxItemHeader</td>
+					<th title="@Resources.Resource.Tax" class="selltax text-right">@Resources.Resource.TaxItemHeader</th>
 
-					<td class="text-center">@Resources.Resource.Location</td>
-					<td class="text-center">@Resources.Resource.Job4Myob</td>
-					<td class="text-right">@Resources.Resource.Amount (@Currency)</td>
+					<th title="@Resources.Resource.Location" class="selllocation text-center">@Resources.Resource.Location</th>
+					<th title="@Resources.Resource.Job4Myob" class="selljob text-center">@Resources.Resource.Job4Myob</th>
+					<th title="@Resources.Resource.Amount" class="sellamt text-right">@Resources.Resource.Amount (@Currency)</th>
 				</tr>
 			</thead>
-			<tbody></tbody>
+			<tbody>
+				@if (forreserve)
+				{
+					int idx = 0;
+					foreach (var line in SalesLnList)
+					{
+						idx++;
+						decimal amt = (decimal)line.rtlSellingPrice * (int)line.rtlQty;
+						totalamt += amt;
+						var zerodisplay = CommonHelper.FormatNumber(0);
+						string disabled_bat = line.chkBat ? "" : "disabled";
+						string disabled_sn = line.chkSN ? "" : "disabled";
+						string disabled_iv = line.ivId == 0 ? "disabled" : "";
+						<tr>
+							<td class="text-center seq"><span>@idx</span></td>
+							<td class="text-center code"><input type="text" name="itemcode" class="form-control itemcode text-center flex form-control" title="@line.itmCode" value="@line.itmCode" readonly /></td>
+							<td class="text-center namedesc"><input type="text" class="itemdesc flex form-control text-center form-control" title="@line.itmNameDesc" data-itemname="@line.itmNameDesc" value="@line.ItemNameDescDisplay" readonly /></td>
+							<td class="text-right unit"><input type="text" class="sellunit text-right flex form-control form-control" data-sellunit="" value="@line.itmSellUnit" readonly /></td>
+							<td class="text-right sellqty"><input type="number" data-qty="@line.rtlQty" name="qty" class="qty text-right flex form-control form-control" value="@line.rtlQty" readonly />
+							<td class="text-center sellbat"><input type="text" class="batch text-center flex form-control" @disabled_bat /></td>
+							<td class="text-center sellsn"><input type="text" class="serialno text-center flex form-control" @disabled_sn /></td>
+							<td class="text-center sellvt"><input type="text" class="validthru datepicker text-center flex form-control" /></td>
+							<td class="text-center selliv"><input type="text" class="vari text-center flex form-control" @disabled_iv /></td>
+							<td class="text-right sellprice">
+								<input type="text" class="price text-right flex form-control number" value="@line.SellingPriceDisplay" />
+							</td>
+							<td class="text-right selldiscpc">
+								<input type="text" class="discpc text-right flex form-control number" value="@zerodisplay" />
+							</td>
+							<td class="text-right selltax">
+								<input type="text" class="taxpc text-right flex form-control number" readonly value="@zerodisplay" />
+							</td>
+							<td class="text-center selllocation">
+								<select class="location flex form-control text-center" readonly>
+									@foreach (var item in LocationList)
+									{
+										string selected = item.Value == line.rtlStockLoc?"selected":"";
+										<option value="@item.Value" @selected>@item.Text</option>
+									}
+								</select>
+							</td>
+							<td class="text-center selljob">
+								<select class="job flex form-control text-center">
+									<option value="0">---</option>
+									@foreach (var job in JobList)
+									{
+										<option value="@job.JobID">@job.JobName</option>
+									}
+								</select>
+							</td>
+							<td class="text-right sellamt"><input type="text" class="amount text-right flex form-control" readonly value="@CommonHelper.FormatNumber(amt)" /></td>
+						</tr>
+					}
+
+				}
+			</tbody>
 		</table>
 	</div>
-</div>
 
 <div class="row mr-1 my-3">
 	<div class="col-8">
@@ -167,20 +204,12 @@
 			</div>
 		}
 		else
-		{
-			<div class="row justify-content-end">
-				<div class="form-inline mb-2">
-					<div class="form-group">
-						<label for="txtRoundings" class="col-form-label mx-sm-3">@Resources.Resource.Roundings (@Currency)</label>
-						<input type="text" class="form-control" id="txtRoundings" name="Roundings" style="width:80px;" value="0.00" />
-					</div>
-				</div>
-			</div>
+		{			
 			<div class="row justify-content-end">
 				<div class="form-inline mb-2">
 					<div class="form-group">
 						<label for="txtTotal" class="col-form-label mx-sm-3">@Resources.Resource.TotalAmount (@Currency)</label>
-						<input type="number" class="form-control" id="txtTotal" readonly name="TotalAmount" value="0.00" />
+						<input type="number" class="form-control" id="txtTotal" readonly name="TotalAmount" value="@CommonHelper.FormatNumber(totalamt)" />
 					</div>
 				</div>
 			</div>

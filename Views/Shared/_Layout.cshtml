@@ -36,7 +36,7 @@
 	<div class="overlay"></div>
 
 	<!-- header-area-start -->
-	<header class="header" data-lang="@CultureHelper.CurrentCulture">
+	<header class="header">
 		<div class="header__flex">
 			<div class="header__left">
 				<div class="bar">
@@ -359,7 +359,7 @@
 
 				@Html.Partial("_TxtBlk")
 
-				<div id="appInfo" data-shop="@shop" data-checkoutportal="@defaultcheckoutportal" data-enablewhatsapplnk="@ComInfo.enableWhatsappLink" data-whatsappapilnk="@ConfigurationManager.AppSettings["WhatsappLinkUrl"]" data-whatsappapidefaulttxt="@ConfigurationManager.AppSettings["WhatsappAPIDefaultText"]"></div>
+				<div id="appInfo" data-lang="@CultureHelper.CurrentCulture" data-shop="@shop" data-checkoutportal="@defaultcheckoutportal" data-enablewhatsapplnk="@ComInfo.enableWhatsappLink" data-whatsappapilnk="@ConfigurationManager.AppSettings["WhatsappLinkUrl"]" data-whatsappapidefaulttxt="@ConfigurationManager.AppSettings["WhatsappAPIDefaultText"]"></div>
 
 				<script src="~/Scripts/ts/js/app.js?v=@rand"></script>
 

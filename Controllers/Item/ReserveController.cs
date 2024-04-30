@@ -16,6 +16,16 @@ namespace SmartBusinessWeb.Controllers.Item
     {
 		[HandleError]
 		[CustomAuthorize("item", "boss", "admin", "superadmin")]
+		[ValidateAntiForgeryToken]
+		[HttpPost]
+		public JsonResult Cancel(int Id)
+		{
+            ReserveEditModel.Cancel(Id);
+			return Json(string.Format(Resources.Resource.SavedOkFormat, Resources.Resource.Reserve));
+		}
+		
+		[HandleError]
+		[CustomAuthorize("item", "boss", "admin", "superadmin")]
 		public ActionResult Edit(string code)
 		{
 			ReserveEditModel model = new(code);
@@ -58,7 +68,7 @@ namespace SmartBusinessWeb.Controllers.Item
         {
             ViewBag.ParentPage = "item";          
             ReserveEditModel model = new ReserveEditModel();              
-            model.PreparePrint(start, end, (CustomerModel)Session["Customer"]);
+            model.PreparePrint(null,start, end);
             return View(model);
         }
 

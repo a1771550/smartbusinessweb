@@ -1,0 +1,4 @@
+﻿#tblSales .form-control:not(textarea):not(#txtKeyword) {
+	padding: 0 .75rem !important;
+	height: calc(1.5rem + 2px) !important;
+}

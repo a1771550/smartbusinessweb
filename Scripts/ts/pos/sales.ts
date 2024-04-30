@@ -96,8 +96,8 @@ function handleProductCheck(ele: HTMLElement | null, discpc: number, increment: 
 		//console.log("discpc#popu:", discpc);
 		//console.log("ele:", ele);
 		if (!ele)
-			selectedSimpleItem = { itmCode: "ABSSV28.9", NameDesc: "ABSS Accounting v28.9", itmItemID: Id, Qty: 1, itmBaseSellingPrice: 4188, itmPicFile: "abss2p.jpg", discpc } as ISimpleItem;
-		else selectedSimpleItem = { itmCode: $(ele!).data("code"), NameDesc: $(ele!).data("namedesc"), itmItemID: Id, Qty: 1, itmBaseSellingPrice: Number($(ele!).data("price")), itmPicFile: $(ele!).data("file"), discpc } as ISimpleItem;
+			selectedSimpleItem = { itmCode: "ABSSV28.9", NameDesc: "ABSS Accounting v28.9", itmItemID: Id, lstQtyAvailable: 1, itmBaseSellingPrice: 4188, itmPicFile: "abss2p.jpg", discpc } as ISimpleItem;
+		else selectedSimpleItem = { itmCode: $(ele!).data("code"), NameDesc: $(ele!).data("namedesc"), itmItemID: Id, lstQtyAvailable: 1, itmBaseSellingPrice: Number($(ele!).data("price")), itmPicFile: $(ele!).data("file"), discpc } as ISimpleItem;
 
 		//console.log("selectedSimpleItem:", selectedSimpleItem);
 	}
@@ -108,7 +108,7 @@ function populateProductList() {
 
 	SelectedSimpleItemList.forEach((x: ISimpleItem) => {
 		let imgpath = x.itmPicFile ? `images/items/${x.itmPicFile}` : `images/default.png`;
-		let _subtotal: number = x.Qty * (x.itmBaseSellingPrice ?? 0);
+		let _subtotal: number = x.lstQtyAvailable * (x.itmBaseSellingPrice ?? 0);
 		//console.log("x.discpc:" + x.discpc);
 		let _disc: number = _subtotal * x.discpc / 100;
 
@@ -134,7 +134,7 @@ function populateProductList() {
 												<div class="increment-decrement">
 													<div class="input-groups">
 														<input type="button" value="-" class="button-minus dec button operator" data-id="${x.itmItemID}">
-														<input type="text" name="child" value="${x.Qty}" class="quantity-field simpleqty" data-id="${x.itmItemID}">
+														<input type="text" name="child" value="${x.lstQtyAvailable}" class="quantity-field simpleqty" data-id="${x.itmItemID}">
 														<input type="button" value="+" class="button-plus inc button operator" data-id="${x.itmItemID}">
 													</div>
 												</div>
@@ -223,7 +223,7 @@ $(document).on("click", ".operator", function () {
 	}
 	if (qty < 0) qty = 0;
 
-	SelectedSimpleItemList[idx].Qty = qty;
+	SelectedSimpleItemList[idx].lstQtyAvailable = qty;
 	//console.log("qty:", qty);
 	populateProductList();
 });
@@ -295,7 +295,7 @@ function populateProductBlk(itemList: ISimpleItem[]): string {
 									<div class="productset flex-fill pointer" id="${item.itmCode}" data-id="${item.itmItemID}" data-namedesc="${item.NameDesc}" data-code="${item.itmCode}" data-price="${item.itmBaseSellingPrice}" data-file="${item.itmPicFile}">
 										<div class="productsetimg">
 											<img src="/images/items/${item.itmPicFile}" alt="${item.NameDesc}">
-											<h6>${qtytxt}: ${item.QtySellable}</h6>
+											<h6>${qtytxt}: ${item.lstQtyAvailable}</h6>
 
 											<div class="check-product hide" data-id="${item.itmItemID}" data-namedesc="${item.NameDesc}" data-code="${item.itmCode}" data-price="${item.itmBaseSellingPrice}" data-file="${item.itmPicFile}">
 												<i class="fa fa-check"></i>
@@ -390,5 +390,5 @@ $(function () {
 
 	$("#searchItem").trigger("focus");
 	/* for debug only */
-	//$("#btnCheckout").trigger("click");
+	//$("#btnCheckout").trigger("click");	
 });

@@ -1149,6 +1149,8 @@ $(function () {
 	} else {
 		DicCurrencyExRate = $infoblk.data("jsondiccurrencyexrate");
 	}
+
+	setInput4NumberOnly("number");
 });
 
 

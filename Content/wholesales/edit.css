@@ -1,0 +1,4 @@
+﻿#tblWSI thead th.selllocation, #tblWSI tbody td.selllocation, #tblWSI thead th.selljob, #tblWSI tbody td.selljob {
+	width: 100px !important;
+	min-width: 100px !important;
+}

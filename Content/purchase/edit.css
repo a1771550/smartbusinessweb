@@ -1,4 +1,26 @@
-﻿#tblPayment tbody tr > td:not(:first-child) {
+﻿.form-control:not(textarea):not(#txtKeyword) {
+	padding: 0 .75rem !important;
+	height: calc(1.5rem + 2px) !important;
+	font-size:.9rem!important;
+}
+#tblPSI thead th:first-child,#tblPSI tbody td:first-child {
+	width: 50px !important;
+	max-width:50px!important;
+}
+
+#tblPSI thead th.ip, #tblPSI tbody td.ip, #tblPSI thead th.iv, #tblPSI tbody td.iv {
+	width: 100px !important;
+	min-width:100px!important;
+}
+#tblPSI thead th.received, #tblPSI tbody td.received {
+	width: 100px !important;
+	min-width: 100px !important;
+}
+#tblPSI thead th.selllocation, #tblPSI tbody td.selllocation, #tblPSI thead th.selljob, #tblPSI tbody td.selljob {
+	width: 100px !important;
+	min-width: 100px !important;
+}
+#tblPayment tbody tr > td:not(:first-child) {
 	width: 290px !important;
 }
 #tblPayment tbody tr > td:nth-child(3){

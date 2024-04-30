@@ -1810,7 +1810,7 @@ namespace SmartBusinessWeb.Controllers
                                  {
                                      lstItemCode = st.lstItemCode,
                                      lstStockLoc = st.lstStockLoc,
-                                     lstQuantityAvailable = st.lstQuantityAvailable ?? 0,
+                                     lstQtyAvailable = st.lstQtyAvailable ?? 0,
                                      lstItemID = st.lstItemID ?? 0,
                                      AccountProfileId = st.AccountProfileId,
                                  }

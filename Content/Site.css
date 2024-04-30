@@ -314,6 +314,9 @@ td {
 .dimmed {
   color: #666666 !important;
 }
+.dimrow {
+    background-color: #999!important;
+}
 .pointer {
   cursor: pointer;
 }
@@ -852,3 +855,38 @@ table.dataTable thead > tr > th.sorting_asc.text-right:before, table.dataTable t
 #pagingblk, #pagingblk_a{
     font-size:.8rem!important;
 }
+.scroll{
+    overflow:scroll!important;
+}
+    .scroll::-webkit-scrollbar {
+        width: 12px;
+    }
+
+    .scroll::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        border-radius: 10px;
+    }
+
+    .scroll::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+    }
+
+.auto {
+    overflow: auto !important;
+    padding:4px;
+}
+
+    .auto::-webkit-scrollbar {
+        width: 12px;
+    }
+
+    .auto::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        border-radius: 10px;
+    }
+
+    .auto::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+    }

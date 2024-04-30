@@ -1,7 +1,10 @@
 ﻿@model PPWLib.Models.POS.Sales.SalesEditModel
 @{
-	ViewBag.Title = Resources.Resource.Sales;
+	bool forreserve = Model.ReserveLnList != null;
+	ViewBag.Title = forreserve? Resources.Resource.PaidOut4Reserve : Resources.Resource.MakeSales;
 	int rand = new Random().Next(10000, 100000);
+
+
 	bool enableEpay = (bool)Model.ComInfo.enableEpay;
 
 	var currency = Model.Currency;
@@ -14,11 +17,14 @@
 
 	if (Request.QueryString["type"] != null)
 	{
-		subtitle = string.Concat(subtitle, " (", Resources.Resource.Preorder, ")");
+		ViewBag.Title = string.Concat(subtitle, " (", Resources.Resource.Preorder, ")");
 	}
+
+
 }
 <link rel="stylesheet" type="text/css" href="~/Content/pos/Sales.css?v=@rand" />
-<h3>@subtitle</h3>
+<link rel="stylesheet" type="text/css" href="~/Content/pos/advsales.css?v=@rand" />
+<h3>@ViewBag.Title</h3>
 
 @if (showrecur)
 {
@@ -30,7 +36,16 @@
 	</div>
 }
 
-@Html.Partial("_SalesBlk", null, new ViewDataDictionary { { "Currency", Model.Currency }, { "rtsCurrency", Sales.rtsCurrency }, { "LocationList", Model.LocationList }, { "showrecur", showrecur }, { "Device", Model.ComInfo.Device }, { "Devices", Model.ComInfo.Devices },{"NextSalesCode",Model.NextSalesCode },{ "DefaultSalesNotesTxt",Model.DefaultSalesNotesTxt } })
+@if (forreserve)
+{
+	@Html.Partial("_SalesBlk", null, new ViewDataDictionary { { "Currency", Model.Currency }, { "rtsCurrency", Sales.rtsCurrency }, { "LocationList", Model.LocationList }, { "JobList", Model.JobList }, { "showrecur", showrecur }, { "Device", Model.ComInfo.Device }, { "Devices", Model.ComInfo.Devices }, { "NextSalesCode", Model.Sales.rtsCode }, { "DefaultSalesNotesTxt", Model.DefaultSalesNotesTxt }, { "SalesLnList", Model.SalesLnList }, { "SelectedCustomer", Model.SelectedCustomer } })
+}
+else
+{
+	@Html.Partial("_SalesBlk", null, new ViewDataDictionary { { "Currency", Model.Currency }, { "rtsCurrency", Sales.rtsCurrency }, { "LocationList", Model.LocationList }, { "JobList", Model.JobList }, { "showrecur", showrecur }, { "Device", Model.ComInfo.Device }, { "Devices", Model.ComInfo.Devices }, { "NextSalesCode", Model.Sales.rtsCode }, { "DefaultSalesNotesTxt", Model.DefaultSalesNotesTxt } })
+}
+
+
 
 <input type="hidden" id="rtsExRate" value="@Sales.rtsExRate" />
 
@@ -57,7 +72,7 @@
 @Html.Partial("_WaitingModal")
 
 
-<div id="infoblk" data-currency="@Model.Currency" data-priceeditable="@Model.PriceEditable" data-disceditable="@Model.DiscEditable" data-enabletax="@Model.TaxModel.EnableTax" data-enablelogo="@Model.EnableLogo" data-inclusivetaxrate="@Model.TaxModel.TaxRate" data-accountprofileid="@Model.AccountProfileId" data-checkoutportal="@ViewBag.DefaultCheckoutPortal.ToLower()" data-salesmanrequiredtxt="@string.Format(Resources.Resource.PleaseFormat,string.Format(Resources.Resource.SelectFormat,Resources.Resource.SalesPerson))" data-jsondiclocation="@Model.JsonDicLocation" data-jsondicbattotalqty="@JsonSerializer.Serialize(Model.DicBatTotalQty)" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicitemsns="@JsonSerializer.Serialize(Model.DicItemSNs)" data-dicitemoptions="@JsonSerializer.Serialize(Model.DicItemOptions)" data-jsonpoitembatvqlist="@JsonSerializer.Serialize(Model.PoItemBatVQList)" data-jsondicitembatsnvtlist="@JsonSerializer.Serialize(Model.DicItemBatSnVtList)" data-jsondicitemvtqtylist="@JsonSerializer.Serialize(Model.DicItemVtQtyList)" data-jsondicitembatchqty="@JsonSerializer.Serialize(Model.DicItemBatchQty)" data-jsondicitemsnvtlist="@JsonSerializer.Serialize(Model.DicItemSnVtList)" data-jsondicitembatdelqty="@JsonSerializer.Serialize(Model.DicItemBatDelQty)" data-jsondicitemvtdelqtylist="@JsonSerializer.Serialize(Model.DicItemVtDelQtyList)" data-jsondicseqdeliveryitems="@JsonSerializer.Serialize(Model.DicSeqDeliveryItems)" data-jsondicitembatsnvt="@JsonSerializer.Serialize(Model.DicItemBatSnVt)" data-jsonpoivinfo="@JsonSerializer.Serialize(Model.PoIvInfo)" data-jsondicivinfo="@JsonSerializer.Serialize(Model.DicIvInfo)" data-dicitemgroupedvariations="@JsonSerializer.Serialize(Model.DicItemGroupedVariations)" data-dicivqtylist="@JsonSerializer.Serialize(Model.DicIvQtyList)" data-dicivdelqtylist="@JsonSerializer.Serialize(Model.DicIvDelQtyList)"></div>
+<div id="infoblk" data-currency="@Model.Currency" data-priceeditable="@Model.PriceEditable" data-disceditable="@Model.DiscEditable" data-enabletax="@Model.TaxModel.EnableTax" data-enablelogo="@Model.EnableLogo" data-inclusivetaxrate="@Model.TaxModel.TaxRate" data-accountprofileid="@Model.AccountProfileId" data-checkoutportal="@ViewBag.DefaultCheckoutPortal.ToLower()" data-salesmanrequiredtxt="@string.Format(Resources.Resource.PleaseFormat,string.Format(Resources.Resource.SelectFormat,Resources.Resource.SalesPerson))" data-jsondiclocation="@Model.JsonDicLocation" data-jsondicbattotalqty="@JsonSerializer.Serialize(Model.DicBatTotalQty)" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicitemsns="@JsonSerializer.Serialize(Model.DicItemSNs)" data-dicitemoptions="@JsonSerializer.Serialize(Model.DicItemOptions)" data-jsonpoitembatvqlist="@JsonSerializer.Serialize(Model.PoItemBatVQList)" data-jsondicitembatsnvtlist="@JsonSerializer.Serialize(Model.DicItemBatSnVtList)" data-jsondicitemvtqtylist="@JsonSerializer.Serialize(Model.DicItemVtQtyList)" data-jsondicitembatchqty="@JsonSerializer.Serialize(Model.DicItemBatchQty)" data-jsondicitemsnvtlist="@JsonSerializer.Serialize(Model.DicItemSnVtList)" data-jsondicitembatdelqty="@JsonSerializer.Serialize(Model.DicItemBatDelQty)" data-jsondicitemvtdelqtylist="@JsonSerializer.Serialize(Model.DicItemVtDelQtyList)" data-jsondicseqdeliveryitems="@JsonSerializer.Serialize(Model.DicSeqDeliveryItems)" data-jsondicitembatsnvt="@JsonSerializer.Serialize(Model.DicItemBatSnVt)" data-jsonpoivinfo="@JsonSerializer.Serialize(Model.PoIvInfo)" data-jsondicivinfo="@JsonSerializer.Serialize(Model.DicIvInfo)" data-dicitemgroupedvariations="@JsonSerializer.Serialize(Model.DicItemGroupedVariations)" data-dicivqtylist="@JsonSerializer.Serialize(Model.DicIvQtyList)" data-dicivdelqtylist="@JsonSerializer.Serialize(Model.DicIvDelQtyList)" data-sales="@JsonSerializer.Serialize(Model.Sales)" data-saleslnlist="@JsonSerializer.Serialize(Model.SalesLnList)" data-itemlist="@JsonSerializer.Serialize(Model.ItemList)"></div>
 
 
 

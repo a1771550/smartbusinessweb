@@ -67,8 +67,6 @@ namespace SmartBusinessWeb.Controllers
         private static string KingdeeMaterialFormId = ConfigurationManager.AppSettings["KingdeeMaterialFormId"];
         private static string KingdeeInventoryFormId = ConfigurationManager.AppSettings["KingdeeInventoryFormId"];
         private static string Kingdee_ItemPriceListFormId = ConfigurationManager.AppSettings["Kingdee_ItemPriceListFormId"];
-        private int startIndex = 0;
-        private int pageSize = 10;
         private string CentralApiUrl = ConfigurationManager.AppSettings["CentralApiUrl"];
         private string shopApiUrl = ConfigurationManager.AppSettings["ShopApiUrl"];
         private string kingdeeApiBaseUrl = ConfigurationManager.AppSettings["KingdeeApiBaseUrl"];
@@ -723,56 +721,6 @@ namespace SmartBusinessWeb.Controllers
             //Response.Write(salescode);
             return Json(device, JsonRequestBehavior.AllowGet);
         }
-
-
-
-
-
-
-        public void Debug64()
-        {
-            List<SalesItem> items = new List<SalesItem>();
-            using var context = new PPWDbContext(Session["DBName"].ToString());
-            var _items = context.GetItemList4Sales15(AccountProfileId, location, startIndex, pageSize, null).ToList();
-            foreach (var i in _items)
-            {
-                var salesitem = new SalesItem
-                {
-                    itmItemID = i.itmItemID,
-                    itmCode = i.itmCode,
-                    itmName = i.itmName,
-                    itmDesc = i.itmDesc,
-                    itmTaxPc = i.itmTaxPc,
-                    itmIsNonStock = i.itmIsNonStock,
-                    itmSupCode = i.itmSupCode,
-                    itmBaseSellingPrice = i.itmBaseSellingPrice,
-                    itmLastUnitPrice = i.itmLastUnitPrice,
-                    itmLastSellingPrice = i.itmLastSellingPrice,
-                    itmUseDesc = i.itmUseDesc,
-                    itmIsTaxedWhenSold = i.itmIsTaxedWhenSold,
-                    //AccountProfileId = accountProfileId,
-                    IncomeAccountID = (int)i.IncomeAccountID,
-                    InventoryAccountID = (int)i.InventoryAccountID,
-                    ExpenseAccountID = (int)i.ExpenseAccountID,
-                    itmSellUnit = i.itmSellUnit,
-                    itmBuyUnit = i.itmBuyUnit,
-                    //Qty = (int)i.lstQuantityAvailable,
-                    //QuantityAvailable = (int)i.lstQuantityAvailable,
-                    //lstStockLoc = location,
-                    chkBat = i.chkBat,
-                    chkSN = i.chkSN,
-                    chkVT = i.chkVT,
-                };
-
-                Response.Write(salesitem.itmCode + ":" + salesitem.NameDesc + ":" + i.itmUseDesc + ":" + i.itmDesc + ":" + i.itmName + "<br>");
-                items.Add(salesitem);
-            }
-
-
-        }
-
-
-
 
         public void Debug59()
         {
@@ -2229,7 +2177,7 @@ btest3
                 //             IsNonStock = i.itmIsNonStock,
                 //             ItemSupCode = i.itmSupCode,
                 //             StockLoc = i.lstStockLoc,
-                //             QuantityAvailable = i.QuantityAvailable
+                //             lstQtyAvailable = i.lstQtyAvailable
                 //         }
                 //         ).ToList();
                 //Dictionary<DistinctItem, Dictionary<string, int>> DicItemQty = new Dictionary<DistinctItem, Dictionary<string, int>>();
@@ -2238,7 +2186,7 @@ btest3
                 //    Dictionary<string, int> dic = new Dictionary<string, int>();
                 //    if (!item.IsNonStock)
                 //    {
-                //        dic[item.StockLoc] = item.QuantityAvailable;
+                //        dic[item.StockLoc] = item.lstQtyAvailable;
                 //    }
 
                 //    DicItemQty.AddPG(item, dic);
@@ -2981,6 +2929,6 @@ btest3
         public string SalesPersonName { get; set; }
 
         public bool itmIsTaxedWhenSold { get; set; }
-        public int lstQuantityAvailable { get; set; }
+        public int lstQtyAvailable { get; set; }
     }
 }

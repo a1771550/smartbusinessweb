@@ -1192,7 +1192,7 @@ function submitRefund() {
 		$("#changeModal").dialog("close");
 	}
 	Refund.rtsRmks = <string>$("#txtNotes").val();
-	Refund.salescode = rno;
+	Refund.rtsCode = rno;
 	Refund.SelectedDevice = $("#txtDeviceCode").val() as string;
 	Refund.rtsEpay = isEpay;
 	Refund.rtsFinalTotal = itotalamt;

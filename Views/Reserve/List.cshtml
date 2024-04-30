@@ -8,8 +8,6 @@
 
 <h2>@ViewBag.Title</h2>
 
-
-
 @if (Model.ReservePagingList != null && Model.ReservePagingList.Count > 0)
 {
 	using (Html.BeginForm("List", "Reserve", FormMethod.Get, new { @Id = "frmReserveList" }))
@@ -51,9 +49,9 @@
 					</td>
 					<td>
 						<a class="btn btn-info edit mx-1" role="button" href="/Reserve/Edit?code=@item.riCode">@Resources.Resource.Edit</a>
-
-						<a class="btn btn-primary print mx-1" role="button" href="/Reserve/PrintByCode?code=@item.riCode" target="_blank">@Resources.Resource.Print</a>
-						<a class="btn btn-danger cancel mx-1" role="button" href="/Reserve/Cancel?code=@item.riCode">@Resources.Resource.Cancel</a>
+						<a class="btn btn-primary paidout mx-1" role="button" href="#" data-id="@item.Id">@Resources.Resource.PayNow</a>
+						<a class="btn btn-warning print mx-1" role="button" href="/Reserve/PrintByCode?code=@item.riCode" target="_blank">@Resources.Resource.Print</a>
+						<a class="btn btn-danger cancel mx-1" role="button" data-id="@item.Id" href="#">@Resources.Resource.Cancel</a>
 					</td>
 				</tr>
 			}
@@ -75,9 +73,10 @@ else
 	@Html.Partial("_NoRecordFound")
 }
 
+@Html.AntiForgeryToken()
 @Html.Partial("_WaitingModal")
 
-<div id="infoblk"></div>
+<div id="infoblk" data-confirmcanceltxt="@string.Format(Resources.Resource.ConfirmFormat, Resources.Resource.Cancel)"></div>
 <script src="~/Scripts/ts/js/item/reserve/list.js?v=@rand"></script>
 
 

@@ -40,7 +40,7 @@
                         foreach (var shop in Item.DicLocQty.Keys)
                         {
                             qty = Item.DicLocQty[shop];
-                            <td><input type="number" name="QuantityAvailable" class="form-control stqty" min="0" data-location="@shop.Trim()" value="@qty" /></td>
+                            <td><input type="number" name="lstQtyAvailable" class="form-control stqty" min="0" data-location="@shop.Trim()" value="@qty" /></td>
                         }
                     }                    
                 }
@@ -49,7 +49,7 @@
                     for (var i = 0; i < Shops.Count(); i++)
                     {                        
                         qty = 0;
-                        <td><input type="number" name="QuantityAvailable" class="form-control stqty" min="0" data-location="@Shops[i].Trim()" value="@qty" /></td>
+                        <td><input type="number" name="lstQtyAvailable" class="form-control stqty" min="0" data-location="@Shops[i].Trim()" value="@qty" /></td>
                     }
                 }
             </tr>

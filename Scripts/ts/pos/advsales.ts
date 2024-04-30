@@ -100,7 +100,8 @@ $(document).on("dblclick", ".nopo", function () {
 
 
 $(function () {
-    forsales = true;
+    forsales = getParameterByName("reserveId") == null;
+    forReservePaidOut = !forsales;
     salesType = SalesType.retail;
     setFullPage();
     triggerMenu(0, 1);
@@ -112,7 +113,7 @@ $(function () {
     shops = comInfo.Shops.split(",");
     devices = comInfo.Devices.split(",");
 
-    $("#drpLocation").val(shop);
+    $("#drpLocation").val(shop); 
     $("#drpDevice").val(device);
 
     $("#rtsExRate").val(1);
@@ -192,4 +193,15 @@ $(function () {
             }
         }
     }
+
+    if (forReservePaidOut) {
+        Sales = $infoblk.data("sales");
+        SalesLnList = $infoblk.data("saleslnlist");
+        ItemList = $infoblk.data("itemlist");
+        //console.log("Sales:", Sales);
+        console.log("SalesLnList#load:", SalesLnList);
+
+        initVTDatePicker();
+    }
+    setInput4NumberOnly("number");
 });

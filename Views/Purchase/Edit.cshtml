@@ -20,8 +20,6 @@
 	bool ismanager = user.Roles.Any(x => x == RoleType.SalesManager);
 	bool isadmin = user.Roles.Any(x => x == RoleType.Admin && x != RoleType.SalesManager);
 }
-<link rel="stylesheet" type="text/css" href="~/Scripts/jspreadsheet/dist/jexcel.css" />
-<link rel="stylesheet" type="text/css" href="~/Scripts/jsuites/dist/jsuites.css" />
 
 <link rel="stylesheet" type="text/css" href="~/Content/purchase/edit.css?v=@rand" />
 
@@ -120,41 +118,43 @@
 		</div>
 	</div>
 
-	<div class="d-flex justify-content-center my-4" data-status="@Purchase.pstStatus" data-enabletax="@Model.EnableTax" data-inclusivetax="@(Model.InclusiveTax)">
-		@{ string tbodycls = Purchase.pstStatus == PurchaseStatus.opened.ToString() ? "small" : "";}
-		<table id="tblPSI" class="jexcel" cellpadding="0" cellspacing="0" style="width:100%;">
-			<thead class="resizable">
-				<tr class="">
-					<td style="width:50px;max-width:50px;" class=""></td>
-					<td title="@Resources.Resource.ItemCode" style="text-align: center;width:100px;">@Resources.Resource.ItemCode</td>
-					<td title="@Resources.Resource.ItemName" style="text-align: center;width:100px;">@Resources.Resource.ItemName</td>
-					<td title="@Resources.Resource.BaseUnit" style="text-align: right; width: 70px;min-width:70px;">@Resources.Resource.BaseUnit</td>
-					<td title="@Resources.Resource.Qty" style="text-align: right; width: 80px;">@Resources.Resource.Qty</td>
-					@if (Purchase.pstStatus == PurchaseStatus.opened.ToString() || Purchase.pstStatus == PurchaseStatus.partialreceival.ToString())
-					{
-						<td title="@Resources.Resource.Batch" style="text-align: center; width: 100px;">@Resources.Resource.Batch</td>
-						<td title="@Resources.Resource.SerialNo" style="text-align: center; width: 100px;">@Resources.Resource.SerialNoItemHeader</td>
-						<td title="@Resources.Resource.ExpiryDate" style="text-align: center; width: 100px;">@Resources.Resource.ExpiryDate</td>
-						<td title="@Resources.Resource.ItemVariations" style="text-align: center; width: 100px;">@Resources.Resource.ItemVariations</td>
-					}
-					<td style="text-align: right; width: 100px;">@Resources.Resource.UnitPrice (@Model.Currency)</td>
-					<td title="@Resources.Resource.DiscPc" style="text-align: right; width: 100px;">@Resources.Resource.DiscPc</td>
-					@if (Model.EnableTax && !Model.InclusiveTax)
-					{
-						<td title="@Resources.Resource.Tax" style="text-align: right; width: 100px;">@Resources.Resource.TaxItemHeader</td>
-					}
-					<td class="text-center" style="width: 100px;">@Resources.Resource.Location</td>
-					<td class="text-center" style="width: 100px;">@Resources.Resource.Job4Myob</td>
-					<td title="@Resources.Resource.Amount" style="text-align: right; width: 100px;">@Resources.Resource.Amount (@Model.Currency)</td>
-					@if (Purchase.pstStatus == PurchaseStatus.opened.ToString() || Purchase.pstStatus == PurchaseStatus.partialreceival.ToString())
-					{
-						<td title="@Resources.Resource.ReceivedQty" style="text-align: right;width:90px!important;">@Resources.Resource.ReceivedQty</td>
-					}
-				</tr>
-			</thead>
-			<tbody class="@tbodycls"></tbody>
-		</table>
-	</div>
+	
+		<div class="auto my-4">
+			@{ string tbodycls = Purchase.pstStatus == PurchaseStatus.opened.ToString() ? "small" : "";}
+			<table id="tblPSI" class="table table-hover table-bordered table-condensed">
+				<thead class="gray-header">
+					<tr class="">
+						<th class="text-center seq"></th>
+						<th class="text-center code" title="@Resources.Resource.ItemCode">@Resources.Resource.ItemCode</th>
+						<th class="text-center namedesc" title="@Resources.Resource.ItemName">@Resources.Resource.ItemName</th>
+						<th class="text-right unit" title="@Resources.Resource.BaseUnit">@Resources.Resource.BaseUnit</th>
+						<th class="text-right sellqty" title="@Resources.Resource.Qty">@Resources.Resource.Qty</th>
+						@if (Purchase.pstStatus == PurchaseStatus.opened.ToString() || Purchase.pstStatus == PurchaseStatus.partialreceival.ToString())
+						{
+							<th class="text-center ip" title="@Resources.Resource.Batch">@Resources.Resource.Batch</th>
+							<th class="text-center ip" title="@Resources.Resource.SerialNo">@Resources.Resource.SerialNoItemHeader</th>
+							<th class="text-center ip" title="@Resources.Resource.ExpiryDate">@Resources.Resource.ExpiryDate</th>
+							<th class="text-center iv" title="@Resources.Resource.ItemVariations">@Resources.Resource.ItemVariations</th>
+						}
+						<th class="text-right sellprice">@Resources.Resource.UnitPrice (@Model.Currency)</th>
+						<th class="text-right selldiscpc" title="@Resources.Resource.DiscPc">@Resources.Resource.DiscPc</th>
+						@if (Model.EnableTax && !Model.InclusiveTax)
+						{
+							<th class="text-right selltax" title="@Resources.Resource.Tax">@Resources.Resource.TaxItemHeader</th>
+						}
+						<th class="text-center selllocation">@Resources.Resource.Location</th>
+						<th class="text-center selljob">@Resources.Resource.Job4Myob</th>
+						<th class="text-right sellamt" title="@Resources.Resource.Amount">@Resources.Resource.Amount (@Model.Currency)</th>
+						@if (Purchase.pstStatus == PurchaseStatus.opened.ToString() || Purchase.pstStatus == PurchaseStatus.partialreceival.ToString())
+						{
+							<th class="text-right received" title="@Resources.Resource.ReceivedQty">@Resources.Resource.ReceivedQty</th>
+						}
+					</tr>
+				</thead>
+				<tbody class="@tbodycls"></tbody>
+			</table>
+		</div>
+	
 
 
 	var decimaltotal = CommonHelper.FormatNumber(Purchase.Total);
@@ -201,9 +201,9 @@
 
 						string disabled = payment.Amount > 0 ? "disabled" : "";
 						<tr data-id="@payment.Id">
-							<td class="text-center">@idx</td>
-							<td class="text-center"><input type="text" class="form-control chequeno text-center" maxlength="8" value="@payment.ChequeNo" /></td>
-							<td class="text-center" data-acclfid="@payment.AcClfID">
+							<th class="text-center">@idx</th>
+							<th class="text-center"><input type="text" class="form-control chequeno text-center" maxlength="8" value="@payment.ChequeNo" /></th>
+							<th class="text-center" data-acclfid="@payment.AcClfID">
 
 								<select class="drpAccount form-control flex">
 									<option value="">- @Resources.Resource.Select -</option>
@@ -216,14 +216,14 @@
 									<option value="OI" @selectedOI>@Resources.Resource.OtherIncome</option>
 									<option value="OEXP" @selectedOEXP>@Resources.Resource.OtherExpense</option>
 								</select>
-							</td>
-							<td class="text-center"><span class="accountno acname" data-acno="@payment.AccountNo" data-acname="@payment.AccountName">@payment.AccountName (@payment.AccountNo)</span></td>
-							<td class="text-right"><input type="number" class="form-control pay text-right" data-id="@payment.Id" value="@CommonHelper.FormatNumber(payment.Amount)" /></td>
-							<td class="text-right">
+							</th>
+							<th class="text-center"><span class="accountno acname" data-acno="@payment.AccountNo" data-acname="@payment.AccountName">@payment.AccountName (@payment.AccountNo)</span></th>
+							<th class="text-right"><input type="number" class="form-control pay text-right" data-id="@payment.Id" value="@CommonHelper.FormatNumber(payment.Amount)" /></th>
+							<th class="text-right">
 								<input type="datetime" class="form-control datepicker ppdate" name="ppDate" value="@payment.DateDisplay" />
 								<input type="hidden" class="datedisplay" value="@payment.DateDisplay" />
-							</td>
-							<td class="text-center text-wrap viewfile pointer" data-filename="@payment.fileName">
+							</th>
+							<th class="text-center text-wrap viewfile pointer" data-filename="@payment.fileName">
 								@if (!string.IsNullOrEmpty(payment.fileName))
 								{
 									string pdfthumbnail = "<img src=\"/images/pdf.jpg\" class=\"thumbnail\">";
@@ -238,21 +238,21 @@
 									<span>...</span>
 								}
 
-							</td>
-							<td class="text-right">@payment.CreateTimeDisplay</td>
-							<td class="text-center">@payment.CreateByDisplay</td>
-							<td>
+							</th>
+							<th class="text-right">@payment.CreateTimeDisplay</th>
+							<th class="text-center">@payment.CreateByDisplay</th>
+							<th>
 								<button type="button" class="btn btn-success btnsmall80 btnSave mr-1" data-id="@payment.Id" title="@string.Format(Resources.Resource.SaveFormat, Resources.Resource.Payment)" @disabled><i class="fa fa-save"></i></button>
 								<button type="button" class="btn btn-warning btnsmall80 btnUpload mr-1" data-id="@payment.Id" title="@Resources.Resource.UploadFile" data-forpurchasepayments="1"><i class="fa fa-upload"></i></button>
 								<button type="button" class="btn btn-danger btnsmall80 btnVoid mr-1" data-id="@payment.Id" title="@Resources.Resource.UploadFile"><i class="fa fa-trash"></i></button>
-							</td>
+							</th>
 						</tr>
 					}
 
 				</tbody>
 				<tfoot style="background:#eee;" data-pstamount="@Purchase.pstAmount" data-payamt="@(Model.PurchasePayments.Sum(x => x.Amount))">
 					<tr>
-						<td colspan="10" class="text-right">
+						<th colspan="10" class="text-right">
 							@{
 								bool ispartial = Purchase.pstStatus == PurchaseStatus.partialreceival.ToString();
 								decimal amount = ispartial ? (decimal)Purchase.pstPartialAmt : (decimal)Purchase.pstAmount;
@@ -265,7 +265,7 @@
 								<span class="font-weight-bold">@Model.Currency<span class="@amtcls" id="totalowed" data-num="@totalowed">@totalowedtxt</span></span>
 
 							</form>
-						</td>
+						</th>
 					</tr>
 				</tfoot>
 			</table>

@@ -220,7 +220,7 @@ function fillinForm_De() {
 		depositItem.DepositAmtDisplay = formatnumber(Deposit.PayAmt);
 		
 		depositItem.SettleDate = depositdate;
-		depositItem.QtyAvailable = item.Qty;
+		depositItem.QtyAvailable = item.lstQtyAvailable;
 		depositItem.rtlStockLoc = e.rtlStockLoc;
 
 		//DepositItemList.push(depositItem);

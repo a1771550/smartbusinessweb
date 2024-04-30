@@ -33,11 +33,10 @@ interface IReserveLn {
 	rilSender: string;
 	itmCode: string;
 	itmSellingPrice: number;
-	rilQty: number;
+	reserveQty: number;
+	reservedQty: number;
 	rilSignedUp_Sender: boolean;
 	rilDate: string;
-	rilCounted: number | null;
-	rilVariance: number | null;
 	ivIdList: string;
 	poIvId: string;
 	ItemNameDesc: string;
@@ -57,7 +56,7 @@ let ReserveCode: string = "";
 let sortByName: boolean = false;
 let DicCodeLocQty: { [Key: string]: { [Key: string]: number } }; //Dictionary<string, Dictionary < string, int >> DicCodeLocQty;
 let DicCodeLocId: { [Key: string]: { [Key: string]: string } };
-//let DicLocCodeResQty: { [Key: string]: { [Key: string]: number } };
+let DicItemReservedQty: { [Key: string]: number };
 interface IPaymentType {
 	Id: number;
 	pmtCode: string;
@@ -603,7 +602,7 @@ let stocklocation: string;
 let receiptno: string;
 let iscrmadmin: boolean;
 let iscrmsalesmanager: boolean;
-let lang: number;
+let lang: number = $appInfo.length ? Number($appInfo.data("lang")) : 0;
 let debug: boolean = false;
 
 let cusAttrEdit: boolean = false;
@@ -703,8 +702,9 @@ let itotalamt: number = 0,
 let currentY: number = 0;
 let zeroprice: boolean = false;
 let zerocost: boolean = false;
-let selectedItemCode: string,
-	selectedCusCodeName: string = "";
+let selectedItemCode: string = "";
+let selectedItemCodes: string[] = [];
+let selectedCusCodeName: string = "";
 let selectedSalesLn: ISalesLn | null;
 let selectedPreSalesLn: IPreSalesLn | null;
 let selectedSimpleSalesLn: ISimpleSalesLn | null;
@@ -808,6 +808,7 @@ let itemAcId: number = 0;
 let selectedItem: IItem | null;
 //let seqItem: { [Key: number]: IItem } = {};
 let forsales: boolean = false;
+let forReservePaidOut: boolean = false;
 let forsimplesales: boolean = false;
 let fordeposit: boolean = false;
 let forpurchase: boolean = false;
@@ -848,7 +849,7 @@ function handleOutOfStocks(
 		callback: function (value) {
 			if (value) {
 				/*  if (forwholesales) {*/
-				window.location.href = "/Item/ZeroStocks?salescode=" + salescode;
+				window.location.href = "/Item/ZeroStocks?rtsCode=" + salescode;
 				//} else {
 				//    window.open(printurl);
 				//    window.location.reload();
@@ -1266,7 +1267,7 @@ function OnSuccess(response) {
 			}
 		} else {
 			openItemModal();
-			_writeItems(model.Items);
+			writeItems(model.Items);
 		}
 
 		$(".Pager").ASPSnippets_Pager({
@@ -1349,15 +1350,19 @@ function GetSetSelectedPurchaseItem(): IPurchaseItem {
 	return selectedPurchaseItem;
 }
 
-function _writeItems(itemList: IItem[]) {
+function writeItems(itemList: IItem[]) {
 	let html = "";
 	$.each(itemList, function () {
 		var item = this;
 		const itemcode: string = item.itmCode;
-		let _qty: number = item.Qty;
+		let _qty: number = item.lstQtyAvailable;
 
-		let trcls = forIA && item.AbssQty <= 0 ? "" : "itmcode", proId = 0;
-		//if (_qty <= 0) console.log("trcls:" + trcls);
+		let trcls = "itmcode", proId = 0;
+
+		if (forEditReserve) trcls = selectedItemCodes.includes(itemcode) ? "dimrow" : "";
+
+		if (forIA) trcls = item.AbssQty <= 0 ? "" : "itmcode";
+
 		if (!forpurchase) {
 			if (item.ItemPromotions.length > 0) {
 				if (item.ItemPromotions.find((e) => e.pro4Period)) {
@@ -1439,7 +1444,7 @@ function _writeItems(itemList: IItem[]) {
 		let displaycls = item.hasItemVari ? "text-success" : "text-danger";
 		html += `<td><span class="fa fa-${facls} ${displaycls}"></span></td>`;
 
-		if (!forpurchase) {
+		if (!forpurchase && !forEditReserve) {
 			seq = currentY + 1;
 			let urlist = "";
 			if (((forsales || forwholesales) && !outofstock) || forpreorder) urlist = genProUrList(urlist, item);
@@ -1453,7 +1458,7 @@ function _writeItems(itemList: IItem[]) {
 		$("#tblItem tbody tr").each(function (i, e) {
 			if ($(e).find("td").eq(2).hasClass("outofstock")) {
 				$(e).removeClass("itmcode").addClass("outofstock");
-			} else {
+			} else if (!$(e).hasClass("dimrow")) {
 				$(e).addClass("itmcode").removeClass("outofstock");
 			}
 		});
@@ -1472,12 +1477,14 @@ $(document).on("click", "#tblmails th", function () {
 $(document).on("click", ".Pager .page", function () {
 	pageindex = Number($(this).attr("page"));
 	if (forenquiry) GetEnquiries(pageindex);
-	if (forattendance) GetAttendances(pageindex);
-	if (forjob) GetJobs(pageindex);
-	if (fortraining) GetTrainings(pageindex);
-	if (forsales || forpreorder || forwholesales || forpurchase) GetItems(pageindex);
+	else if (forattendance) GetAttendances(pageindex);
+	else if (forjob) GetJobs(pageindex);
+	else if (fortraining) GetTrainings(pageindex);
+	//if (forsales || forpreorder || forwholesales || forpurchase || forIA || forEditReserve) GetItems(pageindex);
 
-	if (forstock) GetStocks(pageindex);
+	else if (forstock) GetStocks(pageindex);
+
+	else GetItems(pageindex);
 });
 $(document).on("click", "#tblItem th a", function () {
 	sortName = $(this).data("category");
@@ -2425,7 +2432,9 @@ function confirmPay() {
 	} else if (_totalpay < _totalamt) {
 		switch (salesType) {
 			case SalesType.simplesales:
-				submitSimpleSales();
+				//submitSimpleSales();
+				falert(paymentnotenough, oktxt);
+				_totalpay = 0;
 				break;
 			case SalesType.deposit:
 				break;
@@ -2473,7 +2482,7 @@ function confirmPay() {
 				}
 				if (_couponamt >= _totalamt) {
 					resetPay(true);
-					if (forsales)
+					if (forsales || forReservePaidOut)
 						submitSales();
 					if (forsimplesales) submitSimpleSales();
 					//        break;
@@ -2498,6 +2507,7 @@ function confirmPay() {
 			default:
 			case SalesType.preorder:
 			case SalesType.retail:
+				//console.log("here");
 				submitSales();
 				break;
 		}
@@ -4637,12 +4647,10 @@ function initModals() {
 							(forsales && !Sales.MonthlyPay) ||
 							forpreorder ||
 							forrefund ||
-							fordeposit || forsimplesales
-						) {
-							confirmPay();
-						} else {
-							closePayModal();
-						}
+							fordeposit || forsimplesales || forReservePaidOut
+						) confirmPay();
+
+						closePayModal();
 					},
 				},
 				{
@@ -5149,7 +5157,6 @@ interface ISalesBase extends IRtlSale {
 	DepositAmt: number;
 	MonthlyPay: number;
 	rtsStatus: string;
-	salescode: string;
 	TotalRemainAmt: number | null;
 	rtsDvc: string;
 }
@@ -5693,7 +5700,7 @@ function initItem(): IItem {
 		itmUnitCost: 0,
 		itmItemID: Number($("#itmItemID").val()),
 		itmDSN: "",
-		Qty: 1,
+		lstQtyAvailable: 1,
 		PLA: Number($("#PLA").val()),
 		PLB: Number($("#PLB").val()),
 		PLC: Number($("#PLC").val()),
@@ -5749,19 +5756,19 @@ function initItem(): IItem {
 		TotalBaseStockQty: 0,
 		catId: 0,
 		ItemPromotions: [],
-		QtySellable: 0,
 		hasSelectedIvs: false,
 		singleProId: 0,
 		hasItemVari: false,
 		CategoryName: "",
 		discpc: 0,
+		ItemOptionsDisplay: "",
+		ItemVariDisplay: "",
 	};
 }
 
 interface ISimpleItem {
 	itmPicFile: string | null;
-	QtySellable: number;
-	Qty: number;
+	lstQtyAvailable: number;
 	itmItemID: number;
 	itmCode: string;
 	itmName: string;
@@ -5794,6 +5801,8 @@ interface ISimpleItem {
 	//ServiceChargeAmt: number | null;
 }
 interface IItem extends ISimpleItem {
+	ItemOptionsDisplay: string | null;
+	ItemVariDisplay: string | null;
 	itmIsActive: boolean;
 	itmIsNonStock: boolean;
 	itmIsQtyFractional: boolean;
@@ -5910,14 +5919,8 @@ interface IItem extends ISimpleItem {
 	IsModifyAttr: boolean;
 	TotalBaseStockQty: number;
 	catId: number;
-
-	QtySellable: number;
 	hasSelectedIvs: boolean;
-
 	hasItemVari: boolean;
-	//itmLastSellingPrice: number;
-	//singleProId: number | null;
-	//ItemPromotions: IItemPromotion[];
 }
 interface ILocQty {
 	LocCode: string;
@@ -6078,7 +6081,6 @@ interface ISales extends ISalesBase {
 	Change: number;
 	Roundings: number;
 	totalpay: number;
-	cuscode: string;
 	rtsCode: string;
 	rtsRmks: string;
 	Deposit: number;
@@ -7884,7 +7886,7 @@ interface IPreSalesLn1 {
 	cusName: string;
 	SalesPersonName: string;
 	itmIsTaxedWhenSold: boolean;
-	lstQuantityAvailable: number;
+	lstQtyAvailable: number;
 }
 interface IPreSalesLn {
 	rtlUID: number;
@@ -7945,7 +7947,7 @@ interface IPreSalesLn {
 	SalesPersonName: string;
 	Item: ISimpleItem;
 	itmIsTaxedWhenSold: boolean;
-	lstQuantityAvailable: number;
+	lstQtyAvailable: number;
 }
 function initSalesLn(_seq: number | undefined = 0): ISalesLn {
 	//console.log("Sales@initsalseln:", Sales);
@@ -8415,18 +8417,18 @@ $(document).on("change", ".qty", function () {
 	handleQtyChange.call(this);
 });
 
-$(document).on("change", ".location", function (e) {
-	handleLocationChange(e);
+$(document).on("change", ".location", function () {
+	handleLocationChange.call(this);
 });
 
-$(document).on("change", ".price", function (e) {
+$(document).on("change", ".price", function () {
 	// console.log("price changed");
-	handlePriceChange(e);
+	handlePriceChange.call(this);
 });
 
-$(document).on("change", ".discpc", function (e) {
-	// console.log("disc changed");
-	handleDiscChange(e);
+$(document).on("change", ".discpc", function () {
+	//console.log("disc changed");
+	handleDiscChange.call(this);
 });
 
 $(document).on("change", ".taxpc", function () {
@@ -8435,10 +8437,7 @@ $(document).on("change", ".taxpc", function () {
 });
 
 function handleTaxChange(this: any) {
-	currentY = getCurrentY(this);
-	//console.log("here");
-	//console.log("price:" + getRowPrice());
-	//console.log("discpc:" + getRowDiscPc());
+	getRowCurrentY.call(this);
 	updateRow(getRowPrice(), getRowDiscPc());
 }
 
@@ -8462,7 +8461,6 @@ function getDicItemOptionsVariByCodes(
 				let pointercls = "";
 				if (i < currentItemCount) {
 					selectedItemCode = $(e)
-						.find("td:eq(1)")
 						.find(".itemcode")
 						.val() as string;
 					itemOptions = !$.isEmptyObject(DicItemOptions)
@@ -8482,7 +8480,7 @@ function getDicItemOptionsVariByCodes(
 							: "";
 					}
 				}
-				let html = `<td><input type="text" class="text-center ${batcls}" readonly /></td><td data-serialno=""><input type="text" class="text-center ${sncls}" readonly /></td><td class="text-center" data-validthru="">${vtinput}</td>`;
+				let html = `<td class="sellbat text-center ip"><input type="text" class="text-center ${batcls}" readonly /></td><td class="sellsn text-center ip"><input type="text" class="text-center ${sncls}" readonly /></td><td class="text-center sellvt ip" data-validthru="">${vtinput}</td>`;
 
 				//itemvari
 				let varicls = "";
@@ -8498,13 +8496,13 @@ function getDicItemOptionsVariByCodes(
 				)
 					varicls = "povari pointer focus";
 				//console.log("DicItemGroupedVariations:", DicItemGroupedVariations);
-				html += `<td><input type="text" class="text-center ${varicls}" readonly /></td>`;
+				html += `<td class="iv selliv text-center"><input type="text" class="text-center ${varicls}" readonly /></td>`;
 
 				let $cell = $(e).find("td").eq(4);
 				$cell.after(html);
 				let qty: number = Number($cell.find(".qty").val());
 				$(e).append(
-					`<td data-received=""><input type="number" min="0" max="${qty}" class="text-right received" style="width:90px!important;" value="${qty}"></td>`
+					`<td class="received text-right"><input type="number" min="0" max="${qty}" class="text-right received" value="${qty}"></td>`
 				);
 
 				let seq = ($(e).data("idx") as number) + 1;
@@ -8516,7 +8514,6 @@ function getDicItemOptionsVariByCodes(
 			});
 
 			selectedItemCode = "";
-			$target.find("colgroup").find(".hide").removeClass("hide");
 			setValidThruDatePicker();
 		},
 		dataType: "json",
@@ -8534,7 +8531,7 @@ function handleItmCodeSelected() {
 		//console.log("here");
 		GetSetSelectedLns(null);
 	}
-	if (forEditReserve) toggleItemCodeChange();
+	else if (forEditReserve) toggleItemCodeChange();
 	else {
 		copiedItem = $.grep(ItemList, function (e: IItem, i: number) {
 			return (
@@ -8675,7 +8672,7 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 					? selectedCus.TaxPercentageRate!
 					: 0;
 			namedesc = selectedSimpleSalesLn!.Item.NameDesc;
-			qtysellable = selectedSimpleSalesLn!.Item.QtySellable;
+			qtysellable = selectedSimpleSalesLn!.Item.lstQtyAvailable;
 		} else {
 			selectedSalesLn!.rtlSeq = seq;
 			selectedSalesLn!.Item.singleProId = proId;
@@ -8684,7 +8681,7 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 					? selectedCus.TaxPercentageRate!
 					: 0;
 			namedesc = selectedSalesLn!.Item.NameDesc;
-			qtysellable = selectedSalesLn!.Item.QtySellable;
+			qtysellable = selectedSalesLn!.Item.lstQtyAvailable;
 		}
 
 	}
@@ -8697,7 +8694,7 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 				? selectedCus.TaxPercentageRate!
 				: 0;
 		namedesc = selectedPreSalesLn!.Item.NameDesc;
-		qtysellable = selectedPreSalesLn!.Item.QtySellable;
+		qtysellable = selectedPreSalesLn!.Item.lstQtyAvailable;
 	}
 	if (forwholesales && selectedWholesalesLn) {
 		discpc = selectedWholesalesLn!.wslLineDiscPc ?? 0;
@@ -8710,7 +8707,7 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 				? selectedCus.TaxPercentageRate!
 				: 0;
 		namedesc = selectedWholesalesLn!.Item.NameDesc;
-		qtysellable = selectedWholesalesLn!.Item.QtySellable;
+		qtysellable = selectedWholesalesLn!.Item.lstQtyAvailable;
 	}
 	if (forpurchase && selectedPurchaseItem) {
 		discpc = selectedPurchaseItem!.piDiscPc ?? 0;
@@ -9201,24 +9198,17 @@ function addRow() {
 	let idx = $target.find("tr").length;
 	let i = idx + 1;
 	let html = "";
-	html =
-		'<tr class="" data-idx="' +
-		idx +
-		'" data-amt="0" data-amtplustax="0"><td><span>' +
-		i +
-		'</span></td><td><input type="text" name="itemcode" class="itemcode text-center flex" /></td><td><input type="text" class="itemdesc small flex text-center" data-itemname="" /></td>';
-	if (forpurchase) {
-		html += `<td><input type="text" class="baseunit text-right flex" data-baseunit="" /></td>`;
-	}
-	if (forsales || forwholesales || fordelivery || forpreorder) {
-		html += `<td><input type="text" class="sellunit text-right flex" data-sellunit="" /></td>`;
-	}
-	if (forsales || forwholesales || forpreorder)
-		html += `<td><input type="number" data-qty="0" name="qty" class="qty text-right flex" /></td>`;
-	else
-		html += `<td><input type="number" min="0" data-qty="0" name="qty" class="qty text-right flex" /></td>`;
+	let unitcls = forpurchase ? "baseunit" : "sellunit";
+	html = `<tr>
+							<td class="text-center seq">${i}</td>
+							<td class="text-center code"><input type="text" name="itemcode" class="form-control itemcode text-center flex"  /></td>
+							<td class="text-center namedesc"><input type="text" class="itemdesc small flex form-control text-center" title="" data-itemname="" /></td>
+							<td class="text-right unit"><input type="text" class="${unitcls} text-right flex form-control" data-sellunit=""  /></td><td class="text-right sellqty"><input type="number" data-qty="" name="qty" class="qty text-right flex form-control" />`;
 
-	if (
+	let showbat = false;
+	let batcls = "batch";
+	let readonly = "";
+	if (forsales ||
 		(forwholesales && editmode && Wholesales.wsStatus == "invoice") ||
 		fordelivery ||
 		(forpurchase &&
@@ -9228,20 +9218,23 @@ function addRow() {
 			Purchase.pstStatus.toLowerCase() !== "created" &&
 			Purchase.pstStatus.toLowerCase() !== "rejected")
 	) {
-		html += `<td><input type="text" name="batch" class="batch text-center pointer flex" readonly /></td>`;
+		//html += `<td class="form-control text-center"><input type="text" class="batch form-control text-center pointer flex" readonly /></td>`;
+		readonly = "readonly";
+		batcls += " pointer";
+		showbat = true;
 	}
-	if (forsales)
-		html += `<td><input type="text" class="batch text-center flex" /></td>`; //to be added other classes later
-
-	let disabled =
-		PreSales && PreSales.rtsStatus == SalesStatus.presettling ? "" : "disabled";
+	let disabled = PreSales && PreSales.rtsStatus == SalesStatus.presettling ? "" : "disabled";
 	if (forpreorder) {
-		let batcls =
+		batcls =
 			PreSales.rtsStatus == SalesStatus.presettling ? "batch" : `b ${disabled}`;
-		html += `<td><input type="text" class="${batcls} text-center flex"  ${disabled} /></td>`;
+		showbat = true;
+		//	html += `<td class="form-control text-center"><input type="text" class="${batcls} form-control text-center flex"  ${disabled} /></td>`;
 	}
 
-	if (
+
+	let showsn = false;
+	let sncls = "serialno";
+	if (forsales ||
 		(forpurchase &&
 			editmode &&
 			Purchase.pstStatus !== "order" &&
@@ -9251,20 +9244,22 @@ function addRow() {
 		(forwholesales && editmode && Wholesales.wsStatus == "invoice") ||
 		fordelivery
 	) {
-		html +=
-			'<td><input type="text" name="serailno" readonly class="serialno text-center pointer flex" /></td>';
+		sncls += " pointer";
+		readonly = "readonly";
+		showsn = true;
 	}
-	if (forsales)
-		html += `<td><input type="text" class="serialno text-center flex" /></td>`; //to be added other classes later
 
 	if (forpreorder) {
-		let sncls =
+		sncls =
 			PreSales.rtsStatus == SalesStatus.presettling
 				? "serialno"
 				: `s ${disabled}`;
-		html += `<td><input type="text" class="${sncls} text-center flex" ${disabled} /></td>`;
+		showsn = true;
+		//html += `<td class="form-control text-center"><input type="text" class="${sncls} form-control text-center flex" ${disabled} /></td>`;
 	}
 
+	let showvt = false;
+	let vtcls = "validthru datepicker"; //don't add small here!
 	if (
 		forpurchase &&
 		editmode &&
@@ -9273,41 +9268,44 @@ function addRow() {
 		Purchase.pstStatus.toLowerCase() !== "created" &&
 		Purchase.pstStatus.toLowerCase() !== "rejected"
 	) {
-		html +=
-			'<td><input type="datetime" name="validthru" class="validthru small datepicker text-center pointer flex" /></td>';
+		//html +=
+		//	'<td class="form-control text-center"><input type="datetime" name="validthru" class="validthru small datepicker form-control text-center pointer flex" /></td>';
+		vtcls += "pointer";
+		showvt = true;
 	}
 
-	let vtcls = "validthru datepicker"; //don't add small here!
-	if (
-		forwholesales &&
-		Wholesales.wsStatus != "order" &&
-		Wholesales.wsStatus.toLowerCase() !== "requesting" &&
-		Wholesales.wsStatus.toLowerCase() !== "created" &&
-		Wholesales.wsStatus.toLowerCase() !== "rejected"
-	) {
-		vtcls += "pointer";
-	}
-	if (
-		forsales ||
+
+	if (forsales ||
 		(forwholesales &&
 			Wholesales.wsStatus != "order" &&
 			Wholesales.wsStatus.toLowerCase() !== "requesting" &&
 			Wholesales.wsStatus.toLowerCase() !== "created" &&
 			Wholesales.wsStatus.toLowerCase() !== "rejected")
-	)
-		html += `<td><input type="text" class="${vtcls.trim()} text-center flex" /></td>`;
-
-	//console.log("vtcls:" + vtcls);
-
-	if (forpreorder) {
-		if (!(PreSales.rtsStatus == SalesStatus.presettling))
-			vtcls = `v ${disabled}`;
-		html += `<td><input type="text" class="${vtcls.trim()} text-center flex" ${disabled} /></td>`;
+	) {
+		vtcls += "pointer";
+		showvt = true;
 	}
+	//html += `<td class="form-control text-center"><input type="text" class="${vtcls.trim()} form-control text-center flex" /></td>`;
+	//console.log("vtcls:" + vtcls);
+	if (forpreorder) {
+		if (!(PreSales.rtsStatus == SalesStatus.presettling)) {
+			vtcls = `v ${disabled}`;
+			showvt = true;
+		}
+	}
+
+
+	//to be added other classes later
+	if (showbat)
+		html += `<td class="text-center sellbat"><input type="text" class="text-center flex form-control ${batcls}" ${readonly} ${disabled} /></td>`;
+	if (showsn)
+		html += `<td class="text-center sellsn"><input type="text" class="text-center flex form-control ${sncls}" ${readonly} ${disabled} /></td>`;
+	if (showvt)
+		html += `<td class="text-center sellvt"><input type="text" class="${vtcls.trim()} text-center flex form-control" ${disabled} /></td>`;
 
 	//item variations:
 	if (forsales || forpreorder) {
-		html += `<td class="text-center"><input type="text" name="vari" class="vari text-center" value="" /></td>`;
+		html += `<td class="text-center selliv""><input type="text" class="vari form-control text-center" /></td>`;
 	}
 
 	let p_readonly: string = "",
@@ -9320,16 +9318,14 @@ function addRow() {
 			d_readonly = "readonly";
 		}
 	}
-
 	if (forsales || forpreorder || forpurchase || forwholesales || fordelivery) {
-		html +=
-			'<td><input type="number" name="price" min="0" class="price text-right flex" ' +
-			p_readonly +
-			' /></td><td><input type="number" min="0" name="discpc" class="discpc text-right flex" ' +
-			d_readonly +
-			" /></td>";
+		html += `<td class="text-right sellprice">
+								<input type="number" min="0" class="price text-right flex form-control" ${p_readonly} />
+							</td>
+							<td class="text-right selldiscpc">
+								<input type="number" min="0" class="discpc text-right flex form-control" ${d_readonly} />
+							</td>`;
 	}
-
 	// console.log("inclusivetax:", inclusivetax);
 	if (
 		forsales ||
@@ -9338,22 +9334,25 @@ function addRow() {
 		forwholesales
 		// && enableTax && !inclusivetax
 	) {
-		html +=
-			'<td class="text-right"><input type="number" name="tax" min="0" class="taxpc text-right flex" readonly/></td>';
+		html += `<td class="selltax text-right">
+								<input type="number" name="tax" min="0" class="taxpc text-right flex form-control" readonly />
+							</td>`;
 	}
 
-	html += `<td><select class="location flex text-center">${setLocationListOptions(shop)}</select></td>`;
+	html += `<td class="text-center selllocation">							
+								<select class="location flex form-control text-center">
+									${setLocationListOptions(shop)}
+								</select>
+							</td>
+							<td class="text-center selljob">
+								<select class="job flex form-control text-center">
+									${setJobListOptions(0)}
+								</select>
+									</td>`;
 
-	//let jobs: string = "";
-	//JobList.forEach((x) => jobs += `<option value='${x.JobID}'>${x.job}</option>`);
-	html += `<td><select class="job flex text-center">${setJobListOptions(0)}</select></td>`;
 
-	if (forsales || forpreorder || forwholesales)
-		html +=
-			'<td><input type="number" name="amount" class="amount text-right flex" readonly /></td>';
-	else
-		html +=
-			'<td><input type="number" name="amount" min="0" class="amount text-right flex" readonly /></td>';
+	html += `<td class="text-right sellamt"><input type="number" class="amount text-right flex form-control" readonly /></td>`;
+
 
 	if (
 		forpurchase &&
@@ -9364,7 +9363,7 @@ function addRow() {
 		Purchase.pstStatus.toLowerCase() !== "rejected"
 	) {
 		html +=
-			'<td><input type="number" name="received" min="0" class="received text-right flex" style="width:90px!important;" /></td>';
+			'<td class="text-right poreceived"><input type="number" name="received" min="0" class="received form-control text-right flex" style="width:90px!important;" /></td>';
 	}
 
 	html += "</tr>";
@@ -10820,7 +10819,7 @@ function checkPurchaseItems(): boolean {
 	return msg === "";
 }
 
-$(document).on("dblclick", ".itemcode", function () {
+$(document).on("dblclick", "input.itemcode", function () {
 	getRowCurrentY.call(this);
 	//console.log('seq:' + seq + ';currenty:' + currentY);
 	if (forpurchase) {
@@ -10832,12 +10831,13 @@ $(document).on("dblclick", ".itemcode", function () {
 		}
 	}
 	else {
+		/*console.log("here");*/
 		GetItems(1);
 	}
 });
 
-function handleLocationChange(event: any) {
-	currentY = getCurrentY(event.target);
+function handleLocationChange(this: any) {
+	getRowCurrentY.call(this);
 	updateRow(getRowPrice(), getRowDiscPc());
 }
 
@@ -10850,30 +10850,32 @@ function getRowPrice(): number {
 	return Number($tr.find(".price").val());
 }
 
-function handlePriceChange(event: any) {
+function handlePriceChange(this: any) {
+	getRowCurrentY.call(this);
 	// console.log("price change called");
 	//console.log("price:" + event.target.value);
-	const price: number = Number(event.target.value);
+	const price: number = Number($(this).val());
 	if (price === 0) {
 		zeroprice = true;
 	} else {
 		zeroprice = false;
 	}
 	if (price < 0) {
-		$(event.target).val(price * -1);
+		$(this).val(price * -1);
 	}
-	currentY = getCurrentY(event.target);
 	$tr = $(`#${gTblId} tbody tr`).eq(currentY);
 
 	let _discpc: number = Number($tr.find(".discpc").val());
 	//console.log("price#p change:" + price + ";discpc#p change:" + _discpc);
 	updateRow(price, _discpc);
 }
-function handleDiscChange(event: any) {
-	currentY = getCurrentY(event.target);
-	let _discpc: number = Number($(event.target).val());
-	//console.log("_discpc#change:" + _discpc);
+function handleDiscChange(this: any) {
+	getRowCurrentY.call(this);
+	let _discpc: number = Number($(this).val());
+	/*console.log("_discpc#change:" + _discpc);*/
 	$tr = $(`#${gTblId} tbody tr`).eq(currentY);
+	//console.log("currentY:" + currentY);
+	//console.log("tr:", $tr);
 	let _price: number = 0;
 
 	if (_discpc < 0) {
@@ -10916,7 +10918,7 @@ function updateRow(_price: number = 0, _discount: number = 0) {
 	if (_price > 0) {
 		// _price = _price * exRate;
 	} else {
-		if (forsales) {
+		if (forsales || forReservePaidOut) {
 			if (SalesLnList.length > 0) {
 				$.each(SalesLnList, function (i, e) {
 					if (e.rtlSeq == seq) {
@@ -10978,7 +10980,7 @@ function updateRow(_price: number = 0, _discount: number = 0) {
 	$price.on("change", handlePriceChange);
 	//didx = pidx + 1;
 	//console.log("disc idx:" + didx);
-	if ((forsales || forpreorder) && isPromotion && itemPromotion?.pro4Period) {
+	if ((forsales || forpreorder || forReservePaidOut) && isPromotion && itemPromotion?.pro4Period) {
 		_discount = itemPromotion.proDiscPc!;
 	}
 
@@ -11012,7 +11014,7 @@ function updateRow(_price: number = 0, _discount: number = 0) {
 	//);
 	newamtplustax = calAmountPlusTax(qty, _price, taxrate, _discount);
 
-	if (forsales || forpreorder || forpurchase || forwholesales) {
+	if (forsales || forpreorder || forpurchase || forwholesales || forReservePaidOut) {
 		newamt = calAmount(qty, _price, _discount);
 	}
 	//console.log("newamtplustax:" + newamtplustax + ";newamt:" + newamt);
@@ -11022,7 +11024,7 @@ function updateRow(_price: number = 0, _discount: number = 0) {
 
 
 	//console.log('saleslist#updaterow:', SalesList);
-	if (forsales || forpreorder || forpurchase || forwholesales) {
+	if (forsales || forpreorder || forpurchase || forwholesales || forReservePaidOut) {
 		// console.log("newamtplustax#updaterow:" + newamtplustax);
 		//console.log("here");
 		_updaterow($target, newamtplustax);
@@ -11037,10 +11039,8 @@ function _updaterow($target: JQuery, _amtplustax: number) {
 		$("#btnPayment").prop("disabled", false);
 	}
 
-	if (forsales || forpreorder || forwholesales) {
+	if (forsales || forpreorder || forwholesales || forReservePaidOut) {
 		$target
-			.find("td")
-			.last()
 			.find(".amount")
 			.val(formatnumber(_amtplustax))
 			.data("amount", _amtplustax);
@@ -11055,7 +11055,7 @@ function _updaterow($target: JQuery, _amtplustax: number) {
 		updatePurchase();
 	}
 	//return;
-	if (forsales && !reviewmode) {//not for salesorderlist here
+	if ((forsales && !reviewmode) || forReservePaidOut) {//not for salesorderlist here
 		updateSales();
 	}
 	if (forpreorder) updatePreSales();
@@ -11518,8 +11518,9 @@ function OnGetStocksOK(response) {
 	togglePaging(type, model.Items.length > 0);
 }
 function handleItemDesc(itemnamedesc: string): string {
-	if (itemnamedesc.length > 40) {
-		itemnamedesc = itemnamedesc.substring(0, 25);
+	let length = lang == 2 ? 40 : 20;
+	if (itemnamedesc.length > length) {
+		itemnamedesc = itemnamedesc.substring(0, length);
 		itemnamedesc = itemnamedesc.concat("...");
 	}
 	return itemnamedesc;
@@ -14674,16 +14675,13 @@ $(document).on("change", "#tblSales .location", function () {
 	console.log("location:" + $(this).val());
 });
 function initSales(): ISales {
-	//NextSalesInvoice
-	let salescode = $(".NextSalesInvoice").first().val() as string;
-	//console.log("salescode#initsales:" + salescode);
 	return {
 		authcode: "",
 		epaytype: "",
 		rtsUID: 0,
 		rtsSalesLoc: $("#drpLocation").val()?.toString(),
 		rtsDvc: $("#drpDevice").val()?.toString(),
-		rtsCode: salescode,
+		rtsCode: $(".NextSalesInvoice").first().val() as string,
 		rtsRefCode: "",
 		rtsType: "",
 		rtsStatus: "",
@@ -14728,7 +14726,6 @@ function initSales(): ISales {
 		SelectedDevice: $("#drpDevice").val()?.toString(),
 		deliveryAddressId: 0,
 		ireviewmode: 0,
-		salescode: salescode,
 		selectedPosSalesmanCode: null,
 		CustomerPO: null,
 		DeliveryDate: null,
@@ -14737,14 +14734,13 @@ function initSales(): ISales {
 	} as ISales;
 }
 function initSimpleSales(): ISales {
-	let salescode = $("#salescode").text();
 	return {
 		authcode: "",
 		epaytype: "",
 		rtsUID: 0,
 		rtsSalesLoc: $("#drpLocation").val()?.toString(),
 		rtsDvc: $("#drpDevice").val()?.toString(),
-		rtsCode: salescode,
+		rtsCode: $("#salescode").val()?.toString(),
 		rtsRefCode: "",
 		rtsType: "",
 		rtsStatus: "",
@@ -14789,7 +14785,6 @@ function initSimpleSales(): ISales {
 		SelectedDevice: $("#drpDevice").val()?.toString(),
 		deliveryAddressId: 0,
 		ireviewmode: 0,
-		salescode: salescode,
 		selectedPosSalesmanCode: null,
 		CustomerPO: null,
 		DeliveryDate: null,
@@ -15184,11 +15179,11 @@ function populateOrderSummary() {
 	let html = "";
 
 	SelectedSimpleItemList.forEach((x: ISimpleItem) => {
-		let _subtotal: number = x.Qty * (x.itmBaseSellingPrice ?? 0);
+		let _subtotal: number = x.lstQtyAvailable * (x.itmBaseSellingPrice ?? 0);
 		let _disc: number = _subtotal * x.discpc / 100;
 		subtotal += _subtotal;
 		disc += _disc;
-		html += `<h3>${x.NameDesc} x ${x.Qty} <span>${currencySym}${formatnumber(_subtotal)}</span></h3>`;
+		html += `<h3>${x.NameDesc} x ${x.lstQtyAvailable} <span>${currencySym}${formatnumber(_subtotal)}</span></h3>`;
 	});
 
 	$(".table__single.items").empty().html(html);
@@ -15275,7 +15270,7 @@ $(document).on("click", "#transactionEpay", function () {
 });
 
 $(document).on("click", ".btnPayment", function () {
-	if (forsales) {
+	if (forsales || forReservePaidOut) {
 		if (SalesLnList.length === 0 || $(`#${gTblId} .focus`).length > 0) {
 			falert(salesinfonotenough, oktxt);
 		} else {
@@ -17738,25 +17733,31 @@ function updateSales() {
 	Sales.rtsServiceChargePc = ServiceChargePC;
 	//Sales.rtsServiceChargeAmt = ServiceChargeAmt;
 
+	console.log("SalesLnList#updatesales:", SalesLnList);
+
 	let totalamt = 0;
 	let $rows = $("#tblSales tbody tr");
 	$rows.each(function (i, e) {
 		let _seq = i + 1;
 		let itemcode: string = $(e)
-			.find("td")
-			.eq(1)
 			.find(".itemcode")
 			.val() as string;
 
 		if (itemcode) {
 			let salesln: ISalesLn | ISimpleSalesLn;
 
-			if (SalesLnList.length === 0) salesln = initSalesLn(_seq);
-			else {
+			if (forsales) {
+				if (SalesLnList.length === 0) salesln = initSalesLn(_seq);
+				else {
+					let idx = SalesLnList.findIndex((x) => x.rtlSeq == _seq);
+					if (idx >= 0) salesln = SalesLnList[idx];
+					else salesln = initSalesLn(_seq);
+				}
+			}
+			if (forReservePaidOut) {
 				let idx = SalesLnList.findIndex((x) => x.rtlSeq == _seq);
 				if (idx >= 0) salesln = SalesLnList[idx];
-				else salesln = initSalesLn(_seq);
-			}
+			} 
 
 
 			if (salesln! && !editmode) { //not for salesorderlist here
@@ -17770,31 +17771,30 @@ function updateSales() {
 					salesln.Item = ItemList[idx];
 				}
 
-				salesln.rtlQty = Number($(e).find("td:eq(4)").find(".qty").val());
+				salesln.rtlQty = Number($(e).find(".qty").val());
 
-				idx = PriceIdx4Sales;
 				salesln.rtlSellingPrice = Number(
-					$(e).find("td").eq(idx).find(".price").val()
-				);
-				idx++;
-				salesln.rtlLineDiscPc = Number(
-					$(e).find("td").eq(idx).find(".discpc").val()
+					$(e).find(".price").val()
 				);
 
-				idx++;
+				salesln.rtlLineDiscPc = Number(
+					$(e).find(".discpc").val()
+				);
+
+
 				if (enableTax && !inclusivetax) {
 					salesln.rtlTaxPc = Number(
-						$(e).find("td").eq(idx).find(".taxpc").val()
+						$(e).find(".taxpc").val()
 					);
 				}
 
 				salesln.rtlSalesLoc = salesln.rtlStockLoc = <string>(
-					$(e).find("td").eq(-3).find(".location").val()
+					$(e).find(".location").val()
 				);
-				salesln.JobID = Number($(e).find("td").eq(-2).find(".job").val());
+				salesln.JobID = Number($(e).find(".job").val());
 				//console.log("salesln.jobid:" + salesln.JobID);
 				const amt: number = Number(
-					$(e).find("td").eq(-1).find(".amount").val()
+					$(e).find(".amount").val()
 				);
 				// console.log("amt:" + amt);
 				salesln.rtlSalesAmt = amt;
@@ -17819,6 +17819,8 @@ function updateSales() {
 
 	//reset variables:
 	isPromotion = !isPromotion;
+
+	console.log("SalesLnList:", SalesLnList);
 }
 function getItemsDisplayStart() {
 	return ItemList.length + 1;
@@ -18508,9 +18510,9 @@ function submitSimpleSales() {
 }
 function submitSales() {
 
-	if (forsales) {
+	if (forsales || forReservePaidOut) {
 		updateSales();
-		Sales.Roundings = isNumeric(Sales.Roundings) ? Sales.Roundings : 0;
+		//Sales.Roundings = isNumeric(Sales.Roundings) ? Sales.Roundings : 0;
 		if (validSalesForm()) {
 			_submitSales();
 		}
@@ -18591,18 +18593,18 @@ function _submitSimpleSales() {
 }
 function _submitSales() {
 	let url = "";
-	if (forsales) {
+	if (forsales || forReservePaidOut) {
 		url = "/POSFunc/ProcessAdvSales";
-		Sales.rtsCusCode = selectedCus.cusCode;
+		if (forsales) {
+			Sales.rtsCusCode = selectedCus.cusCode;
+			Sales.rtsCode = receiptno ?? $(".NextSalesInvoice").first().val();
+			Sales.ireviewmode = reviewmode ? 1 : 0;
+			Sales.selectedPosSalesmanCode = selectedPosSalesmanCode;
+		}
+
 		Sales.rtsRmks = $("#txtNotes").val() as string;
 		Sales.rtsInternalRmks = $("#txtInternalNotes").val() as string;
 		Sales.authcode = authcode;
-		// Sale.deliveryAddressId = deliveryAddressId;
-		Sales.ireviewmode = reviewmode ? 1 : 0;
-		Sales.salescode = receiptno ?? $(".NextSalesInvoice").first().val();
-		Sales.selectedPosSalesmanCode = selectedPosSalesmanCode;
-		// Sale.CustomerPO = $("#txtCustomerPO").val() as string;
-		// Sale.DeliveryDate = $("#txtDeliveryDate").val() as string;
 		Sales.rtsCurrency = $("#rtsCurrency").val() as string;
 		Sales.rtsExRate = exRate;
 		Sales.rtsSalesLoc = $("#drpLocation").val() as string;
@@ -18631,7 +18633,7 @@ function _submitSales() {
 		? { PreSales, PreSalesLnList, Payments, DeliveryItems }
 		: { Sales, SalesLnList, Payments, DeliveryItems };
 	console.log("data:", data);
-	//return false;
+	return false;
 	openWaitingModal();
 	$.ajax({
 		type: "POST",
@@ -18694,7 +18696,7 @@ function _submitSales() {
 }
 function validSalesForm(): boolean {
 	var msg = "";
-	if (forsales && (!SalesLnList || SalesLnList!.length === 0))
+	if ((forsales||forReservePaidOut) && (!SalesLnList || SalesLnList!.length === 0))
 		msg += `${salesinfonotenough}<br>`;
 	if (forpreorder && (!PreSalesLnList || PreSalesLnList!.length === 0))
 		msg += `${salesinfonotenough}<br>`;
@@ -22384,37 +22386,12 @@ function handleReserveSaved() {
 		Reserve.cusCode = reserveModal.find("#drpCustomer").val() as string;
 		Reserve.riRemark = reserveModal.find("#txtRemark").val() as string;
 		closeReserveModal();
-		$(`#${gTblId} tbody tr`).each(function (i, e) {
-			$(e)
-				.find("td:gt(5)")
-				.each(function (k, v) {
-					let $input = $(v).find("input.locqty");
-					//console.log('$input length:', $input.length);
-					if ($input.length) {
-						let jsstock: IJsStock = initJsStock();
-						let Id: string = $input.data("id") as string;
-						let itmCode: string = $input.data("code") as string;
 
-						jsstock.Id = Id;
-						let shop: any = $input.data("shop");
-						if (!isNaN(shop)) {
-							shop = Number(shop).toString();
-						}
-
-						jsstock.LocCode = shop;
-						jsstock.itmCode = itmCode;
-						jsstock.Qty = Number($input.val());
-
-						JsStockList.push(jsstock);
-					}
-				});
-		});
-		//console.log("JsStockList:", JsStockList);
 		//console.log("Reserve:", Reserve);
 		//console.log("ReserveLnList:", ReserveLnList);
 		//return false;
 
-		if (JsStockList.length > 0 && Reserve && ReserveLnList.length > 0) {
+		if (Reserve && ReserveLnList.length > 0) {
 			$.ajax({
 				type: "POST",
 				url: "/Reserve/ProcessReserve",
@@ -22422,7 +22399,6 @@ function handleReserveSaved() {
 					__RequestVerificationToken: $(
 						"input[name=__RequestVerificationToken]"
 					).val(),
-					JsStockList,
 					Reserve,
 					ReserveLnList,
 				},
@@ -22473,10 +22449,6 @@ function handleReserveSaved() {
 }
 
 function GetReserveRemarkDisplay(remark: string): string {
-	/*
-	if (string.IsNullOrEmpty(riRemark)) return "";
-				if(riRemark.Length>30)riRemark=string.Concat(riRemark.Substring(0,25),"...");
-	*/
 	if (!remark) return "";
 	if (remark.length > 30) remark = remark.substring(0, 25).concat("...");
 	return remark;
@@ -22485,61 +22457,61 @@ function GetReserveRemarkDisplay(remark: string): string {
 $(document).on("change", ".reserve.locqty", function () {
 	getRowCurrentY.call(this);
 	let changeqty: number = Number($(this).val());
-	console.log("changeqty:" + changeqty);
-	if (changeqty <= 0) return false;
+	//console.log("changeqty:" + changeqty);
+	if (changeqty < 0) return false;
 
 	let oldstockqty: number = Number($(this).data("oldstockqty"));
 	$(this).data("oldstockqty", changeqty);
-	console.log("oldstockqty:" + oldstockqty + ";changeqty:" + changeqty);
+	//console.log("oldstockqty:" + oldstockqty + ";changeqty:" + changeqty);
 	let diff: number = oldstockqty - changeqty;
 	$(this).data("diff", diff);
-	console.log("diff:" + diff);
+	//console.log("diff:" + diff);
+
+	let totalReservedQty: number = 0;
 	if (diff > 0) {
 		let itmcode: string = $(this).data("code") as string;
 		let shop: string = convertVarNumToString($(this).data("shop"));
 		let price: number = Number($tr.find("td.itemprice").find("input.itemprice").val());
 
 		if (forCreateReserve) {
-			let totalResQty = Number($tr.find(".rilqty").val());
-			totalResQty += diff;
-			$tr.find(".rilqty").val(totalResQty);
+			totalReservedQty = Number($tr.find(".reservedQty").val());
+			totalReservedQty += diff;
+			$tr.find(".reservedQty").val(totalReservedQty);
 
-			ReserveLn = { riCode: Reserve.riCode, itmCode: itmcode, rilSender: shop, itmSellingPrice: price, rilQty: diff } as IReserveLn;
+			ReserveLn = { riCode: Reserve.riCode, itmCode: itmcode, rilSender: shop, itmSellingPrice: price, reserveQty: diff, reservedQty: diff } as IReserveLn;
 
 			if (ReserveLnList.length == 0) ReserveLnList.push(ReserveLn);
 			handleReserveLnList(itmcode, shop);
 		}
 		if (forEditReserve) {
-			let totalResQty = Number($tr.find(".rilqty").data("totalreservedqty")); //MUST NOT use val()!!!
-			console.log("totalResQty#before adding:", totalResQty);
+			totalReservedQty = Number($tr.find(".reservedQty").data("totalreservedqty")); //MUST NOT use val()!!!
+			//console.log("totalReservedQty#before adding:", totalReservedQty);
 			let currentReservedQty = Number($(this).data("currentreservedqty"));
-			console.log("currentReservedQty:" + currentReservedQty);
-
+			//console.log("currentReservedQty:" + currentReservedQty);
 			let newReservedQty = diff + currentReservedQty;
-			console.log("newReservedQty:", newReservedQty);
+			//console.log("newReservedQty:", newReservedQty);
+			totalReservedQty += diff;
+			//console.log("totalReservedQty#after adding:", totalReservedQty);
+			$tr.find(".reservedQty").data("totalreservedqty", totalReservedQty);
+			$tr.find(".reservedQty").val(totalReservedQty);
 
-			totalResQty += diff;
-			console.log("totalResQty#after adding:", totalResQty);
-			$tr.find(".rilqty").data("totalreservedqty", totalResQty);
-
-			$tr.find(".rilqty").val(totalResQty);
-
-			ReserveLn = { riCode: Reserve.riCode, itmCode: itmcode, rilSender: shop, itmSellingPrice: price, rilQty: newReservedQty } as IReserveLn;
-			console.log("ReserveLn:", ReserveLn);
-
+			ReserveLn = { riCode: Reserve.riCode, itmCode: itmcode, rilSender: shop, itmSellingPrice: price, reservedQty: newReservedQty, reserveQty: diff } as IReserveLn;
+			//console.log("ReserveLn:", ReserveLn);
 			handleReserveLnList(itmcode, shop);
 		}
-
 	}
-	console.log("ReserveLnList#2:", ReserveLnList);
-
-    function handleReserveLnList(itmcode: string, shop: string) {
-        let idx = ReserveLnList.findIndex(x => x.itmCode == itmcode && x.rilSender == shop);
-        if (idx >= 0) {
-            ReserveLnList[idx] = structuredClone(ReserveLn);
-            //console.log("ReserveLnList#1:", ReserveLnList);
-        } else {
-            ReserveLnList.push(ReserveLn);
-        }
-    }
+	//console.log("ReserveLnList#2:", ReserveLnList);
+	function handleReserveLnList(itmcode: string, shop: string) {
+		let idx = ReserveLnList.findIndex(x => x.itmCode == itmcode && x.rilSender == shop);
+		if (idx >= 0) {
+			ReserveLnList[idx] = structuredClone(ReserveLn);
+			//console.log("ReserveLnList#1:", ReserveLnList);
+		} else {
+			ReserveLnList.push(ReserveLn);
+		}
+	}
 });
+
+function handleReservePaidOut(reserveId: number) {
+	window.location.href = "/POSFunc/AdvSales?reserveId=" + reserveId;
+}

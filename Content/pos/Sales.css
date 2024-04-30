@@ -158,6 +158,33 @@ i.fa-plus, i.fa-minus {
 	font-size: 80% !important;
 }
 
-	.form-control.flex {
+	.form-control.flex:not(.itemcode):not(.itemdesc):not(.location):not(.job) {
 		font-size: .9rem !important;
 	}
+
+	.form-control.itemcode,.form-control.itemdesc, .form-control.location, .form-control.job{
+		font-size:.75rem!important;
+	}
+
+#tblSales thead th.code, #tblSales tbody td.code, #tblSales thead th.namedesc, #tblSales tbody td.namedesc {
+	width: 150px !important;
+	min-width: 150px !important;
+}
+
+#tblSales thead th.selllocation, #tblSales tbody td.selllocation {
+	width: 100px !important;
+	min-width: 100px !important;
+}
+#tblSales thead th.selljob, #tblSales tbody td.selljob {
+	width: 120px !important;
+	min-width: 120px !important;
+}
+#tblSales thead th.sellprice, #tblSales tbody td.sellprice, #tblSales thead th.sellamt, #tblSales tbody td.sellamt {
+	width: 120px !important;
+	min-width: 120px !important;
+}
+
+#tblSales thead th.sellqty, #tblSales tbody td.sellqty {
+	width: 100px !important;
+	min-width: 100px !important;
+}

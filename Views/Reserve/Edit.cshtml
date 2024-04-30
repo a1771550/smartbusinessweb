@@ -64,7 +64,7 @@
 		<tbody>
 			@foreach (var group in Model.GroupedReserveLnlist)
 			{
-				int totalReservedQty = group.Sum(x => x.rilQty);
+				int totalReservedQty = Model.DicItemReservedQty[group.Key];
 				var line = group.FirstOrDefault();
 
 				string msgId = $"msg{line.Id}";
@@ -81,10 +81,10 @@
 						<input type="text" class="form-control number text-right itemprice" value="@line.SellingPriceDisplay" />
 					</td>
 					<td class="text-center itemoptions resetable">@Html.Raw(item.ItemOptionsDisplay)</td>
-					<td class="text-center itemvari resetable">@Html.Raw(item.ItemVariationsDisplay)</td>
+					<td class="text-center itemvari resetable">@Html.Raw(item.ItemVariDisplay)</td>
 
 
-					<td class="text-right onhandstock resetable @item.OutOfStockCls" title="@item.QuantityAvailable">@item.QuantityAvailable</td>
+					<td class="text-right onhandstock resetable @item.OutOfStockCls" title="@item.lstQtyAvailable">@item.lstQtyAvailable</td>
 
 					@foreach (var shop in Model.Shops)
 					{
@@ -105,7 +105,7 @@
 						if (_line != null)
 						{
 							<td class="text-right locqty selectedshop pointer" title="@Resources.Resource.SenderWarehouse">
-								<input type="text" class="form-control text-right btnsmall locqty number reserve" data-id="@Id" data-isprimary="@isprimary" data-code="@item.itmCode" data-shop="@shop" data-onhandstock="@qty" data-oldstockqty="@qty" data-itemid="@item.itmItemID" @disabled data-totalreservedqty="@totalReservedQty" data-currentreservedqty="@(Model.DicLocCodeResQty[shop][_line.itmCode])" value="@qty" title="@qty">
+								<input type="text" class="form-control text-right btnsmall locqty number reserve" data-id="@Id" data-isprimary="@isprimary" data-code="@item.itmCode" data-shop="@shop" data-onhandstock="@qty" data-oldstockqty="@qty" data-itemid="@item.itmItemID" @disabled data-totalreservedqty="@totalReservedQty" data-currentreservedqty="@(Model.DicLocCodeReservedQty[shop][_line.itmCode])" value="@qty" title="@qty">
 							</td>
 						}
 						else
@@ -118,10 +118,10 @@
 					}
 
 					<td class="text-right locqty">
-						<input type="number" class="form-control btnsmall text-right rilqty" data-totalreservedqty="@totalReservedQty" readonly value="@totalReservedQty" />
+						<input type="number" class="form-control btnsmall text-right reservedQty" data-totalreservedqty="@totalReservedQty" readonly value="@totalReservedQty" />
 					</td>
 					<td class="text-center">
-						<button type="button" class="btn btn-success save" data-id="@line.Id" data-msgid="@msgId">@Resources.Resource.Save</button>
+						<button type="button" class="btn btn-success save" data-msgid="@msgId">@Resources.Resource.Save</button>
 						<span id="@msgId"></span>
 					</td>
 				</tr>
@@ -133,13 +133,13 @@
 </div>
 
 <div class="clearfix">
-	<button id="btnPaidOut" class="btn btn-primary float-right" data-orderid="@Reserve.OrderId">@Resources.Resource.PayNow</button>
+	<button id="btnPaidOut" class="btn btn-primary float-right" data-id="@Reserve.OrderId">@Resources.Resource.PayNow</button>
 </div>
 
 @Html.Partial("_WaitingModal")
 @Html.Partial("_ItemModal", null, new ViewDataDictionary { { "currency", Model.Currency }, { "priceheader", Resources.Resource.SellingPrice }, { "forreserve", true } })
 
-<div id="infoblk" data-linelist="@JsonSerializer.Serialize(Model.ReserveLnList)" data-diccodelocresqty="@JsonSerializer.Serialize(Model.DicLocCodeResQty)"></div>
+<div id="infoblk" data-code="@Reserve.riCode" data-shops="@JsonSerializer.Serialize(Model.Shops)" data-dicitemreservedqty="@JsonSerializer.Serialize(Model.DicItemReservedQty)"></div>
 
 <script src="~/Scripts/ts/js/item/reserve/edit.js?v=@rand"></script>
 
