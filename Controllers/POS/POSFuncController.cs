@@ -260,7 +260,7 @@ namespace SmartBusinessWeb.Controllers
             string Notes = Refund.rtsRmks;
             int Change = (int)Refund.Change;
             string salescode = Refund.rtsCode;
-            string devicecode = Refund.SelectedDevice;
+            string devicecode = Refund.rtsDvc;
             string epaytype = Refund.epaytype;
             decimal totalamount = (decimal)Refund.rtsFinalTotal;
             #endregion

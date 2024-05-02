@@ -15,7 +15,7 @@ function populateReserveRow() {
 			DicCodeLocId = data.DicCodeLocId;
 			//console.log("DicCodeLocQty:", DicCodeLocQty);
 			//console.log("DicCodeLocId:", DicCodeLocId);
-			let idx = ItemList.findIndex(x => x.itmCode.toLowerCase() == selectedItemCode.toLowerCase());
+			let idx = ItemList.findIndex(x => { return x.itmCode.toLowerCase() == selectedItemCode.toLowerCase(); });
 			if (idx >= 0) selectedItem = ItemList[idx];
 			//console.log("selectedItem:", selectedItem);//ok
 			if (selectedItem) {

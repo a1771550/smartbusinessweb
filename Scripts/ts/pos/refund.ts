@@ -349,8 +349,8 @@ function getReceiptOk(data) {
 			const tmplist = [...newpolist, ...currentpolist];
 			const filteredpolist = tmplist.filter(
 				(value, index, self) =>
-					index === self.findIndex((t) => t.id === value.id)
-			);
+					index === self.findIndex((t) => { return t.id === value.id; }
+			));
 			PoItemBatVQList = filteredpolist.slice(0);
 		} else {
 			if (model.PoItemBatVQList)
@@ -1193,7 +1193,7 @@ function submitRefund() {
 	}
 	Refund.rtsRmks = <string>$("#txtNotes").val();
 	Refund.rtsCode = rno;
-	Refund.SelectedDevice = $("#txtDeviceCode").val() as string;
+	Refund.rtsDvc = $("#txtDeviceCode").val() as string;
 	Refund.rtsEpay = isEpay;
 	Refund.rtsFinalTotal = itotalamt;
 	Refund.epaytype = epaytype;

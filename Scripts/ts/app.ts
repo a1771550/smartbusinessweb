@@ -1284,7 +1284,7 @@ function OnSuccess(response) {
 }
 function GetSetSelectedPreSalesLn(): IPreSalesLn {
 	if (PreSalesLnList.length > 0) {
-		let idx = PreSalesLnList.findIndex((x) => x.rtlSeq == seq);
+		let idx = PreSalesLnList.findIndex((x) => { return x.rtlSeq == seq; });
 		if (idx >= 0) selectedPreSalesLn = PreSalesLnList[idx];
 		else {
 			initSimpleItem();
@@ -1307,7 +1307,7 @@ function initSimpleItem() {
 
 function GetSetSelectedSalesLn(): ISalesLn {
 	if (SalesLnList.length > 0) {
-		let idx = SalesLnList.findIndex((x) => x.rtlSeq == seq);
+		let idx = SalesLnList.findIndex((x) => { return x.rtlSeq == seq; });
 		if (idx >= 0) selectedSalesLn = SalesLnList[idx];
 		else {
 			selectedSalesLn = initSalesLn();
@@ -1322,7 +1322,7 @@ function GetSetSelectedSalesLn(): ISalesLn {
 }
 function GetSetSelectedWholeSalesLn(): IWholeSalesLn {
 	if (WholeSalesLns.length > 0) {
-		let idx = WholeSalesLns.findIndex((x) => x.wslSeq == seq);
+		let idx = WholeSalesLns.findIndex((x) => { return x.wslSeq == seq; });
 		if (idx >= 0) selectedWholesalesLn = WholeSalesLns[idx];
 		else {
 			selectedWholesalesLn = initWholeSalesLn();
@@ -1336,7 +1336,7 @@ function GetSetSelectedWholeSalesLn(): IWholeSalesLn {
 }
 function GetSetSelectedPurchaseItem(): IPurchaseItem {
 	if (Purchase.PurchaseItems.length > 0) {
-		let idx = Purchase.PurchaseItems.findIndex((x) => x.piSeq == seq);
+		let idx = Purchase.PurchaseItems.findIndex((x) => { return x.piSeq == seq; });
 		if (idx >= 0) selectedPurchaseItem = Purchase.PurchaseItems[idx];
 		else {
 			selectedPurchaseItem = initPurchaseItem();
@@ -2851,7 +2851,7 @@ function openTextAreaModal(title: string = "") {
 		$txtfield.val(selectedJournalLn1.AllocationMemo);
 	}
 	if (forIA && IALs.length > 0) {
-		let idx = IALs.findIndex(x => x.Seq == (currentY + 1));
+		let idx = IALs.findIndex((x) => { return x.Seq == (currentY + 1); });
 		if (IALs[idx]) $txtfield.val(IALs[idx].Memo);
 	}
 }
@@ -3499,7 +3499,7 @@ function initModals() {
 						if (forIA) {
 							if (remark !== "") {
 								if (IALs.length > 0) {
-									let idx = IALs.findIndex(x => x.Seq == (currentY + 1));
+									let idx = IALs.findIndex((x) => { return x.Seq == (currentY + 1); });
 									//console.log("idx:" + idx);
 									if (IALs[idx]) {
 										IALs[idx].Memo = remark;
@@ -6067,9 +6067,7 @@ interface ISales extends ISalesBase {
 	SettleDateDisplay: string;
 	authcode: string;
 	rtsInternalRmks: string;
-	epaytype: string;
-	SelectedDevice: string;
-	SelectedShop: string;
+	epaytype: string;	
 	rtsExRate: number;
 	currency: string;
 	inclusiveTax: boolean;
@@ -6788,7 +6786,7 @@ $(document).on("change", ".chk", function (e) {
 });
 $(document).on("change", ".enqchk", function (e) {
 	let _id: string = <string>$(this).data("id");
-	let idx = assignEnqIdList.findIndex(x => x == _id);
+	let idx = assignEnqIdList.findIndex((x) => { return x == _id; });
 	if ($(this).is(":checked")) {
 		if (idx < 0)
 			assignEnqIdList.push(_id);
@@ -8437,10 +8435,10 @@ $(document).on("change", ".taxpc", function () {
 });
 
 function handleTaxChange(this: any) {
-	console.log("handletaxchange");
+	//console.log("handletaxchange");
 	getRowCurrentY.call(this);
-	console.log("itemcode:", $tr.find(".itemcode").val());
-	if($tr.find(".itemcode").val())
+	//console.log("itemcode:", $tr.find(".itemcode").val());
+	if ($tr.find(".itemcode").val())
 		updateRow(getRowPrice(), getRowDiscPc());
 }
 
@@ -9115,7 +9113,7 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 			$tax.val(formatnumber(taxrate));
 			$tax.on("change", handleTaxChange);
 
-			console.log("triggerChange:", triggerChange);
+			//console.log("triggerChange:", triggerChange);
 			if (triggerChange) $tax.trigger("change");
 		}
 
@@ -9179,13 +9177,8 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 			addRow();
 		}
 	}
-
 }
 
-//function cleanUpIALs() {
-//    let idx = IALs.findIndex(x => !x.itmCode && !x.JounralNumber);
-//    if (idx >= 0) IALs.splice(idx, 1);
-//}
 
 function getItemPromotion(item: IItem | ISimpleItem, proId: number) {
 	if (isPromotion && item.ItemPromotions) {
@@ -10900,7 +10893,7 @@ function handleDiscChange(this: any) {
 }
 
 function updateRow(_price: number = 0, _discount: number = 0) {
-	console.log("_price#updaterow:" + _price + ";_disc:" + _discount);
+	//console.log("_price#updaterow:" + _price + ";_disc:" + _discount);
 	$target = $(`#${gTblId} tbody tr`).eq(currentY);
 	seq = currentY + 1;
 
@@ -12940,7 +12933,7 @@ function updateUniqueSerial(serial: ISnBatSeqVt, itemcode: string) {
 		if (forpurchase) {
 			if (selectedPurchaseItem!.snbatseqvtlist.length > 0) {
 				let idx = selectedPurchaseItem!.snbatseqvtlist.findIndex(
-					(s) => s.snseq === serial.snseq
+					(s) => { return s.snseq === serial.snseq; }
 				);
 				if (idx >= 0) {
 					selectedPurchaseItem!.snbatseqvtlist[idx] = structuredClone(serial); //update
@@ -12954,7 +12947,7 @@ function updateUniqueSerial(serial: ISnBatSeqVt, itemcode: string) {
 
 		if (itemSeqSnBatSeqVtList[itemcode][seq.toString()].length > 0) {
 			let idx = itemSeqSnBatSeqVtList[itemcode][seq.toString()].findIndex(
-				(s) => s.snseq === serial.snseq
+				(s) => { return s.snseq === serial.snseq; }
 			);
 			if (idx >= 0) {
 				itemSeqSnBatSeqVtList[itemcode][seq.toString()][idx] =
@@ -13241,7 +13234,7 @@ function _confirmPoBatch($tr: JQuery): string {
 				)!;
 
 			let idx = selectedPurchaseItem!.batchList.findIndex(
-				(b) => b.batSeq == batch.batSeq
+				(b) => { return b.batSeq == batch.batSeq; }
 			);
 			if (idx >= 0) {
 				selectedPurchaseItem!.batchList[idx] = structuredClone(batch); //update
@@ -13389,7 +13382,7 @@ function confirmPoItemVariQty() {
 			if (x.piSeq == seq) {
 				if (
 					x.poItemVariList &&
-					x.poItemVariList.findIndex((x) => x.ivComboId == comboId) < 0
+					x.poItemVariList.findIndex((x) => { return x.ivComboId == comboId; }) < 0
 				) {
 					addPoItemVari(
 						x,
@@ -14720,9 +14713,7 @@ function initSales(): ISales {
 		Roundings: 0,
 		Change: 0,
 		MonthlyPay: 0,
-		Deposit: 0,
-		SelectedShop: $("#drpLocation").val()?.toString(),
-		SelectedDevice: $("#drpDevice").val()?.toString(),
+		Deposit: 0,	
 		deliveryAddressId: 0,
 		ireviewmode: 0,
 		selectedPosSalesmanCode: null,
@@ -14779,9 +14770,7 @@ function initSimpleSales(): ISales {
 		Roundings: 0,
 		Change: 0,
 		MonthlyPay: 0,
-		Deposit: 0,
-		SelectedShop: $("#drpLocation").val()?.toString(),
-		SelectedDevice: $("#drpDevice").val()?.toString(),
+		Deposit: 0,		
 		deliveryAddressId: 0,
 		ireviewmode: 0,
 		selectedPosSalesmanCode: null,
@@ -14903,7 +14892,7 @@ function handleBatVtQtyChange(this: any, lastCellCls: string) {
 				.val(maxqty - transferredqty);
 		}
 
-		let idx = TransferList.findIndex((x) => x.tmpId == tmpId);
+		let idx = TransferList.findIndex((x) => { return x.tmpId == tmpId; });
 		if (idx >= 0) TransferList.splice(idx, 1);
 
 		TransferList.push({
@@ -15014,7 +15003,7 @@ function handleIvQtyChange(this: any, lastCellCls: string) {
 			.find(lastCellCls)
 			.val(maxqty - transferredqty);
 
-		let idx = TransferList.findIndex((x) => x.poIvId == poIvId);
+		let idx = TransferList.findIndex((x) => { return x.poIvId == poIvId; });
 		if (idx >= 0) TransferList.splice(idx, 1);
 
 		TransferList.push({
@@ -15056,10 +15045,10 @@ function handleIvQtyChange(this: any, lastCellCls: string) {
 }
 
 $(document).on("change", "#drpShop", function () {
-	Sales.SelectedShop = $(this).val() as string;
+	Sales.rtsSalesLoc = $(this).val() as string;
 });
 $(document).on("change", "#drpDevice", function () {
-	Sales.SelectedDevice = $(this).val() as string;
+	Sales.rtsDvc = $(this).val() as string;
 });
 
 $(document).on("change", "#drpDeliveryAddr", function () {
@@ -15407,7 +15396,7 @@ $(document).on("change", ".chkbatsnvttf", function () {
 
 	//console.log("TransferList#change#0:", TransferList);
 	//console.log("sn:" + sn);
-	let idx = TransferList.findIndex((x) => x.tmpId == sn);
+	let idx = TransferList.findIndex((x) => { return x.tmpId == sn; });
 	if (idx >= 0) TransferList.splice(idx, 1);
 
 	TransferList.push({
@@ -15662,7 +15651,7 @@ $(document).on("change", ".nonitemoptions", function () {
 
 		const idx =
 			DeliveryItems.length > 0
-				? DeliveryItems.findIndex((item) => item.dlCode == dlcode)
+				? DeliveryItems.findIndex((item) => { return item.dlCode == dlcode; })
 				: -1;
 
 		if (idx === -1) {
@@ -16125,7 +16114,7 @@ const removeItemAttr = (ele) => {
 		noButton: notxt,
 		callback: function (value) {
 			if (value) {
-				let idx = ItemAttrList.findIndex((x) => x.tmpId === tmpId);
+				let idx = ItemAttrList.findIndex((x) => { return x.tmpId === tmpId; });
 				if (idx >= 0) {
 					ItemAttrList.splice(idx, 1);
 				}
@@ -16360,7 +16349,7 @@ $(document).on("change", "#itmCode", function () {
 		trimByMaxLength($code);
 		if (code !== $("#codeinuse").val()) {
 			if (CodeNameList && CodeNameList.length > 0) {
-				let idx = CodeNameList.findIndex(x => x.Code.toLowerCase() == code.toLowerCase());
+				let idx = CodeNameList.findIndex(x => { return x.Code.toLowerCase() == code.toLowerCase(); });
 				if (idx >= 0) {
 					$.fancyConfirm({
 						title: "",
@@ -16390,7 +16379,7 @@ $(document).on("change", "#itmName", function () {
 		trimByMaxLength($name);
 
 		if (CodeNameList && CodeNameList.length > 0) {
-			let idx = CodeNameList.findIndex(x => x.Name.toLowerCase() == name.toLowerCase());
+			let idx = CodeNameList.findIndex(x => { return x.Name.toLowerCase() == name.toLowerCase(); });
 			if (idx >= 0) {
 				$.fancyConfirm({
 					title: "",
@@ -17629,8 +17618,6 @@ function updatePreSales() {
 	$rows.each(function (i, e) {
 		let _seq = i + 1;
 		let itemcode: string = $(e)
-			.find("td")
-			.eq(1)
 			.find(".itemcode")
 			.val() as string;
 
@@ -17640,7 +17627,7 @@ function updatePreSales() {
 				presalesln = {} as IPreSalesLn;
 				presalesln.rtlSeq = _seq;
 			} else {
-				let idx = PreSalesLnList.findIndex((x) => x.rtlSeq == _seq);
+				let idx = PreSalesLnList.findIndex((x) => { return x.rtlSeq == _seq; });
 				if (idx >= 0) presalesln = PreSalesLnList[idx];
 				else {
 					presalesln = {} as IPreSalesLn;
@@ -17649,41 +17636,33 @@ function updatePreSales() {
 			}
 
 			if (presalesln) {
-				presalesln.rtlSeq = Number($(e).data("idx")) + 1;
+				presalesln.rtlSeq = _seq;
 				let idx = 0;
-				//presalesln.rtlItemCode = itemcode;
-				//let idx = ItemList.findIndex(
-				//	(x) => x.itmCode.toString() == presalesln!.rtlItemCode.toString()
-				//);
-
-				//if (idx >= 0) {
-				//	presalesln.Item = ItemList[idx];
-				//}
-				presalesln.rtlQty = Number($(e).find("td:eq(4)").find(".qty").val());
+				presalesln.rtlQty = Number($(e).find(".qty").val());
 
 				idx = PriceIdx4Sales;
 				presalesln.rtlSellingPrice = Number(
-					$(e).find("td").eq(idx).find(".price").val()
+					$(e).find(".price").val()
 				);
 				idx++;
 				presalesln.rtlLineDiscPc = Number(
-					$(e).find("td").eq(idx).find(".discpc").val()
+					$(e).find(".discpc").val()
 				);
 
 				idx++;
 				if (enableTax && !inclusivetax) {
 					presalesln.rtlTaxPc = Number(
-						$(e).find("td").eq(idx).find(".taxpc").val()
+						$(e).find(".taxpc").val()
 					);
 				}
 
 				presalesln.rtlSalesLoc = presalesln.rtlStockLoc = <string>(
-					$(e).find("td").eq(-3).find(".location").val()
+					$(e).find(".location").val()
 				);
 				presalesln.JobID = Number($(e).find("td").eq(-2).find(".job").val());
 				//console.log("presalesln.jobid:" + presalesln.JobID);
 				const amt: number = Number(
-					$(e).find("td").eq(-1).find(".amount").val()
+					$(e).find(".amount").val()
 				);
 				// console.log("amt:" + amt);
 				presalesln.rtlSalesAmt = amt;
@@ -17691,7 +17670,7 @@ function updatePreSales() {
 			}
 
 			if (PreSalesLnList.length > 0) {
-				let idx = PreSalesLnList.findIndex((x) => x.rtlSeq == _seq);
+				let idx = PreSalesLnList.findIndex((x) => { return x.rtlSeq == _seq; });
 				if (idx >= 0) {
 					PreSalesLnList[idx] = structuredClone(presalesln);
 				} else {
@@ -17733,14 +17712,14 @@ function updateSales() {
 	let totalamt = 0;
 	let $rows = $("#tblSales tbody tr");
 
-	console.log("SalesLnList@updatesales#0:", SalesLnList);
+	//console.log("SalesLnList@updatesales#0:", SalesLnList);
 	$rows.each(function (i, e) {
 		let _seq = i + 1;
-		console.log("_seq:" + _seq);
+		//console.log("_seq:" + _seq);
 		let itemcode: string = $(e)
 			.find(".itemcode")
 			.val() as string;
-		console.log("itemcode:" + itemcode);
+		//console.log("itemcode:" + itemcode);
 		let idx = -1;
 
 		if (itemcode) {
@@ -17749,23 +17728,25 @@ function updateSales() {
 			if (forsales) {
 				if (SalesLnList.length === 0) salesln = initSalesLn(_seq);
 				else {
-					idx = SalesLnList.findIndex((x) => x.rtlSeq == _seq);
+					idx = SalesLnList.findIndex((x) => { return x.rtlSeq == _seq; });
 					if (idx >= 0) salesln = SalesLnList[idx];
 					else salesln = initSalesLn(_seq);
 				}
 			}
 
-			if (forReservePaidOut) {			
-				idx = SalesLnList.findIndex((x) => { x.rtlSeq == _seq; console.log("x.rtlseq:", x.rtlSeq); });
+			if (forReservePaidOut) {
+				//console.log("_seq:" + _seq);
+				idx = SalesLnList.findIndex((x) => { return x.rtlSeq == _seq; });
 				//console.log("idx:" + idx);
 				if (idx >= 0) salesln = SalesLnList[idx];
+				//console.log("salesln:", salesln);
 			}
 
 			if (salesln! && !editmode) { //not for salesorderlist here
-				salesln.rtlSeq = $(e).index()+1;
+				salesln.rtlSeq = _seq;
 				salesln.rtlItemCode = itemcode;
 				let _idx = ItemList.findIndex(
-					(x) => x.itmCode.toString() == salesln!.rtlItemCode.toString()
+					(x) => { return x.itmCode.toString() == salesln!.rtlItemCode.toString(); }
 				);
 
 				if (_idx >= 0) {
@@ -17806,18 +17787,18 @@ function updateSales() {
 				if (idx >= 0) {
 					SalesLnList[idx] = structuredClone(salesln! as ISalesLn);
 				} else {
-					if(forsales)
+					if (forsales)
 						SalesLnList.push(salesln! as ISalesLn);
 				}
 			} else {
-				if(forsales)
+				if (forsales)
 					SalesLnList.push(salesln! as ISalesLn);
 			}
 		}
 	});
 	//console.log("totalamt#updatesales:" + totalamt);
 	$("#txtTotal").val(formatnumber(totalamt));
-	console.log("SalesLnList@updatesales#1:", SalesLnList);
+	//console.log("SalesLnList@updatesales:", SalesLnList);
 
 	//reset variables:
 	isPromotion = !isPromotion;
@@ -17974,7 +17955,7 @@ function handleMGTmails(pageIndex: number = 1) {
 						TotalRecord: 0,
 					};
 
-					let idx = AttendanceList.findIndex(a => a.saId == x.id);
+					let idx = AttendanceList.findIndex(a => { return a.saId == x.id; });
 					if (idx === -1) {
 						AttendanceList.push(attendance);
 						DicAttdSubject[x.id] = `${x.subject}`;
@@ -18039,7 +18020,7 @@ function handleMGTmails(pageIndex: number = 1) {
 						TotalRecord: 0,
 					};
 					//console.log("receivedDateTime:", x.receivedDateTime);
-					let idx = JobList.findIndex(a => a.joId == x.id);
+					let idx = JobList.findIndex(a => { return a.joId == x.id; });
 					if (idx === -1) {
 						JobList.push(job);
 						//console.log("subject:" + x.subject);
@@ -18109,7 +18090,7 @@ function handleMGTmails(pageIndex: number = 1) {
 						TotalRecord: 0,
 					};
 					//console.log("receivedDateTime:", x.receivedDateTime);
-					let idx = TrainingList.findIndex(a => a.trId == x.id);
+					let idx = TrainingList.findIndex(a => { return a.trId == x.id; });
 					if (idx === -1) {
 						TrainingList.push(training);
 						//console.log("content:" + x.body.content);
@@ -18509,9 +18490,8 @@ function submitSimpleSales() {
 	_submitSimpleSales();
 }
 function submitSales() {
-
 	if (forsales || forReservePaidOut) {
-		//updateSales();
+		updateSales();
 		//Sales.Roundings = isNumeric(Sales.Roundings) ? Sales.Roundings : 0;
 		if (validSalesForm()) {
 			_submitSales();
@@ -18632,7 +18612,7 @@ function _submitSales() {
 	let data = forpreorder
 		? { PreSales, PreSalesLnList, Payments, DeliveryItems }
 		: { Sales, SalesLnList, Payments, DeliveryItems };
-	console.log("data:", data);
+	//console.log("data:", data);
 	//return false;
 	openWaitingModal();
 	$.ajax({
@@ -18647,7 +18627,7 @@ function _submitSales() {
 			if (typeof data.epaystatus === "undefined") {
 				if (data.msg === "") {
 					window.open(printurl);
-					if (forsales||forReservePaidOut)
+					if (forsales || forReservePaidOut)
 						//window.location.reload();
 					if (forpreorder)
 						window.location.href = "/Preorder/Index";
@@ -18957,7 +18937,7 @@ function handleCardEmailChange(this: any) {
 		}
 
 		if (PhoneNameEmailList && PhoneNameEmailList.length > 0) {
-			let idx = PhoneNameEmailList.findIndex(x => (x.Email && x.Email.toLowerCase()) == email.toLowerCase());
+			let idx = PhoneNameEmailList.findIndex(x => { return (x.Email && x.Email.toLowerCase()) == email.toLowerCase(); });
 			if (idx >= 0) {
 				$.fancyConfirm({
 					title: "",
@@ -18981,7 +18961,7 @@ function handleCardPhoneChange(this: any) {
 	if (phone) {
 		trimByMaxLength($phone);
 		if (PhoneNameEmailList && PhoneNameEmailList.length > 0) {
-			let idx = PhoneNameEmailList.findIndex(x => (x.Phone && x.Phone.toLowerCase()) == phone.toLowerCase());
+			let idx = PhoneNameEmailList.findIndex(x => { return (x.Phone && x.Phone.toLowerCase()) == phone.toLowerCase(); });
 			if (idx >= 0) {
 				$.fancyConfirm({
 					title: "",
@@ -19023,7 +19003,7 @@ function handleCardNameChange(this: any) {
 		}
 
 		if (PhoneNameEmailList && PhoneNameEmailList.length > 0) {
-			let idx = PhoneNameEmailList.findIndex(x => (x.Name && x.Name.toLowerCase()) == name.toLowerCase());
+			let idx = PhoneNameEmailList.findIndex(x => { return (x.Name && x.Name.toLowerCase()) == name.toLowerCase(); });
 			if (idx >= 0) {
 				$.fancyConfirm({
 					title: "",
@@ -21177,16 +21157,11 @@ $(document).on("dblclick", ".batch", function () {
 								let _disabled = hasFocusCls ? "" : "disabled";
 
 								if (DeliveryItems.length > 0) {
-									let idx = -1;
-									DeliveryItems.findIndex((x, i) => {
+									let idx = DeliveryItems.findIndex((x, i) => {
 										if (hasFocusCls) {
-											if (x.snoCode == ele.sn) {
-												idx = i;
-											}
+											return (x.snoCode == ele.sn);
 										} else {
-											if (x.snoCode == ele.sn && x.seq == seq) {
-												idx = i;
-											}
+											return (x.snoCode == ele.sn && x.seq == seq);
 										}
 									});
 									if (idx >= 0) _checked = "checked disabled";
@@ -21217,17 +21192,12 @@ $(document).on("dblclick", ".batch", function () {
 								let _checked = "";
 								let _disabled = hasFocusCls ? "" : "disabled";
 
-								if (DeliveryItems.length > 0) {
-									let idx = -1;
-									DeliveryItems.findIndex((x, i) => {
+								if (DeliveryItems.length > 0) {									
+									let idx = DeliveryItems.findIndex((x, i) => {
 										if (hasFocusCls) {
-											if (x.snoCode == ele.sn) {
-												idx = i;
-											}
+											return (x.snoCode == ele.sn);
 										} else {
-											if (x.snoCode == ele.sn && x.seq == seq) {
-												idx = i;
-											}
+											return (x.snoCode == ele.sn && x.seq == seq);
 										}
 									});
 									if (idx >= 0) _checked = "checked disabled";
@@ -21330,7 +21300,7 @@ $(document).on("dblclick", ".batch", function () {
 });
 function getSalesLoc() {
 	let salesloc: string = "";
-	if (forsales) reviewmode ? salesloc = SalesOrder.rtsSalesLoc : salesloc = Sales.SelectedShop;
+	if (forsales) reviewmode ? salesloc = SalesOrder.rtsSalesLoc : salesloc = Sales.rtsSalesLoc;
 	if (forpreorder) salesloc = PreSales.rtsSalesLoc;
 	if (forwholesales) salesloc = Wholesales.wsSalesLoc;
 	return salesloc;
@@ -21994,7 +21964,7 @@ $(document).on("click", ".removefile", function () {
 		}
 		else {
 			url = "/Purchase/RemoveFile";
-			let idx = Purchase.FileList.findIndex(x => x == file);
+			let idx = Purchase.FileList.findIndex(x => { return x == file; });
 			if (idx >= 0) Purchase.FileList.splice(idx, 1);
 			populateFileList(Purchase.FileList);
 			let pstCode = $(this).data("code");
@@ -22003,7 +21973,7 @@ $(document).on("click", ".removefile", function () {
 	}
 	if (forcustomer) {
 		url = "/Customer/RemoveFile";
-		let idx = Customer.UploadFileList.findIndex(x => x == file);
+		let idx = Customer.UploadFileList.findIndex(x => { return x == file; });
 		if (idx >= 0) Customer.UploadFileList.splice(idx, 1);
 		populateFileList(Customer.UploadFileList);
 		let cusCode = $(this).data("code");
@@ -22011,7 +21981,7 @@ $(document).on("click", ".removefile", function () {
 	}
 	if (forsupplier) {
 		url = "/Supplier/RemoveFile";
-		let idx = Supplier.UploadFileList.findIndex(x => x == file);
+		let idx = Supplier.UploadFileList.findIndex(x => { return x == file; });
 		if (idx >= 0) Supplier.UploadFileList.splice(idx, 1);
 		populateFileList(Supplier.UploadFileList);
 		let cusCode = $(this).data("code");
@@ -22019,7 +21989,7 @@ $(document).on("click", ".removefile", function () {
 	}
 	if (forenquiry) {
 		url = "/Enquiry/RemoveFile";
-		let idx = enquiry.UploadFileList.findIndex(x => x == file);
+		let idx = enquiry.UploadFileList.findIndex(x => { return x == file; });
 		if (idx >= 0) enquiry.UploadFileList.splice(idx, 1);
 		populateFileList(enquiry.UploadFileList);
 		let enqId = $(this).data("code");
@@ -22505,7 +22475,7 @@ $(document).on("change", ".reserve.locqty", function () {
 	}
 	//console.log("ReserveLnList#2:", ReserveLnList);
 	function handleReserveLnList(itmcode: string, shop: string) {
-		let idx = ReserveLnList.findIndex(x => x.itmCode == itmcode && x.rilSender == shop);
+		let idx = ReserveLnList.findIndex(x => { return x.itmCode == itmcode && x.rilSender == shop; });
 		if (idx >= 0) {
 			ReserveLnList[idx] = structuredClone(ReserveLn);
 			//console.log("ReserveLnList#1:", ReserveLnList);

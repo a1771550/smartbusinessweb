@@ -1,7 +1,7 @@
 ﻿@model PPWLib.Models.POS.Sales.SalesEditModel
 @{
 	bool forreserve = Model.ReserveLnList != null;
-	ViewBag.Title = forreserve? Resources.Resource.PaidOut4Reserve : Resources.Resource.MakeSales;
+	ViewBag.Title = forreserve ? Resources.Resource.PaidOut4Reserve : Resources.Resource.MakeSales;
 	int rand = new Random().Next(10000, 100000);
 
 
@@ -24,7 +24,10 @@
 }
 <link rel="stylesheet" type="text/css" href="~/Content/pos/Sales.css?v=@rand" />
 <link rel="stylesheet" type="text/css" href="~/Content/pos/advsales.css?v=@rand" />
-<h3>@ViewBag.Title</h3>
+<h3 class="clearfix">
+	@ViewBag.Title
+	<span class="small60 d-inline-block float-right">@Resources.Resource.InvoiceNo <span class="badge badge-dark">@Model.Sales.rtsCode</span></span>
+</h3>
 
 @if (showrecur)
 {
@@ -32,7 +35,6 @@
 		<div class="col-12 col-md-2">
 			<button type="button" id="btnUseRecur" class="btn btn-outline-info">@Resources.Resource.UseRecurring</button>
 		</div>
-
 	</div>
 }
 

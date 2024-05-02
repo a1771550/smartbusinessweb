@@ -143,7 +143,7 @@ function removeRecurOrder(orderId: number) {
 					success: function (data) {
 						if (data) {
 							recurOrderList.splice(
-								recurOrderList.findIndex((v) => v.wsUID === orderId),
+								recurOrderList.findIndex((v) => { return v.wsUID === orderId; }),
 								1
 							);
 							console.log("recurorderlist after removal:", recurOrderList);

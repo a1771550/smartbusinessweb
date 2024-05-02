@@ -27,10 +27,10 @@ $(document).on("change", ".searchmode", function () {
 	if (_search) {
 		searchmodelist.push(_mode);
 	} else {
-		var idx = searchmodelist.findIndex((x) => x == _mode);
+		var idx = searchmodelist.findIndex((x) => { return x == _mode; });
 		searchmodelist.splice(idx, 1);
 	}
-	console.log(searchmodelist);
+	//console.log(searchmodelist);
 	//return;
 	$("#searchmode").val(searchmodelist.join(","));
 });

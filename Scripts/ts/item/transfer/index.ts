@@ -133,7 +133,7 @@ $(document).on("change", "input.locqty", function () {
 	}
 
 	if (TransferList.length > 0) {
-		let idx = TransferList.findIndex(x => x.itmCode == itmcode && x.stShop == shop);
+		let idx = TransferList.findIndex(x => { return x.itmCode == itmcode && x.stShop == shop; });
 		if (idx >= 0) TransferList[idx] = structuredClone(stocktransfer);
 		else TransferList.push(stocktransfer);
 	} else {

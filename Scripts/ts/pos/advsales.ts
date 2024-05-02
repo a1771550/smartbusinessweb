@@ -1,11 +1,5 @@
 ﻿$infoblk = $("#infoblk");
-enablelogo = $infoblk.data("enablelogo") === "True";
-enableSN = true;
-// enableTax = $infoblk.data("enabletax") === "True";
-priceeditable = $infoblk.data("priceeditable") === "True";
-disceditable = $infoblk.data("disceditable") === "True";
-//printfields = $infoblk.data('printfields');
-device = $infoblk.data("devicecode");
+
 
 let zerostockItemList: Array<IItem> = [];
 
@@ -37,6 +31,14 @@ $(document).on("click", ".btnNewSales", function () {
 });
 
 let sessionstartdata: Array<any> = [];
+
+function initInfoBlk4AdvSales() {
+    enablelogo = $infoblk.data("enablelogo") === "True";
+    enableSN = true;
+    priceeditable = $infoblk.data("priceeditable") === "True";
+    disceditable = $infoblk.data("disceditable") === "True";
+    device = $infoblk.data("devicecode");
+}
 
 function getSessionStartDataOk(data) {
     closeWaitingModal();
@@ -105,7 +107,7 @@ $(function () {
     salesType = SalesType.retail;
     setFullPage();
     triggerMenu(0, 1);
-
+    initInfoBlk4AdvSales();
     initVariablesFrmInfoblk();
    
     shop = comInfo.Shop;
@@ -118,12 +120,7 @@ $(function () {
 
     $("#rtsExRate").val(1);
     displayExRate(1);
-
-    batchidx = 5;
-    snidx = batchidx + 1;
-    vtidx = snidx + 1;
-    //exRate = 1;
-    //DicCurrencyExRate = $infoblk.data('jsondiccurrencyexrate');
+  
     gTblId = "tblSales";
     let _url = getParameterByName("url");
     //console.log('_url:' + _url);
@@ -199,7 +196,7 @@ $(function () {
         SalesLnList = $infoblk.data("saleslnlist");
         ItemList = $infoblk.data("itemlist");
         //console.log("Sales:", Sales);
-        console.log("SalesLnList#load:", SalesLnList);
+        //console.log("SalesLnList#load:", SalesLnList);
         DicCurrencyExRate = $infoblk.data("diccurrencyexrate");
 
         initVTDatePicker();

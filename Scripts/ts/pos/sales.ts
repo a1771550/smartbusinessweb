@@ -70,7 +70,7 @@ function handleProductCheck(ele: HTMLElement | null, discpc: number, increment: 
 	}
 
 	if (SelectedSimpleItemList.length > 0) {
-		let idx = SelectedSimpleItemList.findIndex(x => x.itmItemID == Id);
+		let idx = SelectedSimpleItemList.findIndex(x => { return x.itmItemID == Id; });
 
 		if (increment) {
 			if (idx < 0) {
@@ -208,7 +208,7 @@ $(document).on("click", "#btnClear", function () {
 });
 $(document).on("click", ".operator", function () {
 	let Id: number = Number($(this).data("id"));
-	let idx = SelectedSimpleItemList.findIndex(x => x.itmItemID == Id);
+	let idx = SelectedSimpleItemList.findIndex(x => { return x.itmItemID == Id; });
 
 	let qty: number = 0;
 	//console.log("id:" + $(this).data("id"));
