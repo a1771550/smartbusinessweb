@@ -168,78 +168,22 @@ $(document).on("click", "#btnSearch", function (e) {
 	//$("#sortorder").val("desc");
 	$("#frmCustomer").trigger("submit");
 });
-$(document).on("click", ".colheader", function () {
-	let $sortcol = $("<input>").attr({
-		type: "hidden",
-		name: "SortCol",
-		value: $(this).data("col"),
-	});
-	let $keyword = $("<input>").attr({
-		type: "hidden",
-		name: "Keyword",
-		value: $(this).data("keyword"),
-	});
-
-	let $sortcol_a = $("<input>").attr({
-		type: "hidden",
-		name: "SortCol_a",
-		value: $(this).data("col"),
-	});
-	let $keyword_a = $("<input>").attr({
-		type: "hidden",
-		name: "Keyword_a",
-		value: $(this).data("keyword"),
-	});
-
-	$("#frmCustomer")
-		.append($sortcol)
-		.append($keyword)
-		.append($sortcol_a)
-		.append($keyword_a)
-		.trigger("submit");
-});
 $(function () {
 	forcustomer = true;
 	setFullPage();
 	gTblId = "tblCustomer";
+	gFrmId = "frmCustomer";
 	triggerMenu(1, 0);
-	initModals();
+	initModals();	
 
-	let $sortorder = $("#sortorder");
-	let $sortcol = $("#sortcol");
-	//console.log('sortorder:' + $sortorder.val() + ';sortcol:' + $sortcol.val());
-	$target = $(".colheader").eq(<number>$sortcol.val());
-	let sortcls =
-		$sortorder.val() === "desc" ? "fa fa-sort-up" : "fa fa-sort-down";
-	$target.addClass(sortcls);
-
-	let $sortorder_a = $("#sortorder_a");
-	let $sortcol_a = $("#sortcol_a");
-	let $target_a = $(".colheader_a").eq(<number>$sortcol_a.val());
-	let sortcls_a =
-		$sortorder_a.val() === "desc" ? "fa fa-sort-up" : "fa fa-sort-down";
-	$target_a.addClass(sortcls_a);
-	
-	$target = $(".pagination");
-	$target
-		.wrap('<nav aria-label="Page navigation"></nav>')
-		.find("li")
-		.addClass("page-item")
-		.find("a")
-		.addClass("page-link");
-
-	let keyword = getParameterByName("Keyword");
-	if (keyword !== null) {
-		$("#txtKeyword").val(keyword);
-	}
-	$(".pagination li").addClass("page-item");
+	pagesize = $infoblk.data("pagesize");
 
 	var checkall = getParameterByName("CheckAll");
 	if (checkall !== null) {
 		//console.log("checkall:" + checkall);
 		let checked = checkall == "1";
 		$(".chk").prop("checked", checked);
-		handleCheckall(checked);
+		handleCheckAll(checked);
 	}
 	
 	if ($infoblk.data('returnmsg')) {
@@ -258,5 +202,6 @@ $(function () {
 	}
 
 	$("#norecord").addClass("hide"); //hide() methods not work!!!
-	$("#txtKeyword").trigger("focus");
+
+	ConfigSimpleSortingHeaders();
 });

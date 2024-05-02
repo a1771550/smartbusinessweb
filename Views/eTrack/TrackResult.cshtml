@@ -4,29 +4,37 @@
 	ViewBag.Title = Resources.Resource.TrackResult;
 }
 <link rel="stylesheet" href="~/Content/select2/select2.min.css" />
+<style>
+	.select2-container--default .select2-selection--multiple .select2-selection__choice__display {	
+		margin-left: 1rem;
+	}
+</style>
 
 <h2>@ViewBag.Title</h2>
 
-@Html.Partial("_NoRecordFound")
 
-@using (Html.BeginForm("TrackResult", "eTrack", FormMethod.Get, new { id = "filterform", @class = "form-inline my-4" }))
+@using (Html.BeginForm("TrackResult", "eTrack", FormMethod.Get, new { id = "frmTrack", @class = "form-inline my-4" }))
 {
 	<div class="container">
 		<div class="row justify-content-center py-3 px-3">
 			<span class="label mx-3">From</span>
-			<input class="col-12 col-md-3 form-control-range" type="text" id="datetimesmin" name="TrackDateFrmTxt" />
+			<input class="col-12 col-md-3 form-control-range" type="text" id="datetimesmin" name="strfrmdate" />
 			<span class="mx-3">To</span>
-			<input class="col-12 col-md-3 form-control-range" type="text" id="datetimesmax" name="TrackDateToTxt" />
+			<input class="col-12 col-md-3 form-control-range" type="text" id="datetimesmax" name="strtodate" />
 		</div>
 
 		<div class="row mb-4">
 			<div class="col-3">
 				<select id="blastid" name="blastid[]" class="form-control select2multiple" multiple="multiple" style="width:100%;">
-					@foreach (string blastid in Model.BlastIds)
+					@if (Model.BlastIds != null && Model.BlastIds.Count > 0)
 					{
-						string selected = Model.CurrentBlastId != null && Model.CurrentBlastId.Contains(blastid) ? " selected" : "";
-						<option value="@blastid" @selected>@blastid</option>
+						foreach (string blastid in Model.BlastIds)
+						{
+							string selected = Model.CurrentBlastId != null && Model.CurrentBlastId.Contains(blastid) ? " selected" : "";
+							<option value="@blastid" @selected>@blastid</option>
+						}
 					}
+
 				</select>
 			</div>
 
@@ -36,38 +44,48 @@
 						List<string> contactlist = new List<string>();
 					}
 
-					@foreach (string contact in Model.ContactNames)
+					@if (Model.ContactNames != null && Model.ContactNames.Count > 0)
 					{
-						if (!contactlist.Any(x => x.Trim().ToLower() == contact.Trim().ToLower()))
+						foreach (string contact in Model.ContactNames)
 						{
-							string _contact = contact.Replace("+", " ").Trim();
-							string selected = Model.CurrentContactName == _contact ? " selected" : "";
-							<option value="@_contact" @selected>@_contact</option>
+							if (!contactlist.Any(x => x.Trim().ToLower() == contact.Trim().ToLower()))
+							{
+								string _contact = contact.Replace("+", " ").Trim();
+								string selected = Model.CurrentContactName == _contact ? " selected" : "";
+								<option value="@_contact" @selected>@_contact</option>
 
-							contactlist.Add(contact);
+								contactlist.Add(contact);
+							}
+
 						}
-
 					}
+
+
 				</select>
 			</div>
 
 			<div class="col-3">
 				<select id="organ" name="organization" class="form-control select2multiple" multiple="multiple" style="width:100%;">
-					@foreach (string organ in Model.Organizations)
+					@if (Model.Organizations != null && Model.Organizations.Count > 0)
 					{
-						if (!string.IsNullOrEmpty(organ))
+						foreach (string organ in Model.Organizations)
 						{
-							string _organ = organ.Replace("+", " ").Trim();
-							string selected = Model.CurrentOrganization == _organ ? " selected" : "";
-							<option value="@_organ" @selected>@_organ</option>
+							if (!string.IsNullOrEmpty(organ))
+							{
+								string _organ = organ.Replace("+", " ").Trim();
+								string selected = Model.CurrentOrganization == _organ ? " selected" : "";
+								<option value="@_organ" @selected>@_organ</option>
+							}
 						}
 					}
+
 				</select>
 			</div>
 
 			<div class="col-3">
 				<select id="viewdate" name="viewdate" class="form-control select2multiple" multiple="multiple" style="width:100%;">
-					@{
+					@if (Model.ViewDates != null && Model.ViewDates.Count > 0)
+					{
 						List<string> dates = new List<string>();
 						foreach (DateTime date in Model.ViewDates)
 						{
@@ -85,19 +103,24 @@
 
 		</div>
 
-		<div class="row justify-content-center mb-2">
-			<button id="btnFilter" type="button" class="form-control btn btn-success mr-sm-3">Submit</button>
-			<button id="btnExclude" type="button" class="form-control btn btn-danger mr-sm-3">Exclude Test Contact</button>
-			<button id="btnReset" type="button" class="form-control btn btn-secondary">Reset</button>
 
-		</div>
 	</div>
 
-	<div class="container-fluid">
+	<div class="container">
+		<div class="row justify-content-center mb-2">
+			<button id="btnFilter" type="button" class="btnsmall80 form-control btn btn-success mr-sm-3">Submit</button>
+			<button id="btnExclude" type="button" class="btnsmall80 form-control btn btn-danger mr-sm-3">Exclude Test Contact</button>
+			<button id="btnReset" type="button" class="btnsmall80 form-control btn btn-secondary">Reset</button>
+		</div>
+	</div>
+	
+
+	var totalrecordcount = Model.PagingInfo != null ? Model.PagingInfo.TotalItems : 0;
+	<div class="container-fluid small">
 		<div class="row justify-content-end">
 			<div class="col-12 col-md-4">
 				<div class="float-right">
-					<span class="mr-sm-3 font-weight-bold">Record Count: <span class="text-primary">@Model.PagingInfo.TotalItems</span></span>
+					<span class="mr-sm-3 font-weight-bold">Record Count: <span class="text-primary">@totalrecordcount</span></span>
 					<span class="font-weight-bold">Contact Count: <span class="text-success">@Model.ContactCount</span></span>
 				</div>
 
@@ -105,50 +128,61 @@
 		</div>
 	</div>
 
-	<table id="tbltrack" class="table table-bordered table-striped table-hover table-responsive-md small" style="width:105%;">
-		<thead class="gray-header">
-			<tr>
-				<th class="colheader" data-col="0" data-order="@Model.SortOrder" data-keyword="@Model.Keyword">Blast ID</th>
-				<th class="colheader" data-col="1" data-order="@Model.SortOrder" data-keyword="@Model.Keyword">Contact ID</th>
-				<th class="colheader" data-col="2" data-order="@Model.SortOrder" data-keyword="@Model.Keyword">Contact Name</th>
-				<th class="colheader" data-col="3" data-order="@Model.SortOrder" data-keyword="@Model.Keyword">Organization</th>
-				<th class="colheader" data-col="4" data-order="@Model.SortOrder" data-keyword="@Model.Keyword">View Date</th>
-				<th class="colheader" data-col="5" data-order="@Model.SortOrder" data-keyword="@Model.Keyword">Phone</th>
-				<th class="colheader" data-col="6" data-order="@Model.SortOrder" data-keyword="@Model.Keyword">Email</th>
-				<th class="colheader" data-col="7" data-order="@Model.SortOrder" data-keyword="@Model.Keyword">IP</th>
-			</tr>
-		</thead>
-		@foreach (eTrackModel log in Model.PagingLogList)
+	if (Model.Logs == null || Model.Logs.Count == 0)
+	{
+		@Html.Partial("_NoRecordFound")
+	}
+	else
+	{
+		<table id="tbltrack" class="table table-bordered table-striped table-hover table-responsive-md small" style="width:105%;">
+			<thead class="gray-header">
+				<tr>
+					<th class="colheader" data-col="0" data-order="@Model.SortOrder" data-keyword="@Model.Keyword">Blast ID</th>
+					<th class="colheader" data-col="1" data-order="@Model.SortOrder" data-keyword="@Model.Keyword">Contact Name</th>
+					<th class="colheader" data-col="2" data-order="@Model.SortOrder" data-keyword="@Model.Keyword">Organization</th>
+					<th class="colheader" data-col="3" data-order="@Model.SortOrder" data-keyword="@Model.Keyword">View Date</th>
+					<th class="colheader" data-col="4" data-order="@Model.SortOrder" data-keyword="@Model.Keyword">Phone</th>
+					<th class="colheader" data-col="5" data-order="@Model.SortOrder" data-keyword="@Model.Keyword">Email</th>
+					<th class="colheader" data-col="6" data-order="@Model.SortOrder" data-keyword="@Model.Keyword">IP</th>
+				</tr>
+			</thead>
+			@if (Model.PagingLogList != null && Model.PagingLogList.Count > 0)
+			{
+				foreach (eTrackModel log in Model.PagingLogList)
+				{
+					@Html.Partial("_MailTrackSummary", log)
+				}
+			}
+
+		</table>
+
+		if (Model.PagingLogList != null && Model.PagingLogList.Count > 0)
 		{
-			@Html.Partial("_MailTrackSummary", log)
+			<div id="pagingblk">
+				@Html.PagedListPager(Model.PagingLogList, PageNo => Url.Action("TrackResult",
+			new { pass = Model.CurrentToken, PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword, blastid = Model.CurrentBlastId, contactname = Model.CurrentContactName, organization = Model.CurrentOrganization, viewdate = Model.CurrentViewDate, strfrmdate = Model.CurrentStartDate, strtodate = Model.CurrentEndDate, excludetestcontact = Model.CurrentExcludeTestContact, SortCol = Model.SortCol }))
+
+			</div>
 		}
-	</table>
 
-	<div id="pagingblk">
 
-		@Html.PagedListPager(Model.PagingLogList, PageNo => Url.Action("TrackResult",
-new { pass = Model.CurrentToken, PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword, blastid = Model.CurrentBlastId, contactname = Model.CurrentContactName, organization = Model.CurrentOrganization, viewdate = Model.CurrentViewDate, strfrmdate = Model.CurrentStartDate, strtodate = Model.CurrentEndDate, excludetestcontact = Model.CurrentExcludeTestContact, SortCol = Model.SortCol }))
 
-	</div>
+		<input type="hidden" id="currentsortorder" value="@Model.CurrentSortOrder" />
+		<input type="hidden" id="excludetestcontact" value="@Model.CurrentExcludeTestContact" />
+		<input type="hidden" id="pass" name="pass" value="@Model.CurrentToken" />
 
-	<input type="hidden" id="sortorder" name="SortOrder" value="@Model.SortOrder" />
-	<input type="hidden" id="sortcol" name="SortCol" value="@Model.SortCol" />
-	<input type="hidden" id="currentsortorder" value="@Model.CurrentSortOrder" />
-	<input type="hidden" id="excludetestcontact" value="@Model.CurrentExcludeTestContact" />
-	<input type="hidden" id="pass" name="pass" value="@Model.CurrentToken" />
-}
+		<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
+		<input type="hidden" id="sortcol" value="@Model.SortCol" />
+		<!--no "name" attr in propose!-->
+	}
 }
 
 @Html.Partial("_WaitingModal")
 
-@if (Model.PagingLogList != null)
-{
-	<div id="infoblk" data-url="@HttpContext.Current.Request.Url.ToString()" data-token="@Model.CurrentToken" data-subjecttxt="@Resources.Resource.Subject" data-viewdatetxt="@Resources.Resource.ViewDate" data-pagesizenoltzerotxt="@string.Format(Resources.Resource.NoLtZero, Resources.Resource.RecordsPerPage)" data-count="@Model.Logs.Count" data-reloadurl="/eTrack/TrackResult?pass=@Model.CurrentToken"></div>
-}
-else
-{
-	<div id="infoblk"></div>
-}
+
+<div id="infoblk" data-url="@HttpContext.Current.Request.Url.ToString()" data-token="d9u%40CXLkcYvgZ2Tsad7" data-subjecttxt="@Resources.Resource.Subject" data-viewdatetxt="@Resources.Resource.ViewDate" data-pagesizenoltzerotxt="@string.Format(Resources.Resource.NoLtZero, Resources.Resource.RecordsPerPage)" data-count="@Model.Logs.Count" data-reloadurl="/eTrack/TrackResult?pass=d9u%40CXLkcYvgZ2Tsad7"></div>
+
+
 
 <script src="~/Scripts/select2/select2.min.js"></script>
 <script type="text/javascript" src="~/Scripts/daterangepicker/moment.min.js"></script>

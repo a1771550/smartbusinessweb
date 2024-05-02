@@ -18,7 +18,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public JsonResult AddCustomers(List<string> cusCodes, long hotlistId)
+        public JsonResult AddCustomers(List<string> cusCodes, int hotlistId)
         {
             var msg = string.Format(Resources.Resource.AddTo, Resources.Resource.HotList);
             msg = string.Concat(msg, "<br>", string.Format(Resources.Resource.WillFormat, Resources.Resource.Email, String.Format(Resources.Resource.SentToFormat, string.Format(Resources.Resource.InChargeFormat, Resources.Resource.SalesPerson))));
@@ -40,7 +40,7 @@ namespace SmartBusinessWeb.Controllers.Customer
 
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
-        public ActionResult Edit(long Id = 0)
+        public ActionResult Edit(int Id = 0)
         {
             ViewBag.ParentPage = "customer";
             HotListEditModel model = new HotListEditModel();            

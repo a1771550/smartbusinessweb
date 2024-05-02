@@ -1,5 +1,5 @@
 ﻿$infoblk = $('#infoblk');
-let _url: string = $infoblk.data('url');
+let _url = "";
 
 $(document).on("click", "#btnAdvSearch", function () {
     eTrackAdvSearchItem = {
@@ -69,6 +69,7 @@ $(document).on('click', '#btnReset', function () {
     $('input[type=search]').val('');
     $('.select2multiple').empty();
     $('#blastid').trigger("focus");
+    window.location.href = $infoblk.data("reloadurl");    
 });
 $('#btnReload').on('click', function () {
     window.location.href = $infoblk.data("reloadurl");
@@ -78,7 +79,11 @@ $(function () {
     foretrack = true;
     setFullPage();
     gTblId = "tblTrack";
+    gFrmId = "frmTrack";
     eTrackToken = $infoblk.data("token");
+
+    _url = $infoblk.data('reloadurl');
+
     initModals();   
 
     triggerMenu(3, 1);
@@ -100,16 +105,12 @@ $(function () {
         placeholder: $infoblk.data('viewdatetxt'),
     });
 
-    console.log('sortorder:' + $('#sortorder').val() + ';sortcol:' + $('#sortcol').val());
-    $target = $('.colheader').eq(<number>$('#sortcol').val());
-    let sortcls = $('#sortorder').val() === 'asc' ? 'fa fa-sort-up' : 'fa fa-sort-down';
-    $target.addClass(sortcls);
+    ConfigSimpleSortingHeaders();
 
-    $target = $('.pagination');
-    $target.wrap('<nav aria-label="Page navigation"></nav>').find('li').addClass('page-item').find('a').addClass('page-link');
-
-    let totalcount: number = Number($infoblk.data("count"));
-    if (totalcount > 0) $("#norecord").show();
-    else $("#norecord").addClass("hide");
+    //let totalcount: number = Number($infoblk.data("count"));
+    //if (totalcount > 0) $("#norecord").show();
+    //else $("#norecord").addClass("hide");
     $("#iPageSize").trigger("focus");
+
+    //console.log("reloadurl:" + $infoblk.data("reloadurl"));
 });

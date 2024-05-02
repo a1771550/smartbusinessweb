@@ -80,7 +80,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                           
                 using var connection = new Microsoft.Data.SqlClient.SqlConnection(DefaultConnection);
                 connection.Open();
-                var _eTracks = connection.Query<eTrackModel>(@"EXEC dbo.GetEtracks @apId=@apId,@frmdate=@frmdate,@todate=@todate", new { apId, frmdate, todate }).ToList();
+                var _eTracks = connection.Query<eTrackModel>(@"EXEC dbo.GetEtracks @apId=@apId,@frmdate=@frmdate,@todate=@todate,@SortCol=@SortCol,@SortOrder=@SortOrder", new { apId, frmdate, todate,SortCol,SortOrder }).ToList();
                 if (_eTracks != null && _eTracks.Count>0)
                 {                   
                     //get distinct organizations from the table "eTracks", which store all of the email tracking data
@@ -153,7 +153,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                         }
                     }
 
-                    model.Logs = model.Logs.OrderByDescending(x => x.ViewDate).ToList();
+                    //model.Logs = model.Logs.OrderByDescending(x => x.ViewDate).ToList();
 
                     //initialize the PagingInfo model
                     model.PagingInfo = new PagingInfo
@@ -166,7 +166,8 @@ namespace SmartBusinessWeb.Controllers.Customer
                     var sortDirection = SortOrder;
 
                     model.CurrentSortOrder = SortOrder;
-                    model.SortCol = SortCol;
+                    model.SortOrder = SortOrder == "desc" ? "asc" : "desc";
+                    model.SortCol = SortCol;                    
 
                     model.ContactCount = model.Logs.Select(x => x.ContactName).Distinct().Count();
 

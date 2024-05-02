@@ -49,7 +49,7 @@ function getSessionStartDataOk(data) {
     /* itemlist = data.items;*/
     selectedCus = defaultcustomer = data.defaultcustomer;
     //console.log('selectedCus#getsessionok:', selectedCus);
-    pagelength = data.pagelength;
+    pagesize = data.pagelength;
     //console.log('data.inclusivetax:' + data.inclusivetax);
     inclusivetax = data.inclusivetax;
     inclusivetaxrate = data.inclusivetaxrate;
@@ -68,7 +68,7 @@ function getSessionStartDataOk(data) {
         sessionstartdata.push(receipt);
         sessionstartdata.push(DicPayTypes);
         sessionstartdata.push(defaultcustomer);
-        sessionstartdata.push(pagelength);
+        sessionstartdata.push(pagesize);
         sessionstartdata.push(enableTax);
         sessionstartdata.push(inclusivetax);
         sessionstartdata.push(inclusivetaxrate);
@@ -171,7 +171,7 @@ $(function () {
                 companyinfo = sessionstartdata[1];
                 receipt = sessionstartdata[2];
                 DicPayTypes = sessionstartdata[3];
-                pagelength = sessionstartdata[5];
+                pagesize = sessionstartdata[5];
                 enableTax = sessionstartdata[6];
                 inclusivetax = sessionstartdata[7];
                 inclusivetaxrate = sessionstartdata[8];
@@ -200,6 +200,7 @@ $(function () {
         ItemList = $infoblk.data("itemlist");
         //console.log("Sales:", Sales);
         console.log("SalesLnList#load:", SalesLnList);
+        DicCurrencyExRate = $infoblk.data("diccurrencyexrate");
 
         initVTDatePicker();
     }

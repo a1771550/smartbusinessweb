@@ -143,7 +143,7 @@
 @Html.Partial("_AdvancedSearchModal", Model.GlobalAttrList)
 
 @Html.Partial("_WaitingModal")
-<div id="infoblk" data-codelist="@JsonSerializer.Serialize(Model.CodeList)" data-actionhistory="@Resources.Resource.ActionHistory" data-selectatleastonecustomertxt="@selectatleastonecustomertxt"></div>
+<div id="infoblk" data-codelist="@JsonSerializer.Serialize(Model.CodeList)" data-actionhistory="@Resources.Resource.ActionHistory" data-selectatleastonecustomertxt="@selectatleastonecustomertxt" data-pagesize="@Model.ComInfo.PageLength"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script src="/Scripts/ts/js/customer/index.js?v=@rand"></script>

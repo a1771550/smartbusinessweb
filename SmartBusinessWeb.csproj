@@ -4928,7 +4928,6 @@
     <Content Include="Views\Shared\_LangPartial.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_MailTrackSummary.cshtml" />
-    <Content Include="Views\Shared\_NormalRetailPaymentBtnBlock.cshtml" />
     <Content Include="Views\Shared\_NormalSaveBlk4Purchase.cshtml" />
     <Content Include="Views\Shared\_NormalSaveBlk4WholeSales.cshtml" />
     <Content Include="Views\Shared\_OneDriveDoc.cshtml" />
