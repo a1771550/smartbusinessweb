@@ -70,6 +70,7 @@
 				string msgId = $"msg{line.Id}";
 				var item = Model.ItemList.FirstOrDefault(x => x.itmCode == line.itmCode);
 				string disabled = "";
+
 				<tr>
 					<td class="text-center itemcode resetable" title="@line.itmCode">
 						@line.itmCode

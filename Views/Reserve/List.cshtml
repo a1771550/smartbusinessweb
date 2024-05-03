@@ -28,12 +28,17 @@
 					<th class="text-center colheader" data-col="1">@Resources.Resource.Customer</th>
 					<th class="text-center">@Resources.Resource.Item</th>
 					<th class="text-center colheader" data-col="2">@Resources.Resource.Date</th>
+					<th class="text-center">@Resources.Resource.Status</th>
 					<th></th>
 				</tr>
 			</thead>
 
 			@foreach (var item in Model.ReservePagingList)
 			{
+				string edittxt = item.PaidOut || item.Cancelled ? Resources.Resource.Detail : Resources.Resource.Edit;
+				int _readonly = item.PaidOut || item.Cancelled ? 1 : 0;
+				string disabled = item.PaidOut || item.Cancelled ? "disabled" : "";
+				string statuscls = item.PaidOut ? "paidout" : item.Cancelled ? "cancelled" : "pending4payment";
 				<tr>
 					<td class="text-center">
 						@item.riCode
@@ -47,11 +52,14 @@
 					<td class="text-center">
 						@item.ReserveDateDisplay
 					</td>
+					<td class="text-center font-weight-bold @statuscls">
+						@item.StatusDisplay
+					</td>
 					<td>
-						<a class="btn btn-info edit mx-1" role="button" href="/Reserve/Edit?code=@item.riCode">@Resources.Resource.Edit</a>
-						<a class="btn btn-primary paidout mx-1" role="button" href="#" data-id="@item.Id">@Resources.Resource.PayNow</a>
+						<a class="btn btn-info edit mx-1" role="button" href="/Reserve/Edit?code=@item.riCode&readonly=@_readonly">@Resources.Resource.Edit</a>
+						<a class="btn btn-primary paidout mx-1 @disabled" role="button" href="#" data-id="@item.Id" @disabled>@Resources.Resource.PayNow</a>
 						<a class="btn btn-warning print mx-1" role="button" href="/Reserve/PrintByCode?code=@item.riCode" target="_blank">@Resources.Resource.Print</a>
-						<a class="btn btn-danger cancel mx-1" role="button" data-id="@item.Id" href="#">@Resources.Resource.Cancel</a>
+						<a class="btn btn-danger cancel mx-1 @disabled" role="button" data-id="@item.Id" href="#" @disabled>@Resources.Resource.Cancel</a>
 					</td>
 				</tr>
 			}

@@ -6,9 +6,9 @@ $(document).on("click", "#btnReserve", function () {
 	let qty = 0;
 
 	$(`#${gTblId} tbody tr`).each(function (i, e) {
-		qty += Number($(e).find(".rilqty").val());
+		qty += Number($(e).find(".reservedQty").val());
 	});
-	//console.log("qty:" + qty);
+
 
 	if (qty === 0) {
 		$.fancyConfirm({

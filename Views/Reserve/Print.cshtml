@@ -32,6 +32,7 @@
 				<h4>@Resources.Resource.ReserveNumber <span class="badge badge-dark">@Model.ReserveNumber</span></h4>
 				<h4>@string.Format(Resources.Resource.DateFormat, Resources.Resource.Reserve) <span class="badge badge-dark">@Model.ReserveDateDisplay</span></h4>
 				<h4>@Resources.Resource.Customer <span class="badge badge-dark">@reserve.CustomerName</span></h4>
+				<h4>@Resources.Resource.Status <span class="badge badge-dark">@reserve.StatusDisplay</span></h4>
 			</div>
 			<div>
 				<h4>@Resources.Resource.RunDate <span class="badge badge-dark">@CommonHelper.FormatDate(DateTime.Now.Date, true)</span></h4>
@@ -45,7 +46,7 @@
 					<td style="text-align: center; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.ItemName</td>
 					<td style="text-align: right; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.UnitPrice (@Model.Currency)</td>
 					<td style="text-align: right; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.Qty</td>
-					<td style="text-align: center; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.Warehouse</td>
+					<td style="text-align: center; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.Warehouse</td>					
 					<td style="text-align: center; border: 1px solid black !important;" class="font-weight-bold">@Resources.Resource.PersonInCharge</td>
 				</tr>
 			</thead>

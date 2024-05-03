@@ -6,7 +6,7 @@ function populateReserveRow() {
 	$.ajax({
 		type: "GET",
 		url: "/Api/GetItem4Reserve",
-		data: {selectedItemCode},
+		data: { selectedItemCode },
 		success: function (data) {
 			//console.log("selectedItemCode:" + selectedItemCode);
 			//console.log("itemlist:", ItemList);//ok
@@ -23,7 +23,7 @@ function populateReserveRow() {
 				$tr.find("td.itemcode").find(".itemcode").val(selectedItemCode);
 				$tr.find(".itemdesc").attr("title", selectedItem.NameDesc).text(handleItemDesc(selectedItem.NameDesc));
 				$tr.find("td.itemprice").find(".itemprice").val(formatnumber(selectedItem.itmBaseSellingPrice ?? 0));
-				$tr.find("td.itemoptions").html(selectedItem.ItemOptionsDisplay??"");
+				$tr.find("td.itemoptions").html(selectedItem.ItemOptionsDisplay ?? "");
 				$tr.find("td.itemvari").html(selectedItem.ItemVariDisplay ?? "");
 				let stockcls = selectedItem.lstQtyAvailable >= 0 ? `text-secondary` : `text-danger`;
 				$tr.find("td.onhandstock").html(`<span class="${stockcls}">${selectedItem.lstQtyAvailable}</span>`);
@@ -37,23 +37,23 @@ function populateReserveRow() {
 
 					if (!$.isEmptyObject(DicCodeLocId) && selectedItemCode in DicCodeLocId && shop in DicCodeLocId[selectedItemCode]) Id = DicCodeLocId[selectedItemCode][shop];
 					if (qty <= 0) disabled = true;
-					
+
 					$tr.find("td.locqty").each(function (i, e) {
 						$target = $(e).find("input.locqty");
-						if ($target.data("shop") == shop) {							
+						if ($target.data("shop") == shop) {
 							$target.data("id", Id).data("code", selectedItemCode).data("onhandstock", qty).data("oldstockqty", qty).data("itemid", selectedItem!.itmItemID ?? 0).data("currentreservedqty", 0).prop("disabled", disabled).attr("title", qty).val(qty);
 							return false;
 						}
-					});					
+					});
 				});
 
-				$tr.find(".reservedQty").data("totalreservedqty",0).val(0);
+				$tr.find(".reservedQty").data("totalreservedqty", 0).val(0);
 			}
 		},
 		dataType: "json"
 	});
-	
-	
+
+
 }
 $(document).on("click", "#btnAdd", function () {
 	$tr = $(`#${gTblId} tbody tr`).first();
@@ -76,7 +76,7 @@ $(document).on("click", "#btnPaidOut", function () {
 });
 $(document).on("click", "#btnEdit", function () {
 	let Id = Number($(this).data("orderid"));
-	Reserve = { Id:Id } as IReserve;
+	Reserve = { Id: Id } as IReserve;
 	openReserveModal();
 });
 
@@ -103,13 +103,13 @@ $(document).on("dblclick", "#txtRemark", function () {
 	openTextAreaModal();
 });
 
-$(function () {	
+$(function () {
 	forEditReserve = true;
 	gTblId = "tblEdit";
 	setFullPage();
 	triggerMenu(2, 6);
 	initModals();
-	/*ReserveLnList = $infoblk.data("linelist");*/
+	
 	ReserveLnList = [];
 	Reserve = { riCode: $infoblk.data("code") } as IReserve;
 
@@ -122,6 +122,11 @@ $(function () {
 	setInput4NumberOnly("number");
 
 	shops = $infoblk.data("shops");
-	//console.log("shops:", shops);	
+	//console.log("shops:", shops);
+
+	let readonly = getParameterByName("readonly") == "1";
+	$("input").prop("disabled", readonly);
+	$("select").prop("disabled", readonly);
+	$("button").not("#btnAdd").prop("disabled", true);
 });
 

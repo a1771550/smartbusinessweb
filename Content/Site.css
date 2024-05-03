@@ -910,3 +910,12 @@ table.dataTable thead > tr > th.sorting_asc.text-right:before, table.dataTable t
 .small40{
     font-size:40%;
 }
+.cancelled{
+    background-color:#f88383;
+}
+.paidout{
+    background-color:#a6fcaa;
+}
+.pending4payment{
+    background-color:#fbe3cb;
+}
