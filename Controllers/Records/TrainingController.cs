@@ -20,7 +20,7 @@ namespace SmartBusinessWeb.Controllers.Records
 			connection.Open();
 			if (string.IsNullOrEmpty(keyword)) keyword = null;
 
-            int pageSize = int.Parse(ConfigurationManager.AppSettings["JobPageSize"]);
+            int pageSize = int.Parse(ConfigurationManager.AppSettings["MGTPageSize"]);
             int startIndex = CommonHelper.GetStartIndex(pageIndex, pageSize);
 
             List<TrainingModel> pagingTrainingList = connection.Query<TrainingModel>(@"EXEC dbo.GetTrainings @apId=@apId,@sortCol=@sortCol,@sortOrder=@sortOrder,@startIndex=@startIndex,@pageSize=@pageSize,@keyword=@keyword", new { apId, sortCol, sortOrder = sortDirection, startIndex, pageSize, keyword }).ToList();
@@ -31,7 +31,7 @@ namespace SmartBusinessWeb.Controllers.Records
 		public JsonResult Save(List<TrainingModel> model)
 		{
 			string msg = string.Format(Resource.Saved, Resource.TrainingRecords);
-			TrainingEditModel.Save(model, apId);
+			TrainingEditModel.Save(model);
 			return Json(new { msg });
 		}
 

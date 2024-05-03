@@ -3,58 +3,49 @@
 	ViewBag.Title = Resources.Resource.Enquiry;
 	var rand = CommonHelper.GetVersionRandomNo();
 	var totaltxt = CultureHelper.CurrentCulture == 2 ? string.Concat(Resources.Resource.Total, " ", Resources.Resource.Record, "s") : String.Concat(Resources.Resource.Total, "", Resources.Resource.Record);
-	//string editedemaillist = string.Join(",", Model.EditedEnqEmail);
 	string addtocontacttxt = string.Format(Resources.Resource.AddTo, Resources.Resource.Contact);
-
-	//var idlist = string.Join(",", Model.IdList);
 	var user = HttpContext.Current.Session["User"] as SessUser;
 	bool isassignor = user.Roles.Any(x => x == RoleType.Admin || x == RoleType.SalesManager);
 	const string mgturl = @"https://unpkg.com/@microsoft/mgt@2/dist/bundle/mgt-loader.js";
-	//const string datacount = @"@odata.count";
-	//const string nextlink = @"@odata.nextLink";
-	string DateFrmTxt = Request["strfrmdate"] ?? CommonHelper.FormatDate(DateTime.Now.AddDays(int.Parse(ConfigurationManager.AppSettings["DaysFrm4Enquiry"])));
-	string DateToTxt = Request["strtodate"] ?? CommonHelper.FormatDate(DateTime.Today.Date);
 	string enquiryacc = ConfigurationManager.AppSettings["EnquiryEmail"];
-	var daterange = string.Concat("<strong>", DateFrmTxt, "</strong>", $" {Resources.Resource.To} ", "<strong>", DateToTxt, "</strong>");
-
 }
 <link href="~/Scripts/paginationjs/pagination.css" rel="stylesheet" type="text/css" />
-<link href="~/Content/enquiry.css?v=@rand" rel="stylesheet" type="text/css" />
+<link href="~/Content/enquiry/index.css?v=@rand" rel="stylesheet" type="text/css" />
 <script src="@mgturl"></script>
 
-<h2>@ViewBag.Title</h2>
+<h3 class="clearfix">
+	@ViewBag.Title
+	<span id="addenq" class="btnsmall50 btn btn-primary float-right fa fa-plus" title="@string.Format(Resources.Resource.AddFormat, Resources.Resource.Enquiry)"></span>
+</h3>
 
 <div id="norecordfound" class="container hide">@Resources.Resource.NoDataFound</div>
 @using (Html.BeginForm("Index", "Enquiry", FormMethod.Post, new { @id = "frmenquiry" }))
 {
-	@Html.Partial("_SearchBlk",null,new ViewDataDictionary { { "keyword", Model.Keyword} })
+	@Html.Partial("_SearchBlk", null, new ViewDataDictionary { { "keyword", Model.Keyword } })
 
-	<div class="row justify-content-between my-3 small">
-		<div class="col-12 col-sm-6">
-			@if (isassignor)
-			{
+	@Html.Partial("_DrpLatestRecordCount")
+
+	if (isassignor)
+	{
+		<div class="row justify-content-between mt-3 small">
+			<div class="col-12 col-sm-6">
 				<button id="btnAssign" type="button" class="btn btn-info"><span class="fa fa-user"></span> @Resources.Resource.AssignEnquiriesToSales</button>
-			}
-		</div>
-		<div class="col-12 col-sm-6">
-			<div class="float-right">
-				<div class=""><span id="datetxt">@Html.Raw(daterange)</span></div>
-				<div class="text-right"><span>@totaltxt: <span id="totalcount" class="font-weight-bold"></span></span></div>
 			</div>
 		</div>
-	</div>
+	}
+
 }
 <hr />
-<div class="my-2">
-	<div class="float-right"><span id="addenq" class="btn btn-primary fa fa-plus" title="@string.Format(Resources.Resource.AddFormat, Resources.Resource.Enquiry)"></span></div>
-</div>
-
-
 <mgt-msal2-provider client-id="84a18ff1-0613-4bb7-a88e-004fa6feab9e"></mgt-msal2-provider>
 <mgt-login></mgt-login>
-<mgt-get id="mgt-email" resource="" scopes="Mail.Read" max-pages="30">
+<mgt-get id="mgt-email" resource="" scopes="Mail.Read">
 </mgt-get>
 
+<div class="clearfix">
+	<div class="float-right small">
+		<div class="text-right"><span>@totaltxt: <span id="totalcount" class="font-weight-bold"></span></span></div>
+	</div>
+</div>
 <table id="tblmails" class="table table-bordered table-hover table-condensed">
 	<thead class="gray-header font-weight-bold">
 		<tr>
@@ -89,18 +80,12 @@
 @Html.Partial("_SalesmenModal")
 
 @Html.Partial("_WaitingModal")
-<div id="infoblk" data-frmdate="@DateFrmTxt" data-todate="@DateToTxt" data-assignsalestxt="@Resources.Resource.AssignToSalesman" data-isassignor="@isassignor" data-enquiryacc="@enquiryacc" data-currentoldestdate="@Model.CurrentOldestDate" data-enqidlist="@string.Join(",",Model.EnqIdList)" data-jsondicassignedsalesenqid="@Model.JsonDicAssignedSalesEnqId" data-currentcontactemaillist="@string.Join(",",Model.CurrentContactEmailList)" data-currentcontactphonelist="@string.Join(",",Model.CurrentContactPhoneList)" data-emailinusetxt="@Resources.Resource.ContactEmailInUseAlertMsg" data-phoneinusetxt="@Resources.Resource.ContactPhoneInUseAlertMsg" data-confirmprompt="@Resources.Resource.ConfirmContinue" data-assignsalesmanrequiredtxt="@Resources.Resource.AssignSalesmanRequired" data-sendmailprompt="@Resources.Resource.SendEmailNotification4AssignedSalespeoplePrompt" data-pagesize="@ConfigurationManager.AppSettings["EnquiryPageSize"]" data-confirmconverttocustomertxt="@string.Format(Resources.Resource.ConfirmFormat,Resources.Resource.ConvertToCustomer)" data-selectatleastoneenquirytxt="@string.Format(Resources.Resource.SelectAtLeastOne,Resources.Resource.Enquiry)"></div>
+<div id="infoblk" data-assignsalestxt="@Resources.Resource.AssignToSalesman" data-isassignor="@isassignor" data-enquiryacc="@enquiryacc" data-currentoldestdate="@Model.CurrentOldestDate" data-enqidlist="@string.Join(",",Model.EnqIdList)" data-jsondicassignedsalesenqid="@Model.JsonDicAssignedSalesEnqId" data-currentcontactemaillist="@string.Join(",",Model.CurrentContactEmailList)" data-currentcontactphonelist="@string.Join(",",Model.CurrentContactPhoneList)" data-emailinusetxt="@Resources.Resource.ContactEmailInUseAlertMsg" data-phoneinusetxt="@Resources.Resource.ContactPhoneInUseAlertMsg" data-confirmprompt="@Resources.Resource.ConfirmContinue" data-assignsalesmanrequiredtxt="@Resources.Resource.AssignSalesmanRequired" data-sendmailprompt="@Resources.Resource.SendEmailNotification4AssignedSalespeoplePrompt" data-pagesize="@int.Parse(ConfigurationManager.AppSettings["MGTPageSize"])" data-confirmconverttocustomertxt="@string.Format(Resources.Resource.ConfirmFormat,Resources.Resource.ConvertToCustomer)" data-selectatleastoneenquirytxt="@string.Format(Resources.Resource.SelectAtLeastOne,Resources.Resource.Enquiry)"></div>
 
 <script type="text/javascript" src="~/Scripts/daterangepicker/moment.min.js"></script>
 <script type="text/javascript" src="~/Scripts/daterangepicker/daterangepicker.min.js"></script>
 <link rel="stylesheet" type="text/css" href="~/Scripts/daterangepicker/daterangepicker.css" />
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
-<script>
-	$(function () {
-		initDatePickers(StartDayEnum.LastMonth, "YYYY-MM-DD");
-	});
-</script>
-
 <script src="~/Scripts/ts/js/customer/enquiry/index.js?v=@rand"></script>
 

@@ -17,3 +17,7 @@
 #tblCustomer th:last-child, #tblCustomer td:last-child {
 	width: 50px !important;
 }
+
+.followupstatus{
+	font-weight:bold;
+}

@@ -1,0 +1,17 @@
+﻿@{ 
+
+}
+
+<div class="row justify-content-end">
+	<div class="col-12 col-sm-1">
+		<label class="small80">@string.Format(Resources.Resource.AcquireFormat, Resources.Resource.GetLatestRecordCount):</label>
+		<select class="form-control small80 font-weight-bold" id="drpLatestRecordCount">
+			@for (int i = 1; i <= 3; i++)
+			{
+				int count = 300 * i;
+				string selected = count == Model.DefaultLatestRecordCount ? "selected" : "";
+				<option value="@count">@count</option>
+			}
+		</select>
+	</div>
+</div>

@@ -1,13 +1,7 @@
 ﻿$infoblk = $('#infoblk');
-
-frmdate = $infoblk.data("frmdate");
-todate = $infoblk.data("todate");
-currentoldestdate = $infoblk.data("currentoldestdate");
-
-pagesize = Number($infoblk.data("pagesize"));
 //from/emailAddress/address ne 'noreply@abssasia.com.hk'
-resource = `/users/{0}/mailFolders/Inbox/messages?$filter=startswith(subject, 'UT Service Report')&$count=true&$ConsistencyLevel=eventual&$orderby=receivedDateTime desc`;
-jobIdList = $infoblk.data("jobidlist") as string[];
+resource = `/users/{0}/mailFolders/Inbox/messages?$top={1}&$filter=startswith(subject, 'UT Service Report')&$count=true&$ConsistencyLevel=eventual&$orderby=receivedDateTime desc`;
+
 
 $(document).on("click", "#btnSearch", function () {
     keyword = $("#txtKeyword").val() as string;
@@ -92,6 +86,9 @@ $(function () {
     initModals();
     triggerMenu(9, 1);
 
+    pagesize = Number($infoblk.data("pagesize"));
+    jobIdList = $infoblk.data("jobidlist") as string[];
+
     let keyword = getParameterByName('Keyword');
     if (keyword !== null) {
         $('#txtKeyword').val(keyword);
@@ -100,6 +97,6 @@ $(function () {
     $('#txtKeyword').trigger("focus");
 
    
-        handleMGTmails();
+    handleMGTmails(1, Number($("#drpLatestRecordCount").val()));
 
 });

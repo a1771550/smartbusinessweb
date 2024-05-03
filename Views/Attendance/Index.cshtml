@@ -3,18 +3,9 @@
 	ViewBag.Title = Resources.Resource.AttendanceRecords;
 	var rand = CommonHelper.GetVersionRandomNo();
 	var totaltxt = CultureHelper.CurrentCulture == 2 ? string.Concat(Resources.Resource.Total, " ", Resources.Resource.Record, "s") : String.Concat(Resources.Resource.Total, "", Resources.Resource.Record);
-
-	//var idlist = string.Join(",", Model.IdList);
 	var user = HttpContext.Current.Session["User"] as SessUser;
 	const string mgturl = @"https://unpkg.com/@microsoft/mgt@2/dist/bundle/mgt-loader.js";
-	//const string datacount = @"@odata.count";
-	//const string nextlink = @"@odata.nextLink";
-	string DateFrmTxt = Request["strfrmdate"] ?? CommonHelper.FormatDate(DateTime.Now.AddDays(int.Parse(ConfigurationManager.AppSettings["DaysFrm4Attendance"])));
-	string DateToTxt = Request["strtodate"] ?? CommonHelper.FormatDate(DateTime.Today.Date);
-
-	var daterange = string.Concat("<strong>", DateFrmTxt, "</strong>", $" {Resources.Resource.To} ", "<strong>", DateToTxt, "</strong>");
 	string attendanceacc = ConfigurationManager.AppSettings["AttendanceEmail"];
-
 }
 <link href="~/Scripts/paginationjs/pagination.css" rel="stylesheet" type="text/css" />
 <link href="~/Content/attendance.css?v=@rand" rel="stylesheet" type="text/css" />
@@ -28,20 +19,20 @@
 
 	@Html.Partial("_SearchBlk", null, new ViewDataDictionary { { "keyword", Model.Keyword } })
 
-	<div class="row justify-content-end my-1 mx-2">
-
-		<div class="text-right"><span>@totaltxt: <span id="totalcount" class="font-weight-bold"></span></span></div>
-	</div>
+	@Html.Partial("_DrpLatestRecordCount")
 }
 <hr />
 
 <mgt-msal2-provider client-id="84a18ff1-0613-4bb7-a88e-004fa6feab9e"></mgt-msal2-provider>
 <mgt-login></mgt-login>
-<mgt-get id="mgt-email" resource="" scopes="Mail.Read" max-pages="0">
+<mgt-get id="mgt-email" resource="" scopes="Mail.Read">
 </mgt-get>
 
-@*<div class="row d-block">
-	<div class="overflow-auto">*@
+<div class="clearfix">
+	<div class="float-right small">
+		<div class="text-right"><span>@totaltxt: <span id="totalcount" class="font-weight-bold"></span></span></div>
+	</div>
+</div>
 <table id="tblmails" class="table table-bordered table-hover table-condensed">
 	<thead class="gray-header font-weight-bold">
 		<tr>
@@ -56,26 +47,19 @@
 </table>
 <br />
 <div class="Pager"></div>
-@*</div>
-	</div>*@
+
 
 @Html.AntiForgeryToken()
 
 @Html.Partial("_WaitingModal")
 
-<div id="infoblk" data-attendanceacc="@attendanceacc" data-frmdate="@DateFrmTxt" data-todate="@DateToTxt" data-currentoldestdate="@Model.CurrentOldestDate" data-attdidlist="@string.Join(",",Model.AttdIdList)" data-emailinusetxt="@Resources.Resource.ContactEmailInUseAlertMsg" data-phoneinusetxt="@Resources.Resource.ContactPhoneInUseAlertMsg" data-confirmprompt="@Resources.Resource.ConfirmContinue" data-assignsalesmanrequiredtxt="@Resources.Resource.AssignSalesmanRequired" data-sendmailprompt="@Resources.Resource.SendEmailNotification4AssignedSalespeoplePrompt" data-pagesize="@ConfigurationManager.AppSettings["AttendancePageSize"]" data-confirmconverttocustomertxt="@string.Format(Resources.Resource.ConfirmFormat,Resources.Resource.ConvertToCustomer)"></div>
+<div id="infoblk" data-attendanceacc="@attendanceacc" data-currentoldestdate="@Model.CurrentOldestDate" data-attdidlist="@string.Join(",",Model.AttdIdList)" data-emailinusetxt="@Resources.Resource.ContactEmailInUseAlertMsg" data-phoneinusetxt="@Resources.Resource.ContactPhoneInUseAlertMsg" data-confirmprompt="@Resources.Resource.ConfirmContinue" data-assignsalesmanrequiredtxt="@Resources.Resource.AssignSalesmanRequired" data-sendmailprompt="@Resources.Resource.SendEmailNotification4AssignedSalespeoplePrompt" data-pagesize="@ConfigurationManager.AppSettings["MGTPageSize"]" data-confirmconverttocustomertxt="@string.Format(Resources.Resource.ConfirmFormat,Resources.Resource.ConvertToCustomer)"></div>
 
 <script type="text/javascript" src="~/Scripts/daterangepicker/moment.min.js"></script>
 <script type="text/javascript" src="~/Scripts/daterangepicker/daterangepicker.min.js"></script>
 <link rel="stylesheet" type="text/css" href="~/Scripts/daterangepicker/daterangepicker.css" />
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
-<script>
-	$(function () {
-		initDatePickers(StartDayEnum.LastMonth, "YYYY-MM-DD");
-	});
-</script>
-
 <script src="~/Scripts/ts/js/records/attendance.js?v=@rand"></script>
 
 

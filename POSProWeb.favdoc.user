@@ -614,11 +614,6 @@
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\pos\Sales.css</absolutePath>
         </Favorite>
         <Favorite>
-          <name>enquiry.css</name>
-          <path>Content\enquiry.css</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\enquiry.css</absolutePath>
-        </Favorite>
-        <Favorite>
           <name>purchase_edit.css</name>
           <path>Content\purchase\edit.css</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\purchase\edit.css</absolutePath>
@@ -652,6 +647,11 @@
           <name>transfer-index.css</name>
           <path>Content\item\transfer\index.css</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\item\transfer\index.css</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>enquiry-index.css</name>
+          <path>Content\enquiry\index.css</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\enquiry\index.css</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

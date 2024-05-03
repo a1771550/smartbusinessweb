@@ -5,11 +5,11 @@
 	int rand = CommonHelper.GetVersionRandomNo();
 }
 
-<h2>@ViewBag.Title</h2>
+<h2 class="clearfix">
+	@ViewBag.Title
+	<a href="/Journal/Edit?Id=0" class="btn btn-info btnsmall40 float-right" title="@Resources.Resource.Add">@Resources.Resource.Add</a>
 
-<p class="my-3">
-	@Html.ActionLink(Resources.Resource.Add, "Edit", null, new { @class = "btn btn-info" })
-</p>
+</h2>
 
 @if (Model.PagingJournalList == null)
 {

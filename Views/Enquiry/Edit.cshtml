@@ -6,7 +6,7 @@
 	int rand = CommonHelper.GetVersionRandomNo();
 	string btnviewcls = Model.FileList.Count > 0 ? "" : "hide";
 }
-<link href="~/Content/enquiry_edit.css?v=@rand" rel="stylesheet" type="text/css" />
+<link href="~/Content/enquiry/edit.css?v=@rand" rel="stylesheet" type="text/css" />
 <h3>@ViewBag.Title</h3>
 
 @using (Html.BeginForm("Save", "Enquiry", FormMethod.Post, new { @id = "frmenquiry" }))

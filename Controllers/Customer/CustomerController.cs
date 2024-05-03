@@ -191,7 +191,7 @@ namespace SmartBusinessWeb.Controllers.Customer
 
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
-        public ActionResult Index(int SortCol = 4, string SortOrder = "desc", string Keyword = "", int PageNo = 1, int CheckAll = 0, int SortCol_a = 0, string SortOrder_a = "desc", string Keyword_a = "", int PageNo_a = 1, string cusIds = null)
+        public ActionResult Index(int PageNo = 1, int PageSize=10, int SortCol = 4, string SortOrder = "desc", string Keyword = "", int CheckAll = 0, string cusIds = null)
         {
             ViewBag.ParentPage = ViewBag.PageName = "customer";
             if (string.IsNullOrEmpty(Keyword))
@@ -201,13 +201,12 @@ namespace SmartBusinessWeb.Controllers.Customer
                 CurrentSortOrder = SortOrder,
                 SortCol = SortCol,
                 Keyword = Keyword,
-                CheckAll = CheckAll,
-                CurrentSortOrder_a = SortOrder_a,
-                Keyword_a = Keyword_a,
+                CheckAll = CheckAll,        
+                SortOrder = SortOrder == "desc" ? "asc" : "desc",
+                PageSize = PageSize,
             };
-            List<ActionLogModel> actionloglist = new List<ActionLogModel>();
-            List<int> cusIdList = new List<int>();
-            var apId = ComInfo.AccountProfileId;
+         
+            List<int> cusIdList = new List<int>();          
 
             model.GetList(SortCol, SortOrder, Keyword, null);
 
@@ -217,43 +216,8 @@ namespace SmartBusinessWeb.Controllers.Customer
                 model.CustomerList = model.CustomerList.Where(x => _cusIdList.Contains(x.cusCustomerID.ToString())).ToList();
             }
 
-            using var context = new PPWDbContext(Session["DBName"].ToString());
-            actionloglist = (from a in context.ActionLogs
-                             where a.actName.ToLower() == "customerpoints" && a.actType.ToLower() == "edit"
-                             select new ActionLogModel
-                             {
-                                 actName = a.actName,
-                                 actType = a.actType,
-                                 actUserCode = a.actUserCode,
-                                 actOldValue = a.actOldValue,
-                                 actNewValue = a.actNewValue,
-                                 actRemark = a.actRemark,
-                                 actLogTime = a.actLogTime,
-                                 actCusCode = a.actCusCode
-                             }
-                      ).OrderByDescending(x => x.actLogTime).ToList();
-
-
-            model.SortCol_a = SortCol_a;
-            var sortColumnIndex_a = SortCol_a;
-            var sortDirection_a = SortOrder_a;
-            if (sortColumnIndex_a == 0)
-            {
-                actionloglist = sortDirection_a == "asc" ? actionloglist.OrderBy(c => c.actUserCode).ToList() : actionloglist.OrderByDescending(c => c.actUserCode).ToList();
-            }
-            else if (sortColumnIndex_a == 1)
-            {
-                actionloglist = sortDirection_a == "asc" ? actionloglist.OrderBy(c => c.actLogTime).ToList() : actionloglist.OrderByDescending(c => c.actLogTime).ToList();
-            }
-
-            model.SortOrder_a = SortOrder_a == "desc" ? "asc" : "desc";
-            model.SortOrder = SortOrder == "desc" ? "asc" : "desc";
-
             model.PagingCustomerList = model.CustomerList.ToPagedList(PageNo, PageSize);
             model.CusIdList = model.CustomerList.Select(x => x.cusCustomerID).ToHashSet();
-
-            model.ActionLogList = actionloglist.ToPagedList(PageNo_a, PageSize);
-
             model.GlobalAttrList = CustomerEditModel.GetGlobalAttrList(apId);
             model.GlobalAttrList.Add(new GlobalAttributeModel
             {

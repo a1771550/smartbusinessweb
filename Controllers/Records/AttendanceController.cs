@@ -23,7 +23,7 @@ namespace SmartBusinessWeb.Controllers.Records
 			connection.Open();
 			if (string.IsNullOrEmpty(keyword)) keyword = null;
 
-            int pageSize = int.Parse(ConfigurationManager.AppSettings["AttendencePageSize"]);
+            int pageSize = int.Parse(ConfigurationManager.AppSettings["MGTPageSize"]);
             int startIndex = CommonHelper.GetStartIndex(pageIndex, pageSize);
 
             List<AttendanceModel> pagingAttdList = connection.Query<AttendanceModel>(@"EXEC dbo.GetAttendances @apId=@apId,@sortCol=@sortCol,@sortOrder=@sortOrder,@startIndex=@startIndex,@pageSize=@pageSize,@keyword=@keyword", new { apId, sortCol, sortOrder = sortDirection, startIndex, pageSize, keyword }).ToList();
@@ -41,12 +41,12 @@ namespace SmartBusinessWeb.Controllers.Records
 
 		[HandleError]
 		[CustomAuthorize("reports", "boss", "admin", "superadmin")]
-		public ActionResult Index(string Keyword = "", string strfrmdate = "", string strtodate = "")
+		public ActionResult Index()
         {
 			ViewBag.ParentPage = "records";
 			ViewBag.PageName = "attendance";
-			AttendanceEditModel model = new AttendanceEditModel(strfrmdate, strtodate, Keyword);
-			return View(model);
+			AttendanceEditModel model = new AttendanceEditModel();
+            return View(model);
 		}
     }
 }

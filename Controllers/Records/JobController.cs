@@ -22,7 +22,7 @@ namespace SmartBusinessWeb.Controllers.Records
 			connection.Open();
 			if (string.IsNullOrEmpty(keyword)) keyword = null;
 
-            int pageSize = int.Parse(ConfigurationManager.AppSettings["JobPageSize"]);
+            int pageSize = int.Parse(ConfigurationManager.AppSettings["MGTPageSize"]);
             int startIndex = CommonHelper.GetStartIndex(pageIndex, pageSize);
 
             List<JobModel> pagingJobList = connection.Query<JobModel>(@"EXEC dbo.GetJobs @apId=@apId,@sortCol=@sortCol,@sortOrder=@sortOrder,@startIndex=@startIndex,@pageSize=@pageSize,@keyword=@keyword", new { apId, sortCol, sortOrder = sortDirection, startIndex, pageSize, keyword }).ToList();			

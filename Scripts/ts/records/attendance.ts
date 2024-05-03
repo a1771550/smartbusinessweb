@@ -1,14 +1,6 @@
 ﻿$infoblk = $('#infoblk');
-
-frmdate = $infoblk.data("frmdate");
-todate = $infoblk.data("todate");
-currentoldestdate = $infoblk.data("currentoldestdate");
-
-pagesize = Number($infoblk.data("pagesize"));
 //from/emailAddress/address ne 'noreply@abssasia.com.hk'
-resource = `/users/{0}/mailFolders/Inbox/messages?$filter=startswith(subject, 'Late arrival report')&$count=true&$ConsistencyLevel=eventual&$orderby=receivedDateTime desc`;
-attdIdList = $infoblk.data("attdidlist") as string[];
-//console.log("attdIdList:", attdIdList);
+resource = `/users/{0}/mailFolders/Inbox/messages?$top={1}&$filter=startswith(subject, 'Late arrival report')&$count=true&$ConsistencyLevel=eventual&$orderby=subject,receivedDateTime desc`;
 
 $(document).on("click", "#btnSearch", function () {
 	keyword = $("#txtKeyword").val() as string;
@@ -81,7 +73,10 @@ function fillInAttdTable() {
 	$("#tblmails tbody").empty().html(html);
 }
 
-
+function initInfoBlkVariables4Attendence() {
+	pagesize = Number($infoblk.data("pagesize"));
+	attdIdList = $infoblk.data("attdidlist") as string[];
+}
 
 $(function () {
 	forattendance = true;
@@ -90,6 +85,8 @@ $(function () {
 	initModals();
 	triggerMenu(9, 0);
 
+	initInfoBlkVariables4Attendence();
+
 	let keyword = getParameterByName('Keyword');
 	if (keyword !== null) {
 		$('#txtKeyword').val(keyword);
@@ -97,5 +94,5 @@ $(function () {
 
 	$('#txtKeyword').trigger("focus");
 
-	handleMGTmails();
+	handleMGTmails(1, Number($("#drpLatestRecordCount").val()));
 });

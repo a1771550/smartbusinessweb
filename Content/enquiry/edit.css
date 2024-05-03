@@ -1,0 +1,3 @@
+﻿#frmenquiry input:not(.datepicker),#frmenquiry select,#frmenquiry textarea{
+    max-width:none!important;
+}

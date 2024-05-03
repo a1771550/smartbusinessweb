@@ -178,7 +178,7 @@ namespace SmartBusinessWeb.Controllers
             connection.Open();
             if (string.IsNullOrEmpty(keyword)) keyword = null;
 
-            int pageSize = int.Parse(ConfigurationManager.AppSettings["EnquiryPageSize"]);
+            int pageSize = int.Parse(ConfigurationManager.AppSettings["MGTPageSize"]);
             int startIndex = CommonHelper.GetStartIndex(pageIndex, pageSize);
 
             List<EnquiryModel> pagingEnqList = connection.Query<EnquiryModel>("GetEnquiries1 @apId=@apId,@sortCol=@sortCol,@sortOrder=@sortOrder,@startIndex=@startIndex,@pageSize=@pageSize,@keyword=@keyword", new { apId, sortCol, sortOrder = sortDirection, startIndex, pageSize, keyword }).ToList();

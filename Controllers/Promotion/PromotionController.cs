@@ -11,7 +11,7 @@ namespace SmartBusinessWeb.Controllers.Item
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
         // GET: Promotion
-        public ActionResult Index(int SortCol = 6, string SortOrder = "desc", string Keyword = null, int? PageNo = 1)
+        public ActionResult Index(int PageNo = 1, int SortCol = 6, string SortOrder = "desc", string Keyword = null)
         {
             ViewBag.ParentPage = "promotion";
             ViewBag.PageName = "promotion";

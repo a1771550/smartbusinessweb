@@ -155,7 +155,7 @@ namespace SmartBusinessWeb.Controllers.Customer
             connection.Open();
             if (string.IsNullOrEmpty(keyword)) keyword = null;
 
-            int pageSize = int.Parse(ConfigurationManager.AppSettings["EnquiryPageSize"]);
+            int pageSize = int.Parse(ConfigurationManager.AppSettings["MGTPageSize"]);
             int startIndex = CommonHelper.GetStartIndex(pageIndex, pageSize);          
 
             List<EnquiryModel> pagingEnqList = connection.Query<EnquiryModel>(@"EXEC dbo.GetEnquiries1 @apId=@apId,@sortCol=@sortCol,@sortOrder=@sortOrder,@startIndex=@startIndex,@pageSize=@pageSize,@keyword=@keyword", new { apId, sortCol, sortOrder = sortDirection, startIndex, pageSize, keyword }).ToList();
@@ -165,11 +165,11 @@ namespace SmartBusinessWeb.Controllers.Customer
 
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
-        public ActionResult Index(string Keyword = "", string strfrmdate = "", string strtodate = "")
+        public ActionResult Index()
         {
             ViewBag.ParentPage = "customer";
             ViewBag.PageName = "enquiry";
-            EnquiryEditModel model = new EnquiryEditModel(strfrmdate, strtodate, Keyword);
+            EnquiryEditModel model = new EnquiryEditModel();
             return View(model);
         }
 
@@ -210,12 +210,12 @@ namespace SmartBusinessWeb.Controllers.Customer
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateInput(false)]
-        public JsonResult Save(List<EnquiryModel> model, string frmdate, string todate)
+        public JsonResult Save(List<EnquiryModel> model)
         {
             ViewBag.ParentPage = "customer";
             ViewBag.PageName = "enquiry";
             string msg = string.Format(Resource.Saved, Resource.Enquiry);
-            EnquiryEditModel.Save(model, frmdate, todate, apId);
+            EnquiryEditModel.Save(model);
             return Json(new { msg });
         }
 

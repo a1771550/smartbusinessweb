@@ -37,14 +37,14 @@
 		<table id="tblCustomer" class="table table-bordered table-hover table-condensed" data-idlist="@string.Join(",", CusIdList)">
 			<thead class="gray-header font-weight-bold">
 				<tr>
-					<th scope="col" class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">@Resources.Resource.Name</th>
-					<th scope="col" class="text-center colheader" data-col="1" data-keyword="@Model.Keyword">@Resources.Resource.Contact</th>
-					<th scope="col" class="text-center colheader" data-col="2" data-keyword="@Model.Keyword">@Resources.Resource.Email</th>
+					<th scope="col" class="text-center colheader" data-col="0">@Resources.Resource.Name</th>
+					<th scope="col" class="text-center colheader" data-col="1">@Resources.Resource.Contact</th>
+					<th scope="col" class="text-center colheader" data-col="2">@Resources.Resource.Email</th>
 					<th class="text-center">@Resources.Resource.CustomAttributes</th>
 
-					<th scope="col" class="text-center colheader" data-col="3" data-keyword="@Model.Keyword">@string.Format(Resources.Resource.FollowUpFormat, Resources.Resource.Status)</th>
-					<th scope="col" class="text-center colheader" data-col="4" data-keyword="@Model.Keyword">@Resources.Resource.FollowUpDate</th>
-					<th scope="col" class="text-center colheader" data-col="5" data-keyword="@Model.Keyword">ABSS</th>
+					<th scope="col" class="text-center colheader" data-col="3">@string.Format(Resources.Resource.FollowUpFormat, Resources.Resource.Status)</th>
+					<th scope="col" class="text-center colheader" data-col="4">@Resources.Resource.FollowUpDate</th>
+					<th scope="col" class="text-center colheader" data-col="5">ABSS</th>
 					<th scope="col"></th>
 					<th scope="col">
 						<input type="checkbox" id="chkall" @checkall />
@@ -67,7 +67,7 @@
 							}
 						</td>
 						
-						<td class="text-center">@customer.FollowUpStatusDisplay</td>
+						<td class="text-center">@Html.Raw(customer.FollowUpStatusDisplay)</td>
 						<td class="text-center">@customer.FollowUpDateDisplay</td>
 						<td class="text-center">@customer.AccountProfileName</td>
 
@@ -86,51 +86,12 @@
 
 		<div id="pagingblk" class="my-3">
 			@Html.PagedListPager(Model.PagingCustomerList, PageNo => Url.Action("Index",
-	new { PageNo, SortOrder = Model.CurrentSortOrder, SortCol = Model.SortCol, Keyword = Model.Keyword }))
+	new { PageNo, SortOrder = Model.CurrentSortOrder, SortCol = Model.SortCol, Keyword = Model.Keyword, PageSize=Model.PageSize }))
 		</div>
 
 		<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
 		<input type="hidden" id="sortcol" value="@Model.SortCol" />
-		<!--no "name" attr in propose!-->
-		<div id="actionModal">
-
-			<table id="tblActionLog" class="table table-bordered  table-hover table-condensed">
-				<thead class="gray-header">
-					<tr>
-						<th class="text-left colheader colheader_a" data-col="0" data-keyword="@Model.Keyword_a">@Resources.Resource.UserCode</th>
-						<th class="text-left colheader colheader_a" data-col="1" data-keyword="@Model.Keyword_a">@Resources.Resource.ActionType</th>
-						<th class="text-left colheader colheader_a" data-col="1" data-keyword="@Model.Keyword_a">@Resources.Resource.CustomerPhone</th>
-						<th class="text-left colheader colheader_a" data-col="2" data-keyword="@Model.Keyword_a">@Resources.Resource.OldValue</th>
-						<th class="text-left colheader colheader_a" data-col="3" data-keyword="@Model.Keyword_a">@Resources.Resource.NewValue</th>
-						<th class="text-left colheader colheader_a" data-col="6" data-keyword="@Model.Keyword_a">@Resources.Resource.DateTime</th>
-					</tr>
-				</thead>
-
-
-				@foreach (var actionlog in Model.ActionLogList)
-				{
-					<tr>
-						<td>@actionlog.actUserCode</td>
-						<td>@actionlog.actType</td>
-						<td>@actionlog.actCusCode</td>
-						<td>@actionlog.actOldValue</td>
-						<td>@actionlog.actNewValue</td>
-						<td>@actionlog.actLogTime</td>
-					</tr>
-				}
-
-			</table>
-			<div id="pagingblk_a" class="mx-3">
-				<div class="row">
-					@Html.PagedListPager(Model.ActionLogList, PageNo_a => Url.Action("Index", new { PageNo_a, SortOrder_a = Model.CurrentSortOrder_a, Keyword_a = Model.Keyword_a }))
-				</div>
-			</div>
-
-			<input type="hidden" name="SortOrder_a" id="sortorder_a" value="@Model.SortOrder_a" />
-			<input type="hidden" id="sortcol_a" value="@Model.SortCol_a" />
-		</div>
-
-
+		<!--no "name" attr in propose!-->		
 	}
 }
 

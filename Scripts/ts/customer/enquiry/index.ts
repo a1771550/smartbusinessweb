@@ -1,23 +1,15 @@
 ﻿$infoblk = $('#infoblk');
-frmdate = $infoblk.data("frmdate");
-todate = $infoblk.data("todate");
-currentoldestdate = $infoblk.data("currentoldestdate");
-const assigntosales = $infoblk.data("assignsalestxt");
-isassignor = $infoblk.data("isassignor") === "True";
+let assigntosales: string = "";
+let currentcontactemaillist: string[] = [];
+let currentcontactphonelist: string[] = [];
 
-pagesize = Number($infoblk.data("pagesize"));
 //from/emailAddress/address ne 'noreply@abssasia.com.hk'
 //resource = `/users/{2}/mailFolders/Inbox/messages?$filter=receivedDateTime ge {0}T00:00:00Z and receivedDateTime lt {1}T23:59:59Z and from/emailAddress/address ne 'autoreply@abssasia.com.hk' and from/emailAddress/address ne 'enquiry@united.com.hk' and from/emailAddress/name ne 'United Technologies (Int''l) Ltd.' and from/emailAddress/name ne 'Kobee Ho' and from/emailAddress/name ne 'Eddy Mok' and from/emailAddress/name ne 'Kim LEUNG' and from/emailAddress/address ne 'lung@united.com.hk' and from/emailAddress/address ne 'sunnyy@united.com.hk' and sender/emailAddress/address eq 'autoreply@united.com.hk'&$count=true&$ConsistencyLevel=eventual&$orderby=receivedDateTime desc`;
 /*resource = `/users/{0}/mailFolders/Inbox/messages?$filter=from/emailAddress/address ne 'autoreply@abssasia.com.hk' and from/emailAddress/address ne 'enquiry@united.com.hk' and from/emailAddress/name ne 'United Technologies (Int''l) Ltd.' and from/emailAddress/name ne 'Kobee Ho' and from/emailAddress/name ne 'Eddy Mok' and from/emailAddress/name ne 'Kim LEUNG' and from/emailAddress/address ne 'lung@united.com.hk' and from/emailAddress/address ne 'sunnyy@united.com.hk' and sender/emailAddress/address eq 'autoreply@united.com.hk'&$count=true&$ConsistencyLevel=eventual&$orderby=receivedDateTime desc`;*/
-resource = `/users/{0}/mailFolders/Inbox/messages?$filter=from/emailAddress/address ne 'autoreply@abssasia.com.hk' and from/emailAddress/address ne 'enquiry@united.com.hk' and sender/emailAddress/address eq 'autoreply@united.com.hk'&$count=true&$ConsistencyLevel=eventual&$orderby=from/emailAddress/address,sender/emailAddress/address,receivedDateTime desc`;
+resource = `/users/{0}/mailFolders/Inbox/messages?$top={1}&$filter=from/emailAddress/address ne 'autoreply@abssasia.com.hk' and from/emailAddress/address ne 'enquiry@united.com.hk' and sender/emailAddress/address eq 'autoreply@united.com.hk'&$count=true&$ConsistencyLevel=eventual&$orderby=from/emailAddress/address,sender/emailAddress/address,receivedDateTime desc`;
 
-enqIdList = $infoblk.data("enqidlist") as string[];
 let DicAssignedSalesEnqId: { [Key: string]: number } = {};
-
-let currentcontactemaillist: string[] = ($infoblk.data('currentcontactemaillist').toString()).split(',');
-let currentcontactphonelist: string[] = ($infoblk.data('currentcontactphonelist').toString()).split(',');
-
-const assignsalesmanrequiredtxt = $infoblk.data("assignsalesmanrequiredtxt");
+let assignsalesmanrequiredtxt:string = $infoblk.data("assignsalesmanrequiredtxt");
 
 $(document).on("click", "#btnSearch", function () {
 	keyword = $("#txtKeyword").val() as string;
@@ -253,15 +245,7 @@ $(document).on("click", '#btnAssign', function () {
 		handleAssign(null);
 	}
 });
-$(document).on("click", "#btnFilter", function (e) {
-	e.preventDefault();
-	frmdate = $("#datetimesmin").val() as string;
-	todate = $("#datetimesmax").val() as string;
-	sortDirection = "DESC";
-	//window.location.href = `/Enquiry/Index?strfrmdate=${frmdate}&strtodate=${todate}`;
-	//handleMGTmails(frmdate, todate);
-	GetEnquiries(1);
-});
+
 function filterEnquiries(enquiryies: IEnquiry[]): IEnquiry[] {
 	let uniqueEmailSubjects: string[] = [];
 	let filterlist: IEnquiry[] = [];
@@ -288,7 +272,7 @@ function saveEnquiries(enqlist: IEnquiry[]) {
 		//contentType: 'application/json; charset=utf-8',
 		type: "POST",
 		url: '/Enquiry/Save',
-		data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val(), model: enqlist, frmdate, todate },
+		data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val(), model: enqlist },
 		dataType: 'json'
 	});
 }
@@ -352,14 +336,23 @@ function fillInEnqTable() {
 	var html = enqTemplate(EnquiryList);
 	$("#tblmails tbody").empty().html(html);
 }
-
+function initInfoBlkVariables4Enquiry() {
+	assigntosales = $infoblk.data("assignsalestxt");
+	isassignor = $infoblk.data("isassignor") === "True";
+	pagesize = Number($infoblk.data("pagesize"));
+	enqIdList = $infoblk.data("enqidlist") as string[];
+	currentcontactemaillist = ($infoblk.data('currentcontactemaillist').toString()).split(',');
+	currentcontactphonelist = ($infoblk.data('currentcontactphonelist').toString()).split(',');
+	assignsalesmanrequiredtxt = $infoblk.data("assignsalesmanrequiredtxt");
+	DicAssignedSalesEnqId = $infoblk.data("jsondicassignedsalesenqid");
+}
 $(function () {
 	forenquiry = true;
-	daterangechange = false;
-
 	setFullPage();
 	initModals();
 	triggerMenu(1, 3);
+
+	initInfoBlkVariables4Enquiry();
 
 	let keyword = getParameterByName('Keyword');
 	if (keyword !== null) {
@@ -370,7 +363,5 @@ $(function () {
 
 	sortCol = 8;
 
-	handleMGTmails();
-
-	DicAssignedSalesEnqId = $infoblk.data("jsondicassignedsalesenqid");
+	handleMGTmails(1, Number($("#drpLatestRecordCount").val()));
 });

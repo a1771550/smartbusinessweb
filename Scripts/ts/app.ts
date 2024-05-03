@@ -1155,6 +1155,8 @@ function GetAttendances(pageIndex) {
 	});
 }
 function GetEnquiries(pageIndex) {
+	openWaitingModal();
+	console.log("sortDirection#0:" + sortDirection);
 	$.ajax({
 		type: "GET",
 		url: "/Enquiry/GetEnquiries",
@@ -1170,7 +1172,8 @@ function GetEnquiries(pageIndex) {
 					$target = $("#tblmails .colheader");
 					$target.removeClass("fa fa-sort-up fa-sort-down");
 					$target = $target.eq(sortCol);
-					$target.addClass("fa");
+					$target.addClass("fa");	
+
 					if (sortDirection.toUpperCase() == "DESC") {
 						sortDirection = "ASC";
 						$target.addClass("fa-sort-down");
@@ -1178,6 +1181,8 @@ function GetEnquiries(pageIndex) {
 						sortDirection = "DESC";
 						$target.addClass("fa-sort-up");
 					}
+
+					console.log("sortDirection#1:" + sortDirection);
 
 					fillInEnqTable();
 
@@ -1190,12 +1195,17 @@ function GetEnquiries(pageIndex) {
 					});
 					$("#totalcount").text(totalRecord);
 				}
+				closeWaitingModal();
 			}
 		},
 		dataType: "json",
 		error: onAjaxFailure,
 	});
 }
+$(document).on("change", "#drpLatestRecordCount", function () {		
+	sortDirection = sortDirection.toUpperCase() == "DESC"? "ASC":"DESC";
+	handleMGTmails(1, Number($(this).val()));
+});
 function GetItems(pageIndex) {
 	let type = getParameterByName("type") ?? "";
 
@@ -17845,7 +17855,7 @@ let tomorrow = new Date();
 tomorrow.setDate(tomorrow.getDate() + 1);
 let yesterday = new Date();
 yesterday.setDate(yesterday.getDate() - 1);
-
+let LatestRecordCount: number = 300;
 function initRecurOrder(): IRecurOrder {
 	return {
 		wsUID: 0,
@@ -17880,26 +17890,25 @@ interface IRecurOrder {
 let selectedRecurCode: string = "";
 let frmdate: any;
 let todate: any;
-let currentoldestdate: any;
 let pagesize: number = 0;
 let resource: string;
 
-function handleMGTmails(pageIndex: number = 1) {
+function handleMGTmails(pageIndex: number = 1, latestRecordCount: number = 300) {
+	//console.log("latestRecordCount:", latestRecordCount);
 	if (forenquiry) {
 		const enquiryacc: string = $infoblk.data("enquiryacc") as string;
 		EnquiryList = [];
 
-		let mgtEmail = document.getElementById("mgt-email");
-		/*let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", `${enquiryacc}`);*/
-		let _resource = resource.replace("{0}", `${enquiryacc}`);
-		//console.log("_resource:", _resource);
+		let mgtEmail = document.getElementById("mgt-email");		
+		configMGTResource(enquiryacc, latestRecordCount);		
 
-		$("#mgt-email").attr("resource", _resource);
+		$("#mgt-email").attr("resource", resource);
 
 		if (mgtEmail) {
+			let enqlist: IEnquiry[] = [];			
 			mgtEmail.addEventListener("dataChange", (e: any) => {
 				const response = e.detail.response;
-				//console.log("response value:", response.value);
+				//console.log("response value:", response.value);				
 				response.value.forEach((x) => {
 					EnquiryList.push(x);
 					DicEnqContent[x.id] = `${x.body.content} ReceivedDateTime:${x.receivedDateTime}`;
@@ -17907,21 +17916,21 @@ function handleMGTmails(pageIndex: number = 1) {
 				parseEnquiries(DicEnqContent);
 
 				if (EnquiryList.length > 0) {
-					//console.log("enqIdList:", enqIdList);
-					let enqlist: IEnquiry[] = [];
+					//console.log("enqIdList:", enqIdList);					
 					EnquiryList.forEach((x) => {
 						if (!enqIdList.includes(x.id)) {
 							enqlist.push(x);
 						}
 					});
-					if (enqlist.length > 0)
-						saveEnquiries(enqlist);
 				}
 
 				sortCol = 8;
 			});
+			if (enqlist.length > 0)
+				saveEnquiries(enqlist);
 
 			GetEnquiries(pageIndex);
+			
 		}
 	}
 
@@ -17931,11 +17940,9 @@ function handleMGTmails(pageIndex: number = 1) {
 		const attendanceacc: string = $infoblk.data("attendanceacc") as string;
 		//console.log("attendanceacc:", attendanceacc);
 		let mgtEmail = document.getElementById("mgt-email");
+		configMGTResource(attendanceacc, latestRecordCount);
 
-		//let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", attendanceacc);
-		let _resource = resource.replace("{0}", `${attendanceacc}`);
-
-		$("#mgt-email").attr("resource", _resource);
+		$("#mgt-email").attr("resource", resource);
 
 		if (mgtEmail) {
 			mgtEmail.addEventListener("dataChange", (e: any) => {
@@ -17993,10 +18000,9 @@ function handleMGTmails(pageIndex: number = 1) {
 		const jobacc: string = $infoblk.data("jobacc") as string;
 		//console.log("jobacc:", jobacc);
 		let mgtEmail = document.getElementById("mgt-email");
-		//let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", jobacc);
-		let _resource = resource.replace("{0}", `${jobacc}`);
+		configMGTResource(jobacc, latestRecordCount);
 
-		$("#mgt-email").attr("resource", _resource);
+		$("#mgt-email").attr("resource", resource);
 
 		if (mgtEmail) {
 			mgtEmail.addEventListener("dataChange", (e: any) => {
@@ -18059,11 +18065,9 @@ function handleMGTmails(pageIndex: number = 1) {
 		const trainingacc: string = $infoblk.data("trainingacc") as string;
 		//console.log("trainingacc:", trainingacc);
 		let mgtEmail = document.getElementById("mgt-email");
+		configMGTResource(trainingacc, latestRecordCount);
 
-		//let _resource = resource.replace("{0}", `${strfrmdate}`).replace("{1}", `${strtodate}`).replace("{2}", trainingacc);
-		let _resource = resource.replace("{0}", `${trainingacc}`);
-
-		$("#mgt-email").attr("resource", _resource);
+		$("#mgt-email").attr("resource", resource);
 
 		if (mgtEmail) {
 			mgtEmail.addEventListener("dataChange", (e: any) => {
@@ -18139,6 +18143,10 @@ $(document).on("change", ".todate", function () {
 
 // let jsdateformat: string = "dd/mm/yy";
 const jsdateformat: string = "yy-mm-dd";
+function configMGTResource(enquiryacc: string, latestRecordCount: number) {
+    resource = resource.replace("{0}", enquiryacc).replace("{1}", latestRecordCount.toString());
+}
+
 function getReceivedDate(receivedDateTime: string): string {
 	return (receivedDateTime).split("T")[0].trim();
 }

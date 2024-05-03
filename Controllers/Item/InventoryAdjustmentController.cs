@@ -11,7 +11,7 @@ namespace SmartBusinessWeb.Controllers.Item
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
         [HttpGet]
-        public ActionResult Index(int SortCol = 0, string SortOrder = "desc", string Keyword = "", int? PageNo = 1)
+        public ActionResult Index(int PageNo = 1, int SortCol = 0, string SortOrder = "desc", string Keyword = "")
         {
             ViewBag.ParentPage = "item";
             ViewBag.PageName = "IA";
