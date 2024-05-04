@@ -1,6 +1,6 @@
 ﻿$infoblk = $('#infoblk');
 //from/emailAddress/address ne 'noreply@abssasia.com.hk'
-resource = `/users/{2}/mailFolders/Inbox/messages?$top={1}&$filter=startswith(subject, '%5BConfirmed%5D')&$count=true&$ConsistencyLevel=eventual&$orderby=receivedDateTime desc`;
+resource = `/users/{0}/mailFolders/Inbox/messages?$top={1}&$filter=startswith(subject, '%5BConfirmed%5D')&$count=true&$ConsistencyLevel=eventual&$orderby=subject,receivedDateTime desc`;
 $(document).on("click", "#btnSearch", function () {
 	keyword = $("#txtKeyword").val() as string;
 	if (keyword !== "") {
@@ -92,5 +92,5 @@ $(function () {
 
 	$('#txtKeyword').trigger("focus");
 
-	handleMGTmails(1, Number($("#drpLatestRecordCount").val()));
+	handleMGTmails(1, 300);
 });

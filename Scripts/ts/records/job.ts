@@ -1,6 +1,6 @@
 ﻿$infoblk = $('#infoblk');
 //from/emailAddress/address ne 'noreply@abssasia.com.hk'
-resource = `/users/{0}/mailFolders/Inbox/messages?$top={1}&$filter=startswith(subject, 'UT Service Report')&$count=true&$ConsistencyLevel=eventual&$orderby=receivedDateTime desc`;
+resource = `/users/{0}/mailFolders/Inbox/messages?$top={1}&$filter=startswith(subject, 'UT Service Report')&$count=true&$ConsistencyLevel=eventual&$orderby=subject,receivedDateTime desc`;
 
 
 $(document).on("click", "#btnSearch", function () {
@@ -97,6 +97,6 @@ $(function () {
     $('#txtKeyword').trigger("focus");
 
    
-    handleMGTmails(1, Number($("#drpLatestRecordCount").val()));
+    handleMGTmails(1, 300);
 
 });

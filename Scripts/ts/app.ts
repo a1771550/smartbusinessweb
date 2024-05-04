@@ -1156,7 +1156,7 @@ function GetAttendances(pageIndex) {
 }
 function GetEnquiries(pageIndex) {
 	openWaitingModal();
-	console.log("sortDirection#0:" + sortDirection);
+	//console.log("sortDirection#0:" + sortDirection);
 	$.ajax({
 		type: "GET",
 		url: "/Enquiry/GetEnquiries",
@@ -1182,7 +1182,7 @@ function GetEnquiries(pageIndex) {
 						$target.addClass("fa-sort-up");
 					}
 
-					console.log("sortDirection#1:" + sortDirection);
+					//console.log("sortDirection#1:" + sortDirection);
 
 					fillInEnqTable();
 
