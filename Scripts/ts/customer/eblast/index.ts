@@ -152,30 +152,16 @@ $(document).on('click', '#btnSearch', function () {
 	}
 });
 
-$(document).on('click', '.colheader', function () {
-	let $sortcol = $('<input>').attr({ type: 'hidden', name: 'SortCol', value: $(this).data('col') });
-	let $keyword = $('<input>').attr({ type: 'hidden', name: 'Keyword', value: $(this).data('keyword') });
-	$('#frmBlast').append($sortcol).append($keyword).trigger("submit");
-});
-
 $(function () {
 	setFullPage();
-	let $sortorder = $('#sortorder');
-	let $sortcol = $('#sortcol');
-	//console.log('sortorder:' + $sortorder.val() + ';sortcol:' + $sortcol.val());
-	$target = $('.colheader').eq(<number>$sortcol.val());
-	let sortcls = $sortorder.val() === 'desc' ? 'fa fa-sort-up' : 'fa fa-sort-down';
-	$target.addClass(sortcls);
-	$target = $('.pagination');
-	$target.wrap('<nav aria-label="Page navigation"></nav>').find('li').addClass('page-item').find('a').addClass('page-link');
-	$('.pagination li').addClass('page-item');
-
 	initModals();	
+	gTblId = "tbleBlast";
+	gFrmId = "frmBlast";
 	triggerMenu(3, 0);
 
-	let keyword = getParameterByName('Keyword');
-	if (keyword !== null) {
-		$('#txtKeyword').val(keyword);
-	}
-	$('#txtKeyword').trigger("focus");
+	pagesize = $infoblk.data("pagesize");
+
+	ConfigSimpleSortingHeaders();
+	
+	initDatePickers(StartDayEnum.Beginning, 'YYYY-MM-DD');
 });

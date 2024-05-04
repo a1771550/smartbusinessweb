@@ -4704,6 +4704,7 @@
     <Content Include="Views\Reserve\Edit.cshtml" />
     <Content Include="Scripts\ts\js\item\reserve\edit.js.map" />
     <Content Include="Views\Shared\_DrpLatestRecordCount.cshtml" />
+    <Content Include="Views\Shared\_SortOrderColHidden.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">

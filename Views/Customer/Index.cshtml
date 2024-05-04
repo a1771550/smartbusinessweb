@@ -9,7 +9,7 @@
 	var CusIdList = Model.CusIdList;
 	string idlist = string.Join(",", CusIdList);
 	bool nonabss = Model.NonABSS;
-	string checkall = Model.CheckAll==1 ? "checked" : "";
+	string checkall = Model.CheckAll == 1 ? "checked" : "";
 }
 <link href="~/Content/customer/index.css?v=@rand" rel="stylesheet" type="text/css" />
 
@@ -66,7 +66,7 @@
 								@Html.Raw(customer.CustomAttributes.Trim())
 							}
 						</td>
-						
+
 						<td class="text-center">@Html.Raw(customer.FollowUpStatusDisplay)</td>
 						<td class="text-center">@customer.FollowUpDateDisplay</td>
 						<td class="text-center">@customer.AccountProfileName</td>
@@ -86,12 +86,10 @@
 
 		<div id="pagingblk" class="my-3">
 			@Html.PagedListPager(Model.PagingCustomerList, PageNo => Url.Action("Index",
-	new { PageNo, SortOrder = Model.CurrentSortOrder, SortCol = Model.SortCol, Keyword = Model.Keyword, PageSize=Model.PageSize }))
+	new { PageNo, SortOrder = Model.CurrentSortOrder, SortCol = Model.SortCol, Keyword = Model.Keyword, PageSize = Model.PageSize }))
 		</div>
 
-		<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
-		<input type="hidden" id="sortcol" value="@Model.SortCol" />
-		<!--no "name" attr in propose!-->		
+		@Html.Partial("_SortOrderColHidden")
 	}
 }
 

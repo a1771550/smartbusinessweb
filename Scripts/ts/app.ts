@@ -8,6 +8,17 @@ abstract class SimpleForm {
 	abstract validform(): boolean;
 	abstract submitForm();
 }
+let StartDayEnum = {
+	Today: 0,
+	CurrentMonth: 1,
+	LastWeek: 2,
+	LastMonth: 3,
+	Last2Month: 4,
+	LastWeekToday: 5,
+	LastMonthToday: 6,
+	ThisYear: 7,
+	Beginning: 8,
+}
 
 enum TriggerReferrer {
 	Row,
@@ -22495,4 +22506,86 @@ $(document).on("change", ".reserve.locqty", function () {
 
 function handleReservePaidOut(reserveId: number) {
 	window.location.href = "/POSFunc/AdvSales?reserveId=" + reserveId;
+}
+function initDatePickers(startDay = StartDayEnum.Today, format = '') {
+	let dateformat = document.getElementById("commonfunc")!.getAttribute("data-dateformat")!.toUpperCase();
+
+	var currentTime = new Date();
+	var startDateFrom = new Date();
+	var startDateTo = new Date();
+	var _format = format === '' ? dateformat : format;
+
+	let commonoptions = {
+		singleDatePicker: true,
+		showDropdowns: true,
+		minYear: 1901,
+		//maxYear: parseInt(moment().format('YYYY'), 10),
+		locale: {
+			format: _format
+		},
+		startDate: new Date(),
+	};
+
+	//clone options without reference
+	let mindateoptions = Object.assign({}, commonoptions);
+	let maxdateoptions = Object.assign({}, commonoptions);
+
+	if (getParameterByName("strfrmdate") == null) {
+		if (startDay == StartDayEnum.CurrentMonth) {
+			// First Date Of the Month
+			startDateFrom = new Date(currentTime.getFullYear(), currentTime.getMonth(), 1);
+		}
+		if (startDay == StartDayEnum.LastWeek || StartDayEnum.LastWeekToday) {
+			startDateFrom = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate() - 7);
+		}
+		if (startDay == StartDayEnum.Today) {
+			startDateFrom = new Date();
+		}
+		if (startDay == StartDayEnum.LastMonth || StartDayEnum.LastMonthToday) {
+			startDateFrom = $('#DateFromTxt').val() == '' ? new Date(currentTime.getFullYear(), currentTime.getMonth() - 1, 1) : convertStringToDate($('#DateFromTxt').val() as string);
+		}
+		if (startDay == StartDayEnum.Last2Month) {
+			startDateFrom = $('#DateFromTxt').val() == '' ? new Date(currentTime.getFullYear(), currentTime.getMonth() - 2, 1) : convertStringToDate($('#DateFromTxt').val() as string);
+		}
+	} else {
+		startDateFrom = convertStringToDate(getParameterByName("strfrmdate") as string);
+	}
+
+	//console.log('startdaynum:' + startDay);
+	if (getParameterByName("strtodate") == null) {
+		if (startDay == StartDayEnum.CurrentMonth) {
+			// Last Date Of the Month
+			startDateTo = new Date(currentTime.getFullYear(), currentTime.getMonth() + 1, 0);
+		}
+		if (startDay == StartDayEnum.LastWeek) {
+			startDateTo = tomorrow;
+		}
+		if (startDay == StartDayEnum.LastWeekToday) {
+			startDateTo = new Date();
+		}
+		if (startDay == StartDayEnum.Today) {
+			startDateTo = tomorrow;
+		}
+		if (startDay == StartDayEnum.LastMonth || StartDayEnum.Last2Month) {
+			startDateTo = $('#DateToTxt').val() == '' ? tomorrow : convertStringToDate($('#DateToTxt').val() as string);
+		}
+		if (startDay == StartDayEnum.LastMonthToday) {
+			startDateTo = $('#DateToTxt').val() == '' ? new Date() : convertStringToDate($('#DateToTxt').val() as string);
+		}
+	} else {
+		startDateTo = convertStringToDate(getParameterByName("strtodate")as string);
+	}
+	//console.log('frmdate:' + startDateFrom + ';todate:' + startDateTo);
+	mindateoptions.startDate = startDateFrom;
+	maxdateoptions.startDate = startDateTo;
+
+	$('#datetimesmin').daterangepicker(mindateoptions,
+		function (start, end, label) {
+			minDate = new Date(start).toDateString();
+		});
+
+	$('#datetimesmax').daterangepicker(maxdateoptions,
+		function (start, end, label) {
+			maxDate = new Date(end).toDateString();
+		});
 }

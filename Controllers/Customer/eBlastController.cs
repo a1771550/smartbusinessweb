@@ -19,11 +19,11 @@ namespace SmartBusinessWeb.Controllers.Customer
     [HandleError]
     [CustomAuthorize("customer", "boss", "admin", "superadmin")]
     public class eBlastController : BaseController
-    {       
+    {
         [HttpGet]
         public JsonResult GetContactsByBlastId(int blastId)
         {
-            List<PPWLib.Models.CRM.Customer.CustomerModel> contacts = eBlastEditModel.GetContactsByBlastId(blastId); 
+            List<PPWLib.Models.CRM.Customer.CustomerModel> contacts = eBlastEditModel.GetContactsByBlastId(blastId);
             return Json(contacts, JsonRequestBehavior.AllowGet);
         }
 
@@ -49,7 +49,7 @@ namespace SmartBusinessWeb.Controllers.Customer
             message.BodyEncoding = Encoding.UTF8;
             message.IsBodyHtml = true;
             string cname = "testemail";
-         
+
             //string url = string.Format(@"{6}?blastId={0}&cusCode={1}&contactName={2}&organization={3}&phone={4}&email={5}", blastId, "000000", cname, cname, "123456", testemail, host);
             //Track/{blastId}/{cusCode}/{contactName}/{organization}/{phone}/{email}/{companyId}/{imported}/
             string url = string.Format(@"{8}/{0}/{1}/{2}/{3}/{4}/{5}/{6}/{7}/", blastId, "99999999", cname, cname, "67456475", testemail, "12345", "0", host);
@@ -138,7 +138,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                 model.SortOrder = "desc";
             }
 
-            model.eBlastList = blastlist.ToPagedList(No_Of_Page, Size_Of_Page);
+            model.eBlastPagingList = blastlist.ToPagedList(No_Of_Page, Size_Of_Page);
             model.Keyword = Keyword;
 
             model.eBlastId = Id;
@@ -189,7 +189,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                     message.Subject = eblast.blSubject;
                     message.BodyEncoding = Encoding.UTF8;
                     message.IsBodyHtml = true;
-                    
+
                     //Track/{blastId}/{cusCode}/{contactName}/{organization}/{phone}/{email}/{companyId}/{imported}/
                     string url = string.Format(@"{8}/{0}/{1}/{2}/{3}/{4}/{5}/{6}/{7}/", blastId, customer.cusCode, customer.cusContact, cname, customer.cusPhone, email, 0, 0, host);
                     //url = HttpUtility.UrlEncode(url);
@@ -238,48 +238,25 @@ namespace SmartBusinessWeb.Controllers.Customer
             Session["eBlastId"] = blastId;
             msg = Resources.Resource.eBlastDone;
             return Json(new { msg });
-        }        
+        }
 
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
-        public ActionResult Index(int SortCol = 2, string SortOrder = "desc", string Keyword = "", string strfrmdate = "", string strtodate = "", int? PageNo = 1)
+        public ActionResult Index(int PageNo = 1, int SortCol = 2, string SortOrder = "desc", string Keyword = "", string strfrmdate = "", string strtodate = "")
         {
             ViewBag.ParentPage = "promotion";
             ViewBag.PageName = "eblast";
-            eBlastEditModel model = new eBlastEditModel();
-            model.CurrentSortOrder = SortOrder;
-            model.Keyword = Keyword;
+            eBlastEditModel model = new eBlastEditModel{
+                CurrentSortOrder = SortOrder,
+                SortCol = SortCol,
+                Keyword = Keyword,
+                SortOrder = SortOrder == "desc" ? "asc" : "desc",
+                PageSize = PageSize,
+            };       
 
-            var blastlist = model.GeteBlastList(strfrmdate, strtodate, Keyword);
-            model.SortCol = SortCol;
+            model.GeteBlastList(strfrmdate, strtodate);            
 
-            int Size_Of_Page = int.Parse(ConfigurationManager.AppSettings["PageLength"]);
-            int No_Of_Page = (PageNo ?? 1);
-
-            var sortColumnIndex = SortCol;
-            var sortDirection = SortOrder;
-
-            if (sortColumnIndex == 0)
-            {
-                blastlist = sortDirection == "asc" ? blastlist.OrderBy(c => c.blSubject).ToList() : blastlist.OrderByDescending(c => c.blSubject).ToList();
-            }
-            //else if (sortColumnIndex == 1)
-            //{
-            //    blastlist = sortDirection == "asc" ? blastlist.OrderBy(c => c.blHtml).ToList() : blastlist.OrderByDescending(c => c.blHtml).ToList();
-            //}
-            else if (sortColumnIndex == 1)
-            {
-                blastlist = sortDirection == "asc" ? blastlist.OrderBy(c => c.CreateTime).ToList() : blastlist.OrderByDescending(c => c.CreateTime).ToList();
-            }
-            else if (sortColumnIndex == 2)
-            {
-                blastlist = sortDirection == "asc" ? blastlist.OrderBy(c => c.ModifyTime).ToList() : blastlist.OrderByDescending(c => c.ModifyTime).ToList();
-            }
-
-            model.SortOrder = SortOrder == "desc" ? "asc" : "desc";
-
-            model.eBlastList = blastlist.ToPagedList(No_Of_Page, Size_Of_Page);
-            model.Keyword = Keyword;
+            model.eBlastPagingList = model.eBlastList.ToPagedList(PageNo, PageSize);
             return View(model);
         }
 

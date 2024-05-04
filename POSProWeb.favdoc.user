@@ -41,11 +41,6 @@
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\itemtransfer\transfer.ts</absolutePath>
         </Favorite>
         <Favorite>
-          <name>uploadfile.js</name>
-          <path>Scripts\uploadfile.js</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\uploadfile.js</absolutePath>
-        </Favorite>
-        <Favorite>
           <name>refund.ts</name>
           <path>Scripts\ts\pos\refund.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\refund.ts</absolutePath>
@@ -104,11 +99,6 @@
           <name>advsales.ts</name>
           <path>Scripts\ts\pos\advsales.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\advsales.ts</absolutePath>
-        </Favorite>
-        <Favorite>
-          <name>commonfunc.js</name>
-          <path>Scripts\commonfunc.js</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\commonfunc.js</absolutePath>
         </Favorite>
         <Favorite>
           <name>menu.ts</name>
@@ -224,6 +214,11 @@
           <name>reserve-index.ts</name>
           <path>Scripts\ts\item\reserve\index.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\item\reserve\index.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>eblast-index.ts</name>
+          <path>Scripts\ts\customer\eblast\index.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\customer\eblast\index.ts</absolutePath>
         </Favorite>
       </favorites>
     </Folder>
@@ -652,6 +647,22 @@
           <name>enquiry-index.css</name>
           <path>Content\enquiry\index.css</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\enquiry\index.css</absolutePath>
+        </Favorite>
+      </favorites>
+    </Folder>
+    <Folder>
+      <name>js</name>
+      <folders />
+      <favorites>
+        <Favorite>
+          <name>uploadfile.js</name>
+          <path>Scripts\uploadfile.js</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\uploadfile.js</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>commonfunc.js</name>
+          <path>Scripts\commonfunc.js</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\commonfunc.js</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

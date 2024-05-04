@@ -1,104 +1,104 @@
 ﻿@model PPWLib.Models.eBlastEditModel
 @using PagedList.Mvc;
 @{
-    ViewBag.Title = Resources.Resource.eBlast;
-    int rand = CommonHelper.GetVersionRandomNo();
+	ViewBag.Title = Resources.Resource.eBlast;
+	int rand = CommonHelper.GetVersionRandomNo();
 }
 <h2>@ViewBag.Title</h2>
 
 <div class="clearfix">
-    <div class="float-right">
-        <a class="btn btn-warning mx-2" role="button" href="/EmailSettings/Index" title="@Resources.Resource.EmailSettings"><i class="fa fa-envelope-circle-check"></i></a>
-        <a class="btn btn-info float-right" role="button" href="/eBlast/Create" title="@Resources.Resource.Add"><i class="fa fa-plus"></i></a>
+	<div class="float-right">
+		<a class="btn btn-warning mx-2" role="button" href="/EmailSettings/Index" title="@Resources.Resource.EmailSettings"><i class="fa fa-envelope-circle-check"></i></a>
+		<a class="btn btn-info float-right" role="button" href="/eBlast/Create" title="@Resources.Resource.Add"><i class="fa fa-plus"></i></a>
 
-    </div>
+	</div>
 </div>
 
 @using (Html.BeginForm("Index", "eBlast", FormMethod.Get, new { @Id = "frmBlast" }))
 {
 
-    <div class="row justify-content-center my-3">
-        @Html.Partial("_DatesRange", null, new ViewDataDictionary { { "DateFromTxt", Model.DateFromTxt }, { "DateToTxt", Model.DateToTxt } })
-        <button id="btnFilter" type="submit" class="btn btn-success mx-2" title="@Resources.Resource.Submit"><i class="fa fa-paper-plane"></i></button>
+	<div class="row justify-content-center my-3">
+		@Html.Partial("_DatesRange", null, new ViewDataDictionary { { "DateFromTxt", Model.DateFromTxt }, { "DateToTxt", Model.DateToTxt } })
+		<button id="btnFilter" type="submit" class="btn btn-success mx-2" title="@Resources.Resource.Submit"><i class="fa fa-paper-plane"></i></button>
 
-    </div>
+	</div>
 
-    <hr />
+	<hr />
 
-    <div class="row justify-content-center form-inline my-4">
-        <div class="form-group">
-            <input type="text" class="form-control" id="txtKeyword" placeholder="@Resources.Resource.KeywordRequired" />
-            <button id="btnSearch" type="button" class="btn btn-primary mx-2" title="@Resources.Resource.Search"><i class="fa fa-search"></i></button>
-            <button id="btnReload" type="button" class="btn btn-info" title="@Resources.Resource.Reload"><i class="fa fa-refresh"></i></button>
-        </div>
-    </div>
+	<div class="row justify-content-center form-inline my-4">
+		<div class="form-group">
+			<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" />
+			<button id="btnSearch" type="button" class="btn btn-primary mx-2" title="@Resources.Resource.Search"><i class="fa fa-search"></i></button>
+			<button id="btnReload" type="button" class="btn btn-info" title="@Resources.Resource.Reload"><i class="fa fa-refresh"></i></button>
+		</div>
+	</div>
 
 
-    <table id="tbleBlast" class="table table-bordered small  table-hover table-condensed">
-        <thead class="gray-header">
-            <tr>
-                <th class="text-center colheader" data-col="0" data-keyword="@Model.Keyword">@Resources.Resource.Subject</th>
-                <th class="text-center">@Resources.Resource.Format</th>
-                <th class="text-center colheader" data-col="1" data-keyword="@Model.Keyword"><span class="font-weight-bold">@Resources.Resource.CreateTime</span></th>
-                <th class="text-center colheader" data-col="2" data-keyword="@Model.Keyword"><span class="font-weight-bold">@Resources.Resource.ModifyTime</span></th>
-                <th></th>
-            </tr>
-        </thead>
+	<table id="tbleBlast" class="table table-bordered small  table-hover table-condensed">
+		<thead class="gray-header">
+			<tr>
+				<th class="text-center colheader" data-col="0">@Resources.Resource.Subject</th>
+				<th class="text-center colheader" data-col="1">@Resources.Resource.Format</th>
+				<th class="text-center colheader" data-col="2"><span class="font-weight-bold">@Resources.Resource.CreateTime</span></th>
+				<th class="text-center colheader" data-col="3"><span class="font-weight-bold">@Resources.Resource.ModifyTime</span></th>
+				<th></th>
+			</tr>
+		</thead>
 
-        @foreach (var blast in Model.eBlastList)
-        {
-            string format = blast.blHtml ? "HTML" : Resources.Resource.Text;
-            <tr>
-                <td class="text-center">
-                    @Html.DisplayFor(modeleBlast => blast.blSubject)
-                </td>
-                <td class="text-center">
-                    @format
-                </td>
-                <td class="text-center">
-                    @Html.DisplayFor(modeleBlast => blast.CreateTimeDisplay)
-                </td>
-                <td class="text-center">
-                    @Html.DisplayFor(modeleBlast => blast.ModifyTimeDisplay)
-                </td>
-                <td>
-                    <a href="#" class="btn btn-success detail mx-1 btnsmall" data-id="@blast.Id" role="button" title="@Resources.Resource.Detail"><i class="fa fa-info-circle"></i></a>
-                    <a href="#" class="btn btn-warning contact mx-1 btnsmall" data-id="@blast.Id" role="button" title="@Resources.Resource.Receiver4eBlast"><i class="fa fa-user"></i></a>
-                    <a href="#" class="btn btn-outline-danger test mx-1 btnsmall" data-id="@blast.Id" role="button" title="@Resources.Resource.Test"><i class="fa fa-check-circle"></i></a>
-                    <a href="#" class="btn btn-primary start mx-1 btnsmall" data-id="@blast.Id" role="button" title="@Resources.Resource.Start"><i class="fa fa-rocket"></i></a>
+		@foreach (var blast in Model.eBlastPagingList)
+		{
+			string format = blast.blHtml ? "HTML" : Resources.Resource.Text;
+			<tr>
+				<td class="text-center">
+					@Html.DisplayFor(modeleBlast => blast.blSubject)
+				</td>
+				<td class="text-center">
+					@format
+				</td>
+				<td class="text-center">
+					@Html.DisplayFor(modeleBlast => blast.CreateTimeDisplay)
+				</td>
+				<td class="text-center">
+					@Html.DisplayFor(modeleBlast => blast.ModifyTimeDisplay)
+				</td>
+				<td>
+					<a href="#" class="btn btn-success detail mx-1 btnsmall" data-id="@blast.Id" role="button" title="@Resources.Resource.Detail"><i class="fa fa-info-circle"></i></a>
+					<a href="#" class="btn btn-warning contact mx-1 btnsmall" data-id="@blast.Id" role="button" title="@Resources.Resource.Receiver4eBlast"><i class="fa fa-user"></i></a>
+					<a href="#" class="btn btn-outline-danger test mx-1 btnsmall" data-id="@blast.Id" role="button" title="@Resources.Resource.Test"><i class="fa fa-check-circle"></i></a>
+					<a href="#" class="btn btn-primary start mx-1 btnsmall" data-id="@blast.Id" role="button" title="@Resources.Resource.Start"><i class="fa fa-rocket"></i></a>
 
-                    <a href="#" class="btn btn-secondary log mx-1 btnsmall" data-id="@blast.Id" role="button" title="@Resources.Resource.Log"><i class="fa fa-history"></i></a>
+					<a href="#" class="btn btn-secondary log mx-1 btnsmall" data-id="@blast.Id" role="button" title="@Resources.Resource.Log"><i class="fa fa-history"></i></a>
 
-                    <a href="/eBlast/Edit?Id=@blast.Id" class="btn btn-info mx-1 btnsmall" title="@Resources.Resource.Edit"><i class="fa fa-edit"></i></a>
-                    <a href="#" class="remove small btn btn-danger btnsmall mx-1" data-id="@blast.Id" title="@Resources.Resource.Remove"><i class="fa fa-trash"></i></a>
-                </td>
-            </tr>
-        }
+					<a href="/eBlast/Edit?Id=@blast.Id" class="btn btn-info mx-1 btnsmall" title="@Resources.Resource.Edit"><i class="fa fa-edit"></i></a>
+					<a href="#" class="remove small btn btn-danger btnsmall mx-1" data-id="@blast.Id" title="@Resources.Resource.Remove"><i class="fa fa-trash"></i></a>
+				</td>
+			</tr>
+		}
 
-    </table>
+	</table>
 
-    <div id="pagingblk" class="my-3">
-       
-            @Html.PagedListPager(Model.eBlastList, PageNo => Url.Action("Index",
-new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
-        
-    </div>
+	<div id="pagingblk" class="my-3">
 
-    <input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
-    <input type="hidden" id="sortcol" value="@Model.SortCol" />
+		@Html.PagedListPager(Model.eBlastPagingList, PageNo => Url.Action("Index",
+new { PageNo, SortOrder = Model.CurrentSortOrder, SortCol = Model.SortCol, Keyword = Model.Keyword, PageSize = Model.PageSize }))
 
-    @Html.AntiForgeryToken()
+	</div>
+
+	@Html.Partial("_SortOrderColHidden")
+
+
 }
+@Html.AntiForgeryToken()
 
 <div id="testEblastModal">
-    <div class="container">
-        <form>
-            <div class="form-group">
-                <label for="testemail">@string.Format(Resources.Resource.TestFormat, Resources.Resource.Email)</label>
-                <input type="email" class="form-control" id="testemail" placeholder="@string.Format(Resources.Resource.TestFormat,Resources.Resource.Email)" value="@Model.TestEmail">
-            </div>
-        </form>
-    </div>
+	<div class="container">
+		<form>
+			<div class="form-group">
+				<label for="testemail">@string.Format(Resources.Resource.TestFormat, Resources.Resource.Email)</label>
+				<input type="email" class="form-control" id="testemail" placeholder="@string.Format(Resources.Resource.TestFormat,Resources.Resource.Email)" value="@Model.TestEmail">
+			</div>
+		</form>
+	</div>
 </div>
 
 @Html.Partial("_WaitingModal")
@@ -111,12 +111,8 @@ new { PageNo, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
 <script type="text/javascript" src="~/Scripts/daterangepicker/daterangepicker.min.js"></script>
 <link rel="stylesheet" type="text/css" href="~/Scripts/daterangepicker/daterangepicker.css" />
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
-<script>
-    $(function () {
-        initDatePickers(StartDayEnum.Last2Month, 'YYYY-MM-DD');
-    });
-</script>
 
-<div id="infoblk" data-scheduledsendtimetxt="@Resources.Resource.ScheduledSendTime"></div>
+
+<div id="infoblk" data-scheduledsendtimetxt="@Resources.Resource.ScheduledSendTime" data-pagesize="@Model.ComInfo.PageLength"></div>
 <script src="~/Scripts/ts/js/customer/eblast/index.js?v=@rand"></script>
 
