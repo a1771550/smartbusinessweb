@@ -1,7 +1,4 @@
 ﻿using CommonLib.Models;
-using PPWCommonLib.CommonModels;
-using KingdeeLib.Models;
-using KingdeeLib.Models.AccountInfo;
 using PPWDAL;
 using PPWLib.Helpers;
 using SmartBusinessWeb.Infrastructure;
@@ -45,37 +42,7 @@ namespace SmartBusinessWeb.Controllers
             return View(model);
         }
 
-
-        [HandleError]
-        [CustomAuthorize("othersettings", "boss", "admin", "superadmin")]
-        public ActionResult KingdeeAccountInfo()
-        {
-            ViewBag.ParentPage = "setup";
-            ViewBag.PageName = "kingdee";
-            KingdeeAccountInfo model = KingdeeAccountInfoEditModel.Get();
-            return View(model);
-        }
-
-        [HandleError]
-        [CustomAuthorize("othersettings", "boss", "admin", "superadmin")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult KingdeeAccountInfo(KingdeeAccountInfo model)
-        {
-            var msg = Resources.Resource.UpdateOkMsg;
-            if (ModelState.IsValid)
-            {
-                model.Msg = msg;
-            }
-            //        else
-            //        {
-            //return View(model);
-            //        }
-            KingdeeAccountInfoEditModel.Update(model);
-            //return Json(msg);
-            return View(model);
-        }
-
+        
         [HandleError]
         [CustomAuthorize("othersettings", "boss", "admin", "superadmin")]
         [HttpPost]

@@ -69,8 +69,8 @@ function OnGetKStocksOK(response) {
     stocklist.length == 0 ? $('#norecord').show() : $('#norecord').hide();
 };
 $(document).on("click", ".StockPager .page", function () {
-    pageindex = parseInt(<string>$(this).attr('page'));
-    GetKStocks(pageindex);
+    pageIndex = parseInt(<string>$(this).attr('page'));
+    GetKStocks(pageIndex);
 });
 
 $(document).on('click', '#btnReload', function () {

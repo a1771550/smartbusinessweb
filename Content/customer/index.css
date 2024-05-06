@@ -21,3 +21,9 @@
 .followupstatus{
 	font-weight:bold;
 }
+
+#tblCustomerGroup .form-control:not(textarea) {
+	padding: 0 .75rem !important;
+	height: calc(1.5rem + 2px) !important;
+	font-size: .9rem !important;
+}

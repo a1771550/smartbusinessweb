@@ -30,6 +30,7 @@
 				<button id="btnReload" type="button" class="btn btn-warning mx-1">@Resources.Resource.Reload</button>
 				<button id="btnAdvSearch" type="button" class="btn btn-danger mx-1">@Resources.Resource.AdvancedSearch</button>
 				<button id="btnHotList" type="button" class="btn btn-info mx-1">@addtohotlisttxt</button>
+				<button id="btnGroup" type="button" class="btn btn-dark mx-1">@string.Format(Resources.Resource.AddToFormat,Resources.Resource.CustomerGroup)</button>
 				<button id="btnBlast" type="button" class="btn btn-primary mx-1">@addtoeblasttxt</button>
 			</div>
 		</div>
@@ -95,6 +96,8 @@
 
 @Html.Partial("_NoRecordFound")
 
+@Html.Partial("_CustomerGroupModal")
+
 @Html.Partial("_HotListModal")
 
 @Html.Partial("_DescModal")
@@ -102,7 +105,7 @@
 @Html.Partial("_AdvancedSearchModal", Model.GlobalAttrList)
 
 @Html.Partial("_WaitingModal")
-<div id="infoblk" data-codelist="@JsonSerializer.Serialize(Model.CodeList)" data-actionhistory="@Resources.Resource.ActionHistory" data-selectatleastonecustomertxt="@selectatleastonecustomertxt" data-pagesize="@Model.ComInfo.PageLength"></div>
+<div id="infoblk" data-codelist="@JsonSerializer.Serialize(Model.CodeList)" data-actionhistory="@Resources.Resource.ActionHistory" data-selectatleastonecustomertxt="@selectatleastonecustomertxt" data-pagesize="@Model.ComInfo.PageLength" data-customergrouplist="@JsonSerializer.Serialize(Model.CustomerGroupList)"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script src="/Scripts/ts/js/customer/index.js?v=@rand"></script>

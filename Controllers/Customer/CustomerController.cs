@@ -1,8 +1,6 @@
-﻿using KingdeeLib.Models.Sales;
-using PagedList;
+﻿using PagedList;
 using SmartBusinessWeb.Infrastructure;
 using PPWDAL;
-using PPWLib.Helpers;
 using PPWLib.Models;
 using PPWLib.Models.Customer;
 using System;
@@ -11,15 +9,30 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ActionLogModel = PPWLib.Models.ActionLogModel;
 using Resources = CommonLib.App_GlobalResources;
-using System.Reflection.Emit;
 
 namespace SmartBusinessWeb.Controllers.Customer
 {
     [CustomAuthenticationFilter]
     public class CustomerController : BaseController
     {
+        [HttpGet]
+        public JsonResult GetGroupListAjax(int PageNo=1, string Keyword = null)
+        {
+            CustomerEditModel model = new CustomerEditModel();
+            model.GetGroupList(PageNo, Keyword);
+            return Json(new { model.AjaxPagingCustomerGroupList, PageIndex=PageNo, PageSize=ComInfo.PageLength, RecordCount = model.CustomerGroupList.Count}, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult SaveGroup(CustomerGroupModel CustomerGroup)
+        {
+            CustomerEditModel model = new CustomerEditModel();
+            model.SaveGroup(CustomerGroup);
+            return Json(new { List = model.AjaxPagingCustomerGroupList, RecordCount=model.CustomerGroupList.Count });
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult RemoveFile(string cusCode, string filename)

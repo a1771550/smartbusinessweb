@@ -1,0 +1,27 @@
+﻿@{ 
+	string groupname = string.Format(Resources.Resource.NameFormat, Resources.Resource.Group);
+}
+<div id="customerGroupModal">
+	<form>
+		<div class="form-group">
+			<label>@groupname</label>
+			<input type="text" id="txtGroupName" class="form-control" />
+			<span class="text-danger"></span>
+		</div>
+	</form>
+
+	<div class="overflow-auto">
+		<table id="tblCustomerGroup" class="table table-hover table-bordered table-condensed">
+			<thead class="gray-header">
+				<tr>
+					<th class="text-center">@groupname</th>
+					<th class="text-center">@Resources.Resource.Customer</th>
+					<th class="text-center">@Resources.Resource.CreateTime</th>
+					<th class="text-center"></th>
+				</tr>
+			</thead>
+		</table>
+		<div class="Pager my-1"></div>
+		<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+	</div>
+</div>

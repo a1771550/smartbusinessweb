@@ -19,8 +19,6 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Data.Entity.Validation;
 using System.Text;
-using KingdeeLib.Models.ItemStock;
-using KingdeeLib.Helpers;
 using CommonLib.App_GlobalResources;
 using CommonLib.BaseModels;
 using System.Net.Mail;
@@ -45,7 +43,7 @@ using PPWLib.Models.Customer;
 
 namespace SmartBusinessWeb.Controllers
 {
-	[AllowAnonymous]
+    [AllowAnonymous]
     public class ApiController : Controller
     {        
         private ComInfo ComInfo { get { return Session["ComInfo"] as ComInfo; } }
@@ -2922,69 +2920,7 @@ namespace SmartBusinessWeb.Controllers
             model.DicItemOptions = ModelHelper.GetDicItemOptions(apId, context);
 
             return Json(model, JsonRequestBehavior.AllowGet);
-        }
-
-
-        [HttpPost]
-        public JsonResult GetKItemsAjax(int pageIndex = 1, int pageSize = 10, string orderBy = "itemName", string direction = "asc", int stockId = 193340, string keyword = "")
-        {
-            ItemStockEditModel model = new ItemStockEditModel();
-            var list = new List<ItemStockModel>();
-            model.PageIndex = pageIndex;
-            model.PageSize = pageSize;
-
-            int startIndex = CommonHelper.GetStartIndex(pageIndex, pageSize);
-
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
-            {
-                var info = KingdeeHelper.GetKingdeeAccountInfo(context);
-                if (keyword == "")
-                {
-                    keyword = null;
-                }
-                var _list = context.GetKingdeeItemStockInfoPagingList3(info.OrgId, startIndex, pageSize, orderBy, direction, stockId, keyword).ToList();
-                if (_list != null)
-                {
-                    foreach (var item in _list)
-                    {
-                        var itemstock = new ItemStockModel
-                        {
-                            Id = item.Id,
-                            stId = item.stId,
-                            ItId = item.ItId,
-                            ItCode = item.ItCode,
-                            ItDesc = item.ItDesc,
-                            Qty = item.Qty,
-                            ItemName = item.ItName,
-                            StockName = item.stName,
-                            IsSold = item.ForSell,
-                            IsStock = item.ForInventory,
-                            itmBaseSellingPrice = item.itPrice == null ? 0 : (decimal)item.itPrice,
-                            stLocId = item.stLocId,
-                            stOrgId = item.stOrgId,
-                            stOwnerId = item.stOwnerId,
-                            stKeeperId = item.stKeeperId,
-                            stBaseUnitId = item.stBaseUnitId,
-                            stUnitId = item.stUnitId,
-                            CreateTime = item.CreateTime,
-                            ModifyTime = item.ModifyTime,
-                        };
-                        list.Add(itemstock);
-                    }
-                }
-                if (string.IsNullOrEmpty(keyword))
-                {
-                    model.RecordCount = context.GetKItemStockCount().FirstOrDefault().GetValueOrDefault();
-                }
-                else
-                {
-                    model.RecordCount = list.Count;
-                }
-            }
-
-            model.Items = list;
-            return Json(model);
-        }
+        }    
 
         [HttpPost]
         public ActionResult GetCustomersAjax4Sales(int pageIndex = 1, string keyword = "", string mode = "")

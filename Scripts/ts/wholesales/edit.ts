@@ -92,15 +92,15 @@ function OnGetRecurOrderSuccess(response) {
 	}
 }
 $(document).on("click", ".RecurPager .page", function () {
-	pageindex = Number($(this).attr("page"));
-	GetRecurOrders(pageindex);
+	pageIndex = Number($(this).attr("page"));
+	GetRecurOrders(pageIndex);
 });
 $(document).on("click", "#tblRecurOrder th", function () {
 	sortName = $(this).data("category");
 	sortCol = Number($(this).data("col"));
 	//sortDirection = sortDirection.toUpperCase() == "ASC" ? "DESC" : "ASC";
-	pageindex = 1;
-	GetRecurOrders(pageindex);
+	pageIndex = 1;
+	GetRecurOrders(pageIndex);
 });
 
 function fillRecurOrderList(model: IRecurOrder[]) {

@@ -68,6 +68,18 @@ let sortByName: boolean = false;
 let DicCodeLocQty: { [Key: string]: { [Key: string]: number } }; //Dictionary<string, Dictionary < string, int >> DicCodeLocQty;
 let DicCodeLocId: { [Key: string]: { [Key: string]: string } };
 let DicItemReservedQty: { [Key: string]: number };
+
+interface ICustomerGroup {
+    CustomerName: any;
+	Id: number;
+	cgName: string;
+	cusCodes: string;
+	Remark: string | null;
+	CreateTimeDisplay: string;
+	ModifyTimeDisplay: string | null;
+}
+let CustomerGroup: ICustomerGroup = {} as ICustomerGroup;
+let CustomerGroupList: ICustomerGroup[] = [];
 interface IPaymentType {
 	Id: number;
 	pmtCode: string;
@@ -134,6 +146,8 @@ let SelectedCountry: number = 1;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
+const groupnamerequiredtxt: string = $txtblk.data("groupnamerequiredtxt");
+const customergrouptxt: string = $txtblk.data("customergrouptxt");
 const reserveitemtxt: string = $txtblk.data("reserveitemtxt");
 const paymenttypetxt: string = $txtblk.data("paymenttypetxt");
 const duplicatedemailalert: string = $txtblk.data("duplicatedemailalert");
@@ -649,6 +663,7 @@ let waitingModal: any,
 	salesmenModal: any,
 	gcomboModal: any,
 	docModal: any,
+	customerGroupModal: any,
 	hotlistModal: any,
 	testEblastModal: any,
 	actionLogValModal: any,
@@ -756,7 +771,7 @@ let ispostback = false;
 let sortName = "";
 let sortDirection = "DESC";
 let sortCol: number = 0;
-let pageindex = 1;
+let pageIndex = 1;
 //let deposit = 0;
 let inclusivetax = false,
 	inclusivetaxrate = 0;
@@ -1488,30 +1503,28 @@ function writeItems(itemList: IItem[]) {
 $(document).on("click", "#tblmails th", function () {
 	sortName = $(this).data("category");
 	sortCol = Number($(this).data("col"));
-	pageindex = 1;
-	if (forenquiry) GetEnquiries(pageindex);
-	if (forattendance) GetAttendances(pageindex);
-	if (forjob) GetJobs(pageindex);
-	if (fortraining) GetTrainings(pageindex);
+	pageIndex = 1;
+	if (forenquiry) GetEnquiries(pageIndex);
+	if (forattendance) GetAttendances(pageIndex);
+	if (forjob) GetJobs(pageIndex);
+	if (fortraining) GetTrainings(pageIndex);
 });
 $(document).on("click", ".Pager .page", function () {
-	pageindex = Number($(this).attr("page"));
-	if (forenquiry) GetEnquiries(pageindex);
-	else if (forattendance) GetAttendances(pageindex);
-	else if (forjob) GetJobs(pageindex);
-	else if (fortraining) GetTrainings(pageindex);
-	//if (forsales || forpreorder || forwholesales || forpurchase || forIA || forEditReserve) GetItems(pageindex);
-
-	else if (forstock) GetStocks(pageindex);
-
-	else GetItems(pageindex);
+	pageIndex = Number($(this).attr("page"));
+	if (forenquiry) GetEnquiries(pageIndex);
+	else if (forattendance) GetAttendances(pageIndex);
+	else if (forjob) GetJobs(pageIndex);
+	else if (fortraining) GetTrainings(pageIndex);
+	else if (forstock) GetStocks(pageIndex);
+	else if (forcustomer) GetCustomerGroupList(pageIndex);
+	else GetItems(pageIndex);
 });
 $(document).on("click", "#tblItem th a", function () {
 	sortName = $(this).data("category");
 	sortDirection = sortDirection == "ASC" ? "DESC" : "ASC";
 	/* console.log('sortname:' + sortName + ';sortdir:' + sortDirection);*/
-	pageindex = 1;
-	GetItems(pageindex);
+	pageIndex = 1;
+	GetItems(pageIndex);
 });
 function genProUrList(urlist: string, item: IItem) {
 	urlist = "<ul class='nostylelist'>";
@@ -1525,6 +1538,43 @@ function genProUrList(urlist: string, item: IItem) {
 	}
 	urlist += "</ul>";
 	return urlist;
+}
+function GetCustomerGroupList(pageIndex: number = 1) {
+	let data = { PageNo: pageIndex, Keyword: keyword };
+
+	openWaitingModal();
+	$.ajax({
+		url: "/Customer/GetGroupListAjax",
+		type: "GET",
+		data: data,
+		contentType: "application/json; charset=utf-8",
+		dataType: "json",
+		success: OnGetCustomerGroupListSuccess,
+		error: onAjaxFailure,
+	});
+}
+function OnGetCustomerGroupListSuccess(response) {
+	closeWaitingModal();
+
+	if (response) {
+		CustomerGroupList = response.AjaxPagingCustomerGroupList.slice(0);
+
+		populateCustomerGroupList();
+
+		openCustomerGroupModal();
+
+		customerGroupModal.find(".Pager").ASPSnippets_Pager({
+			ActiveCssClass: "current",
+			PagerCssClass: "pager",
+			PageIndex: response.PageIndex,
+			PageSize: response.PageSize,
+			RecordCount: response.RecordCount,
+		});
+	} else {
+		customerGroupModal.find(".Pager").hide();
+	}
+
+	keyword = "";
 }
 
 function genPromotionHtml(ItemPromotions: IItemPromotion[]) {
@@ -1784,15 +1834,15 @@ function OnSearchCustomersSuccess(response) {
 }
 
 $(document).on("click", ".CusPager .page", function () {
-	pageindex = Number($(this).attr("page"));
-	GetCustomers4Sales(pageindex);
+	pageIndex = Number($(this).attr("page"));
+	GetCustomers4Sales(pageIndex);
 });
 $(document).on("click", "#tblCus th a", function () {
 	sortName = $(this).data("category");
 	sortDirection = sortDirection == "ASC" ? "DESC" : "ASC";
 	/* console.log('sortname:' + sortName + ';sortdir:' + sortDirection);*/
-	pageindex = 1;
-	GetCustomers4Sales(pageindex);
+	pageIndex = 1;
+	GetCustomers4Sales(pageIndex);
 });
 
 function openItemModal(msg = "") {
@@ -3417,7 +3467,38 @@ function openReserveModal() {
 function closeReserveModal() {
 	reserveModal.dialog("close");
 }
+
+function openCustomerGroupModal() {
+	customerGroupModal.dialog("open");
+	customerGroupModal.find(".text-danger").text("");
+	populateCustomerGroupList();
+	customerGroupModal.find("#txtGroupName").trigger("focus");
+}
+function closeCustomerGroupModal() {
+	customerGroupModal.dialog("close");
+}
 function initModals() {
+	if ($("#customerGroupModal").length) {
+		customerGroupModal = $("#customerGroupModal").dialog({
+			width: 600,
+			title: customergrouptxt,
+			autoOpen: false,
+			modal: true,
+			buttons: [
+				{
+					text: savetxt,
+					class: "savebtn",
+					click: handleCustomerGroupSaved,
+				},
+				{
+					class: "secondarybtn",
+					text: canceltxt,
+					click: closeCustomerGroupModal
+				},
+			],
+		});
+	}
+
 	if ($("#reserveModal").length) {
 		reserveModal = $("#reserveModal").dialog({
 			width: 600,
@@ -16744,10 +16825,10 @@ function fillInItemModal() {
 	}
 	$tr.find("td:eq(3)").text(_price);
 }
-let forCustomer: boolean = false;
+
 function confirmDateTime() {
 	let strdate = $("#strDateTime").val();
-	if (forCustomer) {
+	if (forcustomer) {
 		$.ajax({
 			type: "POST",
 			url: "/Customer/UpdateFollowUpDate",
@@ -22249,15 +22330,15 @@ function OnGetHotListSuccess(response) {
 	}
 }
 $(document).on("click", "#hotlistModal .Pager .page", function () {
-	pageindex = parseInt(<string>$(this).attr("page"));
-	GetHotLists(pageindex);
+	pageIndex = parseInt(<string>$(this).attr("page"));
+	GetHotLists(pageIndex);
 });
 $(document).on("click", "#tblHotList th a", function () {
 	sortName = $(this).data("category");
 	sortDirection = sortDirection == "ASC" ? "DESC" : "ASC";
 	/* console.log('sortname:' + sortName + ';sortdir:' + sortDirection);*/
-	pageindex = 1;
-	GetHotLists(pageindex);
+	pageIndex = 1;
+	GetHotLists(pageIndex);
 });
 let eBlastHotListIds: { [Key: number]: number } = {};
 
