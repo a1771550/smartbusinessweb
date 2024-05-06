@@ -79,22 +79,22 @@
 				<th title="@Resources.Resource.ItemCode" class="code text-center">@Resources.Resource.ItemCode</th>
 				<th title="@Resources.Resource.Name" class="namedesc text-center">@Resources.Resource.Name/@Resources.Resource.Description</th>
 				<th title="@Resources.Resource.BaseUnit" class="unit text-right">@Resources.Resource.BaseUnit</th>
-				<th title="@Resources.Resource.Qty" class="sellqty text-right">@Resources.Resource.Qty</th>
+				<th title="@Resources.Resource.Qty" class="no sellqty text-right">@Resources.Resource.Qty</th>
 
-				<th title="@Resources.Resource.Batch" class="sellbat text-center">@Resources.Resource.Batch</th>
-				<th title="@Resources.Resource.SerialNo" class="sellsn text-center">@Resources.Resource.SerialNoItemHeader</th>
-				<th title="@Resources.Resource.ExpiryDate" class="sellvt text-center">@Resources.Resource.ExpiryDate</th>
+				<th title="@Resources.Resource.Batch" class="io sellbat text-center">@Resources.Resource.Batch</th>
+				<th title="@Resources.Resource.SerialNo" class="io sellsn text-center">@Resources.Resource.SerialNoItemHeader</th>
+				<th title="@Resources.Resource.ExpiryDate" class="io sellvt text-center">@Resources.Resource.ExpiryDate</th>
 
-				<th title="@Resources.Resource.ItemVariations" class="selliv text-center">@Resources.Resource.ItemVariations</th>
+				<th title="@Resources.Resource.ItemVariations" class="iv selliv text-center">@Resources.Resource.ItemVariations</th>
 
-				<th title="@Resources.Resource.Price" class="sellprice text-right">@Resources.Resource.Price (@Currency)</th>
-				<th title="@Resources.Resource.DiscPc" class="selldiscpc text-right">@Resources.Resource.DiscPc</th>
+				<th title="@Resources.Resource.Price" class="no sellprice text-right">@Resources.Resource.Price (@Currency)</th>
+				<th title="@Resources.Resource.DiscPc" class="no selldiscpc text-right">@Resources.Resource.DiscPc</th>
 
-				<th title="@Resources.Resource.Tax" class="selltax text-right">@Resources.Resource.TaxItemHeader</th>
+				<th title="@Resources.Resource.Tax" class="no selltax text-right">@Resources.Resource.TaxItemHeader</th>
 
 				<th title="@Resources.Resource.Location" class="selllocation text-center">@Resources.Resource.Location</th>
 				<th title="@Resources.Resource.Job4Myob" class="selljob text-center">@Resources.Resource.Job4Myob</th>
-				<th title="@Resources.Resource.Amount" class="sellamt text-right">@Resources.Resource.Amount (@Currency)</th>
+				<th title="@Resources.Resource.Amount" class="no sellamt text-right">@Resources.Resource.Amount (@Currency)</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -115,18 +115,18 @@
 						<td class="text-center code"><input type="text" name="itemcode" class="form-control itemcode text-center flex form-control" title="@line.itmCode" value="@line.itmCode" readonly /></td>
 						<td class="text-center namedesc"><input type="text" class="itemdesc flex form-control text-center form-control" title="@line.itmNameDesc" data-itemname="@line.itmNameDesc" value="@line.ItemNameDescDisplay" readonly /></td>
 						<td class="text-right unit"><input type="text" class="sellunit text-right flex form-control form-control" data-sellunit="" value="@line.itmSellUnit" readonly /></td>
-						<td class="text-right sellqty"><input type="number" data-qty="@line.rtlQty" name="qty" class="qty text-right flex form-control form-control" value="@line.rtlQty" readonly />
-						<td class="text-center sellbat"><input type="text" class="batch text-center flex form-control" @disabled_bat /></td>
-						<td class="text-center sellsn"><input type="text" class="serialno text-center flex form-control" @disabled_sn /></td>
-						<td class="text-center sellvt"><input type="text" class="validthru datepicker text-center flex form-control" /></td>
-						<td class="text-center selliv"><input type="text" class="vari text-center flex form-control" @disabled_iv /></td>
-						<td class="text-right sellprice">
+						<td class="text-right no sellqty"><input type="number" data-qty="@line.rtlQty" name="qty" class="qty text-right flex form-control form-control" value="@line.rtlQty" readonly />
+						<td class="text-center io sellbat"><input type="text" class="batch text-center flex form-control" @disabled_bat /></td>
+						<td class="text-center io sellsn"><input type="text" class="serialno text-center flex form-control" @disabled_sn /></td>
+						<td class="text-center io sellvt"><input type="text" class="validthru datepicker text-center flex form-control" /></td>
+						<td class="text-center iv selliv"><input type="text" class="vari text-center flex form-control" @disabled_iv /></td>
+						<td class="text-right no sellprice">
 							<input type="text" class="price text-right flex form-control number" value="@line.SellingPriceDisplay" />
 						</td>
-						<td class="text-right selldiscpc">
+						<td class="text-right no selldiscpc">
 							<input type="text" class="discpc text-right flex form-control number" value="@zerodisplay" />
 						</td>
-						<td class="text-right selltax">
+						<td class="text-right no selltax">
 							<input type="text" class="taxpc text-right flex form-control number" readonly value="@zerodisplay" />
 						</td>
 						<td class="text-center selllocation">
@@ -147,7 +147,7 @@
 								}
 							</select>
 						</td>
-						<td class="text-right sellamt"><input type="text" class="amount text-right flex form-control" readonly value="@CommonHelper.FormatNumber(amt)" /></td>
+						<td class="text-right no sellamt"><input type="text" class="amount text-right flex form-control" readonly value="@CommonHelper.FormatNumber(amt)" /></td>
 					</tr>
 				}
 

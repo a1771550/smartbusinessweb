@@ -327,7 +327,7 @@ namespace SmartBusinessWeb.Controllers
         [AllowAnonymous]
         public void ViewTrack(string blastId, string contactId, string contactName, string organization, string phone, string email, string companyId, int imported)
         {
-            var blast = eBlastEditModel.Get(int.Parse(blastId));
+            var blast = eBlastEditModel.GetEblastById(int.Parse(blastId));
             using (var econtext = new PPWDbContext(Session["DBName"].ToString()))
             {
                 string Id = CommonHelper.GenId();

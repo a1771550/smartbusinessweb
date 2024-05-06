@@ -1183,7 +1183,7 @@ function GetEnquiries(pageIndex) {
 					$target = $("#tblmails .colheader");
 					$target.removeClass("fa fa-sort-up fa-sort-down");
 					$target = $target.eq(sortCol);
-					$target.addClass("fa");	
+					$target.addClass("fa");
 
 					if (sortDirection.toUpperCase() == "DESC") {
 						sortDirection = "ASC";
@@ -1213,8 +1213,8 @@ function GetEnquiries(pageIndex) {
 		error: onAjaxFailure,
 	});
 }
-$(document).on("change", "#drpLatestRecordCount", function () {		
-	sortDirection = sortDirection.toUpperCase() == "DESC"? "ASC":"DESC";
+$(document).on("change", "#drpLatestRecordCount", function () {
+	sortDirection = sortDirection.toUpperCase() == "DESC" ? "ASC" : "DESC";
 	handleMGTmails(1, Number($(this).val()));
 });
 function GetItems(pageIndex) {
@@ -6088,7 +6088,7 @@ interface ISales extends ISalesBase {
 	SettleDateDisplay: string;
 	authcode: string;
 	rtsInternalRmks: string;
-	epaytype: string;	
+	epaytype: string;
 	rtsExRate: number;
 	currency: string;
 	inclusiveTax: boolean;
@@ -6621,6 +6621,7 @@ function fillInEnquiry() {
 		statuscls: null,
 		UploadFileList: [],
 		TotalRecord: 0,
+		emailDisplay: "",
 	};
 	enquiry.FollowUpDateInfo.type = "date";
 	enquiry.FollowUpDateInfo.status = $(".followup:checked").val() as string;
@@ -6637,6 +6638,7 @@ function fillInEnquiry() {
 }
 
 interface IEnquiry {
+	emailDisplay: string;
 	TotalRecord: number;
 	UploadFileList: string[];
 	id: string;
@@ -14734,7 +14736,7 @@ function initSales(): ISales {
 		Roundings: 0,
 		Change: 0,
 		MonthlyPay: 0,
-		Deposit: 0,	
+		Deposit: 0,
 		deliveryAddressId: 0,
 		ireviewmode: 0,
 		selectedPosSalesmanCode: null,
@@ -14791,7 +14793,7 @@ function initSimpleSales(): ISales {
 		Roundings: 0,
 		Change: 0,
 		MonthlyPay: 0,
-		Deposit: 0,		
+		Deposit: 0,
 		deliveryAddressId: 0,
 		ireviewmode: 0,
 		selectedPosSalesmanCode: null,
@@ -17910,13 +17912,13 @@ function handleMGTmails(pageIndex: number = 1, latestRecordCount: number = 300) 
 		const enquiryacc: string = $infoblk.data("enquiryacc") as string;
 		EnquiryList = [];
 
-		let mgtEmail = document.getElementById("mgt-email");		
-		configMGTResource(enquiryacc, latestRecordCount);		
+		let mgtEmail = document.getElementById("mgt-email");
+		configMGTResource(enquiryacc, latestRecordCount);
 
 		$("#mgt-email").attr("resource", resource);
 
 		if (mgtEmail) {
-			let enqlist: IEnquiry[] = [];			
+			let enqlist: IEnquiry[] = [];
 			mgtEmail.addEventListener("dataChange", (e: any) => {
 				const response = e.detail.response;
 				//console.log("response value:", response.value);				
@@ -17941,7 +17943,7 @@ function handleMGTmails(pageIndex: number = 1, latestRecordCount: number = 300) 
 				saveEnquiries(enqlist);
 
 			GetEnquiries(pageIndex);
-			
+
 		}
 	}
 
@@ -18155,7 +18157,7 @@ $(document).on("change", ".todate", function () {
 // let jsdateformat: string = "dd/mm/yy";
 const jsdateformat: string = "yy-mm-dd";
 function configMGTResource(enquiryacc: string, latestRecordCount: number) {
-    resource = resource.replace("{0}", enquiryacc).replace("{1}", latestRecordCount.toString());
+	resource = resource.replace("{0}", enquiryacc).replace("{1}", latestRecordCount.toString());
 }
 
 function getReceivedDate(receivedDateTime: string): string {
@@ -18648,8 +18650,8 @@ function _submitSales() {
 					window.open(printurl);
 					if (forsales || forReservePaidOut)
 						//window.location.reload();
-					if (forpreorder)
-						window.location.href = "/Preorder/Index";
+						if (forpreorder)
+							window.location.href = "/Preorder/Index";
 				}
 			} else {
 				//console.log('epaystatus:' + data.epaystatus);
@@ -21211,7 +21213,7 @@ $(document).on("dblclick", ".batch", function () {
 								let _checked = "";
 								let _disabled = hasFocusCls ? "" : "disabled";
 
-								if (DeliveryItems.length > 0) {									
+								if (DeliveryItems.length > 0) {
 									let idx = DeliveryItems.findIndex((x, i) => {
 										if (hasFocusCls) {
 											return (x.snoCode == ele.sn);
@@ -22525,28 +22527,19 @@ function initDatePickers(startDay = StartDayEnum.Today, format = '') {
 		},
 		startDate: new Date(),
 	};
-
 	//clone options without reference
 	let mindateoptions = Object.assign({}, commonoptions);
 	let maxdateoptions = Object.assign({}, commonoptions);
 
 	if (getParameterByName("strfrmdate") == null) {
-		if (startDay == StartDayEnum.CurrentMonth) {
-			// First Date Of the Month
-			startDateFrom = new Date(currentTime.getFullYear(), currentTime.getMonth(), 1);
-		}
-		if (startDay == StartDayEnum.LastWeek || StartDayEnum.LastWeekToday) {
-			startDateFrom = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate() - 7);
-		}
-		if (startDay == StartDayEnum.Today) {
-			startDateFrom = new Date();
-		}
-		if (startDay == StartDayEnum.LastMonth || StartDayEnum.LastMonthToday) {
-			startDateFrom = $('#DateFromTxt').val() == '' ? new Date(currentTime.getFullYear(), currentTime.getMonth() - 1, 1) : convertStringToDate($('#DateFromTxt').val() as string);
-		}
-		if (startDay == StartDayEnum.Last2Month) {
-			startDateFrom = $('#DateFromTxt').val() == '' ? new Date(currentTime.getFullYear(), currentTime.getMonth() - 2, 1) : convertStringToDate($('#DateFromTxt').val() as string);
-		}
+		if (startDay == StartDayEnum.CurrentMonth) // First Date Of the Month
+			startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), currentTime.getMonth(), 1) : convertStringToDate($("#DateFromTxt").val() as string);
+		if (startDay == StartDayEnum.LastWeek || StartDayEnum.LastWeekToday) startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate() - 7) : convertStringToDate($("#DateFromTxt").val() as string);
+		if (startDay == StartDayEnum.Today) startDateFrom = new Date();
+		if (startDay == StartDayEnum.LastMonth || StartDayEnum.LastMonthToday) startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), currentTime.getMonth() - 1, 1) : convertStringToDate($("#DateFromTxt").val() as string);
+		if (startDay == StartDayEnum.Last2Month) startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), currentTime.getMonth() - 2, 1) : convertStringToDate($("#DateFromTxt").val() as string);
+		if (startDay == StartDayEnum.ThisYear) startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), 0, 1) : convertStringToDate($("#DateFromTxt").val() as string);
+		if (startDay == StartDayEnum.Beginning) startDateFrom = convertStringToDate($("#DateFromTxt").val() as string);
 	} else {
 		startDateFrom = convertStringToDate(getParameterByName("strfrmdate") as string);
 	}
@@ -22567,13 +22560,13 @@ function initDatePickers(startDay = StartDayEnum.Today, format = '') {
 			startDateTo = tomorrow;
 		}
 		if (startDay == StartDayEnum.LastMonth || StartDayEnum.Last2Month) {
-			startDateTo = $('#DateToTxt').val() == '' ? tomorrow : convertStringToDate($('#DateToTxt').val() as string);
+			startDateTo = $("#DateToTxt").val() == '' ? tomorrow : convertStringToDate($("#DateToTxt").val() as string);
 		}
 		if (startDay == StartDayEnum.LastMonthToday) {
-			startDateTo = $('#DateToTxt').val() == '' ? new Date() : convertStringToDate($('#DateToTxt').val() as string);
+			startDateTo = $("#DateToTxt").val() == '' ? new Date() : convertStringToDate($("#DateToTxt").val() as string);
 		}
 	} else {
-		startDateTo = convertStringToDate(getParameterByName("strtodate")as string);
+		startDateTo = convertStringToDate(getParameterByName("strtodate") as string);
 	}
 	//console.log('frmdate:' + startDateFrom + ';todate:' + startDateTo);
 	mindateoptions.startDate = startDateFrom;

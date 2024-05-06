@@ -191,7 +191,7 @@ namespace SmartBusinessWeb.Controllers.Customer
 
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
-        public ActionResult Index(int PageNo = 1, int PageSize=10, int SortCol = 4, string SortOrder = "desc", string Keyword = "", int CheckAll = 0, string cusIds = null)
+        public ActionResult Index(int PageNo = 1, int PageSize=10, int SortCol = 4, string SortOrder = "desc", string Keyword = "", int CheckAll = 0, string cusCodes = null)
         {
             ViewBag.ParentPage = ViewBag.PageName = "customer";
             if (string.IsNullOrEmpty(Keyword))
@@ -205,15 +205,13 @@ namespace SmartBusinessWeb.Controllers.Customer
                 SortOrder = SortOrder == "desc" ? "asc" : "desc",
                 PageSize = PageSize,
             };
-         
-            List<int> cusIdList = new List<int>();          
 
             model.GetList(SortCol, SortOrder, Keyword, null);
 
-            if (cusIds != null)
+            if (cusCodes != null)
             {
-                var _cusIdList = cusIds.Split(',');
-                model.CustomerList = model.CustomerList.Where(x => _cusIdList.Contains(x.cusCustomerID.ToString())).ToList();
+                var cusCodeList = cusCodes.Split(',');
+                model.CustomerList = model.CustomerList.Where(x => x.AccountProfileId==apId && cusCodeList.Contains(x.cusCode)).ToList();
             }
 
             model.PagingCustomerList = model.CustomerList.ToPagedList(PageNo, PageSize);

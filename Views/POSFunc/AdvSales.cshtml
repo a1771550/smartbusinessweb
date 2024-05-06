@@ -9,8 +9,7 @@
 
 	var currency = Model.Currency;
 	bool showrecur = false;
-	SessUser user = System.Web.HttpContext.Current.Session["User"] as SessUser;
-	//bool isadmin = user.Roles.Any(x => x == RoleType.Admin);
+	SessUser user = System.Web.HttpContext.Current.Session["User"] as SessUser;	
 	var Sales = Model.Sales;
 	bool editmode = !string.IsNullOrEmpty(Model.Mode) && Model.Mode == "edit";
 	string subtitle = Resources.Resource.MakeSales;

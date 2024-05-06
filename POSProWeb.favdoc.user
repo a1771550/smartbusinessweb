@@ -458,11 +458,6 @@
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Customer\CustomerController.cs</absolutePath>
         </Favorite>
         <Favorite>
-          <name>EnquiryController.cs</name>
-          <path>Controllers\CRM\EnquiryController.cs</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\CRM\EnquiryController.cs</absolutePath>
-        </Favorite>
-        <Favorite>
           <name>DepositController.cs</name>
           <path>Controllers\POS\DepositController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\POS\DepositController.cs</absolutePath>
@@ -516,6 +511,11 @@
           <name>ReserveController.cs</name>
           <path>Controllers\Item\ReserveController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Item\ReserveController.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>EnquiryController.cs</name>
+          <path>Controllers\Customer\EnquiryController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Customer\EnquiryController.cs</absolutePath>
         </Favorite>
       </favorites>
     </Folder>
@@ -647,6 +647,11 @@
           <name>enquiry-index.css</name>
           <path>Content\enquiry\index.css</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\enquiry\index.css</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>advsales.css</name>
+          <path>Content\pos\advsales.css</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\pos\advsales.css</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

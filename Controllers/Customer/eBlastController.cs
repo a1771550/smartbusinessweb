@@ -21,9 +21,9 @@ namespace SmartBusinessWeb.Controllers.Customer
     public class eBlastController : BaseController
     {
         [HttpGet]
-        public JsonResult GetContactsByBlastId(int blastId)
+        public JsonResult GetCustomersByBlastId(int blastId)
         {
-            List<PPWLib.Models.CRM.Customer.CustomerModel> contacts = eBlastEditModel.GetContactsByBlastId(blastId);
+            List<PPWLib.Models.CRM.Customer.CustomerModel> contacts = eBlastEditModel.GetCustomersByBlastId(blastId);
             return Json(contacts, JsonRequestBehavior.AllowGet);
         }
 
@@ -38,14 +38,14 @@ namespace SmartBusinessWeb.Controllers.Customer
             string host = mailsettings.emEmailTrackingURL;
             int blastId = Id;
             eBlastEditModel emodel = new eBlastEditModel();
-            eBlastModel eblast = emodel.GeteBlastById(Id);
-            eblast.blSendTime = DateTime.Now;
+            emodel.Get(Id);
+            emodel.eBlast.blSendTime = DateTime.Now;
             int okcount = 0;
             int ngcount = 0;
             MailAddress frm = new MailAddress(mailsettings.emEmail, mailsettings.emDisplayName);
             MailAddress to = new MailAddress(testemail, string.Format(Resources.Resource.TestFormat, Resources.Resource.eBlast));
             MailMessage message = new MailMessage(frm, to);
-            message.Subject = eblast.blSubject;
+            message.Subject = emodel.eBlast.blSubject;
             message.BodyEncoding = Encoding.UTF8;
             message.IsBodyHtml = true;
             string cname = "testemail";
@@ -59,7 +59,7 @@ namespace SmartBusinessWeb.Controllers.Customer
             //url = new MvcHtmlString(url).ToString();
             string img = "<img src='" + url + "' width='1' height='1'>";
             //img = new MvcHtmlString(img).ToHtmlString();
-            string mailbody = eblast.blContent;
+            string mailbody = emodel.eBlast.blContent;
             message.Body = mailbody.Replace("##NAME##", "testemail").Replace("##IMG##", img).Replace("##EMAIL##", testemail);
             //message.Body = HttpUtility.HtmlDecode(message.Body);
             message.BodyEncoding = Encoding.UTF8;
@@ -160,10 +160,11 @@ namespace SmartBusinessWeb.Controllers.Customer
 
             int blastId = Id;
             eBlastEditModel emodel = new eBlastEditModel();
-            eBlastModel eblast = emodel.GeteBlastById(Id);
-            eblast.blSendTime = DateTime.Now;
+            emodel.Get(Id);
+            var eBlast = emodel.eBlast;
+            eBlast.blSendTime = DateTime.Now;
 
-            List<PPWLib.Models.CRM.Customer.CustomerModel> contacts = eBlastEditModel.GetContactsByBlastId(blastId);
+            List<PPWLib.Models.CRM.Customer.CustomerModel> contacts = eBlastEditModel.GetCustomersByBlastId(blastId);
 
             int okcount = 0;
             int ngcount = 0;
@@ -186,7 +187,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                     var phone = string.IsNullOrEmpty(customer.cusPhone) ? "NA" : customer.cusPhone;
                     MailAddress to = new MailAddress(email, cname);
                     MailMessage message = new MailMessage(frm, to);
-                    message.Subject = eblast.blSubject;
+                    message.Subject = eBlast.blSubject;
                     message.BodyEncoding = Encoding.UTF8;
                     message.IsBodyHtml = true;
 
@@ -195,7 +196,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                     //url = HttpUtility.UrlEncode(url);
                     string img = $"<img src=\"{url}\" width=\"1\" height=\"1\">";
                     //string mailbody = System.IO.File.ReadAllText(filename);                                    
-                    message.Body = eblast.blContent.Replace("##NAME##", cname).Replace("##IMG##", img).Replace("##CUSCODE##", customer.cusCode);
+                    message.Body = eBlast.blContent.Replace("##NAME##", cname).Replace("##IMG##", img).Replace("##CUSCODE##", customer.cusCode);
                     cusmessages.Add(
                         new eBlastCustomerModel
                         {
@@ -220,7 +221,7 @@ namespace SmartBusinessWeb.Controllers.Customer
 
                         sentemaillist.Add(cusmessage.cusEmail);
                         cname = "";
-                        Thread.Sleep(TimeSpan.FromSeconds((int)eblast.blPause));
+                        Thread.Sleep(TimeSpan.FromSeconds((int)eBlast.blPause));
                     }
                     catch (Exception)
                     {
@@ -229,11 +230,11 @@ namespace SmartBusinessWeb.Controllers.Customer
                 }
             }
 
-            eblast.blSendExpected = contacts.Count;
-            eblast.blSentActual = okcount;
-            eblast.blFinishTime = DateTime.Now;
-            eblast.blSentList = string.Join(",", sentemaillist);
-            eBlastEditModel.AddLog(eblast);
+            eBlast.blSendExpected = contacts.Count;
+            eBlast.blSentActual = okcount;
+            eBlast.blFinishTime = DateTime.Now;
+            eBlast.blSentList = string.Join(",", sentemaillist);
+            eBlastEditModel.AddLog(eBlast);
 
             Session["eBlastId"] = blastId;
             msg = Resources.Resource.eBlastDone;
@@ -245,7 +246,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         public ActionResult Index(int PageNo = 1, int SortCol = 2, string SortOrder = "desc", string Keyword = "", string strfrmdate = "", string strtodate = "")
         {
             ViewBag.ParentPage = "promotion";
-            ViewBag.PageName = "eblast";
+            ViewBag.PageName = "eBlast";
             eBlastEditModel model = new eBlastEditModel{
                 CurrentSortOrder = SortOrder,
                 SortCol = SortCol,
@@ -265,7 +266,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         [HttpGet]
         public ActionResult Create()
         {
-            ViewBag.ParentPage = "eblast";
+            ViewBag.ParentPage = "eBlast";
             ViewBag.PageName = "add";
             eBlastEditModel model = new eBlastEditModel();
             return View("Edit", model);
@@ -288,10 +289,10 @@ namespace SmartBusinessWeb.Controllers.Customer
         [HttpGet]
         public ActionResult Edit(int Id)
         {
-            ViewBag.ParentPage = "eblast";
+            ViewBag.ParentPage = "eBlast";
             ViewBag.PageName = "edit";
             eBlastEditModel model = new eBlastEditModel();
-            model.eBlast = eBlastEditModel.Get(Id);
+            model.eBlast = eBlastEditModel.GetEblastById(Id);
             return View(model);
         }
 
@@ -323,8 +324,9 @@ namespace SmartBusinessWeb.Controllers.Customer
         [HttpGet]
         public ActionResult Detail(int Id)
         {
-            eBlastModel model = eBlastEditModel.Get(Id);
-            return Json(model, JsonRequestBehavior.AllowGet);
+            eBlastEditModel model = new eBlastEditModel();
+            model.Get(Id);           
+            return Json(model.eBlast, JsonRequestBehavior.AllowGet);
         }
     }
 }

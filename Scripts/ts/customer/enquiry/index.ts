@@ -292,10 +292,7 @@ function enqTemplate(data: IEnquiry[]): string {
 		}
 
 		let trcls = converted ? "disabled" : "";
-
-		/*if (x.Id == "KxnihjS3rbNSPgqnSRJwasVn4SE5Nq7evbojjlhOaLCUNCw0t6Bp8AYRSydEUMe0TiVnq74giuMEf0PrVEBHeHWk2NGj7StDgC0ef88m1U6DmKlSYliGBNKCBjlTpJYG09XT0kBM5OFABJxhbnALjc1J") */
-		//let statuscls = (x.FollowUpStatus)&&x.FollowUpStatus!=="need"&&? x.FollowUpStatus!.concat("statusbg"):"";
-		// string statuscls = string.Concat(customer.FollowUpStatus, "statusbg");
+		
 		html += `<tr class="enquiry ${trcls} ${x.statuscls}" role="button" data-Id="${Id}">`;
 
 		if (isassignor) {
@@ -308,7 +305,7 @@ function enqTemplate(data: IEnquiry[]): string {
 		html += `<td style="width:100px; max-width:100px;">${(x.enReceivedDateTime) ?? formatDateTime(new Date(x.receivedDateTime))}</td>
                                     <td style="width:120px;max-width:120px;">${x.subject}</td>
                                     <td style="width:120px;max-width:120px;">${from}</td>
-                                    <td style="width:120px;max-width:120px;">${x.email}</td>
+                                    <td style="width:120px;max-width:120px;">${x.emailDisplay}</td>
                                     <td style="width:100px;max-width:100px;">${x.phone}</td>
                                     <td style="width:120px;max-width:120px;">${x.company}</td>
                                     <td style="width:100px;max-width:100px;">${x.contact}</td>`;

@@ -6,3 +6,34 @@
 	padding: 0 .75rem !important;
 	height: calc(1.5rem + 2px) !important;
 }
+#tblSales thead th:nth-child(1), #tblSales tbody td:nth-child(1) {
+	width: 50px;
+	max-width: 50px;
+}
+#tblSales thead th.code, #tblSales tbody td.code, #tblSales thead th.namedesc, #tblSales tbody td.namedesc {
+	width: 150px !important;
+	min-width: 150px !important;
+}
+#tblSales thead th.unit, #tblSales tbody td.unit {
+	width: 100px !important;
+	min-width: 100px !important;
+}
+#tblSales thead th.selllocation, #tblSales tbody td.selllocation {
+	width: 100px !important;
+	min-width: 100px !important;
+}
+
+#tblSales thead th.selljob, #tblSales tbody td.selljob {
+	width: 120px !important;
+	min-width: 120px !important;
+}
+
+#tblSales thead th.no, #tblSales tbody td.no{
+	width: 120px !important;
+	min-width: 120px !important;
+}
+
+#tblSales thead th.io, #tblSales tbody td.io, #tblSales thead th.iv, #tblSales tbody td.iv {
+	width: 100px !important;
+	min-width: 100px !important;
+}
