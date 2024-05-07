@@ -3,7 +3,7 @@ priceeditable = false; //item price in deposit should not be editable
 salesType = SalesType.deposit;
 
 function submitRemaining() {
-	if (Deposit.Change > 0) {
+	if (Deposit.rtpChange > 0) {
 		$("#changeModal").dialog("close");
 	}
 	Deposit.rtsRmks = <string>$("#txtNotes").val();

@@ -1294,7 +1294,7 @@ function OnSuccess(response) {
 			if (forsales || forpurchase || forwholesales || forpreorder || forIA || forEditReserve) {
 				$(".itemcode").off("change");
 				if (forEditReserve) populateReserveRow();
-				else populateItemRow();
+				else populateSalesRow();
 				$(".itemcode").on("change", handleItemCodeChange);
 			}
 			else {
@@ -2093,7 +2093,7 @@ function openChangeModal() {
 			break;
 	}
 
-	$("#changeamt").text(formatmoney(Sales.Change));
+	$("#changeamt").text(formatmoney(Sales.rtpChange));
 }
 
 const getTotalPayments = (): number => {
@@ -2253,17 +2253,17 @@ function resetPay(partial: boolean = false) {
 				break;
 			case SalesType.refund:
 				Refund.MonthlyPay = 0;
-				Refund.Change = 0;
+				Refund.rtpChange = 0;
 				Refund.Deposit = 0;
-				Refund.Roundings = 0;
+				Refund.rtpRoundings = 0;
 				break;
 			default:
 			case SalesType.deposit:
 			case SalesType.retail:
 				Sales.MonthlyPay = 0;
-				Sales.Change = 0;
+				Sales.rtpChange = 0;
 				Sales.Deposit = 0;
-				Sales.Roundings = 0;
+				Sales.rtpRoundings = 0;
 				break;
 		}
 	}
@@ -2541,12 +2541,12 @@ function confirmPay() {
 		} else {
 			//console.log("usecoupon:" + usecoupon + ";_couponamt:" + _couponamt);
 			if (!usecoupon) {
-				Sales.Change = _totalpay - _totalamt;
+				Sales.rtpChange = _totalpay - _totalamt;
 				//console.log('ichange:' + ichange + ';ready to open changemodal...');
 				openChangeModal();
 			} else {
 				if (_couponamt < _totalamt) {
-					Sales.Change = _totalpay - _totalamt;
+					Sales.rtpChange = _totalpay - _totalamt;
 					//console.log('ichange:' + ichange + ';ready to open changemodal...');
 					openChangeModal();
 				}
@@ -2554,7 +2554,7 @@ function confirmPay() {
 					resetPay(true);
 					if (forsales || forReservePaidOut)
 						submitSales();
-					if (forsimplesales) submitSimpleSales();
+					if (forsimplesales) SubmitSimpleSales();
 					//        break;
 					//}
 				}
@@ -2563,7 +2563,7 @@ function confirmPay() {
 	} else if (_totalpay == _totalamt) {
 		switch (salesType) {
 			case SalesType.simplesales:
-				submitSimpleSales();
+				SubmitSimpleSales();
 				break;
 			case SalesType.deposit:
 				submitRemaining();
@@ -2572,7 +2572,7 @@ function confirmPay() {
 				submitRefund();
 				break;
 			case SalesType.simplesales:
-				submitSimpleSales();
+				SubmitSimpleSales();
 				break;
 			default:
 			case SalesType.preorder:
@@ -6176,8 +6176,8 @@ interface ISales extends ISalesBase {
 	inclusiveTaxRate: number;
 	totalAmount: number;
 	remainamt: number;
-	Change: number;
-	Roundings: number;
+	rtpChange: number;
+	rtpRoundings: number;
 	totalpay: number;
 	rtsCode: string;
 	rtsRmks: string;
@@ -8666,7 +8666,7 @@ $(document).on("click", ".proItem", function (e) {
 function toggleItemCodeChange(proId: number | null = 0) {
 	$(".itemcode").off("change");
 	if (forEditReserve) populateReserveRow();
-	else populateItemRow(proId);
+	else populateSalesRow(proId);
 	$(".itemcode").on("change", handleItemCodeChange);
 }
 
@@ -8743,7 +8743,7 @@ function GetSetSelectedIAL(): IIAL {
 	return IAL;
 
 }
-function populateItemRow(proId: number | null = 0, triggerChange: boolean = true) {
+function populateSalesRow(proId: number | null = 0, triggerChange: boolean = true) {
 	//console.log("here");
 	//console.log("selectedItemCode#popu:" + selectedItemCode);
 	if (!selectedItemCode) return false;
@@ -9027,13 +9027,7 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 		$vt.removeClass("datepicker");
 		//console.log("itemoptions:", itemOptions);
 		let vtdisabled = "";
-		if (itemOptions.WillExpire) {
-			//vtdisabled =
-			//	!itemOptions.ChkBatch && !itemOptions.ChkSN
-			//		? "disabled"
-			//		: itemOptions.ChkBatch || itemOptions.ChkSN
-			//			? "disabled"
-			//			: "";
+		if (itemOptions.WillExpire) {			
 			vtdisabled = (itemOptions.ChkBatch || itemOptions.ChkSN)
 				? "disabled"
 				: "";
@@ -9061,7 +9055,7 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 					vtcls = "itemoptionmissing";
 				}
 			}
-
+			//console.log("vtdisabled:" + vtdisabled + ";vtcls:" + vtcls);
 			vtcls += ` ${pointercls}`;
 		}
 		else {
@@ -9074,10 +9068,10 @@ function populateItemRow(proId: number | null = 0, triggerChange: boolean = true
 				$vt.addClass(nonitemoptionscls);
 		}
 
-		if (vtdisabled !== "") $vt.datepicker("disable");
+		//console.log(`(vtdisabled !== ""):`, (vtdisabled !== ""));
+		$vt.prop("disabled", (vtdisabled !== ""));
 
 		if (readonly !== "") $vt.prop("readonly", true);
-
 
 		$vt.addClass(vtcls).prop("title", vtmsg);
 	}
@@ -10486,26 +10480,17 @@ function _removeSN(_sn: string) {
 	$("#txtSerialNo").trigger("focus");
 }
 
-function setIvMark() {
-	let $tr = $(`#${gTblId} tbody tr`);
-	let ivcls = ".vari";
-	let idx = forwholesales ? 9 : 8;
-	$tr
-		.eq(currentY)
-		.find("td")
-		.eq(idx)
+function setIvMark() {	
+	let ivcls = ".vari";	
+	$tr		
 		.find(ivcls)
 		.removeClass("focus")
 		.val("...");
 }
 function setBatchMark() {
 	//console.log("batchidx:", batchidx);//ok
-	let $tr = $(`#${gTblId} tbody tr`);
 	let batcls = forpurchase ? ".pobatch" : ".batch";
 	$tr
-		.eq(currentY)
-		.find("td")
-		.eq(batchidx)
 		.find(batcls)
 		.removeClass("focus")
 		.val("...");
@@ -10513,21 +10498,15 @@ function setBatchMark() {
 
 function setExpiryDateMark() {
 	//console.log("here");
-	let $tr = $(`#${gTblId} tbody tr`);
+	/*let $tr = $(`#${gTblId} tbody tr`);*/
 	if (itemOptions && (itemOptions.ChkBatch || itemOptions.ChkSN))
-		$tr
-			.eq(currentY)
-			.find("td")
-			.eq(vtidx)
+		$tr				
 			.find(".validthru")
 			.removeClass("focus validthru datepicker pointer")
 			.prop("readonly", true)
 			.val("...");
 	else
 		$tr
-			.eq(currentY)
-			.find("td")
-			.eq(vtidx)
 			.find(".validthru")
 			.removeClass("focus datepicker")
 			.prop("readonly", true)
@@ -10786,7 +10765,7 @@ function resetRow() {
 					.eq(1)
 					.find(".itemcode")
 					.val(selectedItemCode);
-				populateItemRow(x.Item.singleProId ?? 0);
+				populateSalesRow(x.Item.singleProId ?? 0);
 			});
 			selectedItemCode = "";
 			selectedSalesLn = {} as ISalesLn;
@@ -10807,7 +10786,7 @@ function resetRow() {
 					.eq(1)
 					.find(".itemcode")
 					.val(selectedItemCode);
-				populateItemRow(x.Item.singleProId ?? 0);
+				populateSalesRow(x.Item.singleProId ?? 0);
 			});
 			selectedItemCode = "";
 			selectedPreSalesLn = {} as IPreSalesLn;
@@ -10828,7 +10807,7 @@ function resetRow() {
 					.eq(1)
 					.find(".itemcode")
 					.val(selectedItemCode);
-				populateItemRow(x.Item.singleProId ?? 0);
+				populateSalesRow(x.Item.singleProId ?? 0);
 			});
 			selectedItemCode = "";
 			selectedWholesalesLn = {} as IWholeSalesLn;
@@ -10849,7 +10828,7 @@ function resetRow() {
 					.eq(1)
 					.find(".itemcode")
 					.val(selectedItemCode);
-				populateItemRow(x.singleProId ?? 0);
+				populateSalesRow(x.singleProId ?? 0);
 			});
 			selectedItemCode = "";
 			selectedPurchaseItem = {} as IPurchaseItem;
@@ -11152,9 +11131,9 @@ function _updaterow($target: JQuery, _amtplustax: number) {
 	}
 	//return;
 	if ((forsales && !reviewmode) || forReservePaidOut) {//not for salesorderlist here
-		updateSales();
+		UpdateSales();
 	}
-	if (forpreorder) updatePreSales();
+	if (forpreorder) UpdatePreSales();
 
 	if (forwholesales) {
 		//console.log("WholeSalesLns#_updaterow:", WholeSalesLns);
@@ -11614,7 +11593,8 @@ function OnGetStocksOK(response) {
 	togglePaging(type, model.Items.length > 0);
 }
 function handleItemDesc(itemnamedesc: string): string {
-	let length = lang == 2 ? 40 : 20;
+	//let length = lang == 2 ? 40 : 20;
+	let length = 40;
 	if (itemnamedesc.length > length) {
 		itemnamedesc = itemnamedesc.substring(0, length);
 		itemnamedesc = itemnamedesc.concat("...");
@@ -13662,13 +13642,11 @@ function confirmVtQty() {
 	//$("#totalvtdelqty").data("totalvtdelqty", lnqty).val(lnqty);
 
 	let $qty = $(`#${gTblId} tbody tr`)
-		.eq(currentY)
-		.find("td")
-		.eq(4)
+		.eq(currentY)	
 		.find(".qty");
 
 	const qty: number = Number($qty.val());
-
+	console.log("lnqty:" + lnqty + ";qty:" + qty);
 	if (lnqty > qty) {
 		//console.log("here");
 		$.fancyConfirm({
@@ -14777,7 +14755,7 @@ function initSales(): ISales {
 		rtsUID: 0,
 		rtsSalesLoc: $("#drpLocation").val()?.toString(),
 		rtsDvc: $("#drpDevice").val()?.toString(),
-		rtsCode: $(".NextSalesInvoice").first().val() as string,
+		rtsCode: $("#rtsCode").val() as string,
 		rtsRefCode: "",
 		rtsType: "",
 		rtsStatus: "",
@@ -14814,8 +14792,8 @@ function initSales(): ISales {
 		rtsParentUID: 0,
 		rtsExRate: 1,
 		rtsCurrency: "HKD",
-		Roundings: 0,
-		Change: 0,
+		rtpRoundings: 0,
+		rtpChange: 0,
 		MonthlyPay: 0,
 		Deposit: 0,
 		deliveryAddressId: 0,
@@ -14834,7 +14812,7 @@ function initSimpleSales(): ISales {
 		rtsUID: 0,
 		rtsSalesLoc: $("#drpLocation").val()?.toString(),
 		rtsDvc: $("#drpDevice").val()?.toString(),
-		rtsCode: $("#salescode").val()?.toString(),
+		rtsCode: $("#rtsCode").val(),
 		rtsRefCode: "",
 		rtsType: "",
 		rtsStatus: "",
@@ -14871,8 +14849,8 @@ function initSimpleSales(): ISales {
 		rtsParentUID: 0,
 		rtsExRate: 1,
 		rtsCurrency: "HKD",
-		Roundings: 0,
-		Change: 0,
+		rtpRoundings: 0,
+		rtpChange: 0,
 		MonthlyPay: 0,
 		Deposit: 0,
 		deliveryAddressId: 0,
@@ -15193,7 +15171,7 @@ $(document).on("click", "#monthlypay", function () {
 		callback: function (value) {
 			if (value) {
 				Sales.MonthlyPay = 1;
-				submitSimpleSales();
+				SubmitSimpleSales();
 			} else {
 				Sales.MonthlyPay = 0;
 
@@ -15298,12 +15276,12 @@ $(document).on("change", "#txtRoundings", function () {
 	let _roundings = $(this).val();
 	if (_roundings !== "") {
 		//minus current roundings first:
-		itotalamt -= Sales.Roundings;
+		itotalamt -= Sales.rtpRoundings;
 		//add new roundings:
-		Sales.Roundings = parseFloat(<any>$(this).val());
-		itotalamt += Sales.Roundings;
+		Sales.rtpRoundings = parseFloat(<any>$(this).val());
+		itotalamt += Sales.rtpRoundings;
 	} else {
-		itotalamt -= Sales.Roundings;
+		itotalamt -= Sales.rtpRoundings;
 		$(this).val(formatnumber(0));
 	}
 	$("#txtTotal").val(formatnumber(itotalamt));
@@ -17199,7 +17177,7 @@ function validCusForm() {
 function FillInCustomer() {
 	Customer = {} as ICustomer;
 	Customer.cusCustomerID = Number($("#cusCustomerID").val());
-	Customer.cusCode = $("#cusPhone").val() as string; //NOT #cusCode!!!
+	Customer.cusCode = $("#cusCode").val() as string; //NOT #cusPhone!!!
 	Customer.cusName = <string>$("#cusName").val();
 	Customer.cusPhone = <string>$("#cusPhone").val();
 	Customer.cusSaleComment = <string>$salecomment.val();
@@ -17713,7 +17691,7 @@ function disableReverse() {
 let salesln: ISalesLn;
 let checkedcashdrawer: boolean = false;
 
-function updatePreSales() {
+function UpdatePreSales() {
 	//PreSales.rtsServiceChargePc = ServiceChargePC;
 	//PreSales.rtsServiceChargeAmt = ServiceChargeAmt;
 
@@ -17793,7 +17771,7 @@ function updatePreSales() {
 	isPromotion = !isPromotion;
 }
 
-function updateSimpleSales() {
+function UpdateSimpleSales() {
 	//Sales.rtsCusID = Number($("#rtsCusID").val());
 	Sales.authcode = authcode;
 	Sales.rtsCurrency = $("#rtsCurrency").val() as string;
@@ -17810,7 +17788,7 @@ function updateSimpleSales() {
 	});
 }
 
-function updateSales() {
+function UpdateSales() {
 	Sales.rtsServiceChargePc = ServiceChargePC;
 	//Sales.rtsServiceChargeAmt = ServiceChargeAmt;
 	let totalamt = 0;
@@ -18587,20 +18565,20 @@ function respondReview(type) {
 	}
 }
 
-function submitSimpleSales() {
-	updateSimpleSales();
+function SubmitSimpleSales() {
+	UpdateSimpleSales();
 	_submitSimpleSales();
 }
 function submitSales() {
 	if (forsales || forReservePaidOut) {
-		updateSales();
+		UpdateSales();
 		//Sales.Roundings = isNumeric(Sales.Roundings) ? Sales.Roundings : 0;
 		if (validSalesForm()) {
 			_submitSales();
 		}
 	}
 	if (forpreorder) {
-		if (!editmode) updatePreSales();
+		if (!editmode) UpdatePreSales();
 		if (validSalesForm()) {
 			//console.log("here");
 			_submitSales();
@@ -18679,7 +18657,7 @@ function _submitSales() {
 		url = "/POSFunc/ProcessAdvSales";
 		if (forsales) {
 			Sales.rtsCusCode = selectedCus.cusCode;
-			Sales.rtsCode = receiptno ?? $(".NextSalesInvoice").first().val();
+			Sales.rtsCode = receiptno ?? $("#rtsCode").val();
 			Sales.ireviewmode = reviewmode ? 1 : 0;
 			Sales.selectedPosSalesmanCode = selectedPosSalesmanCode;
 		}
@@ -18701,7 +18679,7 @@ function _submitSales() {
 		PreSales.rtsRmks = $("#txtNotes").val() as string;
 		PreSales.rtsInternalRmks = $("#txtInternalNotes").val() as string;
 		PreSales.authcode = authcode;
-		PreSales.salescode = receiptno ?? $(".NextSalesInvoice").first().val();
+		PreSales.salescode = receiptno ?? $("#rtsCode").val();
 		PreSales.rtsCurrency = $("#rtsCurrency").val() as string;
 		PreSales.rtsExRate = exRate;
 		PreSales.rtsSalesLoc = $("#drpLocation").val() as string;
@@ -18714,7 +18692,7 @@ function _submitSales() {
 	let data = forpreorder
 		? { PreSales, PreSalesLnList, Payments, DeliveryItems }
 		: { Sales, SalesLnList, Payments, DeliveryItems };
-	//console.log("data:", data);
+	console.log("data:", data);
 	//return false;
 	openWaitingModal();
 	$.ajax({
@@ -18861,7 +18839,7 @@ function handleRecurOrderList(this: any) {
 				selectedItem.itmSellUnit = e.Item.itmSellUnit;
 				selectedItem.NameDesc = e.Item.NameDesc;
 				selectedWholesalesLn = structuredClone(e);
-				populateItemRow();
+				populateSalesRow();
 				currentY++;
 			});
 		},
@@ -20018,11 +19996,9 @@ function confirmAdvancedSearch() {
 			data: data,
 			success: function (data: ICustomer[] | IeTrack[]) {
 				//console.log("data:", data);
-				IdList = forcustomer
-					? (data as ICustomer[]).map((x) => x.cusCustomerID)
-					: (data as IeTrack[]).map((x) => Number(x.ContactId));
-				//console.log("idlist:", IdList);
-				$(`#${gTblId}`).data("idlist", IdList.join(","));
+				if (forcustomer) CodeList = (data as ICustomer[]).map((x) => x.cusCode);
+				else IdList = (data as IeTrack[]).map((x) => Number(x.ContactId));
+
 				$("#pagingblk").hide();
 				if (data.length > 0) {
 					let html = "";
@@ -20031,7 +20007,7 @@ function confirmAdvancedSearch() {
 							const email = formatEmail(customer.cusEmail ?? "", customer.cusEmail) ?? "N/A";
 							const cname = customer.cusName;
 							let disabled = (customer.cusCheckout) ? "disabled" : "";
-							html += `<tr class="${customer.statuscls} pointer" data-id="${customer.cusCustomerID}">
+							html += `<tr class="${customer.statuscls} pointer" data-id="${customer.cusCustomerID}" data-code="${customer.cusCode}">
                     <td class="text-center">${cname}</td>
                     <td class="text-center">${customer.cusContact}</td>
                     <td class="text-center">${email}</td>
@@ -20652,12 +20628,12 @@ function formatEmail(email: string, username: string | null = ""): string {
 
 
 $(document).on("dblclick", ".validthru.pointer", function () {
-	//console.log("here");
-	$target = $(this).parent("td").parent("tr");
+	getRowCurrentY.call(this);
+	//console.log("here");	
 	selectedItemCode = (
-		$target.find("td:eq(1)").find(".itemcode").val() as string
+		$tr.find(".itemcode").val() as string
 	).trim();
-	currentY = Number($target.data("idx"));
+	
 	seq = currentY + 1;
 	const hasFocusCls = $(this).hasClass("focus");
 	itemOptions = DicItemOptions[selectedItemCode];
@@ -20846,11 +20822,11 @@ ${vtInfoList}
 	}
 });
 $(document).on("dblclick", ".batch", function () {
-	$target = $(this).parent("td").parent("tr");
+	getRowCurrentY.call(this);
 	selectedItemCode = (
-		$target.find("td:eq(1)").find(".itemcode").val() as string
+		$tr.find(".itemcode").val() as string
 	).trim();
-	currentY = Number($target.data("idx"));
+	
 	seq = currentY + 1;
 	const hasFocusCls = $(this).hasClass("focus");
 	itemOptions = DicItemOptions[selectedItemCode];
@@ -21633,14 +21609,11 @@ ${ivInfoList}
 		});
 }
 $(document).on("dblclick", ".vari.pointer", function () {
-	const hasFocusCls: boolean = $(this).hasClass("focus");
-	$tr = $(this).parent("td").parent("tr");
-	let $td = $tr.find("td");
-	selectedItemCode = $td.eq(1).find(".itemcode").val() as string;
-	let idx = forwholesales ? 5 : 4;
-	let qtycls = forwholesales ? ".delqty" : ".qty";
-	const maxqty = Number($td.eq(idx).find(qtycls).val());
-	currentY = Number($tr.data("idx"));
+	getRowCurrentY.call(this);
+	const hasFocusCls: boolean = $(this).hasClass("focus");	
+	selectedItemCode = $tr.find("input.itemcode").val() as string;	
+	let qtycls = forwholesales ? "input.delqty" : "input.qty";
+	const maxqty = Number($tr.find(qtycls).val());	
 	seq = currentY + 1;
 	itemOptions = DicItemOptions[selectedItemCode];
 

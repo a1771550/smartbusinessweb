@@ -212,7 +212,9 @@ function handleCustomerGroupSaved() {
 	let groupname: string = $groupname.val();
 	if (groupname) {
 		closeCustomerGroupModal();
-		CustomerGroup = { cgName: groupname, cusCodes: CodeList.join() } as ICustomerGroup;
+		CustomerGroup = { cgName: groupname, cusCodes: CodeList.join(), Remark: customerGroupModal.find("#txtRemark").val() } as ICustomerGroup;
+		console.log("CustomerGroup:",CustomerGroup)
+		return;
 
 		$.ajax({
 			//contentType: 'application/json; charset=utf-8',

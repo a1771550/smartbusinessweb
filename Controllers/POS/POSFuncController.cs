@@ -258,7 +258,7 @@ namespace SmartBusinessWeb.Controllers
             int isepay = Refund.rtsEpay ? 1 : 0;
             string CusCode = Refund.rtsCusCode;
             string Notes = Refund.rtsRmks;
-            int Change = (int)Refund.Change;
+            int Change = (int)Refund.rtpChange;
             string salescode = Refund.rtsCode;
             string devicecode = Refund.rtsDvc;
             string epaytype = Refund.epaytype;

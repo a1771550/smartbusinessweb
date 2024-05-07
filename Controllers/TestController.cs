@@ -1245,7 +1245,7 @@ btest3
                                      rtsUpLdLog = s.rtsUpLdLog,
                                      rtsFinalTotal = s.rtsFinalTotal,
                                      payId = p.rtpUID,
-                                     Roundings = p.rtpRoundings,
+                                     rtpRoundings = p.rtpRoundings,
                                      rtsMonthBase = s.rtsMonthBase
                                      //Change = (bool)p.rtpIsChange ? p.rtpPayAmt : null
                                  }

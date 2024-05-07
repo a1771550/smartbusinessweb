@@ -66,7 +66,8 @@ $(document).on("click", "#btnEdit", function () {
 			data: _formdata,
 			success: function () {
 				closeWaitingModal();
-				window.location.href = `/Customer/${$infoblk.data("referrer")}`;
+				let referrer = $infoblk.data("referrer") == "" ? "Index" : $infoblk.data("referrer");
+				window.location.href = `/Customer/${referrer}`;
 			},
 			dataType: "json",
 		});

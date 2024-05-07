@@ -74,7 +74,7 @@ $(function () {
 			selectedItemCode = e.rtlItemCode;
 			//console.log("selectedItemCode:" + selectedItemCode);
 			selectedPreSalesLn = structuredClone(e);
-			populateItemRow(null,false);
+			populateSalesRow(null,false);
 		});
 
 		//remove empty row:

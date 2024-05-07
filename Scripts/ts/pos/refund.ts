@@ -1188,7 +1188,7 @@ function fillInRowData(refundsalesln: IRefundSales) {
 }
 
 function submitRefund() {
-	if (Refund.Change > 0) {
+	if (Refund.rtpChange > 0) {
 		$("#changeModal").dialog("close");
 	}
 	Refund.rtsRmks = <string>$("#txtNotes").val();

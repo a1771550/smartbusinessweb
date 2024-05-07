@@ -1,12 +1,8 @@
 ﻿@model PPWLib.Models.SalesModel
 @{
 	Layout = null;
-	//Response.Write(Model == null);
-	//return;
 	string sitename = Resources.Resource.SiteName;
 	bool issales = (bool)TempData["issales"];
-
-	//Response.Write(Model == null);return;
 
 	bool monthbase = Model.rtsMonthBase;
 	string salesrefundcode = Model.rtsCode;
@@ -57,7 +53,7 @@
         int _issales = issales ? 1 : 0;
 
     }
-    <div id="infoblk" class="hide" data-monthlypaytxt="@Resources.Resource.MonthlyPay" data-issales="@_issales" data-salesrefundcode="@salesrefundcode" data-salesrefunddate="@salesrefunddate" data-remark="@Model.rtsRmks" data-monthlypay="@monthbase" data-roundings="@Model.Roundings" data-change="@Model.Change" data-totalamt="@Model.rtsFinalTotal" data-roundingstxt="@Resources.Resource.Roundings" data-changetxt="@Resources.Resource.SalesChange" data-url="@HttpUtility.HtmlEncode(Model.url)"></div>
+    <div id="infoblk" class="hide" data-monthlypaytxt="@Resources.Resource.MonthlyPay" data-issales="@_issales" data-salesrefundcode="@salesrefundcode" data-salesrefunddate="@salesrefunddate" data-remark="@Model.rtsRmks" data-monthlypay="@monthbase" data-roundings="@Model.rtpRoundings" data-change="@Model.rtpChange" data-totalamt="@Model.rtsFinalTotal" data-roundingstxt="@Resources.Resource.Roundings" data-changetxt="@Resources.Resource.SalesChange" data-url="@HttpUtility.HtmlEncode(Model.url)"></div>
 
     <script src="~/Scripts/ts/js/pos/print.js?v=@CommonHelper.GetVersionRandomNo()"></script>
 </body>

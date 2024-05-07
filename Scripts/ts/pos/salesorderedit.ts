@@ -72,7 +72,7 @@ $(function () {
 			selectedItemCode = e.itmCode;
 			//console.log("selectedItemCode:" + selectedItemCode);
 			selectedSimpleSalesLn = structuredClone(e);			
-			populateItemRow();		
+			populateSalesRow();		
 		});
 
 		//remove empty row:

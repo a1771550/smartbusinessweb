@@ -154,15 +154,11 @@ i.fa-plus, i.fa-minus {
 	height: calc(1.5rem + 2px) !important;
 }
 
-.form-control:not(.flex):not(.larger):not(.ivdelqty) {
+.form-control:not(.flex):not(.larger):not(.ivdelqty):not(.vtdelqty):not(#totalvtdelqty) {
 	font-size: 80% !important;
-}
-
-	.form-control.flex:not(.itemcode):not(.itemdesc):not(.location):not(.job) {
+} .form-control.flex:not(.itemcode):not(.itemdesc):not(.location):not(.job) {
 		font-size: .9rem !important;
-	}
-
-	.form-control.itemcode,.form-control.itemdesc, .form-control.location, .form-control.job{
+	} .form-control.itemcode,.form-control.itemdesc, .form-control.location, .form-control.job{
 		font-size:.75rem!important;
 	}
 

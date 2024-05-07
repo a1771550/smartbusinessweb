@@ -3,10 +3,10 @@
 }
 <div id="customerGroupModal">
 	<form>
-		<div class="form-group">
-			<label>@groupname</label>
-			<input type="text" id="txtGroupName" class="form-control" />
+		<div class="form-group">			
+			<input type="text" id="txtGroupName" class="form-control mx-1" placeholder="@groupname" />
 			<span class="text-danger"></span>
+			<textarea id="txtRemark" class="form-control mx-1" placeholder="@Resources.Resource.Remark"></textarea>
 		</div>
 	</form>
 
@@ -15,6 +15,7 @@
 			<thead class="gray-header">
 				<tr>
 					<th class="text-center">@groupname</th>
+					<th class="text-center">@Resources.Resource.Remark</th>
 					<th class="text-center">@Resources.Resource.Customer</th>
 					<th class="text-center">@Resources.Resource.CreateTime</th>
 					<th class="text-center"></th>

@@ -12,14 +12,14 @@ $(function () {
     var salesmanId = Number(getParameterByName("salesmanId") ?? 0);
     var adminId = Number(getParameterByName("adminId") ?? 0);
     var receiptno = getParameterByName("receiptno");
-
+    const password = "123456Pos"; //123456Pos
     if ((salesmanId == 0 && adminId == 0) || receiptno == null) {
         if (isLocal) {
             //$("#Email").val("utservice_sb1@united.com.hk");
             //$("#Email").val("sunnyy@united.com.hk");
            $("#Email").val("utservice@united.com.hk");
            // $("#Email").val("enquiry@united.com.hk");     
-            $("#Password").val("Pos123456");
+            $("#Password").val(password);
            $("#btnLogin").trigger("click");
         } else {
             $("#Email").trigger("focus");
@@ -33,7 +33,7 @@ $(function () {
                 salesmanId === 6 ? "sunnyy@united.com.hk" : "utservice@united.com.hk"
             );
         }
-        if (isLocal) $("#Password").val("Pos123456");
+        if (isLocal) $("#Password").val(password);
 
         $("#btnLogin").trigger("focus");
     }

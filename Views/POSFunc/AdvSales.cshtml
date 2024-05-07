@@ -27,6 +27,7 @@
 	@ViewBag.Title
 	<span class="small60 d-inline-block float-right">@Resources.Resource.InvoiceNo <span class="badge badge-dark">@Model.Sales.rtsCode</span></span>
 </h3>
+<input type="hidden" id="rtsCode" value="@Model.Sales.rtsCode" />
 
 @if (showrecur)
 {

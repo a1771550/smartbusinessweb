@@ -20,9 +20,10 @@
 
 @if (Model.CustomerList != null && Model.CustomerList.Count > 0)
 {
+	@Html.AntiForgeryToken()
+
 	using (Html.BeginForm("Index", "Customer", FormMethod.Get, new { @Id = "frmCustomer" }))
 	{
-		@Html.AntiForgeryToken()
 		<div class="form-inline my-4">
 			<div class="form-group">
 				<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Model.Keyword" />
@@ -30,12 +31,12 @@
 				<button id="btnReload" type="button" class="btn btn-warning mx-1">@Resources.Resource.Reload</button>
 				<button id="btnAdvSearch" type="button" class="btn btn-danger mx-1">@Resources.Resource.AdvancedSearch</button>
 				<button id="btnHotList" type="button" class="btn btn-info mx-1">@addtohotlisttxt</button>
-				<button id="btnGroup" type="button" class="btn btn-dark mx-1">@string.Format(Resources.Resource.AddToFormat,Resources.Resource.CustomerGroup)</button>
+				<button id="btnGroup" type="button" class="btn btn-dark mx-1">@string.Format(Resources.Resource.AddToFormat, Resources.Resource.CustomerGroup)</button>
 				<button id="btnBlast" type="button" class="btn btn-primary mx-1">@addtoeblasttxt</button>
 			</div>
 		</div>
 
-		<table id="tblCustomer" class="table table-bordered table-hover table-condensed" data-idlist="@string.Join(",", CusIdList)">
+		<table id="tblCustomer" class="table table-bordered table-hover table-condensed">
 			<thead class="gray-header font-weight-bold">
 				<tr>
 					<th scope="col" class="text-center colheader" data-col="0">@Resources.Resource.Name</th>
@@ -57,7 +58,7 @@
 				{
 					string cname = customer.cusName;
 					var disabled = (customer.cusCheckout != null && (bool)customer.cusCheckout) ? "disabled" : "";
-					<tr class="@customer.statuscls pointer" data-id="@customer.cusCustomerID">
+					<tr class="@customer.statuscls pointer" data-id="@customer.cusCustomerID" data-code="@customer.cusCode">
 						<td class="text-center">@cname</td>
 						<td class="text-center">@customer.cusContact</td>
 						<td class="text-center">@Html.Raw(customer.EmailDisplay)</td>

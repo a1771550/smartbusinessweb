@@ -93,7 +93,7 @@ function getSessionStartDataOk(data) {
     }
 
     Sales = initSales();
-    //console.log("Sales@getsessiondataok:", Sales);
+    console.log("Sales@getsessiondataok:", Sales);
 
 }
 $(document).on("dblclick", ".nopo", function () {
@@ -181,7 +181,7 @@ $(function () {
                 //console.log('defaultcustomer:', defaultcustomer);
                 selectedCus = defaultcustomer;
                 Sales = initSales();
-                /*console.log("Sales@loadpostback:", Sales);*/
+                console.log("Sales@getsessiondataok:", Sales);
                 Sales.rtsCusCode = selectedCus.cusCode;
                 Sales.rtsRefCode = "";
 
