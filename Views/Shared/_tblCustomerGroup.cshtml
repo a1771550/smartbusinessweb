@@ -1,0 +1,45 @@
+﻿@using PagedList.Mvc;
+@{
+	string groupname = string.Format(Resources.Resource.NameFormat, Resources.Resource.Group);
+	PagedList.IPagedList<CustomerGroupModel> PagingGroupList = ViewData["PagingGroupList"] == null ? null : (PagedList.IPagedList<CustomerGroupModel>)ViewData["PagingGroupList"];
+	string headercls = PagingGroupList != null ? "colheader" : "";
+}
+<table id="tblCustomerGroup" class="table table-hover table-bordered table-condensed">
+	<thead class="gray-header">
+		<tr>
+			<th class="@headercls text-center" data-col="0">@groupname</th>
+			<th class="text-center" data-col="">@Resources.Resource.Customer</th>
+			<th class="text-center">@Resources.Resource.Remark</th>
+			<th class="@headercls text-center" data-col="1">@Resources.Resource.CreateTime</th>
+			@if (PagingGroupList != null)
+			{
+				<th class="@headercls text-center" data-col="2">@Resources.Resource.ModifyTime</th>
+			}
+
+			<th class="text-center"></th>
+		</tr>
+	</thead>
+	<tbody>
+		@if (PagingGroupList != null)
+		{
+			foreach (var x in PagingGroupList)
+			{
+				<tr data-id="@x.Id">
+					<td class="text-center" title="@x.cgName">@x.cgName</td>
+					<td class="text-center" title="@x.CustomerNames">@Html.Raw(x.CustomerNames)</td>
+					<td class="text-center" title="@x.Remark">@x.RemarkDisplay</td>
+					<td class="text-center" title="@x.CreateTimeDisplay">@x.CreateTimeDisplay</td>
+					@if (PagingGroupList != null)
+					{
+						<td class="text-center" title="@x.ModifyTimeDisplay">@x.ModifyTimeDisplay</td>
+					}
+
+					<td class="text-center">
+						<a role="button" class="btn btn-info edit" href="/CustomerGroup/Edit/@x.Id" title="@Resources.Resource.Edit">@Resources.Resource.Edit</a>
+						<button type="button" class="btn btn-danger remove" data-id="@x.Id" title="@Resources.Resource.Remove">@Resources.Resource.Remove</button>
+					</td>
+				</tr>
+			}
+		}
+	</tbody>
+</table>

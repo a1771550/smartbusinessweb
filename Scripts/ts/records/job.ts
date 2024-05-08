@@ -86,7 +86,7 @@ $(function () {
     initModals();
     triggerMenu(9, 1);
 
-    pagesize = Number($infoblk.data("pagesize"));
+    PageSize = Number($infoblk.data("pagesize"));
     jobIdList = $infoblk.data("jobidlist") as string[];
 
     let keyword = getParameterByName('Keyword');

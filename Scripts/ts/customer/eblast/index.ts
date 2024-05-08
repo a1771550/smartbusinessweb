@@ -120,7 +120,7 @@ $(function () {
 	gFrmId = "frmBlast";
 	triggerMenu(3, 0);
 
-	pagesize = $infoblk.data("pagesize");
+	PageSize = $infoblk.data("pagesize");
 
 	ConfigSimpleSortingHeaders();
 	

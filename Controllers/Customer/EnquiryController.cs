@@ -180,7 +180,7 @@ namespace SmartBusinessWeb.Controllers.Customer
             ViewBag.ParentPage = "customer";
             ViewBag.PageName = "enquiry";
             EnquiryModel model = new EnquiryModel();
-            return View("Edit", model);
+            return View("Get", model);
         }
 
         [HandleError]

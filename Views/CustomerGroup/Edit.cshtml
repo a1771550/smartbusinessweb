@@ -1,0 +1,45 @@
+﻿@model CustomerGroupEditModel
+
+@{
+	var Group = Model.CustomerGroup;
+	bool edit = Group.Id > 0;
+
+	ViewBag.Title = edit ? string.Format(Resources.Resource.EditFormat, Resources.Resource.Customer) : string.Format(Resources.Resource.AddFormat, Resources.Resource.Customer);
+
+	int rand = CommonHelper.GetVersionRandomNo();
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("Edit", "CustomerGroup", FormMethod.Get, new { @Id = "frmCustomerGroup", @class = "my-2" }))
+{
+	@Html.AntiForgeryToken()
+
+	<input type="hidden" id="cgId" name="Id" value="@Group.Id" />
+	<input type="hidden" id="cusCodes" name="cusCodes" value="@Group.cusCodes"/>
+
+	<div class="form-group">
+		<label for="txtName">@Resources.Resource.Name</label>
+		<input type="text" class="form-control" id="txtName" name="cgName" value="@Group.cgName" />
+		<span class="text-danger font-weight-bold"></span>
+	</div>
+
+	<div class="form-group">
+		<label for="txtRemark">@Resources.Resource.Remark</label>
+		<textarea class="form-control" id="txtRemark" rows="5" cols="70" name="Remark">@Group.Remark</textarea>
+	</div>
+
+	<button type="button" class="btn btn-success" id="btnSave">@Resources.Resource.Save</button>
+}
+
+<div>
+	@Html.ActionLink(Resources.Resource.BackToList, "Index")
+</div>
+
+@Html.Partial("_WaitingModal")
+
+@Html.AntiForgeryToken()
+
+<div id="infoblk"></div>
+
+<script src="~/Scripts/ts/js/customer/group/edit.js?v=@rand"></script>

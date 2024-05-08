@@ -6,12 +6,10 @@
 	var addtoeblasttxt = string.Format(Resources.Resource.AddTo, Resources.Resource.eBlast);
 	var addtohotlisttxt = string.Format(Resources.Resource.AddTo, Resources.Resource.HotList);
 	string selectatleastonecustomertxt = string.Format(Resources.Resource.SelectAtLeastOne, Resources.Resource.Customer);
-	var CusIdList = Model.CusIdList;
-	string idlist = string.Join(",", CusIdList);
-	bool nonabss = Model.NonABSS;
 	string checkall = Model.CheckAll == 1 ? "checked" : "";
 }
 <link href="~/Content/customer/index.css?v=@rand" rel="stylesheet" type="text/css" />
+<link href="~/Content/customer/group/index.css?v=@rand" rel="stylesheet" type="text/css" />
 
 <h2 class="clearfix">
 	@ViewBag.Title
@@ -94,8 +92,11 @@
 		@Html.Partial("_SortOrderColHidden")
 	}
 }
+else
+{
+	@Html.Partial("_NoRecordFound")
+}
 
-@Html.Partial("_NoRecordFound")
 
 @Html.Partial("_CustomerGroupModal")
 
@@ -106,7 +107,7 @@
 @Html.Partial("_AdvancedSearchModal", Model.GlobalAttrList)
 
 @Html.Partial("_WaitingModal")
-<div id="infoblk" data-codelist="@JsonSerializer.Serialize(Model.CodeList)" data-actionhistory="@Resources.Resource.ActionHistory" data-selectatleastonecustomertxt="@selectatleastonecustomertxt" data-pagesize="@Model.ComInfo.PageLength" data-customergrouplist="@JsonSerializer.Serialize(Model.CustomerGroupList)"></div>
+<div id="infoblk" data-codelist="@JsonSerializer.Serialize(Model.CodeList)" data-actionhistory="@Resources.Resource.ActionHistory" data-selectatleastonecustomertxt="@selectatleastonecustomertxt" data-pagesize="@Model.ComInfo.PageLength"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script src="/Scripts/ts/js/customer/index.js?v=@rand"></script>

@@ -15,23 +15,7 @@ namespace SmartBusinessWeb.Controllers.Customer
 {
     [CustomAuthenticationFilter]
     public class CustomerController : BaseController
-    {
-        [HttpGet]
-        public JsonResult GetGroupListAjax(int PageNo=1, string Keyword = null)
-        {
-            CustomerEditModel model = new CustomerEditModel();
-            model.GetGroupList(PageNo, Keyword);
-            return Json(new { model.AjaxPagingCustomerGroupList, PageIndex=PageNo, PageSize=ComInfo.PageLength, RecordCount = model.CustomerGroupList.Count}, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public JsonResult SaveGroup(CustomerGroupModel CustomerGroup)
-        {
-            CustomerEditModel model = new CustomerEditModel();
-            model.SaveGroup(CustomerGroup);
-            return Json(new { List = model.AjaxPagingCustomerGroupList, RecordCount=model.CustomerGroupList.Count });
-        }
+    {   
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -117,9 +101,10 @@ namespace SmartBusinessWeb.Controllers.Customer
                     }
                     using (var context = new PPWDbContext(Session["DBName"].ToString()))
                     {
-                        var cusInfo = context.CustomerInfoes.FirstOrDefault(x=>x.fileName==filename && x.AccountProfileId== apId && x.cusCode == cusCode);
-                        if(cusInfo==null) {
-                            SessUser user = Session["User"] as SessUser;                       
+                        var cusInfo = context.CustomerInfoes.FirstOrDefault(x => x.fileName == filename && x.AccountProfileId == apId && x.cusCode == cusCode);
+                        if (cusInfo == null)
+                        {
+                            SessUser user = Session["User"] as SessUser;
                             context.CustomerInfoes.Add(new CustomerInfo
                             {
                                 cusCode = cusCode,
@@ -130,9 +115,9 @@ namespace SmartBusinessWeb.Controllers.Customer
                                 AccountProfileId = apId
                             });
                             context.SaveChanges();
-                        }                       
-                        FileList = context.CustomerInfoes.Where(x=>x.cusCode== cusCode && x.AccountProfileId==apId && x.type=="file").Select(x=>x.fileName).Distinct().ToList();
-                    }                             
+                        }
+                        FileList = context.CustomerInfoes.Where(x => x.cusCode == cusCode && x.AccountProfileId == apId && x.type == "file").Select(x => x.fileName).Distinct().ToList();
+                    }
                     return Json(new { msg = Resources.Resource.UploadOkMsg, FileList });
                 }
                 catch (Exception ex)
@@ -204,9 +189,9 @@ namespace SmartBusinessWeb.Controllers.Customer
 
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
-        public ActionResult Index(int PageNo = 1, int PageSize=10, int SortCol = 4, string SortOrder = "desc", string Keyword = "", int CheckAll = 0, string cusCodes = null)
+        public ActionResult Index(int PageNo = 1, int PageSize = 10, int SortCol = 4, string SortOrder = "desc", string Keyword = "", int CheckAll = 0, string cusCodes = null)
         {
-            ViewBag.ParentPage = ViewBag.PageName = "customer";
+            ViewBag.ParentPage = "customer";
             if (string.IsNullOrEmpty(Keyword))
                 Keyword = null;
             CustomerEditModel model = new CustomerEditModel
@@ -214,7 +199,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                 CurrentSortOrder = SortOrder,
                 SortCol = SortCol,
                 Keyword = Keyword,
-                CheckAll = CheckAll,        
+                CheckAll = CheckAll,
                 SortOrder = SortOrder == "desc" ? "asc" : "desc",
                 PageSize = PageSize,
             };
@@ -224,7 +209,7 @@ namespace SmartBusinessWeb.Controllers.Customer
             if (cusCodes != null)
             {
                 var cusCodeList = cusCodes.Split(',');
-                model.CustomerList = model.CustomerList.Where(x => x.AccountProfileId==apId && cusCodeList.Contains(x.cusCode)).ToList();
+                model.CustomerList = model.CustomerList.Where(x => x.AccountProfileId == apId && cusCodeList.Contains(x.cusCode)).ToList();
             }
 
             model.PagingCustomerList = model.CustomerList.ToPagedList(PageNo, PageSize);

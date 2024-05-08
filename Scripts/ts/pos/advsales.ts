@@ -51,7 +51,7 @@ function getSessionStartDataOk(data) {
     /* itemlist = data.items;*/
     selectedCus = defaultcustomer = data.defaultcustomer;
     //console.log('selectedCus#getsessionok:', selectedCus);
-    pagesize = data.pagelength;
+    PageSize = data.pagelength;
     //console.log('data.inclusivetax:' + data.inclusivetax);
     inclusivetax = data.inclusivetax;
     inclusivetaxrate = data.inclusivetaxrate;
@@ -70,7 +70,7 @@ function getSessionStartDataOk(data) {
         sessionstartdata.push(receipt);
         sessionstartdata.push(DicPayTypes);
         sessionstartdata.push(defaultcustomer);
-        sessionstartdata.push(pagesize);
+        sessionstartdata.push(PageSize);
         sessionstartdata.push(enableTax);
         sessionstartdata.push(inclusivetax);
         sessionstartdata.push(inclusivetaxrate);
@@ -168,7 +168,7 @@ $(function () {
                 companyinfo = sessionstartdata[1];
                 receipt = sessionstartdata[2];
                 DicPayTypes = sessionstartdata[3];
-                pagesize = sessionstartdata[5];
+                PageSize = sessionstartdata[5];
                 enableTax = sessionstartdata[6];
                 inclusivetax = sessionstartdata[7];
                 inclusivetaxrate = sessionstartdata[8];

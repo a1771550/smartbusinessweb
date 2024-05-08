@@ -353,6 +353,7 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\ApiController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\Customer\CustomerGroupController.cs" />
     <Compile Include="Controllers\Customer\HotListController.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Controllers\Item\InventoryAdjustmentController.cs" />
@@ -462,6 +463,7 @@
     <Content Include="Content\callhistoryedit.css" />
     <Content Include="Content\customer\edit.css" />
     <Content Include="Content\customer\followup.css" />
+    <Content Include="Content\customer\group\index.css" />
     <Content Include="Content\customer\index.css" />
     <Content Include="Content\datatables.css" />
     <Content Include="Content\datatables.min.css" />
@@ -3061,6 +3063,8 @@
     <Content Include="Scripts\ts\js\customer\enquiry\index.js" />
     <Content Include="Scripts\ts\js\customer\graphsettings\edit.js" />
     <Content Include="Scripts\ts\js\customer\graphsettings\index.js" />
+    <Content Include="Scripts\ts\js\customer\group\edit.js" />
+    <Content Include="Scripts\ts\js\customer\group\index.js" />
     <Content Include="Scripts\ts\js\customer\hotlist\edit.js" />
     <Content Include="Scripts\ts\js\customer\hotlist\index.js" />
     <Content Include="Scripts\ts\js\customer\index.js" />
@@ -4706,6 +4710,11 @@
     <Content Include="Views\Shared\_DrpLatestRecordCount.cshtml" />
     <Content Include="Views\Shared\_SortOrderColHidden.cshtml" />
     <Content Include="Views\Shared\_CustomerGroupModal.cshtml" />
+    <Content Include="Views\CustomerGroup\Index.cshtml" />
+    <Content Include="Views\Shared\_tblCustomerGroup.cshtml" />
+    <Content Include="Views\CustomerGroup\Edit.cshtml" />
+    <Content Include="Scripts\ts\js\customer\group\edit.js.map" />
+    <Content Include="Scripts\ts\js\customer\group\index.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -5091,6 +5100,8 @@
     <TypeScriptCompile Include="Scripts\ts\customer\attributes\common.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\attributes\edit.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\attributes\globalattribute.ts" />
+    <TypeScriptCompile Include="Scripts\ts\customer\group\edit.ts" />
+    <TypeScriptCompile Include="Scripts\ts\customer\group\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\hotlist\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\hotlist\edit.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\inventoryadjustment\edit.ts" />

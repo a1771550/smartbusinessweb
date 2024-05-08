@@ -432,7 +432,7 @@ namespace SmartBusinessWeb.Controllers
             if (string.IsNullOrEmpty(refundcode)) refundcode = ModelHelper.GetNewRefundCode(devicecode, device, context);
 
             TaxModel taxModel = ModelHelper.GetTaxInfo(context);
-            var taxableitems = ModelHelper.GetTaxableItemList(context, CheckoutPortal);
+            var taxableitems = ModelHelper.GetTaxableItemList(context);
 
             var refsaleslns = context.RtlSalesLns.Where(x => x.rtlCode.ToLower() == salescode.ToLower() && x.AccountProfileId == apId).ToList();
 

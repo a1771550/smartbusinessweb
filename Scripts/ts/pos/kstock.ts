@@ -18,7 +18,7 @@ $(document).on('change', '#drpWarehouse', function () {
 
 function GetKStocks(pageIndex: number) {
     //must not use json here!!!
-    let data = '{pageIndex:' + pageIndex + ',pagesize:' + $infoblk.data('pagesize') + ',orderBy:"' + _orderby + '",direction:"' + _direction + '",stockId:' + warehouseId + ',keyword:"' + keyword + '"}';
+    let data = '{PageNo:' + pageIndex + ',pagesize:' + $infoblk.data('pagesize') + ',orderBy:"' + _orderby + '",direction:"' + _direction + '",stockId:' + warehouseId + ',keyword:"' + keyword + '"}';
     console.log('data:', data);
     /*return false;*/
     openWaitingModal();
@@ -69,8 +69,8 @@ function OnGetKStocksOK(response) {
     stocklist.length == 0 ? $('#norecord').show() : $('#norecord').hide();
 };
 $(document).on("click", ".StockPager .page", function () {
-    pageIndex = parseInt(<string>$(this).attr('page'));
-    GetKStocks(pageIndex);
+    PageNo = parseInt(<string>$(this).attr('page'));
+    GetKStocks(PageNo);
 });
 
 $(document).on('click', '#btnReload', function () {

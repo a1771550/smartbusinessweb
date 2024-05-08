@@ -24,11 +24,11 @@ $(document).on("change", ".delqty", function () {
 });
 
 function GetRecurOrders(pageIndex) {
-	let data = `{cusCode:"${selectedCus.cusCode}",pageIndex:${pageIndex},sortName:"${sortName}",sortDirection:"${sortDirection}",sortCol:"${sortCol}"}`;
+	let data = `{cusCode:"${selectedCus.cusCode}",PageNo:${pageIndex},sortName:"${sortName}",sortDirection:"${sortDirection}",sortCol:"${sortCol}"}`;
 	if (typeof keyword !== "undefined" && keyword !== "") {
-		data = `{cusCode:"${selectedCus.cusCode}",pageIndex:${pageIndex},sortName:"${sortName}",sortDirection:"${sortDirection}",sortCol:"${sortCol}",keyword:"${keyword}"}`;
+		data = `{cusCode:"${selectedCus.cusCode}",PageNo:${pageIndex},sortName:"${sortName}",sortDirection:"${sortDirection}",sortCol:"${sortCol}",keyword:"${keyword}"}`;
 	} else {
-		data = `{cusCode:"${selectedCus.cusCode}",pageIndex:${pageIndex},sortName:"${sortName}",sortDirection:"${sortDirection}",sortCol:"${sortCol}",keyword:""}`;
+		data = `{cusCode:"${selectedCus.cusCode}",PageNo:${pageIndex},sortName:"${sortName}",sortDirection:"${sortDirection}",sortCol:"${sortCol}",keyword:""}`;
 	}
 	// console.log("data:", data);
 	/*return false;*/
@@ -92,15 +92,15 @@ function OnGetRecurOrderSuccess(response) {
 	}
 }
 $(document).on("click", ".RecurPager .page", function () {
-	pageIndex = Number($(this).attr("page"));
-	GetRecurOrders(pageIndex);
+	PageNo = Number($(this).attr("page"));
+	GetRecurOrders(PageNo);
 });
 $(document).on("click", "#tblRecurOrder th", function () {
 	sortName = $(this).data("category");
 	sortCol = Number($(this).data("col"));
 	//sortDirection = sortDirection.toUpperCase() == "ASC" ? "DESC" : "ASC";
-	pageIndex = 1;
-	GetRecurOrders(pageIndex);
+	PageNo = 1;
+	GetRecurOrders(PageNo);
 });
 
 function fillRecurOrderList(model: IRecurOrder[]) {

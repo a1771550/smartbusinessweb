@@ -1,27 +1,26 @@
-﻿@{ 
+﻿@{
 	string groupname = string.Format(Resources.Resource.NameFormat, Resources.Resource.Group);
 }
 <div id="customerGroupModal">
 	<form>
-		<div class="form-group">			
-			<input type="text" id="txtGroupName" class="form-control mx-1" placeholder="@groupname" />
-			<span class="text-danger"></span>
-			<textarea id="txtRemark" class="form-control mx-1" placeholder="@Resources.Resource.Remark"></textarea>
+		<div class="row">
+			<div class="col-12 col-sm-4">
+				<div class="form-group">
+					<input type="text" id="txtGroupName" class="form-control mx-1" placeholder="@groupname" />
+					<span class="text-danger"></span>
+				</div>
+			</div>
+			<div class="col-12 col-sm-8">
+				<div class="form-group">
+					<textarea id="txtRemark" class="form-control mx-1 flex" placeholder="@Resources.Resource.Remark" cols="70"></textarea>
+				</div>
+			</div>
 		</div>
+		<input type="hidden" id="cgId" />
 	</form>
 
 	<div class="overflow-auto">
-		<table id="tblCustomerGroup" class="table table-hover table-bordered table-condensed">
-			<thead class="gray-header">
-				<tr>
-					<th class="text-center">@groupname</th>
-					<th class="text-center">@Resources.Resource.Remark</th>
-					<th class="text-center">@Resources.Resource.Customer</th>
-					<th class="text-center">@Resources.Resource.CreateTime</th>
-					<th class="text-center"></th>
-				</tr>
-			</thead>
-		</table>
+		@Html.Partial("_tblCustomerGroup")
 		<div class="Pager my-1"></div>
 		<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 	</div>

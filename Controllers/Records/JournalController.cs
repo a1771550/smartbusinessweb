@@ -31,7 +31,7 @@ namespace SmartBusinessWeb.Controllers.Records
 		[HandleError]
 		[CustomAuthorize("reports", "boss", "admin", "superadmin")]
 		[HttpGet]
-		public ActionResult Edit(string Id = "")
+		public ActionResult Edit(string Id = null)
 		{
 			//ViewBag.ParentPage = "reports";
 			ViewBag.PageName = "journal";

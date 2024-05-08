@@ -336,7 +336,7 @@ function fillInEnqTable() {
 function initInfoBlkVariables4Enquiry() {
 	assigntosales = $infoblk.data("assignsalestxt");
 	isassignor = $infoblk.data("isassignor") === "True";
-	pagesize = Number($infoblk.data("pagesize"));
+	PageSize = Number($infoblk.data("pagesize"));
 	enqIdList = $infoblk.data("enqidlist") as string[];
 	currentcontactemaillist = ($infoblk.data('currentcontactemaillist').toString()).split(',');
 	currentcontactphonelist = ($infoblk.data('currentcontactphonelist').toString()).split(',');

@@ -2982,7 +2982,7 @@ namespace SmartBusinessWeb.Controllers
 
         public void GetCustomerAddressList(PPWDbContext context, ref CustomerModel customer)
         {
-            var _addresslist = context.GetCustomerAddressList2(AccountProfileId, customer.cusCode).ToList();
+            var _addresslist = context.GetCustomerAddressList3(AccountProfileId, customer.cusCode).ToList();
             if (_addresslist != null && _addresslist.Count > 0)
             {
                 customer.AddressList = new List<AddressView>();

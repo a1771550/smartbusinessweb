@@ -218,7 +218,7 @@ new {apId=@"\d+"}
 			routes.MapRoute(
 		  null,
 		  "Contact",
-		  new { controller = "SimpleContact", action = "Edit" }
+		  new { controller = "SimpleContact", action = "Get" }
 	  );
 
 			routes.MapRoute(

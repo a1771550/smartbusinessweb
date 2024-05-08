@@ -74,7 +74,7 @@ function fillInAttdTable() {
 }
 
 function initInfoBlkVariables4Attendence() {
-	pagesize = Number($infoblk.data("pagesize"));
+	PageSize = Number($infoblk.data("pagesize"));
 	attdIdList = $infoblk.data("attdidlist") as string[];
 }
 

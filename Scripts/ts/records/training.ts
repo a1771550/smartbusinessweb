@@ -82,7 +82,7 @@ $(function () {
 	initModals();
 	triggerMenu(9, 2);
 
-	pagesize = Number($infoblk.data("pagesize"));
+	PageSize = Number($infoblk.data("pagesize"));
 	trainingIdList = $infoblk.data("trainingidlist") as string[];
 
 	let keyword = getParameterByName('Keyword');

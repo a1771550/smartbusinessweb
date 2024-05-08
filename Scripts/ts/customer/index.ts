@@ -79,7 +79,13 @@ $(document).on("click", "#btnBlast", function (e) {
 	}
 });
 
+function GetEblastList() {
+	
+}
+
 function handleEblastCustomers() {
+	GetEblastList();
+
 	openWaitingModal();
 	$.ajax({
 		type: "POST",
@@ -190,57 +196,100 @@ $(document).on("click", "#btnGroup", function (e) {
 	}
 
 });
+
+
+
 function populateCustomerGroupList() {
-	if (CustomerGroupList) {
+	console.log("CustomerGroupList#popu:", CustomerGroupList);
+	if (CustomerGroupList.length > 0) {
 		let html = "";
 		CustomerGroupList.forEach((x) => {
-			html += "<tr>";
-			html += `<td class="text-center"><input type="text" class="form-control" value="${x.cgName}"></td>`;
-			html += `<td class="text-center"><input type="text" class="form-control" value="${x.CustomerName}" readonly>${x.CustomerName}</td>`;
+			html += `<tr data-id="${x.Id}">`;
+			html += `<td class="text-center"><input type="text" class="form-control text-center name" readonly value="${x.cgName}"></td>`;
+			html += `<td class="text-center">${x.CustomerNames}</td>`;
+			html += `<td class="text-center"><input type="text" class="form-control remark" title="${x.Remark}" value="${x.RemarkDisplay}" readonly></td>`;
 			html += `<td class="text-center">${x.CreateTimeDisplay}</td>`;
+
 			html += `<td class="text-center">
-				<button type="button" class="btn btn-warning edit" data-id="${x.Id}">${edittxt}</button>
-				<button type="button" class="btn btn-danger delete" data-id="${x.Id}">${removetxt}</button>
+				<button type="button" class="btn btn-info edit" onclick="editCustomerGroup(${x.Id})">${edittxt}</button>
+				<button type="button" class="btn btn-danger remove" data-id="${x.Id}" onclick="handleCustomerGroupRemove(${x.Id})">${removetxt}</button>
 			</td>`;
 			html += "</tr>";
 		});
-		customerGroupModal.find("#tblCustomerGroup tbody").append(html);
+		customerGroupModal.find("#tblCustomerGroup tbody").empty().append(html);
+
+		customerGroupModal.find(".Pager").ASPSnippets_Pager({
+			ActiveCssClass: "current",
+			PagerCssClass: "pager",
+			PageIndex: PageNo,
+			PageSize: PageSize,
+			RecordCount: RecordCount,
+		});
 	}
 }
 function handleCustomerGroupSaved() {
 	let $groupname = customerGroupModal.find("#txtGroupName");
 	let groupname: string = $groupname.val();
 	if (groupname) {
-		closeCustomerGroupModal();
-		CustomerGroup = { cgName: groupname, cusCodes: CodeList.join(), Remark: customerGroupModal.find("#txtRemark").val() } as ICustomerGroup;
-		console.log("CustomerGroup:",CustomerGroup)
-		return;
-
+		if (!PageNo) PageNo = 1;
+		CustomerGroup = { Id:0, cgName: groupname, cusCodes: CodeList.join(), Remark: customerGroupModal.find("#txtRemark").val() } as ICustomerGroup;
+		//console.log("CustomerGroup:",CustomerGroup)
+		//return;
 		$.ajax({
-			//contentType: 'application/json; charset=utf-8',
 			type: "POST",
-			url: "/Customer/SaveGroup",
-			data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), CustomerGroup },
+			url: "/CustomerGroup/Save",
+			data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), CustomerGroup, PageNo },
 			success: function (data) {
 				if (data) {
+					resetCustomerGroupModal();
 					CustomerGroupList = data.List.slice(0);
-					populateCustomerGroupList();
-					customerGroupModal.find(".Pager").ASPSnippets_Pager({
-						ActiveCssClass: "current",
-						PagerCssClass: "pager",
-						PageIndex: 1,
-						PageSize: pagesize,
-						RecordCount: data.RecordCount,
-					});
+					RecordCount = data.RecordCount;
+					populateCustomerGroupList();				
 				}
-					
 			},
 			dataType: "json"
 		});
 	} else {
 		$groupname.trigger("focus").next(".text-danger").text(groupnamerequiredtxt);
 	}
+}
 
+function GetCustomerGroupList(pageNo: number) {
+	PageNo = pageNo;
+	let data = { PageNo };
+	openWaitingModal();
+	$.ajax({
+		url: "/CustomerGroup/GetListAjax",
+		type: "GET",
+		data: data,
+		contentType: "application/json; charset=utf-8",
+		dataType: "json",
+		success: OnGetCustomerGroupListSuccess,
+		error: onAjaxFailure,
+	});
+}
+
+function OnGetCustomerGroupListSuccess(response) {
+	closeWaitingModal();
+
+	if (response) {
+		CustomerGroupList = response.List.slice(0);
+		
+		RecordCount = response.RecordCount;
+		populateCustomerGroupList();
+
+		customerGroupModal.find(".Pager").ASPSnippets_Pager({
+			ActiveCssClass: "current",
+			PagerCssClass: "pager",
+			PageIndex: PageNo,
+			PageSize: PageSize,
+			RecordCount: RecordCount,
+		});
+	} else {
+		customerGroupModal.find(".Pager").hide();
+	}
+
+	keyword = "";
 }
 $(function () {
 	forcustomer = true;
@@ -250,7 +299,7 @@ $(function () {
 	triggerMenu(1, 0);
 	initModals();
 
-	pagesize = $infoblk.data("pagesize");
+	PageSize = $infoblk.data("pagesize");
 
 	var checkall = getParameterByName("CheckAll");
 	if (checkall !== null) {
@@ -275,9 +324,5 @@ $(function () {
 		});
 	}
 
-	$("#norecord").addClass("hide"); //hide() methods not work!!!
-
 	ConfigSimpleSortingHeaders();
-
-	CustomerGroupList = $infoblk.data("customergrouplist");
 });

@@ -70,7 +70,8 @@ let DicCodeLocId: { [Key: string]: { [Key: string]: string } };
 let DicItemReservedQty: { [Key: string]: number };
 
 interface ICustomerGroup {
-    CustomerName: any;
+    RemarkDisplay: any;
+    CustomerNames: any;
 	Id: number;
 	cgName: string;
 	cusCodes: string;
@@ -771,7 +772,9 @@ let ispostback = false;
 let sortName = "";
 let sortDirection = "DESC";
 let sortCol: number = 0;
-let pageIndex = 1;
+let PageNo = 1;
+let PageSize: number = 0;
+let RecordCount: number = 0;
 //let deposit = 0;
 let inclusivetax = false,
 	inclusivetaxrate = 0;
@@ -1087,7 +1090,7 @@ function GetTrainings(pageIndex) {
 						ActiveCssClass: "current",
 						PagerCssClass: "pager",
 						PageIndex: pageIndex,
-						PageSize: pagesize,
+						PageSize: PageSize,
 						RecordCount: totalRecord,
 					});
 					$("#totalcount").text(totalRecord);
@@ -1128,7 +1131,7 @@ function GetJobs(pageIndex) {
 						ActiveCssClass: "current",
 						PagerCssClass: "pager",
 						PageIndex: pageIndex,
-						PageSize: pagesize,
+						PageSize: PageSize,
 						RecordCount: totalRecord,
 					});
 					$("#totalcount").text(totalRecord);
@@ -1169,7 +1172,7 @@ function GetAttendances(pageIndex) {
 						ActiveCssClass: "current",
 						PagerCssClass: "pager",
 						PageIndex: pageIndex,
-						PageSize: pagesize,
+						PageSize: PageSize,
 						RecordCount: totalRecord,
 					});
 					$("#totalcount").text(totalRecord);
@@ -1216,7 +1219,7 @@ function GetEnquiries(pageIndex) {
 						ActiveCssClass: "current",
 						PagerCssClass: "pager",
 						PageIndex: pageIndex,
-						PageSize: pagesize,
+						PageSize: PageSize,
 						RecordCount: totalRecord,
 					});
 					$("#totalcount").text(totalRecord);
@@ -1503,28 +1506,28 @@ function writeItems(itemList: IItem[]) {
 $(document).on("click", "#tblmails th", function () {
 	sortName = $(this).data("category");
 	sortCol = Number($(this).data("col"));
-	pageIndex = 1;
-	if (forenquiry) GetEnquiries(pageIndex);
-	if (forattendance) GetAttendances(pageIndex);
-	if (forjob) GetJobs(pageIndex);
-	if (fortraining) GetTrainings(pageIndex);
+	PageNo = 1;
+	if (forenquiry) GetEnquiries(PageNo);
+	if (forattendance) GetAttendances(PageNo);
+	if (forjob) GetJobs(PageNo);
+	if (fortraining) GetTrainings(PageNo);
 });
 $(document).on("click", ".Pager .page", function () {
-	pageIndex = Number($(this).attr("page"));
-	if (forenquiry) GetEnquiries(pageIndex);
-	else if (forattendance) GetAttendances(pageIndex);
-	else if (forjob) GetJobs(pageIndex);
-	else if (fortraining) GetTrainings(pageIndex);
-	else if (forstock) GetStocks(pageIndex);
-	else if (forcustomer) GetCustomerGroupList(pageIndex);
-	else GetItems(pageIndex);
+	PageNo = Number($(this).attr("page"));
+	if (forenquiry) GetEnquiries(PageNo);
+	else if (forattendance) GetAttendances(PageNo);
+	else if (forjob) GetJobs(PageNo);
+	else if (fortraining) GetTrainings(PageNo);
+	else if (forstock) GetStocks(PageNo);
+	else if (forcustomer) GetCustomerGroupList(PageNo);
+	else GetItems(PageNo);
 });
 $(document).on("click", "#tblItem th a", function () {
 	sortName = $(this).data("category");
 	sortDirection = sortDirection == "ASC" ? "DESC" : "ASC";
 	/* console.log('sortname:' + sortName + ';sortdir:' + sortDirection);*/
-	pageIndex = 1;
-	GetItems(pageIndex);
+	PageNo = 1;
+	GetItems(PageNo);
 });
 function genProUrList(urlist: string, item: IItem) {
 	urlist = "<ul class='nostylelist'>";
@@ -1539,44 +1542,6 @@ function genProUrList(urlist: string, item: IItem) {
 	urlist += "</ul>";
 	return urlist;
 }
-function GetCustomerGroupList(pageIndex: number = 1) {
-	let data = { PageNo: pageIndex, Keyword: keyword };
-
-	openWaitingModal();
-	$.ajax({
-		url: "/Customer/GetGroupListAjax",
-		type: "GET",
-		data: data,
-		contentType: "application/json; charset=utf-8",
-		dataType: "json",
-		success: OnGetCustomerGroupListSuccess,
-		error: onAjaxFailure,
-	});
-}
-function OnGetCustomerGroupListSuccess(response) {
-	closeWaitingModal();
-
-	if (response) {
-		CustomerGroupList = response.AjaxPagingCustomerGroupList.slice(0);
-
-		populateCustomerGroupList();
-
-		openCustomerGroupModal();
-
-		customerGroupModal.find(".Pager").ASPSnippets_Pager({
-			ActiveCssClass: "current",
-			PagerCssClass: "pager",
-			PageIndex: response.PageIndex,
-			PageSize: response.PageSize,
-			RecordCount: response.RecordCount,
-		});
-	} else {
-		customerGroupModal.find(".Pager").hide();
-	}
-
-	keyword = "";
-}
-
 function genPromotionHtml(ItemPromotions: IItemPromotion[]) {
 	let html = ``;
 	$.each(ItemPromotions, function (i, e) {
@@ -1658,12 +1623,12 @@ function updateRows() {
 	}
 }
 function GetCustomers4Sales(pageIndex, mode = "") {
-	let data = `{pageIndex:${pageIndex},mode:'${mode}'`;
+	let data = `{PageNo:${pageIndex},mode:'${mode}'`;
 	if (typeof keyword !== "undefined" && keyword !== "") {
-		data = `{pageIndex:${pageIndex},mode:'${mode}',keyword:'${keyword}'}`;
+		data = `{PageNo:${pageIndex},mode:'${mode}',keyword:'${keyword}'}`;
 		// console.log("data#0:" + data);
 	} else {
-		data = `{pageIndex:${pageIndex},mode:'${mode}',keyword:''}`;
+		data = `{PageNo:${pageIndex},mode:'${mode}',keyword:''}`;
 	}
 	// console.log("data:", data);
 	/*return false;*/
@@ -1834,15 +1799,15 @@ function OnSearchCustomersSuccess(response) {
 }
 
 $(document).on("click", ".CusPager .page", function () {
-	pageIndex = Number($(this).attr("page"));
-	GetCustomers4Sales(pageIndex);
+	PageNo = Number($(this).attr("page"));
+	GetCustomers4Sales(PageNo);
 });
 $(document).on("click", "#tblCus th a", function () {
 	sortName = $(this).data("category");
 	sortDirection = sortDirection == "ASC" ? "DESC" : "ASC";
 	/* console.log('sortname:' + sortName + ';sortdir:' + sortDirection);*/
-	pageIndex = 1;
-	GetCustomers4Sales(pageIndex);
+	PageNo = 1;
+	GetCustomers4Sales(PageNo);
 });
 
 function openItemModal(msg = "") {
@@ -3468,19 +3433,29 @@ function closeReserveModal() {
 	reserveModal.dialog("close");
 }
 
-function openCustomerGroupModal() {
-	customerGroupModal.dialog("open");
-	customerGroupModal.find(".text-danger").text("");
-	populateCustomerGroupList();
-	customerGroupModal.find("#txtGroupName").trigger("focus");
+function resetCustomerGroupModal() {
+	customerGroupModal.find(".text-danger").text("");	
+	customerGroupModal.find("#txtRemark").val("");
+	customerGroupModal.find("#txtGroupName").val("").trigger("focus");
 }
-function closeCustomerGroupModal() {
-	customerGroupModal.dialog("close");
+function openCustomerGroupModal() {
+	resetCustomerGroupModal();
+	customerGroupModal.dialog("open");
+	
+	GetCustomerGroupList(1);
+}
+function closeCustomerGroupModal(fade: boolean = false) {
+	if (fade) {
+		customerGroupModal.dialog({ close: "fade" });
+	} else {
+		customerGroupModal.dialog("close");
+	}
+	
 }
 function initModals() {
 	if ($("#customerGroupModal").length) {
 		customerGroupModal = $("#customerGroupModal").dialog({
-			width: 600,
+			width: 960,
 			title: customergrouptxt,
 			autoOpen: false,
 			modal: true,
@@ -6638,6 +6613,12 @@ interface IAddress {
 	streetLine4: string;
 }
 
+interface IEblast {
+	Id: number;
+	blSubject: string;
+	blContent: string;
+}
+let EblastList: IEblast[] = [];
 function convertStringToDate(
 	strdate: string,
 	format: string = "yyyy-mm-dd",
@@ -6935,7 +6916,7 @@ function handleCheckAll(checked: boolean) {
 	if (forcustomer) {
 		CodeList = [];
 		if (checked) {
-			if ($(`#${gTblId} tbody tr`).length != pagesize) {
+			if ($(`#${gTblId} tbody tr`).length != PageSize) {
 				$(".chk").each(function (i, e) {
 					CodeList.push($(e).data("code"));
 				});
@@ -6949,7 +6930,7 @@ function handleCheckAll(checked: boolean) {
 	} else {
 		IdList = [];
 		if (checked) {
-			if ($(`#${gTblId} tbody tr`).length != pagesize) {
+			if ($(`#${gTblId} tbody tr`).length != PageSize) {
 				$(".chk").each(function (i, e) {
 					IdList.push($(e).data("id"));
 				});
@@ -17962,7 +17943,6 @@ interface IRecurOrder {
 let selectedRecurCode: string = "";
 let frmdate: any;
 let todate: any;
-let pagesize: number = 0;
 let resource: string;
 
 function handleMGTmails(pageIndex: number = 1, latestRecordCount: number = 300) {
@@ -18359,6 +18339,7 @@ let forattendance: boolean = false;
 let forjob: boolean = false;
 let fortraining: boolean = false;
 let forcustomer: boolean = false;
+let forcustomergroup: boolean = false;
 let forCreateReserve: boolean = false;
 let forEditReserve: boolean = false;
 let forhotlist: boolean = false;
@@ -22253,7 +22234,7 @@ function handlePaymentTypeSaved() {
 }
 
 function GetHotLists(pageIndex) {
-	let data = `pageIndex=${pageIndex}`;
+	let data = `PageNo=${pageIndex}`;
 	data += `&keyword=${keyword}`;
 	console.log("data:", data);
 	/*return false;*/
@@ -22303,15 +22284,15 @@ function OnGetHotListSuccess(response) {
 	}
 }
 $(document).on("click", "#hotlistModal .Pager .page", function () {
-	pageIndex = parseInt(<string>$(this).attr("page"));
-	GetHotLists(pageIndex);
+	PageNo = parseInt(<string>$(this).attr("page"));
+	GetHotLists(PageNo);
 });
 $(document).on("click", "#tblHotList th a", function () {
 	sortName = $(this).data("category");
 	sortDirection = sortDirection == "ASC" ? "DESC" : "ASC";
 	/* console.log('sortname:' + sortName + ';sortdir:' + sortDirection);*/
-	pageIndex = 1;
-	GetHotLists(pageIndex);
+	PageNo = 1;
+	GetHotLists(PageNo);
 });
 let eBlastHotListIds: { [Key: number]: number } = {};
 
@@ -22635,4 +22616,54 @@ function initDatePickers(startDay = StartDayEnum.Today, format = '') {
 		function (start, end, label) {
 			maxDate = new Date(end).toDateString();
 		});
+}
+
+function editCustomerGroup(Id: number) {
+	let idx = -1;
+	if (CustomerGroupList.length > 0) {
+		idx = CustomerGroupList.findIndex(x => x.Id == Id);
+		if (idx >= 0) CustomerGroup = structuredClone(CustomerGroupList[idx]);
+		//console.log("CustomerGroup:", CustomerGroup);
+		if (CustomerGroup) {
+			customerGroupModal.find("#txtGroupName").val(CustomerGroup.cgName);
+			customerGroupModal.find("#txtRemark").val(CustomerGroup.Remark);
+		}
+	}
+}
+
+function handleCustomerGroupRemove(Id: number, frmGroupIndex: boolean = false) {
+	if (!PageNo) PageNo = 1;
+	$.fancyConfirm({
+		title: "",
+		message: confirmremovetxt,
+		shownobtn: true,
+		okButton: oktxt,
+		noButton: notxt,
+		callback: function (value) {
+			if (value) {
+				openWaitingModal();
+				$.ajax({
+					type: "POST",
+					url: "/CustomerGroup/Remove",
+					data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), Id, PageNo },
+					success: function (data) {
+						closeWaitingModal();
+						if (data) {
+							if (frmGroupIndex) window.location.href = "/CustomerGroup/Index";
+							else {
+								resetCustomerGroupModal();
+								CustomerGroupList = data.List.slice(0);
+								RecordCount = data.RecordCount;
+								populateCustomerGroupList();
+							}
+						}
+					},
+					dataType: "json"
+				});
+			} else {
+				if(!frmGroupIndex)
+					customerGroupModal.find("#txtGroupName").trigger("focus");
+			}
+		}
+	});
 }

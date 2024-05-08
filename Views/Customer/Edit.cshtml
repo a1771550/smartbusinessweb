@@ -1,8 +1,7 @@
 ﻿@model CustomerEditModel
 @{
 	string plsentertxt = string.Format(Resources.Resource.PlsEnterFormat, string.Format(string.Format(Resources.Resource.ValueFormat, string.Format(Resources.Resource.AllFormat, string.Format(Resources.Resource.DropDownFormat, Resources.Resource.CustomAttribute)))));
-
-	bool enablecrm = Model.enableCRM;
+	
 	var Customer = Model.Customer;
 	bool edit = Customer.cusCustomerID > 0;
 
