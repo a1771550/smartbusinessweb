@@ -7,16 +7,23 @@
 <table id="tblCustomerGroup" class="table table-hover table-bordered table-condensed">
 	<thead class="gray-header">
 		<tr>
-			<th class="@headercls text-center" data-col="0">@groupname</th>
-			<th class="text-center" data-col="">@Resources.Resource.Customer</th>
-			<th class="text-center">@Resources.Resource.Remark</th>
+			<th class="@headercls text-center name" data-col="0">@groupname</th>
+			<th class="text-center customer" data-col="">@Resources.Resource.Customer</th>
+			<th class="text-center remark">@Resources.Resource.Remark</th>
 			<th class="@headercls text-center" data-col="1">@Resources.Resource.CreateTime</th>
 			@if (PagingGroupList != null)
 			{
 				<th class="@headercls text-center" data-col="2">@Resources.Resource.ModifyTime</th>
 			}
 
-			<th class="text-center"></th>
+			<th class="text-center action"></th>
+			@if (PagingGroupList == null)
+			{
+				<th class="text-center checkbox">
+					<input type="checkbox" class="group" id="chkall" />
+				</th>
+			}
+
 		</tr>
 	</thead>
 	<tbody>
@@ -34,10 +41,16 @@
 						<td class="text-center" title="@x.ModifyTimeDisplay">@x.ModifyTimeDisplay</td>
 					}
 
-					<td class="text-center">
+					<td class="text-center action">
 						<a role="button" class="btn btn-info edit" href="/CustomerGroup/Edit/@x.Id" title="@Resources.Resource.Edit">@Resources.Resource.Edit</a>
 						<button type="button" class="btn btn-danger remove" data-id="@x.Id" title="@Resources.Resource.Remove">@Resources.Resource.Remove</button>
 					</td>
+					@if (PagingGroupList == null)
+					{
+						<td class="text-center checkbox">
+							<input type="checkbox" class="chk group" data-id="@x.Id" value="@x.Id" />
+						</td>
+					}
 				</tr>
 			}
 		}

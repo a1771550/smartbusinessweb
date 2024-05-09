@@ -18,12 +18,12 @@ namespace SmartBusinessWeb.Controllers.Customer
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public JsonResult AddCustomers(List<string> cusCodes, int hotlistId)
+        public JsonResult AddCustomers(List<string> cusCodes, List<int> IdList)
         {
             var msg = string.Format(Resources.Resource.AddTo, Resources.Resource.HotList);
             msg = string.Concat(msg, "<br>", string.Format(Resources.Resource.WillFormat, Resources.Resource.Email, String.Format(Resources.Resource.SentToFormat, string.Format(Resources.Resource.InChargeFormat, Resources.Resource.SalesPerson))));
             HotListEditModel model = new HotListEditModel();
-            model.AddCustomers(cusCodes, hotlistId);
+            model.AddCustomers(cusCodes, IdList);
             return Json(msg);
         }
 

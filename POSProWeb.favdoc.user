@@ -396,6 +396,11 @@
           <path>Views\Reserve\Index.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Reserve\Index.cshtml</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>_tblCustomerGroup.cshtml</name>
+          <path>Views\Shared\_tblCustomerGroup.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Shared\_tblCustomerGroup.cshtml</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

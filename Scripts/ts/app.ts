@@ -70,8 +70,8 @@ let DicCodeLocId: { [Key: string]: { [Key: string]: string } };
 let DicItemReservedQty: { [Key: string]: number };
 
 interface ICustomerGroup {
-    RemarkDisplay: any;
-    CustomerNames: any;
+	RemarkDisplay: any;
+	CustomerNames: any;
 	Id: number;
 	cgName: string;
 	cusCodes: string;
@@ -3142,29 +3142,26 @@ function closeViewFileModal() {
 	viewFileModal.dialog("close");
 }
 
-function openDropDownModal(ele: JQuery<any>) {
+function openDropDownModal(ele: any = null) {
 	dropdownModal.dialog("open");
-	//console.log('ele:', ele);
-	let _attrname: string = $(ele).data("attrname");
-	//console.log('name:' + _attrname);
 
-	dropdownModal.find("#lblattrname").text(_attrname);
-	let options: string = "";
-	let $dropdown: JQuery = dropdownModal.find(".dropdown");
-	$dropdown.data("attrname", _attrname);
-	//let _selecttxt: string = `-- ${selecttxt} --`;
-	//options += `<option value=''>${_selecttxt}</option>`;
-
-	$dropdown.attr("Id", _attrname);
-	let _items: string[] = $(ele).data("attrvalue").split("||");
-	$.each(_items, function (i, e) {
-		options += `<option value="${e}">${e}</option>`;
-	});
-	$dropdown.empty().append(options);
+	if (ele) {
+		let _attrname: string = $(ele).data("attrname");
+		dropdownModal.find("label").text(_attrname);
+		let options: string = "";
+		let $dropdown: JQuery = dropdownModal.find("select");
+		$dropdown.data("attrname", _attrname);
+		$dropdown.attr("Id", _attrname);
+		let _items: string[] = $(ele).data("attrvalue").split("||");
+		$.each(_items, function (i, e) {
+			options += `<option value="${e}">${e}</option>`;
+		});
+		$dropdown.empty().append(options);
+	}
 }
 function closeDropDownModal() {
 	dropdownModal.dialog("close");
-	if (reload) {
+	if (!forcustomer) {
 		window.location.reload();
 	}
 }
@@ -3434,23 +3431,18 @@ function closeReserveModal() {
 }
 
 function resetCustomerGroupModal() {
-	customerGroupModal.find(".text-danger").text("");	
+	customerGroupModal.find(".text-danger").text("");
 	customerGroupModal.find("#txtRemark").val("");
 	customerGroupModal.find("#txtGroupName").val("").trigger("focus");
 }
 function openCustomerGroupModal() {
 	resetCustomerGroupModal();
 	customerGroupModal.dialog("open");
-	
+
 	GetCustomerGroupList(1);
 }
-function closeCustomerGroupModal(fade: boolean = false) {
-	if (fade) {
-		customerGroupModal.dialog({ close: "fade" });
-	} else {
-		customerGroupModal.dialog("close");
-	}
-	
+function closeCustomerGroupModal() {
+	customerGroupModal.dialog("close");
 }
 function initModals() {
 	if ($("#customerGroupModal").length) {
@@ -4570,8 +4562,8 @@ function initModals() {
 
 	if ($("#dropdownModal").length) {
 		dropdownModal = $("#dropdownModal").dialog({
-			width: 600,
-			title: editattribute,
+			width: 400,
+			title: "",
 			autoOpen: false,
 			modal: true,
 			buttons: [
@@ -4579,21 +4571,28 @@ function initModals() {
 					text: oktxt,
 					class: "savebtn",
 					click: function () {
-						let $ele = dropdownModal.find(".dropdown");
-						let _id: string = <string>$ele.attr("id");
-						console.log("_id:" + _id);
-						let _val: string = <string>$ele.val();
-						if (_val !== "") {
-							$target = $("#gattrblk").find(".form-group");
-							$.each($target, function (i, e) {
-								let _target = $(e).find(".form-control");
-								if (_target.data("attrname") == _id) {
-									_target.val(_val);
-									return false;
-								}
-							});
-						}
+						$target = dropdownModal.find("select");
 						closeDropDownModal();
+						if (forcustomer) {
+							if (forhotlist)
+								handleHotListCustomers();
+							else
+								handleEblastCustomers();
+						} else {
+							let _id: string = <string>$target.attr("id");
+							console.log("_id:" + _id);
+							let _val: string = <string>$target.val();
+							if (_val !== "") {
+								$target = $("#gattrblk").find(".form-group");
+								$.each($target, function (i, e) {
+									let _target = $(e).find(".form-control");
+									if (_target.data("attrname") == _id) {
+										_target.val(_val);
+										return false;
+									}
+								});
+							}
+						}
 					},
 				},
 				{
@@ -6834,6 +6833,7 @@ $(".chk").on("input", function (e) {
 	e.stopPropagation();
 });
 $(document).on("change", ".chk", function (e) {
+	forcustomergroup = $(this).hasClass("group");
 	if (forcustomer) {
 		let code: string = $(this).data("code") as string;
 		if ($(this).is(":checked")) {
@@ -6908,7 +6908,7 @@ $(document).on("change", "#chkenqall", function () {
 });
 $(document).on("change", "#chkall", function () {
 	let checked: boolean = $(this).is(":checked");
-	//console.log("checked", checked);
+	forcustomergroup = $(this).hasClass("group");
 	handleChk(checked);
 	handleCheckAll(checked);
 });
@@ -7034,7 +7034,7 @@ interface ICallHistory {
 	ContactName: string | null;
 }
 let HotList: IHotList;
-let HotlLists: Array<IHotList>;
+let HotLists: Array<IHotList>;
 function initHotList(ele: JQuery | null): IHotList {
 	return ele === null
 		? {
@@ -9008,7 +9008,7 @@ function populateSalesRow(proId: number | null = 0, triggerChange: boolean = tru
 		$vt.removeClass("datepicker");
 		//console.log("itemoptions:", itemOptions);
 		let vtdisabled = "";
-		if (itemOptions.WillExpire) {			
+		if (itemOptions.WillExpire) {
 			vtdisabled = (itemOptions.ChkBatch || itemOptions.ChkSN)
 				? "disabled"
 				: "";
@@ -10461,9 +10461,9 @@ function _removeSN(_sn: string) {
 	$("#txtSerialNo").trigger("focus");
 }
 
-function setIvMark() {	
-	let ivcls = ".vari";	
-	$tr		
+function setIvMark() {
+	let ivcls = ".vari";
+	$tr
 		.find(ivcls)
 		.removeClass("focus")
 		.val("...");
@@ -10481,7 +10481,7 @@ function setExpiryDateMark() {
 	//console.log("here");
 	/*let $tr = $(`#${gTblId} tbody tr`);*/
 	if (itemOptions && (itemOptions.ChkBatch || itemOptions.ChkSN))
-		$tr				
+		$tr
 			.find(".validthru")
 			.removeClass("focus validthru datepicker pointer")
 			.prop("readonly", true)
@@ -13623,7 +13623,7 @@ function confirmVtQty() {
 	//$("#totalvtdelqty").data("totalvtdelqty", lnqty).val(lnqty);
 
 	let $qty = $(`#${gTblId} tbody tr`)
-		.eq(currentY)	
+		.eq(currentY)
 		.find(".qty");
 
 	const qty: number = Number($qty.val());
@@ -20614,7 +20614,7 @@ $(document).on("dblclick", ".validthru.pointer", function () {
 	selectedItemCode = (
 		$tr.find(".itemcode").val() as string
 	).trim();
-	
+
 	seq = currentY + 1;
 	const hasFocusCls = $(this).hasClass("focus");
 	itemOptions = DicItemOptions[selectedItemCode];
@@ -20807,7 +20807,7 @@ $(document).on("dblclick", ".batch", function () {
 	selectedItemCode = (
 		$tr.find(".itemcode").val() as string
 	).trim();
-	
+
 	seq = currentY + 1;
 	const hasFocusCls = $(this).hasClass("focus");
 	itemOptions = DicItemOptions[selectedItemCode];
@@ -21591,10 +21591,10 @@ ${ivInfoList}
 }
 $(document).on("dblclick", ".vari.pointer", function () {
 	getRowCurrentY.call(this);
-	const hasFocusCls: boolean = $(this).hasClass("focus");	
-	selectedItemCode = $tr.find("input.itemcode").val() as string;	
+	const hasFocusCls: boolean = $(this).hasClass("focus");
+	selectedItemCode = $tr.find("input.itemcode").val() as string;
 	let qtycls = forwholesales ? "input.delqty" : "input.qty";
-	const maxqty = Number($tr.find(qtycls).val());	
+	const maxqty = Number($tr.find(qtycls).val());
 	seq = currentY + 1;
 	itemOptions = DicItemOptions[selectedItemCode];
 
@@ -22254,14 +22254,14 @@ function OnGetHotListSuccess(response) {
 	closeWaitingModal();
 	//console.log("response:", response);
 	var model = response;
-	HotlLists = model.hotlists.slice(0);
+	HotLists = model.hotlists.slice(0);
 	//console.log("hotlists:", HotlLists);
 
-	if (HotlLists.length > 0) {
+	if (HotLists.length > 0) {
 		hotlistModal.find("#norecord").addClass("hide");
 		let html = ``;
 		//row.addClass("hotid pointer").attr("data-id", hotlist.Id);
-		HotlLists.forEach((e) => {
+		HotLists.forEach((e) => {
 			html += `<tr class="hotid pointer" data-id="${e.Id}">
 			<td>${e.hoName}</td>
 			<td>${e.SalesPersonName}</td>
@@ -22574,7 +22574,7 @@ function initDatePickers(startDay = StartDayEnum.Today, format = '') {
 		if (startDay == StartDayEnum.LastMonth || StartDayEnum.LastMonthToday) startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), currentTime.getMonth() - 1, 1) : convertStringToDate($("#DateFromTxt").val() as string);
 		if (startDay == StartDayEnum.Last2Month) startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), currentTime.getMonth() - 2, 1) : convertStringToDate($("#DateFromTxt").val() as string);
 		if (startDay == StartDayEnum.ThisYear) startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), 0, 1) : convertStringToDate($("#DateFromTxt").val() as string);
-		if (startDay == StartDayEnum.Beginning) startDateFrom = convertStringToDate($("#DateFromTxt").val() as string);
+		if (startDay == StartDayEnum.Beginning) convertStringToDate($("#DateFromTxt").val() as string);
 	} else {
 		startDateFrom = convertStringToDate(getParameterByName("strfrmdate") as string);
 	}
@@ -22661,7 +22661,7 @@ function handleCustomerGroupRemove(Id: number, frmGroupIndex: boolean = false) {
 					dataType: "json"
 				});
 			} else {
-				if(!frmGroupIndex)
+				if (!frmGroupIndex)
 					customerGroupModal.find("#txtGroupName").trigger("focus");
 			}
 		}

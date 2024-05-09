@@ -3,6 +3,7 @@
 $(document).on("click", ".customer", function () {
 	//console.log("eblastid:", $(this).data("id"));
 	const blastId = Number($(this).data("id"));
+
 	$.ajax({
 		type: "GET",
 		url: "/eBlast/GetCustomersByBlastId",
@@ -124,5 +125,5 @@ $(function () {
 
 	ConfigSimpleSortingHeaders();
 	
-	initDatePickers(StartDayEnum.Beginning, "YYYY-MM-DD");
+	initDatePickers(StartDayEnum.ThisYear, "YYYY-MM-DD");
 });

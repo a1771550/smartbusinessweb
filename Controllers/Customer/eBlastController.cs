@@ -12,6 +12,7 @@ using System.Net;
 using System.Threading;
 using System.Configuration;
 using CommonLib.Helpers;
+using System.Web.Razor.Tokenizer.Symbols;
 
 namespace SmartBusinessWeb.Controllers.Customer
 {
@@ -20,6 +21,18 @@ namespace SmartBusinessWeb.Controllers.Customer
     [CustomAuthorize("customer", "boss", "admin", "superadmin")]
     public class eBlastController : BaseController
     {
+        [HttpGet]
+        public JsonResult GetList()
+        {
+            eBlastEditModel model = new eBlastEditModel
+            {                
+                SortCol = 0,               
+                SortOrder = "desc",
+                Keyword = null,
+            };
+            model.GetList(null,null);
+            return Json(model.eBlastList, JsonRequestBehavior.AllowGet);
+        }
         [HttpGet]
         public JsonResult GetCustomersByBlastId(int blastId)
         {
@@ -255,7 +268,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                 PageSize = PageSize,
             };       
 
-            model.GeteBlastList(strfrmdate, strtodate);            
+            model.GetList(strfrmdate, strtodate);            
 
             model.eBlastPagingList = model.eBlastList.ToPagedList(PageNo, PageSize);
             return View(model);

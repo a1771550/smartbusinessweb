@@ -40,6 +40,7 @@ using ItemModel = PPWLib.Models.Item.ItemModel;
 using PPWLib.Models.User;
 using CommonLib.Models.MYOB;
 using PPWLib.Models.Customer;
+using PPWLib.Models.Customer.Group;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -64,6 +65,26 @@ namespace SmartBusinessWeb.Controllers
 
         public List<string> ShopNames;
         public ApiController() { }
+
+
+        [HttpGet]
+        public JsonResult GetHotListsCusGroupList()
+        {
+            HotListEditModel emodel = new HotListEditModel();
+            emodel.GetList();
+            CustomerGroupEditModel cmodel = new CustomerGroupEditModel();
+            cmodel.GetList(1);
+            return Json(new { emodel.HotLists, CustomerGroupList = cmodel.GroupList }, JsonRequestBehavior.AllowGet);
+        }
+        [HttpGet]
+        public JsonResult GetEblastListCusGroupList()
+        {            
+            eBlastEditModel emodel = new eBlastEditModel();
+            emodel.GetList();
+            CustomerGroupEditModel cmodel = new CustomerGroupEditModel();
+            cmodel.GetList(1);
+            return Json(new { EblastList=emodel.eBlastList, CustomerGroupList = cmodel.GroupList }, JsonRequestBehavior.AllowGet);
+        }
 
         [HttpGet]
         public JsonResult GetCustomerNamesByCodes(string cusCodes)

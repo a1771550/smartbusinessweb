@@ -37,16 +37,16 @@
 		<table id="tblCustomer" class="table table-bordered table-hover table-condensed">
 			<thead class="gray-header font-weight-bold">
 				<tr>
-					<th scope="col" class="text-center colheader" data-col="0">@Resources.Resource.Name</th>
-					<th scope="col" class="text-center colheader" data-col="1">@Resources.Resource.Contact</th>
-					<th scope="col" class="text-center colheader" data-col="2">@Resources.Resource.Email</th>
+					<th class="text-center colheader" data-col="0">@Resources.Resource.Name</th>
+					<th class="text-center colheader" data-col="1">@Resources.Resource.Contact</th>
+					<th class="text-center colheader" data-col="2">@Resources.Resource.Email</th>
 					<th class="text-center">@Resources.Resource.CustomAttributes</th>
 
-					<th scope="col" class="text-center colheader" data-col="3">@string.Format(Resources.Resource.FollowUpFormat, Resources.Resource.Status)</th>
-					<th scope="col" class="text-center colheader" data-col="4">@Resources.Resource.FollowUpDate</th>
-					<th scope="col" class="text-center colheader" data-col="5">ABSS</th>
-					<th scope="col"></th>
-					<th scope="col">
+					<th class="text-center colheader" data-col="3">@string.Format(Resources.Resource.FollowUpFormat, Resources.Resource.Status)</th>
+					<th class="text-center colheader" data-col="4">@Resources.Resource.FollowUpDate</th>
+					<th class="text-center colheader" data-col="5">ABSS</th>
+					<th class="text-center"></th>
+					<th class="text-center">
 						<input type="checkbox" id="chkall" @checkall />
 					</th>
 				</tr>
@@ -71,12 +71,12 @@
 						<td class="text-center">@customer.FollowUpDateDisplay</td>
 						<td class="text-center">@customer.AccountProfileName</td>
 
-						<td>
+						<td class="text-center">
 							<a class="btn btn-info btnsmall" role="button" href="/Customer/Edit?cusCode=@customer.cusCode&referrer=Index">@Resources.Resource.Edit</a>
 							<a class="btn btn-danger btnsmall remove @disabled" role="button" href="#" data-code="@customer.cusCode" data-id="@customer.cusCustomerID" data-apid="@customer.AccountProfileId">@Resources.Resource.Remove</a>
 						</td>
 
-						<td>
+						<td class="text-center">
 							<input type="checkbox" class="chk" data-code="@customer.cusCode" value="@customer.cusCode" />
 						</td>
 					</tr>
@@ -105,6 +105,8 @@ else
 @Html.Partial("_DescModal")
 
 @Html.Partial("_AdvancedSearchModal", Model.GlobalAttrList)
+
+@Html.Partial("_DropDownModal",null,new ViewDataDictionary { {"lbltxt", Resources.Resource.eBlast }, { "drpId", "drpEblast"}, {"forcustomer",true } })
 
 @Html.Partial("_WaitingModal")
 <div id="infoblk" data-codelist="@JsonSerializer.Serialize(Model.CodeList)" data-actionhistory="@Resources.Resource.ActionHistory" data-selectatleastonecustomertxt="@selectatleastonecustomertxt" data-pagesize="@Model.ComInfo.PageLength"></div>

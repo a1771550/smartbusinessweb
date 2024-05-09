@@ -3,6 +3,8 @@ using SmartBusinessWeb.Infrastructure;
 using System.Web.Mvc;
 using PPWLib.Models.Customer.Group;
 using Resources = CommonLib.App_GlobalResources;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using System.Collections.Generic;
 
 namespace SmartBusinessWeb.Controllers.Customer
 {
@@ -28,10 +30,10 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult Save(CustomerGroupModel CustomerGroup, int PageNo = 1)
+        public JsonResult Save(CustomerGroupModel CustomerGroup, List<int> IdList, List<string> CodeList, int PageNo = 1)
         {
             CustomerGroupEditModel model = new CustomerGroupEditModel();
-            model.SaveGroup(CustomerGroup, PageNo);
+            model.SaveGroup(CustomerGroup, IdList, CodeList, PageNo);
             return Json(new { List = model.PagingGroupList, RecordCount = model.GroupList.Count });
         }
 
