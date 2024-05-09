@@ -136,9 +136,9 @@ namespace SmartBusinessWeb.Controllers.Customer
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult RemoveCattr(int cusId, string cattr)
+        public JsonResult RemoveCattr(string cusCode, string cattr)
         {
-            HashSet<CustomAttribute> cattrlist = CustomAttributeEditModel.Remove(apId, cusId, cattr);
+            HashSet<CustomAttribute> cattrlist = CustomAttributeEditModel.Remove(cusCode, cattr);
             return Json(cattrlist);
         }
 

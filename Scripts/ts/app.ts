@@ -20033,12 +20033,6 @@ function confirmAdvancedSearch() {
 
 					$(`#${gTblId}`).show().find("tbody").empty().append(html);
 					$("#norecord").addClass("hide");
-					/*$("#norecord").addClass("hide");*/
-					//if (foretrack) {
-					//	$("#totalrecord").text(data.length);
-					//	$("#contactcount").text(countUnique(data.map((x) => x.ContactName)));
-					//	$("#iPageSize").trigger("focus");
-					//}					
 				}
 				else {
 					$(`#${gTblId}`).hide();
@@ -22128,19 +22122,25 @@ function initCityDropDown(selectedCity: string = "", lang: number = 1) {
 	let regionfile: string = "";
 	let $lblcity = $("#lblCity");
 	//console.log("SelectedCountry:" + SelectedCountry);
+	let txtCity = `<input type="text" id="txtCity" class="form-control">`;
+	let drpCity = `<select id="drpCity" class="form-control"></select>`;
 	if (SelectedCountry == 1) {
 		regionfile = "/scripts/hongkong_regions.json";
 		//console.log($lblcity.data("area"));
 		$lblcity.text($lblcity.data("area"));
+		if ($("#txtCity").length) $("#txtCity").replaceWith(drpCity);
 	}
 	if (SelectedCountry == 2) {
 		regionfile = "/scripts/macau_regions.json";
 		$lblcity.text($lblcity.data("area"));
+		if ($("#txtCity").length) $("#txtCity").replaceWith(drpCity);
 	}
 	if (SelectedCountry == 3) {
 		regionfile = "";
-		$("#drpCity").empty().trigger("change");
+		/*$("#drpCity").empty().trigger("change");*/
+		$("#drpCity").select2("destroy").replaceWith(txtCity);
 		$lblcity.text($lblcity.data("city"));
+
 	}
 
 	if (regionfile) {

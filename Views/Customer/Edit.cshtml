@@ -1,7 +1,7 @@
 ﻿@model CustomerEditModel
 @{
 	string plsentertxt = string.Format(Resources.Resource.PlsEnterFormat, string.Format(string.Format(Resources.Resource.ValueFormat, string.Format(Resources.Resource.AllFormat, string.Format(Resources.Resource.DropDownFormat, Resources.Resource.CustomAttribute)))));
-	
+
 	var Customer = Model.Customer;
 	bool edit = Customer.cusCustomerID > 0;
 
@@ -12,22 +12,12 @@
 	string _organchecked = Customer.cusIsOrganization ? "checked" : "";
 	string _indivchecked = Customer.cusIsOrganization ? "" : "checked";
 	string _checked = "checked";
-	bool isorgan = true;
-	int iorgan = 1;
-	if (edit)
-	{
-		isorgan = _organchecked == "checked";
-	}
-	else
-	{
-		_organchecked = "checked";
-		_indivchecked = "";
-	}
 
 	string maxcharlength4conametxt = string.Format("({0})", string.Format(Resources.Resource.MaxChar, ConfigurationManager.AppSettings["MaxCoNameLength"]));
 	string maxcharlength4codetxt = string.Format("({0})", string.Format(Resources.Resource.MaxChar, ConfigurationManager.AppSettings["MaxCardCodeLength"]));
 	string _readonly = Customer.cusCheckout!=null&&(bool)Customer.cusCheckout ? "readonly" : "";
 	var enteratleasttxt = string.Format(Resources.Resource.EnterAtLeastOneFormat, Resources.Resource.Item);
+	//string callCode = ConfigurationManager.AppSettings["DefaultCallCode"];
 }
 <link href="~/Content/select2/custom.css?v=@rand" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css" href="~/Content/customer/edit.css?v=@rand" />
@@ -71,8 +61,6 @@
 
 	<hr />
 
-	<input type="hidden" id="IsOrgan" value="@iorgan" />
-
 	<div class="row">
 		<div class="col-12 col-md-3">
 			<div id="colastname" class="form-group required" data-customernull="@(Customer==null)">
@@ -91,7 +79,7 @@
 
 			<div class="form-group required">
 				<label class="control-label " for="cusPhone">@Resources.Resource.Phone</label>
-				<input type="text" class="form-control" id="cusPhone" name="cusPhone" maxlength="@int.Parse(ConfigurationManager.AppSettings["MaxCardCodeLength"])" value="@Customer.cusPhone" />
+				<input type="text" class="form-control" id="cusPhone" name="cusPhone" maxlength="@int.Parse(ConfigurationManager.AppSettings["MaxCardCodeLength"])" value="@Customer.PhoneDisplay" />
 				<span class="danger small">@maxcharlength4codetxt</span>
 			</div>
 
@@ -159,7 +147,7 @@
 			<div class="col-12 col-md-4">
 				<div class="form-group clearfix">
 					<label class=" " for="cusAddrPhone1">@Resources.Resource.Phone 1</label>
-					<input type="text" id="cusAddrPhone1" name="cusAddrPhone1" class="form-control mobile" value="@Customer.cusAddrPhone1" />
+					<input type="text" id="cusAddrPhone1" name="cusAddrPhone1" class="form-control mobile" value="@Customer.Phone1Display" />
 					<span class="fa fa-whatsapp whatsappphone font-weight-bold pointer" data-phone="@Customer.cusAddrPhone1" style="color:#9f8ccf" title="WhatsApp"></span>
 				</div>
 			</div>
@@ -168,14 +156,14 @@
 			<div class="col-12 col-md-4">
 				<div class="form-group">
 					<label class="control-label " for="cusAddrPhone2">@Resources.Resource.Phone 2</label>
-					<input type="text" id="cusAddrPhone2" name="cusAddrPhone2" class="form-control mobile" value="@Customer.cusAddrPhone2" />
+					<input type="text" id="cusAddrPhone2" name="cusAddrPhone2" class="form-control mobile" value="@Customer.Phone2Display" />
 					<span class="fa fa-whatsapp whatsappphone font-weight-bold pointer" data-phone="@Customer.cusAddrPhone2" style="color:#9f8ccf"></span>
 				</div>
 			</div>
 			<div class="col-12 col-md-4">
 				<div class="form-group">
 					<label class="control-label " for="cusAddrPhone3">@Resources.Resource.Phone 3</label>
-					<input type="text" id="cusAddrPhone3" name="cusAddrPhone3" class="form-control mobile" value="@Customer.cusAddrPhone3" />
+					<input type="text" id="cusAddrPhone3" name="cusAddrPhone3" class="form-control mobile" value="@Customer.Phone3Display" />
 					<span class="fa fa-whatsapp whatsappphone font-weight-bold pointer" data-phone="@Customer.cusAddrPhone3" style="color:#9f8ccf" title="WhatsApp"></span>
 				</div>
 			</div>

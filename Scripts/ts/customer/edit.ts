@@ -1,6 +1,4 @@
 ﻿$infoblk = $("#infoblk");
-
-let cusId: number = editmode ? Number($infoblk.data("cusid")) : 0;
 let gattrnamelist: string[] = [];
 
 $(document).on("click", "#addRecord", function () {
@@ -16,10 +14,10 @@ $(document).on("change", ".labeltxt", function () {
 		} as IGlobalAttribute;
 		//UpdateGattrName
 		$.ajax({
-			//contentType: 'application/json; charset=utf-8',
+			//contentType: "application/json; charset=utf-8",
 			type: "POST",
-			url: '/Customer/UpdateGattrName',
-			data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val(), gattr },
+			url: "/Customer/UpdateGattrName",
+			data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), gattr },
 			success: function (data: IGlobalAttribute) {
 				if (data) {
 					//console.log(data);
@@ -34,7 +32,7 @@ $(document).on("change", ".labeltxt", function () {
 					});
 				}
 			},
-			dataType: 'json'
+			dataType: "json"
 		});
 	}
 });
@@ -87,12 +85,6 @@ $(document).on("click", "#mplus", function () {
 	}
 });
 
-$(document).on("change", ".isorgan", function () {
-	$("#IsOrgan").val(<string>$(this).val());
-	isorgan = $(this).val() == 1;
-	toggleNames();
-});
-
 $(document).on("change", "#cusPhone", function () {
 	handleCardPhoneChange.call(this);
 });
@@ -104,12 +96,12 @@ $(document).on("change", "#cusEmail", function () {
 	handleCardEmailChange.call(this);
 });
 
-function removeCattr(cattr: string) {
+function removeCattr(cattr: string) {	
 	$.ajax({
-		//contentType: 'application/json; charset=utf-8',
+		//contentType: "application/json; charset=utf-8",
 		type: "POST",
-		url: '/Customer/RemoveCattr',
-		data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val(), cusId, cattr },
+		url: "/Customer/RemoveCattr",
+		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), cusCode:$("#cusCode").val(0), cattr },
 		success: function (data: ICustomAttribute[]) {
 			if (data) {
 				//console.log("data:", data);
@@ -118,7 +110,7 @@ function removeCattr(cattr: string) {
 				displayCustomAttributes();
 			}
 		},
-		dataType: 'json'
+		dataType: "json"
 	});
 }
 $(document).on("click", ".cattr.pointer.fa-close", function () {
@@ -149,17 +141,7 @@ $(function () {
 	forcustomer = true;
 	apId = Number($infoblk.data("apid"));
 
-	$target = $(".colheader").eq(parseInt(<string>$("#sortcol").val()));
-	let sortcls =
-		$("#sortorder").val() === "asc" ? "fa fa-sort-up" : "fa fa-sort-down";
-	$target.addClass(sortcls);
-	$target = $(".pagination");
-	$target
-		.wrap('<nav aria-label="Page navigation"></nav>')
-		.find("li")
-		.addClass("page-item")
-		.find("a")
-		.addClass("page-link");
+	ConfigSimpleSortingHeaders();
 
 	initModals();
 
