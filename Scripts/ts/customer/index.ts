@@ -10,48 +10,50 @@ $(document).on("dblclick", ".hotid", function () {
 });
 
 function handleHotListCustomers() {
-	IdList = [];
-	let eblasts: string[] = dropdownModal.find("#drpEblast").val() as string[];
+	let hotlistIdList: number[] = [];
+	let hotlists: string[] = dropdownModal.find("select").first().val() as string[];
 	//console.log(eblasts);
-	if (eblasts.length == 1) IdList.push(Number(eblasts[0]));
+	if (hotlists.length == 1) hotlistIdList.push(Number(hotlists[0]));
 	else {
-		eblasts.forEach((x) => {
+		hotlistIdList.forEach((x) => {
 			IdList.push(Number(x));
 		});
 	}
+	let groupIdList: number[] = [];
 	let groups = dropdownModal.find("#drpCustomerGroup").val() as string[];
-	if (groups.length == 1) CodeList.push(groups[0]);
+	console.log(groups);
+	if (groups.length == 1) groupIdList.push(Number(groups[0]));
 	else {
 		groups.forEach((x) => {
-			CodeList.push(x);
-		});
-	}	
-	if (CodeList.length > 0) {
-		openWaitingModal();
-		$.ajax({
-			type: "POST",
-			url: '/HotList/AddCustomers',
-			data: { __RequestVerificationToken: $('input[name=__RequestVerificationToken]').val(), cusCodes: CodeList, IdList },
-			success: function (data) {
-				if (data) {
-					$.fancyConfirm({
-						title: '',
-						message: data,
-						shownobtn: false,
-						okButton: oktxt,
-						noButton: notxt,
-						callback: function (value) {
-							if (value) {
-								closeWaitingModal();
-								$('#txtKeyword').trigger("focus");
-							}
-						}
-					});
-				}
-			},
-			dataType: 'json'
+			groupIdList.push(Number(x));
 		});
 	}
+
+	openWaitingModal();
+	$.ajax({
+		type: "POST",
+		url: '/HotList/AddCustomers',
+		data: { __RequestVerificationToken: $('input[name=__RequestVerificationToken]').val(), groupIdList, hotlistIdList },
+		success: function (data) {
+			if (data) {
+				$.fancyConfirm({
+					title: '',
+					message: data,
+					shownobtn: false,
+					okButton: oktxt,
+					noButton: notxt,
+					callback: function (value) {
+						if (value) {
+							closeWaitingModal();
+							$('#txtKeyword').trigger("focus");
+						}
+					}
+				});
+			}
+		},
+		dataType: 'json'
+	});
+
 }
 $(document).on('click', '#btnHotList', function (e) {
 	forhotlist = true;
@@ -62,41 +64,45 @@ $(document).on('click', '#btnHotList', function (e) {
 });
 
 $(document).on("click", "#btnBlast", function (e) {
+	forhotlist = false;
 	e.preventDefault();
 	e.stopPropagation();
-	populateDropDown4EblastCusGroupList();	
+	populateDropDown4EblastCusGroupList();
 	openDropDownModal();
 });
 
 
 
-function handleEblastCustomers() {	
-	IdList = [];
+function handleEblastCustomers() {
+	let eblastIdList: number[] = [];
 	let eblasts: string[] = dropdownModal.find("#drpEblast").val() as string[];
-	//console.log(eblasts);
-	if (eblasts.length == 1) IdList.push(Number(eblasts[0]));
+	console.log(eblasts);
+	if (eblasts.length == 1) eblastIdList.push(Number(eblasts[0]));
 	else {
 		eblasts.forEach((x) => {
-			IdList.push(Number(x));
+			eblastIdList.push(Number(x));
 		});
 	}
+
+	let groupIdList: number[] = [];
 	let groups = dropdownModal.find("#drpCustomerGroup").val() as string[];
-	if (groups.length == 1) CodeList.push(groups[0]);
+	console.log(groups);
+	if (groups.length == 1) groupIdList.push(Number(groups[0]));
 	else {
 		groups.forEach((x) => {
-			CodeList.push(x);
+			groupIdList.push(Number(x));
 		});
-	}	
-	//console.log("IdList:", IdList);
-	//console.log("CodeList:", CodeList);
+	}
+	console.log("eblastIdList:", eblastIdList);
+	console.log("groupIdList:", groupIdList);
 	//return;
 	openWaitingModal();
 	$.ajax({
 		type: "POST",
 		url: "/Customer/AddToEblast",
-		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), cusCodes: CodeList, IdList },
+		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), groupIdList, eblastIdList },
 		success: function (msg) {
-			closeWaitingModal();			
+			closeWaitingModal();
 			//console.log(msg);
 			if (msg) {
 				$.fancyConfirm({
@@ -110,7 +116,7 @@ function handleEblastCustomers() {
 							$("#txtKeyword").trigger("focus");
 						}
 					}
-				});	
+				});
 			}
 		},
 		dataType: "json"
@@ -210,18 +216,20 @@ function populateDropDown4HotListsCusGroupList() {
 			if (data) {
 				HotLists = data.HotLists.slice(0);
 				//console.log("EblastList:", EblastList);
+				$target = dropdownModal.find("select").first();
+				$target.empty();
 				HotLists.forEach((x) => {
 					openDropDownModal();
-					$target = dropdownModal.find("select").first();
 					$target.append($("<option>", {
 						value: x.Id,
 						text: x.hoName
 					}));
 				});
 				CustomerGroupList = data.CustomerGroupList.slice(0);
+				$target = dropdownModal.find("#drpCustomerGroup");
+				$target.empty();
 				CustomerGroupList.forEach((x) => {
 					openDropDownModal();
-					$target = dropdownModal.find("#drpCustomerGroup");
 					$target.append($("<option>", {
 						value: x.Id,
 						text: x.cgName
@@ -276,18 +284,21 @@ function populateDropDown4EblastCusGroupList() {
 			if (data) {
 				EblastList = data.EblastList.slice(0);
 				//console.log("EblastList:", EblastList);
+				$target = dropdownModal.find("#drpEblast");
+				$target.empty();
 				EblastList.forEach((x) => {
-					openDropDownModal();
-					$target = dropdownModal.find("#drpEblast");
+					openDropDownModal();					
 					$target.append($("<option>", {
 						value: x.Id,
 						text: x.blSubject
 					}));
 				});
+
+				$target = dropdownModal.find("#drpCustomerGroup");
+				$target.empty();
 				CustomerGroupList = data.CustomerGroupList.slice(0);
 				CustomerGroupList.forEach((x) => {
-					openDropDownModal();
-					$target = dropdownModal.find("#drpCustomerGroup");
+					openDropDownModal();					
 					$target.append($("<option>", {
 						value: x.Id,
 						text: x.cgName

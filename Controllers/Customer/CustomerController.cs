@@ -30,11 +30,11 @@ namespace SmartBusinessWeb.Controllers.Customer
         [HttpPost]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
-        public JsonResult AddToEblast(List<string> cusCodes, List<int> IdList)
+        public JsonResult AddToEblast(List<int> groupIdList, List<int> eblastIdList)
         {
             var msg = string.Format(Resources.Resource.AreAddedToFormat, Resources.Resource.Customer, Resources.Resource.eBlast);
             CustomerEditModel model = new CustomerEditModel();
-            model.AddToEblast(cusCodes, IdList);
+            model.AddToEblast(groupIdList, eblastIdList);
             return Json(msg);
         }
 

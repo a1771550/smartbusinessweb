@@ -3144,6 +3144,14 @@ function closeViewFileModal() {
 
 function openDropDownModal(ele: any = null) {
 	dropdownModal.dialog("open");
+	if (forcustomer) {
+		if (forhotlist) {
+			dropdownModal.find(".form-group").first().find("label").text(hotlisttxt);
+		} else {
+			dropdownModal.find(".form-group").first().find("label").text(eblasttxt);
+		}
+	}
+	
 
 	if (ele) {
 		let _attrname: string = $(ele).data("attrname");
@@ -19996,11 +20004,11 @@ function confirmAdvancedSearch() {
                     <td class="text-center">${customer.FollowUpStatusDisplay}</td>
                     <td class="text-center">${customer.FollowUpDateDisplay}</td>
 					 <td class="text-center">${customer.AccountProfileName}</td>
-                    <td>
+                    <td class="text-center">
                         <a class="btn btn-info btnsmall" role="button" href="/Customer/Edit?cusCode=${customer.cusCode}&referrer=Index">${edittxt}</a>
                         <a class="btn btn-danger btnsmall remove ${disabled}" role="button" href="#" data-code="${customer.cusCode}" data-id="${customer.cusCustomerID}">${removetxt}</a>
                     </td>
-					<td>
+					<td class="text-center">
 							<input type="checkbox" class="chk" data-code="${customer.cusCode}" value="${customer.cusCode}" />
 						</td>
                 </tr>`;
