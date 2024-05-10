@@ -1,4 +1,6 @@
-﻿function saveGCombo() {
+﻿let selectedGComboId: string = "";
+
+function saveGCombo() {
     $target = gcomboModal.find("form").find(".gcombo");
     //enteratleasttxt
     let valcount = 0;
@@ -30,37 +32,72 @@
     //console.log("gattr:", gAttribute);
     $.each(gAttributes, function (i, e) {
         if (e.gattrId == gAttribute.gattrId) {
-            console.log("here");
+            //console.log("here");
             e.attrName = gAttribute.attrName;
             e.attrValue = gAttribute.combo.values.join("||");
             $("fieldset").find(".form-group").find(`#${e.gattrId}`).data("attrvalue", e.attrValue).val(e.attrName);
-
             return false;
         }
     });
-    //console.log("gattrs:", gAttributes);
-    //saveGattr();
-}
 
-function saveGattr(cusCode: string) {
-    let gattributes:IGlobalAttribute[] = [];
-    $("#gattrblk .form-control.attr").each(function (i, e) {
-        gattributes.push({
-            gattrId: $(e).attr("id") as string,
-            attrValue: $(e).val() as string
-        } as IGlobalAttribute);
-    });
-
-    console.log("gatts#save:", gattributes);
-    console.log("cAttributes#save:", cAttributes);
-    //return false;
+    //console.log("gattrs:", gAttributes);    
+    //return;
     $.ajax({
         type: "POST",
-        url: "/Customer/SaveAttr",
-        data: { "__RequestVerificationToken": $("input[name=__RequestVerificationToken]").val(),cusCode, gAttributes:gattributes, cAttributes  },
+        url: "/Customer/SaveGAttr4Combo",
+        data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), cusCode:Customer.cusCode, gAttribute },
         success: function (data) {
             if (data) {
-                window.location.href = "/Customer/Edit?cusCode=" + cusCode +"&saveattr=1";
+                //window.location.href = "/Customer/Edit?cusCode=" + cusCode +"&saveattr=1&referrer=" + $infoblk.data("referrer");
+                //$("#gattrMsg").text(savedtxt);
+                showMsg(`${selectedGComboId}msg`, savedtxt, "success");
+            }
+        },
+        dataType: "json"
+    });
+
+}
+
+$(document).on("change", "#gattrblk .form-control.attr", function () {
+    let gattrId = $(this).attr("id");
+    let gattrVal = $(this).val();
+    let idx = -1;
+    idx = gAttributes.findIndex(x => x.gattrId == gattrId);
+    if (idx >= 0) {
+        gAttribute = gAttributes[idx];
+        if (gAttribute) {
+            gAttribute.attrValue = gattrVal;
+            $.ajax({
+                type: "POST",
+                url: "/Customer/SaveGAttr4Txt",
+                data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), cusCode, gAttribute },
+                success: function (data) {
+                    if (data) {
+                        //window.location.href = "/Customer/Edit?cusCode=" + cusCode +"&saveattr=1&referrer=" + $infoblk.data("referrer");
+                        //$("#gattrMsg").text(savedtxt);
+                        showMsg("gattrMsg", savedtxt, "success");
+                    }
+                },
+                dataType: "json"
+            });
+        }
+    }
+    
+    
+
+   
+});
+function saveCattr(cusCode: string) {
+  //  return false;
+    $.ajax({
+        type: "POST",
+        url: "/Customer/SaveCAttr",
+        data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(),cusCode, cAttribute  },
+        success: function (data) {
+            if (data) {
+                //window.location.href = "/Customer/Edit?cusCode=" + cusCode +"&saveattr=1&referrer=" + $infoblk.data("referrer");
+                //$("#gattrMsg").text(savedtxt);
+                showMsg("gattrMsg", savedtxt, "success");
             }            
         },
         dataType: "json"
@@ -85,6 +122,8 @@ $(document).on("change", "#gattrblk .form-control.cattr", function () {
     };
         cAttributes.push(cattr);
     }
+
+
 });
 
 $(document).on("click", "#btnPlusAttr", function () {
@@ -114,6 +153,7 @@ $(document).on("click", "#btnMinus", function () {
     }
 });
 
+
 $(document).on("click", ".border", function () {
     $target = $(this).prev(".combo");
     let _name = <string>$target.val();
@@ -131,10 +171,10 @@ $(document).on("click", ".border", function () {
             }
         });
     } else {
-        let _id: string = <string>$(this).data("id");
+        selectedGComboId = <string>$(this).data("id");
         $.each(gAttributes, function (i, e) {
             //console.log("attrvalue:"+e.attrValue);
-            if (e.gattrId == _id) {
+            if (e.gattrId == selectedGComboId) {
                 gAttribute = e;
                 return false;
             }

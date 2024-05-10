@@ -15,18 +15,7 @@ interface IPhoneMailFormData extends IBaseFormData {
     PhoneMailList:Array<IPhoneMail>,
 }
 
-$(document).on('click', '#btnPost', function () {
-    //let _formdata: IPhoneMailFormData = initPhoneMailFormData();
-    //let testlist: Array<IPhoneMail> = [];
-    //let test1: IPhoneMail = initPhoneMail();
-    //test1.mail = 'test1@test.com';
-    //test1.phone = 'test11111';
-    //let test2: IPhoneMail = initPhoneMail();
-    //test2.mail = 'test2@test.com';
-    //test2.phone = 'test22222';
-    //testlist.push(test1);
-    //testlist.push(test2);
-    //_formdata.PhoneMailList = testlist.slice(0);
+$(document).on('click', '#btnPost', function () {   
     const customer = {} as ICustomer;
     let _formdata: ICustomerFormData = initCustomerFormData(customer);
     AttributeList = [];

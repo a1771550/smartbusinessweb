@@ -152,14 +152,38 @@ namespace SmartBusinessWeb.Controllers.Customer
             return Json(gattr);
         }
 
+        //SaveGAttr4Combo
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult SaveAttr(string cusCode, List<GlobalAttributeModel> gAttributes, List<CustomAttributeView> cAttributes)
+        public JsonResult SaveGAttr4Combo(string cusCode, GlobalAttributeModel gAttribute)
         {
             var msg = string.Format(Resources.Resource.Saved, Resources.Resource.Attribute);
-            CustomerEditModel.SaveAttr(apId, cusCode, gAttributes, cAttributes);
+            CustomerEditModel.SaveGAttr(cusCode, gAttribute);
+            return Json(msg);
+        }
+
+        [HandleError]
+        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult SaveGAttr4Txt(string cusCode, GlobalAttributeModel gAttribute)
+        {
+            var msg = string.Format(Resources.Resource.Saved, Resources.Resource.Attribute);
+            CustomerEditModel.SaveGAttr(cusCode, gAttribute);
+            return Json(msg);
+        }
+
+        [HandleError]
+        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult SaveCAttr(string cusCode, CustomAttributeModel cAttribute)
+        {
+            //todo:
+            var msg = string.Format(Resources.Resource.Saved, Resources.Resource.Attribute);
+            CustomerEditModel.SaveCAttr(cusCode, cAttribute);
             return Json(msg);
         }
 

@@ -2702,7 +2702,7 @@
     <Content Include="Content\fontawesome\svgs\solid\yin-yang.svg" />
     <Content Include="Content\fontawesome\svgs\solid\z.svg" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
-    <Content Include="Content\globalattribute.css" />
+    <Content Include="Content\customer\attr\globalattribute.css" />
     <Content Include="Content\hotlist.css" />
     <Content Include="Content\hotlist\index.css" />
     <Content Include="Content\images\calendar.svg" />

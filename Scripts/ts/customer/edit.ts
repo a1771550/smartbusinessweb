@@ -44,24 +44,21 @@ $(document).on("dblclick", ".pointer.attr", function () {
 	$target.find(".labeltxt").removeClass("hide").trigger("focus");
 });
 
-$(document).on("click", "#btnSaveGattr", function () {
-	saveGattr(Customer.cusCode);
+$(document).on("click", "#btnSaveCattr", function () {
+	saveCattr(Customer.cusCode);
 });
 
 $(document).on("click", "#btnEdit", function () {
 	FillInCustomer();
 	if (validCusForm()) {
-		let _formdata: ICustomerFormData = initCustomerFormData(Customer);
-		_formdata.model = Customer;
-
-		let _url = "/Customer/Edit";
-		//console.log("formdata:", _formdata);
+		let _url = "/Customer/Edit";	
+		//console.log("Customer:", Customer);
 		//return false;
 		openWaitingModal();
 		$.ajax({
 			type: "POST",
 			url: _url,
-			data: _formdata,
+			data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), model:Customer},
 			success: function () {
 				closeWaitingModal();
 				let referrer = $infoblk.data("referrer") == "" ? "Index" : $infoblk.data("referrer");
@@ -197,8 +194,11 @@ $(function () {
 	$("#drpCountry").select2();
 	$("#drpCity").select2();
 
-	$cusname.trigger("focus");
+	$(".combo.attr").select2({
+		width: "resolve",
+	});
 
+	$cusname.trigger("focus");
 });
 
 

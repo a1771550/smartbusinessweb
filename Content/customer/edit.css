@@ -1,4 +1,33 @@
-﻿#globalattr .ui-state-default{
+﻿#gattrblk {
+    padding: 1em !important;
+}
+.combo.attr {
+   /* height: calc(1.5rem + 2px) !important;
+    padding: .375rem .75rem !important;
+    font-size: .9rem !important;*/
+    line-height: 28px !important;
+    width: 250px !important;
+}
+/*.select2-container {
+    height: calc(1.5rem + 2px) !important;
+}
+    .select2-container .select2-selection--single {
+        font-size: .9rem !important;
+        height: calc(1.5rem + 2px) !important;
+        line-height: 28px !important;
+    }
+.select2-container .select2-selection--single .select2-selection__rendered {*/   
+  /*  height: calc(1.5rem + 2px) !important;
+    padding: .375rem .75rem!important;
+    font-size: .9rem!important;*/
+    /*line-height: 28px!important;*/
+    /*width:200px!important;*/  
+/*}
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    font-size:.9rem!important;
+}*/
+
+#globalattr .ui-state-default{
     background-color:#a1b6e9;
     color:white;
 }

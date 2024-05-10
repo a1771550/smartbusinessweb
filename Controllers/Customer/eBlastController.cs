@@ -12,7 +12,7 @@ using System.Net;
 using System.Threading;
 using System.Configuration;
 using CommonLib.Helpers;
-using System.Web.Razor.Tokenizer.Symbols;
+using PPWLib.Models.Customer;
 
 namespace SmartBusinessWeb.Controllers.Customer
 {
@@ -36,7 +36,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         [HttpGet]
         public JsonResult GetCustomersByBlastId(int blastId)
         {
-            List<PPWLib.Models.CRM.Customer.CustomerModel> contacts = eBlastEditModel.GetCustomersByBlastId(blastId);
+            List<CustomerModel> contacts = eBlastEditModel.GetCustomersByBlastId(blastId);
             return Json(contacts, JsonRequestBehavior.AllowGet);
         }
 
@@ -177,7 +177,7 @@ namespace SmartBusinessWeb.Controllers.Customer
             var eBlast = emodel.eBlast;
             eBlast.blSendTime = DateTime.Now;
 
-            List<PPWLib.Models.CRM.Customer.CustomerModel> contacts = eBlastEditModel.GetCustomersByBlastId(blastId);
+            List<CustomerModel> contacts = eBlastEditModel.GetCustomersByBlastId(blastId);
 
             int okcount = 0;
             int ngcount = 0;

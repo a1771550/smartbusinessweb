@@ -658,6 +658,11 @@
           <path>Content\pos\advsales.css</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\pos\advsales.css</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>customer-edit.css</name>
+          <path>Content\customer\edit.css</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\customer\edit.css</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

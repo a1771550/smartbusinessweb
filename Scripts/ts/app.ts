@@ -644,6 +644,7 @@ let gAttributes: Array<IGlobalAttribute> = [];
 let gAttribute: IGlobalAttribute;
 
 let cAttributes: ICustomAttribute[] = [];
+let cAttribute: ICustomAttribute;
 
 let dicAssignedSalesInfo: { [Key: number]: ICrmUser } = {};
 
@@ -21649,7 +21650,12 @@ function removeEmptyRow() {
 	if ($tr.find("td").eq(1).find(".itemcode").val() === "") $tr.remove();
 }
 
-
+function showMsg4Cls(clsname: string, msg: string, alertCls: string = "", timeout: number = 3000, fadeout: number = 1000) {
+	$(`.${clsname}`).addClass(`${alertCls}`).html(msg);
+	setTimeout(function () {
+		$(`.${clsname}`).fadeOut(fadeout);
+	}, timeout);
+}
 function showMsg(Id: string, msg: string, alertCls: string = "info", timeout: number = 3000, fadeout: number = 1000) {
 	$(`#${Id}`).addClass(`small alert alert-${alertCls}`).html(msg);
 	setTimeout(function () {
