@@ -2,12 +2,14 @@
 
 function saveGCombo() {
     $target = gcomboModal.find("form").find(".gcombo");
+    console.log("gAttribute:", gAttribute);
     //enteratleasttxt
     let valcount = 0;
     gAttribute.combo.values = [];
+   
     $.each($target, function (i, e) {
         let _val = <string>$(e).val();
-        if (_val !== "") {
+        if (_val) {
             gAttribute.combo.values.push(_val);
             valcount++;
         }
@@ -29,28 +31,37 @@ function saveGCombo() {
     } else {
         closeGComboModal();
     }
-    //console.log("gattr:", gAttribute);
+    //console.log("gattr:", gAttribute);    
     $.each(gAttributes, function (i, e) {
         if (e.gattrId == gAttribute.gattrId) {
             //console.log("here");
             e.attrName = gAttribute.attrName;
             e.attrValue = gAttribute.combo.values.join("||");
-            $("fieldset").find(".form-group").find(`#${e.gattrId}`).data("attrvalue", e.attrValue).val(e.attrName);
+            //$("fieldset").find(".form-group").find(`#${e.gattrId}`).data("attrvalue", e.attrValue).val(e.attrName);            
             return false;
         }
     });
 
-    //console.log("gattrs:", gAttributes);    
+    //console.log("gAttribute:", gAttribute);
     //return;
     $.ajax({
         type: "POST",
         url: "/Customer/SaveGAttr4Combo",
         data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), cusCode:Customer.cusCode, gAttribute },
         success: function (data) {
-            if (data) {
-                //window.location.href = "/Customer/Edit?cusCode=" + cusCode +"&saveattr=1&referrer=" + $infoblk.data("referrer");
-                //$("#gattrMsg").text(savedtxt);
+            if (data) {                
                 showMsg(`${selectedGComboId}msg`, savedtxt, "success");
+                console.log("gAttribute.combo.values:", gAttribute.combo.values);
+
+                $(`#${gAttribute.gattrId}`).empty();
+                gAttribute.combo.values.forEach(x => {
+                    $(`#${gAttribute.gattrId}`).append($("<option>", {
+                        value: x,
+                        text: x,
+                    }));
+                });
+
+                $(`#${gAttribute.gattrId}`).select2();
             }
         },
         dataType: "json"
@@ -58,24 +69,28 @@ function saveGCombo() {
 
 }
 
-$(document).on("change", "#gattrblk .form-control.attr", function () {
+$(document).on("change", "#gattrblk .form-control.text.attr", function () {
     let gattrId = $(this).attr("id");
-    let gattrVal = $(this).val();
-    let idx = -1;
-    idx = gAttributes.findIndex(x => x.gattrId == gattrId);
+    //console.log("gattrId:" + gattrId);
+    //console.log("gAttributes:", gAttributes);
+    let gattrVal = $(this).val();  
+    //console.log("gattrval:" + gattrVal);
+    let idx = gAttributes.findIndex(x => x.gattrId == gattrId);
     if (idx >= 0) {
         gAttribute = gAttributes[idx];
         if (gAttribute) {
             gAttribute.attrValue = gattrVal;
+            //console.log(gAttribute);
+            //return;
             $.ajax({
                 type: "POST",
                 url: "/Customer/SaveGAttr4Txt",
-                data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), cusCode, gAttribute },
+                data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), cusCode:Customer.cusCode, gAttribute },
                 success: function (data) {
                     if (data) {
                         //window.location.href = "/Customer/Edit?cusCode=" + cusCode +"&saveattr=1&referrer=" + $infoblk.data("referrer");
                         //$("#gattrMsg").text(savedtxt);
-                        showMsg("gattrMsg", savedtxt, "success");
+                        showMsg(`${gattrId}msg`, savedtxt, "success");
                     }
                 },
                 dataType: "json"
@@ -87,30 +102,31 @@ $(document).on("change", "#gattrblk .form-control.attr", function () {
 
    
 });
-function saveCattr(cusCode: string) {
-  //  return false;
+function saveCattr() {
+    //return false;
+    console.log(cAttribute);
     $.ajax({
         type: "POST",
         url: "/Customer/SaveCAttr",
-        data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(),cusCode, cAttribute  },
+        data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), cusCode:Customer.cusCode, cAttribute  },
         success: function (data) {
-            if (data) {
-                //window.location.href = "/Customer/Edit?cusCode=" + cusCode +"&saveattr=1&referrer=" + $infoblk.data("referrer");
-                //$("#gattrMsg").text(savedtxt);
-                showMsg("gattrMsg", savedtxt, "success");
+            if (data) {                
+                //showMsg("gattrMsg", savedtxt, "success");
+                cAttributes = structuredClone(data.CustomAttributeList);
+                displayCustomAttributes();
             }            
         },
         dataType: "json"
     });
 }
 
-$(document).on("change", "#gattrblk .form-control.cattr", function () {
+$(document).on("change", "#cattrlist .form-control.cattr", function () {
     //console.log(customer.cusCustomerID);
     //console.log(apId);
     let val:string= $(this).val() as string;
     if (val) {
         const Id: string = makeId(16);
-        let cattr: ICustomAttribute = {
+        cAttribute = {
             attrId: Id,
             cusCode: Customer.cusCode,
             attrName: Id,
@@ -120,10 +136,8 @@ $(document).on("change", "#gattrblk .form-control.cattr", function () {
             attrIsGlobal: false,
             gattrId:""
     };
-        cAttributes.push(cattr);
+        //cAttributes.push(cAttribute);
     }
-
-
 });
 
 $(document).on("click", "#btnPlusAttr", function () {

@@ -26,7 +26,7 @@
 								<input type="text" class="form-control text attr" id="@id" placeholder="@lbltxt" data-attrvalue="@attr.attrValue" data-attrname="@attr.attrName" data-attrtype="text" data-isdefault="1" data-isglobal="1" value="@val" data-ng-required="1">
 
 								<input type="hidden" class="info" data-attrid="@attr.attrId" data-gattrid="@attr.gattrId" data-order="@attr.attrOrder" />
-								<span id="@(id)msg" class="mx-1 my-auto"></span>
+								<span id="@(id)msg" class="float-right"></span>
 							</div>
 						}
 					</fieldset>
@@ -48,7 +48,7 @@
 								<label class="pointer attr" for="@id">@lbltxt</label>
 								<input type="text" class="form-control text labeltxt hide" data-attrtype="label" data-id="@id" data-oldname="@lbltxt" />
 								<input type="text" class="form-control text attr" id="@id" placeholder="@lbltxt" data-attrvalue="@attr.attrValue" data-attrname="@attr.attrName" data-attrtype="text" data-isdefault="1" data-isglobal="1" value="@val" data-ng-required="0">
-								<span id="@(id)msg" class="mx-1 my-auto"></span>
+								<span id="@(id)msg" class="float-right"></span>
 							</div>
 						}
 					</fieldset>
@@ -66,17 +66,17 @@
 							var lbltxt = attr.attrName;
 							var cattr = CustomAttributeList.FirstOrDefault(x => x.gattrId == id);
 							var val = cattr.attrValue;
-							if (string.IsNullOrEmpty(val))
-							{
-								val = attr.attrValue;
-							}
+							//if (string.IsNullOrEmpty(val))
+							//{
+							//	val = attr.attrValue;
+							//}
 
 							List<string> valattr = new List<string>();
 							if (!string.IsNullOrEmpty(val))
 							{
 								valattr = val.Split(new string[] { "||" }, StringSplitOptions.None).ToList();
 							}
-							
+
 							<div class="form-group">
 								<div class="row">
 									<div class="col-12 col-sm-4">
@@ -87,7 +87,11 @@
 										<select class="form-control flex combo attr" id="@id" data-id="@id" data-attrname="@attr.attrName" data-attrvalue="@val" placeholder="@lbltxt" data-attrtype="dropdown" data-isdefault="1" data-isglobal="1" data-ng-required="1">
 											@foreach (var v in valattr)
 											{
-												<option value="@v">@v</option>
+												if (!string.IsNullOrEmpty(v))
+												{
+													<option value="@v">@v</option>
+												}
+
 											}
 										</select>
 									</div>
@@ -114,7 +118,7 @@
 				<span id="gattrMsg" class="mx-2 my-auto"></span>
 			</div>
 		</div>
-		
+
 	</div>
 }
 

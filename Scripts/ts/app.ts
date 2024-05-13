@@ -2735,7 +2735,7 @@ function openGComboModal() {
 	if (gAttribute.attrValue !== "") {
 		$target = gcomboModal.find("form");
 		$target.empty();
-		console.log("gval:" + gAttribute.attrValue);
+		//console.log("gval:" + gAttribute.attrValue);
 		let _vals = gAttribute.attrValue.split("||");
 		//console.log('_vals#open:', _vals);
 		let html = "";
@@ -3152,7 +3152,7 @@ function openDropDownModal(ele: any = null) {
 			dropdownModal.find(".form-group").first().find("label").text(eblasttxt);
 		}
 	}
-	
+
 
 	if (ele) {
 		let _attrname: string = $(ele).data("attrname");
@@ -7153,9 +7153,11 @@ function pagingRecords(records, containername) {
 }
 
 function initGCombo(id: string, _val: string = ""): IGCombo {
+	//console.log("_val:" + _val);
+	if (_val && isNumber(_val)) _val = convertVarNumToString(_val);
 	return {
 		id: id,
-		values: _val === "" ? [] : _val.split("||"),
+		values: _val ? _val.split("||") : [],
 	};
 }
 interface IGCombo {
@@ -21653,14 +21655,18 @@ function removeEmptyRow() {
 function showMsg4Cls(clsname: string, msg: string, alertCls: string = "", timeout: number = 3000, fadeout: number = 1000) {
 	$(`.${clsname}`).addClass(`${alertCls}`).html(msg);
 	setTimeout(function () {
-		$(`.${clsname}`).fadeOut(fadeout);
+		//reset the msg tag	
+		$(`.${clsname}`).removeClass(`${alertCls}`).text("");
 	}, timeout);
 }
 function showMsg(Id: string, msg: string, alertCls: string = "info", timeout: number = 3000, fadeout: number = 1000) {
 	$(`#${Id}`).addClass(`small alert alert-${alertCls}`).html(msg);
 	setTimeout(function () {
-		$(`#${Id}`).fadeOut(fadeout);
+		//reset the msg tag	
+		$(`#${Id}`).removeClass(`small alert alert-${alertCls}`).text("");		
 	}, timeout);
+
+	
 }
 let isassignor: boolean;
 let SelectedSimpleItemList: ISimpleItem[] = [];

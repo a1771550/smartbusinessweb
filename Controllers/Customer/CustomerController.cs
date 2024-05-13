@@ -180,11 +180,10 @@ namespace SmartBusinessWeb.Controllers.Customer
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult SaveCAttr(string cusCode, CustomAttributeModel cAttribute)
-        {
-            //todo:
-            var msg = string.Format(Resources.Resource.Saved, Resources.Resource.Attribute);
-            CustomerEditModel.SaveCAttr(cusCode, cAttribute);
-            return Json(msg);
+        {   
+            CustomerEditModel model = new CustomerEditModel();
+            model.SaveCAttr(cusCode, cAttribute);
+            return Json(new { model.CustomAttributeList });
         }
 
         [HandleError]

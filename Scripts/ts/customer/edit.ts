@@ -45,7 +45,7 @@ $(document).on("dblclick", ".pointer.attr", function () {
 });
 
 $(document).on("click", "#btnSaveCattr", function () {
-	saveCattr(Customer.cusCode);
+	saveCattr();
 });
 
 $(document).on("click", "#btnEdit", function () {
@@ -103,7 +103,7 @@ function removeCattr(cattr: string) {
 			if (data) {
 				//console.log("data:", data);
 				cAttributes = data.slice(0);
-				console.log("cattrbutes:", cAttributes);
+				//console.log("cattrbutes:", cAttributes);
 				displayCustomAttributes();
 			}
 		},
@@ -120,6 +120,7 @@ function handleAttrAccordionActivated() {
 	}
 }
 function displayCustomAttributes() {
+	console.log("cAttributes:", cAttributes);
 	let html = "";
 	cAttributes.forEach((x) => {
 		if (x.attrType == "custom") {

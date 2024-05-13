@@ -16,24 +16,24 @@
 	<a href="/Customer/Edit?Id=0&referrer=Index" class="btn btn-info btnsmall40 float-right" title="@Resources.Resource.Add">@Resources.Resource.Add</a>
 </h2>
 
-@if (Model.CustomerList != null && Model.CustomerList.Count > 0)
+@Html.AntiForgeryToken()
+
+@using (Html.BeginForm("Index", "Customer", FormMethod.Get, new { @Id = "frmCustomer" }))
 {
-	@Html.AntiForgeryToken()
-
-	using (Html.BeginForm("Index", "Customer", FormMethod.Get, new { @Id = "frmCustomer" }))
-	{
-		<div class="form-inline my-4">
-			<div class="form-group">
-				<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Model.Keyword" />
-				<button id="btnSearch" type="button" class="btn btn-success mx-1">@Resources.Resource.Search</button>
-				<button id="btnReload" type="button" class="btn btn-warning mx-1">@Resources.Resource.Reload</button>
-				<button id="btnAdvSearch" type="button" class="btn btn-danger mx-1">@Resources.Resource.AdvancedSearch</button>
-				<button id="btnHotList" type="button" class="btn btn-info mx-1">@addtohotlisttxt</button>
-				<button id="btnGroup" type="button" class="btn btn-dark mx-1">@string.Format(Resources.Resource.AddToFormat, Resources.Resource.CustomerGroup)</button>
-				<button id="btnBlast" type="button" class="btn btn-primary mx-1">@addtoeblasttxt</button>
-			</div>
+	<div class="form-inline my-4">
+		<div class="form-group">
+			<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Model.Keyword" />
+			<button id="btnSearch" type="button" class="btn btn-success mx-1">@Resources.Resource.Search</button>
+			<button id="btnReload" type="button" class="btn btn-warning mx-1">@Resources.Resource.Reload</button>
+			<button id="btnAdvSearch" type="button" class="btn btn-danger mx-1">@Resources.Resource.AdvancedSearch</button>
+			<button id="btnHotList" type="button" class="btn btn-info mx-1">@addtohotlisttxt</button>
+			<button id="btnGroup" type="button" class="btn btn-dark mx-1">@string.Format(Resources.Resource.AddToFormat, Resources.Resource.CustomerGroup)</button>
+			<button id="btnBlast" type="button" class="btn btn-primary mx-1">@addtoeblasttxt</button>
 		</div>
+	</div>
 
+	if (Model.CustomerList != null && Model.CustomerList.Count > 0)
+	{
 		<table id="tblCustomer" class="table table-bordered table-hover table-condensed">
 			<thead class="gray-header font-weight-bold">
 				<tr>
@@ -91,11 +91,12 @@
 
 		@Html.Partial("_SortOrderColHidden")
 	}
+	else
+	{
+		@Html.Partial("_NoRecordFound")
+	}
 }
-else
-{
-	@Html.Partial("_NoRecordFound")
-}
+
 
 
 @Html.Partial("_CustomerGroupModal")
@@ -106,7 +107,7 @@ else
 
 @Html.Partial("_AdvancedSearchModal", Model.GlobalAttrList)
 
-@Html.Partial("_DropDownModal",null,new ViewDataDictionary { {"lbltxt", Resources.Resource.eBlast }, { "drpId", "drpEblast"}, {"forcustomer",true } })
+@Html.Partial("_DropDownModal", null, new ViewDataDictionary { { "lbltxt", Resources.Resource.eBlast }, { "drpId", "drpEblast" }, { "forcustomer", true } })
 
 @Html.Partial("_WaitingModal")
 <div id="infoblk" data-codelist="@JsonSerializer.Serialize(Model.CodeList)" data-actionhistory="@Resources.Resource.ActionHistory" data-selectatleastonecustomertxt="@selectatleastonecustomertxt" data-pagesize="@Model.ComInfo.PageLength"></div>
