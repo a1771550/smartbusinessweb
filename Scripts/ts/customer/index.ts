@@ -1,5 +1,19 @@
 ﻿$infoblk = $("#infoblk");
 
+$(document).on("click", ".assign", function (e) {
+	e.stopPropagation();
+	getRowCurrentY.call(this);
+	$tr.find("td").last().find(".chk").prop("checked", true).trigger("change");
+	handleAssign($(this).data("salespersonid"));
+});
+$(document).on('click', '#btnAssign', function (e) {
+	forhotlist = true;
+	e.preventDefault();
+	e.stopPropagation();
+	populateDropDown4HotListsCusGroupList();
+	openDropDownModal();
+});
+
 $(document).on("dblclick", ".hotid", function () {
 	closeHotListModal();
 	if (CodeList.length > 0) {

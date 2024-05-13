@@ -19589,45 +19589,92 @@ let assignEnqIdList: string[] = [];
 function assignSave(salesmanId: number) {
 	closeSalesmenModal();
 
-	//sendmail4assignmentprompt
-	$.fancyConfirm({
-		title: "",
-		message: sendmail4assignmentprompt,
-		shownobtn: true,
-		okButton: oktxt,
-		noButton: notxt,
-		callback: function (value) {
-			$.ajax({
-				type: "POST",
-				url: "/Enquiry/Assign",
-				data: {
-					__RequestVerificationToken: $(
-						"input[name=__RequestVerificationToken]"
-					).val(),
-					assignEnqIdList,
-					salesmanId,
-					notification: value ? 1 : 0,
-				},
-				success: function (data) {
-					if (data) {
-						$.fancyConfirm({
-							title: "",
-							message: data.msg,
-							shownobtn: false,
-							okButton: oktxt,
-							noButton: notxt,
-							callback: function (value) {
-								if (value) {
-									window.location.reload();
-								}
-							},
-						});
-					}
-				},
-				dataType: "json",
-			});
-		},
-	});
+	if (forcustomer) {
+		console.log("CodeList:", CodeList);
+		console.log("salesmanId:", salesmanId);
+		return;
+		$.fancyConfirm({
+			title: "",
+			message: sendmail4assignmentprompt,
+			shownobtn: true,
+			okButton: oktxt,
+			noButton: notxt,
+			callback: function (value) {
+				$.ajax({
+					type: "POST",
+					url: "/Customer/Assign",
+					data: {
+						__RequestVerificationToken: $(
+							"input[name=__RequestVerificationToken]"
+						).val(),
+						CodeList,
+						salesmanId,
+						notification: value ? 1 : 0,
+					},
+					success: function (data) {
+						if (data) {
+							$.fancyConfirm({
+								title: "",
+								message: data.msg,
+								shownobtn: false,
+								okButton: oktxt,
+								noButton: notxt,
+								callback: function (value) {
+									if (value) {
+										window.location.reload();
+									}
+								},
+							});
+						}
+					},
+					dataType: "json",
+				});
+			},
+		});
+	}
+
+	if (forenquiry) {
+		//sendmail4assignmentprompt
+		$.fancyConfirm({
+			title: "",
+			message: sendmail4assignmentprompt,
+			shownobtn: true,
+			okButton: oktxt,
+			noButton: notxt,
+			callback: function (value) {
+				$.ajax({
+					type: "POST",
+					url: "/Enquiry/Assign",
+					data: {
+						__RequestVerificationToken: $(
+							"input[name=__RequestVerificationToken]"
+						).val(),
+						assignEnqIdList,
+						salesmanId,
+						notification: value ? 1 : 0,
+					},
+					success: function (data) {
+						if (data) {
+							$.fancyConfirm({
+								title: "",
+								message: data.msg,
+								shownobtn: false,
+								okButton: oktxt,
+								noButton: notxt,
+								callback: function (value) {
+									if (value) {
+										window.location.reload();
+									}
+								},
+							});
+						}
+					},
+					dataType: "json",
+				});
+			},
+		});
+	}
+	
 }
 
 let DicIDItemOptions: { [Key: number]: IItemOptions };

@@ -12,13 +12,13 @@ $(function () {
     var salesmanId = Number(getParameterByName("salesmanId") ?? 0);
     var adminId = Number(getParameterByName("adminId") ?? 0);
     var receiptno = getParameterByName("receiptno");
-    const password = "123456Pos"; //123456Pos
+    const password = "123456Pos"; //123456Pos;Pos123456
     if ((salesmanId == 0 && adminId == 0) || receiptno == null) {
         if (isLocal) {
             //$("#Email").val("utservice_sb1@united.com.hk");
             //$("#Email").val("sunnyy@united.com.hk");
-           $("#Email").val("utservice@united.com.hk");
-           // $("#Email").val("enquiry@united.com.hk");     
+          // $("#Email").val("utservice@united.com.hk");
+            $("#Email").val("enquiry@united.com.hk");     
             $("#Password").val(password);
            $("#btnLogin").trigger("click");
         } else {

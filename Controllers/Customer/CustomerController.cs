@@ -10,12 +10,27 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
+using CommonLib.App_GlobalResources;
 
 namespace SmartBusinessWeb.Controllers.Customer
 {
     [CustomAuthenticationFilter]
     public class CustomerController : BaseController
-    {   
+    {
+        [HandleError]
+        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult Assign(List<string> CodeList, int salesmanId, int notification)
+        {
+            var msg = Resource.CustomersAssigned;
+            if ((bool)ComInfo.enableEmail4Assignment && notification == 1)
+                msg += "<p>" + Resource.NotificationEmailWillBeSentToSalesperson + "</p>";
+
+            string salesmanname = CustomerEditModel.AssignCustomersToSalesman(CodeList, salesmanId, notification);
+            msg = string.Format(msg, salesmanname);
+            return Json(new { msg });
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -110,6 +125,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                                 cusCode = cusCode,
                                 fileName = FileList.FirstOrDefault(),
                                 type = "file",
+                                assignedSalesId = user.surUID,
                                 CreateBy = user.UserCode,
                                 CreateTime = DateTime.Now,
                                 AccountProfileId = apId

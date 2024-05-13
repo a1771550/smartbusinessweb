@@ -4,8 +4,7 @@
 	var rand = CommonHelper.GetVersionRandomNo();
 	var totaltxt = CultureHelper.CurrentCulture == 2 ? string.Concat(Resources.Resource.Total, " ", Resources.Resource.Record, "s") : String.Concat(Resources.Resource.Total, "", Resources.Resource.Record);
 	string addtocontacttxt = string.Format(Resources.Resource.AddTo, Resources.Resource.Contact);
-	var user = HttpContext.Current.Session["User"] as SessUser;
-	bool isassignor = user.Roles.Any(x => x == RoleType.Admin || x == RoleType.SalesManager);
+	bool isassignor = Model.User.Roles.Any(x => x == RoleType.Admin || x == RoleType.SalesManager);
 	const string mgturl = @"https://unpkg.com/@microsoft/mgt@2/dist/bundle/mgt-loader.js";
 	string enquiryacc = ConfigurationManager.AppSettings["EnquiryEmail"];
 }
