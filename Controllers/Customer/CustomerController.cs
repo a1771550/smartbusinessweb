@@ -17,6 +17,17 @@ namespace SmartBusinessWeb.Controllers.Customer
     [CustomAuthenticationFilter]
     public class CustomerController : BaseController
     {
+        [HttpPost]
+        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [ValidateAntiForgeryToken]
+        public JsonResult AddToSalesmen(List<int> groupIdList, List<int> salesmanIdList, bool notification)
+        {
+            var msg = string.Format(Resource.AreAddedToFormat, Resource.Customer, Resource.Salesmen);
+            CustomerEditModel model = new CustomerEditModel();
+            model.AddToSalesmen(groupIdList, salesmanIdList, notification);
+            return Json(msg);
+        }
+
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [HttpPost]
@@ -47,7 +58,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         [ValidateAntiForgeryToken]
         public JsonResult AddToEblast(List<int> groupIdList, List<int> eblastIdList)
         {
-            var msg = string.Format(Resources.Resource.AreAddedToFormat, Resources.Resource.Customer, Resources.Resource.eBlast);
+            var msg = string.Format(Resource.AreAddedToFormat, Resource.Customer, Resource.eBlast);
             CustomerEditModel model = new CustomerEditModel();
             model.AddToEblast(groupIdList, eblastIdList);
             return Json(msg);

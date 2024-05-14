@@ -219,12 +219,12 @@ $(document).on("dblclick", ".enquiry", function () {
 	}
 });
 
-$(document).on("click", ".assign", function (e) {
-	e.stopPropagation();
-	$(this).parent("td").parent("tr").find("td").first().find(".enqchk").prop("checked", true).trigger("change");
-	//console.log("salespersonid:" + $(this).data("salespersonid"));
-	handleAssign($(this).data("salespersonid"));
-});
+//$(document).on("click", ".assign", function (e) {
+//	e.stopPropagation();
+//	$(this).parent("td").parent("tr").find("td").first().find(".enqchk").prop("checked", true).trigger("change");
+//	//console.log("salespersonid:" + $(this).data("salespersonid"));
+//	handleAssign($(this).data("salespersonid"));
+//});
 $(document).on("click", '#btnAssign', function () {
 	$target = $(this);
 	if (assignEnqIdList.length === 0) {
@@ -242,7 +242,7 @@ $(document).on("click", '#btnAssign', function () {
 			}
 		});
 	} else {
-		handleAssign(null);
+		handleAssign(0);
 	}
 });
 

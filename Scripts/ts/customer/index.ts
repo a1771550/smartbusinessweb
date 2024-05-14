@@ -1,16 +1,60 @@
 ﻿$infoblk = $("#infoblk");
 
-$(document).on("click", ".assign", function (e) {
-	e.stopPropagation();
-	getRowCurrentY.call(this);
-	$tr.find("td").last().find(".chk").prop("checked", true).trigger("change");
-	handleAssign($(this).data("salespersonid"));
-});
-$(document).on('click', '#btnAssign', function (e) {
-	forhotlist = true;
+function handleSalesmenCustomers(notification:boolean) {
+	let salesmanIdList: number[] = [];
+	let salesmen: string[] = dropdownModal.find("select").first().val() as string[];
+	//console.log(eblasts);
+	if (salesmen.length == 1) salesmanIdList.push(Number(salesmen[0]));
+	else {
+		salesmen.forEach((x) => {
+			salesmanIdList.push(Number(x));
+		});
+	}
+	let groupIdList: number[] = [];
+	let groups = dropdownModal.find("#drpCustomerGroup").val() as string[];
+	//console.log(groups);
+	if (groups.length == 1) groupIdList.push(Number(groups[0]));
+	else {
+		groups.forEach((x) => {
+			groupIdList.push(Number(x));
+		});
+	}
+
+	//console.log("salesmanIdList:", salesmanIdList);
+	//console.log("groupIdList:", groupIdList);
+	//return;
+	openWaitingModal();
+	$.ajax({
+		type: "POST",
+		url: "/Customer/AddToSalesmen",
+		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), groupIdList, salesmanIdList, notification },
+		success: function (data) {
+			if (data) {
+				$.fancyConfirm({
+					title: "",
+					message: data,
+					shownobtn: false,
+					okButton: oktxt,
+					noButton: notxt,
+					callback: function (value) {
+						if (value) {
+							closeWaitingModal();
+							$("#txtKeyword").trigger("focus");
+						}
+					}
+				});
+			}
+		},
+		dataType: "json"
+	});
+}
+$(document).on("click", "#btnAssign", function (e) {
+	foreblast = false;
+	forhotlist = false;
+	forassignsalesmen = true;
 	e.preventDefault();
 	e.stopPropagation();
-	populateDropDown4HotListsCusGroupList();
+	populateDropDown4SalesmenCusGroupList();
 	openDropDownModal();
 });
 
@@ -18,7 +62,7 @@ $(document).on("dblclick", ".hotid", function () {
 	closeHotListModal();
 	if (CodeList.length > 0) {
 		IdList = [];
-		IdList.push(Number($(this).data('id')));
+		IdList.push(Number($(this).data("id")));
 		handleHotListCustomers();
 	}
 });
@@ -29,13 +73,13 @@ function handleHotListCustomers() {
 	//console.log(eblasts);
 	if (hotlists.length == 1) hotlistIdList.push(Number(hotlists[0]));
 	else {
-		hotlistIdList.forEach((x) => {
-			IdList.push(Number(x));
+		hotlists.forEach((x) => {
+			hotlistIdList.push(Number(x));
 		});
 	}
 	let groupIdList: number[] = [];
 	let groups = dropdownModal.find("#drpCustomerGroup").val() as string[];
-	console.log(groups);
+	//console.log(groups);
 	if (groups.length == 1) groupIdList.push(Number(groups[0]));
 	else {
 		groups.forEach((x) => {
@@ -46,12 +90,12 @@ function handleHotListCustomers() {
 	openWaitingModal();
 	$.ajax({
 		type: "POST",
-		url: '/HotList/AddCustomers',
-		data: { __RequestVerificationToken: $('input[name=__RequestVerificationToken]').val(), groupIdList, hotlistIdList },
+		url: "/HotList/AddCustomers",
+		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), groupIdList, hotlistIdList },
 		success: function (data) {
 			if (data) {
 				$.fancyConfirm({
-					title: '',
+					title: "",
 					message: data,
 					shownobtn: false,
 					okButton: oktxt,
@@ -59,18 +103,20 @@ function handleHotListCustomers() {
 					callback: function (value) {
 						if (value) {
 							closeWaitingModal();
-							$('#txtKeyword').trigger("focus");
+							$("#txtKeyword").trigger("focus");
 						}
 					}
 				});
 			}
 		},
-		dataType: 'json'
+		dataType: "json"
 	});
 
 }
-$(document).on('click', '#btnHotList', function (e) {
+$(document).on("click", "#btnHotList", function (e) {
 	forhotlist = true;
+	foreblast = false;
+	forassignsalesmen = false;
 	e.preventDefault();
 	e.stopPropagation();
 	populateDropDown4HotListsCusGroupList();
@@ -78,7 +124,9 @@ $(document).on('click', '#btnHotList', function (e) {
 });
 
 $(document).on("click", "#btnBlast", function (e) {
+	foreblast = true;
 	forhotlist = false;
+	forassignsalesmen = false;
 	e.preventDefault();
 	e.stopPropagation();
 	populateDropDown4EblastCusGroupList();
@@ -200,18 +248,18 @@ $(document).on("click", "#btnSearch", function () {
 $(document).on("click", "#btnGroup", function (e) {
 	e.preventDefault();
 	e.stopPropagation();
-	//console.log('CodeList:', CodeList);
+	//console.log("CodeList:", CodeList);
 	//return false;
 	if (CodeList.length === 0) {
 		$.fancyConfirm({
-			title: '',
-			message: $infoblk.data('selectatleastonecustomertxt'),
+			title: "",
+			message: $infoblk.data("selectatleastonecustomertxt"),
 			shownobtn: false,
 			okButton: oktxt,
 			noButton: notxt,
 			callback: function (value) {
 				if (value) {
-					$('#txtKeyword').trigger("focus");
+					$("#txtKeyword").trigger("focus");
 				}
 			}
 		});
@@ -221,6 +269,40 @@ $(document).on("click", "#btnGroup", function (e) {
 
 });
 
+function populateDropDown4SalesmenCusGroupList() {
+	$.ajax({
+		type: "GET",
+		url: "/Api/GetSalesmenCusGroupList",
+		data: {},
+		success: function (data) {
+			if (data) {				
+				salesmen = data.Salesmen.slice(0);
+				$target = dropdownModal.find("select").first();
+				$target.empty();
+				salesmen.forEach((x) => {
+					openDropDownModal();
+					$target.append($("<option>", {
+						value: x.surUID,
+						text: x.UserName
+					}));
+				});
+				CustomerGroupList = data.CustomerGroupList.slice(0);
+				$target = dropdownModal.find("#drpCustomerGroup");
+				$target.empty();
+				CustomerGroupList.forEach((x) => {
+					openDropDownModal();
+					$target.append($("<option>", {
+						value: x.Id,
+						text: x.cgName
+					}));
+				});
+
+				dropdownModal.find("select").select2();
+			}
+		},
+		dataType: "json"
+	});
+}
 function populateDropDown4HotListsCusGroupList() {
 	$.ajax({
 		type: "GET",
@@ -409,16 +491,16 @@ $(function () {
 		handleCheckAll(checked);
 	}
 
-	if ($infoblk.data('returnmsg')) {
+	if ($infoblk.data("returnmsg")) {
 		$.fancyConfirm({
-			title: '',
-			message: $infoblk.data('returnmsg'),
+			title: "",
+			message: $infoblk.data("returnmsg"),
 			shownobtn: false,
 			okButton: oktxt,
 			noButton: notxt,
 			callback: function (value) {
 				if (value) {
-					$('#txtKeyword').trigger("focus");
+					$("#txtKeyword").trigger("focus");
 				}
 			}
 		});

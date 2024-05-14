@@ -117,7 +117,8 @@ let $appInfo = $("#appInfo");
 let $txtblk = $("#txtblk");
 
 let isEpay: boolean = false;
-let salesman: ICrmUser;
+let salesman: ISalesman;
+
 let checkoutportal: string =
 	$appInfo.length === 0
 		? ""
@@ -147,6 +148,8 @@ let SelectedCountry: number = 1;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
+const emailnotificationtosalesmentxt: string = $txtblk.data("emailnotificationtosalesmentxt");
+const salesmentxt: string = $txtblk.data("salesmentxt");
 const groupnamerequiredtxt: string = $txtblk.data("groupnamerequiredtxt");
 const customergrouptxt: string = $txtblk.data("customergrouptxt");
 const reserveitemtxt: string = $txtblk.data("reserveitemtxt");
@@ -646,7 +649,7 @@ let gAttribute: IGlobalAttribute;
 let cAttributes: ICustomAttribute[] = [];
 let cAttribute: ICustomAttribute;
 
-let dicAssignedSalesInfo: { [Key: number]: ICrmUser } = {};
+let dicAssignedSalesInfo: { [Key: number]: ISalesman } = {};
 
 let waitingModal: any,
 	itemModal: any,
@@ -708,7 +711,7 @@ let sysdateformat: string = "yyyy-mm-dd";
 let attrId: string;
 let attrvalues: string[] = [];
 let customerlist: Array<ICustomer> = [];
-let staff: ICrmUser;
+let staff: ISalesman;
 let payurl = "https://pay.wepayez.com/pay/qrcode?uuid={0}&s={1}";
 let authcode: string = "";
 let fileList: string[] = [];
@@ -3148,8 +3151,18 @@ function openDropDownModal(ele: any = null) {
 	if (forcustomer) {
 		if (forhotlist) {
 			dropdownModal.find(".form-group").first().find("label").text(hotlisttxt);
-		} else {
+		}
+		if(foreblast){
 			dropdownModal.find(".form-group").first().find("label").text(eblasttxt);
+		}
+		if (forassignsalesmen) {
+			dropdownModal.find(".form-group").first().find("label").text(salesmentxt);
+
+			let html = `<div class="form-check small">
+			<input type="checkbox" class="form-check-input" id="chkEmailNotification" checked />
+			<label class="form-check-label" for="chkEmailNotification">${emailnotificationtosalesmentxt}</label>
+		</div>`;
+			dropdownModal.append(html);
 		}
 	}
 
@@ -4563,6 +4576,7 @@ function initModals() {
 			buttons: [
 				{
 					text: canceltxt,
+					class: "secondarybtn",
 					click: closeSalesmenModal,
 				},
 			],
@@ -4583,10 +4597,12 @@ function initModals() {
 						$target = dropdownModal.find("select");
 						closeDropDownModal();
 						if (forcustomer) {
-							if (forhotlist)
-								handleHotListCustomers();
-							else
-								handleEblastCustomers();
+							if (forhotlist)	handleHotListCustomers();
+							if (foreblast) handleEblastCustomers();
+							if (forassignsalesmen) {
+								let $chk = $("#chkEmailNotification");
+								handleSalesmenCustomers($chk.length>0 && $chk.is(":checked"));
+							}								
 						} else {
 							let _id: string = <string>$target.attr("id");
 							console.log("_id:" + _id);
@@ -5093,82 +5109,8 @@ $.fancyConfirm = function (opts) {
 	});
 };
 
-function initCrmUser(): ICrmUser {
-	return {
-		//surUID: 0,
-		//surIsActive: false,
-		//UserCode: "",
-		//UserName: "",
-		//Email: "",
-		//ManagerId: 0,
-		//IsActive: 0,
-		//AccountProfileId: 0,
-		//AssignedContactIds: [],
-		//FirstName: "",
-		//LastName: "",
-		//surCreateBy: "",
-		//CreateTimeDisplay: "",
-		//surModifyBy: "",
-		//ModifyTimeDisplay: "",
-		//surDesc: "",
-		//surNotes: "",
-		//Password: "",
-		//ConfirmPassword: "",
-		//checkpass: false,
-		//RoleTypes: [RoleType.SalesPerson],
-		//GroupMemberList: [],
-		//CrmSalesGroupIdList: [],
-		//ManagerName: "",
-		//CrmSalesGroupMemberIdList: [],
-		//SalesGroup: initCrmSalesGroup(),
-		//DicSalesGroup: {},
-	} as ICrmUser;
-}
-function initCrmSalesGroup(): ICrmSalesGroup {
-	return {
-		Id: 0,
-		sgName: "",
-		sgDesc: "",
-		CreateTimeDisplay: "",
-		ModifyTimeDisplay: "",
-	};
-}
-interface ICrmSalesGroup {
-	Id: number;
-	sgName: string;
-	sgDesc: string;
-	CreateTimeDisplay: string;
-	ModifyTimeDisplay: string | null;
-}
-let crmuser: ICrmUser;
-interface ICrmUser extends ISysUser {
-	//surUID: number;
-	//surIsActive: boolean;
-	//UserCode: string;
-	//UserName: string;
-	//Email: string;
-	ManagerId: number;
-	//IsActive: number;
-	//AccountProfileId: number;
-	AssignedContactIds: Array<number>;
-	//FirstName: string;
-	//LastName: string;
-	//surCreateBy: string;
-	CreateTimeDisplay: string;
-	//surModifyBy: string;
-	ModifyTimeDisplay: string | null;
-	//surDesc: string | null;
-	//surNotes: string | null;
-	//Password: string;
-	ConfirmPassword: string;
-	checkpass: boolean;
-	RoleTypes: Array<RoleType>;
-	GroupMemberList: Array<ICrmUser>;
-	CrmSalesGroupIdList: Array<number>;
-	ManagerName: string | null;
-	CrmSalesGroupMemberIdList: Array<number>;
-	SalesGroup: ICrmSalesGroup;
-	DicSalesGroup: { [Key: number]: string };
+interface ISalesman extends ISysUser{	 
+	AssignedCusCodes: string[];	
 }
 
 interface IePayResult {
@@ -6845,7 +6787,7 @@ $(document).on("change", ".chk", function (e) {
 	forcustomergroup = $(this).hasClass("group");
 	if (forcustomer) {
 		let code: string = $(this).data("code") as string;
-		if ($(this).is(":checked")) {
+		if ($(this).is(":checked") && !CodeList.includes(code)) {
 			CodeList.push(code);
 		} else {
 			let codex = -1;
@@ -6861,7 +6803,7 @@ $(document).on("change", ".chk", function (e) {
 		}
 	} else {
 		let _id: number = <number>$(this).data("id");
-		if ($(this).is(":checked")) {
+		if ($(this).is(":checked") && !IdList.includes(_id)) {
 			IdList.push(_id);
 		} else {
 			let idx = -1;
@@ -7075,7 +7017,7 @@ interface IHotList {
 	CreateTimeDisplay: string;
 	ModifyTimeDisplay: string | null;
 	SalesPersonName: string;
-	SalesmanList: Array<ICrmUser>;
+	SalesmanList: Array<ISalesman>;
 }
 
 function getGraphAuthority(tenantId: string): string {
@@ -7154,7 +7096,7 @@ function pagingRecords(records, containername) {
 
 function initGCombo(id: string, _val: string = ""): IGCombo {
 	//console.log("_val:" + _val);
-	if (_val && isNumber(_val)) _val = convertVarNumToString(_val);
+	if (_val && isNumber(_val)) _val = convertNumToString(_val);
 	return {
 		id: id,
 		values: _val ? _val.split("||") : [],
@@ -7326,7 +7268,7 @@ function initContact(): IContact {
 		ModifyBy: "",
 		ModifyTimeDisplay: "",
 		cusCheckout: false,
-		SalesPerson: initCrmUser(),
+		SalesPerson: {} as ISalesman,
 		NameDisplay: "",
 		FrmEnquiry: false,
 		SelectedType: "",
@@ -7383,7 +7325,7 @@ interface IContact {
 	ModifyTimeDisplay: string | null;
 	DeleteTimeDisplay: string | null;
 	cusCheckout: boolean;
-	SalesPerson: ICrmUser;
+	SalesPerson: ISalesman;
 	NameDisplay: string;
 	FrmEnquiry: boolean;
 	SelectedType: string | null;
@@ -7557,7 +7499,7 @@ function populateTblAssignedContacts(response: Array<IContact>) {
 	openAssignedContactModal();
 }
 let selectedContactId: number;
-function populateTblGroupSalesmen(response: Array<ICrmUser>) {
+function populateTblGroupSalesmen(response: Array<ISalesman>) {
 	//console.log('response:', response);
 	let dataHtml: string = "";
 	$.each(response, function (i, e) {
@@ -8195,9 +8137,9 @@ interface ISysUser {
 	surLockBy: string;
 	surLockTime: string | null;
 	surCreateBy: string;
-	surCreateTime: string;
+	CreateTimeDisplay: string;
 	surModifyBy: string;
-	surModifyTime: string | null;
+	ModifyTimeDisplay: string | null;
 	surIsAbss: boolean;
 	abssCardID: string;
 	CustomerList: Array<ICustomer>;
@@ -8205,9 +8147,8 @@ interface ISysUser {
 	IsActive: number;
 	ManagerName: string | null;
 }
-interface ISalesman extends ISysUser { }
 
-let salesmanlist: Array<ISalesman> = [];
+let salesmen: ISalesman[] = [];
 let selectedPosSalesmanCode: string = "";
 
 let DicCrmSalesGroupMembers: { [Key: number]: Array<number> } = {};
@@ -11743,7 +11684,7 @@ interface IStockTransfer {
 	CreateTimeDisplay: string;
 	ModifyTimeDisplay: string;
 }
-function convertVarNumToString(inum: any): string {
+function convertNumToString(inum: any): string {
 	if (!isNaN(inum)) {
 		return (inum as number).toString();
 	}
@@ -18354,6 +18295,8 @@ let forcustomergroup: boolean = false;
 let forCreateReserve: boolean = false;
 let forEditReserve: boolean = false;
 let forhotlist: boolean = false;
+let foreblast: boolean = false;
+let forassignsalesmen: boolean = false;
 let forrejectedcustomer: boolean = false;
 let forapprovedcustomer: boolean = false;
 $(document).on("click", ".whatspplink", function () {
@@ -19553,7 +19496,15 @@ $(document).on("change", ".range", function () {
 	daterangechange = true;
 });
 
-function handleAssign(salespersonId: number | null) {
+$(document).on("click", ".assign", function (e) {
+	e.stopPropagation();
+	getRowCurrentY.call(this);
+	let code = $(this).data("code") as string;
+	//console.log("code:", code);
+	if (code) { code = convertNumToString(code).trim(); }
+	handleAssign($(this).data("salespersonid"), code);
+});
+function handleAssign(salespersonId: number=0, cusCode:string="") {
 	$.ajax({
 		type: "GET",
 		url: "/Api/GetSalesInfo",
@@ -19563,15 +19514,26 @@ function handleAssign(salespersonId: number | null) {
 			if (data.length > 0) {
 				openSalesmenModal();
 				let html = "";
-				$.each(data, function (i, e: ICrmUser) {
-					let uname = e.UserName;
+				$.each(data, function (i, e: ISalesman) {				
 					let email = formatEmail(e.Email, e.UserName) ?? "N/A";
 					let notes = e.surNotes ?? "N/A";
+					let disabled = "";
+					let ondblclick = "";
+					let onclick = "";
+					let trcls = "";
 					if (salespersonId != null && salespersonId == e.surUID) {
-						html += `<tr data-id="${e.surUID}" class="selected"><td>${uname}</td><td>${email}</td><td>${notes}</td><td><span class="small">${e.ModifyTimeDisplay}</span></td></tr>`;
+						disabled = "disabled";
+						trcls = "selected";						
 					} else {
-						html += `<tr data-id="${e.surUID}" class="pointer" ondblclick="assignSave(${e.surUID});"><td>${uname}</td><td>${email}</td><td>${notes}</td><td><span class="small">${e.ModifyTimeDisplay}</span></td></tr>`;
+						trcls = "pointer";
+						onclick = `onclick="assignSave(${e.surUID},'${cusCode}');"`;
+						ondblclick = `ondblclick="assignSave(${e.surUID},'${cusCode}');"`;						
 					}
+					html += `<tr data-id="${e.surUID}" class="${trcls}" ${ondblclick}>
+					<td>${email}</td>
+					<td>${notes}</td><td class="text-center"><span class="">${e.ModifyTimeDisplay}</span></td>
+					<td class="text-center"><button type="button" class="btn btn-success" ${disabled} ${onclick}>${assigntxt}</button></td>
+					</tr>`;
 				});
 				$target = $("#tblsalesmen tbody");
 				$target.empty().html(html);
@@ -19586,13 +19548,14 @@ let jobIdList: string[] = [];
 let attdIdList: string[] = [];
 let enqIdList: string[] = [];
 let assignEnqIdList: string[] = [];
-function assignSave(salesmanId: number) {
+function assignSave(salesmanId: number, cusCode:string|null) {
 	closeSalesmenModal();
 
 	if (forcustomer) {
-		console.log("CodeList:", CodeList);
-		console.log("salesmanId:", salesmanId);
-		return;
+		if (cusCode && !CodeList.includes(cusCode)) CodeList.push(cusCode);
+		//console.log("CodeList:", CodeList);
+		//console.log("salesmanId:", salesmanId);
+		//return;
 		$.fancyConfirm({
 			title: "",
 			message: sendmail4assignmentprompt,
@@ -19674,7 +19637,7 @@ function assignSave(salesmanId: number) {
 			},
 		});
 	}
-	
+
 }
 
 let DicIDItemOptions: { [Key: number]: IItemOptions };
@@ -21710,10 +21673,10 @@ function showMsg(Id: string, msg: string, alertCls: string = "info", timeout: nu
 	$(`#${Id}`).addClass(`small alert alert-${alertCls}`).html(msg);
 	setTimeout(function () {
 		//reset the msg tag	
-		$(`#${Id}`).removeClass(`small alert alert-${alertCls}`).text("");		
+		$(`#${Id}`).removeClass(`small alert alert-${alertCls}`).text("");
 	}, timeout);
 
-	
+
 }
 let isassignor: boolean;
 let SelectedSimpleItemList: ISimpleItem[] = [];
@@ -22566,7 +22529,7 @@ $(document).on("change", ".reserve.locqty", function () {
 	let totalReservedQty: number = 0;
 	if (diff > 0) {
 		let itmcode: string = $(this).data("code") as string;
-		let shop: string = convertVarNumToString($(this).data("shop"));
+		let shop: string = convertNumToString($(this).data("shop"));
 		let price: number = Number($tr.find("td.itemprice").find("input.itemprice").val());
 
 		if (forCreateReserve) {

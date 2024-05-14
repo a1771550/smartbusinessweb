@@ -94,7 +94,7 @@ $(document).on("click", "#btnTransfer", function () {
 
 $(document).on("change", "input.locqty", function () {
 	let itmcode: string = $(this).data("code") as string;
-	let shop: string = convertVarNumToString($(this).data("shop"));
+	let shop: string = convertNumToString($(this).data("shop"));
 	//console.log('itemcode:' + itmcode + ';shop:' + shop);
 	let originalqty: number = Number($(this).data("oldval"));
 	let changeqty: number = Number($(this).val());

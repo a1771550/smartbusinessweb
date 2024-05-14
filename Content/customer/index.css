@@ -6,13 +6,20 @@
 }
 #tblCustomer th:nth-child(4), #tblCustomer td:nth-child(4) {
 	width: 250px !important;
+	min-width:250px!important;
 }
 
 #tblCustomer th:nth-child(5), #tblCustomer td:nth-child(5) {
 	width: 90px !important;
 }
-#tblCustomer th:nth-child(6), #tblCustomer td:nth-child(6), #tblCustomer th:nth-child(8), #tblCustomer td:nth-child(8) {
+#tblCustomer th:nth-child(6), #tblCustomer td:nth-child(6), #tblCustomer th.abss, #tblCustomer td.abss {
 	width: 120px !important;
+}
+#tblCustomer th:nth-child(8), #tblCustomer td:nth-child(8){
+	width: 140px !important;
+}
+#tblCustomer th.action, #tblCustomer td.action {
+	width: 140px !important;
 }
 #tblCustomer th:last-child, #tblCustomer td:last-child {
 	width: 50px !important;

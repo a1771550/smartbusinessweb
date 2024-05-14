@@ -1,22 +1,28 @@
 ﻿@{ 
-    string cls = ViewData["cls"]!=null ? (string)ViewData["cls"]:"";
-    string lbltxt = ViewData["lbltxt"] != null ? (string)ViewData["lbltxt"] : "";
-    string drpId = ViewData["drpId"] != null ? (string)ViewData["drpId"] : "";
-    bool forcustomer = ViewData["forcustomer"] != null;
+	string cls = ViewData["cls"]!=null ? (string)ViewData["cls"]:"";
+	string lbltxt = ViewData["lbltxt"] != null ? (string)ViewData["lbltxt"] : "";
+	string drpId = ViewData["drpId"] != null ? (string)ViewData["drpId"] : "";
+	bool forcustomer = ViewData["forcustomer"] != null;
+	string multiple = forcustomer ? "multiple='multiple'" : "";
 }
 
 <div id="dropdownModal">
 	<div class="form-group">
 		<label for="@drpId">@lbltxt</label>
-		<select id="@drpId" class="form-control dropdown @cls">
+		<select id="@drpId" class="form-control dropdown @cls" @multiple>
 		</select>
 	</div>
 	@if (forcustomer)
 	{
 		<div class="form-group">
 			<label for="drpCustomerGroup">@Resources.Resource.CustomerGroup</label>
-			<select id="drpCustomerGroup" class="form-control dropdown">
+			<select id="drpCustomerGroup" class="form-control dropdown" @multiple>
 			</select>
 		</div>
+
+		@*<div class="form-check small">
+			<input type="checkbox" class="form-check-input" id="chkEmailNotification" checked />
+			<label class="form-check-label" for="chkEmailNotification">@Resources.Resource.NotificationEmailWillBeSentToSalesperson</label>
+		</div>*@
 	}
 </div>

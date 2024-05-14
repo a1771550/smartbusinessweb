@@ -919,3 +919,17 @@ table.dataTable thead > tr > th.sorting_asc.text-right:before, table.dataTable t
 .pending4payment{
     background-color:#fbe3cb;
 }
+
+#tblsalesmen th:nth-child(1), #tblsalesmen td:nth-child(1){
+    width:130px;
+}
+#tblsalesmen th:nth-child(2), #tblsalesmen td:nth-child(2) {
+    width: 220px;
+}
+#tblsalesmen th:nth-child(3), #tblsalesmen td:nth-child(3) {
+    width: 140px;
+}
+#tblsalesmen th:nth-child(4), #tblsalesmen td:nth-child(4) {
+    width: 80px;
+    max-width:80px;
+}

@@ -66,7 +66,15 @@ namespace SmartBusinessWeb.Controllers
         public List<string> ShopNames;
         public ApiController() { }
 
-
+        [HttpGet]
+        public JsonResult GetSalesmenCusGroupList()
+        {
+            UserEditModel umodel = new UserEditModel();
+            umodel.GetSalesmen();
+            CustomerGroupEditModel cmodel = new CustomerGroupEditModel();
+            cmodel.GetList(1);
+            return Json(new { umodel.Salesmen, CustomerGroupList = cmodel.GroupList }, JsonRequestBehavior.AllowGet);
+        }
         [HttpGet]
         public JsonResult GetHotListsCusGroupList()
         {

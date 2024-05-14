@@ -56,7 +56,7 @@ function getSessionStartDataOk(data) {
     inclusivetax = data.inclusivetax;
     inclusivetaxrate = data.inclusivetaxrate;
     //console.log('inclusivetax#sessionstart:' + inclusivetax + ';inclusivetaxrate:' + inclusivetaxrate);
-    salesmanlist = data.salesmanlist;
+    salesmen = data.salesmanlist;
     enableTax = data.enableTax;
     DicCurrencyExRate = Object.assign({}, data.DicCurrencyExRate);
     //console.log(DicCurrencyExRate);
@@ -74,7 +74,7 @@ function getSessionStartDataOk(data) {
         sessionstartdata.push(enableTax);
         sessionstartdata.push(inclusivetax);
         sessionstartdata.push(inclusivetaxrate);
-        sessionstartdata.push(salesmanlist);
+        sessionstartdata.push(salesmen);
         sessionstartdata.push(DicCurrencyExRate);
         sessionstartdata.push(UseForexAPI);
         sessionstartdata.push(MyobJobList);
@@ -172,7 +172,7 @@ $(function () {
                 enableTax = sessionstartdata[6];
                 inclusivetax = sessionstartdata[7];
                 inclusivetaxrate = sessionstartdata[8];
-                salesmanlist = sessionstartdata[9];
+                salesmen = sessionstartdata[9];
                 defaultcustomer = sessionstartdata[4];
                 DicCurrencyExRate = sessionstartdata[10];
                 //console.log("DicCurrencyExRate:", DicCurrencyExRate);

@@ -3089,6 +3089,7 @@
     <Content Include="Scripts\ts\js\menu.js" />
     <Content Include="Scripts\ts\js\paymenttypes\index.js" />
     <Content Include="Scripts\ts\js\pos\advsales.js" />
+    <Content Include="Scripts\ts\js\pos\excludedinvoices.js" />
     <Content Include="Scripts\ts\js\pos\pendinginvoices.js" />
     <Content Include="Scripts\ts\js\pos\preorderedit.js" />
     <Content Include="Scripts\ts\js\pos\preorderlist.js" />
@@ -4328,11 +4329,6 @@
     <Content Include="Scripts\ts\js\crm\graphsettings\graphsettings_edit.js" />
     <Content Include="Scripts\ts\js\crm\onedrive\onedrive.js" />
     <Content Include="Scripts\ts\js\crm\report\actionlog.js" />
-    <Content Include="Scripts\ts\js\crm\usermanagement\salesmen\salesmen.js" />
-    <Content Include="Scripts\ts\js\crm\usermanagement\salesmen\salesmenedit.js" />
-    <Content Include="Scripts\ts\js\crm\usermanagement\user\edit.js" />
-    <Content Include="Scripts\ts\js\crm\usermanagement\user\editsalesgroup.js" />
-    <Content Include="Scripts\ts\js\crm\usermanagement\user\list.js" />
     <Content Include="Scripts\ts\js\datatransfer\exportfrmshop.js" />
     <Content Include="Scripts\ts\js\datatransfer\importfrmcentral.js" />
     <Content Include="Scripts\ts\js\emailsetting.js" />
@@ -4498,8 +4494,6 @@
     <Content Include="Scripts\ts\js\pos\sales.js" />
     <Content Include="Scripts\ts\js\pos\search.js" />
     <Content Include="Scripts\ts\js\pos\showits.js" />
-    <Content Include="Scripts\ts\js\pos\staff.js" />
-    <Content Include="Scripts\ts\js\pos\staffedit.js" />
     <Content Include="Scripts\ts\js\promotion\itemperiodpromotion.js" />
     <Content Include="Scripts\ts\js\promotion\itemperiodpromotionedit.js" />
     <Content Include="Scripts\ts\js\promotion\itemqtypromotion.js" />
@@ -4715,6 +4709,7 @@
     <Content Include="Views\CustomerGroup\Edit.cshtml" />
     <Content Include="Scripts\ts\js\customer\group\edit.js.map" />
     <Content Include="Scripts\ts\js\customer\group\index.js.map" />
+    <Content Include="Scripts\ts\js\pos\excludedinvoices.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4736,11 +4731,6 @@
     <Content Include="Scripts\ts\js\crm\graphsettings\graphsettings_edit.js.map" />
     <Content Include="Scripts\ts\js\crm\onedrive\onedrive.js.map" />
     <Content Include="Scripts\ts\js\crm\report\actionlog.js.map" />
-    <Content Include="Scripts\ts\js\crm\usermanagement\salesmen\salesmen.js.map" />
-    <Content Include="Scripts\ts\js\crm\usermanagement\salesmen\salesmenedit.js.map" />
-    <Content Include="Scripts\ts\js\crm\usermanagement\user\edit.js.map" />
-    <Content Include="Scripts\ts\js\crm\usermanagement\user\editsalesgroup.js.map" />
-    <Content Include="Scripts\ts\js\crm\usermanagement\user\list.js.map" />
     <Content Include="Scripts\ts\js\datatransfer\exportfrmshop.js.map" />
     <Content Include="Scripts\ts\js\datatransfer\importfrmcentral.js.map" />
     <Content Include="Scripts\ts\js\emailsetting.js.map" />
@@ -4771,8 +4761,6 @@
     <Content Include="Scripts\ts\js\pos\sales.js.map" />
     <Content Include="Scripts\ts\js\pos\search.js.map" />
     <Content Include="Scripts\ts\js\pos\showits.js.map" />
-    <Content Include="Scripts\ts\js\pos\staff.js.map" />
-    <Content Include="Scripts\ts\js\pos\staffedit.js.map" />
     <Content Include="Scripts\ts\js\promotion\itemperiodpromotion.js.map" />
     <Content Include="Scripts\ts\js\promotion\itemperiodpromotionedit.js.map" />
     <Content Include="Scripts\ts\js\promotion\itemqtypromotion.js.map" />
@@ -4961,8 +4949,6 @@
     <Content Include="Views\Shared\_WaitingModal.cshtml" />
     <Content Include="Views\Shared\_WhatsAppLinkModal.cshtml" />
     <Content Include="Views\Shared\NotFound.cshtml" />
-    <Content Include="Views\Staff\Edit.cshtml" />
-    <Content Include="Views\Staff\Index.cshtml" />
     <Content Include="Views\Supplier\Edit.cshtml" />
     <Content Include="Views\Supplier\Index.cshtml" />
     <Content Include="Views\Test\AjaxPostList.cshtml" />
@@ -5129,11 +5115,6 @@
     <TypeScriptCompile Include="Scripts\ts\customer\graphsettings\edit.ts" />
     <TypeScriptCompile Include="Scripts\ts\crm\onedrive\onedrive.ts" />
     <TypeScriptCompile Include="Scripts\ts\crm\report\actionlog.ts" />
-    <TypeScriptCompile Include="Scripts\ts\crm\usermanagement\salesmen\salesmen.ts" />
-    <TypeScriptCompile Include="Scripts\ts\crm\usermanagement\salesmen\salesmenedit.ts" />
-    <TypeScriptCompile Include="Scripts\ts\crm\usermanagement\user\edit.ts" />
-    <TypeScriptCompile Include="Scripts\ts\crm\usermanagement\user\editsalesgroup.ts" />
-    <TypeScriptCompile Include="Scripts\ts\crm\usermanagement\user\list.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\edit.ts" />
     <TypeScriptCompile Include="Scripts\ts\datatransfer\exportfrmshop.ts" />
@@ -5169,8 +5150,6 @@
     <TypeScriptCompile Include="Scripts\ts\pos\salesorderlist.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\search.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\showits.ts" />
-    <TypeScriptCompile Include="Scripts\ts\pos\staff.ts" />
-    <TypeScriptCompile Include="Scripts\ts\pos\staffedit.ts" />
     <TypeScriptCompile Include="Scripts\ts\promotion\itemperiodpromotion.ts" />
     <TypeScriptCompile Include="Scripts\ts\promotion\itemperiodpromotionedit.ts" />
     <TypeScriptCompile Include="Scripts\ts\promotion\itemqtypromotion.ts" />
