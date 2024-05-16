@@ -69,6 +69,16 @@ let DicCodeLocQty: { [Key: string]: { [Key: string]: number } }; //Dictionary<st
 let DicCodeLocId: { [Key: string]: { [Key: string]: string } };
 let DicItemReservedQty: { [Key: string]: number };
 
+interface IEnquiryGroup {
+	RemarkDisplay: any;
+	CompanyNames: any;
+	Id: number;
+	egName: string;
+	enIds: string;
+	Remark: string | null;
+	CreateTimeDisplay: string;
+	ModifyTimeDisplay: string | null;
+}
 interface ICustomerGroup {
 	RemarkDisplay: any;
 	CustomerNames: any;
@@ -81,6 +91,8 @@ interface ICustomerGroup {
 }
 let CustomerGroup: ICustomerGroup = {} as ICustomerGroup;
 let CustomerGroupList: ICustomerGroup[] = [];
+let EnquiryGroup: IEnquiryGroup = {} as IEnquiryGroup;
+let EnquiryGroupList: IEnquiryGroup[] = [];
 interface IPaymentType {
 	Id: number;
 	pmtCode: string;
@@ -148,6 +160,7 @@ let SelectedCountry: number = 1;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
+const enquirygrouptxt: string = $txtblk.data("enquirygrouptxt");
 const emailnotificationtosalesmentxt: string = $txtblk.data("emailnotificationtosalesmentxt");
 const salesmentxt: string = $txtblk.data("salesmentxt");
 const groupnamerequiredtxt: string = $txtblk.data("groupnamerequiredtxt");
@@ -642,6 +655,8 @@ let graphsettingslist: Array<IGraphSettings> = [];
 
 let IdList: number[] = [];
 let CodeList: string[] = [];
+let EnIdList: string[] = [];
+let AssignEnqIdList: string[] = [];
 
 let gAttributes: Array<IGlobalAttribute> = [];
 let gAttribute: IGlobalAttribute;
@@ -669,6 +684,7 @@ let waitingModal: any,
 	gcomboModal: any,
 	docModal: any,
 	customerGroupModal: any,
+	enquiryGroupModal: any,
 	hotlistModal: any,
 	testEblastModal: any,
 	actionLogValModal: any,
@@ -3152,17 +3168,19 @@ function openDropDownModal(ele: any = null) {
 		if (forhotlist) {
 			dropdownModal.find(".form-group").first().find("label").text(hotlisttxt);
 		}
-		if(foreblast){
+		if (foreblast) {
 			dropdownModal.find(".form-group").first().find("label").text(eblasttxt);
 		}
 		if (forassignsalesmen) {
 			dropdownModal.find(".form-group").first().find("label").text(salesmentxt);
 
-			let html = `<div class="form-check small">
+			if (!dropdownModal.find("#chkEmailNotification").length) {
+				let html = `<div class="form-check small">
 			<input type="checkbox" class="form-check-input" id="chkEmailNotification" checked />
 			<label class="form-check-label" for="chkEmailNotification">${emailnotificationtosalesmentxt}</label>
 		</div>`;
-			dropdownModal.append(html);
+				dropdownModal.append(html);
+			}
 		}
 	}
 
@@ -3452,6 +3470,11 @@ function closeReserveModal() {
 	reserveModal.dialog("close");
 }
 
+function resetEnquiryGroupModal() {
+	enquiryGroupModal.find(".text-danger").text("");
+	enquiryGroupModal.find("#txtRemark").val("");
+	enquiryGroupModal.find("#txtGroupName").val("").trigger("focus");
+}
 function resetCustomerGroupModal() {
 	customerGroupModal.find(".text-danger").text("");
 	customerGroupModal.find("#txtRemark").val("");
@@ -3460,13 +3483,41 @@ function resetCustomerGroupModal() {
 function openCustomerGroupModal() {
 	resetCustomerGroupModal();
 	customerGroupModal.dialog("open");
-
 	GetCustomerGroupList(1);
 }
 function closeCustomerGroupModal() {
 	customerGroupModal.dialog("close");
 }
+
+function openEnquiryGroupModal() {
+	resetEnquiryGroupModal();
+	enquiryGroupModal.dialog("open");
+	GetEnquiryGroupList(1);
+}
+function closeEnquiryGroupModal() {
+	enquiryGroupModal.dialog("close");
+}
 function initModals() {
+	if ($("#enquiryGroupModal").length) {
+		enquiryGroupModal = $("#enquiryGroupModal").dialog({
+			width: 960,
+			title: enquirygrouptxt,
+			autoOpen: false,
+			modal: true,
+			buttons: [
+				{
+					text: savetxt,
+					class: "savebtn",
+					click: handleEnquiryGroupSaved,
+				},
+				{
+					class: "secondarybtn",
+					text: canceltxt,
+					click: closeEnquiryGroupModal
+				},
+			],
+		});
+	}
 	if ($("#customerGroupModal").length) {
 		customerGroupModal = $("#customerGroupModal").dialog({
 			width: 960,
@@ -4597,12 +4648,12 @@ function initModals() {
 						$target = dropdownModal.find("select");
 						closeDropDownModal();
 						if (forcustomer) {
-							if (forhotlist)	handleHotListCustomers();
+							if (forhotlist) handleHotListCustomers();
 							if (foreblast) handleEblastCustomers();
 							if (forassignsalesmen) {
 								let $chk = $("#chkEmailNotification");
-								handleSalesmenCustomers($chk.length>0 && $chk.is(":checked"));
-							}								
+								handleSalesmenCustomers($chk.length > 0 && $chk.is(":checked"));
+							}
 						} else {
 							let _id: string = <string>$target.attr("id");
 							console.log("_id:" + _id);
@@ -5109,8 +5160,8 @@ $.fancyConfirm = function (opts) {
 	});
 };
 
-interface ISalesman extends ISysUser{	 
-	AssignedCusCodes: string[];	
+interface ISalesman extends ISysUser {
+	AssignedCusCodes: string[];
 }
 
 interface IePayResult {
@@ -6634,6 +6685,7 @@ function fillInEnquiry() {
 		UploadFileList: [],
 		TotalRecord: 0,
 		emailDisplay: "",
+		CustomAttributes: $("#CustomAttributes").val() as string,
 	};
 	enquiry.FollowUpDateInfo.type = "date";
 	enquiry.FollowUpDateInfo.status = $(".followup:checked").val() as string;
@@ -6650,6 +6702,7 @@ function fillInEnquiry() {
 }
 
 interface IEnquiry {
+	CustomAttributes: string | null;
 	emailDisplay: string;
 	TotalRecord: number;
 	UploadFileList: string[];
@@ -6770,14 +6823,14 @@ let assignedsalesmanEnqIds: number[] = [];
 let icheckall: number = 0;
 
 function handleCheckEnqAll(checked: boolean) {
-	assignEnqIdList = [];
+	EnIdList = [];
 	if (checked) {
 		$(".enqchk").each(function (i, e) {
-			assignEnqIdList.push($(e).data("id"));
+			EnIdList.push($(e).data("id"));
 		});
 
 	} else {
-		assignEnqIdList = [];
+		EnIdList = [];
 	}
 }
 $(".chk").on("input", function (e) {
@@ -6821,17 +6874,17 @@ $(document).on("change", ".chk", function (e) {
 	}
 });
 $(document).on("change", ".enqchk", function (e) {
-	let _id: string = <string>$(this).data("id");
-	let idx = assignEnqIdList.findIndex((x) => { return x == _id; });
-	if ($(this).is(":checked")) {
-		if (idx < 0)
-			assignEnqIdList.push(_id);
+	let id: string = <string>$(this).data("id");
+	//console.log("AssignEnqIdList#change:", AssignEnqIdList);
+	if ($(this).is(":checked") && !AssignEnqIdList.includes(id)) {	
+			AssignEnqIdList.push(id);
 	} else {
+		let idx = AssignEnqIdList.findIndex(x => x == id);
 		if (idx >= 0) {
-			assignEnqIdList.splice(idx, 1);
+			AssignEnqIdList.splice(idx, 1);
 		}
 	}
-	console.log("assignEnqIdList#change:", assignEnqIdList);
+	//console.log("AssignEnqIdList#change:", AssignEnqIdList);
 });
 function handleChk(checked: boolean) {
 	$(".chk").each(function (i, e) {
@@ -17922,7 +17975,7 @@ function handleMGTmails(pageIndex: number = 1, latestRecordCount: number = 300) 
 				if (EnquiryList.length > 0) {
 					//console.log("enqIdList:", enqIdList);					
 					EnquiryList.forEach((x) => {
-						if (!enqIdList.includes(x.id)) {
+						if (!EnIdList.includes(x.id)) {
 							enqlist.push(x);
 						}
 					});
@@ -18292,6 +18345,7 @@ let forjob: boolean = false;
 let fortraining: boolean = false;
 let forcustomer: boolean = false;
 let forcustomergroup: boolean = false;
+let forenquirygroup: boolean = false;
 let forCreateReserve: boolean = false;
 let forEditReserve: boolean = false;
 let forhotlist: boolean = false;
@@ -19230,9 +19284,7 @@ function parseEnquiries(DicEnqContent) {
 			enquiry = {} as IEnquiry;
 			enquiry.id = key;
 			for (const m of found) {
-				const from = m[1].split(":")[1].trim();
-
-				enquiry.from = parseEmailInString(from, key);
+				enquiry.from = m[1].split(":")[1].trim();
 				enquiry.subject = m[2].split(":")[1].trim();
 				enquiry.company = m[3].split(":")[1].trim();
 				enquiry.contact = m[4].split(":")[1].trim();
@@ -19337,21 +19389,6 @@ function parseAttendances(DicAttdSubject) {
 }
 function openEnqMail(ele) {
 	window.location.href = "mailto:" + $(ele).data("mailto");
-}
-function parseEmailInString(text, Id): string {
-	//console.log("text#0:" + text);
-	let stremail = text;
-	text = text.replace("&lt;", "<").replace("&gt;", ">");
-	//console.log("text#1:" + text);
-	var re =
-		/(.+)([^\<]+)(\<+)(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))(@)((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))(\>+)/;
-	let found = text.match(re);
-	//console.log("found:", found);
-	if (found) {
-		const mailto = `${found[5]}${found[8]}${found[9]}`;
-		stremail = `<a onclick="event.stopPropagation();" href="/Enquiry/Edit?Id=${Id}" data-mailto="${mailto}">${found[1]}</a>`;
-	}
-	return stremail;
 }
 
 /* Port of strftime(). Compatibility notes:
@@ -19499,12 +19536,12 @@ $(document).on("change", ".range", function () {
 $(document).on("click", ".assign", function (e) {
 	e.stopPropagation();
 	getRowCurrentY.call(this);
-	let code = $(this).data("code") as string;
+	let codeId = forcustomer ? $(this).data("code") as string : $(this).data("id") as string;
 	//console.log("code:", code);
-	if (code) { code = convertNumToString(code).trim(); }
-	handleAssign($(this).data("salespersonid"), code);
+	if (codeId && isNumber(codeId)) { codeId = convertNumToString(codeId).trim(); }
+	handleAssign($(this).data("salespersonid"), codeId);
 });
-function handleAssign(salespersonId: number=0, cusCode:string="") {
+function handleAssign(salespersonId: number = 0, codeId: string = "") {
 	$.ajax({
 		type: "GET",
 		url: "/Api/GetSalesInfo",
@@ -19514,7 +19551,7 @@ function handleAssign(salespersonId: number=0, cusCode:string="") {
 			if (data.length > 0) {
 				openSalesmenModal();
 				let html = "";
-				$.each(data, function (i, e: ISalesman) {				
+				$.each(data, function (i, e: ISalesman) {
 					let email = formatEmail(e.Email, e.UserName) ?? "N/A";
 					let notes = e.surNotes ?? "N/A";
 					let disabled = "";
@@ -19523,11 +19560,11 @@ function handleAssign(salespersonId: number=0, cusCode:string="") {
 					let trcls = "";
 					if (salespersonId != null && salespersonId == e.surUID) {
 						disabled = "disabled";
-						trcls = "selected";						
+						trcls = "selected";
 					} else {
 						trcls = "pointer";
-						onclick = `onclick="assignSave(${e.surUID},'${cusCode}');"`;
-						ondblclick = `ondblclick="assignSave(${e.surUID},'${cusCode}');"`;						
+						onclick = `onclick="assignSave(${e.surUID},'${codeId}');"`;
+						ondblclick = `ondblclick="assignSave(${e.surUID},'${codeId}');"`;
 					}
 					html += `<tr data-id="${e.surUID}" class="${trcls}" ${ondblclick}>
 					<td>${email}</td>
@@ -19546,13 +19583,11 @@ function handleAssign(salespersonId: number=0, cusCode:string="") {
 let trainingIdList: string[] = [];
 let jobIdList: string[] = [];
 let attdIdList: string[] = [];
-let enqIdList: string[] = [];
-let assignEnqIdList: string[] = [];
-function assignSave(salesmanId: number, cusCode:string|null) {
+function assignSave(salesmanId: number, codeId: string | null) {
 	closeSalesmenModal();
 
 	if (forcustomer) {
-		if (cusCode && !CodeList.includes(cusCode)) CodeList.push(cusCode);
+		if (codeId && !CodeList.includes(codeId)) CodeList.push(codeId);
 		//console.log("CodeList:", CodeList);
 		//console.log("salesmanId:", salesmanId);
 		//return;
@@ -19597,6 +19632,7 @@ function assignSave(salesmanId: number, cusCode:string|null) {
 	}
 
 	if (forenquiry) {
+		if (codeId && !EnIdList.includes(codeId)) EnIdList.push(codeId);
 		//sendmail4assignmentprompt
 		$.fancyConfirm({
 			title: "",
@@ -19612,7 +19648,7 @@ function assignSave(salesmanId: number, cusCode:string|null) {
 						__RequestVerificationToken: $(
 							"input[name=__RequestVerificationToken]"
 						).val(),
-						assignEnqIdList,
+						EnIdList,
 						salesmanId,
 						notification: value ? 1 : 0,
 					},
@@ -22646,54 +22682,4 @@ function initDatePickers(startDay = StartDayEnum.Today, format = '') {
 		function (start, end, label) {
 			maxDate = new Date(end).toDateString();
 		});
-}
-
-function editCustomerGroup(Id: number) {
-	let idx = -1;
-	if (CustomerGroupList.length > 0) {
-		idx = CustomerGroupList.findIndex(x => x.Id == Id);
-		if (idx >= 0) CustomerGroup = structuredClone(CustomerGroupList[idx]);
-		//console.log("CustomerGroup:", CustomerGroup);
-		if (CustomerGroup) {
-			customerGroupModal.find("#txtGroupName").val(CustomerGroup.cgName);
-			customerGroupModal.find("#txtRemark").val(CustomerGroup.Remark);
-		}
-	}
-}
-
-function handleCustomerGroupRemove(Id: number, frmGroupIndex: boolean = false) {
-	if (!PageNo) PageNo = 1;
-	$.fancyConfirm({
-		title: "",
-		message: confirmremovetxt,
-		shownobtn: true,
-		okButton: oktxt,
-		noButton: notxt,
-		callback: function (value) {
-			if (value) {
-				openWaitingModal();
-				$.ajax({
-					type: "POST",
-					url: "/CustomerGroup/Remove",
-					data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), Id, PageNo },
-					success: function (data) {
-						closeWaitingModal();
-						if (data) {
-							if (frmGroupIndex) window.location.href = "/CustomerGroup/Index";
-							else {
-								resetCustomerGroupModal();
-								CustomerGroupList = data.List.slice(0);
-								RecordCount = data.RecordCount;
-								populateCustomerGroupList();
-							}
-						}
-					},
-					dataType: "json"
-				});
-			} else {
-				if (!frmGroupIndex)
-					customerGroupModal.find("#txtGroupName").trigger("focus");
-			}
-		}
-	});
 }

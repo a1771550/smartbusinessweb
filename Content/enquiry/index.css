@@ -9,3 +9,80 @@
     padding: 0 .75rem !important;
     height: calc(1.5rem + 2px) !important;
 }
+
+/*
+    		html += `<td style="width:10px;max-width:10px;"><input type="checkbox" class="form-check enqchk" data-Id="${Id}" ${_checked} ${_disabled} data-salespersonid="${salespersonId}" ${trcls}></td>`;
+		}
+
+		let from = converted ? removeAnchorTag(x.from) : x.from;
+		html += `<td style="width:100px; max-width:100px;">${(x.enReceivedDateTime) ?? formatDateTime(new Date(x.receivedDateTime))}</td>
+                                    <td style="width:120px;max-width:120px;">${x.subject}</td>
+                                    <td style="width:120px;max-width:120px;">${from}</td>
+                                    <td style="width:120px;max-width:120px;">${x.emailDisplay}</td>
+                                    <td style="width:100px;max-width:100px;">${x.phone}</td>
+                                    <td style="width:120px;max-width:120px;">${x.company}</td>
+                                    <td style="width:100px;max-width:100px;">${x.contact}</td>`;
+
+		html += `<td style="width:60px;max-width:60px;">${x.FollowUpStatusDisplay}</td>`;
+		html += `<td style="width:100px;max-width:100px;">${x.FollowUpDateDisplay}</td>`;
+		html += `<td style="width:100px;max-width:100px;">${x.SalesPersonName}</td>`;
+		//assignsalesmanrequiredtxt
+		html += `<td style="width:120px;min-width:130px;">`;
+*/
+
+#tblmails th.checkbox,#tblmails td.checkbox{
+    width:10px;
+}
+#tblmails th.datetime, #tblmails td.datetime {
+    width:100px;
+    max-width:100px;
+}
+#tblmails th.subject, #tblmails td.subject {
+    width:140px;
+    max-width:140px;
+}
+#tblmails th.from, #tblmails td.from {
+    width: 120px;
+    max-width:120px;
+}
+#tblmails th.email, #tblmails td.email {
+    width: 140px;
+    max-width: 140px;
+}
+#tblmails th.phone, #tblmails td.phone {
+    width: 120px;
+    max-width: 120px;
+}
+#tblmails th.company, #tblmails td.company {
+    width: 140px;
+    max-width: 140px;
+}
+#tblmails th.contact, #tblmails td.contact {
+    width: 120px;
+    max-width: 120px;
+}
+#tblmails th.fstatus, #tblmails td.fstatus {
+    width: 80px;
+    min-width: 80px;
+}
+#tblmails th.fdate, #tblmails td.fdate {
+    width: 100px;
+    max-width: 100px;
+}
+#tblmails th.sales, #tblmails td.sales {
+    width: 100px;
+    max-width: 100px;
+}
+#tblmails th.attr, #tblmails td.attr {
+    width: 180px;
+    min-width:180px;
+}
+
+#tblmails th.action, #tblmails td.action {
+    width: 190px;
+    min-width:190px;
+}
+#tblmails th.action4sales, #tblmails td.action4sales {
+    width: 150px;
+    max-width:150px;
+}

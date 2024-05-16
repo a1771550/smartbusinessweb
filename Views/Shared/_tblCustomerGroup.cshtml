@@ -1,5 +1,4 @@
-﻿@using PagedList.Mvc;
-@{
+﻿@{
 	string groupname = string.Format(Resources.Resource.NameFormat, Resources.Resource.Group);
 	PagedList.IPagedList<CustomerGroupModel> PagingGroupList = ViewData["PagingGroupList"] == null ? null : (PagedList.IPagedList<CustomerGroupModel>)ViewData["PagingGroupList"];
 	string headercls = PagingGroupList != null ? "colheader" : "";

@@ -1,4 +1,4 @@
-﻿@model PPWLib.Models.Customer.Group.CustomerGroupEditModel
+﻿@model PPWLib.Models.Customer.CustomerGroupEditModel
 @using PagedList.Mvc;
 @{
 	ViewBag.Title = Resources.Resource.CustomerGroup;
@@ -38,11 +38,7 @@ else
 	@Html.Partial("_NoRecordFound")
 }
 
-
-
 @Html.Partial("_WaitingModal")
 <div id="infoblk"></div>
-
-<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script src="/Scripts/ts/js/customer/group/index.js?v=@rand"></script>
 

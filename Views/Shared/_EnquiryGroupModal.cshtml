@@ -1,0 +1,27 @@
+﻿@{
+	string groupname = string.Format(Resources.Resource.NameFormat, Resources.Resource.Group);
+}
+<div id="enquiryGroupModal">
+	<form>
+		<div class="row">
+			<div class="col-12 col-sm-4">
+				<div class="form-group">
+					<input type="text" id="txtGroupName" class="form-control mx-1" placeholder="@groupname" />
+					<span class="text-danger"></span>
+				</div>
+			</div>
+			<div class="col-12 col-sm-8">
+				<div class="form-group">
+					<textarea id="txtRemark" class="form-control mx-1 flex" placeholder="@Resources.Resource.Remark" cols="70"></textarea>
+				</div>
+			</div>
+		</div>
+		<input type="hidden" id="egId" />
+	</form>
+
+	<div class="overflow-auto">
+		@Html.Partial("_tblEnquiryGroup")
+		<div class="Pager my-1"></div>
+		<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+	</div>
+</div>

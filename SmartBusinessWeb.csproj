@@ -354,13 +354,14 @@
     <Compile Include="Controllers\ApiController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\Customer\CustomerGroupController.cs" />
+    <Compile Include="Controllers\Customer\Enquiry\EnquiryGroupController.cs" />
     <Compile Include="Controllers\Customer\HotListController.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Controllers\Item\InventoryAdjustmentController.cs" />
     <Compile Include="Controllers\Item\ReserveController.cs" />
     <Compile Include="Controllers\SimpleContactController.cs" />
     <Compile Include="Controllers\Customer\eBlastController.cs" />
-    <Compile Include="Controllers\Customer\EnquiryController.cs" />
+    <Compile Include="Controllers\Customer\Enquiry\EnquiryController.cs" />
     <Compile Include="Controllers\Customer\eTrackController.cs" />
     <Compile Include="Controllers\Records\JournalController.cs" />
     <Compile Include="Controllers\Records\TrainingController.cs" />
@@ -631,6 +632,7 @@
     <Content Include="Content\datepicker\bootstrap-datepicker.min.css" />
     <Content Include="Content\datetimepicker\jquery.datetimepicker.min.css" />
     <Content Include="Content\dayendscheckinout.css" />
+    <Content Include="Content\enquiry\group\index.css" />
     <Content Include="Content\enquiry\index.css" />
     <Content Include="Content\enquiry\edit.css" />
     <Content Include="Content\ErrorStyles.css" />
@@ -3060,6 +3062,8 @@
     <Content Include="Scripts\ts\js\customer\eblast\log.js" />
     <Content Include="Scripts\ts\js\customer\edit.js" />
     <Content Include="Scripts\ts\js\customer\enquiry\edit.js" />
+    <Content Include="Scripts\ts\js\customer\enquiry\group\edit.js" />
+    <Content Include="Scripts\ts\js\customer\enquiry\group\index.js" />
     <Content Include="Scripts\ts\js\customer\enquiry\index.js" />
     <Content Include="Scripts\ts\js\customer\graphsettings\edit.js" />
     <Content Include="Scripts\ts\js\customer\graphsettings\index.js" />
@@ -4710,6 +4714,12 @@
     <Content Include="Scripts\ts\js\customer\group\edit.js.map" />
     <Content Include="Scripts\ts\js\customer\group\index.js.map" />
     <Content Include="Scripts\ts\js\pos\excludedinvoices.js.map" />
+    <Content Include="Views\Shared\_AdvSearchBlk.cshtml" />
+    <Content Include="Views\EnquiryGroup\Index.cshtml" />
+    <Content Include="Views\Shared\_EnquiryGroupModal.cshtml" />
+    <Content Include="Views\Shared\_tblEnquiryGroup.cshtml" />
+    <Content Include="Scripts\ts\js\customer\enquiry\group\edit.js.map" />
+    <Content Include="Scripts\ts\js\customer\enquiry\group\index.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4830,7 +4840,6 @@
     <Content Include="Views\CrmUser\Index.cshtml" />
     <Content Include="Views\Customer\Edit.cshtml" />
     <Content Include="Views\Customer\Index.cshtml" />
-    <Content Include="Views\Customer\KEdit.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\DataTransfer\DayendsExportFrmShop.cshtml" />
     <Content Include="Views\DataTransfer\DayendsImportFrmCentral.cshtml" />
@@ -5086,6 +5095,8 @@
     <TypeScriptCompile Include="Scripts\ts\customer\attributes\common.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\attributes\edit.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\attributes\globalattribute.ts" />
+    <TypeScriptCompile Include="Scripts\ts\customer\enquiry\group\edit.ts" />
+    <TypeScriptCompile Include="Scripts\ts\customer\enquiry\group\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\group\edit.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\group\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\hotlist\index.ts" />

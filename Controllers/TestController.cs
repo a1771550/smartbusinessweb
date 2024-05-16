@@ -338,40 +338,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
 
-        public void ParseDateTime()
-        {
-            //DateTime datetimeValue;
-            //string dateformat= "yyyy-MM-dd HH:mm:ss"; 
-            var dt = DateTime.ParseExact(
-              "2023-07-06T03:06:42Z",
-              "yyyy-MM-ddTHH:mm:ssZ",
-               CultureInfo.InvariantCulture);
-
-            var dateString = CommonHelper.FormatDateTime(dt);
-
-            ////2023-07-06 11:06:42
-
-            //DateTime.TryParseExact(dateString, dateformat, null,
-            //                   DateTimeStyles.None, out datetimeValue);
-            //Response.Write(datetimeValue);
-            //Response.Write(CommonHelper.GetDateFrmString4SQL(dateString));
-
-            using var context = new PPWDbContext(Session["DBName"].ToString());
-            var enquiry = new Enquiry
-            {
-                Id = CommonHelper.GenerateNonce(),
-                enSubject = "Test",
-                enReceivedDateTime = dateString,
-                CreateTime = DateTime.Now,
-                ModifyTime = DateTime.Now
-            };
-            context.Enquiries.Add(enquiry);
-            context.SaveChanges();
-
-            Response.Write(dt);//6/7/2023 11:06:42 am
-            Response.Write("<br>");
-            Response.Write(dateString + "<br>");
-        }
+    
 
         public void DapperQuery()
         {

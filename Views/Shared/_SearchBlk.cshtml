@@ -1,9 +1,11 @@
-﻿@{ 
+﻿@{
 	string keyword = ViewData["Keyword"] as string;
+	string additionalcls = ViewData["additionalcls"] == null ? null : (string)ViewData["additionalcls"];
 }
-<div class="input-group">
-	<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@keyword">
-	<div class="input-group-append">
+<div class="form-inline @additionalcls">
+	<div class="form-group">
+		<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@keyword">
+
 		<button id="btnSearch" class="btn btn-secondary mx-1" type="button" title="@Resources.Resource.Search">
 			<i class="fa fa-search"></i>
 		</button>

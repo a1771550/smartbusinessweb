@@ -1,0 +1,25 @@
+﻿@{ 
+	bool isassignor = Convert.ToBoolean(ViewData["isassignor"]);
+	bool forcustomer = ViewData["forcustomer"] != null;
+	string additionalcls = ViewData["additionalcls"] == null ? "" : (string)ViewData["additionalcls"];
+	string Keyword = (string)ViewData["Keyword"];
+	string grouptxt = (string)ViewData["GroupTxt"];
+}
+<div class="form-inline @additionalcls">
+	<div class="form-group">
+		<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Keyword" />
+		<button id="btnSearch" type="button" class="btn btn-success mx-1">@Resources.Resource.Search</button>
+		<button id="btnReload" type="button" class="btn btn-warning mx-1">@Resources.Resource.Reload</button>
+		<button id="btnAdvSearch" type="button" class="btn btn-danger mx-1">@Resources.Resource.AdvancedSearch</button>
+		@if (isassignor)
+		{
+			<button id="btnAssign" type="button" class="btn btn-info mx-1" data-salespersonid=""><span class="fa fa-user"></span> @Resources.Resource.AssignToSalesman</button>
+		}
+		<button id="btnGroup" type="button" class="btn btn-dark mx-1">@grouptxt</button>
+		@if (forcustomer)
+		{
+			<button id="btnHotList" type="button" class="btn btn-outline-info mx-1">@string.Format(Resources.Resource.AddTo, Resources.Resource.HotList)</button>
+			<button id="btnBlast" type="button" class="btn btn-primary mx-1">@string.Format(Resources.Resource.AddTo, Resources.Resource.eBlast)</button>
+		}
+	</div>
+</div>

@@ -1,0 +1,44 @@
+﻿@model PPWLib.Models.Customer.Enquiry.EnquiryGroupEditModel
+@using PagedList.Mvc;
+@{
+	ViewBag.Title = Resources.Resource.EnquiryGroup;
+	int rand = CommonHelper.GetVersionRandomNo();
+}
+<link href="~/Content/enquiry/group/index.css?v=@rand" rel="stylesheet" type="text/css" />
+<h2>
+	@ViewBag.Title
+</h2>
+
+@if (Model.GroupList != null && Model.GroupList.Count > 0)
+{
+	@Html.AntiForgeryToken()
+
+	using (Html.BeginForm("Index", "EnquiryGroup", FormMethod.Get, new { @Id = "frmEnquiryGroup" }))
+	{
+		<div class="form-inline my-4">
+			<div class="form-group">
+				<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Model.Keyword" />
+				<button id="btnSearch" type="button" class="btn btn-success mx-1">@Resources.Resource.Search</button>
+				<button id="btnReload" type="button" class="btn btn-warning mx-1">@Resources.Resource.Reload</button>
+			</div>
+		</div>
+
+		@Html.Partial("_tblEnquiryGroup", null, new ViewDataDictionary { { "PagingGroupList", Model.PagingGroupList } })
+
+		<div id="pagingblk" class="my-3">
+			@Html.PagedListPager(Model.PagingGroupList, PageNo => Url.Action("Index",
+	new { PageNo, SortOrder = Model.CurrentSortOrder, SortCol = Model.SortCol, Keyword = Model.Keyword, PageSize = Model.PageSize }))
+		</div>
+
+		@Html.Partial("_SortOrderColHidden")
+	}
+}
+else
+{
+	@Html.Partial("_NoRecordFound")
+}
+
+@Html.Partial("_WaitingModal")
+<div id="infoblk"></div>
+<script src="/Scripts/ts/js/customer/enquiry/group/index.js?v=@rand"></script>
+

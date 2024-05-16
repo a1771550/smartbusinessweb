@@ -192,22 +192,22 @@
 			@Html.Partial("_GComboModal")
 		</div>
 
-		var _needchecked = Customer.FollowUpDateInfo == null ? "checked" : Customer.FollowUpDateInfo.status == CusFollowUpStatus.need.ToString() ? "checked" : "";
-		var _noneedchecked = Customer.FollowUpDateInfo == null ? "" : Customer.FollowUpDateInfo.status == CusFollowUpStatus.noneed.ToString() ? "checked" : "";
-		var _completechecked = Customer.FollowUpDateInfo == null ? "" : Customer.FollowUpDateInfo.status == CusFollowUpStatus.completed.ToString() ? "checked" : "";
+		var _needchecked = Customer.FollowUpDateInfo == null ? "checked" : Customer.FollowUpDateInfo.status == FollowUpStatus.need.ToString() ? "checked" : "";
+		var _noneedchecked = Customer.FollowUpDateInfo == null ? "" : Customer.FollowUpDateInfo.status == FollowUpStatus.noneed.ToString() ? "checked" : "";
+		var _completechecked = Customer.FollowUpDateInfo == null ? "" : Customer.FollowUpDateInfo.status == FollowUpStatus.completed.ToString() ? "checked" : "";
 
 		<div class="form-group">
 			<label class="mr-4">@string.Format(Resources.Resource.FollowUpFormat, Resources.Resource.Status)</label>
 			<div class="form-check form-check-inline small">
-				<input class="form-check-input followup" type="radio" name="followup" id="radNeed" value="@CusFollowUpStatus.need.ToString()" @_needchecked>
+				<input class="form-check-input followup" type="radio" name="followup" id="radNeed" value="@FollowUpStatus.need.ToString()" @_needchecked>
 				<label class="form-check-label" for="radNeed">@Resources.Resource.NeedFollowUp</label>
 			</div>
 			<div class="form-check form-check-inline small">
-				<input class="form-check-input followup" type="radio" name="followup" id="radNoNeed" value="@CusFollowUpStatus.noneed.ToString()" @_noneedchecked>
+				<input class="form-check-input followup" type="radio" name="followup" id="radNoNeed" value="@FollowUpStatus.noneed.ToString()" @_noneedchecked>
 				<label class="form-check-label" for="radNoNeed">@Resources.Resource.NoNeedFollowUp</label>
 			</div>
 			<div class="form-check form-check-inline small">
-				<input class="form-check-input followup" type="radio" name="followup" id="radCompleted" value="@CusFollowUpStatus.completed.ToString()" @_completechecked>
+				<input class="form-check-input followup" type="radio" name="followup" id="radCompleted" value="@FollowUpStatus.completed.ToString()" @_completechecked>
 				<label class="form-check-label" for="radCompleted">@Resources.Resource.Completed</label>
 			</div>
 		</div>

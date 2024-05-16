@@ -107,7 +107,7 @@ $(function () {
 		$("#addRecord").on("click", handleAddRecordClick);
 	}
 
-	assignEnqIdList.push($("#Id").val() as string);
+	EnIdList.push($("#Id").val() as string);
 
 	$('#enFrom').trigger("focus");
 

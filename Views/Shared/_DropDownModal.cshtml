@@ -3,10 +3,14 @@
 	string lbltxt = ViewData["lbltxt"] != null ? (string)ViewData["lbltxt"] : "";
 	string drpId = ViewData["drpId"] != null ? (string)ViewData["drpId"] : "";
 	bool forcustomer = ViewData["forcustomer"] != null;
-	string multiple = forcustomer ? "multiple='multiple'" : "";
+	string multiple = forcustomer ? "multiple" : "";
+	string multipletxt = forcustomer ? string.Concat("(", Resources.Resource.MultipleSelection,")") : "";
+	string multipletag = forcustomer? $"<span class=\"small font-weight-bold text-info\">{multipletxt}</span>":"";
 }
 
 <div id="dropdownModal">
+	@Html.Raw(multipletag)
+
 	<div class="form-group">
 		<label for="@drpId">@lbltxt</label>
 		<select id="@drpId" class="form-control dropdown @cls" @multiple>
@@ -14,15 +18,11 @@
 	</div>
 	@if (forcustomer)
 	{
+		@Html.Raw(multipletag)
 		<div class="form-group">
 			<label for="drpCustomerGroup">@Resources.Resource.CustomerGroup</label>
 			<select id="drpCustomerGroup" class="form-control dropdown" @multiple>
 			</select>
 		</div>
-
-		@*<div class="form-check small">
-			<input type="checkbox" class="form-check-input" id="chkEmailNotification" checked />
-			<label class="form-check-label" for="chkEmailNotification">@Resources.Resource.NotificationEmailWillBeSentToSalesperson</label>
-		</div>*@
 	}
 </div>

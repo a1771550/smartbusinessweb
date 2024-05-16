@@ -19,7 +19,6 @@ function handleSalesmenCustomers(notification:boolean) {
 			groupIdList.push(Number(x));
 		});
 	}
-
 	//console.log("salesmanIdList:", salesmanIdList);
 	//console.log("groupIdList:", groupIdList);
 	//return;
@@ -29,6 +28,7 @@ function handleSalesmenCustomers(notification:boolean) {
 		url: "/Customer/AddToSalesmen",
 		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), groupIdList, salesmanIdList, notification },
 		success: function (data) {
+			closeWaitingModal();
 			if (data) {
 				$.fancyConfirm({
 					title: "",
@@ -38,8 +38,7 @@ function handleSalesmenCustomers(notification:boolean) {
 					noButton: notxt,
 					callback: function (value) {
 						if (value) {
-							closeWaitingModal();
-							$("#txtKeyword").trigger("focus");
+							window.location.href = "/Customer/Index";							
 						}
 					}
 				});

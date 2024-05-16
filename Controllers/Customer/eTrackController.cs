@@ -13,6 +13,7 @@ using System.Configuration;
 using Resources = CommonLib.App_GlobalResources.Resource;
 using Dapper;
 using PPWLib.Models.Customer;
+using PPWLib.Models.Customer.eBlast;
 
 namespace SmartBusinessWeb.Controllers.Customer
 {

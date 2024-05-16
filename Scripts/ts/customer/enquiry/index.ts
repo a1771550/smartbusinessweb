@@ -219,15 +219,9 @@ $(document).on("dblclick", ".enquiry", function () {
 	}
 });
 
-//$(document).on("click", ".assign", function (e) {
-//	e.stopPropagation();
-//	$(this).parent("td").parent("tr").find("td").first().find(".enqchk").prop("checked", true).trigger("change");
-//	//console.log("salespersonid:" + $(this).data("salespersonid"));
-//	handleAssign($(this).data("salespersonid"));
-//});
 $(document).on("click", '#btnAssign', function () {
 	$target = $(this);
-	if (assignEnqIdList.length === 0) {
+	if (EnIdList.length === 0) {
 		let msg = <string>$infoblk.data('selectatleastoneenquirytxt');
 		$.fancyConfirm({
 			title: '',
@@ -295,26 +289,28 @@ function enqTemplate(data: IEnquiry[]): string {
 		
 		html += `<tr class="enquiry ${trcls} ${x.statuscls}" role="button" data-Id="${Id}">`;
 
+		let actioncls = "action";
 		if (isassignor) {
 			let _checked = assigned ? "checked" : "";
 			let _disabled = assigned ? "disabled" : "";
-			html += `<td style="width:10px;max-width:10px;"><input type="checkbox" class="form-check enqchk" data-Id="${Id}" ${_checked} ${_disabled} data-salespersonid="${salespersonId}" ${trcls}></td>`;
-		}
+			html += `<td class="text-center checkbox"><input type="checkbox" class="form-check enqchk" data-Id="${Id}" ${_checked} ${_disabled} data-salespersonid="${salespersonId}" ${trcls}></td>`;
+		} else actioncls = "action4sales";
 
 		let from = converted ? removeAnchorTag(x.from) : x.from;
-		html += `<td style="width:100px; max-width:100px;">${(x.enReceivedDateTime) ?? formatDateTime(new Date(x.receivedDateTime))}</td>
-                                    <td style="width:120px;max-width:120px;">${x.subject}</td>
-                                    <td style="width:120px;max-width:120px;">${from}</td>
-                                    <td style="width:120px;max-width:120px;">${x.emailDisplay}</td>
-                                    <td style="width:100px;max-width:100px;">${x.phone}</td>
-                                    <td style="width:120px;max-width:120px;">${x.company}</td>
-                                    <td style="width:100px;max-width:100px;">${x.contact}</td>`;
+		html += `<td class="text-center datetime">${(x.enReceivedDateTime) ?? formatDateTime(new Date(x.receivedDateTime))}</td>
+                                    <td class="text-center subject">${x.subject}</td>
+                                    <td class="text-center from">${from}</td>
+                                    <td class="text-center email">${x.emailDisplay}</td>
+                                    <td class="text-center phone">${x.phone}</td>
+                                    <td class="text-center company">${x.company}</td>
+                                    <td class="text-center contact">${x.contact}</td>`;
 
-		html += `<td style="width:60px;max-width:60px;">${x.FollowUpStatusDisplay}</td>`;
-		html += `<td style="width:100px;max-width:100px;">${x.FollowUpDateDisplay}</td>`;
-		html += `<td style="width:100px;max-width:100px;">${x.SalesPersonName}</td>`;
+		html += `<td class="text-center fstatus">${x.FollowUpStatusDisplay}</td>`;
+		html += `<td class="text-center fdate">${x.FollowUpDateDisplay}</td>`;
+		html += `<td class="text-center sales">${x.SalesPersonName}</td>`;
+		html += `<td class="text-center attr">${x.CustomAttributes??"N/A"}</td>`;
 		//assignsalesmanrequiredtxt
-		html += `<td style="width:120px;min-width:130px;">`;
+		html += `<td class="text-center ${actioncls}">`;
 
 		if (converted) {
 			html += `<a href="#" data-Id="${Id}" title="${removetxt}" role='button' class='btn btn-danger removeenq mx-1'><span class="fa-solid fa-trash"></span></a>`;
@@ -322,7 +318,8 @@ function enqTemplate(data: IEnquiry[]): string {
 			if (isassignor)
 				html += `<a href="#" data-email="${x.email}" data-Id="${Id}" data-salespersonid="${salespersonId}" title="${assigntosales}" role='button' class='btn btn-info assign ${trcls} mx-1'><span class="fa fa-user"></span></a>`;
 
-			html += `<a href="#" data-salesid="${x.enAssignedSalesId}" data-email="${x.email}" data-phone="${x.phone}" data-Id="${Id}" title="${converttocustomertxt}" role='button' class='btn btn-warning convert mx-1 ${trcls}'><span class="fa-solid  fa-hand-point-right"></span></a><a href="#" data-Id="${Id}" title="${removetxt}" role='button' class='btn btn-danger removeenq mx-1 ${trcls}'><span class="fa-solid fa-trash"></span></a>`;
+			html += `<a href="#" data-salesid="${x.enAssignedSalesId}" data-email="${x.email}" data-phone="${x.phone}" data-Id="${Id}" title="${converttocustomertxt}" role='button' class='btn btn-primary convert mx-1 ${trcls}'><span class="fa-solid  fa-hand-point-right"></span></a><a href="#" data-Id="${Id}" title="${removetxt}" role='button' class='btn btn-danger removeenq mx-1 ${trcls}'><span class="fa-solid fa-trash"></span></a>`;
+			html += `<a href="/Enquiry/Edit?Id=${Id}" role="button" class="btn btn-warning mx-1" title="${edittxt}"><i class="fa fa-edit"></i></a>`;
 		}
 
 		html += `</td></tr>`;
@@ -337,12 +334,134 @@ function initInfoBlkVariables4Enquiry() {
 	assigntosales = $infoblk.data("assignsalestxt");
 	isassignor = $infoblk.data("isassignor") === "True";
 	PageSize = Number($infoblk.data("pagesize"));
-	enqIdList = $infoblk.data("enqidlist") as string[];
+	EnIdList = $infoblk.data("enqidlist") as string[];
 	currentcontactemaillist = ($infoblk.data('currentcontactemaillist').toString()).split(',');
 	currentcontactphonelist = ($infoblk.data('currentcontactphonelist').toString()).split(',');
 	assignsalesmanrequiredtxt = $infoblk.data("assignsalesmanrequiredtxt");
 	DicAssignedSalesEnqId = $infoblk.data("jsondicassignedsalesenqid");
 }
+
+$(document).on("click", "#btnGroup", function (e) {
+	e.preventDefault();
+	e.stopPropagation();
+	//console.log("AssignEnqIdList:", AssignEnqIdList);
+	//return false;
+	if (AssignEnqIdList.length === 0) {
+		$.fancyConfirm({
+			title: "",
+			message: $infoblk.data("selectatleastoneenquirytxt"),
+			shownobtn: false,
+			okButton: oktxt,
+			noButton: notxt,
+			callback: function (value) {
+				if (value) {
+					$("#txtKeyword").trigger("focus");
+				}
+			}
+		});
+	} else {
+		openEnquiryGroupModal();
+	}
+
+});
+function populateEnquiryGroupList() {
+	//console.log("EnquiryGroupList#popu:", EnquiryGroupList);
+	if (EnquiryGroupList.length > 0) {
+		let html = "";
+		EnquiryGroupList.forEach((x) => {
+			html += `<tr data-id="${x.Id}">`;
+			html += `<td class="text-center"><input type="text" class="form-control text-center name" readonly value="${x.egName}"></td>`;
+			html += `<td class="text-center">${x.CompanyNames}</td>`;
+			html += `<td class="text-center"><input type="text" class="form-control remark" title="${x.Remark}" value="${x.RemarkDisplay}" readonly></td>`;
+			html += `<td class="text-center">${x.CreateTimeDisplay}</td>`;
+
+			html += `<td class="text-center">
+				<button type="button" class="btn btn-info edit" onclick="editEnquiryGroup(${x.Id})">${edittxt}</button>
+				<button type="button" class="btn btn-danger remove" data-id="${x.Id}" onclick="handleEnquiryGroupRemove(${x.Id})">${removetxt}</button>
+			</td>`;
+
+			html += `<td class="text-center">
+						<input type="checkbox" class="chk group" data-id="${x.Id}" value="${x.Id}" />
+					</td>`;
+			html += "</tr>";
+		});
+		enquiryGroupModal.find("#tblEnquiryGroup tbody").empty().append(html);
+
+		enquiryGroupModal.find(".Pager").ASPSnippets_Pager({
+			ActiveCssClass: "current",
+			PagerCssClass: "pager",
+			PageIndex: PageNo,
+			PageSize: PageSize,
+			RecordCount: RecordCount,
+		});
+	}
+}
+function GetEnquiryGroupList(pageNo: number) {
+	PageNo = pageNo;
+	let data = { PageNo };
+	openWaitingModal();
+	$.ajax({
+		url: "/EnquiryGroup/GetListAjax",
+		type: "GET",
+		data: data,
+		contentType: "application/json; charset=utf-8",
+		dataType: "json",
+		success: OnGetEnquiryGroupListSuccess,
+		error: onAjaxFailure,
+	});
+}
+
+function OnGetEnquiryGroupListSuccess(response) {
+	closeWaitingModal();
+
+	if (response) {
+		EnquiryGroupList = response.List.slice(0);
+
+		$target = dropdownModal.find("#drpEnquiryGroup");
+
+		RecordCount = response.RecordCount;
+		populateEnquiryGroupList();
+
+		enquiryGroupModal.find(".Pager").ASPSnippets_Pager({
+			ActiveCssClass: "current",
+			PagerCssClass: "pager",
+			PageIndex: PageNo,
+			PageSize: PageSize,
+			RecordCount: RecordCount,
+		});
+	} else {
+		enquiryGroupModal.find(".Pager").hide();
+	}
+
+	keyword = "";
+}
+function handleEnquiryGroupSaved() {
+	let $groupname = enquiryGroupModal.find("#txtGroupName");
+	let groupname: string = $groupname.val();
+	if (groupname) {
+		if (!PageNo) PageNo = 1;
+		EnquiryGroup = { Id: 0, egName: groupname, enIds: EnIdList.join(), Remark: enquiryGroupModal.find("#txtRemark").val() } as IEnquiryGroup;
+		//console.log("EnquiryGroup:",EnquiryGroup)
+		//return;
+		$.ajax({
+			type: "POST",
+			url: "/EnquiryGroup/Save",
+			data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), EnquiryGroup, PageNo, IdList, EnIdList },
+			success: function (data) {
+				if (data) {
+					resetEnquiryGroupModal();
+					EnquiryGroupList = data.List.slice(0);
+					RecordCount = data.RecordCount;
+					populateEnquiryGroupList();
+				}
+			},
+			dataType: "json"
+		});
+	} else {
+		$groupname.trigger("focus").next(".text-danger").text(groupnamerequiredtxt);
+	}
+}
+
 $(function () {
 	forenquiry = true;
 	setFullPage();

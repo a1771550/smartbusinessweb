@@ -2,9 +2,7 @@
 @using PagedList.Mvc;
 @{
 	ViewBag.Title = Resources.Resource.Customer;
-	int rand = CommonHelper.GetVersionRandomNo();
-	var addtoeblasttxt = string.Format(Resources.Resource.AddTo, Resources.Resource.eBlast);
-	var addtohotlisttxt = string.Format(Resources.Resource.AddTo, Resources.Resource.HotList);
+	int rand = CommonHelper.GetVersionRandomNo();	
 	string selectatleastonecustomertxt = string.Format(Resources.Resource.SelectAtLeastOne, Resources.Resource.Customer);
 	string checkall = Model.CheckAll == 1 ? "checked" : "";
 	bool isassignor = UserHelper.CheckIfAssignor(Model.User);
@@ -21,22 +19,7 @@
 
 @using (Html.BeginForm("Index", "Customer", FormMethod.Get, new { @Id = "frmCustomer" }))
 {
-	<div class="form-inline my-4">
-		<div class="form-group">
-			<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Model.Keyword" />
-			<button id="btnSearch" type="button" class="btn btn-success mx-1">@Resources.Resource.Search</button>
-			<button id="btnReload" type="button" class="btn btn-warning mx-1">@Resources.Resource.Reload</button>
-			<button id="btnAdvSearch" type="button" class="btn btn-danger mx-1">@Resources.Resource.AdvancedSearch</button>
-			@if (isassignor)
-			{
-				<button id="btnAssign" type="button" class="btn btn-info mx-1" data-salespersonid=""><span class="fa fa-user"></span> @Resources.Resource.AssignToSalesman</button>
-			}
-			<button id="btnHotList" type="button" class="btn btn-outline-info mx-1">@addtohotlisttxt</button>
-			<button id="btnGroup" type="button" class="btn btn-dark mx-1">@string.Format(Resources.Resource.AddToFormat, Resources.Resource.CustomerGroup)</button>
-			<button id="btnBlast" type="button" class="btn btn-primary mx-1">@addtoeblasttxt</button>
-
-		</div>
-	</div>
+	@Html.Partial("_AdvSearchBlk", null, new ViewDataDictionary { {"Keyword",Model.Keyword }, { "isassignor", isassignor }, { "additionalcls", "my-4" },{"forcustomer",true },{"GroupTxt", string.Format(Resources.Resource.AddToFormat, Resources.Resource.CustomerGroup) } })
 
 	if (Model.CustomerList != null && Model.CustomerList.Count > 0)
 	{

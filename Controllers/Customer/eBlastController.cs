@@ -13,6 +13,7 @@ using System.Threading;
 using System.Configuration;
 using CommonLib.Helpers;
 using PPWLib.Models.Customer;
+using PPWLib.Models.Customer.eBlast;
 
 namespace SmartBusinessWeb.Controllers.Customer
 {

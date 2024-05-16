@@ -40,7 +40,7 @@ using ItemModel = PPWLib.Models.Item.ItemModel;
 using PPWLib.Models.User;
 using CommonLib.Models.MYOB;
 using PPWLib.Models.Customer;
-using PPWLib.Models.Customer.Group;
+using PPWLib.Models.Customer.eBlast;
 
 namespace SmartBusinessWeb.Controllers
 {
