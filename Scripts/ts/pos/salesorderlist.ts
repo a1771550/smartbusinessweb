@@ -108,30 +108,12 @@ $(function () {
 	setFullPage();
 	triggerMenu(0, 3);
 
-	let $sortorder = $("#sortorder");
-	let $sortcol = $("#sortcol");
-	console.log('sortorder:' + $sortorder.val() + ';sortcol:' + $sortcol.val());
-	$target = $(".colheader").eq(Number($sortcol.val()));
-	let sortcls =
-		$sortorder.val() === "desc" ? "fa fa-sort-up" : "fa fa-sort-down";
-	$target.addClass(sortcls);
-
+	ConfigSimpleSortingHeaders();
 
 	initModals();	
 
-	$target = $(".pagination");
-	$target
-		.wrap('<nav aria-label="Page navigation"></nav>')
-		.find("li")
-		.addClass("page-item")
-		.find("a")
-		.addClass("page-link");
-
 	$(".disabled").off("click");
 
-	let keyword = getParameterByName("Keyword");
-	if (keyword !== null) {
-		$("#txtKeyword").val(keyword);
-	}
-	$("#txtKeyword").trigger("focus");
+	if (!$("#norecord").length)
+		initDatePickers(StartDayEnum.LastMonthToday, 'YYYY-MM-DD');
 });

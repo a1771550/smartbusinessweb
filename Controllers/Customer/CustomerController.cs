@@ -11,6 +11,7 @@ using System.Web;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
 using CommonLib.App_GlobalResources;
+using PPWLib.Helpers;
 
 namespace SmartBusinessWeb.Controllers.Customer
 {
@@ -264,7 +265,7 @@ namespace SmartBusinessWeb.Controllers.Customer
 
             model.PagingCustomerList = model.CustomerList.ToPagedList(PageNo, PageSize);
             model.CusIdList = model.CustomerList.Select(x => x.cusCustomerID).ToHashSet();
-            model.GlobalAttrList = CustomerEditModel.GetGlobalAttrList(apId);
+            model.GlobalAttrList = ModelHelper.GetGlobalAttrList(apId);
             model.GlobalAttrList.Add(new GlobalAttributeModel
             {
                 gattrId = "custom",
@@ -301,13 +302,12 @@ namespace SmartBusinessWeb.Controllers.Customer
         [ValidateAntiForgeryToken]
         public JsonResult Edit(CustomerModel model)
         {
-            ViewBag.ParentPage = ViewBag.PageName = "customer";
+            ViewBag.ParentPage = "customer";
             CustomerEditModel cmodel = new();
 
             cmodel.Edit(model);
-
-            string msg = Resources.Resource.CustomerSaved;
-            return Json(msg);
+           
+            return Json(Resource.CustomerSaved);
         }
 
 

@@ -9,6 +9,7 @@
 }
 #tblEnquiryGroup th.action, #tblEnquiryGroup td.action {
 	width: 120px !important;
+	min-width:120px!important;
 }
 
 #tblEnquiryGroup th.checkbox, #tblEnquiryGroup td.checkbox {

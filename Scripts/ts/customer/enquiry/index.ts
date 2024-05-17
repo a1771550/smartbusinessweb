@@ -11,6 +11,53 @@ resource = `/users/{0}/mailFolders/Inbox/messages?$top={1}&$filter=from/emailAdd
 let DicAssignedSalesEnqId: { [Key: string]: number } = {};
 let assignsalesmanrequiredtxt:string = $infoblk.data("assignsalesmanrequiredtxt");
 
+function handleSalesmenEnquiries(notification: boolean) {
+	let salesmanIdList: number[] = [];
+	let salesmen: string[] = dropdownModal.find("select").first().val() as string[];
+	//console.log(eblasts);
+	if (salesmen.length == 1) salesmanIdList.push(Number(salesmen[0]));
+	else {
+		salesmen.forEach((x) => {
+			salesmanIdList.push(Number(x));
+		});
+	}
+	let groupIdList: number[] = [];
+	let groups = dropdownModal.find("#drpEnquiryGroup").val() as string[];
+	//console.log(groups);
+	if (groups.length == 1) groupIdList.push(Number(groups[0]));
+	else {
+		groups.forEach((x) => {
+			groupIdList.push(Number(x));
+		});
+	}
+	//console.log("salesmanIdList:", salesmanIdList);
+	//console.log("groupIdList:", groupIdList);
+	//return;
+	openWaitingModal();
+	$.ajax({
+		type: "POST",
+		url: "/Enquiry/AddToSalesmen",
+		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), groupIdList, salesmanIdList, notification },
+		success: function (data) {
+			closeWaitingModal();
+			if (data) {
+				$.fancyConfirm({
+					title: "",
+					message: data,
+					shownobtn: false,
+					okButton: oktxt,
+					noButton: notxt,
+					callback: function (value) {
+						if (value) {
+							window.location.href = "/Enquiry/Index";
+						}
+					}
+				});
+			}
+		},
+		dataType: "json"
+	});
+}
 $(document).on("click", "#btnSearch", function () {
 	keyword = $("#txtKeyword").val() as string;
 	if (keyword !== "") {
@@ -219,25 +266,47 @@ $(document).on("dblclick", ".enquiry", function () {
 	}
 });
 
-$(document).on("click", '#btnAssign', function () {
-	$target = $(this);
-	if (EnIdList.length === 0) {
-		let msg = <string>$infoblk.data('selectatleastoneenquirytxt');
-		$.fancyConfirm({
-			title: '',
-			message: msg,
-			shownobtn: false,
-			okButton: oktxt,
-			noButton: notxt,
-			callback: function (value) {
-				if (value) {
-					$target.trigger("focus");
-				}
+function populateDropDown4SalesmenEnqGroupList() {
+	$.ajax({
+		type: "GET",
+		url: "/Api/GetSalesmenEnqGroupList",
+		data: {},
+		success: function (data) {
+			if (data) {
+				salesmen = data.Salesmen.slice(0);
+				$target = dropdownModal.find("select").first();
+				$target.empty();
+				salesmen.forEach((x) => {
+					openDropDownModal();
+					$target.append($("<option>", {
+						value: x.surUID,
+						text: x.UserName
+					}));
+				});
+				EnquiryGroupList = data.EnquiryGroupList.slice(0);
+				console.log("EnquiryGroupList:", EnquiryGroupList);
+				$target = dropdownModal.find("#drpEnquiryGroup");
+				$target.empty();
+				EnquiryGroupList.forEach((x) => {
+					openDropDownModal();
+					$target.append($("<option>", {
+						value: x.Id,
+						text: x.egName
+					}));
+				});
+
+				dropdownModal.find("select").select2();
 			}
-		});
-	} else {
-		handleAssign(0);
-	}
+		},
+		dataType: "json"
+	});
+}
+$(document).on("click", '#btnAssign', function (e) {
+	forassignsalesmen = true;
+	e.preventDefault();
+	e.stopPropagation();
+	populateDropDown4SalesmenEnqGroupList();
+	openDropDownModal();
 });
 
 function filterEnquiries(enquiryies: IEnquiry[]): IEnquiry[] {
@@ -293,7 +362,7 @@ function enqTemplate(data: IEnquiry[]): string {
 		if (isassignor) {
 			let _checked = assigned ? "checked" : "";
 			let _disabled = assigned ? "disabled" : "";
-			html += `<td class="text-center checkbox"><input type="checkbox" class="form-check enqchk" data-Id="${Id}" ${_checked} ${_disabled} data-salespersonid="${salespersonId}" ${trcls}></td>`;
+			html += `<td class="text-center checkbox"><input type="checkbox" class="form-check enqchk" data-id="${Id}" data-enid="${x.enId}" ${_checked} ${_disabled} data-salespersonid="${salespersonId}" ${trcls}></td>`;
 		} else actioncls = "action4sales";
 
 		let from = converted ? removeAnchorTag(x.from) : x.from;
@@ -334,7 +403,7 @@ function initInfoBlkVariables4Enquiry() {
 	assigntosales = $infoblk.data("assignsalestxt");
 	isassignor = $infoblk.data("isassignor") === "True";
 	PageSize = Number($infoblk.data("pagesize"));
-	EnIdList = $infoblk.data("enqidlist") as string[];
+	EnIdList = $infoblk.data("enidlist")as string[];
 	currentcontactemaillist = ($infoblk.data('currentcontactemaillist').toString()).split(',');
 	currentcontactphonelist = ($infoblk.data('currentcontactphonelist').toString()).split(',');
 	assignsalesmanrequiredtxt = $infoblk.data("assignsalesmanrequiredtxt");
@@ -342,11 +411,26 @@ function initInfoBlkVariables4Enquiry() {
 }
 
 $(document).on("click", "#btnGroup", function (e) {
+	forenquirygroup = true;
 	e.preventDefault();
 	e.stopPropagation();
-	//console.log("AssignEnqIdList:", AssignEnqIdList);
+
+	EnIdList4Group = [];
+	if (EnqCheckedAll) {		
+		EnIdList4Group = EnIdList.slice(0);
+	} else {
+		$("#tblmails tbody tr").each(function (i, e) {
+			let $chk = $(e).find(".checkbox").find(".enqchk");
+			let enId = $chk.data("enid") as string;
+			if ($chk.is(":checked") && !$chk.prop("disabled") && !EnIdList4Group.includes(enId)) {
+				EnIdList4Group.push(enId);
+			}
+		});
+	}
+
+	console.log("EnIdList4Group:", EnIdList4Group);
 	//return false;
-	if (AssignEnqIdList.length === 0) {
+	if (EnIdList4Group.length === 0) {
 		$.fancyConfirm({
 			title: "",
 			message: $infoblk.data("selectatleastoneenquirytxt"),
@@ -375,14 +459,13 @@ function populateEnquiryGroupList() {
 			html += `<td class="text-center"><input type="text" class="form-control remark" title="${x.Remark}" value="${x.RemarkDisplay}" readonly></td>`;
 			html += `<td class="text-center">${x.CreateTimeDisplay}</td>`;
 
-			html += `<td class="text-center">
+			html += `<td class="text-center action">
 				<button type="button" class="btn btn-info edit" onclick="editEnquiryGroup(${x.Id})">${edittxt}</button>
 				<button type="button" class="btn btn-danger remove" data-id="${x.Id}" onclick="handleEnquiryGroupRemove(${x.Id})">${removetxt}</button>
 			</td>`;
-
-			html += `<td class="text-center">
-						<input type="checkbox" class="chk group" data-id="${x.Id}" value="${x.Id}" />
-					</td>`;
+			//html += `<td class="text-center">
+			//			<input type="checkbox" class="chk group" data-id="${x.Id}" value="${x.Id}" />
+			//		</td>`;
 			html += "</tr>";
 		});
 		enquiryGroupModal.find("#tblEnquiryGroup tbody").empty().append(html);
@@ -440,13 +523,15 @@ function handleEnquiryGroupSaved() {
 	let groupname: string = $groupname.val();
 	if (groupname) {
 		if (!PageNo) PageNo = 1;
-		EnquiryGroup = { Id: 0, egName: groupname, enIds: EnIdList.join(), Remark: enquiryGroupModal.find("#txtRemark").val() } as IEnquiryGroup;
-		//console.log("EnquiryGroup:",EnquiryGroup)
+		EnquiryGroup = { Id: 0, egName: groupname, enIds: EnIdList4Group.join(), Remark: enquiryGroupModal.find("#txtRemark").val() } as IEnquiryGroup;
+		//console.log("EnquiryGroup:", EnquiryGroup);
+		//console.log("IdList:", IdList);
+	//	console.log("EnIdList4Group:", EnIdList4Group);
 		//return;
 		$.ajax({
 			type: "POST",
 			url: "/EnquiryGroup/Save",
-			data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), EnquiryGroup, PageNo, IdList, EnIdList },
+			data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), EnquiryGroup, PageNo, IdList },
 			success: function (data) {
 				if (data) {
 					resetEnquiryGroupModal();

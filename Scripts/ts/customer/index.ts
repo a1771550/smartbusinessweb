@@ -349,14 +349,13 @@ function populateCustomerGroupList() {
 			html += `<td class="text-center"><input type="text" class="form-control remark" title="${x.Remark}" value="${x.RemarkDisplay}" readonly></td>`;
 			html += `<td class="text-center">${x.CreateTimeDisplay}</td>`;
 
-			html += `<td class="text-center">
+			html += `<td class="text-center action">
 				<button type="button" class="btn btn-info edit" onclick="editCustomerGroup(${x.Id})">${edittxt}</button>
 				<button type="button" class="btn btn-danger remove" data-id="${x.Id}" onclick="handleCustomerGroupRemove(${x.Id})">${removetxt}</button>
 			</td>`;
-
-			html += `<td class="text-center">
-						<input type="checkbox" class="chk group" data-id="${x.Id}" value="${x.Id}" />
-					</td>`;
+			//html += `<td class="text-center">
+			//			<input type="checkbox" class="chk group" data-id="${x.Id}" value="${x.Id}" />
+			//		</td>`;
 			html += "</tr>";
 		});
 		customerGroupModal.find("#tblCustomerGroup tbody").empty().append(html);

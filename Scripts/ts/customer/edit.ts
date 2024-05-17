@@ -147,9 +147,7 @@ $(function () {
 
 	PhoneNameEmailList = $infoblk.data("phonenameemaillist");
 	approvalmode = $infoblk.data("approvalmode") === "True";
-	editmode = Customer.cusCustomerID > 0;
-
-	let $cusname = $("#cusName");
+	editmode = Customer.cusCustomerID > 0;	
 
 	cAttributes = $infoblk.data("jscustomattributelist") as ICustomAttribute[];
 	//console.log("cAttributes:", cAttributes);
@@ -199,7 +197,7 @@ $(function () {
 		width: "resolve",
 	});
 
-	$cusname.trigger("focus");
+	$("#cusName").trigger("focus");
 });
 
 

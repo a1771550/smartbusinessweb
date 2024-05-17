@@ -41,6 +41,7 @@ using PPWLib.Models.User;
 using CommonLib.Models.MYOB;
 using PPWLib.Models.Customer;
 using PPWLib.Models.Customer.eBlast;
+using PPWLib.Models.Customer.Enquiry;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -66,6 +67,17 @@ namespace SmartBusinessWeb.Controllers
         public List<string> ShopNames;
         public ApiController() { }
 
+      
+        [HttpGet]
+        public JsonResult GetSalesmenEnqGroupList()
+        {
+            UserEditModel umodel = new UserEditModel();
+            umodel.GetSalesmen();
+            EnquiryGroupEditModel emodel = new EnquiryGroupEditModel();
+            emodel.GetList(1);
+            return Json(new { umodel.Salesmen, EnquiryGroupList = emodel.GroupList }, JsonRequestBehavior.AllowGet);
+        }
+
         [HttpGet]
         public JsonResult GetSalesmenCusGroupList()
         {
@@ -75,6 +87,7 @@ namespace SmartBusinessWeb.Controllers
             cmodel.GetList(1);
             return Json(new { umodel.Salesmen, CustomerGroupList = cmodel.GroupList }, JsonRequestBehavior.AllowGet);
         }
+
         [HttpGet]
         public JsonResult GetHotListsCusGroupList()
         {
@@ -84,6 +97,7 @@ namespace SmartBusinessWeb.Controllers
             cmodel.GetList(1);
             return Json(new { emodel.HotLists, CustomerGroupList = cmodel.GroupList }, JsonRequestBehavior.AllowGet);
         }
+
         [HttpGet]
         public JsonResult GetEblastListCusGroupList()
         {            
@@ -2237,8 +2251,7 @@ namespace SmartBusinessWeb.Controllers
                     {
                         customer = new CustomerModel
                         {
-                            cusCustomerID = c.cusCustomerID,
-                            salescode = sales.rtsCode,
+                            cusCustomerID = c.cusCustomerID,                            
                             cusCode = c.cusCode,
                             cusIsActive = c.cusIsActive,
                             cusName = c.cusName,
@@ -2484,8 +2497,7 @@ namespace SmartBusinessWeb.Controllers
                                 {
                                     customers.Add(new CustomerModel
                                     {
-                                        cusCustomerID = c.cusCustomerID,
-                                        salescode = salesln.rtlCode,
+                                        cusCustomerID = c.cusCustomerID,                                      
                                         cusCode = c.cusCode,
                                         cusIsActive = c.cusIsActive,
                                         cusName = c.cusName,
@@ -2612,8 +2624,7 @@ namespace SmartBusinessWeb.Controllers
                             {
                                 customers.Add(new CustomerModel
                                 {
-                                    cusCustomerID = c.cusCustomerID,
-                                    salescode = salesln.rtlCode,
+                                    cusCustomerID = c.cusCustomerID,                                    
                                     cusCode = c.cusCode,
                                     cusIsActive = c.cusIsActive,
                                     cusName = c.cusName,

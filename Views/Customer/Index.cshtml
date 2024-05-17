@@ -70,7 +70,7 @@
 						}
 
 						<td class="text-center action">
-							<a href="#" title="@Resources.Resource.AssignToSalesman" role="button" class="btn btn-info assign" data-code="@customer.cusCode" data-salespersonid="@customer.AssignedSalesId"><span class="fa fa-user" aria-hidden="true"></span></a>
+							<a href="#" title="@Resources.Resource.AssignToSalesman" role="button" class="btn btn-info assign" data-code="@customer.cusCode" data-salespersonid="@customer.assignedSalesId"><span class="fa fa-user" aria-hidden="true"></span></a>
 							<a class="btn btn-warning btnsmall" role="button" href="/Customer/Edit?cusCode=@customer.cusCode&referrer=Index" title="@Resources.Resource.Edit"><i class="fa fa-edit"></i></a>
 							<a class="btn btn-danger btnsmall remove @disabled" role="button" href="#" data-code="@customer.cusCode" data-id="@customer.cusCustomerID" data-apid="@customer.AccountProfileId" title="@Resources.Resource.Remove"><i class="fa fa-trash"></i></a>
 						</td>
@@ -106,6 +106,7 @@
 
 @Html.Partial("_AdvancedSearchModal", Model.GlobalAttrList)
 
+<!--properties to be changed via js-->
 @Html.Partial("_DropDownModal", null, new ViewDataDictionary { { "lbltxt", Resources.Resource.eBlast }, { "drpId", "drpEblast" }, { "forcustomer", true } })
 
 @Html.Partial("_WaitingModal")

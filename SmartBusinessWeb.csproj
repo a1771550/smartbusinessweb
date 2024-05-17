@@ -4496,7 +4496,6 @@
     <Content Include="Scripts\ts\js\pos\receipt.js" />
     <Content Include="Scripts\ts\js\pos\refund.js" />
     <Content Include="Scripts\ts\js\pos\sales.js" />
-    <Content Include="Scripts\ts\js\pos\search.js" />
     <Content Include="Scripts\ts\js\pos\showits.js" />
     <Content Include="Scripts\ts\js\promotion\itemperiodpromotion.js" />
     <Content Include="Scripts\ts\js\promotion\itemperiodpromotionedit.js" />
@@ -4769,7 +4768,6 @@
     <Content Include="Scripts\ts\js\pos\receipt.js.map" />
     <Content Include="Scripts\ts\js\pos\refund.js.map" />
     <Content Include="Scripts\ts\js\pos\sales.js.map" />
-    <Content Include="Scripts\ts\js\pos\search.js.map" />
     <Content Include="Scripts\ts\js\pos\showits.js.map" />
     <Content Include="Scripts\ts\js\promotion\itemperiodpromotion.js.map" />
     <Content Include="Scripts\ts\js\promotion\itemperiodpromotionedit.js.map" />
@@ -4869,7 +4867,6 @@
     <Content Include="Views\POSFunc\PendingInvoices.cshtml" />
     <Content Include="Views\POSFunc\Refund.cshtml" />
     <Content Include="Views\POSFunc\Sales.cshtml" />
-    <Content Include="Views\POSFunc\Search.cshtml" />
     <Content Include="Views\PriceLevels\Index.cshtml" />
     <Content Include="Views\Print\Index.cshtml" />
     <Content Include="Views\Promotion\Edit.cshtml" />
@@ -5159,7 +5156,6 @@
     <TypeScriptCompile Include="Scripts\ts\pos\sales.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\salesorderedit.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\salesorderlist.ts" />
-    <TypeScriptCompile Include="Scripts\ts\pos\search.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\showits.ts" />
     <TypeScriptCompile Include="Scripts\ts\promotion\itemperiodpromotion.ts" />
     <TypeScriptCompile Include="Scripts\ts\promotion\itemperiodpromotionedit.ts" />

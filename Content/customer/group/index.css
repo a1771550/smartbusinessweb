@@ -9,6 +9,7 @@
 }
 #tblCustomerGroup th.action, #tblCustomerGroup td.action {
 	width: 120px !important;
+	min-width:120px!important;
 }
 
 #tblCustomerGroup th.checkbox, #tblCustomerGroup td.checkbox {

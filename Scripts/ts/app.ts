@@ -657,6 +657,7 @@ let IdList: number[] = [];
 let CodeList: string[] = [];
 let EnIdList: string[] = [];
 let AssignEnqIdList: string[] = [];
+let EnIdList4Group: string[] = [];
 
 let gAttributes: Array<IGlobalAttribute> = [];
 let gAttribute: IGlobalAttribute;
@@ -3172,15 +3173,12 @@ function openDropDownModal(ele: any = null) {
 			dropdownModal.find(".form-group").first().find("label").text(eblasttxt);
 		}
 		if (forassignsalesmen) {
-			dropdownModal.find(".form-group").first().find("label").text(salesmentxt);
-
-			if (!dropdownModal.find("#chkEmailNotification").length) {
-				let html = `<div class="form-check small">
-			<input type="checkbox" class="form-check-input" id="chkEmailNotification" checked />
-			<label class="form-check-label" for="chkEmailNotification">${emailnotificationtosalesmentxt}</label>
-		</div>`;
-				dropdownModal.append(html);
-			}
+			setUpChkEmailNotification();
+		}
+	}
+	if (forenquiry) {
+		if (forassignsalesmen) {
+			setUpChkEmailNotification();
 		}
 	}
 
@@ -3198,12 +3196,21 @@ function openDropDownModal(ele: any = null) {
 		});
 		$dropdown.empty().append(options);
 	}
+
+	function setUpChkEmailNotification() {
+		dropdownModal.find(".form-group").first().find("label").text(salesmentxt);
+
+		if (!dropdownModal.find("#chkEmailNotification").length) {
+			let html = `<div class="form-check small">
+			<input type="checkbox" class="form-check-input" id="chkEmailNotification" checked />
+			<label class="form-check-label" for="chkEmailNotification">${emailnotificationtosalesmentxt}</label>
+		</div>`;
+			dropdownModal.append(html);
+		}
+	}
 }
 function closeDropDownModal() {
-	dropdownModal.dialog("close");
-	if (!forcustomer) {
-		window.location.reload();
-	}
+	dropdownModal.dialog("close");	
 }
 
 function openCurrencySettingModal() {
@@ -4654,7 +4661,14 @@ function initModals() {
 								let $chk = $("#chkEmailNotification");
 								handleSalesmenCustomers($chk.length > 0 && $chk.is(":checked"));
 							}
-						} else {
+						}
+						if (forenquiry) {
+							if (forassignsalesmen) {
+								let $chk = $("#chkEmailNotification");								
+								handleSalesmenEnquiries($chk.length > 0 && $chk.is(":checked"));
+							}
+						}
+						else {
 							let _id: string = <string>$target.attr("id");
 							console.log("_id:" + _id);
 							let _val: string = <string>$target.val();
@@ -5572,28 +5586,27 @@ interface ICustomerPointPriceLevel {
 	CustomerPoint: number;
 }
 interface ICustomer {
-	cusCheckout: null;
-	CityTxt: string | null;
-	CountryTxt: string | null;
-	ExchangeRate: number | null;
-	CreateTimeDisplay: any;
-	AccountProfileName: string;
 	cusCustomerID: number;
 	cusCode: string;
 	cusName: string;
 	cusContact: string | null;
 	cusPhone: string;
 	cusMobile: string | null;
-	cusEmail: string | null;
+	cusEmail: string;
+	assignedSalesId: number | null;
 	cusAddrLocation: number | null;
 	cusAddrStreetLine1: string | null;
 	cusAddrStreetLine2: string | null;
 	cusAddrStreetLine3: string | null;
 	cusAddrStreetLine4: string | null;
+	cusAddrStreetLine5: string | null;
+	cusAddrRegion: string | null;
 	cusAddrCity: string | null;
+	CityTxt: string | null;
 	cusAddrState: string | null;
 	cusAddrPostcode: string | null;
 	cusAddrCountry: string | null;
+	CountryTxt: string | null;
 	cusAddrPhone1: string | null;
 	cusAddrPhone2: string | null;
 	cusAddrPhone3: string | null;
@@ -5601,48 +5614,140 @@ interface ICustomer {
 	cusAddrWeb: string | null;
 	cusPriceLevel: string | null;
 	cusPriceLevelID: string | null;
-	cusPointsSoFar: number;
+	cusStatusCode: string | null;
+	cusRmks: string | null;
+	cusDeposit: number | null;
+	cusPointsSoFar: number | null;
 	cusPointsActive: number | null;
 	cusPointsUsed: number | null;
 	cusSaleComment: string | null;
 	cusTermsID: number | null;
-	cusUnsubscribe: boolean;
+	enqId: string | null;
+	LatePaymentChargePercent: number | null;
+	EarlyPaymentDiscountPercent: number | null;
 	TermsOfPaymentID: string | null;
 	PaymentIsDue: number | null;
 	DiscountDays: number | null;
 	BalanceDueDays: number | null;
 	ImportPaymentIsDue: number | null;
 	PaymentTermsDesc: string | null;
-	FollowUpDate: string | null;
+	abssSalesID: number | null;
+	FollowUpDateDisplay: string | null;
 	CurrencyID: number | null;
 	CurrencyCode: string | null;
 	TaxIDNumber: string | null;
 	TaxCodeID: number | null;
+	GSTIDNumber: number | null;
+	FreightTaxCodeID: number | null;
+	UseCustomerTaxCode: boolean | null;
 	cusStatus: string | null;
+	cusReviewUrl: string | null;
+	cusSendNotification: boolean | null;
 	cusWhatsappPhoneNo: string | null;
-	cusPriceLevelDescription: string | null;
-	IpCountry: string | null;
-	salescode: string | null;
-	iPriceLevel: number | null;
-	//PointsActive: number | null;
+	cusUnsubscribe: boolean | null;
+	UnsubscribeTime: string | null;
+	cusIsActive: boolean;
+	cusIsOrganization: boolean;
+	TaxPercentageRate: number | null;
+	AccountProfileName: string;
+	CustomerItems: ICustomerItem[];
+	CreateTimeDisplay: string;
 	AddressList: IAddressView[];
-	NewCustomerId: number;
 	IsLastSellingPrice: boolean | null;
-	statuscls: string | null;
-	FollowUpStatusDisplay: string | null;
-	FollowUpDateDisplay: string | null;
-	CustomAttributes: string | null;
-	UploadFileList: string[];
-	GlobalAttributeList: IGlobalAttribute[];
-	CustomAttributeList: ICustomAttribute[];
-	TaxCode: string | null;
 	FollowUpDateInfo: ICustomerInfo;
 	FollowUpRecordList: ICustomerInfo[];
-	CustomerItems: ICustomerItem[];
-	StreetLines: string[];
-	CustomerInfo: ICustomerInfo[];
-	TaxPercentageRate: number | null;
+	cusPriceLevelDescription: string | null;
+	ExchangeRate: number | null;
+	cusCheckout: boolean;
+	statuscls: string | null;
+	CustomAttributes: string | null;
+	FollowUpStatus: string | null;
+	FollowUpStatusDisplay: string | null;
+	UploadFileList: string[];
+	FileList: string[];
+	ImgList: string[];
+	SalesPersonName: string | null;
+	DefaultCallCode: string | null;
+	PhoneDisplay: string | null;
+	Phone1Display: string | null;
+	Phone2Display: string | null;
+	Phone3Display: string | null;
+	EmailDisplay: string;
+	GlobalAttributeList: IGlobalAttribute[];
+	CustomAttributeList: ICustomAttribute[];
 }
+//interface ICustomer {
+//	cusCheckout: null;
+//	CityTxt: string | null;
+//	CountryTxt: string | null;
+//	ExchangeRate: number | null;
+//	CreateTimeDisplay: any;
+//	AccountProfileName: string;
+//	cusCustomerID: number;
+//	cusCode: string;
+//	cusName: string;
+//	cusContact: string | null;
+//	cusPhone: string;
+//	cusMobile: string | null;
+//	cusEmail: string | null;
+//	cusAddrLocation: number | null;
+//	cusAddrStreetLine1: string | null;
+//	cusAddrStreetLine2: string | null;
+//	cusAddrStreetLine3: string | null;
+//	cusAddrStreetLine4: string | null;
+//	cusAddrCity: string | null;
+//	cusAddrState: string | null;
+//	cusAddrPostcode: string | null;
+//	cusAddrCountry: string | null;
+//	cusAddrPhone1: string | null;
+//	cusAddrPhone2: string | null;
+//	cusAddrPhone3: string | null;
+//	cusAddrFax: string | null;
+//	cusAddrWeb: string | null;
+//	cusPriceLevel: string | null;
+//	cusPriceLevelID: string | null;
+//	cusPointsSoFar: number;
+//	cusPointsActive: number | null;
+//	cusPointsUsed: number | null;
+//	cusSaleComment: string | null;
+//	cusTermsID: number | null;
+//	cusUnsubscribe: boolean;
+//	TermsOfPaymentID: string | null;
+//	PaymentIsDue: number | null;
+//	DiscountDays: number | null;
+//	BalanceDueDays: number | null;
+//	ImportPaymentIsDue: number | null;
+//	PaymentTermsDesc: string | null;
+//	FollowUpDate: string | null;
+//	CurrencyID: number | null;
+//	CurrencyCode: string | null;
+//	TaxIDNumber: string | null;
+//	TaxCodeID: number | null;
+//	cusStatus: string | null;
+//	cusWhatsappPhoneNo: string | null;
+//	cusPriceLevelDescription: string | null;
+//	IpCountry: string | null;
+//	salescode: string | null;
+//	iPriceLevel: number | null;
+//	//PointsActive: number | null;
+//	AddressList: IAddressView[];
+//	NewCustomerId: number;
+//	IsLastSellingPrice: boolean | null;
+//	statuscls: string | null;
+//	FollowUpStatusDisplay: string | null;
+//	FollowUpDateDisplay: string | null;
+//	CustomAttributes: string | null;
+//	UploadFileList: string[];
+//	GlobalAttributeList: IGlobalAttribute[];
+//	CustomAttributeList: ICustomAttribute[];
+//	TaxCode: string | null;
+//	FollowUpDateInfo: ICustomerInfo;
+//	FollowUpRecordList: ICustomerInfo[];
+//	CustomerItems: ICustomerItem[];
+//	StreetLines: string[];
+//	CustomerInfo: ICustomerInfo[];
+//	TaxPercentageRate: number | null;
+//}
 function initAddressView(): IAddressView {
 	return {
 		Id: 0,
@@ -6823,15 +6928,29 @@ let assignedsalesmanEnqIds: number[] = [];
 let icheckall: number = 0;
 
 function handleCheckEnqAll(checked: boolean) {
-	EnIdList = [];
-	if (checked) {
-		$(".enqchk").each(function (i, e) {
-			EnIdList.push($(e).data("id"));
-		});
+	if (forenquirygroup) {
+		EnIdList4Group = [];
+		if (checked) {
+			$(".enqchk").each(function (i, e) {
+				if (!$(e).prop("disabled"))
+					EnIdList4Group.push($(e).data("enid")); //MUST NOT data("id")!!!
+			});
 
+		} else {
+			EnIdList4Group = [];
+		}
 	} else {
 		EnIdList = [];
+		if (checked) {
+			$(".enqchk").each(function (i, e) {
+				EnIdList.push($(e).data("id"));
+			});
+
+		} else {
+			EnIdList = [];
+		}
 	}
+
 }
 $(".chk").on("input", function (e) {
 	e.stopPropagation();
@@ -6876,14 +6995,26 @@ $(document).on("change", ".chk", function (e) {
 $(document).on("change", ".enqchk", function (e) {
 	let id: string = <string>$(this).data("id");
 	//console.log("AssignEnqIdList#change:", AssignEnqIdList);
-	if ($(this).is(":checked") && !AssignEnqIdList.includes(id)) {	
-			AssignEnqIdList.push(id);
+
+	//if (forenquirygroup) {
+	//	if ($(this).is(":checked") && !EnIdList4Group.includes(id)) {
+	//		EnIdList4Group.push(id);
+	//	} else {
+	//		let idx = EnIdList4Group.findIndex(x => x == id);
+	//		if (idx >= 0) {
+	//			EnIdList4Group.splice(idx, 1);
+	//		}
+	//	}
+	//} else {
+	if ($(this).is(":checked") && !EnIdList.includes(id)) {
+		EnIdList.push(id);
 	} else {
-		let idx = AssignEnqIdList.findIndex(x => x == id);
+		let idx = EnIdList.findIndex(x => x == id);
 		if (idx >= 0) {
-			AssignEnqIdList.splice(idx, 1);
+			EnIdList.splice(idx, 1);
 		}
 	}
+	//}	
 	//console.log("AssignEnqIdList#change:", AssignEnqIdList);
 });
 function handleChk(checked: boolean) {
@@ -6905,10 +7036,11 @@ function handleEnqChk(checked: boolean) {
 	});
 }
 
+let EnqCheckedAll: boolean = false;
 $(document).on("change", "#chkenqall", function () {
-	let checked: boolean = $(this).is(":checked");
-	handleEnqChk(checked);
-	handleCheckEnqAll(checked);
+	EnqCheckedAll = $(this).is(":checked");
+	handleEnqChk(EnqCheckedAll);
+	handleCheckEnqAll(EnqCheckedAll);
 });
 $(document).on("change", "#chkall", function () {
 	let checked: boolean = $(this).is(":checked");
@@ -17028,7 +17160,7 @@ interface ICategory {
 	Removable: boolean;
 }
 let $salecomment = $("#cusSaleComment");
-let $paymentIsDue = $("#PaymentIsDue");
+
 
 function getCustomers() {
 	openWaitingModal();
@@ -17092,40 +17224,35 @@ function OnSearchCustomersOK(data) {
 
 function validCusForm() {
 	let msg = "";
-	// console.log("cuscode:" + customer.cusCode);
-	let $cusname = $("#cusName");
-	let $cusfname = $("#cusFirstName");
 	let $contact = $("#cusContact");
-	let $cuscode = $("#cusCode");
-	let duplicated = false;
-	let $cusemail = $("#cusEmail");
-	let emailerr = false;
+	let $phone = $("#cusPhone");
+	let $email = $("#cusEmail");
 
-	if (Customer.cusPhone === "") {
+	if (Customer.cusPhone === "" || Customer.cusPhone.length <= 3) {
 		msg += $infoblk.data("customerphonerequired") + "<br>";
+		$phone.addClass("error");
 	} else {
 		if (Customer.cusPhone !== <string>$("#phoneinuse").val()!.toString()) {
 			if (phonelist.includes(Customer.cusPhone ?? "")) {
 				msg += customerphoneduplicatederrtxt + "<br>";
-				duplicated = true;
+				$phone.addClass("error");
 			}
 		}
 	}
 
 	if (Customer.cusContact === "") {
 		msg += $infoblk.data("contactrequired") + "<br>";
+		$contact.addClass("error");
 	}
 
-	let email = Customer.cusEmail;
-
-	if (email !== "") {
-		if (!validateEmail(email)) {
+	if (Customer.cusEmail !== "") {
+		if (!validateEmail(Customer.cusEmail)) {
 			msg += emailformaterr + "<br>";
-			emailerr = true;
+			$email.addClass("error");
 		}
 	}
 
-	console.log("msg:" + msg);
+	//console.log("msg:" + msg);
 	if (msg !== "") {
 		$.fancyConfirm({
 			title: "",
@@ -17134,25 +17261,9 @@ function validCusForm() {
 			okButton: oktxt,
 			noButton: canceltxt,
 			callback: function (value) {
-				console.log("duplicated:" + duplicated);
+				//console.log("duplicated:" + duplicated);
 				if (value) {
-					if (_attrmode) {
-						if (isorgan && Customer.cusName === "") {
-							$cusname.addClass("focus");
-						}
-						if (Customer.cusCode === "") {
-							$cuscode.addClass("focus");
-						}
-						if (Customer.cusContact === "") {
-							$contact.addClass("focus");
-						}
-						if (duplicated) {
-							$cuscode.addClass("focus");
-						}
-						if (emailerr) {
-							$cusemail.addClass("focus");
-						}
-					}
+					$(".error").first().trigger("focus");
 				}
 			},
 		});
@@ -17161,17 +17272,15 @@ function validCusForm() {
 }
 
 function FillInCustomer() {
+	let phone = $("#cusPhone").val() as string;
 	Customer = {} as ICustomer;
 	Customer.cusCustomerID = Number($("#cusCustomerID").val());
-	Customer.cusCode = $("#cusCode").val() as string; //NOT #cusPhone!!!
+	Customer.cusCode = editmode? $("#cusCode").val() as string:phone;
 	Customer.cusName = <string>$("#cusName").val();
-	Customer.cusPhone = <string>$("#cusPhone").val();
+	Customer.cusPhone = phone;
 	Customer.cusSaleComment = <string>$salecomment.val();
-	Customer.PaymentIsDue = Number($paymentIsDue.val());
-	Customer.BalanceDueDays = Number($("#BalanceDueDays").val());
-	//let $points = $("#points");
-	//let newpoints: number = Number($points.val());
-	//let oldpoints: number = Number($points.data("oldpoints"));
+	Customer.PaymentIsDue = Number($("#PaymentIsDue").val());
+	Customer.BalanceDueDays = Number($("#BalanceDueDays").val());	
 	Customer.cusPointsSoFar = Number($("#cusPointsSoFar").val());
 	Customer.cusEmail = <string>$("#cusEmail").val();
 	Customer.cusContact = <string>$("#cusContact").val();

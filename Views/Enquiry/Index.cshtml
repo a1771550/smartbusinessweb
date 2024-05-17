@@ -10,6 +10,7 @@
 }
 <link href="~/Scripts/paginationjs/pagination.css" rel="stylesheet" type="text/css" />
 <link href="~/Content/enquiry/index.css?v=@rand" rel="stylesheet" type="text/css" />
+<link href="~/Content/enquiry/group/index.css?v=@rand" rel="stylesheet" type="text/css" />
 <script src="@mgturl"></script>
 
 <h3 class="clearfix">
@@ -76,10 +77,13 @@
 
 @Html.Partial("_EnquiryGroupModal")
 
+@Html.Partial("_AdvancedSearchModal", Model.GlobalAttrList)
 
+<!--properties can be changed via js-->
+@Html.Partial("_DropDownModal", null, new ViewDataDictionary { { "lbltxt", Resources.Resource.Salesmen }, { "drpId", "drpSalesman" }, { "forenquiry", true } })
 
 @Html.Partial("_WaitingModal")
-<div id="infoblk" data-assignsalestxt="@Resources.Resource.AssignToSalesman" data-isassignor="@isassignor" data-enquiryacc="@enquiryacc" data-currentoldestdate="@Model.CurrentOldestDate" data-enqidlist="@JsonSerializer.Serialize(Model.EnqIdList)" data-jsondicassignedsalesenqid="@Model.JsonDicAssignedSalesEnqId" data-currentcontactemaillist="@string.Join(",",Model.CurrentContactEmailList)" data-currentcontactphonelist="@string.Join(",",Model.CurrentContactPhoneList)" data-emailinusetxt="@Resources.Resource.ContactEmailInUseAlertMsg" data-phoneinusetxt="@Resources.Resource.ContactPhoneInUseAlertMsg" data-confirmprompt="@Resources.Resource.ConfirmContinue" data-assignsalesmanrequiredtxt="@Resources.Resource.AssignSalesmanRequired" data-sendmailprompt="@Resources.Resource.SendEmailNotification4AssignedSalespeoplePrompt" data-pagesize="@int.Parse(ConfigurationManager.AppSettings["MGTPageSize"])" data-confirmconverttocustomertxt="@string.Format(Resources.Resource.ConfirmFormat,Resources.Resource.ConvertToCustomer)" data-selectatleastoneenquirytxt="@string.Format(Resources.Resource.SelectAtLeastOne,Resources.Resource.Enquiry)"></div>
+<div id="infoblk" data-assignsalestxt="@Resources.Resource.AssignToSalesman" data-isassignor="@isassignor" data-enquiryacc="@enquiryacc" data-currentoldestdate="@Model.CurrentOldestDate" data-enidlist="@JsonSerializer.Serialize(Model.EnIdList)" data-jsondicassignedsalesenqid="@Model.JsonDicAssignedSalesEnqId" data-currentcontactemaillist="@string.Join(",",Model.CurrentContactEmailList)" data-currentcontactphonelist="@string.Join(",",Model.CurrentContactPhoneList)" data-emailinusetxt="@Resources.Resource.ContactEmailInUseAlertMsg" data-phoneinusetxt="@Resources.Resource.ContactPhoneInUseAlertMsg" data-confirmprompt="@Resources.Resource.ConfirmContinue" data-assignsalesmanrequiredtxt="@Resources.Resource.AssignSalesmanRequired" data-sendmailprompt="@Resources.Resource.SendEmailNotification4AssignedSalespeoplePrompt" data-pagesize="@int.Parse(ConfigurationManager.AppSettings["MGTPageSize"])" data-confirmconverttocustomertxt="@string.Format(Resources.Resource.ConfirmFormat,Resources.Resource.ConvertToCustomer)" data-selectatleastoneenquirytxt="@string.Format(Resources.Resource.SelectAtLeastOne,Resources.Resource.Enquiry)"></div>
 
 <script type="text/javascript" src="~/Scripts/daterangepicker/moment.min.js"></script>
 <script type="text/javascript" src="~/Scripts/daterangepicker/daterangepicker.min.js"></script>

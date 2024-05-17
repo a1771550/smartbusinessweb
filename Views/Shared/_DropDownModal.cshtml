@@ -3,9 +3,12 @@
 	string lbltxt = ViewData["lbltxt"] != null ? (string)ViewData["lbltxt"] : "";
 	string drpId = ViewData["drpId"] != null ? (string)ViewData["drpId"] : "";
 	bool forcustomer = ViewData["forcustomer"] != null;
-	string multiple = forcustomer ? "multiple" : "";
-	string multipletxt = forcustomer ? string.Concat("(", Resources.Resource.MultipleSelection,")") : "";
-	string multipletag = forcustomer? $"<span class=\"small font-weight-bold text-info\">{multipletxt}</span>":"";
+	bool forenquiry = ViewData["forenquiry"] != null;
+	string multiple = forcustomer||forenquiry ? "multiple" : "";
+	string multipletxt = forcustomer || forenquiry ? string.Concat("(", Resources.Resource.MultipleSelection,")") : "";
+	string multipletag = forcustomer || forenquiry ? $"<span class=\"small font-weight-bold text-info\">{multipletxt}</span>":"";
+	string grouptxt = forcustomer ? Resources.Resource.CustomerGroup : Resources.Resource.EnquiryGroup;
+	string groupId = forcustomer ? "drpCustomerGroup" : "drpEnquiryGroup";
 }
 
 <div id="dropdownModal">
@@ -16,12 +19,12 @@
 		<select id="@drpId" class="form-control dropdown @cls" @multiple>
 		</select>
 	</div>
-	@if (forcustomer)
+	@if (forcustomer||forenquiry)
 	{
 		@Html.Raw(multipletag)
 		<div class="form-group">
-			<label for="drpCustomerGroup">@Resources.Resource.CustomerGroup</label>
-			<select id="drpCustomerGroup" class="form-control dropdown" @multiple>
+			<label for="@groupId">@grouptxt</label>
+			<select id="@groupId" class="form-control dropdown" @multiple>
 			</select>
 		</div>
 	}

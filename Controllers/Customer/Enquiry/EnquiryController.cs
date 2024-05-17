@@ -20,6 +20,17 @@ namespace SmartBusinessWeb.Controllers.Customer.Enquiry
     public class EnquiryController : BaseController
     {
         [HttpPost]
+        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [ValidateAntiForgeryToken]
+        public JsonResult AddToSalesmen(List<int> groupIdList, List<int> salesmanIdList, bool notification)
+        {
+            var msg = string.Format(Resource.AreAddedToFormat, Resource.Enquiry, Resource.Salesmen);
+            EnquiryEditModel model = new EnquiryEditModel();
+            model.AddToSalesmen(groupIdList, salesmanIdList, notification);
+            return Json(msg);
+        }
+
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult RemoveFile(string enqId, string filename)
         {
@@ -126,7 +137,7 @@ namespace SmartBusinessWeb.Controllers.Customer.Enquiry
 
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
-        public ActionResult AddToCustomer(string enqId, int overwrite = 0)
+        public ActionResult AddToEnquiry(string enqId, int overwrite = 0)
         {
             CustomerEditModel model = new CustomerEditModel();
             model.ConvertFrmEnquiry(apId, enqId, overwrite == 1);

@@ -28,10 +28,10 @@ namespace SmartBusinessWeb.Controllers.Enquiry.Enquiry
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult Save(EnquiryGroupModel EnquiryGroup, List<int> IdList, List<string> EnIdList, int PageNo = 1)
+        public JsonResult Save(EnquiryGroupModel EnquiryGroup, List<int> IdList, int PageNo = 1)
         {
             EnquiryGroupEditModel model = new EnquiryGroupEditModel();
-            model.SaveGroup(EnquiryGroup, IdList, EnIdList, PageNo);
+            model.SaveGroup(EnquiryGroup, IdList, PageNo);
             return Json(new { List = model.PagingGroupList, RecordCount = model.GroupList.Count });
         }
 

@@ -224,18 +224,6 @@ namespace SmartBusinessWeb.Controllers
 
             }
         }
-
-        [HandleError]
-        [CustomAuthorize("search", "boss", "admin", "superadmin")]
-        public ActionResult Search()
-        {
-            ViewBag.PageName = "search";
-            SearchModel model = new SearchModel();
-            return View(model);
-        }
-
-
-
         [HandleError]
         [CustomAuthorize("refund", "boss", "admin", "superadmin")]
         public ActionResult Refund()

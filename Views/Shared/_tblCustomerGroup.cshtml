@@ -16,12 +16,12 @@
 			}
 
 			<th class="text-center action"></th>
-			@if (PagingGroupList == null)
+			@*@if (PagingGroupList == null)
 			{
 				<th class="text-center checkbox">
 					<input type="checkbox" class="group" id="chkall" />
 				</th>
-			}
+			}*@
 
 		</tr>
 	</thead>
@@ -44,12 +44,12 @@
 						<a role="button" class="btn btn-info edit" href="/CustomerGroup/Edit/@x.Id" title="@Resources.Resource.Edit">@Resources.Resource.Edit</a>
 						<button type="button" class="btn btn-danger remove" data-id="@x.Id" title="@Resources.Resource.Remove">@Resources.Resource.Remove</button>
 					</td>
-					@if (PagingGroupList == null)
+					@*@if (PagingGroupList == null)
 					{
 						<td class="text-center checkbox">
 							<input type="checkbox" class="chk group" data-id="@x.Id" value="@x.Id" />
 						</td>
-					}
+					}*@
 				</tr>
 			}
 		}
