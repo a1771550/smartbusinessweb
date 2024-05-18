@@ -47,7 +47,7 @@ namespace SmartBusinessWeb.Controllers
 {
     [AllowAnonymous]
     public class ApiController : Controller
-    {        
+    {
         private ComInfo ComInfo { get { return Session["ComInfo"] as ComInfo; } }
         private string ConnectionString { get { return string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ;", ComInfo.MYOBDriver, ComInfo.MYOBUID, ComInfo.MYOBPASS, ComInfo.MYOBDb, ComInfo.MYOBExe, ComInfo.MYOBKey); } }
         private string CentralBaseUrl { get { return UriHelper.GetAppUrl(); } }
@@ -67,7 +67,123 @@ namespace SmartBusinessWeb.Controllers
         public List<string> ShopNames;
         public ApiController() { }
 
-      
+        [HttpGet]
+        public void AlertFollowUp()
+        {
+            try
+            {
+                if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
+                List<CustomerInfoModel> customerInfoes;
+                List<EnquiryInfoModel> enquiryInfoes;
+                EmailSetting emailSettings;
+                using (SqlConnection)
+                {
+                    customerInfoes = SqlConnection.Query<CustomerInfoModel>("EXEC dbo.GetCustomerInfoes4FollowUpSales @apId=@apId", new { apId }).ToList();
+                    enquiryInfoes = SqlConnection.Query<EnquiryInfoModel>("EXEC dbo.GetEnquiryInfoes4FollowUpSales @apId=@apId", new { apId }).ToList();
+                    emailSettings = SqlConnection.QueryFirstOrDefault<EmailSetting>("EXEC dbo.GetEmailSettings @apId=@apId", new { apId });
+                }
+                if (customerInfoes != null && customerInfoes.Count > 0)
+                {                   
+                    string msg = "";
+                    string subject = ConfigurationManager.AppSettings["CustomerFollowUpAlertSubject"];
+                    var groupedInfoes = customerInfoes.GroupBy(x => x.UserName).ToList();
+                    foreach (var group in groupedInfoes)
+                    {
+                        var customerInfo = group.FirstOrDefault();
+                        var customernames = group.Select(x => x.CustomerName).ToList();
+                        if (customerInfo != null)
+                        {
+                            msg = string.Format(HttpUtility.HtmlDecode(ConfigurationManager.AppSettings["CustomerFollowUpFormat"]), customerInfo.UserName);
+                            msg += "<ul>";
+                            foreach (var customername in customernames)
+                            {
+                                msg += $"<li>{customername}</li>";
+                            }
+                            msg += "</ul>";
+
+                            SendSimpleEmail(customerInfo.Email, customerInfo.UserName, msg, subject, emailSettings);
+                        }
+                    }
+                }
+                if (enquiryInfoes != null && enquiryInfoes.Count > 0)
+                {
+                    string msg = "";
+                    string subject = ConfigurationManager.AppSettings["EnquiryFollowUpAlertSubject"];
+                    var groupedInfoes = enquiryInfoes.GroupBy(x => x.UserName).ToList();
+                    foreach (var group in groupedInfoes)
+                    {
+                        var enquiryInfo = group.FirstOrDefault();
+                        var companynames = group.Select(x => x.CompanyName).ToList();
+                        if (enquiryInfo != null)
+                        {
+                            msg = string.Format(HttpUtility.HtmlDecode(ConfigurationManager.AppSettings["EnquiryFollowUpFormat"]), enquiryInfo.UserName);
+                            msg += "<ul>";
+                            foreach (var companyname in companynames)
+                            {
+                                msg += $"<li>{companyname}</li>";
+                            }
+                            msg += "</ul>";
+
+                            SendSimpleEmail(enquiryInfo.Email, enquiryInfo.UserName, msg, subject, emailSettings);
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                using var context = new PPWDbContext("SmartBusinessWeb_db");
+                ModelHelper.WriteLog(context, ex.Message, "AlertSalesmenFollowUp4Customers");
+            }
+        }
+
+        private static bool SendSimpleEmail(string receiverEmail, string receiverName, string msg, string subject, EmailSetting mailsettings)
+        {
+            int okcount = 0;
+            int ngcount = 0;
+
+            MailAddress frm = new MailAddress(mailsettings.emEmail, mailsettings.emDisplayName);
+
+            while (okcount == 0)
+            {
+                if (ngcount >= mailsettings.emMaxEmailsFailed || okcount > 0)
+                {
+                    break;
+                }
+
+                MailAddress to = new MailAddress(receiverEmail, receiverName);
+                bool addbc = int.Parse(ConfigurationManager.AppSettings["AddBccToDeveloper"]) == 1;
+                MailAddress addressBCC = new MailAddress(ConfigurationManager.AppSettings["DeveloperEmailAddress"], ConfigurationManager.AppSettings["DeveloperEmailName"]);
+                MailMessage message = new MailMessage(frm, to);
+                if (addbc)
+                {
+                    message.Bcc.Add(addressBCC);
+                }
+
+                message.Subject = subject;
+                message.BodyEncoding = Encoding.UTF8;
+                message.IsBodyHtml = true;
+                message.Body = msg;
+
+                using (SmtpClient smtp = new SmtpClient(mailsettings.emSMTP_Server, mailsettings.emSMTP_Port))
+                {
+                    smtp.UseDefaultCredentials = false;
+                    smtp.EnableSsl = mailsettings.emSMTP_EnableSSL;
+                    smtp.Credentials = new NetworkCredential(mailsettings.emSMTP_UserName, mailsettings.emSMTP_Pass);
+                    try
+                    {
+                        smtp.Send(message);
+                        okcount++;
+                    }
+                    catch (Exception)
+                    {
+                        ngcount++;
+                    }
+                }
+            }
+            return okcount > 0;
+        }
+
         [HttpGet]
         public JsonResult GetSalesmenEnqGroupList()
         {
@@ -100,20 +216,23 @@ namespace SmartBusinessWeb.Controllers
 
         [HttpGet]
         public JsonResult GetEblastListCusGroupList()
-        {            
+        {
             eBlastEditModel emodel = new eBlastEditModel();
             emodel.GetList();
             CustomerGroupEditModel cmodel = new CustomerGroupEditModel();
             cmodel.GetList(1);
-            return Json(new { EblastList=emodel.eBlastList, CustomerGroupList = cmodel.GroupList }, JsonRequestBehavior.AllowGet);
+            return Json(new { EblastList = emodel.eBlastList, CustomerGroupList = cmodel.GroupList }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
         public JsonResult GetCustomerNamesByCodes(string cusCodes)
-        {            
-            if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();           
-            List<string> cusNames = SqlConnection.Query<string>("EXEC dbo.GetCustomerNamesByCodes @apId=@apId,@cusCodes=@cusCodes", new { apId, cusCodes }).ToList();           
-            return Json(cusNames, JsonRequestBehavior.AllowGet);
+        {
+            if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
+            using (SqlConnection)
+            {
+                List<string> cusNames = SqlConnection.Query<string>("EXEC dbo.GetCustomerNamesByCodes @apId=@apId,@cusCodes=@cusCodes", new { apId, cusCodes }).ToList();
+                return Json(cusNames, JsonRequestBehavior.AllowGet);
+            }
         }
 
         [HttpGet]
@@ -121,10 +240,13 @@ namespace SmartBusinessWeb.Controllers
         {
             //GetHotListPaging
             if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
-            int startIndex = CommonHelper.GetStartIndex(pageIndex, PageSize);
-            List<HotListModel> hotlists = SqlConnection.Query<HotListModel>("EXEC dbo.GetHotListPaging @apId=@apId,@startIndex=@startIndex,@pageSize=@pageSize,@keyword=@keyword", new { apId, startIndex, pageSize = PageSize,keyword }).ToList();
-            var model = new { hotlists, PageSize, RecordCount = hotlists.Count, PageIndex=pageIndex };
-            return Json(model, JsonRequestBehavior.AllowGet);
+            using (SqlConnection)
+            {
+                int startIndex = CommonHelper.GetStartIndex(pageIndex, PageSize);
+                List<HotListModel> hotlists = SqlConnection.Query<HotListModel>("EXEC dbo.GetHotListPaging @apId=@apId,@startIndex=@startIndex,@pageSize=@pageSize,@keyword=@keyword", new { apId, startIndex, pageSize = PageSize, keyword }).ToList();
+                var model = new { hotlists, PageSize, RecordCount = hotlists.Count, PageIndex = pageIndex };
+                return Json(model, JsonRequestBehavior.AllowGet);
+            }
         }
 
 
@@ -132,9 +254,11 @@ namespace SmartBusinessWeb.Controllers
         public JsonResult GetCustomersByHotListId(long hotlistId)
         {
             if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
-            List<CustomerModel> customers = SqlConnection.Query<CustomerModel>("EXEC dbo.GetCustomersByHotListId @apId=@apId,@hotlistId=@hotlistId", new { apId, hotlistId }).ToList();
-            return Json(customers, JsonRequestBehavior.AllowGet);
-
+            using (SqlConnection)
+            {
+                List<CustomerModel> customers = SqlConnection.Query<CustomerModel>("EXEC dbo.GetCustomersByHotListId @apId=@apId,@hotlistId=@hotlistId", new { apId, hotlistId }).ToList();
+                return Json(customers, JsonRequestBehavior.AllowGet);
+            }
         }
 
         [HttpGet]
@@ -1774,7 +1898,7 @@ namespace SmartBusinessWeb.Controllers
                                      Lang = lang,
                                  }
                                 ).ToList();
-                   
+
                     PayList = (from p in context.RtlPays
                                where p.rtpDate >= frmdate && p.rtpDate <= todate && p.rtpDvc.ToLower() == device && p.rtpSalesLoc.ToLower() == shop
                                && p.AccountProfileId == accountProfileId
@@ -2251,7 +2375,7 @@ namespace SmartBusinessWeb.Controllers
                     {
                         customer = new CustomerModel
                         {
-                            cusCustomerID = c.cusCustomerID,                            
+                            cusCustomerID = c.cusCustomerID,
                             cusCode = c.cusCode,
                             cusIsActive = c.cusIsActive,
                             cusName = c.cusName,
@@ -2497,7 +2621,7 @@ namespace SmartBusinessWeb.Controllers
                                 {
                                     customers.Add(new CustomerModel
                                     {
-                                        cusCustomerID = c.cusCustomerID,                                      
+                                        cusCustomerID = c.cusCustomerID,
                                         cusCode = c.cusCode,
                                         cusIsActive = c.cusIsActive,
                                         cusName = c.cusName,
@@ -2624,7 +2748,7 @@ namespace SmartBusinessWeb.Controllers
                             {
                                 customers.Add(new CustomerModel
                                 {
-                                    cusCustomerID = c.cusCustomerID,                                    
+                                    cusCustomerID = c.cusCustomerID,
                                     cusCode = c.cusCode,
                                     cusIsActive = c.cusIsActive,
                                     cusName = c.cusName,
@@ -2924,12 +3048,12 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public JsonResult GetItem4Reserve(string selectedItemCode)
         {
-			var DicCodeLocQty = new Dictionary<string, Dictionary<string, int>>();
-			var DicCodeLocId = new Dictionary<string, Dictionary<string, string>>();
+            var DicCodeLocQty = new Dictionary<string, Dictionary<string, int>>();
+            var DicCodeLocId = new Dictionary<string, Dictionary<string, string>>();
             var ItemList = new List<ItemModel>();
-			ReserveEditModel model = new ReserveEditModel();
-			ModelHelper.GetShops(SqlConnection, ref Shops, ref ShopNames, apId);
-			model.HandleReserveItems(selectedItemCode, ref ItemList, ref DicCodeLocQty, ref DicCodeLocId, Shops);
+            ReserveEditModel model = new ReserveEditModel();
+            ModelHelper.GetShops(SqlConnection, ref Shops, ref ShopNames, apId);
+            model.HandleReserveItems(selectedItemCode, ref ItemList, ref DicCodeLocQty, ref DicCodeLocId, Shops);
             return Json(new { ItemList, DicCodeLocQty, DicCodeLocId }, JsonRequestBehavior.AllowGet);
         }
 
@@ -2955,12 +3079,12 @@ namespace SmartBusinessWeb.Controllers
             List<SalesItem> itemlist = ModelHelper.GetItemList(context, stockinfo, startIndex, model.PageSize, out model.RecordCount, keyword, location, type);
 
             ModelHelper.GetItemPriceLevelList(ref itemlist);
-            model.Items = itemlist;            
+            model.Items = itemlist;
 
             model.DicItemOptions = ModelHelper.GetDicItemOptions(apId, context);
 
             return Json(model, JsonRequestBehavior.AllowGet);
-        }    
+        }
 
         [HttpPost]
         public ActionResult GetCustomersAjax4Sales(int pageIndex = 1, string keyword = "", string mode = "")

@@ -21,7 +21,7 @@
 <div id="norecordfound" class="container hide">@Resources.Resource.NoDataFound</div>
 @using (Html.BeginForm("Index", "Enquiry", FormMethod.Post, new { @id = "frmEnquiry" }))
 {
-	@Html.Partial("_AdvSearchBlk", null, new ViewDataDictionary { { "Keyword", Model.Keyword }, { "isassignor", isassignor }, { "additionalcls", "mt-4" }, { "GroupTxt", string.Format(Resources.Resource.AddToFormat, Resources.Resource.EnquiryGroup) } })
+	@Html.Partial("_AdvSearchBlk", null, new ViewDataDictionary { { "Keyword", Model.Keyword }, { "isassignor", isassignor }, { "additionalcls", "mt-4" }, { "GroupTxt", string.Format(Resources.Resource.AddToFormat, Resources.Resource.EnquiryGroup) },{"HideAdvSearch",true } })
 
 	@Html.Partial("_DrpLatestRecordCount")
 }
@@ -55,7 +55,7 @@
 				<th class="text-center fstatus colheader" data-col="7" data-category="followupstatus">@string.Format(Resources.Resource.FollowUpFormat, Resources.Resource.Status)</th>
 				<th class="text-center fdate colheader" data-col="8" data-category="followupdate">@Resources.Resource.FollowUpDate</th>
 				<th class="text-center sales colheader" data-col="9" data-category="salesperson">@Resources.Resource.SalesPerson</th>
-				<th class="text-center attr">@Resources.Resource.CustomAttributes</th>
+				@*<th class="text-center attr">@Resources.Resource.CustomAttributes</th>*@
 				@{
 					string action = (isassignor) ? "action" : "action4sales";
 				}

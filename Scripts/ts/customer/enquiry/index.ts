@@ -377,8 +377,7 @@ function enqTemplate(data: IEnquiry[]): string {
 		html += `<td class="text-center fstatus">${x.FollowUpStatusDisplay}</td>`;
 		html += `<td class="text-center fdate">${x.FollowUpDateDisplay}</td>`;
 		html += `<td class="text-center sales">${x.SalesPersonName}</td>`;
-		html += `<td class="text-center attr">${x.CustomAttributes??"N/A"}</td>`;
-		//assignsalesmanrequiredtxt
+		//html += `<td class="text-center attr">${x.CustomAttributes??"N/A"}</td>`;		
 		html += `<td class="text-center ${actioncls}">`;
 
 		if (converted) {

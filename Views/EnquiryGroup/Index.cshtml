@@ -5,7 +5,7 @@
 	int rand = CommonHelper.GetVersionRandomNo();
 }
 <link href="~/Content/enquiry/group/index.css?v=@rand" rel="stylesheet" type="text/css" />
-<h2>
+<h2 data-groupcount="@Model.GroupList.Count">
 	@ViewBag.Title
 </h2>
 

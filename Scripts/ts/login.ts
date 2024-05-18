@@ -17,10 +17,10 @@ $(function () {
         if (isLocal) {
             //$("#Email").val("utservice_sb1@united.com.hk");
             //$("#Email").val("sunnyy@united.com.hk");
-         // $("#Email").val("utservice@united.com.hk");
-           $("#Email").val("enquiry@united.com.hk");     
+          $("#Email").val("utservice@united.com.hk");
+         //  $("#Email").val("enquiry@united.com.hk");     
             $("#Password").val(password);
-           $("#btnLogin").trigger("click");
+           //$("#btnLogin").trigger("click");
         } else {
             $("#Email").trigger("focus");
         }

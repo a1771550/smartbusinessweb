@@ -15,14 +15,7 @@
 				<th class="@headercls text-center" data-col="2">@Resources.Resource.ModifyTime</th>
 			}
 
-			<th class="text-center action"></th>
-			@*@if (PagingGroupList == null)
-			{
-				<th class="text-center checkbox">
-					<input type="checkbox" class="group" id="chkall" />
-				</th>
-			}*@
-
+			<th class="text-center action"></th>			
 		</tr>
 	</thead>
 	<tbody>
@@ -43,13 +36,7 @@
 					<td class="text-center action">
 						<a role="button" class="btn btn-info edit" href="/EnquiryGroup/Edit/@x.Id" title="@Resources.Resource.Edit">@Resources.Resource.Edit</a>
 						<button type="button" class="btn btn-danger remove" data-id="@x.Id" title="@Resources.Resource.Remove">@Resources.Resource.Remove</button>
-					</td>
-					@*@if (PagingGroupList == null)
-					{
-						<td class="text-center checkbox">
-							<input type="checkbox" class="chk group" data-id="@x.Id" value="@x.Id" />
-						</td>
-					}*@
+					</td>					
 				</tr>
 			}
 		}

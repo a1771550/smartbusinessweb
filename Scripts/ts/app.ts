@@ -20048,6 +20048,8 @@ interface IInfoBase {
 	CreatedBy: string | null;
 	ModifyTimeDisplay: string | null;
 	ModifiedBy: string | null;
+	UserName: string | null;
+	Email: string | null;
 }
 interface ICustomerInfo extends IInfoBase {
 	cusCode: string;
@@ -20070,11 +20072,13 @@ interface ICustomerInfo extends IInfoBase {
 	ContactName: string;
 	WWW: string;
 	Street: string;
+	CustomerName: string|null;
 }
 interface IEnquiryInfo extends IInfoBase {
 	Id: string;
 	//enId: string;
 	enEmail: string;
+	CompanyName: string|null;
 }
 
 interface IAdvSearchItem {
