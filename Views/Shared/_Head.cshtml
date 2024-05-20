@@ -1,11 +1,8 @@
 ﻿@{
 	string dateformat = ConfigurationManager.AppSettings["DateFormat"];
 	string sitename = Resources.Resource.SiteName;
-	int rand = CommonHelper.GetVersionRandomNo();
-	//string cssbsfile = ViewData["cssbsfile"] == null ? @"Content/bs4" : ViewData["CssBSFile"].ToString();
-	//string scriptbsfile = ViewData["scriptbsfile"] == null ? @"Scripts/bs4" : ViewData["ScriptBSFile"].ToString();
-	string pagetitle = ViewData["PageTitle"] == null ? @"" : ViewData["PageTitle"].ToString();
-	//string printcss = ViewData["printcss"] == null ? "" : ViewData["printcss"].ToString();
+	int rand = CommonHelper.GetVersionRandomNo();	
+	string pagetitle = ViewData["PageTitle"] == null ? "" : ViewData["PageTitle"].ToString();	
 }
 <head>
 	<meta charset="utf-8" />
@@ -33,7 +30,7 @@
 	<link type="text/css" rel="stylesheet" href="~/Content/pos/animate.css">
 	<link type="text/css" rel="stylesheet" href="~/Scripts/select2/select2.min.css">
 
-	<link type="text/css" href="~/Content/fontawesome/css/fontawesome.css" rel="stylesheet" />	
+	<link type="text/css" href="~/Content/fontawesome/css/fontawesome.css" rel="stylesheet" />
 	<link type="text/css" href="~/Content/fontawesome/css/brands.css" rel="stylesheet">
 	<link type="text/css" href="~/Content/fontawesome/css/solid.css" rel="stylesheet">
 
@@ -45,8 +42,8 @@
 	<script src="~/Scripts/bs4/bootstrap.min.js"></script>
 	<script src="~/Content/mean/js/jquery.nice-select.js"></script>
 	<script src="~/Content/mean/js/main.js"></script>
-
 	<script src="~/Scripts/moment.min.js"></script>
+	<script src="~/Scripts/datetimepicker/bootstrap-datetimepicker.min.js"></script>
 	<script src="~/Scripts/respond.js"></script>
 	<script src="~/Scripts/modernizr-2.8.3.js"></script>
 

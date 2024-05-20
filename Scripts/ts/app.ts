@@ -20162,10 +20162,11 @@ function confirmAdvancedSearch() {
                     <td class="text-center">${cname}</td>
                     <td class="text-center">${customer.cusContact}</td>
                     <td class="text-center">${email}</td>
-                    <td class="text-center customattrs">${customer.CustomAttributes}</td>                   
+                    <td class="text-center customattrs">${customer.CustomAttributes??"N/A"}</td>                   
                     <td class="text-center">${customer.FollowUpStatusDisplay}</td>
                     <td class="text-center">${customer.FollowUpDateDisplay}</td>
 					 <td class="text-center">${customer.AccountProfileName}</td>
+					  <td class="text-center">${customer.SalesPersonName??"N/A"}</td>
                     <td class="text-center">
                         <a class="btn btn-info btnsmall" role="button" href="/Customer/Edit?cusCode=${customer.cusCode}&referrer=Index">${edittxt}</a>
                         <a class="btn btn-danger btnsmall remove ${disabled}" role="button" href="#" data-code="${customer.cusCode}" data-id="${customer.cusCustomerID}">${removetxt}</a>

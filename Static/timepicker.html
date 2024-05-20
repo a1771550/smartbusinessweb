@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Time Picker Demo</title>
+	<link rel="icon" type="image/png" href="../Content/favicon_io/favicon-16x16.png">
+	<link href="../Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+	<link href="../Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+
+	<link type="text/css" href="../Content/fontawesome/css/fontawesome.css" rel="stylesheet" />
+	<link type="text/css" href="../Content/fontawesome/css/brands.css" rel="stylesheet">
+	<link type="text/css" href="../Content/fontawesome/css/solid.css" rel="stylesheet">
+
+	<script src="../Scripts/jquery-ui/external/jquery/jquery.js"></script>
+	<script src="../Scripts/bootstrap.min.js"></script>
+	<script src="../Scripts/moment.min.js"></script>
+	<script src="../Scripts/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+	<script src="../Scripts/respond.min.js"></script>
+	<script src="../Scripts/modernizr-2.8.3.js"></script>
+	<script src="https://kit.fontawesome.com/1dc29bcabd.js" crossorigin="anonymous"></script>
+</head>
+<body>
+   <link href="../Content/static/timepicker.css" rel="stylesheet" type="text/css" />
+    
+	<main class="cd__main">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-lg-6 offset-lg-3 col-md-8 offset-md-2">
+					<div class="content">
+						<h1>DateTimePicker Styles</h1>
+						<div class="form-group">
+							<label>Date</label>
+							<div class="input-group date" id="datepicker">
+								<input class="form-control" placeholder="MM/DD/YYYY" /><span class="input-group-append input-group-addon"><span class="input-group-text"><i class="fa fa-calendar"></i></span></span>
+							</div>
+						</div>
+						<div class="form-group">
+							<label>Time</label>
+							<div class="input-group time" id="timepicker">
+								<input class="form-control" placeholder="HH:MM AM/PM" /><span class="input-group-append input-group-addon"><span class="input-group-text"><i class="fa fa-clock"></i></span></span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	
+
+	<script>
+		$(function () {
+			if (/Mobi/.test(navigator.userAgent)) {
+				// if mobile device, use native pickers
+				$(".date input").attr("type", "date");
+				$(".time input").attr("type", "time");
+			} else {
+				// if desktop device, use DateTimePicker
+				$("#datepicker").datetimepicker({
+					useCurrent: false,
+					format: "DD-MMM-YYYY",
+					showTodayButton: true,
+					icons: {
+						next: "fa fa-chevron-right",
+						previous: "fa fa-chevron-left",
+						today: 'todayText',
+					}
+				});
+				$("#timepicker").datetimepicker({
+					format: "LT",
+					icons: {
+						up: "fa fa-chevron-up",
+						down: "fa fa-chevron-down"
+					}
+				});
+			}
+		});
+	</script>
+</body>
+</html>

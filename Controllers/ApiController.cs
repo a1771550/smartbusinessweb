@@ -29,7 +29,7 @@ using PPWLib.Models.Item;
 using CommonLib.Models;
 using PPWLib.Models.WholeSales;
 using Dapper;
-using PPWLib.Models.POS.Settings;
+using PPWLib.Models.Settings;
 using System.Data.Entity;
 using CustomerModel = PPWLib.Models.Customer.CustomerModel;
 using System.Web;
@@ -48,15 +48,15 @@ namespace SmartBusinessWeb.Controllers
     [AllowAnonymous]
     public class ApiController : Controller
     {
-        private ComInfo ComInfo { get { return Session["ComInfo"] as ComInfo; } }
-        private string ConnectionString { get { return string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ;", ComInfo.MYOBDriver, ComInfo.MYOBUID, ComInfo.MYOBPASS, ComInfo.MYOBDb, ComInfo.MYOBExe, ComInfo.MYOBKey); } }
+        private ComInfo ComInfo { get { return Session["ComInfo"] == null ? null : Session["ComInfo"] as ComInfo; } }
+        private string ConnectionString { get { return ComInfo == null ? string.Empty : string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ;", ComInfo.MYOBDriver, ComInfo.MYOBUID, ComInfo.MYOBPASS, ComInfo.MYOBDb, ComInfo.MYOBExe, ComInfo.MYOBKey); } }
         private string CentralBaseUrl { get { return UriHelper.GetAppUrl(); } }
         private string CentralApiUrl { get { return ConfigurationManager.AppSettings["CentralApiUrl"]; } }
         private string CentralApiUrl4Receipt { get { return ConfigurationManager.AppSettings["CentralApiUrl4Receipt"]; } }
         private int PageSize { get { return ComInfo == null ? int.Parse(ConfigurationManager.AppSettings["PageLength"]) : (int)ComInfo.PageLength; } }
         private int AccountProfileId { get { return ComInfo == null ? int.Parse(ConfigurationManager.AppSettings["AccountProfileId"]) : (int)Session["AccountProfileId"]; } }
         private int apId { get { return AccountProfileId; } }
-        private string DbName { get { return Session["DBName"].ToString(); } }
+        private string DbName { get { return Session["DBName"] == null ? string.Empty : Session["DBName"].ToString(); } }
         private string CheckoutPortal { get { return ComInfo.DefaultCheckoutPortal; } }
         private string DefaultConnection { get { return Session["DBName"] == null ? ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", "SmartBusinessWeb_db") : ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", Session["DBName"].ToString()); } }
         private SqlConnection SqlConnection { get { return new SqlConnection(DefaultConnection); } }
@@ -67,8 +67,10 @@ namespace SmartBusinessWeb.Controllers
         public List<string> ShopNames;
         public ApiController() { }
 
+       
+
         [HttpGet]
-        public void AlertFollowUp()
+        public void AlertFollowUp(int apId = 1)
         {
             try
             {
@@ -82,26 +84,24 @@ namespace SmartBusinessWeb.Controllers
                     enquiryInfoes = SqlConnection.Query<EnquiryInfoModel>("EXEC dbo.GetEnquiryInfoes4FollowUpSales @apId=@apId", new { apId }).ToList();
                     emailSettings = SqlConnection.QueryFirstOrDefault<EmailSetting>("EXEC dbo.GetEmailSettings @apId=@apId", new { apId });
                 }
+                StringBuilder sb = new StringBuilder();
                 if (customerInfoes != null && customerInfoes.Count > 0)
-                {                   
+                {
                     string msg = "";
                     string subject = ConfigurationManager.AppSettings["CustomerFollowUpAlertSubject"];
                     var groupedInfoes = customerInfoes.GroupBy(x => x.UserName).ToList();
                     foreach (var group in groupedInfoes)
                     {
                         var customerInfo = group.FirstOrDefault();
-                        var customernames = group.Select(x => x.CustomerName).ToList();
+                        var customernames = group.Select(x => x.CustomerName).Distinct().ToList();
                         if (customerInfo != null)
                         {
                             msg = string.Format(HttpUtility.HtmlDecode(ConfigurationManager.AppSettings["CustomerFollowUpFormat"]), customerInfo.UserName);
                             msg += "<ul>";
-                            foreach (var customername in customernames)
-                            {
-                                msg += $"<li>{customername}</li>";
-                            }
+                            foreach (var customername in customernames) msg += $"<li>{customername}</li>";
                             msg += "</ul>";
-
                             SendSimpleEmail(customerInfo.Email, customerInfo.UserName, msg, subject, emailSettings);
+                            sb.Append(msg);
                         }
                     }
                 }
@@ -113,27 +113,29 @@ namespace SmartBusinessWeb.Controllers
                     foreach (var group in groupedInfoes)
                     {
                         var enquiryInfo = group.FirstOrDefault();
-                        var companynames = group.Select(x => x.CompanyName).ToList();
+                        var companynames = group.Select(x => x.CompanyName).Distinct().ToList();
                         if (enquiryInfo != null)
                         {
                             msg = string.Format(HttpUtility.HtmlDecode(ConfigurationManager.AppSettings["EnquiryFollowUpFormat"]), enquiryInfo.UserName);
                             msg += "<ul>";
-                            foreach (var companyname in companynames)
-                            {
-                                msg += $"<li>{companyname}</li>";
-                            }
+                            foreach (var companyname in companynames) msg += $"<li>{companyname}</li>";
                             msg += "</ul>";
-
                             SendSimpleEmail(enquiryInfo.Email, enquiryInfo.UserName, msg, subject, emailSettings);
+                            sb.Append(msg);
                         }
                     }
                 }
 
+                if (!string.IsNullOrEmpty(sb.ToString()))
+                {
+                    using var context = new PPWDbContext("SmartBusinessWeb_db");
+                    ModelHelper.WriteLog(context, sb.ToString(), "AlertFollowUp:Done");
+                }
             }
             catch (Exception ex)
             {
                 using var context = new PPWDbContext("SmartBusinessWeb_db");
-                ModelHelper.WriteLog(context, ex.Message, "AlertSalesmenFollowUp4Customers");
+                ModelHelper.WriteLog(context, ex.Message, "AlertFollowUp:Failed");
             }
         }
 

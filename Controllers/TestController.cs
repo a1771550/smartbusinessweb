@@ -80,6 +80,10 @@ namespace SmartBusinessWeb.Controllers
 
         private SqlConnection SqlConnection { get { return new SqlConnection(DefaultConnection); } }
 
+        public ViewResult TimePicker()
+        {
+            return View();
+        }
         public void Device()
         {
             using var context = new PPWDbContext("SmartBusinessWeb_db");

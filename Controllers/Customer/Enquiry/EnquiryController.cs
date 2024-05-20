@@ -22,11 +22,11 @@ namespace SmartBusinessWeb.Controllers.Customer.Enquiry
         [HttpPost]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
-        public JsonResult AddToSalesmen(List<int> groupIdList, List<int> salesmanIdList, bool notification)
+        public JsonResult AddToSalesmen(List<int> groupIdList, int salesmanId, bool notification)
         {
             var msg = string.Format(Resource.AreAddedToFormat, Resource.Enquiry, Resource.Salesmen);
             EnquiryEditModel model = new EnquiryEditModel();
-            model.AddToSalesmen(groupIdList, salesmanIdList, notification);
+            model.AddToSalesmen(groupIdList, salesmanId, notification);
             return Json(msg);
         }
 

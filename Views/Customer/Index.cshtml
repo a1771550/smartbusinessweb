@@ -107,7 +107,7 @@
 @Html.Partial("_AdvancedSearchModal", Model.GlobalAttrList)
 
 <!--properties to be changed via js-->
-@Html.Partial("_DropDownModal", null, new ViewDataDictionary { { "lbltxt", Resources.Resource.eBlast }, { "drpId", "drpEblast" }, { "forcustomer", true } })
+@Html.Partial("_DropDownModal", null, new ViewDataDictionary { { "lbltxt", Resources.Resource.eBlast }, { "drpId", "drpCustomer" }, { "forcustomer", true } })
 
 @Html.Partial("_WaitingModal")
 <div id="infoblk" data-codelist="@JsonSerializer.Serialize(Model.CodeList)" data-actionhistory="@Resources.Resource.ActionHistory" data-selectatleastonecustomertxt="@selectatleastonecustomertxt" data-pagesize="@Model.ComInfo.PageLength"></div>

@@ -12,15 +12,7 @@ let DicAssignedSalesEnqId: { [Key: string]: number } = {};
 let assignsalesmanrequiredtxt:string = $infoblk.data("assignsalesmanrequiredtxt");
 
 function handleSalesmenEnquiries(notification: boolean) {
-	let salesmanIdList: number[] = [];
-	let salesmen: string[] = dropdownModal.find("select").first().val() as string[];
-	//console.log(eblasts);
-	if (salesmen.length == 1) salesmanIdList.push(Number(salesmen[0]));
-	else {
-		salesmen.forEach((x) => {
-			salesmanIdList.push(Number(x));
-		});
-	}
+	let salesmanId: number = Number(dropdownModal.find("select").first().val());	
 	let groupIdList: number[] = [];
 	let groups = dropdownModal.find("#drpEnquiryGroup").val() as string[];
 	//console.log(groups);
@@ -37,7 +29,7 @@ function handleSalesmenEnquiries(notification: boolean) {
 	$.ajax({
 		type: "POST",
 		url: "/Enquiry/AddToSalesmen",
-		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), groupIdList, salesmanIdList, notification },
+		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), groupIdList, salesmanId, notification },
 		success: function (data) {
 			closeWaitingModal();
 			if (data) {

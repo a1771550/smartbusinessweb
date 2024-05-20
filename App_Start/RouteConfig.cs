@@ -190,6 +190,18 @@ new {apId=@"\d+"}
    );
 
             routes.MapRoute(
+         null,
+         "alertfollowup/{apId}",
+         new { controller = "Api", action = "AlertFollowUp" },
+         new { apId = @"\d+" }
+     );
+
+            routes.MapRoute(
+         null,
+         "apitest",
+         new { controller = "ApiV2", action = "Test" }       
+     );
+            routes.MapRoute(
 		  null,
 		  "POS",
 		  new { controller = "Test", action = "POS" }
@@ -227,6 +239,7 @@ new {apId=@"\d+"}
            new { controller = "Api", action = "GetContacts" }
        );
 
+          
 
 
             routes.MapRoute(

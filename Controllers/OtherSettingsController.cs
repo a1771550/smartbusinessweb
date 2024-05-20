@@ -11,14 +11,33 @@ using System.Web;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
 using CommonLib.Helpers;
-using PPWLib.Models.POS.Settings;
+using PPWLib.Models.Settings;
+using PPWLib.Models.Settings.Duty;
 
 namespace SmartBusinessWeb.Controllers
 {
     [CustomAuthenticationFilter]
     public class OtherSettingsController : BaseController
     {
-       
+        [HandleError]
+        [CustomAuthorize("othersettings", "boss", "admin", "superadmin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult Duty(DutyModel model)
+        {  
+            DutyEditModel.Save(model);
+            return Json(string.Format(Resources.Resource.SavedOkFormat, Resources.Resource.Duty));
+        }
+
+        [HandleError]
+        [CustomAuthorize("othersettings", "boss", "admin", "superadmin")]
+        public ActionResult Duty()
+        {
+            ViewBag.ParentPage = "setup";          
+            DutyEditModel model = new DutyEditModel();
+            model.Get();
+            return View(model);
+        }
 
         [HandleError]
         [CustomAuthorize("othersettings", "boss", "admin", "superadmin")]
@@ -36,8 +55,7 @@ namespace SmartBusinessWeb.Controllers
         [CustomAuthorize("othersettings", "boss", "admin", "superadmin")]
         public ActionResult ExchangeRate()
         {
-            ViewBag.ParentPage = "setup";
-            ViewBag.PageName = "exchangerate";
+            ViewBag.ParentPage = "setup";          
             ExchangeRateEditModel model = new ExchangeRateEditModel();
             return View(model);
         }

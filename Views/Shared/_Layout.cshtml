@@ -241,10 +241,11 @@
 									<p>@Resources.Resource.DataIntegration</p>
 								</a>
 								<ul class="submenu collapse" id="collapseDataTransfer">
-									@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "dayendsimportfrmcentral") ? "active" : ""; var pagetitle = HttpContext.Current.Session["ImportFrmCentralPageTitle"] ?? string.Format(Resources.Resource.DayendsImportFrmCentral, defaultcheckoutportal.ToUpper()); }
-									<li><a href="/DataTransfer/DayendsImportFrmCentral" class="@sublnkcls">@pagetitle</a></li>
+									@{ 
+										var pagetitle = HttpContext.Current.Session["ImportFrmCentralPageTitle"] ?? string.Format(Resources.Resource.DayendsImportFrmCentral, defaultcheckoutportal.ToUpper()); }
+									<li><a href="/DataTransfer/DayendsImportFrmCentral">@pagetitle</a></li>
 									@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "dayendsexportfrmshop") ? "active" : ""; pagetitle = HttpContext.Current.Session["ExportFrmShopPageTitle"] ?? string.Format(Resources.Resource.DayendsImportFrmShop, defaultcheckoutportal.ToUpper()); }
-									<li><a href="/DataTransfer/DayendsExportFrmShop" class="@sublnkcls">@pagetitle</a></li>
+									<li><a href="/DataTransfer/DayendsExportFrmShop">@pagetitle</a></li>
 								</ul>
 							</li>
 						}
@@ -263,10 +264,8 @@
 								@if (reports != null && reports.Count > 0)
 								{
 									foreach (ReportView report in reports)
-									{
-										sublnkcls = "{0}";
-										if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == report.Code.ToLower()) { sublnkcls = string.Format(sublnkcls, "active"); } else { sublnkcls = string.Format(sublnkcls, string.Empty); }
-										<li>@Html.ActionLink(report.Name, "Show" + report.Code, "Report", new { }, new { @class = sublnkcls })</li>
+									{										
+										<li>@Html.ActionLink(report.Name, "Show" + report.Code, "Report")</li>
 									}
 								}
 							</ul>
@@ -278,15 +277,15 @@
 								<p>@string.Format(Resources.Resource.ReportFormat, "ABSS")</p>
 							</a>
 							<ul class="submenu collapse" id="collapseAbssReports">
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "quotation") ? "active" : ""; }
-								<li>@Html.ActionLink(Resources.Resource.Quotation, "Quotation", "ABSSReport", null, new { @class = sublnkcls })</li>
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "receivable") ? "active" : ""; }
-								<li>@Html.ActionLink(Resources.Resource.AccountReceivable, "AccountReceivable", "ABSSReport", null, new { @class = sublnkcls })</li>
+								
+								<li>@Html.ActionLink(Resources.Resource.Quotation, "Quotation", "ABSSReport")</li>
+							
+								<li>@Html.ActionLink(Resources.Resource.AccountReceivable, "AccountReceivable", "ABSSReport")</li>
 
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "spp") ? "active" : ""; }
-								<li>@Html.ActionLink(Resources.Resource.SalesPersonPerformance, "SPP", "ABSSReport", null, new { @class = sublnkcls })</li>
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "ci") ? "active" : ""; }
-								<li>@Html.ActionLink(Resources.Resource.CustomerInvoices, "CI", "ABSSReport", null, new { @class = sublnkcls })</li>
+							
+								<li>@Html.ActionLink(Resources.Resource.SalesPersonPerformance, "SPP", "ABSSReport")</li>
+							
+								<li>@Html.ActionLink(Resources.Resource.CustomerInvoices, "CI", "ABSSReport")</li>
 							</ul>
 						</li>
 						<li class="btn_expand">
@@ -295,13 +294,10 @@
 								<span><img src="~/Content/mean/img/rec.svg" alt=""></span>
 								<p>@Resources.Resource.Record</p>
 							</a>
-							<ul class="submenu collapse" id="collapseRecords">
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "attendance") ? "active" : ""; }
-								<li>@Html.ActionLink(Resources.Resource.AttendanceRecords, "Index", "Attendance", null, new { @class = sublnkcls })</li>
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "job") ? "active" : ""; }
-								<li>@Html.ActionLink(Resources.Resource.JobRecords, "Index", "Job", null, new { @class = sublnkcls })</li>
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "training") ? "active" : ""; }
-								<li>@Html.ActionLink(Resources.Resource.TrainingRecords, "Index", "Training", null, new { @class = sublnkcls })</li>
+							<ul class="submenu collapse" id="collapseRecords">							
+								<li>@Html.ActionLink(Resources.Resource.AttendanceRecords, "Index", "Attendance")</li>							
+								<li>@Html.ActionLink(Resources.Resource.JobRecords, "Index", "Job")</li>							
+								<li>@Html.ActionLink(Resources.Resource.TrainingRecords, "Index", "Training")</li>
 							</ul>
 						</li>
 						<li class="btn_expand">
@@ -325,17 +321,15 @@
 								{
 									foreach (string key in dicSetupMenus.Keys)
 									{
-										sublnkcls = "{0}";
 										Menu menu = dicSetupMenus[key];
-										if (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == key.ToLower()) { sublnkcls = string.Format(sublnkcls, "active"); } else { sublnkcls = string.Format(sublnkcls, string.Empty); }
-										<li>@Html.ActionLink(menu.DisplayText, menu.ActionName, menu.ControllerName, new { }, new { @class = sublnkcls })</li>
+
+										<li>@Html.ActionLink(menu.DisplayText, menu.ActionName, menu.ControllerName)</li>
 									}
 								}
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "accessrights") ? "active" : ""; }
-								<li>@Html.ActionLink(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.User), "Index", "AccessRight", new { }, new { @class = sublnkcls })</li>
-								@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "exchangerate") ? "active" : ""; }
-								<li><a href="/Othersettings/ExchangeRate" class="@sublnkcls">@string.Format(Resources.Resource.SetupFormat, Resources.Resource.ExchangeRate)</a></li>
 
+								<li>@Html.ActionLink(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.User), "Index", "AccessRight")</li>
+								<li><a href="/Othersettings/ExchangeRate">@string.Format(Resources.Resource.SetupFormat, Resources.Resource.ExchangeRate)</a></li>
+								<li><a href="/Othersettings/Duty">@Resources.Resource.Duty</a></li>
 							</ul>
 						</li>
 					</ul>

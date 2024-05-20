@@ -519,8 +519,8 @@
         </Favorite>
         <Favorite>
           <name>EnquiryController.cs</name>
-          <path>Controllers\Customer\EnquiryController.cs</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Customer\EnquiryController.cs</absolutePath>
+          <path>Controllers\Customer\Enquiry\EnquiryController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Customer\Enquiry\EnquiryController.cs</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

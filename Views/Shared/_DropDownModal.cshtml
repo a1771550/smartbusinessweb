@@ -12,11 +12,9 @@
 }
 
 <div id="dropdownModal">
-	@Html.Raw(multipletag)
-
 	<div class="form-group">
 		<label for="@drpId">@lbltxt</label>
-		<select id="@drpId" class="form-control dropdown @cls" @multiple>
+		<select id="@drpId" class="form-control dropdown @cls">
 		</select>
 	</div>
 	@if (forcustomer||forenquiry)

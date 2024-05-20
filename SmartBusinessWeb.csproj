@@ -2793,6 +2793,7 @@
     <Content Include="Content\select2\select2.min.css" />
     <Content Include="Content\item\stock.css" />
     <Content Include="Content\item\transfer\print.css" />
+    <Content Include="Content\static\timepicker.css" />
     <Content Include="Content\supplier\edit.css" />
     <Content Include="Content\supplier\index.css" />
     <Content Include="Content\training.css" />
@@ -2899,6 +2900,7 @@
     <Content Include="Scripts\datatables.js" />
     <Content Include="Scripts\datatables.min.js" />
     <Content Include="Scripts\date.format.js" />
+    <Content Include="Scripts\datetimepicker\bootstrap-datetimepicker.min.js" />
     <Content Include="Scripts\filestyle.js" />
     <Content Include="Scripts\glide\css\glide.core.css.map" />
     <Content Include="Scripts\glide\css\glide.core.min.css.map" />
@@ -3108,6 +3110,10 @@
     <Content Include="Scripts\ts\js\records\journaledit.js" />
     <Content Include="Scripts\ts\js\records\journallist.js" />
     <Content Include="Scripts\ts\js\records\training.js" />
+    <Content Include="Scripts\ts\js\settings\duty.js" />
+    <Content Include="Scripts\ts\js\settings\email.js" />
+    <Content Include="Scripts\ts\js\settings\exchangerate.js" />
+    <Content Include="Scripts\ts\js\settings\othersettings.js" />
     <Content Include="Scripts\ts\js\simplecontact\edit.js" />
     <Content Include="Scripts\ts\js\supplier\edit.js" />
     <Content Include="Scripts\ts\js\supplier\index.js" />
@@ -3118,6 +3124,7 @@
     <Content Include="Static\barcode.html" />
     <Content Include="Static\collapse.html" />
     <Content Include="Static\datatables.html" />
+    <Content Include="Static\timepicker.html" />
     <Content Include="Static\fadeToggle.html" />
     <Content Include="Static\POS\images\banana.png" />
     <Content Include="Static\POS\images\cherry.png" />
@@ -4489,7 +4496,6 @@
     <Content Include="Scripts\ts\js\pos\inventorytransfer.js" />
     <Content Include="Scripts\ts\js\pos\kingdeeaccountinfo.js" />
     <Content Include="Scripts\ts\js\pos\kstock.js" />
-    <Content Include="Scripts\ts\js\pos\othersettings.js" />
     <Content Include="Scripts\ts\js\pos\print.js" />
     <Content Include="Scripts\ts\js\pos\purchasestock.js" />
     <Content Include="Scripts\ts\js\pos\purchasestockedit.js" />
@@ -4719,6 +4725,12 @@
     <Content Include="Views\Shared\_tblEnquiryGroup.cshtml" />
     <Content Include="Scripts\ts\js\customer\enquiry\group\edit.js.map" />
     <Content Include="Scripts\ts\js\customer\enquiry\group\index.js.map" />
+    <Content Include="Views\OtherSettings\Duty.cshtml" />
+    <Content Include="Scripts\ts\js\settings\duty.js.map" />
+    <Content Include="Scripts\ts\js\settings\email.js.map" />
+    <Content Include="Scripts\ts\js\settings\exchangerate.js.map" />
+    <Content Include="Scripts\ts\js\settings\othersettings.js.map" />
+    <Content Include="Views\Test\TimePicker.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4761,7 +4773,6 @@
     <Content Include="Scripts\ts\js\pos\inventorytransfer.js.map" />
     <Content Include="Scripts\ts\js\pos\kingdeeaccountinfo.js.map" />
     <Content Include="Scripts\ts\js\pos\kstock.js.map" />
-    <Content Include="Scripts\ts\js\pos\othersettings.js.map" />
     <Content Include="Scripts\ts\js\pos\print.js.map" />
     <Content Include="Scripts\ts\js\pos\purchasestock.js.map" />
     <Content Include="Scripts\ts\js\pos\purchasestockedit.js.map" />
@@ -4988,6 +4999,7 @@
     <Folder Include="Controllers\CRM\" />
     <Folder Include="Models\" />
     <Folder Include="Scripts\mean\" />
+    <Folder Include="Views\ApiV2\" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\index.d.ts" />
@@ -5127,8 +5139,9 @@
     <TypeScriptCompile Include="Scripts\ts\customer\edit.ts" />
     <TypeScriptCompile Include="Scripts\ts\datatransfer\exportfrmshop.ts" />
     <TypeScriptCompile Include="Scripts\ts\datatransfer\importfrmcentral.ts" />
-    <TypeScriptCompile Include="Scripts\ts\emailsetting.ts" />
-    <TypeScriptCompile Include="Scripts\ts\exchangerate.ts" />
+    <TypeScriptCompile Include="Scripts\ts\settings\duty.ts" />
+    <TypeScriptCompile Include="Scripts\ts\settings\email.ts" />
+    <TypeScriptCompile Include="Scripts\ts\settings\exchangerate.ts" />
     <TypeScriptCompile Include="Scripts\ts\home.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\transfer\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\item\transfer\transfer.ts" />
@@ -5141,7 +5154,7 @@
     <TypeScriptCompile Include="Scripts\ts\item\stock.ts" />
     <TypeScriptCompile Include="Scripts\ts\records\job.ts" />
     <TypeScriptCompile Include="Scripts\ts\login.ts" />
-    <TypeScriptCompile Include="Scripts\ts\othersettings.ts" />
+    <TypeScriptCompile Include="Scripts\ts\settings\othersettings.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\accessrights.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\accessrightsedit.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\dayends.ts" />
