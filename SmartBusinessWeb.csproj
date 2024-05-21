@@ -368,7 +368,7 @@
     <Compile Include="Controllers\Customer\CustomerController.cs" />
     <Compile Include="Controllers\DataTransferController.cs" />
     <Compile Include="Controllers\DemoController.cs" />
-    <Compile Include="Controllers\EmailSettingsController.cs" />
+    <Compile Include="Controllers\Settings\EmailSettingsController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Item\ItemCategoryController.cs" />
@@ -376,7 +376,7 @@
     <Compile Include="Controllers\Item\TransferController.cs" />
     <Compile Include="Controllers\Records\JobController.cs" />
     <Compile Include="Controllers\JsonController.cs" />
-    <Compile Include="Controllers\OtherSettingsController.cs" />
+    <Compile Include="Controllers\Settings\OtherSettingsController.cs" />
     <Compile Include="Controllers\POS\DepositController.cs" />
     <Compile Include="Controllers\POS\PaymentTypesController.cs" />
     <Compile Include="Controllers\POS\PayServiceController.cs" />

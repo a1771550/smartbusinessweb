@@ -98,25 +98,15 @@
 	<script>
 		$(function () {
 			// window.addEventListener("load", function() {
-			var now = new Date();
-			var utcString = now.toISOString().substring(0, 19);
+			var now = new Date();			
 			var year = now.getFullYear();
 			var month = now.getMonth() + 1;
 			var day = now.getDate();
 			var hour = now.getHours();
 			var minute = now.getMinutes();
 			var second = now.getSeconds();
-			var localDate =
-				(day < 10 ? "0" + day.toString() : day) + "-" +
-				(month < 10 ? "0" + month.toString() : month) + "-" +
-				year;
-			var localTime = (hour < 10 ? "0" + hour.toString() : hour) + ":" +
-				(minute < 10 ? "0" + minute.toString() : minute) + ":" +
-				second;
-			var localDateTime = localDate + " " + localTime;
-			console.log("localdatetime:" + localDateTime);
-			console.log("now:", now);
-			var newDate = new Date(year,month,day,3,50,second,0);
+			
+			var newDate = new Date(year,month,day,hour,minute,second,0);
 			if (/Mobi/.test(navigator.userAgent)) {
 				// if mobile device, use native pickers
 				$(".date input").attr("type", "date");

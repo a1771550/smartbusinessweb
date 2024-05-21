@@ -24,6 +24,10 @@ enum TriggerReferrer {
 	Row,
 	Modal
 }
+interface IDuty {
+	DutyOn: string;
+	DutyOff: string;
+}
 interface IReserve {
 	Id: number;
 	riCode: string;
@@ -6743,6 +6747,10 @@ function convertStringToDate(
 	return new Date(year, mth, day);
 }
 
+function getNumberFrmString(str: string):number {
+	var numsStr = str.replace(/[^0-9]/g, '');
+	return parseInt(numsStr);
+}
 function fillInEnquiry() {
 	enquiry = {
 		id: <string>$("#Id").val(),
