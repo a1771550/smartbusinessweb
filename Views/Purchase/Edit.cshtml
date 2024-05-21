@@ -119,7 +119,7 @@
 	</div>
 
 	
-		<div class="auto my-4">
+		<div class="auto">
 			@{ string tbodycls = Purchase.pstStatus == PurchaseStatus.opened.ToString() ? "small" : "";}
 			<table id="tblPSI" class="table table-hover table-bordered table-condensed">
 				<thead class="gray-header">
@@ -136,18 +136,18 @@
 							<th class="text-center ip" title="@Resources.Resource.ExpiryDate">@Resources.Resource.ExpiryDate</th>
 							<th class="text-center iv" title="@Resources.Resource.ItemVariations">@Resources.Resource.ItemVariations</th>
 						}
-						<th class="text-right sellprice">@Resources.Resource.UnitPrice (@Model.Currency)</th>
-						<th class="text-right selldiscpc" title="@Resources.Resource.DiscPc">@Resources.Resource.DiscPc</th>
+						<th class="text-right sellprice num">@Resources.Resource.UnitPrice (@Model.Currency)</th>
+						<th class="text-right selldiscpc num" title="@Resources.Resource.DiscPc">@Resources.Resource.DiscPc</th>
 						@if (Model.EnableTax && !Model.InclusiveTax)
 						{
-							<th class="text-right selltax" title="@Resources.Resource.Tax">@Resources.Resource.TaxItemHeader</th>
+							<th class="text-right selltax num" title="@Resources.Resource.Tax">@Resources.Resource.TaxItemHeader</th>
 						}
 						<th class="text-center selllocation">@Resources.Resource.Location</th>
 						<th class="text-center selljob">@Resources.Resource.Job4Myob</th>
-						<th class="text-right sellamt" title="@Resources.Resource.Amount">@Resources.Resource.Amount (@Model.Currency)</th>
+						<th class="text-right sellamt num" title="@Resources.Resource.Amount">@Resources.Resource.Amount (@Model.Currency)</th>
 						@if (Purchase.pstStatus == PurchaseStatus.opened.ToString() || Purchase.pstStatus == PurchaseStatus.partialreceival.ToString())
 						{
-							<th class="text-right received" title="@Resources.Resource.ReceivedQty">@Resources.Resource.ReceivedQty</th>
+							<th class="text-right treceived" title="@Resources.Resource.ReceivedQty">@Resources.Resource.ReceivedQty</th>
 						}
 					</tr>
 				</thead>
@@ -336,7 +336,7 @@
 				else if (!editmode)
 				{
 					<div class="d-none d-md-block text-right">
-						<button id="" type="button" class="btn btn-primary ml-3 my-2 request makeorder btnRequestApproval" style="height:5em;">@Resources.Resource.Request4Approval</button>
+						<button id="" type="button" class="btn btn-primary ml-3 my-2 request makeorder btnRequestApproval">@Resources.Resource.Request4Approval</button>
 						@if (showrecur)
 						{
 							<button id="" type="button" class="btn btn-info ml-3 my-2 btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>

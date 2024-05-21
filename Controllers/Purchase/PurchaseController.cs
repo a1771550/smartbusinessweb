@@ -195,7 +195,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
             ViewBag.ParentPage = "purchase";
             ViewBag.PageName = "edit";
             PurchaseEditModel model = new PurchaseEditModel(receiptno, ireadonly);
-            return View("Get", model);
+            return View("Edit", model);
         }
 
         [HandleError]
@@ -297,7 +297,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
             }
             else if (sortColumnIndex == 4)
             {
-                model.PSList = sortDirection == "asc" ? model.PSList.OrderBy(c => c.pstPurchaseDate).ThenBy(x => x.pstCode).ThenBy(c => c.pstPromisedDate).ThenBy(c => c.CreateTime).ToList() : model.PSList.OrderByDescending(c => c.pstPurchaseDate).ThenByDescending(x => x.pstCode).ThenByDescending(c => c.pstPromisedDate).ThenByDescending(c => c.CreateTime).ToList();
+                model.PSList = sortDirection == "asc" ? model.PSList.OrderBy(c => c.pstPurchaseTime).ThenBy(x => x.pstCode).ThenBy(c => c.pstPromisedDate).ThenBy(c => c.CreateTime).ToList() : model.PSList.OrderByDescending(c => c.pstPurchaseTime).ThenByDescending(x => x.pstCode).ThenByDescending(c => c.pstPromisedDate).ThenByDescending(c => c.CreateTime).ToList();
             }
             else if (sortColumnIndex == 5)
             {

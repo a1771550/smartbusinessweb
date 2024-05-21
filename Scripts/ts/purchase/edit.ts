@@ -96,8 +96,8 @@ $(document).on("change", ".received", function () {
 	//console.log("receivedqty:" + receivedqty);
 	$.each(Purchase.PurchaseItems, function (i, e) {
 		if (e.piSeq == seq) {
-			selectedPurchaseItem = structuredClone(e);
-			e.piReceivedQty = selectedPurchaseItem.piReceivedQty = receivedqty;
+			SelectedPurchaseItem = structuredClone(e);
+			e.piReceivedQty = SelectedPurchaseItem.piReceivedQty = receivedqty;
 			return false;
 		}
 	});
@@ -142,20 +142,18 @@ function updatePurchase() {
 			let seq = currentY + 1;
 			//console.log("e.piseq:" + e.piSeq + ";rtlSeq:" + seq);
 			if (e.piSeq == seq) {
-				e.piReceivedQty = Number($tr.find("td").last().find(".received").val());
-				e.piQty = Number($tr.find("td:eq(4)").find(".qty").val());
-				let idx = PriceIdx4PstBill;
-				e.piUnitPrice = Number($tr.find("td").eq(idx).find(".price").val());
-				idx++;
-				e.piDiscPc = Number($tr.find("td").eq(idx).find(".discpc").val());
-				idx++;
+				e.piReceivedQty = Number($tr.find(".received").val());
+				e.piQty = Number($tr.find(".qty").val());
+				e.piUnitPrice = Number($tr.find(".price").val());
+				e.piDiscPc = Number($tr.find(".discpc").val());
+				
 				if (enableTax && !inclusivetax) {
-					e.piTaxPc = Number($tr.find("td").eq(idx).find(".taxpc").val());
+					e.piTaxPc = Number($tr.find(".taxpc").val());
 					e.piTaxAmt = (e.piReceivedQty * e.piUnitPrice) * (e.piTaxPc / 100);
-					idx++;
+					
 				}
 				e.piAmtPlusTax = Number(
-					$tr.find("td").eq(-2).find(".amount").val()
+					$tr.find(".amount").val()
 				);
 				e.piAmt = e.piAmtPlusTax - (e.piTaxAmt ?? 0);
 
@@ -322,7 +320,7 @@ $(document).on("click", "#btnBill", function () {
 	$target
 		.find("thead tr:first")
 		.append(
-			`<th class="text-right received">${receivedqtytxt}</th>`
+			`<th class="text-right treceived">${receivedqtytxt}</th>`
 		);
 	let currentItemCount = $target.find("tbody tr").length;
 
@@ -335,13 +333,14 @@ $(document).on("click", "#btnBill", function () {
 				.val() as string;
 			itemcodelist.push(selectedItemCode);
 		}
-		$(e).find(".qty").prop("isadmin", true).prop("disabled", true);
+		$(e).find("td:lt(5)").prop("isadmin", isadmin).find("input").prop("disabled", true);
+		$(e).find(".number").prop("disabled", true);
+		$(e).find("select").prop("disabled", true);
 	});
 
 	getDicItemOptionsVariByCodes(itemcodelist, $rows, currentItemCount);
 	$("#tblPSI tbody input").removeClass("form-control");
 	$("#tblPSI tbody select").removeClass("form-control");
-	//setInput4NumberOnly("number");
 });
 
 $(document).on("change", ".baseunit", function () {
@@ -427,8 +426,8 @@ $(document).on("change", "#drpSupplier", function () {
 			}
 
 			if (enableTax && !inclusivetax) {
-				//console.log("here");
-				updateRows();
+				
+				if ($(`#${gTblId} tbody tr`).find(".itemcode").val()) updateRows4Tax();
 			}
 		},
 		dataType: "json",
@@ -550,21 +549,24 @@ function populatePurchaseItems() {
 		const formattedtaxpc: string = formatnumber(<number>purchaseitem.piTaxPc);
 
 		var baseunit: string = purchaseitem.piBaseUnit ?? "N/A";
-		html += `<tr data-idx="${idx}" data-qty="${purchaseitem.piQty}" class=""><td class="text-center seq"><span>${purchaseitem.piSeq}</span></td><td class="text-center code"><input type="text" name="itemcode" class="form-control itemcode text-center" value="${purchaseitem.itmCode}"></td><td class="text-center namedesc"><input type="text" name="itemdesc" class="form-control itemdesc text-center small" value="${purchaseitem.itmNameDesc}" title="${purchaseitem.itmNameDesc}"></td><td class="text-right unit"><input type="text" name="baseunit" class="form-control baseunit text-right" value="${baseunit}"></td><td class="text-right sellqty"><input type="number" name="qty" class="form-control qty text-right" value="${purchaseitem.piQty}"></td>`;
+		//console.log("purchaseitem.itmCode:", purchaseitem.itmCode);
+		let inputcls = (Purchase.pstStatus == "opened" || Purchase.pstStatus == "partialreceival") ? "" : "form-control";
+		html += `<tr data-idx="${idx}" data-qty="${purchaseitem.piQty}" class=""><td class="text-center seq"><span>${purchaseitem.piSeq}</span></td><td class="text-center code"><input type="text" name="itemcode" class="${inputcls} pointer itemcode text-center flex" title="${purchaseitem.itmCode}" value="${purchaseitem.itmCode}"></td><td class="text-center namedesc"><input type="text" name="itemdesc" readonly class="${inputcls} itemdesc text-center small" value="${purchaseitem.itmNameDesc}" title="${purchaseitem.itmNameDesc}"></td><td class="text-right unit"><input type="text" name="baseunit" class="form-control baseunit text-right flex" readonly value="${baseunit}"></td><td class="text-right sellqty"><input type="number" name="qty" class="form-control qty text-right flex" value="${purchaseitem.piQty}"></td>`;
 		var sncls = (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") ? "posn pointer" : "serialno";
 		var vtcls = (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") ? "vt pointer" : "validthru datepicker";
 
-		if (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") {
-			html += `<td class="text-center sellbat"><input type="text" name="batch" class="form-control pobatch text-center pointer ip" data-batcode="${batcode}" value="${batch}" isadmin /></td><td class="text-center sellsn"><input type="text" name="serailno" isadmin class="${sncls} form-control text-center ip" value="${sntxt}" /></td><td class="text-center sellvt"><input type="datetime" name="validthru" class="form-control ${vtcls} datepicker text-center ip" value="${vt}" /></td>`;
+		
+		inputcls = "form-control ip";
+		if (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") {			
+			html += `<td class="text-center ip"><input type="text" class="${inputcls} pobatch text-center pointer flex" data-batcode="${batcode}" value="${batch}" /></td><td class="text-center ip"><input type="text" class="${sncls} ${inputcls} text-center flex" value="${sntxt}" /></td><td class="text-center ip"><input type="text" class="${inputcls} ${vtcls} text-center flex" value="${vt}" /></td>`;
 
-			//itemvari
-			/*let vari: string = ((purchaseitem.itmCode in DicItemGroupedVariations) || (!itemOptions.ChkBatch && !itemOptions.ChkSN && !itemOptions.WillExpire)) ? "..." : "";*/
+			
 			let vari: string = (purchaseitem.itmCode in DicItemGroupedVariations) ? "..." : "";
-			html += `<td class="text-center selliv"><input type="text" name="vari" class="form-control povari text-center pointer" value="${vari}" /></td>`;
+			html += `<td class="text-center iv"><input type="text" class="${inputcls} povari text-center flex pointer" value="${vari}" /></td>`;
 		}
-		html += `<td class="text-right sellprice"><input type="number" name="price" class="form-control price text-right" data-price="${purchaseitem.piUnitPrice}" value="${formattedprice}"></td><td class="text-right selldiscpc"><input type="number" name="discpc" class="form-control discpc text-right" data-discpc="${purchaseitem.piDiscPc}" value="${formatteddiscpc}"></td>`;
+		html += `<td class="text-right sellprice num"><input type="text" name="price" class="form-control price number text-right flex" data-price="${purchaseitem.piUnitPrice}" value="${formattedprice}"></td><td class="text-right selldiscpc" num><input type="text" name="discpc" class="form-control discpc number text-right flex" data-discpc="${purchaseitem.piDiscPc}" value="${formatteddiscpc}"></td>`;
 		if (enableTax && !inclusivetax) {
-			html += `<td class="text-right selltax"><input type="number" name="taxpc" class="form-control taxpc text-right" value="${formattedtaxpc}"></td>`;
+			html += `<td class="text-right selltax num"><input type="text" name="taxpc" class="form-control taxpc number text-right flex" value="${formattedtaxpc}"></td>`;
 		}
 
 		let locations: string = "";
@@ -575,9 +577,9 @@ function populatePurchaseItems() {
 		}
 		html += `<td class="text-center selllocation"><select class="form-control location flex text-center">${locations}</td>`;
 		html += `<td class="text-center selljob"><select class="form-control job flex text-center">${setJobListOptions(purchaseitem.JobID ?? 0)}</select></td>`;
-		html += `<td class="text-right sellamt"><input type="number" name="amount" class="form-control amount text-right" data-amt="${purchaseitem.piAmtPlusTax}" value="${formattedamt}"></td>`;
+		html += `<td class="text-right sellamt num"><input type="text" name="amount" class="form-control amount number text-right flex" data-amt="${purchaseitem.piAmtPlusTax}" value="${formattedamt}" readonly></td>`;
 		if (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") {
-			html += `<td class="text-right received"><input type="number" name="received" class="form-control received text-right" min="0" style="width:90px!important;" data-received="${purchaseitem.piReceivedQty}" value="${purchaseitem.piReceivedQty}"></td>`;
+			html += `<td class="text-right treceived"><input type="number" class="form-control received text-right flex" min="0" data-received="${purchaseitem.piReceivedQty}" value="${purchaseitem.piReceivedQty}"></td>`;
 		}
 		html += "</tr>";
 		idx++;

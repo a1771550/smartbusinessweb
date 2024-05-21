@@ -829,7 +829,7 @@ $(document).on("change", "#drpCustomer", function () {
 
 				//console.log("exRate#drpcustomer change:" + exRate);
 				displayExRate(exRate);
-				if (enableTax && !inclusivetax) updateRows();
+				if (enableTax && !inclusivetax) updateRows4Tax();
 			},
 			dataType: "json",
 		});

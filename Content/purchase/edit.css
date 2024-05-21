@@ -7,12 +7,23 @@
 	width: 50px !important;
 	max-width:50px!important;
 }
-
+#tblPSI thead th.num, #tblPSI tbody td.num {
+	width: 120px !important;
+	min-width: 120px !important;
+}
+#tblPSI thead th.unit, #tblPSI tbody td.unit {
+	width: 80px !important;
+	min-width: 80px !important;
+}
+#tblPSI thead th.sellqty, #tblPSI tbody td.sellqty {
+	width: 100px !important;
+	min-width: 100px !important;
+}
 #tblPSI thead th.ip, #tblPSI tbody td.ip, #tblPSI thead th.iv, #tblPSI tbody td.iv {
 	width: 100px !important;
 	min-width:100px!important;
 }
-#tblPSI thead th.received, #tblPSI tbody td.received {
+#tblPSI thead th.treceived, #tblPSI tbody td.treceived {
 	width: 100px !important;
 	min-width: 100px !important;
 }
@@ -20,6 +31,10 @@
 	width: 100px !important;
 	min-width: 100px !important;
 }
+#tblPSI tbody :nth-child(n+4 of td) input, #tblPSI tbody :nth-child(n+4 of td) select {
+	width: 100%;
+}
+
 #tblPayment tbody tr > td:not(:first-child) {
 	width: 290px !important;
 }

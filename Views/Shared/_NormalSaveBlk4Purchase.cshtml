@@ -7,9 +7,7 @@
 }
 <div class="form-group">
     @if (approvalmode && status.ToLower() == PurchaseStatus.created.ToString())
-    {
-        @*<a role="button" href="#" id="btnEdit" class="btn btn-info mr-2">@Resources.Resource.Edit</a>
-            <button id="" type="button" class="btn btn-primary mr-2 my-2 request makeorder btnRequestApproval hide" style="height:5em;">@Resources.Resource.Request4Approval</button>*@
+    {       
         <a role="button" href="#" id="btnBill" class="btn btn-primary mr-2">@Resources.Resource.ReceiveItems</a>
         <a role="button" href="#" id="btnSave" class="btn btn-success mr-2">@Resources.Resource.Save</a>
     }

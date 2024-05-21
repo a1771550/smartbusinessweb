@@ -65,8 +65,7 @@ else
                 <button id="btnReload" type="button" role="button" class="btn btn-warning">@Resources.Resource.Reload</button>
             </div>
 
-            <input type="hidden" id="sortorder" name="SortOrder" value="@Model.SortOrder" />
-            <input type="hidden" id="sortname" name="SortName" value="@Model.SortName" />
+            @Html.Partial("_SortOrderColHidden")
             <input type="hidden" id="currentsortorder" value="@Model.CurrentSortOrder" />
 
         }
@@ -76,23 +75,23 @@ else
         <table id="tblpurchaseorder" class="table table-bordered  table-hover table-condensed">
             <thead class="gray-header">
                 <tr>
-                    <th class="text-left colheader" data-col="0" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="pstCode">
+                    <th class="text-left colheader" data-col="0" data-category="pstCode">
                         @Resources.Resource.InvoiceNo
                     </th>
-                    <th class="text-left colheader" data-col="1" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="PurchaseName">
+                    <th class="text-left colheader" data-col="1" data-category="PurchaseName">
                         @Resources.Resource.PurchasePerson
                     </th>
-                    <th class="text-left colheader" data-col="2" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="CusName">
+                    <th class="text-left colheader" data-col="2" data-category="SupName">
                         @Resources.Resource.Supplier
                     </th>
                     <th class="text-left">
                         @Resources.Resource.Remark
                     </th>
-                    <th class="text-left colheader" data-col="3" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="pstStatus">
+                    <th class="text-left colheader" data-col="3" data-category="pstStatus">
                         @Resources.Resource.Status
                     </th>
-                    <th class="text-center colheader" data-col="4" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="wsTime">@Resources.Resource.InvoiceTime</th>
-                    <th class="text-center colheader" data-col="5" data-order="@Model.SortOrder" data-keyword="@Model.Keyword" data-category="pstPromisedDate">@Resources.Resource.PromisedDate</th>
+                    <th class="text-center colheader" data-col="4" data-category="pstPurchaseTime">@Resources.Resource.InvoiceTime</th>
+                    <th class="text-center colheader" data-col="5" data-category="pstPromisedDate">@Resources.Resource.PromisedDate</th>
                     <th></th>
                 </tr>
             </thead>
@@ -171,8 +170,8 @@ else
                         <td class="@bgclr">
                             @statustxt
                         </td>
-                        <td>@item.PurchaseTimeDisplay</td>
-                        <td data-date="@item.pstPromisedDate">@item.PromisedDateDisplay</td>
+                        <td class="text-center">@item.PurchaseTimeDisplay</td>
+                        <td class="text-center" data-date="@item.pstPromisedDate">@item.PromisedDateDisplay</td>
                         <td class="button">
 
                             @if (approvalmode)
@@ -207,7 +206,7 @@ else
         <div id="pagingblk" class="my-3">
           
                 @Html.PagedListPager(Model.PagingPurchaseOrderList, PageNo => Url.Action("PurchaseOrderList",
-        new { PageNo, SortOrder = Model.CurrentSortOrder, SortName = Model.SortName, Keyword = Model.Keyword, strfrmdate = Model.DateFromTxt, strtodate = Model.DateToTxt }))
+        new { PageNo, SortOrder = Model.CurrentSortOrder, SortName = Model.SortName, Keyword = Model.Keyword }))
          
         </div>
     </div>

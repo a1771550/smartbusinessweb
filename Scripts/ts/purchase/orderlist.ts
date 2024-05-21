@@ -143,8 +143,19 @@ $(document).on("click", ".colheader", function () {
 
 $(function () {
 	forpurchase = true;
+	gFrmId = "frmPurchaseOrderList";
+	gTblId = "tblpurchaseorder";
 	setFullPage();
-	triggerMenu(5, 0);
+
+	
+
+	initModals();
+	triggerMenu(5, 1);
+
+	$(".disabled").off("click");
+
+	ConfigSimpleSortingHeaders();
+
 	const filter: any = getParameterByName("filter");
 	if (filter !== null && Number(filter) === 1) {
 		$(".colheader").each(function (i, e) {
@@ -168,24 +179,5 @@ $(function () {
 				return false;
 			}
 		});
-	}
-
-	initModals();
-	triggerMenu(5, 1);
-	$("#txtKeyword").trigger("focus");
-
-	$target = $(".pagination");
-	$target
-		.wrap('<nav aria-label="Page navigation"></nav>')
-		.find("li")
-		.addClass("page-item")
-		.find("a")
-		.addClass("page-link");
-
-	$(".disabled").off("click");
-
-	let keyword = getParameterByName("Keyword");
-	if (keyword !== null) {
-		$("#txtKeyword").val(keyword);
 	}
 });
