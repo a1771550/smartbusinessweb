@@ -5,8 +5,7 @@
 	bool fordeposit = ViewData["fordeposit"] == null ? false : (bool)ViewData["fordeposit"];
 	bool enableEpay = ViewData["enableEpay"] == null ? false : (bool)ViewData["enableEpay"];
 	string rtsCurrency = ViewData["rtsCurrency"] == null ? "HKD" : (string)ViewData["rtsCurrency"];
-	List<PaymentType> PaymentTypes = ViewData["PaymentTypes"] == null ? null : (List<PaymentType>)ViewData["PaymentTypes"];
-	List<PaymentTypeView> PaymentTypeList = ViewData["PaymentTypeList"] == null ? null : (List<PaymentTypeView>)ViewData["PaymentTypeList"];
+	List<PayTypeModel> PaymentTypes = ViewData["PaymentTypes"] == null ? null : (List<PayTypeModel>)ViewData["PaymentTypes"];	
 	Dictionary<string, string> DicPayTypes = (Dictionary<string, string>)ViewData["DicPayTypes"];
 	string activecls = "";
 
@@ -108,10 +107,10 @@
 							}
 						}
 
-						@if ((forpreorder && PaymentTypeList != null) || (fordeposit && PaymentTypeList != null))
+						@if ((forpreorder && PaymentTypes != null) || (fordeposit && PaymentTypes != null))
 						{
 							int idx = 0;
-							foreach (var payment in PaymentTypeList)
+							foreach (var payment in PaymentTypes)
 							{
 								string btnName = string.Concat("btn" + payment.pmtCode);
 								activecls = idx == 0 ? "toggle" : "";
@@ -192,7 +191,7 @@
 				</div>
 				<div class="dash__pay--code">
 					<label for="#">@Resources.Resource.PayerCode</label>
-					<input id="txtPayerCode" type="text" placeholder="@Resources.Resource.PayerCode" readonly>
+					<input id="txtPayerCode" type="text" placeholder="@Resources.Resource.PayerCode">
 				</div>
 				<div class="dash__btn">
 					<button id="reverseEpay" type="button" class="red isDisabled" >@Html.Raw(Resources.Resource.ReversePaymentHTML)</button>

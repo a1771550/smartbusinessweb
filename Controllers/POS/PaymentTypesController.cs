@@ -10,6 +10,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
+using PPWLib.Models.Sales;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -23,7 +24,7 @@ namespace SmartBusinessWeb.Controllers
             ViewBag.ParentPage = "setup";
             ViewBag.PageName = "paymenttypes";
             int lang = (int)Session["CurrentCulture"];
-            List<PaymentTypeView> model = PaymentTypeHelper.GetList(lang);
+            List<PayTypeModel> model = PaymentTypeHelper.GetList(lang);
             return View(model);
         }
 
@@ -32,7 +33,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            List<PaymentTypeView> model = new List<PaymentTypeView>();
+            List<PayTypeModel> model = new List<PayTypeModel>();
             TempData["model"] = model;
             return View();
         }
@@ -41,7 +42,7 @@ namespace SmartBusinessWeb.Controllers
         [CustomAuthorize("paymenttypes", "admin1", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult Create(PaymentTypeView model)
+        public ActionResult Create(PayTypeModel model)
         {
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
@@ -93,7 +94,7 @@ namespace SmartBusinessWeb.Controllers
             {
                 PaymentType paymentType = context.PaymentTypes.Find(Id);
                 int lang = (int)Session["CurrentCulture"];
-                PaymentTypeView paymentTypeView = new PaymentTypeView
+                PayTypeModel paymentTypeView = new PayTypeModel
                 {
                     Id = paymentType.Id,
                     pmtCode = paymentType.pmtCode,
@@ -126,7 +127,7 @@ namespace SmartBusinessWeb.Controllers
         [CustomAuthorize("paymenttypes", "admin1", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult Edit(PaymentTypeView model)
+        public ActionResult Edit(PayTypeModel model)
         {
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
@@ -145,10 +146,10 @@ namespace SmartBusinessWeb.Controllers
                     switch (lang)
                     {
                         case 2:
-                            paymentType.pmtNameEng = model.pmtName;
+                            paymentType.pmtNameEng = model.pmtNameEng;
                             break;
                         case 1:
-                            paymentType.pmtNameCN = model.pmtName;
+                            paymentType.pmtNameCN = model.pmtNameCN;
                             break;
                         default:
                         case 0:

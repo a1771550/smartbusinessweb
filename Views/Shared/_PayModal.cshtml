@@ -5,14 +5,15 @@
 	bool fordeposit = ViewData["fordeposit"] == null ? false : (bool)ViewData["fordeposit"];
 	bool enableEpay = ViewData["enableEpay"] == null ? false : (bool)ViewData["enableEpay"];
 	string rtsCurrency = ViewData["rtsCurrency"] == null ? "HKD" : (string)ViewData["rtsCurrency"];
-	List<PaymentType> PaymentTypes = ViewData["PaymentTypes"] == null ? null : (List<PaymentType>)ViewData["PaymentTypes"];
-	List<PaymentTypeView> PaymentTypeList = ViewData["PaymentTypeList"] == null ? null : (List<PaymentTypeView>)ViewData["PaymentTypeList"];
+	List<PayTypeModel> PaymentTypes = ViewData["PaymentTypes"] == null ? null : (List<PayTypeModel>)ViewData["PaymentTypes"];
+
 	Dictionary<string, string> DicPayTypes = (Dictionary<string, string>)ViewData["DicPayTypes"];
+	Dictionary<string, PayServiceCharge> DicPayServiceCharge = ViewData["DicPayServiceCharge"] == null ? null : (Dictionary<string, PayServiceCharge>)ViewData["DicPayServiceCharge"];
 }
 
 <div id="payModal" data-debug="" data-null="">
 
-	@Html.Partial("_ExRateModal", null, new ViewDataDictionary { { "fieldname", "rtsCurrency" }, { "currency", rtsCurrency }, { "lblcls", "col-form-label mx-sm-2" }, { "exratecls", "d-block ml-2 hide" }, { "txtboxattr", "readonly" }, { "txtboxstyle", "width:60px;" }, { "txtboxcls", "disabled" }, { "usedropdown", true }, {"showsymblk",false } })
+	@Html.Partial("_ExRateModal", null, new ViewDataDictionary { { "fieldname", "rtsCurrency" }, { "currency", rtsCurrency }, { "lblcls", "col-form-label mx-sm-2" }, { "exratecls", "d-block ml-2 hide" }, { "txtboxattr", "readonly" }, { "txtboxstyle", "width:60px;" }, { "txtboxcls", "disabled" }, { "usedropdown", true }, { "showsymblk", false } })
 	<div class="row">
 		@if (forsales || forpreorder)
 		{
@@ -98,29 +99,30 @@
 
 		<table id="tblPay" class="table table-bordered table-hover  table-condensed">
 			<thead class="gray-header">
-				<tr><th>@Resources.Resource.PaymentType</th><th class="text-right">@Resources.Resource.Amount</th></tr>
+				<tr><th class="text-center">@Resources.Resource.PaymentType</th><th class="text-right">@Resources.Resource.ServiceCharge</th><th class="text-right">@Resources.Resource.Amount</th></tr>
 			</thead>
 			<tbody>
-				@if ((forpreorder && PaymentTypeList != null) || (fordeposit && PaymentTypeList != null))
+				@if ((forpreorder && PaymentTypes != null) || (fordeposit && PaymentTypes != null))
 				{
 					int idx = 0;
-					foreach (var payment in PaymentTypeList)
+					foreach (var payment in PaymentTypes)
 					{
 						string chkId = string.Concat("chk" + payment.pmtCode);
 						string _checked = idx == 0 ? "checked" : "";
 						string _readonly = idx == 0 ? "" : "readonly";
 						<tr data-idx="@idx">
 							<td>
-								<div class="row justify-content-start mx-3">
-									<div class="form-check">
+								
+									<div class="form-check justify-content-start">
 										<input type="checkbox" class="mx-2 chkpayment" data-type="@payment.pmtCode" id="@chkId" @_checked />
 										<label class="form-check-label" for="@chkId">
 											@DicPayTypes[payment.pmtCode]
 										</label>
 									</div>
-								</div>
+								
 							</td>
-							<td class="text-right"><input type="number" min="0" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype flex" value="0" @_readonly  data-scpc="@payment.pmtServiceChargePercent"/></td>
+							<td class="text-right"><input type="text" class="form-control scpc number flex text-right" value="@payment.pmtServiceChargePercent" readonly /></td>
+							<td class="text-right"><input type="text" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype flex number text-right" value="0.00" @_readonly data-scpc="@payment.pmtServiceChargePercent" /></td>
 						</tr>
 						idx++;
 					}
@@ -136,16 +138,17 @@
 						string _readonly = idx == 0 ? "" : "readonly";
 						<tr data-idx="@idx">
 							<td>
-								<div class="row justify-content-start mx-3">
-									<div class="form-check">
+								
+									<div class="form-check justify-content-start">
 										<input type="checkbox" class="mx-2 chkpayment" data-type="@payment.pmtCode" id="@chkId" @_checked />
 										<label class="form-check-label" for="@chkId">
 											@DicPayTypes[payment.pmtCode]
 										</label>
 									</div>
-								</div>
+								
 							</td>
-							<td class="text-right"><input type="number" min="0" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype flex" value="0" @_readonly  data-scpc="@payment.pmtServiceChargePercent"/></td>
+							<td class="text-right"><input type="text" class="form-control scpc number flex text-right" value="@payment.pmtServiceChargePercent" readonly /></td>
+							<td class="text-right"><input type="text" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype flex number text-right" value="0.00" @_readonly data-scpc="@payment.pmtServiceChargePercent" /></td>
 						</tr>
 						idx++;
 					}
@@ -159,8 +162,9 @@
 						{
 							<tr data-code="@payment.pmtCode">
 								<td>@DicPayTypes[payment.pmtCode]</td>
+								<td class="text-right"><input type="text" class="form-control scpc number flex text-right" value="@payment.pmtServiceChargePercent" readonly /></td>
 								<td class="text-right">
-									<input type="number" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype flex" value="0" data-scpc="@payment.pmtServiceChargePercent" />
+									<input type="text" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype flex number text-right" value="0.00" data-scpc="@payment.pmtServiceChargePercent" />
 								</td>
 							</tr>
 						}

@@ -1871,7 +1871,7 @@ namespace SmartBusinessWeb.Controllers
                     }
 
                     Dictionary<string, string> DicPayTypes = new Dictionary<string, string>();
-                    DicPayTypes = PPWCommonLib.CommonHelpers.ModelHelper.GetDicPayTypes(lang, false, context);
+                    DicPayTypes = ModelHelper.GetDicPayTypes();
                     SalesList = (from s in context.RtlSales
                                  where s.rtsDate >= frmdate && s.rtsDate <= todate && s.rtsSalesLoc.ToLower() == shop && s.rtsDvc.ToLower() == device
                                  && s.AccountProfileId == accountProfileId

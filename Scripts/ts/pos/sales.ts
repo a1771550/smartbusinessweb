@@ -25,32 +25,39 @@ function togglePayment(code: string, checked: boolean) {
 				$(e).find(".paymenttype").data("amt", amt).val(formatnumber(amt));
 			}
 		});
-	}	
+	}
 }
 
-$(document).on("click", ".btnpayment", function () {	
+
+
+$(document).on("click", ".btnpayment", function () {
 	let Id = $(this).attr("id") as string;
 	let code = $(this).data("type") as string;
-	let checked = togglePlusCheck(Id);	
+	let checked = togglePlusCheck(Id);
 	//console.log("checked:", checked);
 	togglePayModeTxt();
-	
 
 	if (checked) $(this).addClass("toggle");
 	else $(this).removeClass("toggle");
-
-	isEpay = (code.toLowerCase() == "alipay" || code.toLowerCase() == "wechat");
-
+	
+	isEpay = (code.toLowerCase() == "alipay" || code.toLowerCase() == "wechat");	
+	//console.log("scpc:" + scpc);
+	//console.log("isEay:", isEpay);
 	if (isEpay) {
 		$(".btnpayment").not(this).removeClass("toggle");
 		$(".btnpayment").not(this).find(".pluse").hide();
 		$(".btnpayment").not(this).find(".checks").hide();
 		$("#txtPayerCode").prop("readonly", false).trigger("focus");
 	}
-	else $("#txtPayerCode").prop("readonly", true);
+	else {
+		$("#txtPayerCode").prop("readonly", true);
+	}
+
+	DicPayServiceCharge[code].Selected = checked;	
 
 	togglePayment(code, checked);
 
+	populateOrderSummary();
 });
 $(document).on("change", "#txtItemCode", function () {
 	/*console.log("here");*/
@@ -359,10 +366,13 @@ $(function () {
 	triggerMenu(0, 0);
 
 	comInfo = $infoblk.data("cominfo");
-	DicPayTypes = $infoblk.data("dicpaytypes");
-	//console.log("DicPayTypes:", DicPayTypes);
 	PayTypes = $infoblk.data("paytypes");
 	//console.log("PayTypes:", PayTypes);
+	DicPayTypes = $infoblk.data("dicpaytypes");
+	//console.log("DicPayTypes:", DicPayTypes);
+	DicPayServiceCharge = $infoblk.data("dicpayservicecharge");
+	//console.log("DicPayServiceCharge:", DicPayServiceCharge);
+
 	DicCurrencyExRate = $infoblk.data("diccurrencyexrate");
 	defaultcustomer = $infoblk.data("defaultcustomer");
 
@@ -387,6 +397,8 @@ $(function () {
 	else $norecordfound.hide();
 
 	$("#txtCustomerName").val(defaultcustomer.cusName);
+
+	setInputs4NumberOnly(["sdiscpc", "paymenttype"]);
 
 	$("#searchItem").trigger("focus");
 	/* for debug only */

@@ -954,7 +954,8 @@ namespace SmartBusinessWeb.Controllers
 				dmodel.SelectedLocation = location;
 				dmodel.Device = device;
 
-				List<string> sqllist = RetailEditModel.GetUploadSqlList(includeUploaded, lang, comInfo, apId, context, connection, frmdate, todate, ref dmodel);
+				RetailEditModel model = new RetailEditModel();
+				List<string> sqllist = model.GetUploadSqlList(includeUploaded, lang, comInfo, apId, context, connection, frmdate, todate, ref dmodel);
 
 				if (sqllist.Count > 0)
 				{

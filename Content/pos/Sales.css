@@ -46,7 +46,7 @@ i.fa-plus, i.fa-minus {
 	border: none;
 }
 
-#tblPay .form-control.paymenttype {
+#tblPay .form-control.number {
 	min-width: 100%;
 }
 

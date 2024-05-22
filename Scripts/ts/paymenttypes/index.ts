@@ -1,6 +1,6 @@
 ﻿$infoblk = $("#infoblk");
 let ptmode = 0;
-let payType: IPaymentType;
+
 
 $(document).on('click', '.btnDelete', function () {
 	let _token = $('input[name="__RequestVerificationToken"]').val();
@@ -43,7 +43,7 @@ $(document).on('click', '.btnEdit', function () {
 });
 
 function genPaytype(Id, $tr) {
-	payType = {
+	PayType = {
         Id: Id,
         pmtCode: $tr.data('code'),
         pmtName: $tr.find('.name').html(),
@@ -53,14 +53,14 @@ function genPaytype(Id, $tr) {
         pmtIsActive: $tr.find('.status').data("status")=="True",		
 		serviceChargeDisplay: "",
     } as IPaymentType;
-	console.log('payType:', payType);
+	console.log('PayType:', PayType);
 }
 
 function fillForm() {
-	$('#pmtName').val(payType.pmtName);
-	$("#pmtServiceCharge").val(payType.pmtServiceChargePercent??0);
-	let iscash = payType.pmtIsCash;
-	let active = payType.pmtIsActive;
+	$('#pmtName').val(PayType.pmtName);
+	$("#pmtServiceCharge").val(PayType.pmtServiceChargePercent??0);
+	let iscash = PayType.pmtIsCash;
+	let active = PayType.pmtIsActive;
 	if (iscash) {
 		$('#pmtIsCash1').prop('checked', true);
 	} else {

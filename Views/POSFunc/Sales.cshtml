@@ -61,7 +61,7 @@
 
 													<label class="small" for="discount">@Resources.Resource.DiscPc:</label>
 
-													<input type="number" class="sdiscpc small flex" name="discpc" min="0" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode" data-price="@item.itmBaseSellingPrice" data-file="@item.itmPicFile">
+													<input type="text" class="sdiscpc small flex" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode" data-price="@item.itmBaseSellingPrice" data-file="@item.itmPicFile">
 
 												</div>
 											</div>
@@ -195,7 +195,7 @@
 @Html.Partial("_BarcodeModal")
 @Html.Partial("_ChangeModal")
 
-<div id="infoblk" data-defaultcatname="@Model.CategoryList.First().NameDisplay" data-currency="@Model.Currency" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicpaytypes="@JsonSerializer.Serialize(Model.DicPayTypes)" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)" data-defaultcustomer="@JsonSerializer.Serialize(Model.DefaultCustomer)" data-itemlist="@JsonSerializer.Serialize(Model.SimpleItemList)" data-filteredlist="@JsonSerializer.Serialize(FilteredItemList)" data-paytypes="@JsonSerializer.Serialize(Model.PaymentTypes)" data-sales="@JsonSerializer.Serialize(Model.Sales)"></div>
+<div id="infoblk" data-defaultcatname="@Model.CategoryList.First().NameDisplay" data-currency="@Model.Currency" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicpaytypes="@JsonSerializer.Serialize(Model.DicPayTypes)" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)" data-defaultcustomer="@JsonSerializer.Serialize(Model.DefaultCustomer)" data-itemlist="@JsonSerializer.Serialize(Model.SimpleItemList)" data-filteredlist="@JsonSerializer.Serialize(FilteredItemList)" data-paytypes="@JsonSerializer.Serialize(Model.PaymentTypes)" data-sales="@JsonSerializer.Serialize(Model.Sales)" data-dicpayservicecharge="@JsonSerializer.Serialize(Model.DicPayServiceCharge)"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script src="~/Scripts/ts/js/pos/sales.js?v=@rand"></script>

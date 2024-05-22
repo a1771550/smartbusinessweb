@@ -478,6 +478,7 @@ function fillinRefundForm() {
 			RefundableSalesList.push(e);
 		}
 
+		let totalamt = e.rtlSalesAmt + (RefundSales.rtsServiceChargeAmt ?? 0);
 		salesrefund = {
 			rtlUID: e.rtlUID,
 			salescode: e.rtlCode,
@@ -489,12 +490,12 @@ function fillinRefundForm() {
 			price: price,
 			disc: e.rtlLineDiscPc,
 			tax: taxrate,
-			amt: e.rtlSalesAmt,
+			amt: totalamt,
 			date: e.rtlSalesDate,
 			pricetxt: formatnumber(price),
 			disctxt: formatnumber(e.rtlLineDiscPc),
 			taxtxt: formatnumber(taxrate),
-			amttxt: formatnumber(e.rtlSalesAmt),
+			amttxt: formatnumber(totalamt),
 			datetxt: e.SalesDateDisplay,
 			refundedQty: refundedqty,
 			refundedAmt: -1 * refundedamt,
@@ -529,7 +530,9 @@ function fillinRefundForm() {
 			e.price +
 			'</td><td class="text-right flex">' +
 			e.disc +
-			'</td><td class="text-right flex">' +
+			'</td>' +
+			`<td class="text-right flex">${RefundSales.rtsServiceChargeAmt??0}</td>` +
+			'<td class="text-right flex">' +
 			e.amt +
 			'</td><td class="text-center flex">' +
 			e.datetxt +
@@ -713,7 +716,8 @@ function addRefRow(
 		refundsalesln?.qtyToRefund!,
 		refundsalesln?.rtlSellingPrice!,
 		refundsalesln?.rtlLineDiscPc ?? 0,
-		refundsalesln?.rtlTaxAmt ?? 0
+		refundsalesln?.rtlTaxAmt ?? 0,
+		RefundSales.rtsServiceChargeAmt??0
 	);
 	html += `<td class="text-right"><input type="number" name="amount" class="amount text-right" ${areadonly} value="${formatnumber(salesamt)}" /></td>`;
 

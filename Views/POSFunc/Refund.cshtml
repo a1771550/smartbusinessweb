@@ -57,6 +57,7 @@
 			<col width="85">
 			<col width="90">
 			<col width="90">
+			<col width="90">
 			<col width="100">
 			<col width="150">
 			<col width="85">
@@ -72,6 +73,7 @@
 				<td class="text-right">@Resources.Resource.Qty</td>
 				<td class="text-right">@Resources.Resource.Price</td>
 				<td class="text-right">@Resources.Resource.DiscountItemHeader</td>
+				<td class="text-right">@Resources.Resource.ServiceCharge</td>
 				<td class="text-right">@Resources.Resource.AmountItemHeader</td>
 				<td class="text-center">@Resources.Resource.SalesDate</td>
 				<td class="text-right">@Resources.Resource.RefundedQty</td>
@@ -195,7 +197,7 @@
 
 @Html.Partial("_DescModal")
 
-@Html.Partial("_PayModal", null, new ViewDataDictionary { { "forrefund", true }, { "PaymentTypes", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes } })
+@Html.Partial("_PayModal", null, new ViewDataDictionary { { "forrefund", true }, { "PaymentTypes", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes }, { "DicPayServiceCharge", Model.DicPayServiceCharge } })
 
 
 @Html.Partial("_ChangeModal")

@@ -38,6 +38,8 @@ function initInfoBlk4AdvSales() {
     priceeditable = $infoblk.data("priceeditable") === "True";
     disceditable = $infoblk.data("disceditable") === "True";
     device = $infoblk.data("devicecode");
+    DicPayServiceCharge = $infoblk.data("dicpayservicecharge");
+    //console.log("DicPayServiceCharge:", DicPayServiceCharge);
 }
 
 function getSessionStartDataOk(data) {
@@ -93,7 +95,7 @@ function getSessionStartDataOk(data) {
     }
 
     Sales = initSales();
-    console.log("Sales@getsessiondataok:", Sales);
+    //console.log("Sales@getsessiondataok:", Sales);
 
 }
 $(document).on("dblclick", ".nopo", function () {
@@ -181,7 +183,7 @@ $(function () {
                 //console.log('defaultcustomer:', defaultcustomer);
                 selectedCus = defaultcustomer;
                 Sales = initSales();
-                console.log("Sales@getsessiondataok:", Sales);
+                //console.log("Sales@getsessiondataok:", Sales);
                 Sales.rtsCusCode = selectedCus.cusCode;
                 Sales.rtsRefCode = "";
 
@@ -201,5 +203,6 @@ $(function () {
 
         initVTDatePicker();
     }
+
     setInput4NumberOnly("number");
 });

@@ -28,7 +28,7 @@
 
 @Html.Partial("_ValidThruModal")
 
-@Html.Partial("_PayModal", null, new ViewDataDictionary { {"fordeposit",fordeposit }, { "forpreorder", !fordeposit }, { "PaymentTypeList", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes } })
+@Html.Partial("_PayModal", null, new ViewDataDictionary { {"fordeposit",fordeposit }, { "forpreorder", !fordeposit }, { "PaymentTypes", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes }, { "DicPayServiceCharge", Model.DicPayServiceCharge } })
 
 
 @Html.Partial("_ItemVariModal")
