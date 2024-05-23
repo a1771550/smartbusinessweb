@@ -1,8 +1,5 @@
 ﻿$infoblk = $("#infoblk");
-enableSN = $infoblk.data("enablesn") === "True";
-enableTax = $infoblk.data("enabletax") === "True";
-priceeditable = $infoblk.data("priceeditable") === "True";
-disceditable = $infoblk.data("disceditable") === "True";
+
 
 let purchaseitems: IPurchaseItem[] = [];
 $(document).on("click", ".btnSave", function () {
@@ -137,23 +134,23 @@ function updatePurchase() {
 
 	if (Purchase.pstStatus !== "order" && Purchase.pstStatus !== "created" && Purchase.pstStatus !== "draft") {
 		//console.log("currenty#updatepurchase:" + currentY);
-		$tr = $("#tblPSI tbody tr").eq(currentY);
+		let $localTR = $("#tblPSI tbody tr").eq(currentY);
 		$.each(Purchase.PurchaseItems, function (i, e) {
 			let seq = currentY + 1;
 			//console.log("e.piseq:" + e.piSeq + ";rtlSeq:" + seq);
 			if (e.piSeq == seq) {
-				e.piReceivedQty = Number($tr.find(".received").val());
-				e.piQty = Number($tr.find(".qty").val());
-				e.piUnitPrice = Number($tr.find(".price").val());
-				e.piDiscPc = Number($tr.find(".discpc").val());
+				e.piReceivedQty = Number($localTR.find(".received").val());
+				e.piQty = Number($localTR.find(".qty").val());
+				e.piUnitPrice = Number($localTR.find(".price").val());
+				e.piDiscPc = Number($localTR.find(".discpc").val());
 				
 				if (enableTax && !inclusivetax) {
-					e.piTaxPc = Number($tr.find(".taxpc").val());
+					e.piTaxPc = Number($localTR.find(".taxpc").val());
 					e.piTaxAmt = (e.piReceivedQty * e.piUnitPrice) * (e.piTaxPc / 100);
 					
 				}
 				e.piAmtPlusTax = Number(
-					$tr.find(".amount").val()
+					$localTR.find(".amount").val()
 				);
 				e.piAmt = e.piAmtPlusTax - (e.piTaxAmt ?? 0);
 
@@ -442,14 +439,15 @@ $(document).on("change", "#pstRemark", function () {
 	Purchase.pstRemark = <string>$(this).val();
 });
 
-
-
-
 function initPurchaseForm():boolean {
 	approvalmode = $infoblk.data("approvalmode") == "True";
 	setFullPage();
 	apId = Number($infoblk.data("apid"));
 	forpurchase = true;
+	enableSN = $infoblk.data("enablesn") === "True";
+	enableTax = $infoblk.data("enabletax") === "True";
+	priceeditable = $infoblk.data("priceeditable") === "True";
+	disceditable = $infoblk.data("disceditable") === "True";
 	DicLocation = $infoblk.data("jsondiclocation");
 	MyobJobList = $infoblk.data("jsonjoblist");
 	uploadsizelimit = parseInt($infoblk.data("uploadsizelimit"));
@@ -534,7 +532,7 @@ function populatePurchaseItems() {
 		const batcode = purchaseitem.batchList.length === 0 ? "" : purchaseitem.batchList.find((x) => x.batStockInCode == Purchase.pstCode)?.batCode;
 		const batch = purchaseitem.batchList.length > 0 ? "..." : "";
 		//console.log(purchaseitem);
-		let vt: string | null = "";
+		let vt: string | null = purchaseitem.ValidThruDisplay??"";
 
 		if (itemOptions && itemOptions.WillExpire) {
 			if (!itemOptions.ChkBatch && !itemOptions.ChkSN) {
@@ -558,7 +556,7 @@ function populatePurchaseItems() {
 		
 		inputcls = "form-control ip";
 		if (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") {			
-			html += `<td class="text-center ip"><input type="text" class="${inputcls} pobatch text-center pointer flex" data-batcode="${batcode}" value="${batch}" /></td><td class="text-center ip"><input type="text" class="${sncls} ${inputcls} text-center flex" value="${sntxt}" /></td><td class="text-center ip"><input type="text" class="${inputcls} ${vtcls} text-center flex" value="${vt}" /></td>`;
+			html += `<td class="text-center ip"><input type="text" class="${inputcls} pobatch text-center pointer flex" data-batcode="${batcode}" value="${batch}" /></td><td class="text-center ip"><input type="text" class="${sncls} ${inputcls} text-center flex" value="${sntxt}" /></td><td class="text-center ip"><input type="text" class="${inputcls} ${vtcls} text-center flex" value="${vt}" title="${vt}" /></td>`;
 
 			
 			let vari: string = (purchaseitem.itmCode in DicItemGroupedVariations) ? "..." : "";
@@ -668,7 +666,7 @@ $(function () {
 			//forpurchasepayments = true;
 			gTblId = "tblPayment";
 
-			disableEntries();
+			ReadonlyDisableEntries();
 
 			if (reviewmode) {
 				if (!isadmin) $("button").addClass("disabled");
@@ -695,7 +693,7 @@ $(function () {
 
 			if (editmode) addRow();
 
-			if (reviewmode) disableEntries();
+			if (reviewmode) ReadonlyDisableEntries();
 		}
 	}
 

@@ -442,16 +442,15 @@ function updateWholesales() {
 
 	const $selector = $(`#${gTblId} tbody tr`);
 	let salesamt: number = 0;
-	$selector.each(function (i, e) {
-		$tr = $(e);
-		const itemoptionmissing: boolean = $tr
+	$selector.each(function (i, e) {		
+		const itemoptionmissing: boolean = $(e)
 			.find("td")
 			.find("input")
 			.hasClass("itemoptionmissing");
-		const itemcode = $tr.find("td:eq(1)").find(".itemcode").val();
+		const itemcode = $(e).find(".itemcode").val();
 		if (!itemcode) return false;
 
-		let seq = parseInt(<string>$tr.find("td:first").text());
+		let seq = parseInt(<string>$(e).find("td:first").text());
 		if (WholeSalesLns.length > 0) {
 			selectedWholesalesLn = WholeSalesLns.filter(
 				(x) => x.wslSeq == seq
@@ -460,40 +459,41 @@ function updateWholesales() {
 		} else {
 			selectedWholesalesLn = initWholeSalesLn();
 		}
-		selectedWholesalesLn.wslUID = Number($tr.data("id"));
+		selectedWholesalesLn.wslUID = Number($(e).data("id"));
 		selectedWholesalesLn.MissingItemOptions = itemoptionmissing;
 
 		selectedWholesalesLn.wslStatus = Wholesales.wsStatus;
 		selectedWholesalesLn.wslItemCode = <string>(
-			$tr.find("td:eq(1)").find(".itemcode").val()
+			$(e).find(".itemcode").val()
 		);
 		selectedWholesalesLn.wslSeq = seq;
 		selectedWholesalesLn.itmNameDesc = <string>(
-			$tr.find("td:eq(2)").find(".itemdesc").data("itemname")
+			$(e).find(".itemdesc").data("itemname")
 		);
 		selectedWholesalesLn.wslDesc = <string>(
-			$tr.find("td:eq(2)").find(".itemdesc").val()
+			$(e).find(".itemdesc").val()
 		);
 		selectedWholesalesLn.wslSellUnit = <string>(
-			$tr.find("td:eq(3)").find(".sellunit").val()
+			$(e).find(".sellunit").val()
 		);
 		let qty = 0;
-		qty = Number($tr.find("td:eq(4)").find(".qty").val());
+		qty = Number($(e).find(".qty").val());
 		selectedWholesalesLn.wslQty = qty;
 
 		if (isInvoice) {
-			selectedWholesalesLn.wslDelQty = Number($tr.find("td:eq(5)").find(".delqty").val());;
+			selectedWholesalesLn.wslDelQty = Number($(e).find(".delqty").val());;
 		}
 
 		selectedWholesalesLn.wslHasSn =
 			selectedWholesalesLn.snvtList && selectedWholesalesLn.snvtList.length > 0;
 
-		let idx = isInvoice ? PriceIdx4WsInvoice : PriceIdx4WsOrder;
-		let _price: number = Number($tr.find("td").eq(idx).find(".price").val());
+		selectedWholesalesLn.JsValidThru = $(e).find(".validthru").val() as string ??"";
+	
+		let _price: number = Number($(e).find(".price").val());
 		selectedWholesalesLn.wslSellingPrice = _price;
-		idx++;
+		
 		let _discpc: number = Number(
-			$tr.find("td").eq(idx).find(".discpc").val()
+			$(e).find(".discpc").val()
 		);
 		selectedWholesalesLn.wslLineDiscPc = _discpc;
 
@@ -501,11 +501,10 @@ function updateWholesales() {
 			selectedWholesalesLn.wslSellingPrice *
 			(selectedWholesalesLn.wslLineDiscPc / 100) *
 			qty;
-
-		idx++;
+	
 		if (enableTax && !inclusivetax) {
 			selectedWholesalesLn.wslTaxPc = Number(
-				$tr.find("td").eq(idx).find(".taxpc").val()
+				$(e).find(".taxpc").val()
 			);
 			selectedWholesalesLn.wslTaxAmt =
 				selectedWholesalesLn.wslSellingPrice *
@@ -514,17 +513,13 @@ function updateWholesales() {
 				qty;
 		}
 
-		selectedWholesalesLn.wslStockLoc = $tr
-			.find("td")
-			.eq(-3)
+		selectedWholesalesLn.wslStockLoc = $(e)			
 			.find(".location")
 			.val() as string;
-		selectedWholesalesLn.JobID = Number($tr
-			.find("td")
-			.eq(-2)
+		selectedWholesalesLn.JobID = Number($(e)			
 			.find(".job")
 			.val());
-		let _amt: number = Number($tr.find("td").last().find(".amount").val());
+		let _amt: number = Number($(e).find(".amount").val());
 		// console.log("_amt:" + _amt);
 		selectedWholesalesLn.wslSalesAmt = _amt;
 		// console.log(selectedWholesalesLn);
@@ -578,60 +573,63 @@ function handleSubmit4Wholesales(forRecurOrder: boolean = false) {
 					okButton: oktxt,
 					noButton: notxt,
 				});
-			} else {
+			} else {			
 				if ($(`#${gTblId} tbody tr`).length > 0) {
-					$(`#${gTblId} tbody tr`).each(function (i, e) {
-						const itemcode: string = $(e).find("td").eq(1).find(".itemcode").val()!.toString();
-						if (!(itemcode in DicIvInfo) || DicIvInfo[itemcode].length === 0) {
 
-							let nonitemoptions = $(e).find(".nonitemoptions").length;
+					
+					//todo:handle ItemVari
+					//$(`#${gTblId} tbody tr`).each(function (i, e) {
+					//	const itemcode: string = $(e).find(".itemcode").val()!.toString();
+					//	if (!(itemcode in DicIvInfo) || DicIvInfo[itemcode].length === 0) {
 
-							if (nonitemoptions > 0) {
-								let deliveryItem: IDeliveryItem = initDeliveryItem();
-								deliveryItem.dlCode = `noio${i}`;
-						
-								deliveryItem.seq = Number($(e).find("td").first().text());
-							
-								deliveryItem.itmCode = $(e)									
-									.find(".itemcode")
-									.val() as string;
-								
-								deliveryItem.dlBaseUnit = $(e)									
-									.find(".sellunit")
-									.val() as string;
-								
-								deliveryItem.dlQty = Number(
-									$(e).find(".delqty").val()
-								);
-								
-								deliveryItem.dlUnitPrice = Number(
-									$(e).find(".price").val()
-								);
-							
-								deliveryItem.dlDiscPc = Number(
-									$(e).find(".discpc").val()
-								);
-								
-								if (enableTax && !inclusivetax) {
-									deliveryItem.dlTaxPc = Number(
-										$(e).find(".taxpc").val()
-									);
-									
-								}
+					//		let nonitemoptions = $(e).find(".nonitemoptions").length;
 
-								deliveryItem.dlStockLoc = $(e).find(".location").val() as string;							
+					//		if (nonitemoptions > 0) {
+					//			let deliveryItem: IDeliveryItem = initDeliveryItem();
+					//			deliveryItem.dlCode = `noio${i}`;
 
-								deliveryItem.JobID = Number($(e).find(".job").val());							
+					//			deliveryItem.seq = Number($(e).find("td").first().text());
 
-								deliveryItem.dlAmt = deliveryItem.dlAmtPlusTax = Number(
-									$(e).find("td").last().find(".amount").val()
-								);
-								DeliveryItems.push(deliveryItem);
-							}
-						}
-					});
-					//console.log("DeliveryItems:", DeliveryItems);
-					//console.log("WholeSalesLns:", WholeSalesLns);
+					//			deliveryItem.itmCode = $(e)
+					//				.find(".itemcode")
+					//				.val() as string;
+
+					//			deliveryItem.dlBaseUnit = $(e)
+					//				.find(".sellunit")
+					//				.val() as string;
+
+					//			deliveryItem.dlQty = Number(
+					//				$(e).find(".delqty").val()
+					//			);
+
+					//			deliveryItem.dlUnitPrice = Number(
+					//				$(e).find(".price").val()
+					//			);
+
+					//			deliveryItem.dlDiscPc = Number(
+					//				$(e).find(".discpc").val()
+					//			);
+
+					//			if (enableTax && !inclusivetax) {
+					//				deliveryItem.dlTaxPc = Number(
+					//					$(e).find(".taxpc").val()
+					//				);
+
+					//			}
+
+					//			deliveryItem.dlStockLoc = $(e).find(".location").val() as string;
+
+					//			deliveryItem.JobID = Number($(e).find(".job").val());
+
+					//			deliveryItem.dlAmt = deliveryItem.dlAmtPlusTax = Number(
+					//				$(e).find("td").last().find(".amount").val()
+					//			);
+					//			DeliveryItems.push(deliveryItem);
+					//		}
+					//	}
+					//});
+					console.log("DeliveryItems:", DeliveryItems);
+					console.log("WholeSalesLns:", WholeSalesLns);
 					//return false;
 					if (DeliveryItems.length === 0) {
 						$.fancyConfirm({
@@ -860,27 +858,20 @@ function fillInDeliveryItems() {
 		"jsondicseqdeliveryitems"
 	) as typeof DicSeqDeliveryItems;
 	//console.log("DicDeliveryItems#fillin:", DicDeliveryItems);
-
 	$("#tblWSI tbody tr").each(function (i, e) {
 		//console.log("e:", $(e));
 		let seq = i + 1;
-		//console.log("seq:" + seq);
-
-		let idx = 1;
+		//console.log("seq:" + seq);		
 		let itemcode: string = $(e)
-			.find("td")
-			.eq(idx)
 			.find(".itemcode")
 			.val() as string;
 
 		itemOptions = DicItemOptions[itemcode];
 		if (!itemOptions) return false;
 
-		idx = 8;
+
 		if (itemOptions.WillExpire) {
 			$target = $(e)
-				.find("td")
-				.eq(idx)
 				.find(".validthru.pointer");
 
 			if (!itemOptions.ChkBatch && !itemOptions.ChkSN) {
@@ -890,19 +881,15 @@ function fillInDeliveryItems() {
 			}
 			else $target.val("...");
 		}
-		idx--;
+
 		if (itemOptions.ChkSN) {
 			$target = $(e)
-				.find("td")
-				.eq(idx)
 				.find(".serialno.pointer");
 			$target.val("...");
 		}
-		idx--;
+
 		if (itemOptions.ChkBatch) {
 			$target = $(e)
-				.find("td")
-				.eq(idx)
 				.find(".batch.pointer");
 			$target.val("...");
 		}
@@ -955,7 +942,6 @@ $(function () {
 	if (reviewmode || editmode || editapproved) {
 		Wholesales = fillInWholeSales();
 		wholesaleslns = $infoblk.data("jsonwholesaleslns");
-		
 
 		if (Wholesales.wsStatus.toLowerCase() === "deliver" || Wholesales.wsStatus.toLowerCase() === "partialdeliver") {
 			$("#btnInvoice").trigger("click");
@@ -967,7 +953,7 @@ $(function () {
 			//console.log("here");
 			readonly = true;
 		}
-
+		//console.log("here");
 		let html = "";
 		let idx = 0;
 		$.each(wholesaleslns, function (i, wholesalesln: IWholeSalesLn) {
@@ -1013,22 +999,14 @@ $(function () {
 				Wholesales.wsStatus.toLowerCase() != "requesting" &&
 				Wholesales.wsStatus.toLowerCase() != "rejected" &&
 				Wholesales.wsStatus.toLowerCase() != "passed"
-			)
-				html += `<td class="text-right"><input type="number" name="delqty" class="delqty text-right" value="${wholesalesln.wslDelQty}" ${_readonly}></td>`;
-
-			if (
-				Wholesales.wsStatus.toLowerCase() != "order" &&
-				Wholesales.wsStatus.toLowerCase() != "created" &&
-				Wholesales.wsStatus.toLowerCase() != "requesting" &&
-				Wholesales.wsStatus.toLowerCase() != "rejected" &&
-				Wholesales.wsStatus.toLowerCase() != "passed"
 			) {
-				//console.log("here");
-				html += `<td class="text-center"><input type="text" name="batch" class="text-center batch pointer" readonly value="${batch}" /></td><td class="text-center"><input type="text" name="serailno" readonly class="text-center serialno pointer" value="${sntxt}" /></td><td class="text-center"><input type="datetime" name="validthru" class="small text-center validthru pointer datepicker" value="${wholesalesln.JsValidThru}" /></td>`;
-
-				//itemvari
-				html += `<td class="text-center"><input type="text" name="vari" class="text-center vari pointer" value="${vari}" /></td>`;
+				html += `<td class="text-right"><input type="number" name="delqty" class="delqty text-right" value="${wholesalesln.wslDelQty}" ${_readonly}></td>`;
+				html += `<td class="text-center"><input type="text" name="batch" class="text-center batch pointer" readonly value="${batch}" /></td><td class="text-center"><input type="text" name="serailno" readonly class="text-center serialno pointer" value="${sntxt}" /></td><td class="text-center"><input type="datetime" name="validthru" class="small text-center validthru pointer datepicker" value="${wholesalesln.ValidThruDisplay}" title="${wholesalesln.ValidThruDisplay}" /></td>`;
 			}
+
+			//itemvari
+			html += `<td class="text-center"><input type="text" name="vari" class="text-center vari pointer" value="${vari}" /></td>`;
+
 			html += `<td class="text-right"><input type="number" name="price" class="price text-right" data-price="${wholesalesln.wslSellingPrice}" value="${formattedprice}" readonly></td><td class="text-right"><input type="number" name="discpc" class="discpc text-right" data-discpc="${wholesalesln.wslLineDiscPc}" value="${formatteddiscpc}" ${_readonly}></td>`;
 			if (enableTax && !inclusivetax) {
 				html += `<td class="text-right"><input type="number" name="taxpc" class="taxpc text-right" data-taxpc="${wholesalesln.wslTaxPc}" value="${formattedtaxpc}" ${_readonly}></td>`;
@@ -1093,7 +1071,7 @@ $(function () {
 			Wholesales.wsStatus = "order";
 			addRow();
 		} else {
-			$("input").prop("readonly", readonly).prop("disabled", readonly);
+			$("input").prop("readonly", readonly).prop("readonly", readonly);
 			$("select").prop("disabled", readonly);
 			$("textarea").not("#txtField").prop("readonly", readonly);
 			//console.log("here");
@@ -1152,5 +1130,3 @@ $(function () {
 
 	setInput4NumberOnly("number");
 });
-
-

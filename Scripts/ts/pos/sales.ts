@@ -37,8 +37,13 @@ $(document).on("click", ".btnpayment", function () {
 	//console.log("checked:", checked);
 	togglePayModeTxt();
 
+	DicPayServiceCharge[code].Selected = checked;	
+
 	if (checked) $(this).addClass("toggle");
-	else $(this).removeClass("toggle");
+	else {
+		$(this).removeClass("toggle");
+		DicPayServiceCharge[code].Added = false;
+	} 
 	
 	isEpay = (code.toLowerCase() == "alipay" || code.toLowerCase() == "wechat");	
 	//console.log("scpc:" + scpc);
@@ -52,8 +57,6 @@ $(document).on("click", ".btnpayment", function () {
 	else {
 		$("#txtPayerCode").prop("readonly", true);
 	}
-
-	DicPayServiceCharge[code].Selected = checked;	
 
 	togglePayment(code, checked);
 

@@ -2458,6 +2458,7 @@ $(document).on("change", ".chkpayment", function () {
 	} else {
 		$tr.find(".paymenttype").val("0.00");
 		Sales.rtsFinalTotal! -= ServiceChargeAmt;
+		DicPayServiceCharge[type].Added = false;
 	}
 
 	setAmtDisplay(Sales!.rtsFinalTotal ?? 0, 0);
@@ -3083,7 +3084,8 @@ function openPurchaseBatchModal(
 	addrow: boolean = false,
 	readonly: boolean = false
 ) {
-	console.log("here");
+	//console.log("addrow:", addrow);
+	//console.log("readonly:",true);
 	purchaseBatchModal.find("#batchLocSeqItem").text(selectedItemCode);
 	purchaseBatchModal.dialog("open");
 	if (addrow) addPoBatRow(false);
@@ -8571,7 +8573,7 @@ function handleQtyChange(this: any) {
 			$(this).val(_qty);
 		}
 	}
-
+	//console.log("$tr.index#qtychange:", $tr.index());
 	let _price: number = Number($tr.find(".price").val());
 
 	let _discpc: number = Number($tr.find(".discpc").val());
@@ -8581,7 +8583,6 @@ function handleQtyChange(this: any) {
 		/*	if (Purchase.pstStatus !== "order"&&Purchase.pstStatus!=="created"&&Purchase.pstStatus!=="draft")*/
 		let $received = $tr.find(".received");
 		if ($received.length) $received.attr("max", _qty).val(_qty);
-
 
 		updateRow(_price, _discpc);
 		seq = currentY + 1;
@@ -8688,6 +8689,8 @@ function handleQtyChange(this: any) {
 		let _amt = _qty * _cost;
 		$tr.find(".amt").data("amt", _amt).val(formatnumber(_amt));
 	}
+
+	//console.log("$tr.index#qtychange:", $tr.index());
 }
 $(document).on("change", ".unitcost", function () {
 	getRowCurrentY.call(this);
@@ -9705,14 +9708,12 @@ function fillInDelDetail(arr: string[], title: string) {
 }
 
 $(document).on("dblclick", ".serialno.pointer", function () {
+	getRowCurrentY.call(this);
 	//console.log("here");
 	let hasFocusCls: boolean = $(this).hasClass("focus");
 
-	$tr = $(this).parent("td").parent("tr");
-	let idx = forrefund ? 0 : 1;
-	selectedItemCode = <string>$tr.find("td").eq(idx).find(".itemcode").val();
-	// console.log("selecteditemcode:" + selectedItemCode);
-	currentY = $tr.data("idx") as number;
+	selectedItemCode = <string>$tr.find(".itemcode").val();
+	// console.log("selecteditemcode:" + selectedItemCode);	
 	seq = forrefund ? currentY : currentY + 1;
 	// console.log("seq:" + seq);
 
@@ -9725,9 +9726,7 @@ $(document).on("dblclick", ".serialno.pointer", function () {
 			noButton: canceltxt,
 			callback: function (value) {
 				if (value) {
-					$(`#${gTblId} tbody tr`)
-						.eq(currentY)
-						.find("td:eq(1)")
+					$tr					
 						.find(".itemcode")
 						.trigger("focus");
 				}
@@ -9829,10 +9828,7 @@ $(document).on("dblclick", ".serialno.pointer", function () {
 						});
 
 						if (SelectedPurchaseItem!.piStatus !== "order") {
-							$target = $(this)
-								.parent("td")
-								.parent("tr")
-								.find("td:last")
+							$target = $tr							
 								.find(".received");
 							SelectedPurchaseItem!.piReceivedQty = <number>$target.val();
 							if (SelectedPurchaseItem!.piReceivedQty == 0) {
@@ -9855,29 +9851,17 @@ $(document).on("dblclick", ".serialno.pointer", function () {
 						SelectedPurchaseItem = initPurchaseItem();
 						SelectedPurchaseItem!.piSeq = currentY + 1;
 						SelectedPurchaseItem!.itmCode = <string>(
-							$(this)
-								.parent("td")
-								.parent("tr")
-								.find("td")
-								.eq(1)
+							$tr
 								.find(".itemcode")
 								.val()
 						);
 						SelectedPurchaseItem!.itmNameDesc = <string>(
-							$(this)
-								.parent("td")
-								.parent("tr")
-								.find("td")
-								.eq(2)
+							$tr
 								.find(".itemdesc")
 								.val()
 						);
 						SelectedPurchaseItem!.piQty = <number>(
-							$(this)
-								.parent("td")
-								.parent("tr")
-								.find("td")
-								.eq(4)
+							$tr
 								.find(".qty")
 								.val()
 						);
@@ -9888,28 +9872,16 @@ $(document).on("dblclick", ".serialno.pointer", function () {
 					selectedWholesalesLn = initWholeSalesLn();
 					selectedWholesalesLn.wslSeq = currentY + 1;
 					selectedWholesalesLn.wslItemCode = <string>(
-						$(this)
-							.parent("td")
-							.parent("tr")
-							.find("td")
-							.eq(1)
+						$tr
 							.find(".itemcode")
 							.val()
 					);
 					selectedWholesalesLn.itmNameDesc = <string>(
-						$(this)
-							.parent("td")
-							.parent("tr")
-							.find("td")
-							.eq(2)
+						$tr
 							.find(".itemdesc")
 							.val()
 					);
-					$target = $(this)
-						.parent("td")
-						.parent("tr")
-						.find("td")
-						.eq(4)
+					$target = $tr
 						.find(".qty");
 					selectedWholesalesLn.wslQty = <number>$target.val();
 
@@ -10664,8 +10636,7 @@ function setBatchMark() {
 }
 
 function setExpiryDateMark() {
-	//console.log("here");
-	/*let $tr = $(`#${gTblId} tbody tr`);*/
+	//console.log("tr index:", $tr.index());
 	if (itemOptions && (itemOptions.ChkBatch || itemOptions.ChkSN))
 		$tr
 			.find(".validthru")
@@ -10681,21 +10652,14 @@ function setExpiryDateMark() {
 }
 
 function removeExpiryDateMark() {
-	let $tr = $(`#${gTblId} tbody tr`);
 	if (forwholesales) {
 		$tr
-			.eq(currentY)
-			.find("td")
-			.eq(vtidx)
 			.find(".small.pointer")
 			.addClass("validthru datepicker focus")
 			.prop("readonly", false)
 			.val("");
 	} else {
-		$tr
-			.eq(currentY)
-			.find("td")
-			.eq(vtidx)
+		$tr			
 			.find(".validthru")
 			.addClass("validthru datepicker")
 			.prop("readonly", false)
@@ -11101,6 +11065,7 @@ function handleDiscChange(this: any) {
 
 function updateRow(_price: number = 0, _discount: number = 0) {
 	//console.log("_price#updaterow:" + _price + ";_disc:" + _discount);
+	//console.log("$tr.index#updaterow:", $tr.index());
 	$target = $(`#${gTblId} tbody tr`).eq(currentY);
 	seq = currentY + 1;
 
@@ -11263,6 +11228,7 @@ function _updaterow($target: JQuery, _amtplustax: number) {
 		//console.log("WholeSalesLns#_updaterow:", WholeSalesLns);
 		updateWholesales();
 	}
+	
 }
 
 let SelectedSupplier: ISupplier;
@@ -12803,13 +12769,16 @@ function fillSnRow(idx: number, snseqvt: ISnBatSeqVt | null): string {
 	let vt: string =
 		snseqvt === null ? "" : ((<ISnBatSeqVt>snseqvt).vt as string);
 
-	html += `<td>${_seq}</td><td><input type="text" class="form-control text-center posn" value="${sn}" /></td>`;
+	html += `<td>${idx+1}</td><td><input type="text" class="form-control text-center posn" value="${sn}" /></td>`;
 
 	if (itemOptions && itemOptions.WillExpire) {
-		html += `<td><input type="datetime" class="form-control text-center datepicker posnvt small" value="${vt}" /></td>`;
+		html += `<td><input type="datetime" class="form-control text-center datepicker posnvt small" value="${vt}" title="${vt}" /></td>`;
 	}
 
-	html += `<td><button type="button" class="btn btn-danger snminus"><i class="fa fa-minus"></i></button></td>`;
+	if (Purchase.pstStatus != "opened" && Purchase.pstStatus != "partialreceival") {
+		html += `<td><button type="button" class="btn btn-danger snminus"><i class="fa fa-minus"></i></button></td>`;
+	}
+
 	html += `</tr>`;
 	return html;
 }
@@ -12821,6 +12790,7 @@ function addPoSnRow(plus: boolean = false) {
 		html = fillSnRow($(`#tblPserial tbody tr`).length, null);
 	} else {
 		if (forpurchase) {
+			//console.log("here");
 			if (SelectedPurchaseItem!.snbatseqvtlist.length > 0) {
 				let $rows = $target.find("tr");
 				let tblSns: string[] = [];
@@ -12844,7 +12814,7 @@ function addPoSnRow(plus: boolean = false) {
 					});
 				}
 			} else {
-				//console.log('selectedPurchaseItem!.piReceivedQty:' + selectedPurchaseItem!.piReceivedQty);
+				//console.log('selectedPurchaseItem!.piReceivedQty:' + selectedPurchaseItem!.piReceivedQty);				
 				for (let i = 0; i < SelectedPurchaseItem!.piReceivedQty; i++) {
 					html += fillSnRow(i, null);
 				}
@@ -13180,6 +13150,7 @@ $(document).on("click", ".batplus", function () {
 });
 
 function fillBatchRow(index: number | null, batch: IBatch | null): string {
+	if (!itemOptions) return "";
 	$target = purchaseBatchModal.find("#tblPbatch tbody");
 	//console.log("batch#fill:", batch);
 	let html = "";
@@ -13188,22 +13159,24 @@ function fillBatchRow(index: number | null, batch: IBatch | null): string {
 	let vt = batch === null ? "" : batch.BatVtDisplay ?? "N/A";
 	let batseq = batch === null ? idx + 1 : batch.batSeq;
 	let batqty = batch === null ? 0 : batch.batQty;
+	//console.log("batqty:" + batqty);
 	html += `<tr data-idx="${idx}" data-batseq="${batseq}">`;
 	html += `<td>${idx + 1
 		}</td><td class="text-center"><input type="text" class="form-control pbatch" value="${batcode}" /></td>`;
-
+	
 	if (
-		(itemOptions && itemOptions.ChkSN && itemOptions.WillExpire) ||
-		(itemOptions && itemOptions.ChkBatch && !itemOptions.WillExpire)
-	) {
+		(itemOptions.ChkSN && itemOptions.WillExpire) ||
+		(itemOptions.ChkBatch && !itemOptions.WillExpire)
+	) {	
 	} else {
+		
 		html += `<td class="text-center"><input type="datetime" class="form-control datepicker pobavt small" value="${vt}" /></td>`;
 	}
 
-	if (itemOptions && itemOptions.ChkBatch && !itemOptions.ChkSN)
+	if (itemOptions.ChkBatch && !itemOptions.ChkSN)
 		html += `<td class="text-right"><input type="number" class="form-control batqty" value="${batqty}" /></td>`;
 
-	if (itemOptions && itemOptions.ChkBatch && itemOptions.ChkSN) {
+	if (itemOptions.ChkBatch && itemOptions.ChkSN) {	
 	} else {
 		html += `<td><button type="button" class="btn btn-danger batminus"><i class="fa fa-minus"></i></button></td>`;
 	}
@@ -13217,17 +13190,13 @@ function addPoBatRow(isPlus: boolean = true) {
 		html = fillBatchRow($(`#tblPbatch tbody tr`).length, null);
 	} else {
 		$target = purchaseBatchModal.find("#tblPbatch tbody");
+		//console.log("$target:", $target);
 		if (
 			SelectedPurchaseItem &&
 			SelectedPurchaseItem!.batchList &&
 			SelectedPurchaseItem!.batchList.length > 0
 		) {
-			if (Purchase.pstStatus !== "order") {
-				//console.log("here");
-				$.each(SelectedPurchaseItem!.batchList, function (i, e) {
-					html += fillBatchRow(i, e);
-				});
-			} else {
+			if (Purchase.pstStatus == "order") {
 				let idx = -1;
 				$.each(SelectedPurchaseItem!.batchList, function (i, e) {
 					if (e.seq == seq) {
@@ -13239,12 +13208,18 @@ function addPoBatRow(isPlus: boolean = true) {
 				if (idx < 0) {
 					html = fillBatchRow(0, null);
 				}
+			} else {
+				$.each(SelectedPurchaseItem!.batchList, function (i, e) {
+					html += fillBatchRow(i, e);
+				});
+				//console.log("html:", html);
 			}
 		} else {
 			html = fillBatchRow(0, null);
 		}
 	}
-	$target.append(html);
+	//console.log("html:", html);
+	$target.empty().append(html);
 	if (forpurchase) {
 		if (Purchase.pstStatus != "opened") {
 			setBatchFocus();
@@ -13252,7 +13227,6 @@ function addPoBatRow(isPlus: boolean = true) {
 		}
 	}
 }
-
 function resetPurchaseBatchModal() {
 	$("#tblPbatch tbody").empty();
 }
@@ -13690,9 +13664,7 @@ function confirmVtQty() {
 	if (!itemOptions) return false;
 
 	$("#tblVt tbody tr").each(function (i, e) {
-		$(e)
-			.find("td")
-			.first()
+		$(e)			
 			.find(".vtdelqty")
 			.each(function (k, v) {
 				let newvtqty = Number($(v).val());
@@ -13739,15 +13711,13 @@ function confirmVtQty() {
 			});
 	});
 
-	//console.log("DeliveryItems#confirmvtqty:", DeliveryItems);
-	//$("#totalvtdelqty").data("totalvtdelqty", lnqty).val(lnqty);
-
-	let $qty = $(`#${gTblId} tbody tr`)
-		.eq(currentY)
-		.find(".qty");
-
+	
+	//console.log("$tr.table:", $tr.parent("tbody").parent("table").attr("id"));
+	//console.log("$tr.index:", $tr.index());
+	let $qty = $tr.find(".qty");
+	//console.log("$qty:", $qty);
 	const qty: number = Number($qty.val());
-	console.log("lnqty:" + lnqty + ";qty:" + qty);
+	//console.log("lnqty:" + lnqty + ";qty:" + qty);
 	if (lnqty > qty) {
 		//console.log("here");
 		$.fancyConfirm({
@@ -13768,9 +13738,7 @@ function confirmVtQty() {
 					$(".vtdelqty").val(0).addClass("focus");
 
 					$("#tblVt tbody tr").each(function (i, e) {
-						$(e)
-							.find("td")
-							.first()
+						$(e)						
 							.find(".vtdelqty")
 							.each(function (k, v) {
 								let dlCode = $(v).attr("id") as string;
@@ -13818,9 +13786,7 @@ function confirmBatchSnQty() {
 				.forEach((x) => ividlist.push(x));
 		}
 		if (!itemOptions!.ChkSN) {
-			$(e)
-				.find("td")
-				.eq(1)
+			$(e)				
 				.find(".batdelqty")
 				.each(function (k, v) {
 					let newbdq = Number($(v).val());
@@ -13869,9 +13835,7 @@ function confirmBatchSnQty() {
 				});
 		} else {
 			//console.log("here");
-			$(e)
-				.find("td")
-				.eq(1)
+			$(e)				
 				.find(".chkbatsnvt")
 				.each(function (k, v) {
 					$target = $(v);
@@ -13931,10 +13895,7 @@ function confirmBatchSnQty() {
 		if (x.dlHasSN && x.seq == seq) lnqty++;
 	});
 
-	let $qty = $(`#${gTblId} tbody tr`)
-		.eq(currentY)
-		.find("td")
-		.eq(5)
+	let $qty = $tr		
 		.find(".delqty");
 
 	// console.log("del qty:" + Number($qty.val()) + ";lnqty:" + lnqty);
@@ -14045,55 +14006,45 @@ function confirmBatchSnQty() {
 	}
 }
 
-function getItemInfo4BatSnVtIv(sn: string | null = null) {
-	$tr = $(`#${gTblId} tbody tr`).eq(currentY);
-	let idx: number = 2;
-	deliveryItem!.itmNameDesc = $tr
-		.find("td")
-		.eq(idx)
+function getItemInfo4BatSnVtIv(sn: string | null = null) {		
+	deliveryItem!.itmNameDesc = $tr		
 		.find(".itemdesc")
 		.val() as string;
-	idx++;
-	deliveryItem!.dlBaseUnit = $tr
-		.find("td")
-		.eq(idx)
+	
+	deliveryItem!.dlBaseUnit = $tr		
 		.find(".sellunit")
 		.val() as string;
-
-	idx = forwholesales ? 10 : 9;
+	
 	deliveryItem!.dlUnitPrice = Number(
-		$tr.find("td").eq(idx).find(".price").data("price")
+		$tr.find(".price").data("price")
 	);
 	//console.log("dlunitprice:" + deliveryItem!.dlUnitPrice);
-
-	idx++;
+	
 	deliveryItem!.dlDiscPc = Number(
-		$tr.find("td").eq(idx).find(".discpc").data("discpc")
+		$tr.find(".discpc").data("discpc")
 	);
 
-	if (enableTax && !inclusivetax) {
-		idx++;
+	if (enableTax && !inclusivetax) {		
 		deliveryItem!.dlTaxPc = Number(
-			$tr.find("td").eq(idx).find(".taxpc").data("taxpc")
+			$tr.find(".taxpc").data("taxpc")
 		);
 	}
-	idx++;
-	deliveryItem!.dlStockLoc = $tr
-		.find("td")
-		.eq(idx)
+	
+	deliveryItem!.dlStockLoc = $tr		
 		.find(".location")
 		.val() as string;
-	idx++;
-	deliveryItem!.JobID = Number($tr.find("td").eq(idx).find(".job").val());
+	
+	deliveryItem!.JobID = Number($tr.find(".job").val());
 }
 
 let snvtlist: ISnVt[] = [];
 
 function toggleBatQty() {
-	if (itemOptions && itemOptions.ChkBatch && itemOptions.ChkSN) {
+	if (!itemOptions) return;
+	if (itemOptions.ChkBatch && itemOptions.ChkSN) {
 		$("#tblPbatch thead tr th").eq(3).hide();
 	}
-	if (itemOptions && itemOptions.ChkBatch && !itemOptions.ChkSN) {
+	if (itemOptions.ChkBatch && !itemOptions.ChkSN) {
 		$("#tblPbatch thead tr th").eq(3).show();
 	}
 }
@@ -15020,8 +14971,8 @@ function handleBatVtQtyChange(this: any, lastCellCls: string) {
 	let tmpId: string = $(this).data("id").toString();
 	let itemcode: string = $(this).data("itemcode").toString();
 	let receiver: string = $(this).data("shop").toString();
-	$tr = $(this).parent("div").parent("td").parent("tr");
-	let tridx: number = Number($tr.data("idx"));
+	let $localTR = $(this).parent("div").parent("td").parent("tr");
+	let tridx: number = Number($localTR.data("idx"));
 	let transferredqty: number = 0;
 	if (qty > 0) {
 		if (qty > maxqty) {
@@ -15627,16 +15578,16 @@ $(document).on("change", ".chkbatsnvt", function () {
 	);
 
 	let ischecked: boolean = $(this).is(":checked");
-	$tr = $(this).parent("div").parent("td").parent("tr");
+	let $localTR = $(this).parent("div").parent("td").parent("tr");
 	chkbatsnvtchange = true;
 
-	$target = $tr.find(".currentbattypeqty");
+	$target = $localTR.find(".currentbattypeqty");
 	let currentbattypeqty: number = Number($target.text());
 	currentbattypeqty = ischecked ? currentbattypeqty - 1 : currentbattypeqty + 1;
 	//if (currentbattypeqty < 0) currentbattypeqty = 0;
 	$target.text(currentbattypeqty);
 
-	$target = $tr.find("td.batdelqtytxt").find(".row").find(".batdeledqty");
+	$target = $localTR.find("td.batdelqtytxt").find(".row").find(".batdeledqty");
 	let currentdelqty = Number($target.text());
 	//console.log("currentdelqty#0:" + currentdelqty);
 
@@ -15664,7 +15615,7 @@ $(document).on("change", ".chkbatsnvt", function () {
 	}
 });
 $(document).on("change", ".batdelqty", function () {
-	$tr = $(this).parent("div").parent("td").parent("tr");
+	let $localTR = $(this).parent("div").parent("td").parent("tr");
 
 	batdelqtychange = true;
 	let newbdq = Number($(this).val());
@@ -15678,13 +15629,13 @@ $(document).on("change", ".batdelqty", function () {
 	//console.log("newbdq#1:" + newbdq);
 	$(this).data("currentbdq", newbdq);
 
-	$target = $tr.find(".currentbattypeqty");
+	$target = $localTR.find(".currentbattypeqty");
 	let currentbattypeqty: number = Number($target.text());
 	currentbattypeqty -= newbdq;
 	//if (currentbattypeqty < 0) currentbattypeqty = 0;
 	$target.text(currentbattypeqty);
 
-	$target = $tr.find("td.batdelqtytxt").find(".row").find(".batdeledqty");
+	$target = $localTR.find("td.batdelqtytxt").find(".row").find(".batdeledqty");
 	let currentdelqty = Number($target.text());
 	//console.log("currentdelqty:" + currentdelqty);
 	newbdq += currentdelqty;
@@ -15711,7 +15662,7 @@ $(document).on("change", ".batdelqty", function () {
 });
 
 $(document).on("change", ".vtdelqty", function () {
-	$tr = $(this).parent("div").parent("td").parent("tr");
+	let $localTR = $(this).parent("div").parent("td").parent("tr");
 
 	vtdelqtychange = true;
 	let newvdq = Number($(this).val());
@@ -15725,25 +15676,17 @@ $(document).on("change", ".vtdelqty", function () {
 	//console.log("newvdq#1:" + newvdq);
 	$(this).data("currentvdq", newvdq);
 
-	$target = $tr.find(".currentvttypeqty");
+	$target = $localTR.find(".currentvttypeqty");
 	let currentvttypeqty: number = Number($target.text());
 	currentvttypeqty -= newvdq;
 	//if (currentvttypeqty < 0) currentvttypeqty = 0;
 	$target.text(currentvttypeqty);
 
-	$target = $tr.find("td.vtdelqtytxt");
+	$target = $localTR.find("td.vtdelqtytxt");
 	let currentdelqty = Number($target.text());
 	//console.log("currentdelqty:" + currentdelqty);
 	newvdq += currentdelqty;
 
-	//console.log("newdelqty#0:" + newdelqty);
-	//if (newvdq > vtqty) {
-	//    let _newdelqty = newvdq - vtqty;
-	//    //console.log("_newdelqty:" + _newdelqty);
-	//    $(this).val(_newdelqty);
-	//    newvdq = vtqty;
-	//}
-	//console.log("newdelqty#1:" + newdelqty);
 	$target.text(newvdq);
 
 	let totalvtdelqty: number = 0;
@@ -15759,8 +15702,8 @@ let ivdelqtychange: boolean = false;
 //for those items with variations but without batch
 $(document).on("change", ".ivdelqty", function () {
 	let $ivdelqty = $(this);
-	$tr = $ivdelqty.parent("div").parent("td").parent("tr");
-	let tridx = $tr.data("idx");
+	let $localTR = $ivdelqty.parent("div").parent("td").parent("tr");
+	let tridx = $localTR.data("idx");
 
 	ivdelqtychange = true;
 	let newivdq = Number($ivdelqty.val());
@@ -15783,13 +15726,13 @@ $(document).on("change", ".ivdelqty", function () {
 	//console.log("newivdq#1:" + newivdq);
 	$ivdelqty.data("currentivdq", newivdq);
 
-	$target = $tr.find(".currentivtypeqty");
+	$target = $localTR.find(".currentivtypeqty");
 	let currentivtypeqty: number = Number($target.text());
 	currentivtypeqty -= newivdq;
 	//if (currentivtypeqty < 0) currentivtypeqty = 0;
 	$target.text(currentivtypeqty);
 
-	$target = $tr.find("td.ivdelqtytxt");
+	$target = $localTR.find("td.ivdelqtytxt");
 	let currentdelqty = Number($target.text());
 	//console.log("currentdelqty:" + currentdelqty);
 	newivdq += currentdelqty;
@@ -15813,7 +15756,7 @@ $(document).on("change", ".ivdelqty", function () {
 $(document).on("change", ".nonitemoptions", function () {
 	let val = $(this).val() as string;
 	if (val !== "") {
-		$tr = $(this).parent("td").parent("tr");
+		let $localTR = $(this).parent("td").parent("tr");
 		let type = $(this).data("type") as string;
 		let batch: string = "";
 		let sn: string = "";
@@ -15821,8 +15764,8 @@ $(document).on("change", ".nonitemoptions", function () {
 		switch (type) {
 			case "bat":
 				batch = val;
-				sn = $tr.find("td:eq(6)").find(".serialno").val() as string;
-				vt = $tr.find("td:eq(8)").find(".validthru").val() as string;
+				sn = $localTR.find("td:eq(6)").find(".serialno").val() as string;
+				vt = $localTR.find("td:eq(8)").find(".validthru").val() as string;
 				break;
 			case "sn":
 				sn = val;
@@ -15832,20 +15775,20 @@ $(document).on("change", ".nonitemoptions", function () {
 					checkIfDuplicatedSNOk,
 					getRemoteDataFail
 				);
-				batch = $tr.find("td:eq(5)").find(".batch").val() as string;
-				vt = $tr.find("td:eq(8)").find(".validthru").val() as string;
+				batch = $localTR.find("td:eq(5)").find(".batch").val() as string;
+				vt = $localTR.find("td:eq(8)").find(".validthru").val() as string;
 				break;
 			case "vt":
 				vt = val;
-				batch = $tr.find("td:eq(5)").find(".batch").val() as string;
-				sn = $tr.find("td:eq(6)").find(".serialno").val() as string;
+				batch = $localTR.find("td:eq(5)").find(".batch").val() as string;
+				sn = $localTR.find("td:eq(6)").find(".serialno").val() as string;
 				break;
 		}
 
-		selectedItemCode = $tr.find("td:eq(1)").find(".itemcode").val() as string;
-		currentY = Number($tr.data("idx"));
+		selectedItemCode = $localTR.find("td:eq(1)").find(".itemcode").val() as string;
+		currentY = Number($localTR.data("idx"));
 		seq = currentY + 1;
-		let qty: number = Number($tr.find("td:eq(4)").find(".qty").val());
+		let qty: number = Number($localTR.find("td:eq(4)").find(".qty").val());
 		let dlcode = `${selectedItemCode}_${seq}`;
 
 		const idx =
@@ -15868,7 +15811,7 @@ $(document).on("change", ".nonitemoptions", function () {
 		deliveryItem!.dlQty = qty;
 		getItemInfo4BatSnVtIv();
 		deliveryItem.dlAmtPlusTax = deliveryItem.dlAmt = Number(
-			$tr.find("td:last").find(".amount").val()
+			$localTR.find("td:last").find(".amount").val()
 		);
 
 		if (idx === -1) DeliveryItems.push(deliveryItem);
@@ -20388,23 +20331,10 @@ $(document).on("dblclick", ".pobatch.pointer", function () {
 			}
 		});
 		if (!SelectedPurchaseItem) SelectedPurchaseItem = initPurchaseItem();
-	}
 
-	if (forpurchase) {
-		console.log("here1");
-		openPurchaseBatchModal(
-			true,
-			(Purchase.pstStatus === "opened" ||
-				Purchase.pstStatus === "partialreceival")
-		);
-	}
-
-	resetPurchaseBatchModal();
-	//console.log("batch model reset");
-
-	if (forpurchase) {
 		if (!$.isEmptyObject(DicItemOptions)) {
 			itemOptions = DicItemOptions[selectedItemCode];
+			//console.log("itemOptions#dblclick:", itemOptions);
 			if (itemOptions) {
 				if (itemOptions.ChkBatch && itemOptions.ChkSN) {
 					$("#tblPbatch thead tr th").last().hide();
@@ -20422,8 +20352,20 @@ $(document).on("dblclick", ".pobatch.pointer", function () {
 				}
 			}
 		}
+
+		if (Purchase.pstStatus == "opened" || Purchase.pstStatus == "partialreceival") {
+			$("#tblPbatch thead tr th").last().hide();
+		}
 	}
 
+	resetPurchaseBatchModal();
+	openPurchaseBatchModal(
+		true,
+		(Purchase.pstStatus === "opened" ||
+			Purchase.pstStatus === "partialreceival")
+	);
+
+	//if(Purchase.pstStatus=="open")
 	toggleBatQty();
 });
 
@@ -20458,9 +20400,7 @@ $(document).on("dblclick", ".posn.pointer", function () {
 			noButton: notxt,
 			callback: function (value) {
 				if (value) {
-					$(`#${gTblId} tbody tr`)
-						.eq(currentY)
-						.find("td:eq(5)")
+					$tr
 						.find(".pobatch")
 						.addClass("focus")
 						.trigger("focus");
@@ -20473,15 +20413,19 @@ $(document).on("dblclick", ".posn.pointer", function () {
 		} else {
 			$("#tblPserial thead tr th:eq(2)").show();
 		}
-		if (forpurchase)
+		if (forpurchase) {
 			openPurchaseSerialModal(
 				true,
 				Purchase.pstStatus === "opened" ||
 				Purchase.pstStatus === "partialreceival"
 			);
+			if (Purchase.pstStatus == "opened" || Purchase.pstStatus == "partialreceival") $("#tblPserial thead tr th").last().hide();
+		}			
 
 		setValidThruDatePicker();
 	}
+
+	
 });
 
 $(document).on("change", ".validthru", function () {
@@ -20764,7 +20708,6 @@ $(document).on("dblclick", ".validthru.pointer", function () {
 		$tr.find(".itemcode").val() as string
 	).trim();
 
-	seq = currentY + 1;
 	const hasFocusCls = $(this).hasClass("focus");
 	itemOptions = DicItemOptions[selectedItemCode];
 	//console.log("itemOptions:", itemOptions);
@@ -20773,7 +20716,7 @@ $(document).on("dblclick", ".validthru.pointer", function () {
 	if (
 		(forwholesales &&
 			(Wholesales.wsStatus.toLowerCase() === "deliver" ||
-				Wholesales.wsStatus.toLowerCase() === "partialdeliver") && reviewmode)
+				Wholesales.wsStatus.toLowerCase() === "partialdeliver") || reviewmode)
 	) {
 		DeliveryItems = DicSeqDeliveryItems[seq].slice(0);
 		//console.log("DeliveryItems:", DeliveryItems);
@@ -20956,8 +20899,7 @@ $(document).on("dblclick", ".batch", function () {
 	selectedItemCode = (
 		$tr.find(".itemcode").val() as string
 	).trim();
-
-	seq = currentY + 1;
+	
 	const hasFocusCls = $(this).hasClass("focus");
 	itemOptions = DicItemOptions[selectedItemCode];
 	//console.log("itemOptions:", itemOptions);
@@ -20967,7 +20909,7 @@ $(document).on("dblclick", ".batch", function () {
 	if (
 		(forwholesales &&
 			(Wholesales.wsStatus.toLowerCase() === "deliver" ||
-				Wholesales.wsStatus.toLowerCase() === "partialdeliver") && reviewmode)
+				Wholesales.wsStatus.toLowerCase() === "partialdeliver") || reviewmode)
 	) {
 		DeliveryItems = DicSeqDeliveryItems[seq].slice(0);
 
@@ -21329,8 +21271,8 @@ $(document).on("dblclick", ".batch", function () {
 									}
 								});
 
-								console.log("!hasFocusCls:", !hasFocusCls);
-								console.log("ibatdelqty" + ibatdelqty + ";currentbattypeqty:" + currentbattypeqty + ";totalbatqty:" + totalbatqty);
+								//console.log("!hasFocusCls:", !hasFocusCls);
+								//console.log("ibatdelqty" + ibatdelqty + ";currentbattypeqty:" + currentbattypeqty + ";totalbatqty:" + totalbatqty);
 
 								let disabled =
 									!hasFocusCls ||
@@ -22230,7 +22172,7 @@ function handleRemoveFile(url: string, data: any) {
 }
 
 
-function disableEntries() {
+function ReadonlyDisableEntries() {
 	$("input:not([type='file'],[id='txtUserName'],.ip,.povari)").prop("isadmin", true).prop("disabled", true);
 	$("input.ip,input.povari").prop("readonly", true);
 	$("select").prop("disabled", true);

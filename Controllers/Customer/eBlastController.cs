@@ -283,7 +283,7 @@ namespace SmartBusinessWeb.Controllers.Customer
             ViewBag.ParentPage = "eBlast";
             ViewBag.PageName = "add";
             eBlastEditModel model = new eBlastEditModel();
-            return View("Get", model);
+            return View("Edit", model);
         }
 
         [HandleError]

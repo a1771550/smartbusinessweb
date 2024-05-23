@@ -191,7 +191,7 @@ namespace SmartBusinessWeb.Controllers.Customer.Enquiry
             ViewBag.ParentPage = "customer";
             ViewBag.PageName = "enquiry";
             EnquiryModel model = new EnquiryModel();
-            return View("Get", model);
+            return View("Edit", model);
         }
 
         [HandleError]

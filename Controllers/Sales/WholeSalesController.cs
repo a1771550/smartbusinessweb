@@ -88,7 +88,7 @@ namespace SmartBusinessWeb.Controllers.Sales
             ViewBag.ParentPage = "wholesales";
             ViewBag.PageName = "edit";
             WholeSalesEditModel model = new WholeSalesEditModel(receiptno);
-            return View("Get", model);
+            return View("Edit", model);
         }
 
         [HandleError]
