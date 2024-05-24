@@ -101,10 +101,10 @@ function updateRefund() {
 	//console.log("refundlist:", RefundList);
 	let _totalamt = 0;
 	$.each(RefundList, function (i, e) {
-		console.log("e.amt:", e.amt);
+		//console.log("e.amt:", e.amt);
 		_totalamt += e.amt;
 	});
-	console.log("_totalamt:" + _totalamt);
+	//console.log("_totalamt:" + _totalamt);
 	$("#txtTotal").val(formatnumber(_totalamt));
 	focusRefItemCode();
 }
@@ -287,7 +287,7 @@ function getReceiptOk(data) {
 		RefundSales = data.sales;
 		selectedSalesCode = RefundSales.rtsCode;
 		selectedCus = data.customer;
-		selectedCusCodeName =selectedCus.cusCode;
+		selectedCusCodeName = selectedCus.cusCode;
 		companyinfo = data.companyinfo;
 		receipt = data.receipt;
 		ItemList = data.items.slice(0);
@@ -303,10 +303,10 @@ function getReceiptOk(data) {
 			refundLns = data.refundLns.slice(0);
 		}
 		// console.log("refundLns:", refundLns);
-
 		if (isEpay) {
 			$("#partialrefundnote").removeClass("hide");
 			epaytype = data.ePayType;
+			//console.log("epaytpe:", epaytype);//Alipay
 		} else {
 			$("#partialrefundnote").addClass("hide");
 		}
@@ -350,7 +350,7 @@ function getReceiptOk(data) {
 			const filteredpolist = tmplist.filter(
 				(value, index, self) =>
 					index === self.findIndex((t) => { return t.id === value.id; }
-			));
+					));
 			PoItemBatVQList = filteredpolist.slice(0);
 		} else {
 			if (model.PoItemBatVQList)
@@ -365,7 +365,7 @@ function fillinRefundForm() {
 	$("#txtCustomerCode").val(selectedCusCodeName);
 	$("#txtStaticCustomerName").val(selectedCus.cusName);
 	if (selectedCusCodeName.toLowerCase() !== "guest") {
-		$("#txtPoints").val(selectedCus.cusPointsActive??0);
+		$("#txtPoints").val(selectedCus.cusPointsActive ?? 0);
 		$("#txtPhone").val(selectedCus.cusCode);
 		if (selectedCus.cusPointsActive == 0) {
 			$("#txtPriceLevel").val(cpplList[0].PriceLevelDescription);
@@ -378,7 +378,7 @@ function fillinRefundForm() {
 					selectedCus.cusPriceLevelID = cpplList[i].PriceLevelID;
 					return false;
 				}
-				if (e.CustomerPoint > (selectedCus.cusPointsActive??0)) {
+				if (e.CustomerPoint > (selectedCus.cusPointsActive ?? 0)) {
 					if (
 						typeof cpplList[i - 1] !== "undefined" &&
 						typeof cpplList[i - 1].PriceLevelDescription !== "undefined"
@@ -390,7 +390,7 @@ function fillinRefundForm() {
 				}
 			});
 			if (
-				(selectedCus.cusPointsActive??0) >
+				(selectedCus.cusPointsActive ?? 0) >
 				cpplList[cpplList.length - 1].CustomerPoint
 			) {
 				$("#txtPriceLevel").val(
@@ -531,7 +531,7 @@ function fillinRefundForm() {
 			'</td><td class="text-right flex">' +
 			e.disc +
 			'</td>' +
-			`<td class="text-right flex">${RefundSales.rtsServiceChargeAmt??0}</td>` +
+			`<td class="text-right flex">${RefundSales.rtsServiceChargeAmt ?? 0}</td>` +
 			'<td class="text-right flex">' +
 			e.amt +
 			'</td><td class="text-center flex">' +
@@ -572,15 +572,17 @@ function fillinRefundForm() {
 					return false;
 				}
 			});
-		} else {
-			genRefundRows();
-			const $rows = $("#tblRefund tbody tr");
-			if ($rows.length === 1) {
-				const $seq = $rows.first().find("td").last().find(".rtlSeq");
-				$seq.prop("checked", true).trigger("change");
-			}
+			console.log("itotalamt1:" + itotalamt);
 		}
-		//console.log("itotalamt:" + itotalamt);
+
+		genRefundRows();
+		const $rows = $("#tblRefund tbody tr");
+		if ($rows.length === 1) {
+			const $seq = $rows.first().find("td").last().find(".rtlSeq");
+			$seq.prop("checked", true).trigger("change");
+		}
+
+		console.log("itotalamt2:" + itotalamt);
 		if (isEpay || RefundableSalesList.length == 1) { $("#txtTotal").val(formatnumber(itotalamt)); refundsalesln = RefundableSalesList[0]; genRefund(); }
 
 	} else {
@@ -717,18 +719,19 @@ function addRefRow(
 		refundsalesln?.rtlSellingPrice!,
 		refundsalesln?.rtlLineDiscPc ?? 0,
 		refundsalesln?.rtlTaxAmt ?? 0,
-		RefundSales.rtsServiceChargeAmt??0
+		RefundSales.rtsServiceChargeAmt ?? 0
 	);
 	html += `<td class="text-right"><input type="number" name="amount" class="amount text-right" ${areadonly} value="${formatnumber(salesamt)}" /></td>`;
 
-	itotalamt += salesamt;
+	if(!isEpay)
+		itotalamt += salesamt;
 
 	const rtlseq = refundsalesln?.rtlSeq;
 
 	let clsDel: string = "";
 
-	console.log(`batdelId:${batdelId};vt:${vt};sn:${sn}`);
-	console.log(`(batdelId!=null || vt!=null || sn!=""):`, (batdelId!=null || vt!=null || sn!=""));
+	//console.log(`batdelId:${batdelId};vt:${vt};sn:${sn}`);
+	//console.log(`(batdelId!=null || vt!=null || sn!=""):`, (batdelId != null || vt != null || sn != ""));
 	if (batdelId != null || vt != null || sn != "") {
 		clsDel = "bsv ";
 		if (itemOptions.ChkBatch) {
@@ -957,7 +960,7 @@ function selectRefItem() {
 					});
 				}
 				seq = 0;
-				
+
 			} else {
 				let refundsaleslns: Array<IRefundSales> = [];
 
@@ -1216,7 +1219,8 @@ function submitRefund() {
 				let _url = printurl + "?issales=0&salesrefundcode=" + data.refundcode;
 
 				if (isEpay) {
-					let epayresult: IePayResult = data.eresult;
+					let epayresult: IePayResult = data.ePayResult;
+					console.log("epayresult:", epayresult);
 					if (epayresult.Status == 0) {
 						$.fancyConfirm({
 							title: "",
@@ -1326,6 +1330,7 @@ $(document).on("click", "#btnRefund", function () {
 	}
 	else {
 		if (isEpay) {
+			console.log("RefundList:", RefundList);
 			confirmPay();
 		} else {
 			openRefPayModal();

@@ -2498,6 +2498,7 @@ $(document).on("change", ".paymenttype", function () {
 
 function confirmPay() {
 	//console.log("here");
+	let _totalpay: number = 0;
 	let _totalamt: number = 0;
 	switch (salesType) {
 		case SalesType.simplesales:
@@ -2509,7 +2510,8 @@ function confirmPay() {
 			_totalamt = itotalremainamt;
 			break;
 		case SalesType.refund:
-			RefundList.forEach((x) => (_totalamt += x.amt));
+			RefundList.forEach((x) => (_totalamt += x.amt));		
+			if (isEpay) submitRefund();
 			break;
 		default:
 		case SalesType.retail:
@@ -2525,7 +2527,7 @@ function confirmPay() {
 	let paymentsInfo = GetPaymentsInfo();
 	//console.log("paymentsInfo:", paymentsInfo);
 	let _couponamt: number = paymentsInfo.couponamt;
-	let _totalpay: number = paymentsInfo.totalpay;
+	_totalpay = paymentsInfo.totalpay;
 
 	_totalpay = round(_totalpay, 2);
 	_totalamt = round(_totalamt, 2);
@@ -5239,6 +5241,8 @@ interface ISalesman extends ISysUser {
 interface IePayResult {
 	Message: string;
 	Status: number;
+	ResultCode: string;
+	ServiceStatus: string;
 }
 
 enum SalesType {

@@ -17,6 +17,7 @@ using System.Xml;
 using PPWLib.Models.Item;
 using PPWLib.Models.POS.Sales;
 using PPWLib.Models.Sales;
+using DocumentFormat.OpenXml.ExtendedProperties;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -224,6 +225,7 @@ namespace SmartBusinessWeb.Controllers
 
             }
         }
+
         [HandleError]
         [CustomAuthorize("refund", "boss", "admin", "superadmin")]
         public ActionResult Refund()
@@ -235,12 +237,11 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult ProcessRefund(SalesModel Refund, List<SalesViewModel> RefundList, List<PayLnView> Payments)
+        public JsonResult ProcessRefund(SalesModel Refund, List<SalesViewModel> RefundList, List<PayLnView> Payments)
         {
             SessUser user = (SessUser)Session["User"];
-            decimal salestotal = 0;
             string refundcode = "";
-            ePayResult eresult = new ePayResult();
+            ePayResult ePayResult = new();
 
             #region JS Properties
             int isepay = Refund.rtsEpay ? 1 : 0;
@@ -250,147 +251,28 @@ namespace SmartBusinessWeb.Controllers
             string salescode = Refund.rtsCode;
             string devicecode = Refund.rtsDvc;
             string epaytype = Refund.epaytype;
-            decimal totalamount = (decimal)Refund.rtsFinalTotal;
             #endregion
 
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using var context = new PPWDbContext(Session["DBName"].ToString());
+            using var transaction = context.Database.BeginTransaction();
+            try
             {
-                using (var transaction = context.Database.BeginTransaction())
+                if (isepay == 1)
                 {
-                    try
-                    {
-                        if (isepay == 1)
-                        {
-                            #region ePayment
-                            var device = ModelHelper.GetDevice(user.surUID); //don't use session, as no new refundno will be retreived.				
-                            refundcode = ModelHelper.GetNewRefundCode(devicecode, device, context);
-                            //totalamount *= -1;
-                            int refundamt = (bool)ComInfo.ePayTest ? decimal.ToInt32(totalamount / 1000) : decimal.ToInt32(totalamount);
-                            salestotal = (decimal)context.RtlSales.FirstOrDefault(x => x.rtsCode.ToLower() == salescode.ToLower() && x.AccountProfileId == apId).rtsFinalTotal;
+                    ePayResult = RefundEpay(salescode);
 
-                            var _ps = context.ePayments.FirstOrDefault(x => x.out_trade_no.ToUpper() == salescode.ToUpper() && x.AccountProfileId == apId);
-                            if (_ps != null)
-                            {
-                                PayService payService = new PayService(_ps.auth_code, _ps.out_trade_no, _ps.body.Split(',').ToList(), decimal.ToInt32(salestotal), ePayMode.Refund);
-                                payService.OutRefundNo = refundcode;
-                                payService.RefundFee = refundamt;
-
-                                SalesEditModel.GenEpaySignature(ref payService, ePayMode.Refund);
-
-
-                                /* payment xml for reference only:
-                                 * string xml = $"<xml><auth_code><![CDATA[{payService.AuthCode}]]></auth_code><body><![CDATA[{payService.Body}]]></body><mch_create_ip><![CDATA[{payService.MachineCreateIP}]]></mch_create_ip><mch_id><![CDATA[{payService.MerchantID}]]></mch_id><nonce_str><![CDATA[{payService.Nonce}]]></nonce_str><out_trade_no><![CDATA[{payService.OutTradeNo}]]></out_trade_no><service><![CDATA[{payService.Service}]]></service><total_fee><![CDATA[{payService.TotalFee}]]></total_fee><sign><![CDATA[{payService.Signature}]]></sign><notify_url><![CDATA[{payService.NotifyUrl}]]></notify_url></xml>";
-                                 */
-                                /*return string.Format("mch_id={0}&nonce_str={1}&op_user_id={7}&out_refund_no={4}&out_trade_no={2}&refund_fee={6}&service={3}&total_fee={5}", payservice.MerchantID, payservice.Nonce, payservice.OutTradeNo, payservice.Service, payservice.OutRefundNo, payservice.TotalFee, payservice.RefundFee, payservice.MerchantID);
-                                 */
-                                string xml = $"<xml><auth_code><![CDATA[{payService.AuthCode}]]></auth_code><body><![CDATA[{payService.Body}]]></body><mch_create_ip><![CDATA[{payService.MachineCreateIP}]]></mch_create_ip><mch_id><![CDATA[{payService.MerchantID}]]></mch_id><nonce_str><![CDATA[{payService.Nonce}]]></nonce_str><op_user_id><![CDATA[{payService.MerchantID}]]></op_user_id><out_refund_no><![CDATA[{payService.OutRefundNo}]]></out_refund_no><out_trade_no><![CDATA[{payService.OutTradeNo}]]></out_trade_no><refund_fee><![CDATA[{payService.RefundFee}]]></refund_fee><service><![CDATA[{payService.Service}]]></service><total_fee><![CDATA[{payService.TotalFee}]]></total_fee><sign><![CDATA[{payService.Signature}]]></sign><notify_url><![CDATA[{payService.NotifyUrl}]]></notify_url></xml>";
-
-                                payService.GateWayUrl = ConfigurationManager.AppSettings["RefundGatewayUrl"];
-                                var xmlDoc = XMLHelper.PostXML(payService.GateWayUrl, xml);
-
-                                XmlNodeList nodelist = xmlDoc.SelectNodes("/xml");
-
-                                if (nodelist != null)
-                                {
-                                    PayService ps = SalesEditModel.GetStatusResult(nodelist);
-                                    var status = ps.Status;
-                                    var resultcode = ps.ResultCode;
-                                    var message = ps.Message;
-
-                                    if (status == "0")
-                                    {
-                                        if (resultcode != "0")
-                                        {
-                                            ps = SalesEditModel.HandleUnSuccessfulResult(context, payService, nodelist, status, resultcode, ePayMode.Refund, apId);
-                                            context.SaveChanges();
-                                            eresult = new ePayResult
-                                            {
-                                                Message = ps.Message,
-                                                Status = 0,
-                                            };
-                                        }
-                                        else
-                                        {
-                                            /*
-                                         * transaction_id Yes String(32) The unique trade reference of platform system. 
-                                         * out_trade_no Yes String(32) The unique transaction order id of merchant system. 
-                                         * out_refund_no Yes String(32) Specifies the internal refund number, which is uniqueinthemerchant system. 
-                                         * refund_id Yes String(32) Specifies the internal refund number, which is uniqueintheplatform system. 
-                                         * refund_channel Yes String(16) Value : ORIGINAL. The money will refund back to whereit camefrom. 
-                                         * refund_fee Yes Int Refund amount. The unit of the fee is the minimal unit of thelocalcurrency. Partial refund can be supported. 
-                                         * coupon_refund_fee No Int Coupon refund amount. coupon_refund_fee <= refund_fee. refund_fee - coupon_refund_fee = cash refund amount
-                                         */
-                                            ps = nodelist.Cast<XmlNode>()
-                                    .Select(x => new PayService()
-                                    {
-                                        TransactionId = x.SelectSingleNode("transaction_id") != null ? x.SelectSingleNode("transaction_id").InnerText : "",
-                                        OutTradeNo = x.SelectSingleNode("out_trade_no") != null ? x.SelectSingleNode("out_trade_no").InnerText : "",
-                                        OutRefundNo = x.SelectSingleNode("out_refund_no") != null ? x.SelectSingleNode("out_refund_no").InnerText : "",
-                                        RefundID = x.SelectSingleNode("refund_id") != null ? x.SelectSingleNode("refund_id").InnerText : "",
-                                        RefundChannel = x.SelectSingleNode("refund_channel") != null ? x.SelectSingleNode("refund_channel").InnerText : "",
-                                        RefundFee = x.SelectSingleNode("refund_fee") != null ? int.Parse(x.SelectSingleNode("refund_fee").InnerText) : 0,
-                                        CouponRefundFee = x.SelectSingleNode("coupon_refund_fee") != null ? int.Parse(x.SelectSingleNode("coupon_refund_fee").InnerText) : 0,
-                                    })
-                                    .FirstOrDefault();
-                                            eRefund erefund = new eRefund
-                                            {
-                                                out_trade_no = ps.OutTradeNo,
-                                                out_refund_no = ps.OutRefundNo,
-                                                refund_fee = ps.RefundFee,
-                                                refund_id = ps.RefundID,
-                                                refund_channel = ps.RefundChannel,
-                                                refund_status = "SUCCESS",
-                                                coupon_refund_fee = ps.CouponRefundFee,
-                                                CreateTime = DateTime.Now,
-                                                AccountProfileId = apId
-                                            };
-                                            context.eRefunds.Add(erefund);
-                                            context.SaveChanges();
-                                            eresult = new ePayResult
-                                            {
-                                                Message = Resources.Resource.eRefundSuccessful,
-                                                Status = 1,
-                                            };
-                                            HandleNormalRefund(RefundList, CusCode, Notes, Payments, Change, salescode, devicecode, isepay, epaytype, context, refundcode, user);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        ps = SalesEditModel.HandleEpayErr(context, payService, nodelist, status, resultcode, ePayMode.Refund, apId);
-                                        context.SaveChanges();
-                                        eresult = new ePayResult
-                                        {
-                                            Message = ps.Message,
-                                            Status = 0,
-                                        };
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                eresult = new ePayResult
-                                {
-                                    Message = Resources.Resource.eRefundFailed,
-                                    Status = 0,
-                                };
-                            }
-                            #endregion
-                        }
-                        else
-                        {
-                            refundcode = HandleNormalRefund(RefundList, CusCode, Notes, Payments, Change, salescode, devicecode, isepay, epaytype, context, "", user);
-                        }
-
-                        transaction.Commit();
-                        return Json(new { msg = "", refundcode, eresult });
-
-                    }
-                    catch (Exception ex)
-                    {
-                        transaction.Rollback();
-                        throw new Exception(ex.Message);
-                    }
+                    if (ePayResult.Status == 1) HandleNormalRefund(RefundList, CusCode, Notes, Payments, Change, salescode, devicecode, isepay, epaytype, context, refundcode, user);                   
                 }
+                else refundcode = HandleNormalRefund(RefundList, CusCode, Notes, Payments, Change, salescode, devicecode, isepay, epaytype, context, "", user);
+
+                transaction.Commit();
+                return Json(new { msg = "", refundcode, ePayResult });
+
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new Exception(ex.Message);
             }
         }
 
@@ -457,7 +339,7 @@ namespace SmartBusinessWeb.Controllers
 
                     RtlSalesLn rtlSalesLn = new RtlSalesLn(); //MUST not use object initializer in the loop, otherwise will get error.    
                     rtlSalesLn.rtlSalesLoc = refsalesln.rtlSalesLoc;
-                    rtlSalesLn.rtlStockLoc = refundln.rtlStockLoc;                    
+                    rtlSalesLn.rtlStockLoc = refundln.rtlStockLoc;
                     rtlSalesLn.rtlDvc = devicecode;
                     rtlSalesLn.rtlCode = refundcode;
                     rtlSalesLn.rtlRefSales = salescode;
@@ -632,7 +514,86 @@ namespace SmartBusinessWeb.Controllers
             return refundcode;
         }
 
+        [HttpPost]
+        public ePayResult RefundEpay(string salescode)
+        {
+            PayService payService = new PayService();
+            ePayResult result = new ePayResult
+            {
+                Status = 0,
+            };
 
+            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            {
+                var _ps = context.ePayments.FirstOrDefault(x => x.out_trade_no.ToUpper() == salescode.ToUpper());
+                if (_ps != null)
+                {
+                    payService = new PayService(_ps.auth_code, _ps.out_trade_no, _ps.body.Split(',').ToList(), _ps.total_fee, ePayMode.Refund);
+                    SalesEditModel.GenEpaySignature(ref payService, ePayMode.Refund);
+
+                    string xml = $"<xml><auth_code><![CDATA[{payService.AuthCode}]]></auth_code><body><![CDATA[{payService.Body}]]></body><mch_create_ip><![CDATA[{payService.MachineCreateIP}]]></mch_create_ip><mch_id><![CDATA[{payService.MerchantID}]]></mch_id><nonce_str><![CDATA[{payService.Nonce}]]></nonce_str><op_user_id><![CDATA[{payService.MerchantID}]]></op_user_id><out_refund_no><![CDATA[{payService.OutRefundNo}]]></out_refund_no><out_trade_no><![CDATA[{payService.OutTradeNo}]]></out_trade_no><refund_fee><![CDATA[{payService.RefundFee}]]></refund_fee><service><![CDATA[{payService.Service}]]></service><total_fee><![CDATA[{payService.TotalFee}]]></total_fee><sign><![CDATA[{payService.Signature}]]></sign><notify_url><![CDATA[{payService.NotifyUrl}]]></notify_url></xml>";
+
+                    var xmlDoc = XMLHelper.PostXML(payService.GateWayUrl, xml);
+
+                    XmlNodeList nodelist = xmlDoc.SelectNodes("/xml");
+
+                    if (nodelist != null)
+                    {
+                        var ps = SalesEditModel.GetStatusResult(nodelist);
+
+                        if (ps.Status == "0")
+                        {
+                            if (ps.ResultCode != "0")
+                            {
+                                ps = SalesEditModel.HandleUnSuccessfulResult(context, payService, nodelist, ps.Status, ps.ResultCode, ePayMode.Refund, apId);
+                                context.SaveChanges();
+                                result.Message = ps.Message??Resources.Resource.eRefundFailed;
+                                result.Status = 0;
+                            }
+                            else
+                            {
+                                ps = nodelist.Cast<XmlNode>()
+                        .Select(x => new PayService()
+                        {
+                            TransactionId = x.SelectSingleNode("transaction_id") != null ? x.SelectSingleNode("transaction_id").InnerText : "",
+                            OutTradeNo = x.SelectSingleNode("out_trade_no") != null ? x.SelectSingleNode("out_trade_no").InnerText : "",
+                            OutRefundNo = x.SelectSingleNode("out_refund_no") != null ? x.SelectSingleNode("out_refund_no").InnerText : "",
+                            RefundID = x.SelectSingleNode("refund_id") != null ? x.SelectSingleNode("refund_id").InnerText : "",
+                            RefundChannel = x.SelectSingleNode("refund_channel") != null ? x.SelectSingleNode("refund_channel").InnerText : "",
+                            RefundFee = x.SelectSingleNode("refund_fee") != null ? int.Parse(x.SelectSingleNode("refund_fee").InnerText) : 0,
+                            CouponRefundFee = x.SelectSingleNode("coupon_refund_fee") != null ? int.Parse(x.SelectSingleNode("coupon_refund_fee").InnerText) : 0,
+                        })
+                        .FirstOrDefault();
+                                eRefund erefund = new eRefund
+                                {
+                                    out_trade_no = ps.OutTradeNo,
+                                    out_refund_no = ps.OutRefundNo,
+                                    refund_fee = ps.RefundFee,
+                                    refund_id = ps.RefundID,
+                                    refund_channel = ps.RefundChannel,
+                                    refund_status = "SUCCESS",
+                                    coupon_refund_fee = ps.CouponRefundFee,
+                                    CreateTime = DateTime.Now,
+                                    AccountProfileId = apId
+                                };
+                                context.eRefunds.Add(erefund);
+                                context.SaveChanges();
+                                result.Message = Resources.Resource.eRefundSuccessful;
+                                result.Status = 1;
+                                //HandleNormalRefund(RefundList, CusCode, Notes, Payments, Change, salescode, devicecode, isepay, epaytype, context, refundcode, user);
+                            }
+                        }
+                        else
+                        {
+                            SalesEditModel.HandleEpayErr(context, payService, nodelist, ps.Status, ps.ResultCode, ePayMode.Refund, apId);
+                            result.Message = ps.Message ?? Resources.Resource.eRefundFailed;
+                        }
+                    }
+                }
+
+                return result;
+            }
+        }
         [HandleError]
         [CustomAuthorize("retail", "boss", "admin", "superadmin")]
         public ActionResult AdvSales(int? reserveId)
@@ -643,7 +604,7 @@ namespace SmartBusinessWeb.Controllers
             Session["ABSSToSBOK"] = Resources.Resource.ABSSToSBOK;
             ViewBag.DefaultCheckoutPortal = ModelHelper.HandleCheckoutPortal();
 
-			ViewBag.ParentPage = "sales";           
+            ViewBag.ParentPage = "sales";
             SalesEditModel model = new SalesEditModel(false, reserveId);
             return View(model);
         }
@@ -784,77 +745,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
 
-        [HttpPost]
-        public JsonResult RefundEpay(string salescode)
-        {
-            PayService payService = new PayService();
-
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
-            {
-                var _ps = context.ePayments.FirstOrDefault(x => x.out_trade_no.ToUpper() == salescode.ToUpper());
-                if (_ps != null)
-                {
-                    payService = new PayService(_ps.auth_code, _ps.out_trade_no, _ps.body.Split(',').ToList(), _ps.total_fee, ePayMode.Refund);
-                    SalesEditModel.GenEpaySignature(ref payService, ePayMode.Refund);
-
-                    string xml = $"<xml><auth_code><![CDATA[{payService.AuthCode}]]></auth_code><body><![CDATA[{payService.Body}]]></body><mch_create_ip><![CDATA[{payService.MachineCreateIP}]]></mch_create_ip><mch_id><![CDATA[{payService.MerchantID}]]></mch_id><nonce_str><![CDATA[{payService.Nonce}]]></nonce_str><op_user_id><![CDATA[{payService.MerchantID}]]></op_user_id><out_refund_no><![CDATA[{payService.OutRefundNo}]]></out_refund_no><out_trade_no><![CDATA[{payService.OutTradeNo}]]></out_trade_no><refund_fee><![CDATA[{payService.RefundFee}]]></refund_fee><service><![CDATA[{payService.Service}]]></service><total_fee><![CDATA[{payService.TotalFee}]]></total_fee><sign><![CDATA[{payService.Signature}]]></sign><notify_url><![CDATA[{payService.NotifyUrl}]]></notify_url></xml>";
-
-                    //string xml = $"<xml><auth_code><![CDATA[{payService.AuthCode}]]></auth_code><body><![CDATA[{payService.Body}]]></body><mch_create_ip><![CDATA[{payService.MachineCreateIP}]]></mch_create_ip><mch_id><![CDATA[{payService.MerchantID}]]></mch_id><op_user_id><![CDATA[{payService.MerchantID}]]></op_user_id><nonce_str><![CDATA[{payService.Nonce}]]></nonce_str><out_refund_no><![CDATA[{payService.OutRefundNo}]]></out_refund_no><service><![CDATA[{payService.Service}]]></service><total_fee><![CDATA[{payService.TotalFee}]]></total_fee><refund_fee><![CDATA[{payService.RefundFee}]]></refund_fee><sign><![CDATA[{payService.Signature}]]></sign><notify_url><![CDATA[{payService.NotifyUrl}]]></notify_url></xml>";
-
-                    var xmlDoc = XMLHelper.PostXML(payService.GateWayUrl, xml);
-
-                    XmlNodeList nodelist = xmlDoc.SelectNodes("/xml");
-
-                    if (nodelist != null)
-                    {
-
-                        PayService ps = SalesEditModel.GetStatusResult(nodelist);
-
-                        var status = ps.Status;
-                        var resultcode = ps.ResultCode;
-                        var message = ps.Message;
-
-                        if (string.IsNullOrEmpty(message))
-                        {
-                            if (status == "0")
-                            {
-                                if (resultcode == "1")
-                                {
-                                    SalesEditModel.HandleUnSuccessfulResult(context, payService, nodelist, status, resultcode, ePayMode.Refund, apId);
-                                    context.SaveChanges();
-                                    return Json(new { msg = Resources.Resource.PaymentRefundFailed, epaystatus = 0 }, JsonRequestBehavior.AllowGet);
-                                }
-                                else if (resultcode == "0")
-                                {
-                                    SalesEditModel.HandleSuccessfulResult(context, payService, nodelist, status, resultcode, ePayMode.Refund);
-                                    context.SaveChanges();
-                                    return Json(new { msg = Resources.Resource.PaymentRefunded, epaystatus = 1 }, JsonRequestBehavior.AllowGet);
-                                }
-                            }
-                            else
-                            {
-                                return Json(new { msg = Resources.Resource.PaymentRefundFailed, epaystatus = 0 }, JsonRequestBehavior.AllowGet);
-                            }
-                        }
-                        else
-                        {
-                            return Json(new { msg = message, epaystatus = 0 }, JsonRequestBehavior.AllowGet);
-                        }
-
-                    }
-                    else
-                    {
-                        return Json(new { msg = Resources.Resource.PaymentRefundFailed, epaystatus = 0 }, JsonRequestBehavior.AllowGet);
-                    }
-                }
-                else
-                {
-                    return Json(new { msg = Resources.Resource.PaymentRefundFailed, epaystatus = 0 }, JsonRequestBehavior.AllowGet);
-                }
-
-                return null;
-            }
-        }
+    
 
         [HttpPost]
         public JsonResult ReversePayment(string salescode)
