@@ -45,7 +45,7 @@ namespace SmartBusinessWeb.Controllers.Item
 
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
-        public ActionResult List(int SortCol = 0, string SortOrder = "desc", string strfrmdate = "", string strtodate = "", string Keyword = null, int? PageNo = 1)
+        public ActionResult List(int SortCol = 0, string SortOrder = "asc", string strfrmdate = "", string strtodate = "", string Keyword = null, int? PageNo = 1)
         {
             ViewBag.ParentPage = "item";
             ViewBag.PageName = "transferlist";
@@ -118,7 +118,7 @@ namespace SmartBusinessWeb.Controllers.Item
 
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
-        public ActionResult Index(int PageNo = 1, string SortName = "code", string SortOrder = "desc", string Keyword = null)
+        public ActionResult Index(int PageNo = 1, string SortName = "code", string SortOrder = "asc", string Keyword = null)
         {
             ViewBag.ParentPage = "item";  
             TransferEditModel model = new()

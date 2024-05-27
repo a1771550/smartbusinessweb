@@ -78,7 +78,7 @@ body{
     min-height: 100vh;
 }
 .login-box{
-    max-width: 628px;
+    max-width: 528px;/*628*/
     width: 100%;
     margin: 50px auto;
     background-color: #fff;

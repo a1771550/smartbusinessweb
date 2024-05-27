@@ -13,7 +13,7 @@ $(document).on("click", ".remove", function () {
 				$.ajax({
 					//contentType: 'application/json; charset=utf-8',
 					type: "POST",
-					url: "/ItemCategory/Delete",
+					url: "/Category/Delete",
 					data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), Id },
 					success: function (data) {
 						if (data.msg) $("#btnReload").trigger("click");
@@ -25,42 +25,30 @@ $(document).on("click", ".remove", function () {
 	});
 });
 
-$(document).on('click', '#btnReload', function () {
-	window.location.href = '/ItemCategory/Index';
+$(document).on("change", ".displayorder", function () {
+	let $dorder = $(this);
+	let dorder = $dorder.val();
+	if (dorder) {
+		Category = {Id:$dorder.data("id"),displayOrder:dorder} as ICategory;
+		$.ajax({
+			type: "POST",
+			url: "/Category/SaveDisplayOrder",
+			data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(),Category },
+			success: function (data) {
+				if (data) showMsg4Cls("msg", data);
+			},
+			dataType: "json"
+		});
+	}
 });
-
-$(document).on('click', '.colheader', function () {
-	let $sortcol = $('<input>').attr({ type: 'hidden', name: 'SortCol', value: $(this).data('col') });
-	let $keyword = $('<input>').attr({ type: 'hidden', name: 'Keyword', value: $(this).data('keyword') });
-	$('#frmCategory').append($sortcol).append($keyword).trigger("submit");
-});
-
 $(function () {
+	gFrmId = "frmCategory";
+	gTblId = "tblCategory";
 	setFullPage();
-	let $sortorder = $("#sortorder");
-	let $sortcol = $("#sortcol");
-	//console.log($sortcol.val() + ";" + $sortorder.val());
-	$target = $(".colheader").eq(<number>$sortcol.val());
-	let sortcls =
-		$sortorder.val() === "desc" ? "fa fa-sort-up" : "fa fa-sort-down";
-	$target.addClass(sortcls);
-
+	
 	initModals();
 	triggerMenu(2, 7);
 
-	$("#txtKeyword").trigger("focus");
-
-	$target = $(".pagination");
-	$target
-		.wrap('<nav aria-label="Page navigation"></nav>')
-		.find("li")
-		.addClass("page-item")
-		.find("a")
-		.addClass("page-link");
-
-	let keyword = getParameterByName("Keyword");
-	if (keyword !== null) {
-		$("#txtKeyword").val(keyword);
-	}
-	$(".pagination li").addClass("page-item");
+	ConfigSimpleSortingHeaders();
+	
 });

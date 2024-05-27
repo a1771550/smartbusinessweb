@@ -371,7 +371,7 @@
     <Compile Include="Controllers\Settings\EmailSettingsController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\Item\ItemCategoryController.cs" />
+    <Compile Include="Controllers\Item\CategoryController.cs" />
     <Compile Include="Controllers\Item\ItemController.cs" />
     <Compile Include="Controllers\Item\TransferController.cs" />
     <Compile Include="Controllers\Records\JobController.cs" />
@@ -2710,6 +2710,7 @@
     <Content Include="Content\images\calendar.svg" />
     <Content Include="Content\images\X-office-calendar.svg" />
     <Content Include="Content\Item.css" />
+    <Content Include="Content\item\category\index.css" />
     <Content Include="Content\item\iaedit.css" />
     <Content Include="Content\item\index.css" />
     <Content Include="Content\item\reserve\edit.css" />
@@ -4863,8 +4864,8 @@
     <Content Include="Views\Item\Edit.cshtml" />
     <Content Include="Views\Item\Stock.cshtml" />
     <Content Include="Views\Item\ZeroStocks.cshtml" />
-    <Content Include="Views\ItemCategory\Edit.cshtml" />
-    <Content Include="Views\ItemCategory\Index.cshtml" />
+    <Content Include="Views\Category\Edit.cshtml" />
+    <Content Include="Views\Category\Index.cshtml" />
     <Content Include="Views\ItemPeriodPromotion\Edit.cshtml" />
     <Content Include="Views\ItemPeriodPromotion\Index.cshtml" />
     <Content Include="Views\ItemQtyPromotion\Edit.cshtml" />
@@ -4999,7 +5000,6 @@
     <Folder Include="Controllers\CRM\" />
     <Folder Include="Models\" />
     <Folder Include="Scripts\mean\" />
-    <Folder Include="Views\ApiV2\" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\index.d.ts" />

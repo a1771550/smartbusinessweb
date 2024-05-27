@@ -11554,8 +11554,8 @@ function OnGetStocksOK(response) {
 					: "square-o"
 				: "square-o";
 
-			html += `<td class="text-center">${itemcode}</td>`;
-			html += `<td class="text-center itemdesc" data-desc="${item.NameDesc}" title="${item.NameDesc}">${handleItemDesc(item.NameDesc)}</td>`;
+			html += `<td class="text-left">${itemcode}</td>`;
+			html += `<td class="text-left itemdesc" data-desc="${item.NameDesc}" title="${item.NameDesc}">${handleItemDesc(item.NameDesc)}</td>`;
 
 			html += `<td class="text-center"><span class="text-success"><span class="fa fa-${fabatcls}"></span> <span class="fa fa-${fasncls}"></span> <span class="fa fa-${favtcls}"></span></span></td>`;
 			let facls = item.hasItemVari ? "check" : "xmark";
@@ -17080,17 +17080,18 @@ function backUpCardDrpOptions() {
 let DicOriCards: { [Key: string]: string } = {};
 let DicFilteredCards: { [Key: string]: string } = {};
 function fillInCategory() {
-	ItemCategory = {} as ICategory;
-	ItemCategory.Id = editmode ? Number($("#Id").val()) : 0;
-	ItemCategory.catName = $("#catName").val() as string;
-	ItemCategory.catDesc = $("#catDesc").val() as string;
-	ItemCategory.catNameTC = $("#catNameTC").val() as string;
-	ItemCategory.catDescTC = $("#catDescTC").val() as string;
-	ItemCategory.catNameSC = $("#catNameSC").val() as string;
-	ItemCategory.catDescSC = $("#catDescSC").val() as string;
-	ItemCategory.Removable = editmode ? $("#Removable").val() == "True" : true;
+	Category = {} as ICategory;
+	Category.Id = editmode ? Number($("#Id").val()) : 0;
+	Category.catName = $("#catName").val() as string;
+	Category.catDesc = $("#catDesc").val() as string;
+	Category.catNameTC = $("#catNameTC").val() as string;
+	Category.catDescTC = $("#catDescTC").val() as string;
+	Category.catNameSC = $("#catNameSC").val() as string;
+	Category.catDescSC = $("#catDescSC").val() as string;
+	Category.Removable = editmode ? $("#Removable").val() == "True" : true;
+	Category.displayOrder = Number($("#displayOrder").val());
 }
-let ItemCategory: ICategory;
+let Category: ICategory;
 interface ICategory {
 	Id: number;
 	catName: string;
@@ -17098,11 +17099,8 @@ interface ICategory {
 	catNameTC: string;
 	catDescTC: string;
 	catNameSC: string;
-	catDescSC: string;
-	AccountProfileId: number;
-	CompanyId: number;
-	CreateTimeDisplay: string;
-	ModifyTimeDisplay: string | null;
+	catDescSC: string;	
+	displayOrder: number;	
 	Removable: boolean;
 }
 let $salecomment = $("#cusSaleComment");

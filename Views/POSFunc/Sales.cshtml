@@ -2,11 +2,10 @@
 @{
 	ViewBag.Title = Resources.Resource.Sales;
 	int rand = new Random().Next(10000, 100000);
-	var defaultCat = Model.CategoryList.FirstOrDefault();
+	var catList = Model.CategoryList.OrderBy(x => x.displayOrder);
+	var defaultCat = catList.FirstOrDefault();
 	var Sales = Model.Sales;
 	List<SimpleItem> FilteredItemList = Model.SimpleItemList.Where(x=>x.catId==defaultCat.Id).ToList();
-	//Response.Write("defaultCat id:" + defaultCat.Id);
-	//return;
 }
 <link rel="stylesheet" href="~/Content/pos/pos.css?v=@rand">
 <link rel="stylesheet" href="~/Content/pos/Sales.css?v=@rand">
@@ -18,13 +17,13 @@
 
 				<!-- Tab links -->
 				<div class="tab small">
-					@foreach (var category in Model.CategoryList)
+					@foreach (var category in catList)
 					{
 						<button class="tablinks" data-id="@category.Id"  onclick="openTapContent(this, '@category.NameDisplay', @category.Id)">@category.NameDisplay</button>
 					}
 				</div>
 
-				@foreach (var category in Model.CategoryList)
+				@foreach (var category in catList)
 				{
 					<div id="@category.NameDisplay" class="tab_content" data-id="@category.Id" data-tab="@category.NameDisplay">
 

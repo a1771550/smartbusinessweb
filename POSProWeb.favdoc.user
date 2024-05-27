@@ -106,11 +106,6 @@
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\menu.ts</absolutePath>
         </Favorite>
         <Favorite>
-          <name>categoryedit.ts</name>
-          <path>Scripts\ts\item\categoryedit.ts</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\item\categoryedit.ts</absolutePath>
-        </Favorite>
-        <Favorite>
           <name>ia-edit.ts</name>
           <path>Scripts\ts\inventoryadjustment\edit.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\inventoryadjustment\edit.ts</absolutePath>
@@ -287,11 +282,6 @@
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Preorder\Index.cshtml</absolutePath>
         </Favorite>
         <Favorite>
-          <name>_LoginPage.cshtml</name>
-          <path>Views\Shared\_LoginPage.cshtml</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Shared\_LoginPage.cshtml</absolutePath>
-        </Favorite>
-        <Favorite>
           <name>_Head.cshtml</name>
           <path>Views\Shared\_Head.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Shared\_Head.cshtml</absolutePath>
@@ -400,6 +390,11 @@
           <name>_tblCustomerGroup.cshtml</name>
           <path>Views\Shared\_tblCustomerGroup.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Shared\_tblCustomerGroup.cshtml</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>Login.cshtml</name>
+          <path>Views\Account\Login.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Account\Login.cshtml</absolutePath>
         </Favorite>
       </favorites>
     </Folder>
@@ -662,6 +657,16 @@
           <name>customer-edit.css</name>
           <path>Content\customer\edit.css</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\customer\edit.css</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>item-index.css</name>
+          <path>Content\item\index.css</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\item\index.css</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>itemcategory-edit.ts</name>
+          <path>Scripts\ts\item\category\edit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\item\category\edit.ts</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

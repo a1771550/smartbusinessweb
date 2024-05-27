@@ -14,10 +14,12 @@
 
 .tblList th.itemprice, .tblList td.itemprice {
 	width: 140px;
+	min-width:100px;
 }
 
 .tblList th.itemoptions, .tblList td.itemoptions {
 	width: 200px;
+	min-width:150px;
 }
 
 .tblList th.itemvari, .tblList td.itemvari {
@@ -27,6 +29,7 @@
 
 .tblList th.onhandstock, .tblList td.onhandstock {
 	width: 80px;
+	min-width:80px;
 }
 
 .tblList th.locqty, .tblList td.locqty, .tblList th.rqty, .tblList td.rqty {

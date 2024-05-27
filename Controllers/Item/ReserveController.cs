@@ -104,7 +104,7 @@ namespace SmartBusinessWeb.Controllers.Item
         // GET: Reserve
         [HandleError]
         [CustomAuthorize("item", "boss", "admin", "superadmin")]
-        public ActionResult Index(int PageNo = 1, string SortName = "code", string SortOrder = "desc", string Keyword = null)
+        public ActionResult Index(int PageNo = 1, string SortName = "code", string SortOrder = "asc", string Keyword = null)
         {
             ViewBag.ParentPage = "item";
             ReserveEditModel model = new()

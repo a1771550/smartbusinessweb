@@ -24,8 +24,8 @@
 	<table id="tblItems" class="tblList table table-bordered table-hover table-condensed overflow-auto">
 		<thead class="gray-header">
 			<tr>
-				<th class="text-center colheader itemcode" data-col="code">@Resources.Resource.ItemCode</th>
-				<th class="text-center colheader itemdesc" data-col="namedesc">@Resources.Resource.Name/@Resources.Resource.Description</th>
+				<th class="text-left colheader itemcode" data-col="code">@Resources.Resource.ItemCode</th>
+				<th class="text-left colheader itemdesc" data-col="namedesc">@Resources.Resource.Name/@Resources.Resource.Description</th>
 				<th class="text-right colheader itemprice" data-col="price">@Resources.Resource.SellingPrice (@Model.Currency)</th>
 				<th class="text-center itemoptions">@Resources.Resource.Batch|@Resources.Resource.SerialNo|@Resources.Resource.ExpiryDate</th>
 				<th class="text-center itemvari">@Resources.Resource.ItemVariations</th>
@@ -41,8 +41,8 @@
 			var trcls = (bool)item.itmCheckout ? "" : "nonabss";
 			<tr class="@trcls">
 
-				<td class="text-center itemcode" title="@item.itmCode">@item.itmCode</td>
-				<td class="text-center itemdesc" data-desc="@item.NameDesc" title="@item.NameDesc">@item.NameDescDisplay</td>
+				<td class="text-left itemcode" title="@item.itmCode">@item.itmCode</td>
+				<td class="text-left itemdesc" data-desc="@item.NameDesc" title="@item.NameDesc">@item.NameDescDisplay</td>
 				<td class="text-right itemprice">
 					<input type="text" class="itemprice form-control btnsmall number" readonly value="@item.itmBaseSellingPrice" />
 				</td>
