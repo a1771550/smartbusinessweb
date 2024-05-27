@@ -3,6 +3,12 @@
   "WorkspaceRootPath": "F:\\repos\\PPWProject\\SmartBusinessWeb\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{E6585784-6922-4BAD-A92F-3EE21E5BC33D}|..\\PPWLib\\PPWLib.csproj|f:\\repos\\ppwproject\\ppwlib\\helpers\\modelhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E6585784-6922-4BAD-A92F-3EE21E5BC33D}|..\\PPWLib\\PPWLib.csproj|f:\\repos\\ppwproject\\ppwlib\\models\\sales\\retaileditmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|f:\\repos\\ppwproject\\smartbusinessweb\\controllers\\datatransfercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|solutionrelative:controllers\\datatransfercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
@@ -27,12 +33,38 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "ModelHelper.cs",
+              "DocumentMoniker": "F:\\repos\\PPWProject\\PPWLib\\Helpers\\ModelHelper.cs",
+              "RelativeDocumentMoniker": "..\\PPWLib\\Helpers\\ModelHelper.cs",
+              "ToolTip": "F:\\repos\\PPWProject\\PPWLib\\Helpers\\ModelHelper.cs",
+              "RelativeToolTip": "..\\PPWLib\\Helpers\\ModelHelper.cs",
+              "ViewState": "AQIAAD8MAAAAAAAAAIA0wEoMAAAUAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-27T07:26:48.006Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "RetailEditModel.cs",
+              "DocumentMoniker": "F:\\repos\\PPWProject\\PPWLib\\Models\\Sales\\RetailEditModel.cs",
+              "RelativeDocumentMoniker": "..\\PPWLib\\Models\\Sales\\RetailEditModel.cs",
+              "ToolTip": "F:\\repos\\PPWProject\\PPWLib\\Models\\Sales\\RetailEditModel.cs",
+              "RelativeToolTip": "..\\PPWLib\\Models\\Sales\\RetailEditModel.cs",
+              "ViewState": "AQIAACABAAAAAAAAAAAwwDcBAAAbAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-27T07:26:30.171Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "DataTransferController.cs",
               "DocumentMoniker": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Controllers\\DataTransferController.cs",
               "RelativeDocumentMoniker": "Controllers\\DataTransferController.cs",
               "ToolTip": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Controllers\\DataTransferController.cs",
               "RelativeToolTip": "Controllers\\DataTransferController.cs",
-              "ViewState": "AQIAADQAAAAAAAAAAADwvwAAAAAAAAAA",
+              "ViewState": "AQIAANECAAAAAAAAAAAAAL0DAAAlAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-05-27T07:23:23.964Z",
               "EditorCaption": ""
@@ -40,7 +72,7 @@
           ]
         },
         {
-          "DockedHeight": 31,
+          "DockedHeight": 36,
           "SelectedChildIndex": -1,
           "Children": [
             {
@@ -54,7 +86,7 @@
           ]
         },
         {
-          "DockedHeight": 162,
+          "DockedHeight": 31,
           "SelectedChildIndex": -1,
           "Children": [
             {
@@ -72,7 +104,7 @@
           ]
         },
         {
-          "DockedHeight": 227,
+          "DockedHeight": 162,
           "SelectedChildIndex": -1,
           "Children": [
             {
