@@ -3,14 +3,20 @@
   "WorkspaceRootPath": "F:\\repos\\PPWProject\\SmartBusinessWeb\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{E6585784-6922-4BAD-A92F-3EE21E5BC33D}|..\\PPWLib\\PPWLib.csproj|f:\\repos\\ppwproject\\ppwlib\\helpers\\modelhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E6585784-6922-4BAD-A92F-3EE21E5BC33D}|..\\PPWLib\\PPWLib.csproj|f:\\repos\\ppwproject\\ppwlib\\helpers\\printhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E6585784-6922-4BAD-A92F-3EE21E5BC33D}|..\\PPWLib\\PPWLib.csproj|f:\\repos\\ppwproject\\ppwlib\\models\\sales\\retaileditmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E6585784-6922-4BAD-A92F-3EE21E5BC33D}|..\\PPWLib\\PPWLib.csproj|f:\\repos\\ppwproject\\ppwlib\\models\\receipt\\printmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|f:\\repos\\ppwproject\\smartbusinessweb\\controllers\\datatransfercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|solutionrelative:controllers\\datatransfercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E6585784-6922-4BAD-A92F-3EE21E5BC33D}|..\\PPWLib\\PPWLib.csproj|f:\\repos\\ppwproject\\ppwlib\\models\\sales\\saleslnview.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E6585784-6922-4BAD-A92F-3EE21E5BC33D}|..\\PPWLib\\PPWLib.csproj|f:\\repos\\ppwproject\\ppwlib\\models\\sales\\salesmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|f:\\repos\\ppwproject\\smartbusinessweb\\controllers\\pos\\printcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|solutionrelative:controllers\\pos\\printcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -19,8 +25,8 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedHeight": 72,
-          "SelectedChildIndex": 2,
+          "DockedHeight": 83,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
@@ -32,41 +38,73 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ModelHelper.cs",
-              "DocumentMoniker": "F:\\repos\\PPWProject\\PPWLib\\Helpers\\ModelHelper.cs",
-              "RelativeDocumentMoniker": "..\\PPWLib\\Helpers\\ModelHelper.cs",
-              "ToolTip": "F:\\repos\\PPWProject\\PPWLib\\Helpers\\ModelHelper.cs",
-              "RelativeToolTip": "..\\PPWLib\\Helpers\\ModelHelper.cs",
-              "ViewState": "AQIAAD8MAAAAAAAAAIA0wEoMAAAUAAAA",
+              "DocumentIndex": 2,
+              "Title": "SalesLnView.cs",
+              "DocumentMoniker": "F:\\repos\\PPWProject\\PPWLib\\Models\\Sales\\SalesLnView.cs",
+              "RelativeDocumentMoniker": "..\\PPWLib\\Models\\Sales\\SalesLnView.cs",
+              "ToolTip": "F:\\repos\\PPWProject\\PPWLib\\Models\\Sales\\SalesLnView.cs",
+              "RelativeToolTip": "..\\PPWLib\\Models\\Sales\\SalesLnView.cs",
+              "ViewState": "AQIAAAoAAAAAAAAAAAAYwAsAAAAnAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-05-27T07:26:48.006Z",
+              "WhenOpened": "2024-05-27T09:31:02.744Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "RetailEditModel.cs",
-              "DocumentMoniker": "F:\\repos\\PPWProject\\PPWLib\\Models\\Sales\\RetailEditModel.cs",
-              "RelativeDocumentMoniker": "..\\PPWLib\\Models\\Sales\\RetailEditModel.cs",
-              "ToolTip": "F:\\repos\\PPWProject\\PPWLib\\Models\\Sales\\RetailEditModel.cs",
-              "RelativeToolTip": "..\\PPWLib\\Models\\Sales\\RetailEditModel.cs",
-              "ViewState": "AQIAACABAAAAAAAAAAAwwDcBAAAbAAAA",
+              "Title": "PrintModel.cs",
+              "DocumentMoniker": "F:\\repos\\PPWProject\\PPWLib\\Models\\Receipt\\PrintModel.cs",
+              "RelativeDocumentMoniker": "..\\PPWLib\\Models\\Receipt\\PrintModel.cs",
+              "ToolTip": "F:\\repos\\PPWProject\\PPWLib\\Models\\Receipt\\PrintModel.cs",
+              "RelativeToolTip": "..\\PPWLib\\Models\\Receipt\\PrintModel.cs",
+              "ViewState": "AQIAAFYAAAAAAAAAAAAiwGAAAAARAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-05-27T07:26:30.171Z",
+              "WhenOpened": "2024-05-27T09:09:55.917Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "DataTransferController.cs",
-              "DocumentMoniker": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Controllers\\DataTransferController.cs",
-              "RelativeDocumentMoniker": "Controllers\\DataTransferController.cs",
-              "ToolTip": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Controllers\\DataTransferController.cs",
-              "RelativeToolTip": "Controllers\\DataTransferController.cs",
-              "ViewState": "AQIAANECAAAAAAAAAAAAAL0DAAAlAAAA",
+              "DocumentIndex": 0,
+              "Title": "PrintHelper.cs",
+              "DocumentMoniker": "F:\\repos\\PPWProject\\PPWLib\\Helpers\\PrintHelper.cs",
+              "RelativeDocumentMoniker": "..\\PPWLib\\Helpers\\PrintHelper.cs",
+              "ToolTip": "F:\\repos\\PPWProject\\PPWLib\\Helpers\\PrintHelper.cs",
+              "RelativeToolTip": "..\\PPWLib\\Helpers\\PrintHelper.cs",
+              "ViewState": "AQIAAIMCAAAAAAAAAAAywK0CAABYAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-05-27T07:23:23.964Z",
+              "WhenOpened": "2024-05-27T09:09:11.504Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedHeight": 61,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "PrintController.cs",
+              "DocumentMoniker": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Controllers\\POS\\PrintController.cs",
+              "RelativeDocumentMoniker": "Controllers\\POS\\PrintController.cs",
+              "ToolTip": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Controllers\\POS\\PrintController.cs",
+              "RelativeToolTip": "Controllers\\POS\\PrintController.cs",
+              "ViewState": "AQIAAAsAAAAAAAAAAAAgwAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-27T09:21:35.189Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "SalesModel.cs",
+              "DocumentMoniker": "F:\\repos\\PPWProject\\PPWLib\\Models\\Sales\\SalesModel.cs",
+              "RelativeDocumentMoniker": "..\\PPWLib\\Models\\Sales\\SalesModel.cs",
+              "ToolTip": "F:\\repos\\PPWProject\\PPWLib\\Models\\Sales\\SalesModel.cs",
+              "RelativeToolTip": "..\\PPWLib\\Models\\Sales\\SalesModel.cs",
+              "ViewState": "AQIAABwAAAAAAAAAAAAYwB0AAACDAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-27T09:10:00.794Z",
               "EditorCaption": ""
             }
           ]

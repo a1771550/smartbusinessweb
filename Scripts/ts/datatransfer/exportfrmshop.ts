@@ -1,6 +1,5 @@
 ﻿$infoblk = $("#infoblk");
-lang = parseInt($infoblk.data("lang"));
-checkoutportal = $infoblk.data("checkoutportal");
+
 
 $(document).on("change", "#kingdee", function () {
 	changeCheckoutPortal("kingdee", "export");
@@ -79,7 +78,11 @@ $(document).on("click", ".export", function () {
 });
 
 $(function () {
+	lang = parseInt($infoblk.data("lang"));
+	checkoutportal = $infoblk.data("checkoutportal");
 	setFullPage();
 	initModals();
+	triggerMenu(6, 1);
+	initDatePickers();
 });
 

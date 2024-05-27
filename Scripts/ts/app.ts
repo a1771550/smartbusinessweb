@@ -22654,13 +22654,14 @@ $(document).on("change", ".reserve.locqty", function () {
 function handleReservePaidOut(reserveId: number) {
 	window.location.href = "/POSFunc/AdvSales?reserveId=" + reserveId;
 }
-function initDatePickers(startDay = StartDayEnum.Today, format = '') {
+function initDatePickers(startDay = StartDayEnum.Today, format = "") {
 	let dateformat = document.getElementById("commonfunc")!.getAttribute("data-dateformat")!.toUpperCase();
 
 	var currentTime = new Date();
 	var startDateFrom = new Date();
 	var startDateTo = new Date();
-	var _format = format === '' ? dateformat : format;
+	var _format = format === "" ? dateformat : format;
+	//console.log("_format:", _format);
 
 	let commonoptions = {
 		singleDatePicker: true,
@@ -22676,12 +22677,12 @@ function initDatePickers(startDay = StartDayEnum.Today, format = '') {
 	let mindateoptions = Object.assign({}, commonoptions);
 	let maxdateoptions = Object.assign({}, commonoptions);
 
-	if (getParameterByName("strfrmdate") == null) {
+	if (getParameterByName("strfrmdate") == null) {		
 		if (startDay == StartDayEnum.CurrentMonth) // First Date Of the Month
 			startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), currentTime.getMonth(), 1) : convertStringToDate($("#DateFromTxt").val() as string);
-		if (startDay == StartDayEnum.LastWeek || StartDayEnum.LastWeekToday) startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate() - 7) : convertStringToDate($("#DateFromTxt").val() as string);
+		if (startDay == StartDayEnum.LastWeek || startDay == StartDayEnum.LastWeekToday) startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate() - 7) : convertStringToDate($("#DateFromTxt").val() as string);
 		if (startDay == StartDayEnum.Today) startDateFrom = new Date();
-		if (startDay == StartDayEnum.LastMonth || StartDayEnum.LastMonthToday) startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), currentTime.getMonth() - 1, 1) : convertStringToDate($("#DateFromTxt").val() as string);
+		if (startDay == StartDayEnum.LastMonth || startDay ==  StartDayEnum.LastMonthToday) startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), currentTime.getMonth() - 1, 1) : convertStringToDate($("#DateFromTxt").val() as string);
 		if (startDay == StartDayEnum.Last2Month) startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), currentTime.getMonth() - 2, 1) : convertStringToDate($("#DateFromTxt").val() as string);
 		if (startDay == StartDayEnum.ThisYear) startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), 0, 1) : convertStringToDate($("#DateFromTxt").val() as string);
 		if (startDay == StartDayEnum.Beginning) convertStringToDate($("#DateFromTxt").val() as string);
@@ -22704,7 +22705,7 @@ function initDatePickers(startDay = StartDayEnum.Today, format = '') {
 		if (startDay == StartDayEnum.Today) {
 			startDateTo = tomorrow;
 		}
-		if (startDay == StartDayEnum.LastMonth || StartDayEnum.Last2Month) {
+		if (startDay == StartDayEnum.LastMonth || startDay ==  StartDayEnum.Last2Month) {
 			startDateTo = $("#DateToTxt").val() == '' ? tomorrow : convertStringToDate($("#DateToTxt").val() as string);
 		}
 		if (startDay == StartDayEnum.LastMonthToday) {

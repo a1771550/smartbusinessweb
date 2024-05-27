@@ -61,11 +61,3 @@
 <div id="infoblk" class="hide" data-lang="@lang" data-confirmtxt="@Resources.Resource.ExportPOSToABSSReminder" data-exporttxt="@Resources.Resource.Export" data-exportpathtxt="@Resources.Resource.ExportBasePath" data-isoffline="@Model.IsOffLine" data-checkoutportal="@ConfigurationManager.AppSettings["DefaultCheckoutPortal"]" data-importdonemsg="@HttpContext.Current.Session["SBToABSSOK"].ToString()" data-importngmsg="@Resources.Resource.SBToABSSNG"></div>
 
 <script src="~/Scripts/ts/js/datatransfer/exportfrmshop.js?v=@rand"></script>
-
-<script>
-    $(function () {
-        initModals();
-        triggerMenu(6,1);
-        initDatePickers();
-    });
-</script>

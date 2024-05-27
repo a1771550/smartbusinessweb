@@ -1139,10 +1139,10 @@ namespace SmartBusinessWeb.Controllers
 
 			if (filename.StartsWith("Items_"))
 			{
-				if (dmodel.ItemList.Count > 0)
-				{
-					ModelHelper.GetDataTransferData(context, accountprofileId, CheckOutType.Items, ref dmodel);
+                ModelHelper.GetDataTransferData(context, accountprofileId, CheckOutType.Items, ref dmodel);
 
+                if (dmodel.ItemList.Count > 0)
+				{
 					List<string> columns = new List<string>();
 
 					string sql = MyobHelper.InsertImportItemSql;
@@ -1190,7 +1190,8 @@ namespace SmartBusinessWeb.Controllers
 
 			if (filename.StartsWith("Customers_"))
 			{
-				if(dmodel.CustomerList.Count > 0)
+                ModelHelper.GetDataTransferData(context, accountprofileId, CheckOutType.Customers, ref dmodel);
+                if (dmodel.CustomerList.Count > 0)
 				{
 					WriteMyobCustomerToABSS(AccountProfileId, ref onlineModeItem, dmodel);
 					updateDB(onlineModeItem.checkoutIds.ToArray(), AccountProfileId, CheckOutType.Customers);
@@ -1200,7 +1201,8 @@ namespace SmartBusinessWeb.Controllers
 
 			if (filename == "Suppliers_")
 			{
-				if (dmodel.Supplierlist.Count > 0)
+                ModelHelper.GetDataTransferData(context, accountprofileId, CheckOutType.Suppliers, ref dmodel);
+                if (dmodel.Supplierlist.Count > 0)
 				{
 					WriteSupplierToABSS(accountprofileId, ref onlineModeItem, dmodel);
 					updateDB(onlineModeItem.checkoutIds.ToArray(), accountprofileId, CheckOutType.Suppliers);
