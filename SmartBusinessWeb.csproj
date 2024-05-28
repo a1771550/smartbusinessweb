@@ -4732,6 +4732,7 @@
     <Content Include="Scripts\ts\js\settings\exchangerate.js.map" />
     <Content Include="Scripts\ts\js\settings\othersettings.js.map" />
     <Content Include="Views\Test\TimePicker.cshtml" />
+    <Content Include="Views\Shared\_SortOrderNameHidden.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">

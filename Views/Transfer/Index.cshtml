@@ -89,9 +89,7 @@
 new { PageNo, SortName = Model.SortName, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
 	</div>
 
-	<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
-	<input type="hidden" id="sortname" value="@Model.SortName" />
-	<!--no "name" attr in propose!-->
+	@Html.Partial("_SortOrderNameHidden")
 }
 
 @Html.Partial("_WaitingModal")
@@ -104,7 +102,7 @@ new { PageNo, SortName = Model.SortName, SortOrder = Model.CurrentSortOrder, Key
 	<button type="button" class="btn btn-success" id="btnTransfer">@Resources.Resource.MoveItems</button>
 </div>
 
-<div id="infoblk" data-shop="@user.shopCode" data-shops="@string.Join(",",Model.Shops)" data-enablebuysellunits="@Model.EnableBuySellUnits" data-outofbalancewarningtxt="@Resources.Resource.OutOfBalanceWarning" data-jsondiciditemoptions="@Model.JsonDicIDItemOptions"></div>
+<div id="infoblk" data-shop="@user.shopCode" data-shops="@string.Join(",",Model.Shops)" data-enablebuysellunits="@Model.EnableBuySellUnits" data-outofbalancewarningtxt="@Resources.Resource.OutOfBalanceWarning" data-jsondiciditemoptions="@JsonSerializer.Serialize(Model.DicIDItemOptions)"></div>
 
 
 <script src="~/Scripts/ts/js/item/transfer/index.js?v=@rand"></script>

@@ -52,11 +52,17 @@ namespace SmartBusinessWeb.Controllers.Item
 
         [HandleError]
         [CustomAuthorize("stock", "boss", "admin", "superadmin")]
-        public ActionResult Stock()
+        public ActionResult Stock(int PageNo = 1, string SortName = "code", string SortOrder = "asc", string Keyword = null)
         {
-            ViewBag.ParentPage = "item";
-            ViewBag.PageName = "stock";
-            StockModel model = new StockModel();
+            ViewBag.ParentPage = "item";           
+            StockEditModel model = new()
+            {
+                PageNo = PageNo,
+                SortName = SortName,
+                SortOrder = (SortOrder == "desc") ? "asc" : "desc",
+                Keyword = Keyword,
+            };
+            model.GetList();
             return View(model);
         }
 

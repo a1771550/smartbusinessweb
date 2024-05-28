@@ -100,7 +100,7 @@ new { PageNo, SortName = Model.SortName, SortOrder = Model.CurrentSortOrder, Key
 
 	<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
 	<input type="hidden" id="sortname" value="@Model.SortName" />
-	<!--no "name" attr in propose!-->
+	<!--no "name" attr on purpose!-->
 }
 
 @Html.Partial("_WaitingModal")

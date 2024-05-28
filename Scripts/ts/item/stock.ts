@@ -1,22 +1,5 @@
 ﻿$infoblk = $("#infoblk");
-enablebuysellunits = $infoblk.data("enablebuysellunits") == "True";
-//var barcode = document.querySelector("#txtKeyword");
 
-//$('#txtKeyword').on({
-//    keypress: function (e) {
-//        if (e.key !== "Enter") {
-//            barcode!.value += e.key;
-//        }
-//        e.preventDefault();
-//    },
-//    keyup: function () {
-//        var $field = $(this);
-//        setTimeout(function () {
-//            keyword = $field.val();
-//            GetStocks(1);
-//        }, 500);
-//    }
-//});
 
 $(document).on("change", "#drpLocation", function () {
     stocklocation = <string>$(this).val();
@@ -29,12 +12,7 @@ $(function () {
     gTblId = "tblStock";
     gFrmId = "frmStock";
     shops = (<string>$infoblk.data("shops")).split(",");
-    //console.log('sortorder:' + $('#sortorder').val() + ';sortcol:' + $('#sortcol').val());
-    $target = $(".colheader").eq(parseInt(<string>$("#sortcol").val()));
-    let sortcls =
-        $("#sortorder").val() === "asc" ? "fa fa-sort-up" : "fa fa-sort-down";
-    $target.addClass(sortcls);
-
+    enablebuysellunits = $infoblk.data("enablebuysellunits") == "True";
     initModals();
     triggerMenu(2, 1);
     keyword = "";
@@ -43,7 +21,9 @@ $(function () {
 
     DicIDItemOptions = $infoblk.data("jsondiciditemoptions");
     //console.log("DicIDItemOptions", DicIDItemOptions);
-    GetStocks(1);
+    //GetStocks(1);
 
+    sortByName = true;
+    ConfigSimpleSortingHeaders();
     /*$("#txtKeyword").trigger("focus");*/
 });

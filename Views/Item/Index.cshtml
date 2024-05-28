@@ -35,7 +35,7 @@
 		</thead>
 
 		@foreach (var item in Model.ItemPagingList)
-		{			
+		{
 			var abssdisplay = (bool)item.itmCheckout ? Resources.Resource.Yes : Resources.Resource.No;
 			var disabled = (bool)item.itmCheckout ? "disabled" : "";
 			var trcls = (bool)item.itmCheckout ? "" : "nonabss";
@@ -64,7 +64,7 @@
 new { PageNo, SortName = Model.SortName, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
 	</div>
 
-	@Html.Partial("_SortOrderColHidden")
+	@Html.Partial("_SortOrderNameHidden")
 }
 @Html.AntiForgeryToken()
 

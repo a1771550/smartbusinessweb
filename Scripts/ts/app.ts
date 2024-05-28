@@ -2511,7 +2511,7 @@ function confirmPay() {
 			_totalamt = itotalremainamt;
 			break;
 		case SalesType.refund:
-			RefundList.forEach((x) => (_totalamt += x.amt));		
+			RefundList.forEach((x) => (_totalamt += x.amt));
 			if (isEpay) submitRefund();
 			break;
 		default:
@@ -5963,12 +5963,10 @@ function initItem(): IItem {
 		ExpenseAccountID: $("#ExpenseAccountID").length
 			? Number($("#ExpenseAccountID").data("id"))
 			: 0,
-		AccountProfileId: 0,
+
 		itmIsBought: $("#buy").length ? $("#buy").is(":checked") : false,
 		itmIsSold: $("#sell").length ? $("#sell").is(":checked") : false,
 		SellingPriceDisplay: "",
-		CreateTimeDisplay: "",
-		ModifyTimeDisplay: "",
 		DicItemAccounts: {},
 		LocQtyList: [],
 		SelectedLocation: "",
@@ -6131,12 +6129,11 @@ interface IItem extends ISimpleItem {
 	IncomeAccountID: number;
 	InventoryAccountID: number;
 	ExpenseAccountID: number;
-	AccountProfileId: number;
+
 	itmIsBought: boolean;
 	itmIsSold: boolean;
 	SellingPriceDisplay: string;
-	CreateTimeDisplay: string;
-	ModifyTimeDisplay: string;
+
 	DicItemAccounts: typeof dicItemAccount;
 	LocQtyList: Array<ILocQty>;
 	SelectedLocation: string;
@@ -9731,7 +9728,7 @@ $(document).on("dblclick", ".serialno.pointer", function () {
 			noButton: canceltxt,
 			callback: function (value) {
 				if (value) {
-					$tr					
+					$tr
 						.find(".itemcode")
 						.trigger("focus");
 				}
@@ -9833,7 +9830,7 @@ $(document).on("dblclick", ".serialno.pointer", function () {
 						});
 
 						if (SelectedPurchaseItem!.piStatus !== "order") {
-							$target = $tr							
+							$target = $tr
 								.find(".received");
 							SelectedPurchaseItem!.piReceivedQty = <number>$target.val();
 							if (SelectedPurchaseItem!.piReceivedQty == 0) {
@@ -10664,7 +10661,7 @@ function removeExpiryDateMark() {
 			.prop("readonly", false)
 			.val("");
 	} else {
-		$tr			
+		$tr
 			.find(".validthru")
 			.addClass("validthru datepicker")
 			.prop("readonly", false)
@@ -11233,7 +11230,7 @@ function _updaterow($target: JQuery, _amtplustax: number) {
 		//console.log("WholeSalesLns#_updaterow:", WholeSalesLns);
 		updateWholesales();
 	}
-	
+
 }
 
 let SelectedSupplier: ISupplier;
@@ -11588,8 +11585,7 @@ function OnGetStocksOK(response) {
 					}
 				});
 				let diclocqty = item.DicItemLocQty[item.itmCode];
-				let dicabssqty = item.DicItemAbssQty[item.itmCode];
-				//let splocqty =
+				let dicabssqty = item.DicItemAbssQty[item.itmCode];				
 				let locqty: number = diclocqty[e] ?? 0;
 				let abssqty: number = dicabssqty[e] ?? 0;
 				let locqtydisplay: string = "";
@@ -11611,11 +11607,6 @@ function OnGetStocksOK(response) {
 					locqtydisplay = `<span>${locqty}</span>`;
 				}
 
-				//if (itemcode == "ABSSPP23-1U") {
-				//    console.log("(itemoption?.ChkBatch || itemoption?.ChkSN || itemoption?.WillExpire):", (itemoption?.ChkBatch || itemoption?.ChkSN || itemoption?.WillExpire));
-				//    console.log("(itemcode in DicIvInfo):", (itemcode in DicIvInfo));
-				//}
-
 				let readonly =
 					itemoption?.ChkBatch ||
 						itemoption?.ChkSN ||
@@ -11623,17 +11614,7 @@ function OnGetStocksOK(response) {
 						(itemcode in DicIvInfo && DicIvInfo[itemcode].length > 0)
 						? "readonly"
 						: "";
-
-				//if ((itemoption?.ChkBatch || itemoption?.ChkSN || itemoption?.WillExpire)) readonly = "readonly";
-				//else if ((itemcode in DicIvInfo && DicIvInfo[itemcode].length>0)) readonly = "readonly";
-				//else readonly = "";
-				//else readonly = "readonly";
-				//if (itemcode == "ABSSP23.9-1U") console.log("readonly:", readonly);
-
-				//readonly =
-
-				//        ? ""
-				//        : (!(itemcode in DicIvInfo))?"": "readonly";
+				
 				let inputcls =
 					!itemoption?.ChkBatch && !itemoption?.ChkSN && !itemoption?.WillExpire
 						? "locqty"
@@ -12774,7 +12755,7 @@ function fillSnRow(idx: number, snseqvt: ISnBatSeqVt | null): string {
 	let vt: string =
 		snseqvt === null ? "" : ((<ISnBatSeqVt>snseqvt).vt as string);
 
-	html += `<td>${idx+1}</td><td><input type="text" class="form-control text-center posn" value="${sn}" /></td>`;
+	html += `<td>${idx + 1}</td><td><input type="text" class="form-control text-center posn" value="${sn}" /></td>`;
 
 	if (itemOptions && itemOptions.WillExpire) {
 		html += `<td><input type="datetime" class="form-control text-center datepicker posnvt small" value="${vt}" title="${vt}" /></td>`;
@@ -13168,20 +13149,20 @@ function fillBatchRow(index: number | null, batch: IBatch | null): string {
 	html += `<tr data-idx="${idx}" data-batseq="${batseq}">`;
 	html += `<td>${idx + 1
 		}</td><td class="text-center"><input type="text" class="form-control pbatch" value="${batcode}" /></td>`;
-	
+
 	if (
 		(itemOptions.ChkSN && itemOptions.WillExpire) ||
 		(itemOptions.ChkBatch && !itemOptions.WillExpire)
-	) {	
+	) {
 	} else {
-		
+
 		html += `<td class="text-center"><input type="datetime" class="form-control datepicker pobavt small" value="${vt}" /></td>`;
 	}
 
 	if (itemOptions.ChkBatch && !itemOptions.ChkSN)
 		html += `<td class="text-right"><input type="number" class="form-control batqty" value="${batqty}" /></td>`;
 
-	if (itemOptions.ChkBatch && itemOptions.ChkSN) {	
+	if (itemOptions.ChkBatch && itemOptions.ChkSN) {
 	} else {
 		html += `<td><button type="button" class="btn btn-danger batminus"><i class="fa fa-minus"></i></button></td>`;
 	}
@@ -13669,7 +13650,7 @@ function confirmVtQty() {
 	if (!itemOptions) return false;
 
 	$("#tblVt tbody tr").each(function (i, e) {
-		$(e)			
+		$(e)
 			.find(".vtdelqty")
 			.each(function (k, v) {
 				let newvtqty = Number($(v).val());
@@ -13716,7 +13697,7 @@ function confirmVtQty() {
 			});
 	});
 
-	
+
 	//console.log("$tr.table:", $tr.parent("tbody").parent("table").attr("id"));
 	//console.log("$tr.index:", $tr.index());
 	let $qty = $tr.find(".qty");
@@ -13743,7 +13724,7 @@ function confirmVtQty() {
 					$(".vtdelqty").val(0).addClass("focus");
 
 					$("#tblVt tbody tr").each(function (i, e) {
-						$(e)						
+						$(e)
 							.find(".vtdelqty")
 							.each(function (k, v) {
 								let dlCode = $(v).attr("id") as string;
@@ -13791,7 +13772,7 @@ function confirmBatchSnQty() {
 				.forEach((x) => ividlist.push(x));
 		}
 		if (!itemOptions!.ChkSN) {
-			$(e)				
+			$(e)
 				.find(".batdelqty")
 				.each(function (k, v) {
 					let newbdq = Number($(v).val());
@@ -13840,7 +13821,7 @@ function confirmBatchSnQty() {
 				});
 		} else {
 			//console.log("here");
-			$(e)				
+			$(e)
 				.find(".chkbatsnvt")
 				.each(function (k, v) {
 					$target = $(v);
@@ -13900,7 +13881,7 @@ function confirmBatchSnQty() {
 		if (x.dlHasSN && x.seq == seq) lnqty++;
 	});
 
-	let $qty = $tr		
+	let $qty = $tr
 		.find(".delqty");
 
 	// console.log("del qty:" + Number($qty.val()) + ";lnqty:" + lnqty);
@@ -14011,34 +13992,34 @@ function confirmBatchSnQty() {
 	}
 }
 
-function getItemInfo4BatSnVtIv(sn: string | null = null) {		
-	deliveryItem!.itmNameDesc = $tr		
+function getItemInfo4BatSnVtIv(sn: string | null = null) {
+	deliveryItem!.itmNameDesc = $tr
 		.find(".itemdesc")
 		.val() as string;
-	
-	deliveryItem!.dlBaseUnit = $tr		
+
+	deliveryItem!.dlBaseUnit = $tr
 		.find(".sellunit")
 		.val() as string;
-	
+
 	deliveryItem!.dlUnitPrice = Number(
 		$tr.find(".price").data("price")
 	);
 	//console.log("dlunitprice:" + deliveryItem!.dlUnitPrice);
-	
+
 	deliveryItem!.dlDiscPc = Number(
 		$tr.find(".discpc").data("discpc")
 	);
 
-	if (enableTax && !inclusivetax) {		
+	if (enableTax && !inclusivetax) {
 		deliveryItem!.dlTaxPc = Number(
 			$tr.find(".taxpc").data("taxpc")
 		);
 	}
-	
-	deliveryItem!.dlStockLoc = $tr		
+
+	deliveryItem!.dlStockLoc = $tr
 		.find(".location")
 		.val() as string;
-	
+
 	deliveryItem!.JobID = Number($tr.find(".job").val());
 }
 
@@ -17101,8 +17082,8 @@ interface ICategory {
 	catNameTC: string;
 	catDescTC: string;
 	catNameSC: string;
-	catDescSC: string;	
-	displayOrder: number;	
+	catDescSC: string;
+	displayOrder: number;
 	Removable: boolean;
 }
 let $salecomment = $("#cusSaleComment");
@@ -17462,6 +17443,12 @@ function initItemPromotion(): IItemPromotion {
 		DescDisplay: "",
 		PriceDisplay: "",
 		DiscPcDisplay: "",
+		proDesc: "",
+		proDescSC: "",
+		proDescTC: "",
+		proName: "",
+		proNameSC: "",
+		proNameTC: "",
 	};
 }
 
@@ -17480,6 +17467,12 @@ interface IItemPromotion {
 	DescDisplay: string;
 	PriceDisplay: string;
 	DiscPcDisplay: string;
+	proName: string;
+	proDesc: string;
+	proNameSC: string;
+	proDescSC: string;
+	proNameTC: string;
+	proDescTC: string;
 }
 function selectCus() {
 	selectcus();
@@ -20423,12 +20416,12 @@ $(document).on("dblclick", ".posn.pointer", function () {
 				Purchase.pstStatus === "partialreceival"
 			);
 			if (Purchase.pstStatus == "opened" || Purchase.pstStatus == "partialreceival") $("#tblPserial thead tr th").last().hide();
-		}			
+		}
 
 		setValidThruDatePicker();
 	}
 
-	
+
 });
 
 $(document).on("change", ".validthru", function () {
@@ -20902,7 +20895,7 @@ $(document).on("dblclick", ".batch", function () {
 	selectedItemCode = (
 		$tr.find(".itemcode").val() as string
 	).trim();
-	
+
 	const hasFocusCls = $(this).hasClass("focus");
 	itemOptions = DicItemOptions[selectedItemCode];
 	//console.log("itemOptions:", itemOptions);
@@ -22500,7 +22493,7 @@ function ConfigSimpleSortingHeaders() {
 		$target = $(".colheader").eq(Number($sortcol.val()));
 		//console.log('sortorder:' + $sortorder.val() + ';sortcol:' + $sortcol.val());
 	}
-
+	console.log("sortorder:", $sortorder.val());
 	let sortcls = $sortorder.val() === "desc" ? "fa fa-sort-up" : "fa fa-sort-down";
 	$target.addClass(sortcls);
 
@@ -22679,12 +22672,12 @@ function initDatePickers(startDay = StartDayEnum.Today, format = "") {
 	let mindateoptions = Object.assign({}, commonoptions);
 	let maxdateoptions = Object.assign({}, commonoptions);
 
-	if (getParameterByName("strfrmdate") == null) {		
+	if (getParameterByName("strfrmdate") == null) {
 		if (startDay == StartDayEnum.CurrentMonth) // First Date Of the Month
 			startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), currentTime.getMonth(), 1) : convertStringToDate($("#DateFromTxt").val() as string);
 		if (startDay == StartDayEnum.LastWeek || startDay == StartDayEnum.LastWeekToday) startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate() - 7) : convertStringToDate($("#DateFromTxt").val() as string);
 		if (startDay == StartDayEnum.Today) startDateFrom = new Date();
-		if (startDay == StartDayEnum.LastMonth || startDay ==  StartDayEnum.LastMonthToday) startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), currentTime.getMonth() - 1, 1) : convertStringToDate($("#DateFromTxt").val() as string);
+		if (startDay == StartDayEnum.LastMonth || startDay == StartDayEnum.LastMonthToday) startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), currentTime.getMonth() - 1, 1) : convertStringToDate($("#DateFromTxt").val() as string);
 		if (startDay == StartDayEnum.Last2Month) startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), currentTime.getMonth() - 2, 1) : convertStringToDate($("#DateFromTxt").val() as string);
 		if (startDay == StartDayEnum.ThisYear) startDateFrom = $("#DateFromTxt").val() == "" ? new Date(currentTime.getFullYear(), 0, 1) : convertStringToDate($("#DateFromTxt").val() as string);
 		if (startDay == StartDayEnum.Beginning) convertStringToDate($("#DateFromTxt").val() as string);
@@ -22707,7 +22700,7 @@ function initDatePickers(startDay = StartDayEnum.Today, format = "") {
 		if (startDay == StartDayEnum.Today) {
 			startDateTo = tomorrow;
 		}
-		if (startDay == StartDayEnum.LastMonth || startDay ==  StartDayEnum.Last2Month) {
+		if (startDay == StartDayEnum.LastMonth || startDay == StartDayEnum.Last2Month) {
 			startDateTo = $("#DateToTxt").val() == '' ? tomorrow : convertStringToDate($("#DateToTxt").val() as string);
 		}
 		if (startDay == StartDayEnum.LastMonthToday) {
@@ -22734,7 +22727,7 @@ function financial(x) {
 	return Number(Number.parseFloat(x).toFixed(2));
 }
 
-function getFixedDigitNumber(Num: string|number, digit: number = 2) { return Number(Number(Num).toFixed(digit)); }
+function getFixedDigitNumber(Num: string | number, digit: number = 2) { return Number(Number(Num).toFixed(digit)); }
 
 $(document).on("change", "#drpCurrency", function () {
 	exRate = getFixedDigitNumber($(this).val());

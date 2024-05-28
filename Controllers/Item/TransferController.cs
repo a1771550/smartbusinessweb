@@ -127,7 +127,7 @@ namespace SmartBusinessWeb.Controllers.Item
 				SortOrder = (SortOrder == "desc") ? "asc" : "desc",
 				Keyword = Keyword,
 			};
-			model.GetItemList(PageNo, (int)ComInfo.PageLength, SortName, SortOrder, Keyword);
+			model.GetItemList(PageNo, SortName, SortOrder, Keyword);
 			return View(model);
         }
 

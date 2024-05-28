@@ -65,7 +65,7 @@ new { PageNo, SortCol = Model.SortCol, SortOrder = Model.CurrentSortOrder, Keywo
 
 	<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
 	<input type="hidden" id="sortcol" value="@Model.SortCol" />
- <!--no "name" attr in propose!-->
+ <!--no "name" attr on purpose!-->
 
 }
 @Html.AntiForgeryToken()
