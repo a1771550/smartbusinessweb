@@ -1,20 +1,33 @@
 ﻿$infoblk = $("#infoblk");
 enablebuysellunits = $infoblk.data("enablebuysellunits") == "True";
+//var barcode = document.querySelector("#txtKeyword");
 
+//$('#txtKeyword').on({
+//    keypress: function (e) {
+//        if (e.key !== "Enter") {
+//            barcode!.value += e.key;
+//        }
+//        e.preventDefault();
+//    },
+//    keyup: function () {
+//        var $field = $(this);
+//        setTimeout(function () {
+//            keyword = $field.val();
+//            GetStocks(1);
+//        }, 500);
+//    }
+//});
 
 $(document).on("change", "#drpLocation", function () {
     stocklocation = <string>$(this).val();
     GetStocks(1);
 });
 
-$(document).on("click", "#btnSearch", function () {
-    $("#txtStock").trigger("change");
-});
-
 $(function () {
     setFullPage();
     forstock = true;
-    gTblId = gFrmId = "Stock";
+    gTblId = "tblStock";
+    gFrmId = "frmStock";
     shops = (<string>$infoblk.data("shops")).split(",");
     //console.log('sortorder:' + $('#sortorder').val() + ';sortcol:' + $('#sortcol').val());
     $target = $(".colheader").eq(parseInt(<string>$("#sortcol").val()));
@@ -32,5 +45,5 @@ $(function () {
     //console.log("DicIDItemOptions", DicIDItemOptions);
     GetStocks(1);
 
-    /*$("#txtStock").trigger("focus");*/
+    /*$("#txtKeyword").trigger("focus");*/
 });

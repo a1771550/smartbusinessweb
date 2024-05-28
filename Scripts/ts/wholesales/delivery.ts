@@ -69,7 +69,7 @@ $(document).ready(function () {
 	let bgcls: string = "deliverybg";
 	$("body").addClass(bgcls);
 
-	Wholesales = fillInWholeSales();
+	WholeSales = fillInWholeSales();
 
 	wholesaleslnswosn = $infoblk.data("jsonwholesaleslnswosn");
 	console.log("wholesaleslnswosn:", wholesaleslnswosn);
@@ -143,9 +143,9 @@ $(document).ready(function () {
 	$target = $("#tblWSI tbody");
 	$target.empty().html(html);
 
-	if (Wholesales.DeliveryDateDisplay != null) {
+	if (WholeSales.DeliveryDateDisplay != null) {
 		let pdate: Date = convertCsharpDateStringToJsDate(
-			Wholesales.DeliveryDateDisplay
+			WholeSales.DeliveryDateDisplay
 		);
 		initDatePicker("promisedDate", pdate);
 	} else {
@@ -153,12 +153,12 @@ $(document).ready(function () {
 	}
 	initDatePicker(
 		"wholesalesDate",
-		convertCsharpDateStringToJsDate(Wholesales.WsDateDisplay)
+		convertCsharpDateStringToJsDate(WholeSales.WsDateDisplay)
 	);
 
 	WholeSalesLns = wholesaleslns;
-	Wholesales.JsWholesalesDate = <string>$("#wholesalesDate").val();
-	Wholesales.JsDeliveryDate = <string>$("#deliveryDate").val();
+	WholeSales.JsWholesalesDate = <string>$("#wholesalesDate").val();
+	WholeSales.JsDeliveryDate = <string>$("#deliveryDate").val();
 
 	$("input").not("[type=checkbox]").not(".qty").prop("readonly", true);
 	$("select").prop("disabled", true);

@@ -632,10 +632,7 @@ namespace SmartBusinessWeb.Controllers
             using var context = new PPWDbContext(Session["DBName"].ToString());
             string finalsalescode = model.ProcessSimpleSales(context, Sales, SimpleSalesLns, Payments, ref totalpayamt);
             string msg = Resources.Resource.OrderSavedSuccessfully;
-            if (string.IsNullOrEmpty(Sales.authcode))
-            {
-                return Json(new { msg = "", finalsalescode });
-            }
+            if (string.IsNullOrEmpty(Sales.authcode)) return Json(new { msg = "", finalsalescode });            
             else
             {
                 #region ePayment
@@ -683,7 +680,6 @@ namespace SmartBusinessWeb.Controllers
             }
         }
 
-
         [HttpPost]
         public ActionResult ProcessAdvSales(SalesModel Sales, List<SalesLnView> SalesLnList, List<PayLnView> Payments, List<DeliveryItemModel> DeliveryItems)
         {
@@ -693,10 +689,7 @@ namespace SmartBusinessWeb.Controllers
             using var context = new PPWDbContext(Session["DBName"].ToString());
             string finalsalescode = model.ProcessSales(context, Sales, SalesLnList, Payments, ref totalpayamt, DeliveryItems);
             string msg = Resources.Resource.OrderSavedSuccessfully;
-            if (string.IsNullOrEmpty(Sales.authcode))
-            {
-                return Json(new { msg = "", finalsalescode });
-            }
+            if (string.IsNullOrEmpty(Sales.authcode)) return Json(new { msg = "", finalsalescode });            
             else
             {
                 #region ePayment
@@ -743,9 +736,6 @@ namespace SmartBusinessWeb.Controllers
                 #endregion
             }
         }
-
-
-    
 
         [HttpPost]
         public JsonResult ReversePayment(string salescode)

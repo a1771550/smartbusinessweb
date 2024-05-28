@@ -17,12 +17,14 @@
 
 	<div class="form-inline my-4">
 		<div class="form-group">
-			<input type="text" class="form-control" id="txtStock" placeholder="@Resources.Resource.EnterItemCodeName" />
+			<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.EnterItemCodeName" />
 			<button id="btnSearch" type="button" class="btn btn-primary ml-4">@Resources.Resource.Search</button>
 			<button id="btnReload" type="button" class="btn btn-warning ml-4">@Resources.Resource.Reload</button>
 			<a href="/Item/Edit?itemId=0&referrer=stock" role="button" class="btn btn-info ml-4">@string.Format(Resources.Resource.NewFormat, Resources.Resource.Item)</a>
 		</div>
 	</div>
+
+	@Html.Partial("_SortOrderColHidden")
 
 	<div class="d-flex small">
 		@Html.Partial("_ItemOptionsBlk", null, new ViewDataDictionary { { "showSaveBtn", true } })
@@ -63,26 +65,5 @@
 <div id="infoblk" data-shop="@user.shopCode" data-shops="@string.Join(",",Model.Shops)" data-enablebuysellunits="@Model.EnableBuySellUnits" data-idlist="@string.Join(",",Model.ItemIdList)" data-jsondiciditemoptions="@Model.JsonDicIDItemOptions" data-referrer="stock"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
-<script>
-
-	var barcode = document.querySelector("#txtStock");
-	$('#txtStock').on({
-		keypress: function (e) {
-			if (e.key !== "Enter") {
-				barcode.value += e.key;
-			}
-			e.preventDefault();
-		},
-		keyup: function () {
-			var $field = $(this);
-			setTimeout(function () {
-				keyword = $field.val();
-				GetStocks(1);
-			}, 500);
-
-		}
-
-	});
-</script>
 <script src="~/Scripts/ts/js/item/stock.js?v=@rand"></script>
 

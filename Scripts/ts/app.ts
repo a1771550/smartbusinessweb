@@ -1704,7 +1704,7 @@ function GetCustomers4Sales(pageIndex, mode = "") {
 	}
 
 	$.ajax({
-		url: "/Api/GetCustomersAjax4Sales",
+		url: "/Api/GetCustomers4Retail",
 		type: "POST",
 		data: data,
 		contentType: "application/json; charset=utf-8",
@@ -2130,7 +2130,8 @@ function getTotalPayments(): number {
 		if ($chk.is(":checked")) {
 			let $pay = $(e).find(".paymenttype");
 			if ($chk.is(":checked")) {
-				payments += (Number($pay.val()) / exRate);
+				//payments += (Number($pay.val()) / exRate);
+				payments += Number($pay.val());
 			}
 		}
 	});
@@ -2483,7 +2484,7 @@ $(document).on("change", ".paymenttype", function () {
 		if (forsimplesales) populateOrderSummary();
 
 		$(this).val(formatnumber(payamt));
-		payamt = payamt / exRate;
+		/*payamt = payamt / exRate;*/
 		//console.log("amt:" + amt);
 		if (payamt >= 0) {
 			couponamt = payamt;
@@ -3688,7 +3689,7 @@ function initModals() {
 						}
 						if (stockTransferEditMode) {
 
-							$target = $(`#tbl${gTblId} tbody tr`)
+							$target = $(`#${gTblId} tbody tr`)
 								.eq(currentY)
 								.find(".remark");
 							$target.data("remark", remark);
@@ -8603,7 +8604,7 @@ function handleQtyChange(this: any) {
 	}
 
 	if (forwholesales) {
-		if (Wholesales.wsStatus == "invoice")
+		if (WholeSales.wsStatus == "invoice")
 			$tr.find("td").last().find(".received").attr("max", _qty).val(_qty);
 
 		updateRow(_price, _discpc);
@@ -8612,7 +8613,7 @@ function handleQtyChange(this: any) {
 		if (WholeSalesLns.length > 0) {
 			$.each(WholeSalesLns, function (i, e) {
 				if (e.wslSeq == seq) {
-					if (Wholesales.wsStatus == "invoice") {
+					if (WholeSales.wsStatus == "invoice") {
 						e.wslDelQty = _qty;
 					} else {
 						e.wslQty = _qty;
@@ -9352,7 +9353,7 @@ function populateSalesRow(proId: number | null = 0, triggerChange: boolean = tru
 			selectedWholesalesLn!.wslSellingPrice = price;
 		}
 
-		price = price / exRate;
+		/*price = price / exRate;*/
 		let $price = $target
 			.find(".price");
 		$price.off("change");
@@ -9478,7 +9479,7 @@ function addRow() {
 	let batcls = "batch";
 	let readonly = "";
 	if (forsales ||
-		(forwholesales && editmode && Wholesales.wsStatus == "invoice") ||
+		(forwholesales && editmode && WholeSales.wsStatus == "invoice") ||
 		fordelivery ||
 		(forpurchase &&
 			editmode &&
@@ -9509,7 +9510,7 @@ function addRow() {
 			Purchase.pstStatus.toLowerCase() !== "requesting" &&
 			Purchase.pstStatus.toLowerCase() !== "created" &&
 			Purchase.pstStatus.toLowerCase() !== "rejected") ||
-		(forwholesales && editmode && Wholesales.wsStatus == "invoice") ||
+		(forwholesales && editmode && WholeSales.wsStatus == "invoice") ||
 		fordelivery
 	) {
 		sncls += " pointer";
@@ -9545,10 +9546,10 @@ function addRow() {
 
 	if (forsales ||
 		(forwholesales &&
-			Wholesales.wsStatus != "order" &&
-			Wholesales.wsStatus.toLowerCase() !== "requesting" &&
-			Wholesales.wsStatus.toLowerCase() !== "created" &&
-			Wholesales.wsStatus.toLowerCase() !== "rejected")
+			WholeSales.wsStatus != "order" &&
+			WholeSales.wsStatus.toLowerCase() !== "requesting" &&
+			WholeSales.wsStatus.toLowerCase() !== "created" &&
+			WholeSales.wsStatus.toLowerCase() !== "rejected")
 	) {
 		vtcls += "pointer";
 		showvt = true;
@@ -9742,8 +9743,8 @@ $(document).on("dblclick", ".serialno.pointer", function () {
 				itemOptions = DicItemOptions[selectedItemCode];
 				if (forwholesales) {
 					if (
-						Wholesales.wsStatus == "deliver" ||
-						Wholesales.wsStatus == "partialdeliver"
+						WholeSales.wsStatus == "deliver" ||
+						WholeSales.wsStatus == "partialdeliver"
 					) {
 						DeliveryItems = DicSeqDeliveryItems[seq];
 					}
@@ -9795,12 +9796,12 @@ $(document).on("dblclick", ".serialno.pointer", function () {
 				}
 
 				if (forwholesales) {
-					if (Wholesales.wsStatus == "invoice") {
+					if (WholeSales.wsStatus == "invoice") {
 						snvtlist = DicItemSnVtList[selectedItemCode].slice(0);
 					}
 					if (
-						Wholesales.wsStatus.toLowerCase() === "deliver" ||
-						Wholesales.wsStatus.toLowerCase() === "partialdeliver"
+						WholeSales.wsStatus.toLowerCase() === "deliver" ||
+						WholeSales.wsStatus.toLowerCase() === "partialdeliver"
 					) {
 						DeliveryItems.forEach((x) => {
 							if (x.seq == seq) {
@@ -9981,7 +9982,7 @@ function openSerialModal(hasFocusCls: boolean) {
 		}
 	}
 	if (
-		(forwholesales && Wholesales.wsStatus != "order") ||
+		(forwholesales && WholeSales.wsStatus != "order") ||
 		forsales ||
 		forpreorder
 	) {
@@ -10769,7 +10770,7 @@ function resetRow() {
 		forsales ||
 		forpreorder ||
 		(forpurchase && Purchase.pstStatus !== "order") ||
-		(forwholesales && Wholesales.wsStatus == "invoice")
+		(forwholesales && WholeSales.wsStatus == "invoice")
 	) {
 		idx = 5;
 		$target
@@ -10811,7 +10812,7 @@ function resetRow() {
 	}
 	if (
 		(forpurchase && Purchase.pstStatus == "order") ||
-		(forwholesales && Wholesales.wsStatus == "order")
+		(forwholesales && WholeSales.wsStatus == "order")
 	) {
 		idx = 5;
 	}
@@ -11076,7 +11077,7 @@ function updateRow(_price: number = 0, _discount: number = 0) {
 	let qty: number = 0;
 	qty = Number($target.find(".qty").val());
 
-	if (forwholesales && Wholesales && Wholesales.wsStatus == "invoice") {
+	if (forwholesales && WholeSales && WholeSales.wsStatus == "invoice") {
 		qty = Number($target.find(".delqty").val());
 	}
 
@@ -11403,7 +11404,7 @@ interface IStockInItem {
 	JsValidThru: string;
 }
 let Purchase: IPurchase;
-let Wholesales: IWholeSales;
+let WholeSales: IWholeSales;
 let DicExList: { [Key: string]: number } = {};
 let exRate: number = 1;
 let StockIn: IStockIn;
@@ -11668,7 +11669,7 @@ function OnGetStocksOK(response) {
 			html += "</tr>";
 		});
 
-		$(`#tbl${gTblId} tbody`).empty().html(html);
+		$(`#${gTblId} tbody`).empty().html(html);
 
 
 		let $pager = $(".Pager");
@@ -11738,7 +11739,7 @@ function removeItem(itemId: number) {
 							noButton: notxt,
 							callback: function (value) {
 								if (value) {
-									$("#txtStock").trigger("focus");
+									$("#txtKeyword").trigger("focus");
 								}
 							},
 						});
@@ -11746,7 +11747,7 @@ function removeItem(itemId: number) {
 					dataType: "json",
 				});
 			} else {
-				$("#txtStock").trigger("focus");
+				$("#txtKeyword").trigger("focus");
 			}
 		},
 	});
@@ -11912,7 +11913,7 @@ function fillInWholeSales(): IWholeSales {
 		wsRemark: $("#wsRemark").val() as string,
 		wsDate: new Date(),
 		WsDateDisplay: <string>$("#WsDateDisplay").val(),
-		JsWholesalesDate: $("#deliveryDate").val() as string,
+		JsWholesalesDate: $("#wholesalesDate").val() as string,
 		wsStatus: ($("#WholeSales_wsStatus").val() as string).toLowerCase(),
 		wsCurrency: $("#wsCurrency").val() as string,
 		wsExRate: getExRate($("#wsCurrency").val() as string),
@@ -12560,13 +12561,13 @@ function initDeliveryItem(
 			Id: 0,
 			CompanyId: 0,
 			AccountProfileId: 0,
-			dlCode: forwholesales ? Wholesales.wsCode : Sales.rtsCode,
+			dlCode: forwholesales ? WholeSales.wsCode : Sales.rtsCode,
 			seq: seq,
 			batseq: 0,
 			snseq: 0,
 			vtseq: 0,
 			ivseq: 0,
-			dlStatus: forwholesales ? Wholesales.wsStatus : Sales.rtsStatus,
+			dlStatus: forwholesales ? WholeSales.wsStatus : Sales.rtsStatus,
 			itmCode: $td.eq(1).find(".itemcode").val() as string,
 			itmNameDesc: $td.eq(2).find(".itemdesc").val() as string,
 			snlist: [],
@@ -15861,7 +15862,8 @@ function getTotalAmt4Order(): number {
 		if ($(e).find(".itemcode").val() !== "")
 			totalamt += Number($(e).find(".amount").val());
 	});
-	return totalamt / exRate;
+	//return totalamt / exRate;
+	return totalamt;
 }
 
 //for item edit:
@@ -16811,7 +16813,7 @@ const fillInCurrencyModal = (currcode: string = "") => {
 				$("#pstExRate").val(exRate);
 			}
 			if (forwholesales) {
-				if (Wholesales) Wholesales.wsExRate = exRate;
+				if (WholeSales) WholeSales.wsExRate = exRate;
 				$("#wsExRate").val(exRate);
 			}
 			if (forsales || forpreorder || fordeposit || forrefund) {
@@ -17007,8 +17009,8 @@ function handleExRateChange(cardcode: string, triggerCardChange: boolean) {
 		}
 	}
 	if (forwholesales) {
-		Wholesales.wsCurrency = cardcode;
-		exRate = Wholesales.wsExRate = DicCurrencyExRate[Wholesales.wsCurrency];
+		WholeSales.wsCurrency = cardcode;
+		exRate = WholeSales.wsExRate = DicCurrencyExRate[WholeSales.wsCurrency];
 		$("#wsExRate").val(exRate);
 		//console.log("exrate#0:" + exRate);
 		currentY = 0;
@@ -17026,7 +17028,7 @@ function handleExRateChange(cardcode: string, triggerCardChange: boolean) {
 			$("#drpCustomer > option").each(function (i, e) {
 				const _cardcode = $(e).val() as string;
 				var currkey = GetForeignCurrencyFrmCode(_cardcode);
-				if (currkey && currkey == Wholesales.wsCurrency) {
+				if (currkey && currkey == WholeSales.wsCurrency) {
 					cardcode = _cardcode;
 					if (!(currkey in DicFilteredCards)) {
 						cardcount++;
@@ -17954,7 +17956,7 @@ function fillInAddressList(): JQuery<HTMLElement> {
 					$("<option>", {
 						value: item.Id,
 						text: address,
-						selected: Wholesales && Wholesales.wsDeliveryAddressId == item.Id,
+						selected: WholeSales && WholeSales.wsDeliveryAddressId == item.Id,
 					})
 				);
 			}
@@ -18840,18 +18842,18 @@ function handleRecurOrderList(this: any) {
 		success: function (data) {
 			let ws = data.sales as IWholeSales;
 			//console.log("recurorder data:", data);
-			Wholesales = fillInWholeSales();
-			Wholesales.wsCode = ws.wsCode;
-			Wholesales.wsCusID = ws.wsCusID;
-			Wholesales.wsDvc = ws.wsDvc;
-			Wholesales.wsSalesLoc = ws.wsSalesLoc;
-			Wholesales.wsRefCode = ws.wsRefCode;
-			Wholesales.wsAllLoc = ws.wsAllLoc;
+			WholeSales = fillInWholeSales();
+			WholeSales.wsCode = ws.wsCode;
+			WholeSales.wsCusID = ws.wsCusID;
+			WholeSales.wsDvc = ws.wsDvc;
+			WholeSales.wsSalesLoc = ws.wsSalesLoc;
+			WholeSales.wsRefCode = ws.wsRefCode;
+			WholeSales.wsAllLoc = ws.wsAllLoc;
 
-			Wholesales.wsDeliveryAddressId = ws.wsDeliveryAddressId;
+			WholeSales.wsDeliveryAddressId = ws.wsDeliveryAddressId;
 
-			Wholesales.wsCustomerPO = ws.wsCustomerPO;
-			$("#txtCustomerPO").val(Wholesales.wsCustomerPO);
+			WholeSales.wsCustomerPO = ws.wsCustomerPO;
+			$("#txtCustomerPO").val(WholeSales.wsCustomerPO);
 			// console.log("data customer#orderid:", data.Customer);
 			selectedCus = {} as ICustomer;
 			selectedCus.cusCustomerID = ws.Customer.cusCustomerID;
@@ -20156,7 +20158,6 @@ function confirmAdvancedSearch() {
 function countUnique(iterable) {
 	return new Set(iterable).size;
 }
-
 $(document).on("change", "#drpCategories", function () {
 	const catIds: string = ($(this).val() as string[]).join();
 	let currentSelectedItemCodes: string[] = $("#drpItems").val() as string[];
@@ -20717,8 +20718,8 @@ $(document).on("dblclick", ".validthru.pointer", function () {
 
 	if (
 		(forwholesales &&
-			(Wholesales.wsStatus.toLowerCase() === "deliver" ||
-				Wholesales.wsStatus.toLowerCase() === "partialdeliver") || reviewmode)
+			(WholeSales.wsStatus.toLowerCase() === "deliver" ||
+				WholeSales.wsStatus.toLowerCase() === "partialdeliver") || reviewmode)
 	) {
 		DeliveryItems = DicSeqDeliveryItems[seq].slice(0);
 		//console.log("DeliveryItems:", DeliveryItems);
@@ -20910,8 +20911,8 @@ $(document).on("dblclick", ".batch", function () {
 
 	if (
 		(forwholesales &&
-			(Wholesales.wsStatus.toLowerCase() === "deliver" ||
-				Wholesales.wsStatus.toLowerCase() === "partialdeliver") || reviewmode)
+			(WholeSales.wsStatus.toLowerCase() === "deliver" ||
+				WholeSales.wsStatus.toLowerCase() === "partialdeliver") || reviewmode)
 	) {
 		DeliveryItems = DicSeqDeliveryItems[seq].slice(0);
 
@@ -21454,7 +21455,7 @@ function getSalesLoc() {
 	let salesloc: string = "";
 	if (forsales) reviewmode ? salesloc = SalesOrder.rtsSalesLoc : salesloc = Sales.rtsSalesLoc;
 	if (forpreorder) salesloc = PreSales.rtsSalesLoc;
-	if (forwholesales) salesloc = Wholesales.wsSalesLoc;
+	if (forwholesales) salesloc = WholeSales.wsSalesLoc;
 	return salesloc;
 }
 
@@ -21693,8 +21694,8 @@ $(document).on("dblclick", ".vari.pointer", function () {
 
 	if (
 		(forwholesales &&
-			(Wholesales.wsStatus.toLowerCase() === "deliver" ||
-				Wholesales.wsStatus.toLowerCase() === "partialdeliver")) && reviewmode || (SalesOrder && (SalesOrder.rtsStatus.toLowerCase() == SalesStatus.created.toString() || SalesOrder.rtsStatus.toLowerCase() == SalesStatus.presettled.toString()))
+			(WholeSales.wsStatus.toLowerCase() === "deliver" ||
+				WholeSales.wsStatus.toLowerCase() === "partialdeliver")) && reviewmode || (SalesOrder && (SalesOrder.rtsStatus.toLowerCase() == SalesStatus.created.toString() || SalesOrder.rtsStatus.toLowerCase() == SalesStatus.presettled.toString()))
 	) {
 		DeliveryItems = DicSeqDeliveryItems[seq].slice(0);
 		deliveryItem = DeliveryItems[0];
@@ -22466,6 +22467,7 @@ $(document).on("click", "#btnSearch", function (e) {
 		name: "SortCol",
 		value: $("#sortcol").val(),
 	});
+	console.log("gfrmId:", gFrmId);
 	if (gFrmId)
 		$(`#${gFrmId}`).append($sortcol).trigger("submit");
 });
@@ -22731,3 +22733,16 @@ function initDatePickers(startDay = StartDayEnum.Today, format = "") {
 function financial(x) {
 	return Number(Number.parseFloat(x).toFixed(2));
 }
+
+function getFixedDigitNumber(Num: string|number, digit: number = 2) { return Number(Number(Num).toFixed(digit)); }
+
+$(document).on("change", "#drpCurrency", function () {
+	exRate = getFixedDigitNumber($(this).val());
+	itotalamt = getFixedDigitNumber(Sales && (Sales.rtsFinalTotal ?? 0) / (exRate ?? 1));
+	if (forsimplesales) {
+		$(".totalamt").text(itotalamt);
+	}
+	if (forsales) {
+		$("#salesamount").text(itotalamt);
+	}
+});

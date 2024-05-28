@@ -64,9 +64,7 @@
 new { PageNo, SortName = Model.SortName, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
 	</div>
 
-	<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
-	<input type="hidden" id="sortname" value="@Model.SortName" />
- <!--no "name" attr in propose!-->
+	@Html.Partial("_SortOrderColHidden")
 }
 @Html.AntiForgeryToken()
 

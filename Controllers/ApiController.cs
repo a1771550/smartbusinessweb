@@ -3089,7 +3089,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetCustomersAjax4Sales(int pageIndex = 1, string keyword = "", string mode = "")
+        public ActionResult GetCustomers4Retail(int pageIndex = 1, string keyword = "", string mode = "")
         {
             CustomerViewModel model = new CustomerViewModel();
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
@@ -3100,7 +3100,7 @@ namespace SmartBusinessWeb.Controllers
                 int startIndex = CommonHelper.GetStartIndex(pageIndex, pagesize);
                 if (keyword == "") keyword = null;
 
-                model.Customers = (string.IsNullOrEmpty(mode) || mode == "search") ? ModelHelper.GetCustomers4Sales(context, pageIndex, pagesize, keyword, true) : ModelHelper.GetCustomerList(false, pageIndex, pagesize, keyword);
+                model.Customers = (string.IsNullOrEmpty(mode) || mode == "search") ? ModelHelper.GetCustomers4Sales(context, pageIndex, pagesize, keyword, true, true) : ModelHelper.GetCustomerList(false, pageIndex, pagesize, keyword, true);
 
                 model.RecordCount = (int)context.GetCustomerCount(apId, keyword).FirstOrDefault();
                 return Json(model);

@@ -544,10 +544,6 @@
           <absolutePath>F:\repos\PPWProject\PPWDAL\PPWDbContext1.cs</absolutePath>
         </Favorite>
         <Favorite>
-          <name>PrintModel.cs</name>
-          <absolutePath>F:\repos\PPWProject\PPWLib\Models\POS\Receipt\PrintModel.cs</absolutePath>
-        </Favorite>
-        <Favorite>
           <name>PPWDbContext.se</name>
           <path>PPWDAL\PPWDbContext.edmx\PPWDbContext.Context.tt\PPWDbContext.Context.cs\PPWDbContext</path>
           <viewKind>Solution Explorer</viewKind>
