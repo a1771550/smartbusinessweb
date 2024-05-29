@@ -18393,6 +18393,7 @@ let forattendance: boolean = false;
 let forjob: boolean = false;
 let fortraining: boolean = false;
 let forcustomer: boolean = false;
+let forduty: boolean = false;
 let forcustomergroup: boolean = false;
 let forenquirygroup: boolean = false;
 let forCreateReserve: boolean = false;

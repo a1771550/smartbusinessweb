@@ -4,7 +4,7 @@
     ViewBag.Title = Resources.Resource.ReceiptSettings;
     int rand = new Random().Next(10000, 100000);
 }
-<link rel="stylesheet" type="text/css" href="~/Content/Receipt.css?v=@rand" />
+<link rel="stylesheet" type="text/css" href="~/Content/site/Receipt.css?v=@rand" />
 
 
 @using (Html.BeginForm("Edit", "Receipt", FormMethod.Post, new { @id = "frmReceipt" }))

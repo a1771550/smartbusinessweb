@@ -470,7 +470,6 @@ $(function () {
 	gFrmId = "frmCustomer";
 	triggerMenu(1, 0);
 	initModals();
-
 	PageSize = $infoblk.data("pagesize");
 
 	var checkall = getParameterByName("CheckAll");
@@ -498,5 +497,3 @@ $(function () {
 
 	ConfigSimpleSortingHeaders();
 });
-
-

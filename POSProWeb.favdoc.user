@@ -587,12 +587,12 @@
         <Favorite>
           <name>Site.css</name>
           <path>Content\Site.css</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\Site.css</absolutePath>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\site\Site.css</absolutePath>
         </Favorite>
         <Favorite>
           <name>login.css</name>
           <path>Content\login.css</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\login.css</absolutePath>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\site\login.css</absolutePath>
         </Favorite>
         <Favorite>
           <name>style.CSS</name>

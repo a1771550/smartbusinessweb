@@ -2088,7 +2088,7 @@ btest3
 
         public string FilePath()
         {
-            string filepath = @"~/Content/printreceipt.css";
+            string filepath = @"~/Content/site/printreceipt.css";
             //return filepath;
             return Server.MapPath(filepath);
         }

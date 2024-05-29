@@ -1,0 +1,71 @@
+﻿@model DutyEditModel
+
+@using PagedList.Mvc;
+@{
+	ViewBag.Title = Resources.Resource.Duty;
+	int rand = CommonHelper.GetVersionRandomNo();	
+	bool isassignor = UserHelper.CheckIfAssignor(Model.User);
+}
+<link href="~/Content/settings/duty/index.css?v=@rand" rel="stylesheet" type="text/css" />
+
+<h2 class="clearfix">
+	@ViewBag.Title
+	<a href="/Duty/Edit" class="btn btn-warning btnsmall40 float-right" title="@Resources.Resource.Add">@Resources.Resource.Add</a>
+</h2>
+
+@Html.AntiForgeryToken()
+
+@using (Html.BeginForm("Index", "Duty", FormMethod.Get, new { @Id = "frmDuty" }))
+{
+	@Html.Partial("_SearchBlk", null, new ViewDataDictionary { { "Keyword", Model.Keyword }, { "additionalcls", "my-4" } })
+
+	if (Model.DutyList != null && Model.DutyList.Count > 0)
+	{
+		<table id="tblDuty" class="table table-bordered table-hover table-condensed">
+			<thead class="gray-header font-weight-bold">
+				<tr>
+					<th class="text-center colheader" data-col="0">@Resources.Resource.Name</th>
+					<th class="text-center colheader" data-col="1">@Resources.Resource.Employee</th>
+					<th class="text-center colheader" data-col="2">@Resources.Resource.CreateTime</th>
+					<th class="text-center action"></th>
+					
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var duty in Model.PagingDutyList)
+				{					
+					<tr>
+						<td class="text-center">@duty.DutyName</td>
+						<td class="text-center">@duty.EmployeeName</td>
+						<td class="text-center">@duty.CreateTimeDisplay</td>
+						<td class="text-center action">						
+							<a class="btn btn-warning btnsmall" role="button" href="/Duty/Edit?Id=@duty.dtId" title="@Resources.Resource.Edit"><i class="fa fa-edit"></i></a>
+							<a class="btn btn-danger btnsmall remove" role="button" href="#" data-id="@duty.dtId" title="@Resources.Resource.Remove"><i class="fa fa-trash"></i></a>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+		<div id="pagingblk" class="my-3">
+			@Html.PagedListPager(Model.PagingDutyList, PageNo => Url.Action("Index",
+	new { PageNo, SortOrder = Model.CurrentSortOrder, SortCol = Model.SortCol, Keyword = Model.Keyword, PageSize = Model.PageSize }))
+		</div>
+
+		@Html.Partial("_SortOrderColHidden")
+	}
+	else
+	{
+		@Html.Partial("_NoRecordFound")
+	}
+}
+
+
+
+@Html.Partial("_WaitingModal")
+<div id="infoblk" data-pagesize="@Model.ComInfo.PageLength"></div>
+
+<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+<script src="~/Scripts/ts/js/settings/duty/index.js?v=@rand"></script>
+
+
