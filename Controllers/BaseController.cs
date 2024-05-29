@@ -23,7 +23,7 @@ namespace SmartBusinessWeb.Controllers
         protected int AccountProfileId { get { return ComInfo.AccountProfileId; } }
         protected int apId { get { return ComInfo.AccountProfileId; } }
         protected string DbName { get { return Session["DBName"].ToString(); } }
-		protected SessUser SessUser => Session["User"] as SessUser;
+		protected new SessUser User => Session["User"] as SessUser;
 		protected bool NonABSS { get { return ComInfo.DefaultCheckoutPortal.ToLower() == "nonabss"; } }
         protected string CentralBaseUrl = UriHelper.GetAppUrl();
         protected string CentralApiUrl = ConfigurationManager.AppSettings["CentralApiUrl"];

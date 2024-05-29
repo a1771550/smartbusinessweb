@@ -785,7 +785,7 @@ namespace SmartBusinessWeb.Controllers
 							{
 								ia.Checkout = true;
 								ia.ModifyTime = DateTime.Now;
-								ia.ModifyBy = SessUser.UserCode;
+								ia.ModifyBy = User.UserCode;
 							}
 							context.SaveChanges();
 							transaction.Commit();

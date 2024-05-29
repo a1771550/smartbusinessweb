@@ -62,7 +62,7 @@ namespace SmartBusinessWeb.Controllers
                     pmtDisplayOrder = displayorder,
                     AccountProfileId = apId,
                     CreateTime = DateTime.Now,
-                    CreateBy = SessUser.UserCode
+                    CreateBy = User.UserCode
                 };
                 switch (lang)
                 {
@@ -139,7 +139,7 @@ namespace SmartBusinessWeb.Controllers
                     paymentType.pmtIsCash = model.pmtIsCash;
                     paymentType.pmtIsActive = model.pmtIsActive;
                     paymentType.pmtServiceChargePercent = model.pmtServiceChargePercent;
-                    paymentType.ModifyBy = SessUser.UserCode;
+                    paymentType.ModifyBy = User.UserCode;
                     paymentType.ModifyTime = DateTime.Now;
 
                     int lang = (int)Session["CurrentCulture"];
