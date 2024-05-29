@@ -1,5 +1,5 @@
 ﻿@model StockEditModel
-
+@using PagedList.Mvc;
 @{
 	ViewBag.Title = Resources.Resource.Stock;
 	int rand = CommonHelper.GetVersionRandomNo();
@@ -37,12 +37,12 @@
 		<thead class="gray-header">
 			<tr class="">
 				<th><input id="chkall" type="checkbox" class="form-check" /></th>
-				<th class="text-left colheader" data-col="0">@Resources.Resource.ItemCode <span class="small font-weight-bold"></span></th>
-				<th class="text-left colheader" data-col="1">@Resources.Resource.ItemName</th>
-				<th class="text-center">@Resources.Resource.Batch|@Resources.Resource.SerialNo|@Resources.Resource.ExpiryDate</th>
-				<th class="text-center">@Resources.Resource.ItemVariations</th>
+				<th class="text-left colheader itemcode" data-col="code">@Resources.Resource.ItemCode <span class="small font-weight-bold"></span></th>
+				<th class="text-left colheader itemdesc" data-col="namedesc">@Resources.Resource.Name/@Resources.Resource.Description</th>
+				<th class="text-center itemoptions">@Resources.Resource.Batch|@Resources.Resource.SerialNo|@Resources.Resource.ExpiryDate</th>
+				<th class="text-center itemvari">@Resources.Resource.ItemVariations</th>
 
-				<th class="text-right">@Resources.Resource.OnHandStock</th>
+				<th class="text-right colheader font-weight-bold onhandstock qty">@Resources.Resource.OnHandStock</th>
 				@foreach (var _shop in Model.ShopNames)
 				{
 					<th class="text-right">@_shop.Trim()</th>
@@ -52,74 +52,25 @@
 		</thead>
 		<tbody>
 			@foreach (var item in Model.PagingItemList)
-						{
-							var itemcode = item.itmCode;
-							var trcls = Model.EnableBuySellUnits ? "button" : "";
-							var ondblclick = Model.EnableBuySellUnits ? $"HandleStockDblClick(\"{itemcode}\");" : "";
-							var itemoption = Model.DicItemOptions[itemcode];
-							var fabatcls = itemoption != null ? itemoption.ChkBatch ? "check-square" : "square-o" : "square-o";
-							var fasncls = itemoption != null ? itemoption.ChkSN ? "check-square" : "square-o" : "square-o";
-							var favtcls = itemoption != null ? itemoption.WillExpire ? "check-square" : "square-o" : "square-o";
-							var facls = item.hasItemVari ? "check" : "xmark";
-							var displaycls = item.hasItemVari ? "text-success" : "text-danger";
-							var onhandstock = item.OnHandStock <= 0 ? Html.Raw($"<span class=\"outofstock\">{item.OnHandStock}</span>"): Html.Raw(item.OnHandStock.ToString());
-							var diclocqty = Model.DicItemLocQty[itemcode];
-							var dicabssqty = Model.DicItemAbssQty[itemcode];
-
-							foreach(var e in Model.Shops)
-							{
-								var locqty = diclocqty[e];
-								var abssqty = dicabssqty[e];
-								var locqtydisplay = "";
-								var isprimary = Model.PrimaryLocation == e ? 1 : 0;
-
-								if (locqty <= 0)
-								{
-									locqtydisplay = `
-< span class="danger">${locqty
-				}</span>`;
-} else
 			{
-				locqtydisplay = `
-< span >${ locqty}</ span >`;
-			}
-
-			var readonly =
-			itemoption?.ChkBatch ||
-			itemoption?.ChkSN ||
-			itemoption?.WillExpire ||
-			(itemcode in DicIvInfo && DicIvInfo[itemcode].length > 0)
-? "readonly"
-: "";
-
-			var inputcls =
-			!itemoption?.ChkBatch && !itemoption?.ChkSN && !itemoption?.WillExpire
-			? "locqty"
-			: "locqty itemoption";
-			if (
-			itemcode in DicIvInfo &&
-			DicIvInfo[itemcode].length > 0 &&
-			!itemoption?.ChkBatch &&
-			!itemoption?.ChkSN &&
-			!itemoption?.WillExpire
-)
-inputcls = "locqty vari";
-
-			var _html = forstock
-			? `${locqtydisplay}`
-: `
-< input type = "text" class= "text-right form-control btnsmall ${inputcls}" data - isprimary = "${isprimary}" data - code = "${item.itmCode}" data - shop = "${e}" data - onhandstock = "${item.OnHandStock}" data - id = "${Id}" data - oldval = "${locqty}" data - abssqty = "${abssqty}" data - itemid = "${item.itmItemID}" value = "${locqty}" ${ readonly}
-			title = "${transferdblclickhints}" />`;
-
-			html += `
-< td class= "text-right locqty" >${ _html}</ td >`;
-				}
+				var itemcode = item.itmCode;
+				var trcls = Model.EnableBuySellUnits ? "button" : "";
+				var ondblclick = Model.EnableBuySellUnits ? $"HandleStockDblClick(\"{itemcode}\");" : "";
+				var itemoption = Model.DicItemOptions[itemcode];
+				var fabatcls = itemoption != null ? itemoption.ChkBatch ? "check-square" : "square-o" : "square-o";
+				var fasncls = itemoption != null ? itemoption.ChkSN ? "check-square" : "square-o" : "square-o";
+				var favtcls = itemoption != null ? itemoption.WillExpire ? "check-square" : "square-o" : "square-o";
+				var facls = item.hasItemVari ? "check" : "xmark";
+				var displaycls = item.hasItemVari ? "text-success" : "text-danger";
+				var onhandstock = item.OnHandStock <= 0 ? Html.Raw($"<span class=\"outofstock\">{item.OnHandStock}</span>") : Html.Raw(item.OnHandStock.ToString());
+				var diclocqty = Model.DicItemLocQty[itemcode];
+				var dicabssqty = Model.DicItemAbssQty[itemcode];
 
 
 				<tr class="@trcls" data-code="@itemcode" data-jsstocklist="@item.JsonJsStockList" ondblclick="@ondblclick">
 					<td><input type="checkbox" class="form-check chk" data-id="@item.itmItemID" data-code="@itemcode"></td>
 
-					<td class="text-left">@itemcode</td>`;
+					<td class="text-left">@itemcode</td>
 
 					<td class="text-left itemdesc" data-desc="@item.NameDesc" title="@item.NameDesc">@item.NameDescDisplay</td>
 					<td class="text-center"><span class="text-success"><span class="fa fa-@fabatcls"></span> <span class="fa fa-@fasncls"></span> <span class="fa fa-@favtcls"></span></span></td>
@@ -128,25 +79,50 @@ inputcls = "locqty vari";
 
 					<td class="text-right locqty">@onhandstock</td>
 
-					
+					@foreach (var e in Model.Shops)
+					{
+						var locqty = diclocqty.ContainsKey(e) ? diclocqty[e] : 0;
+						var abssqty = dicabssqty.ContainsKey(e) ? dicabssqty[e] : 0;
+						var locqtydisplay = "";
+						var isprimary = Model.PrimaryLocation == e ? 1 : 0;
 
-					
+						if (locqty <= 0)
+						{
+							locqtydisplay = $"<span class=\"danger\">{locqty}</span>";
+						}
+						else
+						{
+							locqtydisplay = $"<span>{locqty}</span>";
+						}
 
-					
+						var inputcls = !itemoption.ChkBatch && !itemoption.ChkSN && !itemoption.WillExpire ? "locqty" : "locqty itemoption";
+						if (Model.DicIvInfo.ContainsKey(itemcode) && Model.DicIvInfo[itemcode].Count > 0 && !itemoption.ChkBatch && !itemoption.ChkSN &&
+						!itemoption.WillExpire)
+						{
+							inputcls = "locqty vari";
+						}
 
+						<td class="text-right locqty">@Html.Raw(locqtydisplay)</td>
+
+					}
+
+					<td><button class="btn btn-info edit btnsmall" type="button" data-id="@item.itmItemID" onclick="editItem(@item.itmItemID);">@Resources.Resource.Edit</button></td>
 				</tr>
 			}
 
-			
+
 		</tbody>
 
 	</table>
 
-	<div class="Pager my-3"></div>
+	<div id="pagingblk" class="my-3">
+		@Html.PagedListPager(Model.PagingItemList, PageNo => Url.Action("Stock",
+new { PageNo, SortName = Model.SortName, SortOrder = Model.CurrentSortOrder, Keyword = Model.Keyword }))
+	</div>
 
 	@Html.Partial("_SortOrderNameHidden")
 }
-@Html.Partial("_NoRecordFound")
+
 @Html.Partial("_WaitingModal")
 @Html.Partial("_DescModal")
 @Html.AntiForgeryToken()

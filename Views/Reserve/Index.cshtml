@@ -115,7 +115,7 @@ new { PageNo, SortName = Model.SortName, SortOrder = Model.CurrentSortOrder, Key
 	<button type="button" class="btn btn-success" id="btnReserve">@Resources.Resource.ReserveItems</button>
 </div>
 
-<div id="infoblk" data-shop="@Model.User.shopCode" data-shops="@string.Join(",",Model.Shops)" data-enablebuysellunits="@Model.EnableBuySellUnits" data-jsondiciditemoptions="@Model.JsonDicIDItemOptions" data-reserveitemqtyrequired="@Resources.Resource.ReserveItemQtyRequired"></div>
+<div id="infoblk" data-shop="@Model.User.shopCode" data-shops="@string.Join(",",Model.Shops)" data-enablebuysellunits="@Model.EnableBuySellUnits" data-jsondiciditemoptions="@JsonSerializer.Serialize(Model.DicIDItemOptions)" data-reserveitemqtyrequired="@Resources.Resource.ReserveItemQtyRequired"></div>
 
 
 <script src="~/Scripts/ts/js/item/reserve/index.js?v=@rand"></script>

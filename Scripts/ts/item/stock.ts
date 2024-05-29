@@ -20,10 +20,7 @@ $(function () {
     stocklocation = <string>$("#drpLocation").val();
 
     DicIDItemOptions = $infoblk.data("jsondiciditemoptions");
-    //console.log("DicIDItemOptions", DicIDItemOptions);
-    //GetStocks(1);
 
     sortByName = true;
     ConfigSimpleSortingHeaders();
-    /*$("#txtKeyword").trigger("focus");*/
 });

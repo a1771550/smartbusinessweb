@@ -3,9 +3,11 @@
 }
 #tblStock th:nth-child(2), #tblStock td:nth-child(2) {
 	width: 200px;
+	max-width:200px!important;
 }
 #tblStock th:nth-child(3), #tblStock td:nth-child(3) {
 	width: 200px;
+	max-width:200px!important;
 }
 #tblStock th:nth-child(4), #tblStock td:nth-child(4) {
 	width: 100px;
@@ -13,8 +15,9 @@
 #tblStock th:nth-child(5), #tblStock td:nth-child(5) {
 	width: 80px;
 }
-#tblStock th:last-child{
+#tblStock th:last-child, #tblStock td:last-child{
 	width:60px;
+	min-width:60px;
 }
 #tblStock td.locqty{
 	width:80px;
