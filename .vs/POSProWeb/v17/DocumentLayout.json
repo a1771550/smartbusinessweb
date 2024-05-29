@@ -22,7 +22,7 @@
           ]
         },
         {
-          "DockedHeight": 101,
+          "DockedHeight": 64,
           "SelectedChildIndex": -1,
           "Children": [
             {
@@ -36,7 +36,7 @@
           ]
         },
         {
-          "DockedHeight": 36,
+          "DockedHeight": 101,
           "SelectedChildIndex": -1,
           "Children": [
             {
@@ -54,7 +54,7 @@
           ]
         },
         {
-          "DockedHeight": 31,
+          "DockedHeight": 36,
           "SelectedChildIndex": -1,
           "Children": [
             {
