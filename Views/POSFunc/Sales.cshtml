@@ -55,13 +55,16 @@
 											<div class="productsetcontent">
 												<h5>@item.CategoryName</h5>
 												<h4><span class="itmnamedesc">@item.NameDesc</span></h4>
-												<h6><span class="itmprice">@Model.Currency@CommonHelper.FormatNumber(item.itmBaseSellingPrice)</span></h6>
+
+												<h6><span class="itmprice" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode" data-price="@item.itmBaseSellingPrice" data-pricetxt="@CommonHelper.FormatNumber(item.itmBaseSellingPrice)" data-file="@item.itmPicFile">@Model.Currency@CommonHelper.FormatNumber(item.itmBaseSellingPrice)</span></h6>
+												@*<div class="price-box">
+													<label class="small">@Model.Currency</label>
+													 <input type="text" class="number itmprice small flex" value="@CommonHelper.FormatNumber(item.itmBaseSellingPrice)" />
+												</div>*@
+
 												<div class="discount-box">
-
-													<label class="small" for="discount">@Resources.Resource.DiscPc:</label>
-
-													<input type="text" class="sdiscpc small flex" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode" data-price="@item.itmBaseSellingPrice" data-file="@item.itmPicFile">
-
+													<label class="small">@Resources.Resource.DiscPc:</label>
+													<input type="text" class="number sdiscpc small flex" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode" data-price="@item.itmBaseSellingPrice" data-file="@item.itmPicFile">
 												</div>
 											</div>
 										</div>
@@ -78,7 +81,7 @@
 
 			</div>
 
-			<div class="col-lg-4 col-sm-12 " data-select2-id="10">
+			<div class="col-lg-4 col-sm-12 scroll" data-select2-id="10">
 				<div class="order-list">
 					<div class="orderid">
 						<h4>@Resources.Resource.OrderList</h4>

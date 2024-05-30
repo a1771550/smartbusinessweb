@@ -564,6 +564,10 @@
           <name>SalesEditModel.cs</name>
           <absolutePath>F:\repos\PPWProject\PPWLib\Models\Sales\SalesEditModel.cs</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>PrintModel.cs</name>
+          <absolutePath>F:\repos\PPWProject\PPWLib\Models\Receipt\PrintModel.cs</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

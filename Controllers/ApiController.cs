@@ -42,6 +42,7 @@ using CommonLib.Models.MYOB;
 using PPWLib.Models.Customer;
 using PPWLib.Models.Customer.eBlast;
 using PPWLib.Models.Customer.Enquiry;
+using PPWLib.Models.Receipt;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -67,7 +68,7 @@ namespace SmartBusinessWeb.Controllers
         public List<string> ShopNames;
         public ApiController() { }
 
-       
+
 
         [HttpGet]
         public void AlertFollowUp(int apId = 1)
@@ -1443,7 +1444,7 @@ namespace SmartBusinessWeb.Controllers
 
             if (currentIV != null)
             {
-                currentIV = ModelHelper.PopulateIV(Shops, context, itemcode, currentIV);
+                currentIV = ModelHelper.PopulateIV(connection, itemcode, currentIV);
                 return Json(new { currentIV });
             }
             else
@@ -3089,23 +3090,18 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetCustomers4Retail(int pageIndex = 1, string keyword = "", string mode = "")
+        public ActionResult GetCustomers4Retail(int pageIndex = 1, string keyword = null, string mode = "")
         {
             CustomerViewModel model = new CustomerViewModel();
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            var pagesize = model.PageSize = PageSize;
+            model.PageIndex = pageIndex;           
+            if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
+            using (SqlConnection)
             {
-                var apId = ModelHelper.GetAccountProfileId(context);
-                var pagesize = model.PageSize = PageSize;
-                model.PageIndex = pageIndex;
-                int startIndex = CommonHelper.GetStartIndex(pageIndex, pagesize);
-                if (keyword == "") keyword = null;
-
-                model.Customers = (string.IsNullOrEmpty(mode) || mode == "search") ? ModelHelper.GetCustomers4Sales(context, pageIndex, pagesize, keyword, true, true) : ModelHelper.GetCustomerList(false, pageIndex, pagesize, keyword, true);
-
-                model.RecordCount = (int)context.GetCustomerCount(apId, keyword).FirstOrDefault();
-                return Json(model);
+                model.Customers = (string.IsNullOrEmpty(mode) || mode == "search") ? ModelHelper.GetCustomers4Sales(SqlConnection, pageIndex, pagesize, keyword, true, true) : ModelHelper.GetCustomerList(SqlConnection, false, pageIndex, pagesize, keyword, true);
+                model.RecordCount = ModelHelper.GetCustomersCount(SqlConnection, keyword);
             }
-
+            return Json(model);
         }
 
 
@@ -3113,20 +3109,20 @@ namespace SmartBusinessWeb.Controllers
         public ActionResult SearchCustomersAjax(int pageIndex = 1, string keyword = "")
         {
             CustomerViewModel model = new CustomerViewModel();
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
+            using (SqlConnection)
             {
-                var apId = AccountProfileId;
                 int pagesize = model.PageSize = PageSize;
                 model.PageIndex = pageIndex;
-
-                var customerlist = ModelHelper.GetCustomerList(false, pageIndex, pagesize, keyword);
-
-                model.RecordCount = (int)context.GetCustomerCount(apId, keyword).FirstOrDefault();
+                var customerlist = ModelHelper.GetCustomerList(SqlConnection, false, pageIndex, pagesize, keyword);
+                //(int)context.GetCustomerCount(apId, keyword).FirstOrDefault();
+                model.RecordCount = SqlConnection.QueryFirstOrDefault<int>("EXEC dbo.GetCustomerCount @apId=@apId,@keyword=@keyword", new { apId, keyword });
 
                 model.Customers = customerlist;
-
-                return Json(model, JsonRequestBehavior.AllowGet);
             }
+
+            return Json(model, JsonRequestBehavior.AllowGet);
+
 
         }
 

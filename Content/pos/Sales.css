@@ -102,7 +102,7 @@ i.fa-plus, i.fa-minus {
 	border: 1px solid #ccc;
 	border-top: none;
 }
-.sdiscpc {
+.sdiscpc,.itmprice {
 	width: 65px;
 }
 
@@ -127,6 +127,7 @@ i.fa-plus, i.fa-minus {
 }
 
 .product-lists{
+	border:1px solid #eee!important;
 	font-size:14px!important;
 }
 
@@ -138,6 +139,14 @@ i.fa-plus, i.fa-minus {
 	font: inherit;
 	vertical-align: baseline;
 }
+/*.productimgs img{
+	border:1px solid #eee;
+}
+*/
+.productcontent textarea{
+	width:70%!important;
+}
+
 .btnpayment{
 	cursor:pointer;
 }

@@ -87,8 +87,9 @@ function handleProductCheck(ele: HTMLElement | null, discpc: number, increment: 
 				populateSimpleItem();
 				SelectedSimpleItemList.push(selectedSimpleItem);
 			} else {
-				//update discpc:
+				//update discpc & price:
 				SelectedSimpleItemList[idx].discpc = discpc;
+				SelectedSimpleItemList[idx].itmBaseSellingPrice = Number($(ele!).data("price"));
 			}
 		} else {
 			if (idx >= 0) SelectedSimpleItemList.splice(idx, 1);
@@ -99,16 +100,15 @@ function handleProductCheck(ele: HTMLElement | null, discpc: number, increment: 
 			populateSimpleItem();
 			SelectedSimpleItemList.push(selectedSimpleItem);
 		}
-
 	}
 
 	function populateSimpleItem() {
 		//console.log("discpc#popu:", discpc);
 		//console.log("ele:", ele);
+		console.log("ele.price:", $(ele!).data("price"));
 		if (!ele)
 			selectedSimpleItem = { itmCode: "ABSSV28.9", NameDesc: "ABSS Accounting v28.9", itmItemID: Id, lstQtyAvailable: 1, itmBaseSellingPrice: 4188, itmPicFile: "abss2p.jpg", discpc } as ISimpleItem;
 		else selectedSimpleItem = { itmCode: $(ele!).data("code"), NameDesc: $(ele!).data("namedesc"), itmItemID: Id, lstQtyAvailable: 1, itmBaseSellingPrice: Number($(ele!).data("price")), itmPicFile: $(ele!).data("file"), discpc } as ISimpleItem;
-
 		//console.log("selectedSimpleItem:", selectedSimpleItem);
 	}
 }
@@ -134,13 +134,14 @@ function populateProductList() {
 											<div class="productimgs">
 												<img src="/${imgpath}" alt="${x.NameDesc}">
 											</div>
-											<div class="productcontet">
-												<h4>
+											<div class="productcontent">
+												<h5>
 													${x.NameDesc}
-												</h4>
+												</h5>
 												<div class="productlinkset">
 													<h5>${x.itmCode}</h5>
 												</div>
+												<textarea class="form-control note"></textarea>
 												<div class="increment-decrement">
 													<div class="input-groups">
 														<input type="button" value="-" class="button-minus dec button operator" data-id="${x.itmItemID}">
@@ -176,7 +177,6 @@ $(document).on("click", "#btnConfirmPay", function () {
 $(document).on("click", "#btnCheckout", function () {
 	//Sales.rtsFinalTotal = 5000;
 	//togglePaymentBlk("open", "salesBlk", Sales.rtsFinalTotal); return false;
-
 	Sales.rtsFinalTotal = Number($(this).find(".totalamt").text());
 	//console.log("Sales.rtsFinalTotal:", Sales.rtsFinalTotal);
 	//console.log("amt:" + amt);
@@ -202,12 +202,6 @@ $(document).on("click", "#btnCheckout", function () {
 			});
 		}
 	}
-});
-$(document).on("change", ".sdiscpc", function () {
-	let discpc: number = Number($(this).val());
-	//console.log("discpc#change:", discpc);//10
-	handleProductCheck(this, discpc, true);
-	populateProductList();
 });
 $(document).on("click", "#btnClear", function () {
 	SelectedSimpleItemList = [];
@@ -237,6 +231,13 @@ $(document).on("click", ".operator", function () {
 	//console.log("qty:", qty);
 	populateProductList();
 });
+function handleDiscPcChange(this: any) {
+    let discpc: number = Number($(this).val());
+   //console.log("discpc#change:", discpc);//10
+    handleProductCheck(this, discpc, true);
+    populateProductList();
+}
+
 function openTapContent(ele, tapName, Id) {
 	// Declare all variables
 	var i, tab_content, tablinks;
@@ -281,8 +282,6 @@ function toggleProductCheck(ele: HTMLElement, show: boolean) {
 	}
 }
 
-
-
 $(document).on("click", ".check-product", function () {
 	toggleProductCheck(this, false);
 	let discpc: number = Number($(this).parent(".productsetimg").parent(".productset").find(".productsetcontent").find(".discount-box").find(".sdiscpc").val());
@@ -296,8 +295,28 @@ $(document).on("click", ".productset.pointer", function () {
 	handleProductCheck(this, discpc, true);
 	populateProductList();
 });
+$(document).on("change", ".sdiscpc", function () {
+	handleDiscPcChange.call(this);
+});
+$(document).on("change", ".itmprice", function () {
+	let price = Number($(this).val());
+	//console.log("price:", price);
+	let $parent = $(this).parent(".price-box").parent("h6").parent(".productsetcontent");
+	//console.log("$parent:", $parent);
+	let $discpc = $parent.find(".sdiscpc");
+	//console.log("$discpc:", $discpc);
+	$discpc.data("price", price).trigger("change");
+});
+$(document).on("dblclick", ".itmprice", function () {
+	let $parent = $(this).parent("h6").parent("div");
+	let html = `<div class="price-box">
+													<label class="small">${currency}</label>
+													 <input type="text" class="number itmprice small flex" data-id="${$(this).data("id")}" data-namedesc="${$(this).data("namedesc")}" data-code="${$(this).data("code")}" data-price="${$(this).data("price")}" data-file="${$(this).data("file")}" value="${$(this).data("pricetxt")}" />
+												</div>`;
 
-
+	$(this).replaceWith(html);
+	$parent.find(".itmprice").trigger("focus");
+});
 function populateProductBlk(itemList: ISimpleItem[]): string {
 	let html = "";
 	itemList.forEach((item) => {
@@ -401,7 +420,7 @@ $(function () {
 
 	$("#txtCustomerName").val(defaultcustomer.cusName);
 
-	setInputs4NumberOnly(["sdiscpc", "paymenttype"]);
+	setInputs4NumberOnly(["number", "paymenttype"]);
 
 	$("#searchItem").trigger("focus");
 	/* for debug only */

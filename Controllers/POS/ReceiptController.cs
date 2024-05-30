@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
 using CommonLib.Helpers;
 using System.Collections.Generic;
+using PPWLib.Models.Receipt;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -20,9 +21,9 @@ namespace SmartBusinessWeb.Controllers
             ViewBag.PageName = "receipt";
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
-                ReceiptViewModel model = (from r in context.Receipts
+                ReceiptModel model = (from r in context.Receipts
                                           where r.deviceCode.ToLower() == ComInfo.Device.ToLower() && r.shopCode.ToLower() == ComInfo.Shop.ToLower() && r.AccountProfileId == ComInfo.AccountProfileId
-                                          select new ReceiptViewModel
+                                          select new ReceiptModel
                                           {
                                               Id = r.Id,
                                               HeaderTitle = r.HeaderTitle + ":" + r.HeaderTitleCN + ":" + r.HeaderTitleEng,
@@ -80,7 +81,7 @@ namespace SmartBusinessWeb.Controllers
         [CustomAuthorize("receipt", "admin1", "boss", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult Edit(ReceiptViewModel model, FormCollection formCollection)
+        public ActionResult Edit(ReceiptModel model, FormCollection formCollection)
         {
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {                

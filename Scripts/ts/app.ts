@@ -8020,6 +8020,7 @@ interface ISimpleSalesLn {
 	itmLastSellingPrice: number | null;
 	SalesPersonName: string | null;
 	itmIsTaxedWhenSold: boolean;
+	rtlNote: string | null;
 }
 interface ISaleOrder {
 	rtsUID: number;
@@ -17817,7 +17818,7 @@ function UpdateSimpleSales() {
 	SimpleSalesLns = [];
 	$(".product-lists").each(function (i, e) {
 		let salesLn: ISimpleSalesLn = {
-			rtlItemCode: $(e).data("code"), rtlLineDiscPc: Number($(e).data("discpc")), rtlLineDiscAmt: Number($(e).data("disc")), rtlQty: Number($(e).find(".simpleqty").val()), rtlSellingPrice: Number($(e).data("price")), rtlDesc: $(e).data("desc"), rtlSalesAmt: Number($(e).data("amt")), rtlSalesLoc: comInfo.Shop, rtlStockLoc: comInfo.Shop
+			rtlItemCode: $(e).data("code"), rtlLineDiscPc: Number($(e).data("discpc")), rtlLineDiscAmt: Number($(e).data("disc")), rtlQty: Number($(e).find(".simpleqty").val()), rtlSellingPrice: Number($(e).data("price")), rtlDesc: $(e).data("desc"), rtlSalesAmt: Number($(e).data("amt")), rtlSalesLoc: comInfo.Shop, rtlStockLoc: comInfo.Shop, rtlNote:$(e).find(".note").val()
 		} as ISimpleSalesLn;
 		SimpleSalesLns.push(salesLn);
 	});

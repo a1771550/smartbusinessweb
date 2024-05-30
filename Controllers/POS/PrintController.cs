@@ -5,6 +5,7 @@ using PPWDAL;
 using System.Configuration;
 using Helpers = PPWLib.Helpers;
 using Dapper;
+using PPWLib.Models.Receipt;
 
 namespace SmartBusinessWeb.Controllers
 {
