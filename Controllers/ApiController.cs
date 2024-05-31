@@ -59,7 +59,7 @@ namespace SmartBusinessWeb.Controllers
         private int apId { get { return AccountProfileId; } }
         private string DbName { get { return Session["DBName"] == null ? string.Empty : Session["DBName"].ToString(); } }
         private string CheckoutPortal { get { return ComInfo.DefaultCheckoutPortal; } }
-        private string DefaultConnection { get { return Session["DBName"] == null ? ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", "SmartBusinessWeb_db") : ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", Session["DBName"].ToString()); } }
+        private string DefaultConnection { get { return Session["DBName"] == null ? ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", "SmartBusinessWeb_db") : ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", Session["DBName"].ToString()); } }
         private SqlConnection SqlConnection { get { return new SqlConnection(DefaultConnection); } }
 
         private List<string> Shops;

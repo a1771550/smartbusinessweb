@@ -48,7 +48,7 @@ namespace SmartBusinessWeb.Controllers
     public class TestController : Controller
     {
         int AccountProfileId = 1;    
-        private string DefaultConnection { get { return Session["DBName"] == null ? ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", "SmartBusinessWeb_db") : ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", Session["DBName"].ToString()); } }
+        private string DefaultConnection { get { return Session["DBName"] == null ? ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", "SmartBusinessWeb_db") : ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", Session["DBName"].ToString()); } }
         private SqlConnection connection { get { return new SqlConnection(DefaultConnection); } }
         private string centralbaseUrl = UriHelper.GetAppUrl();
         protected string DateFormat { get { return ConfigurationManager.AppSettings["DateFormat"]; } }

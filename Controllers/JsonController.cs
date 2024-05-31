@@ -21,7 +21,7 @@ namespace SmartBusinessWeb.Controllers
     [System.Web.Http.AllowAnonymous]
     public class JsonController : Controller
     {
-		[System.Web.Mvc.AllowAnonymous]
+        [System.Web.Mvc.AllowAnonymous]
 		[System.Web.Mvc.HttpPost]
 		public HttpResponseMessage PostTest(int apId, FormCollection form)
 		{
@@ -75,7 +75,7 @@ namespace SmartBusinessWeb.Controllers
             ComInfo comInfo = context.ComInfoes.FirstOrDefault(x => x.AccountProfileId == apId);
             if (comInfo != null)
             {
-                string DefaultConnection = ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", dbname);
+                string DefaultConnection = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", dbname);
                 using var connection = new SqlConnection(DefaultConnection);
                 connection.Open();
                 DataTransferModel dmodel = new DataTransferModel
@@ -123,7 +123,7 @@ namespace SmartBusinessWeb.Controllers
             ComInfo comInfo = context.ComInfoes.FirstOrDefault(x => x.AccountProfileId == apId);
             if (comInfo != null)
             {
-                string DefaultConnection = ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", dbname);
+                string DefaultConnection = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", dbname);
                 using var connection = new SqlConnection(DefaultConnection);
                 connection.Open();
                 DataTransferModel dmodel = new DataTransferModel
@@ -203,7 +203,7 @@ namespace SmartBusinessWeb.Controllers
                 HandleDateRanges(strfrmdate, strtodate, out frmdate, out todate);
                 #endregion
 
-                var connectionString = ConfigurationManager.AppSettings["DefaultConnection"].Replace("_DBNAME_", dbname);
+                var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", dbname);
 
                 data.sqllist = PurchaseEditModel.GetUploadPurchaseSqlList(apId, ref dmodel, strfrmdate, strtodate, comInfo, context, frmdate, todate);
                 data.checkoutIds = dmodel.PoCheckOutIds;
