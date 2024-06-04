@@ -19,7 +19,7 @@
     int MaxCodeLength = Convert.ToInt32(ViewData["MaxCodeLength"]);
     int MaxNameLength = Convert.ToInt32(ViewData["MaxNameLength"]);
 
-    HashSet<ItemCategoryModel> CategoryList = ViewData["CategoryList"] as HashSet<ItemCategoryModel>;
+    HashSet<CategoryModel> CategoryList = ViewData["CategoryList"] as HashSet<CategoryModel>;
     bool EditItem = Convert.ToBoolean(ViewData["EditItem"]);
 
     string _readonly = editmode ? "readonly" : "";

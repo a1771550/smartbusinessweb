@@ -19,7 +19,7 @@
 	bool itemnull = Item == null;
 	List<string> Shops = ViewData["Shops"] != null ? (List<string>)ViewData["Shops"] : new List<string>();
 	bool isItemABSS = Item == null ? false : Item.itmCheckout == null ? true : (bool)Item.itmCheckout;
-	HashSet<ItemCategoryModel> CategoryList = ViewData["CategoryList"] as HashSet<ItemCategoryModel>;
+	HashSet<CategoryModel> CategoryList = ViewData["CategoryList"] as HashSet<CategoryModel>;
 	bool EditItem = Convert.ToBoolean(ViewData["EditItem"]);
 	int itemId = editmode ? (int)Item.itmItemID : 0;
 	string itemCode = editmode ? Item.itmCode : "";
