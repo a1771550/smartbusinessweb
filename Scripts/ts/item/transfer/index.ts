@@ -3,7 +3,7 @@
 enablebuysellunits = $infoblk.data("enablebuysellunits") == "True";
 
 $(document).on("click", "#btnTransfer", function () {
-	$target = $("#tblTransfer tr");
+	$target = $("#tblTransfer tbody tr");
 	let outofbalancefound: boolean = false;
 	$target.each(function (i, e) {
 		if ($(e).find("td:last").find(".balance").hasClass("outofbalance")) {
@@ -26,7 +26,7 @@ $(document).on("click", "#btnTransfer", function () {
 			},
 		});
 	} else {
-		$target = $("#tblTransfer tr:gt(0)");
+		$target = $("#tblTransfer tbody tr:gt(0)");
 		$target.each(function (i, e) {
 			$(e)
 				.find("td:gt(3)")

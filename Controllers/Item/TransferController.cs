@@ -111,7 +111,7 @@ namespace SmartBusinessWeb.Controllers.Item
         public JsonResult ProcessTransfer(List<JsStock> JsStockList, List<TransferModel> TransferList)
         {
             var msg = string.Format(Resources.Resource.SavedOkFormat, Resources.Resource.Transfer);
-            TransferEditModel model = new TransferEditModel();
+            TransferEditModel model = new();
             model.ProcessTransfer(JsStockList, TransferList);
             return Json(new { msg });
         }

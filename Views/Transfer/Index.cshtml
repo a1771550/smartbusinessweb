@@ -44,7 +44,7 @@
 		</thead>
 		<tbody>
 			@foreach (var item in Model.PagingItemList)
-			{				
+			{
 				<tr>
 					<td class="text-left itemcode" title="@item.itmCode">@item.itmCode</td>
 					<td class="text-left itemdesc" data-desc="@item.NameDesc" title="@item.NameDesc">@item.NameDescDisplay</td>
@@ -70,9 +70,10 @@
 						{
 							Id = Model.DicCodeLocId[item.itmCode][shop];
 						}
+						string disabled = Id == "N/A" ? "disabled" : "";
 
 						<td class="text-right locqty">
-							<input type="text" class="form-control text-right btnsmall locqty" data-id="@Id" data-isprimary="@isprimary" data-code="@item.itmCode" data-shop="@shop" data-onhandstock="@item.lstQtyAvailable" data-oldval="@qty" data-itemid="@item.itmItemID" value="@qty" title="@qty">
+							<input type="text" class="form-control text-right btnsmall locqty" data-id="@Id" data-isprimary="@isprimary" data-code="@item.itmCode" data-shop="@shop" data-onhandstock="@item.lstQtyAvailable" data-oldval="@qty" data-itemid="@item.itmItemID" value="@qty" title="@qty" @disabled>
 						</td>
 					}
 
