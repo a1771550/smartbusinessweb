@@ -103,9 +103,7 @@ function handleProductCheck(ele: HTMLElement | null, discpc: number, increment: 
 	}
 
 	function populateSimpleItem() {
-		//console.log("discpc#popu:", discpc);
-		//console.log("ele:", ele);
-		console.log("ele.price:", $(ele!).data("price"));
+		//console.log("ele.price:", $(ele!).data("price"));
 		if (!ele)
 			selectedSimpleItem = { itmCode: "ABSSV28.9", NameDesc: "ABSS Accounting v28.9", itmItemID: Id, lstQtyAvailable: 1, itmBaseSellingPrice: 4188, itmPicFile: "abss2p.jpg", discpc } as ISimpleItem;
 		else selectedSimpleItem = { itmCode: $(ele!).data("code"), NameDesc: $(ele!).data("namedesc"), itmItemID: Id, lstQtyAvailable: 1, itmBaseSellingPrice: Number($(ele!).data("price")), itmPicFile: $(ele!).data("file"), discpc } as ISimpleItem;
@@ -271,25 +269,37 @@ function openTapContent(ele, tapName, Id) {
 	}
 }
 
-function toggleProductCheck(ele: HTMLElement, show: boolean) {
-	$target = $(ele).find(".check-product");
+function toggleProductCheck(ele: HTMLElement, show: boolean) {	
 	if (show) {
+		$target = $(ele).find(".check-product");
 		$target.removeClass("hide");
 		$target.parent(".productsetimg").parent(".productset").addClass("productsethover");
 	} else {
+		$target = $(ele);
 		$target.addClass("hide");
-		$target.parent(".productsetimg").parent(".productset").removeClass("productsethover");
+		$target.parent(".productsetimg").parent(".productset").removeClass("productsethover");		
 	}
 }
-
-$(document).on("click", ".check-product", function () {
+function handleRemoveItem(this: any) {
 	toggleProductCheck(this, false);
 	let discpc: number = Number($(this).parent(".productsetimg").parent(".productset").find(".productsetcontent").find(".discount-box").find(".sdiscpc").val());
 	handleProductCheck(this, discpc, false);
 	populateProductList();
+}
+$(document).on("click", ".removeitem", function (e) {
+	e.stopPropagation();
+	handleRemoveItem.call(this);
 });
 
-$(document).on("click", ".productset.pointer", function () {
+$(document).on("click", ".check-product", function (e) {
+	e.stopPropagation();
+	//console.log("check-product click");
+	handleRemoveItem.call(this);
+});
+
+$(document).on("click", ".productset.pointer", function (e) {
+	e.stopPropagation();
+	//console.log("productset click");
 	toggleProductCheck(this, true);
 	let discpc: number = Number($(this).find(".productsetcontent").find(".discount-box").find(".sdiscpc").val());
 	handleProductCheck(this, discpc, true);
@@ -317,6 +327,8 @@ $(document).on("dblclick", ".itmprice", function () {
 	$(this).replaceWith(html);
 	$parent.find(".itmprice").trigger("focus");
 });
+
+
 function populateProductBlk(itemList: ISimpleItem[]): string {
 	let html = "";
 	itemList.forEach((item) => {

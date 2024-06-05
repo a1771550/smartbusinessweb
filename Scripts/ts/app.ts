@@ -8566,21 +8566,61 @@ let ReturnableItemList: Array<IPurchaseItem> = [];
 function handleQtyChange(this: any) {
 	//console.log("here");
 	getRowCurrentY.call(this);
+	//console.log("$tr index:", $tr.index());
 	let _qty: number = Number($(this).val());
-
-	if (forsales) {
-		const qtysellable: number = Number($(this).data("qtysellable"));
-		// console.log("qtysellable:" + qtysellable);
-		if (_qty > qtysellable) {
-			_qty = qtysellable;
-			$(this).val(_qty);
-		}
+	//console.log("_qty#0:", _qty);
+	let $price, $discount, _price, _discpc;
+	if (forsales) {		
+		$price = $tr.find(".price");
+		$discount = $tr.find(".discpc");
+		_price = Number($price.val());
+		_discpc = Number($discount.val());
 	}
 	//console.log("$tr.index#qtychange:", $tr.index());
-	let _price: number = Number($tr.find(".price").val());
+	//console.log("price#qty change:" + _price + ";_discpc:" + _discpc);
 
-	let _discpc: number = Number($tr.find(".discpc").val());
-	// console.log("price#qty change:" + _price + ";_discpc:" + _discpc);
+	if (forsales || forpreorder) {
+		if ($(this).data("proqty")) {
+			const proqty: number = Number($(this).data("proqty"));
+			//console.log("proqty:",proqty);
+			if (_qty >= proqty) {
+				if ($(this).data("proprice")) {
+					const proprice: string = formatnumber($(this).data("proprice"));
+					const originalprice = Number($price.val());
+					$price
+						.data("originalprice", originalprice)
+						.val(proprice)
+						.trigger("change");
+					return false;
+				}
+				if ($(this).data("prodiscpc")) {
+					const prodiscpc: string = formatnumber($(this).data("prodiscpc"));
+					const originaldiscpc: number = Number($discount.val());
+					$discount
+						.data("originaldiscpc", originaldiscpc)
+						.val(prodiscpc)
+						.trigger("change");
+					return false;
+				}
+			}
+			else {
+				if ($(this).data("proprice")) {
+					$price
+						.val(formatnumber($price.data("originalprice")))
+						.trigger("change");
+					return false;
+				}
+				if ($(this).data("prodiscpc")) {
+					$discount
+						.val(formatnumber($discount.data("originaldiscpc")))
+						.trigger("change");
+					return false;
+				}
+			}
+		} else {
+			updateRow(_price, _discpc);
+		}
+	}
 
 	if (forpurchase) {
 		/*	if (Purchase.pstStatus !== "order"&&Purchase.pstStatus!=="created"&&Purchase.pstStatus!=="draft")*/
@@ -8623,69 +8663,6 @@ function handleQtyChange(this: any) {
 		}
 	}
 
-	if (forsales || forpreorder) {
-		let $rows = $(`#${gTblId} tbody tr`);
-		$tr = $rows.eq(currentY);
-		const $price = $tr.find("td").eq(9).find(".price");
-		const $discount = $tr.find("td").eq(10).find(".discpc");
-		if ($(this).data("proqty")) {
-			const proqty: number = Number($(this).data("proqty"));
-			// console.log("here");
-			if (_qty >= proqty) {
-				if ($(this).data("proprice")) {
-					const proprice: string = formatnumber($(this).data("proprice"));
-					const originalprice = Number($price.val());
-					$price
-						.data("originalprice", originalprice)
-						.val(proprice)
-						.trigger("change");
-					return false;
-				}
-				if ($(this).data("prodiscpc")) {
-					const prodiscpc: string = formatnumber($(this).data("prodiscpc"));
-					const originaldiscpc: number = Number($discount.val());
-					$discount
-						.data("originaldiscpc", originaldiscpc)
-						.val(prodiscpc)
-						.trigger("change");
-					return false;
-				}
-			} else {
-				if ($(this).data("proprice")) {
-					$price
-						.val(formatnumber($price.data("originalprice")))
-						.trigger("change");
-					return false;
-				}
-				if ($(this).data("prodiscpc")) {
-					$discount
-						.val(formatnumber($discount.data("originaldiscpc")))
-						.trigger("change");
-					return false;
-				}
-			}
-		} else {
-			if (_qty === 0) {
-				$tr.remove();
-				$rows = $(`#${gTblId} tbody tr`);
-				//console.log(`rows length after remove:${$rows.length}`);
-				selectedItemCode = "";
-				selectedSalesLn = {} as ISalesLn;
-				$.each($rows, function (i, e) {
-					//console.log('i:' + i);
-					$(e).data("idx", i);
-					$(e)
-						.find("td:first")
-						.find("span")
-						.text(i + 1);
-				});
-				focusItemCode();
-				return;
-			} else {
-				updateRow(_price, _discpc);
-			}
-		}
-	}
 
 	if (forIA) {
 		let _cost = Number($tr.find(".unitcost").val());
@@ -11586,7 +11563,7 @@ function OnGetStocksOK(response) {
 					}
 				});
 				let diclocqty = item.DicItemLocQty[item.itmCode];
-				let dicabssqty = item.DicItemAbssQty[item.itmCode];				
+				let dicabssqty = item.DicItemAbssQty[item.itmCode];
 				let locqty: number = diclocqty[e] ?? 0;
 				let abssqty: number = dicabssqty[e] ?? 0;
 				let locqtydisplay: string = "";
@@ -11615,7 +11592,7 @@ function OnGetStocksOK(response) {
 						(itemcode in DicIvInfo && DicIvInfo[itemcode].length > 0)
 						? "readonly"
 						: "";
-				
+
 				let inputcls =
 					!itemoption?.ChkBatch && !itemoption?.ChkSN && !itemoption?.WillExpire
 						? "locqty"
@@ -17818,7 +17795,7 @@ function UpdateSimpleSales() {
 	SimpleSalesLns = [];
 	$(".product-lists").each(function (i, e) {
 		let salesLn: ISimpleSalesLn = {
-			rtlItemCode: $(e).data("code"), rtlLineDiscPc: Number($(e).data("discpc")), rtlLineDiscAmt: Number($(e).data("disc")), rtlQty: Number($(e).find(".simpleqty").val()), rtlSellingPrice: Number($(e).data("price")), rtlDesc: $(e).data("desc"), rtlSalesAmt: Number($(e).data("amt")), rtlSalesLoc: comInfo.Shop, rtlStockLoc: comInfo.Shop, rtlNote:$(e).find(".note").val()
+			rtlItemCode: $(e).data("code"), rtlLineDiscPc: Number($(e).data("discpc")), rtlLineDiscAmt: Number($(e).data("disc")), rtlQty: Number($(e).find(".simpleqty").val()), rtlSellingPrice: Number($(e).data("price")), rtlDesc: $(e).data("desc"), rtlSalesAmt: Number($(e).data("amt")), rtlSalesLoc: comInfo.Shop, rtlStockLoc: comInfo.Shop, rtlNote: $(e).find(".note").val()
 		} as ISimpleSalesLn;
 		SimpleSalesLns.push(salesLn);
 	});

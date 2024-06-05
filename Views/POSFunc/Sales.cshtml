@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="~/Content/pos/pos.css?v=@rand">
 <link rel="stylesheet" href="~/Content/pos/Sales.css?v=@rand">
 
-<div class="page-wrapper ms-0" data-defaultcatid="@defaultCat.Id">
+<div class="page-wrapper ms-0" data-defaultcatid="@defaultCat.Id" data-defaultcatname="@defaultCat.NameDisplay">
 	<div class="content">
 		<div id="salesBlk" class="row">
 			<div class="col-lg-8 col-sm-12 tabs_wrapper">
@@ -19,7 +19,7 @@
 				<div class="tab small">
 					@foreach (var category in catList)
 					{
-						<button class="tablinks" data-id="@category.Id"  onclick="openTapContent(this, '@category.NameDisplay', @category.Id)">@category.NameDisplay</button>
+						<button type="button" title="@category.NameDisplay" class="tablinks" data-id="@category.Id"  onclick="openTapContent(this, '@category.NameDisplay', @category.Id)">@category.NameDisplay</button>
 					}
 				</div>
 
@@ -197,7 +197,7 @@
 @Html.Partial("_BarcodeModal")
 @Html.Partial("_ChangeModal")
 
-<div id="infoblk" data-defaultcatname="@Model.CategoryList.First().NameDisplay" data-currency="@Model.Currency" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicpaytypes="@JsonSerializer.Serialize(Model.DicPayTypes)" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)" data-defaultcustomer="@JsonSerializer.Serialize(Model.DefaultCustomer)" data-itemlist="@JsonSerializer.Serialize(Model.SimpleItemList)" data-filteredlist="@JsonSerializer.Serialize(FilteredItemList)" data-paytypes="@JsonSerializer.Serialize(Model.PaymentTypes)" data-sales="@JsonSerializer.Serialize(Model.Sales)" data-dicpayservicecharge="@JsonSerializer.Serialize(Model.DicPayServiceCharge)"></div>
+<div id="infoblk" data-defaultcatname="@defaultCat.NameDisplay" data-currency="@Model.Currency" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicpaytypes="@JsonSerializer.Serialize(Model.DicPayTypes)" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)" data-defaultcustomer="@JsonSerializer.Serialize(Model.DefaultCustomer)" data-itemlist="@JsonSerializer.Serialize(Model.SimpleItemList)" data-filteredlist="@JsonSerializer.Serialize(FilteredItemList)" data-paytypes="@JsonSerializer.Serialize(Model.PaymentTypes)" data-sales="@JsonSerializer.Serialize(Model.Sales)" data-dicpayservicecharge="@JsonSerializer.Serialize(Model.DicPayServiceCharge)"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script src="~/Scripts/ts/js/pos/sales.js?v=@rand"></script>
