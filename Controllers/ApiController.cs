@@ -2106,7 +2106,7 @@ namespace SmartBusinessWeb.Controllers
             }
             if (filename.StartsWith("Customers_"))
             {
-                List<CommonLib.Models.MYOB.MYOBCustomerModel> cuslist = MYOBHelper.GetCustomerList(ConnectionString);
+                List<MYOBCustomerModel> cuslist = MYOBHelper.GetCustomerList(ConnectionString);
                 var json = Json(cuslist, JsonRequestBehavior.AllowGet);
                 json.MaxJsonLength = int.MaxValue;
                 return json;
@@ -2615,26 +2615,10 @@ namespace SmartBusinessWeb.Controllers
                                      }).ToList();
 
                         var cusCodes = string.Join(",", salesLns.Select(x => x.cusCode).ToList());
-                        var _customers = context.GetCustomersByCusCodes(apId, cusCodes).ToList();
-                        foreach (var c in _customers)
+                        if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
+                        using (SqlConnection)
                         {
-                            foreach (var salesln in salesLns)
-                            {
-                                if (c.cusCode == salesln.cusCode)
-                                {
-                                    customers.Add(new CustomerModel
-                                    {
-                                        cusCustomerID = c.cusCustomerID,
-                                        cusCode = c.cusCode,
-                                        cusIsActive = c.cusIsActive,
-                                        cusName = c.cusName,
-                                        cusPhone = c.cusPhone,
-                                        cusPointsSoFar = c.cusPointsSoFar,
-                                        cusPointsUsed = c.cusPointsUsed,
-                                        cusPriceLevelID = c.cusPriceLevelID
-                                    });
-                                }
-                            }
+                            customers = SqlConnection.Query<CustomerModel>(@"EXEC dbo.GetCustomersByCusCodes @apId=@apId,@cusCodes=@cusCodes", new { apId, cusCodes }).ToList();                            
                         }
                     }
 
@@ -2741,28 +2725,11 @@ namespace SmartBusinessWeb.Controllers
                                  }).ToList();
 
                     var cusCodes = string.Join(",", salesLns.Select(x => x.cusCode).ToList());
-                    var _customers = context.GetCustomersByCusCodes(apId, cusCodes).ToList();
-
-                    foreach (var c in _customers)
+                    if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
+                    using (SqlConnection)
                     {
-                        foreach (var salesln in salesLns)
-                        {
-                            if (c.cusCode == salesln.cusCode)
-                            {
-                                customers.Add(new CustomerModel
-                                {
-                                    cusCustomerID = c.cusCustomerID,
-                                    cusCode = c.cusCode,
-                                    cusIsActive = c.cusIsActive,
-                                    cusName = c.cusName,
-                                    cusPhone = c.cusPhone,
-                                    cusPointsSoFar = c.cusPointsSoFar,
-                                    cusPointsUsed = c.cusPointsUsed,
-                                    cusPriceLevelID = c.cusPriceLevelID
-                                });
-                            }
-                        }
-                    }
+                        customers = SqlConnection.Query<CustomerModel>(@"EXEC dbo.GetCustomersByCusCodes @apId=@apId,@cusCodes=@cusCodes", new { apId, cusCodes }).ToList();
+                    }                    
 
                     var _snlist = (from se in context.SerialNoes
                                    where se.snoIsActive == true && salescodes.Contains(se.snoRtlSalesCode) && se.snoRtlSalesLoc.ToLower() == location && se.snoRtlSalesDvc.ToLower() == device
@@ -3114,8 +3081,7 @@ namespace SmartBusinessWeb.Controllers
             {
                 int pagesize = model.PageSize = PageSize;
                 model.PageIndex = pageIndex;
-                var customerlist = ModelHelper.GetCustomerList(SqlConnection, false, pageIndex, pagesize, keyword);
-                //(int)context.GetCustomerCount(apId, keyword).FirstOrDefault();
+                var customerlist = ModelHelper.GetCustomerList(SqlConnection, false, pageIndex, pagesize, keyword);                
                 model.RecordCount = SqlConnection.QueryFirstOrDefault<int>("EXEC dbo.GetCustomerCount @apId=@apId,@keyword=@keyword", new { apId, keyword });
 
                 model.Customers = customerlist;

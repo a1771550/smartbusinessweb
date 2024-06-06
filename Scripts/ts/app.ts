@@ -63,6 +63,7 @@ interface IReserveLn {
 	CustomerName: string;
 	SellingPriceDisplay: string;
 }
+let forpreorder: boolean = false;
 let Reserve: IReserve;
 let ReserveLn: IReserveLn;
 let ReserveLnList: IReserveLn[] = [];
@@ -1283,8 +1284,6 @@ function GetItems(pageIndex) {
 		error: onAjaxFailure,
 	});
 }
-
-let forpreorder: boolean = false;
 function OnSuccess(response) {
 	closeWaitingModal();
 	var model = response;
@@ -6974,6 +6973,7 @@ interface ICustomAttribute {
 	cusCode: string;
 	attrName: string;
 	attrValue: string | null;
+	attrValueSelected: string | null;
 	attrType: string | null;
 	attrIsDefault: boolean;
 	attrIsGlobal: boolean;
@@ -17177,12 +17177,14 @@ function validCusForm() {
 }
 
 function FillInCustomer() {
-	let phone = $("#cusPhone").val() as string;
+	/*let phone = $("#cusPhone").val() as string;*/
 	Customer = {} as ICustomer;
 	Customer.cusCustomerID = Number($("#cusCustomerID").val());
-	Customer.cusCode = editmode ? $("#cusCode").val() as string : phone;
-	Customer.cusName = <string>$("#cusName").val();
-	Customer.cusPhone = phone;
+	/*Customer.cusCode = editmode ? $("#cusCode").val() as string : phone;*/
+	Customer.cusCode = $("#cusCode").val() as string;
+	Customer.cusPhone = $("#cusPhone").val() as string;
+
+	Customer.cusName = <string>$("#cusName").val();	
 	Customer.cusSaleComment = <string>$salecomment.val();
 	Customer.PaymentIsDue = Number($("#PaymentIsDue").val());
 	Customer.BalanceDueDays = Number($("#BalanceDueDays").val());
@@ -22472,7 +22474,7 @@ function ConfigSimpleSortingHeaders() {
 		$target = $(".colheader").eq(Number($sortcol.val()));
 		//console.log('sortorder:' + $sortorder.val() + ';sortcol:' + $sortcol.val());
 	}
-	console.log("sortorder:", $sortorder.val());
+	//console.log("sortorder:", $sortorder.val());
 	let sortcls = $sortorder.val() === "desc" ? "fa fa-sort-up" : "fa fa-sort-down";
 	$target.addClass(sortcls);
 

@@ -1,227 +1,238 @@
 ﻿let selectedGComboId: string = "";
 
 function saveGCombo() {
-    $target = gcomboModal.find("form").find(".gcombo");
-    console.log("gAttribute:", gAttribute);
-    //enteratleasttxt
-    let valcount = 0;
-    gAttribute.combo.values = [];
-   
-    $.each($target, function (i, e) {
-        let _val = <string>$(e).val();
-        if (_val) {
-            gAttribute.combo.values.push(_val);
-            valcount++;
-        }
-    });
+	$target = gcomboModal.find("form").find(".gcombo");
+	console.log("gAttribute:", gAttribute);
+	//enteratleasttxt
+	let valcount = 0;
+	gAttribute.combo.values = [];
 
-    if (valcount === 0) {
-        $.fancyConfirm({
-            title: "",
-            message: $infoblk.data("enteratleasttxt"),
-            shownobtn: false,
-            okButton: oktxt,
-            noButton: notxt,
-            callback: function (value) {
-                if (value) {
-                    $target.eq(0).trigger("focus");
-                }
-            }
-        });
-    } else {
-        closeGComboModal();
-    }
-    //console.log("gattr:", gAttribute);    
-    $.each(gAttributes, function (i, e) {
-        if (e.gattrId == gAttribute.gattrId) {
-            //console.log("here");
-            e.attrName = gAttribute.attrName;
-            e.attrValue = gAttribute.combo.values.join("||");
-            //$("fieldset").find(".form-group").find(`#${e.gattrId}`).data("attrvalue", e.attrValue).val(e.attrName);            
-            return false;
-        }
-    });
+	$.each($target, function (i, e) {
+		let _val = <string>$(e).val();
+		if (_val) {
+			gAttribute.combo.values.push(_val);
+			valcount++;
+		}
+	});
 
-    //console.log("gAttribute:", gAttribute);
-    //return;
-    $.ajax({
-        type: "POST",
-        url: "/Customer/SaveGAttr4Combo",
-        data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), cusCode:Customer.cusCode, gAttribute },
-        success: function (data) {
-            if (data) {                
-                showMsg(`${selectedGComboId}msg`, savedtxt, "success");
-                console.log("gAttribute.combo.values:", gAttribute.combo.values);
+	if (valcount === 0) {
+		$.fancyConfirm({
+			title: "",
+			message: $infoblk.data("enteratleasttxt"),
+			shownobtn: false,
+			okButton: oktxt,
+			noButton: notxt,
+			callback: function (value) {
+				if (value) {
+					$target.eq(0).trigger("focus");
+				}
+			}
+		});
+	} else {
+		closeGComboModal();
+	}
+	//console.log("gattr:", gAttribute);    
+	$.each(gAttributes, function (i, e) {
+		if (e.gattrId == gAttribute.gattrId) {
+			//console.log("here");
+			e.attrName = gAttribute.attrName;
+			e.attrValue = gAttribute.combo.values.join("||");
+			//$("fieldset").find(".form-group").find(`#${e.gattrId}`).data("attrvalue", e.attrValue).val(e.attrName);            
+			return false;
+		}
+	});
 
-                $(`#${gAttribute.gattrId}`).empty();
-                gAttribute.combo.values.forEach(x => {
-                    $(`#${gAttribute.gattrId}`).append($("<option>", {
-                        value: x,
-                        text: x,
-                    }));
-                });
+	//console.log("gAttribute:", gAttribute);
+	//return;
+	$.ajax({
+		type: "POST",
+		url: "/Customer/SaveGAttr4Combo",
+		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), cusCode: Customer.cusCode, gAttribute },
+		success: function (data) {
+			if (data) {
+				showMsg(`${selectedGComboId}msg`, savedtxt, "success");
+				console.log("gAttribute.combo.values:", gAttribute.combo.values);
 
-                $(`#${gAttribute.gattrId}`).select2();
-            }
-        },
-        dataType: "json"
-    });
+				$(`#${gAttribute.gattrId}`).empty();
+				gAttribute.combo.values.forEach(x => {
+					$(`#${gAttribute.gattrId}`).append($("<option>", {
+						value: x,
+						text: x,
+					}));
+				});
+
+				$(`#${gAttribute.gattrId}`).select2();
+			}
+		},
+		dataType: "json"
+	});
 
 }
 
 $(document).on("change", "#gattrblk .form-control.text.attr", function () {
-    let gattrId = $(this).attr("id");
-    //console.log("gattrId:" + gattrId);
-    //console.log("gAttributes:", gAttributes);
-    let gattrVal = $(this).val();  
-    //console.log("gattrval:" + gattrVal);
-    let idx = gAttributes.findIndex(x => x.gattrId == gattrId);
-    if (idx >= 0) {
-        gAttribute = gAttributes[idx];
-        if (gAttribute) {
-            gAttribute.attrValue = gattrVal;
-            //console.log(gAttribute);
-            //return;
-            $.ajax({
-                type: "POST",
-                url: "/Customer/SaveGAttr4Txt",
-                data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), cusCode:Customer.cusCode, gAttribute },
-                success: function (data) {
-                    if (data) {
-                        //window.location.href = "/Customer/Edit?cusCode=" + cusCode +"&saveattr=1&referrer=" + $infoblk.data("referrer");
-                        //$("#gattrMsg").text(savedtxt);
-                        showMsg(`${gattrId}msg`, savedtxt, "success");
-                    }
-                },
-                dataType: "json"
-            });
-        }
-    }
-    
-    
-
-   
+	let gattrId = $(this).attr("id");
+	//console.log("gattrId:" + gattrId);
+	//console.log("gAttributes:", gAttributes);
+	let gattrVal = $(this).val();
+	//console.log("gattrval:" + gattrVal);
+	let idx = gAttributes.findIndex(x => x.gattrId == gattrId);
+	if (idx >= 0) {
+		gAttribute = gAttributes[idx];
+		if (gAttribute) {
+			gAttribute.attrValue = gattrVal;
+			//console.log(gAttribute);
+			//return;
+			$.ajax({
+				type: "POST",
+				url: "/Customer/SaveGAttr4Txt",
+				data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), cusCode: Customer.cusCode, gAttribute },
+				success: function (data) {
+					if (data) {
+						//window.location.href = "/Customer/Edit?cusCode=" + cusCode +"&saveattr=1&referrer=" + $infoblk.data("referrer");
+						//$("#gattrMsg").text(savedtxt);
+						showMsg(`${gattrId}msg`, savedtxt, "success");
+					}
+				},
+				dataType: "json"
+			});
+		}
+	}
 });
-function saveCattr() {
-    //return false;
-    console.log(cAttribute);
-    $.ajax({
-        type: "POST",
-        url: "/Customer/SaveCAttr",
-        data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), cusCode:Customer.cusCode, cAttribute  },
-        success: function (data) {
-            if (data) {                
-                //showMsg("gattrMsg", savedtxt, "success");
-                cAttributes = structuredClone(data.CustomAttributeList);
-                displayCustomAttributes();
-            }            
-        },
-        dataType: "json"
-    });
+function saveCattr(gattrId:string="") {
+	//return false;
+	//console.log(cAttribute);
+	$.ajax({
+		type: "POST",
+		url: "/Customer/SaveCAttr",
+		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), cusCode: Customer.cusCode, cAttribute },
+		success: function (data) {
+			if (data) {
+				if(gattrId)
+					showMsg(`${gattrId}msg`, savedtxt, "success");
+
+				cAttributes = structuredClone(data.CustomAttributeList);
+				displayCustomAttributes();
+			}
+		},
+		dataType: "json"
+	});
 }
 
+$(document).on("change", ".combo.attr", function () {
+	let gattrId = $(this).attr("id");
+	//console.log("val:", $(this).val());
+	let vals = $(this).val() as string[];
+	if (vals) {
+		let val = vals.join();
+		FillInCustomAttribute($(this).data("attrvalue") as string, true, $(this).data("attrid"), val);
+		saveCattr(gattrId);
+	}
+
+});
 $(document).on("change", "#cattrlist .form-control.cattr", function () {
-    //console.log(customer.cusCustomerID);
-    //console.log(apId);
-    let val:string= $(this).val() as string;
-    if (val) {
-        const Id: string = makeId(16);
-        cAttribute = {
-            attrId: Id,
-            cusCode: Customer.cusCode,
-            attrName: Id,
-            attrValue: val,
-            attrType:"custom",
-            attrIsDefault: false,
-            attrIsGlobal: false,
-            gattrId:""
-    };
-        //cAttributes.push(cAttribute);
-    }
+	//console.log(customer.cusCustomerID);
+	//console.log(apId);
+	let val: string = $(this).val() as string;
+	if (val) {
+		FillInCustomAttribute(val, false);
+	}
 });
 
+
+function FillInCustomAttribute(val: string, forcombo: boolean, attrId: string = "", selectedVal: string = "") {
+	let Id: string = forcombo ? attrId : makeId(16);
+	cAttribute = {
+		attrId: Id,
+		cusCode: Customer.cusCode,
+		attrName: Id,
+		attrValue: val,
+		attrValueSelected: selectedVal,
+		attrType: forcombo ? "dropdown" : "custom",
+		attrIsDefault: forcombo,
+		attrIsGlobal: forcombo,
+		gattrId: ""
+	};
+}
+
 $(document).on("click", "#btnPlusAttr", function () {
-    $target = $("#gattrblk").find("#cattrlist");
-    $target.find(".cattr:last").clone().appendTo($target).trigger("focus");
+	$target = $("#gattrblk").find("#cattrlist");
+	$target.find(".cattr:last").clone().appendTo($target).trigger("focus");
 });
 
 $(document).on("click", "#btnMinusAttr", function () {
-    $target = $("#gattrblk").find("#cattrlist");
-    if ($target.find(".cattr").length > 1) {
-        $target.find(".cattr:last").remove();
-        $target.find(".cattr:last").trigger("focus");
-    }
+	$target = $("#gattrblk").find("#cattrlist");
+	if ($target.find(".cattr").length > 1) {
+		$target.find(".cattr:last").remove();
+		$target.find(".cattr:last").trigger("focus");
+	}
 });
 
 $(document).on("click", "#btnPlus", function () {
-    $target = gcomboModal.find("form");
-    $target.find(".form-group:last").clone().appendTo($target);
-    $target.find(".form-group:last").find(".form-control").val("").trigger("focus");
+	$target = gcomboModal.find("form");
+	$target.find(".form-group:last").clone().appendTo($target);
+	$target.find(".form-group:last").find(".form-control").val("").trigger("focus");
 });
 
 $(document).on("click", "#btnMinus", function () {
-    $target = gcomboModal.find("form");
-    if ($target.find(".form-group").length > 1) {
-        $target.find(".form-group:last").remove();
-        $target.find(".form-group:last").find(".form-control").trigger("focus");
-    }
+	$target = gcomboModal.find("form");
+	if ($target.find(".form-group").length > 1) {
+		$target.find(".form-group:last").remove();
+		$target.find(".form-group:last").find(".form-control").trigger("focus");
+	}
 });
 
 
 $(document).on("click", ".border", function () {
-    $target = $(this).prev(".combo");
-    let _name = <string>$target.val();
-    if (_name === "") {
-        $.fancyConfirm({
-            title: "",
-            message: $infoblk.data("entercustomnamefirsttxt"),
-            shownobtn: false,
-            okButton: oktxt,
-            noButton: notxt,
-            callback: function (value) {
-                if (value) {
-                    $target.trigger("focus");
-                }
-            }
-        });
-    } else {
-        selectedGComboId = <string>$(this).data("id");
-        $.each(gAttributes, function (i, e) {
-            //console.log("attrvalue:"+e.attrValue);
-            if (e.gattrId == selectedGComboId) {
-                gAttribute = e;
-                return false;
-            }
-        });
-        //console.log("gattr#border:", gAttribute);
-        //alert(gAttribute.attrValues);
-        openGComboModal();
+	$target = $(this).prev(".combo");
+	let _name = <string>$target.val();
+	if (_name === "") {
+		$.fancyConfirm({
+			title: "",
+			message: $infoblk.data("entercustomnamefirsttxt"),
+			shownobtn: false,
+			okButton: oktxt,
+			noButton: notxt,
+			callback: function (value) {
+				if (value) {
+					$target.trigger("focus");
+				}
+			}
+		});
+	} else {
+		selectedGComboId = <string>$(this).data("id");
+		$.each(gAttributes, function (i, e) {
+			//console.log("attrvalue:"+e.attrValue);
+			if (e.gattrId == selectedGComboId) {
+				gAttribute = e;
+				return false;
+			}
+		});
+		//console.log("gattr#border:", gAttribute);
+		//alert(gAttribute.attrValues);
+		openGComboModal();
 
-    }
+	}
 });
-
-
-
 function initgattr(_id: string, i: number, t: string, apId: number) {
-    $target = $("fieldset").find(".form-group").find(`#${_id}`);
-    let _val: string = $target.data("attrvalue");
-    let _ga: IGlobalAttribute = initGlobalAttribute(_id, $target.data("attrname"), _val, t, i, apId);
-    gAttributes.push(_ga);
+	$target = $("fieldset").find(".form-group").find(`#${_id}`);
+	let _val: string = $target.data("attrvalue");
+	let _ga: IGlobalAttribute = initGlobalAttribute(_id, $target.data("attrname"), _val, t, i, apId);
+	gAttributes.push(_ga);
 }
 
 $(function () {
-    //initModals();
-    gAttributes = [];
-    let apId: number = <number>$infoblk.data("apid");
+	//initModals();
+	gAttributes = [];
+	let apId: number = <number>$infoblk.data("apid");
 
-    let _id: string = "";
-    for (let i = 1; i <= 20; i++) {
-        _id = `txt${i}`;
-        initgattr(_id, i, "text", apId);
-    }
-    for (let i = 21; i <= 30; i++) {
-        _id = `drp${i}`;
-        initgattr(_id, i, "dropdown", apId);
-    }
-    //console.log("gattributes#ready:", gAttributes);
+	let _id: string = "";
+	for (let i = 1; i <= 20; i++) {
+		_id = `txt${i}`;
+		initgattr(_id, i, "text", apId);
+	}
+	for (let i = 21; i <= 30; i++) {
+		_id = `drp${i}`;
+		initgattr(_id, i, "dropdown", apId);
+	}
+	//console.log("gattributes#ready:", gAttributes);
 });

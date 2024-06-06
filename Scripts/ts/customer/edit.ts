@@ -1,6 +1,8 @@
 ﻿$infoblk = $("#infoblk");
 let gattrnamelist: string[] = [];
 
+
+
 $(document).on("click", "#addRecord", function () {
 	handleAddRecordClick.call(this);
 });
@@ -71,7 +73,7 @@ $(document).on("click", "#btnEdit", function () {
 
 $(document).on("click", "#mplus", function () {
 	_mobilecount++;
-	console.log("mobilecount:" + _mobilecount);
+	//console.log("mobilecount:" + _mobilecount);
 	if (_mobilecount <= 3) {
 		$(".mobile:first")
 			.clone()
@@ -120,7 +122,7 @@ function handleAttrAccordionActivated() {
 	}
 }
 function displayCustomAttributes() {
-	console.log("cAttributes:", cAttributes);
+	//console.log("cAttributes:", cAttributes);
 	let html = "";
 	cAttributes.forEach((x) => {
 		if (x.attrType == "custom") {
@@ -138,8 +140,6 @@ $(function () {
 	triggerMenu(1, 0);
 	forcustomer = true;
 	apId = Number($infoblk.data("apid"));
-
-	ConfigSimpleSortingHeaders();
 
 	initModals();
 

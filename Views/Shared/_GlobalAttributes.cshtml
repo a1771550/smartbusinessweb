@@ -66,15 +66,16 @@
 							var lbltxt = attr.attrName;
 							var cattr = CustomAttributeList.FirstOrDefault(x => x.gattrId == id);
 							var val = cattr.attrValue;
-							//if (string.IsNullOrEmpty(val))
-							//{
-							//	val = attr.attrValue;
-							//}
 
 							List<string> valattr = new List<string>();
+							List<string> valattrSelected = new List<string>();
 							if (!string.IsNullOrEmpty(val))
 							{
 								valattr = val.Split(new string[] { "||" }, StringSplitOptions.None).ToList();
+								if (!string.IsNullOrEmpty(cattr.attrValueSelected))
+								{
+									valattrSelected = cattr.attrValueSelected.Split(',').ToList();
+								}
 							}
 
 							<div class="form-group">
@@ -84,12 +85,13 @@
 										<input type="text" class="form-control text labeltxt hide" data-attrtype="label" data-id="@id" data-oldname="@lbltxt" />
 									</div>
 									<div class="col-12 col-sm-7">
-										<select class="form-control flex combo attr" id="@id" data-id="@id" data-attrname="@attr.attrName" data-attrvalue="@val" placeholder="@lbltxt" data-attrtype="dropdown" data-isdefault="1" data-isglobal="1" data-ng-required="1">
+										<select class="form-control flex combo attr" id="@id" data-id="@id" data-attrid="@cattr.attrId" data-attrname="@cattr.attrName" data-attrvalue="@val" data-selectedval="@cattr.attrValueSelected" placeholder="@lbltxt" data-attrtype="dropdown" data-isdefault="1" data-isglobal="1" data-ng-required="1" multiple>
 											@foreach (var v in valattr)
 											{
 												if (!string.IsNullOrEmpty(v))
 												{
-													<option value="@v">@v</option>
+													var selected = valattrSelected.Contains(v) ? "selected" : "";
+													<option value="@v" @selected>@v</option>
 												}
 
 											}
