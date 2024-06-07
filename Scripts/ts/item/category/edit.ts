@@ -67,6 +67,8 @@ $(document).on("click", "#btnSaveCat", function () {
 });
 
 $(function () {
+	setFullPage();
 	initModals();
+	triggerMenu(2, 7);
 	$("#catName").trigger("focus");
 });

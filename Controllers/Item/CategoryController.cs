@@ -32,7 +32,7 @@ namespace SmartBusinessWeb.Controllers.Item
             };
             model.GetList(SortCol, SortOrder, Keyword, true);
             int No_Of_Page = PageNo ?? 1;        
-            model.PagingCategoryList = model.ItemCategories.ToPagedList(No_Of_Page, PageSize);
+            model.PagingCategoryList = model.Categories.ToPagedList(No_Of_Page, PageSize);
             return View(model);
         }
 

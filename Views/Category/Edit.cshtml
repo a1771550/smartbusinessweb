@@ -10,34 +10,33 @@
 {
     @Html.AntiForgeryToken()
 
-
-    @Html.HiddenFor(model => model.Id)
-    @Html.HiddenFor(model=>model.Removable)
+    <input type="hidden" id="Id" value="@(edit?Category.Id:0)" />
+	<input type="hidden" id="Removable" value="@(edit?Category.Removable:false)" />
 
 
 <div class="row">
     <div class="col-12 col-md-3">
         <div class="form-group required">
             <label>@Resources.Resource.Name (@Resources.Resource.EN)</label>
-            @Html.EditorFor(model => model.catName, new { htmlAttributes = new { @class = "form-control catname" } })
+            <input type="text" id="catName" class="form-control catname" value="@(edit?Category.catName:"")" />
         </div>
     </div>
     <div class="col-12 col-md-3">
-        <div class="form-group">
-            <label>@Resources.Resource.Name (@Resources.Resource.TC)</label>
-            @Html.EditorFor(model => model.catNameTC, new { htmlAttributes = new { @class = "form-control catname" } })
-        </div>
+		<div class="form-group">
+			<label>@Resources.Resource.Name (@Resources.Resource.TC)</label>
+			<input type="text" id="catNameTC" class="form-control catname" value="@(edit?Category.catNameTC:"")" />
+		</div>
     </div>
     <div class="col-12 col-md-3">
-        <div class="form-group">
-            <label>@Resources.Resource.Name (@Resources.Resource.SC)</label>
-            @Html.EditorFor(model => model.catNameSC, new { htmlAttributes = new { @class = "form-control catname" } })
-        </div>
+		<div class="form-group">
+			<label>@Resources.Resource.Name (@Resources.Resource.SC)</label>
+			<input type="text" id="catNameSC" class="form-control catname" value="@(edit?Category.catNameSC:"")" />
+		</div>
     </div>
     <div class="col-12 col-md-3">
         <div class="form-group required">
             <label>@Resources.Resource.DisplayOrder</label>
-            <input type="number" id="displayOrder" class="form-control" value="@Category.displayOrder" />
+            <input type="number" id="displayOrder" class="form-control" value="@(edit?Category.displayOrder:1)" />
         </div>
     </div>
 
@@ -46,19 +45,19 @@
     <div class="col-12 col-md-3">
         <div class="form-group">
             <label>@Resources.Resource.Description (@Resources.Resource.EN)</label>
-            @Html.TextAreaFor(model => model.catDesc, new { @class = "form-control", @rows = 3 })
+            <textarea id="catDesc" class="form-control" rows="3">@(edit?Category.catDesc:"")</textarea>
         </div>
     </div>
     <div class="col-12 col-md-3">
-        <div class="form-group">
-            <label>@Resources.Resource.Description (@Resources.Resource.TC)</label>
-            @Html.TextAreaFor(model => model.catDescTC, new { @class = "form-control", @rows = 3 })
-        </div>
+		<div class="form-group">
+			<label>@Resources.Resource.Description (@Resources.Resource.TC)</label>
+			<textarea id="catDescTC" class="form-control" rows="3">@(edit?Category.catDescTC:"")</textarea>
+		</div>
     </div>
     <div class="col-12 col-md-3">
         <div class="form-group">
             <label>@Resources.Resource.Description (@Resources.Resource.SC)</label>
-            @Html.TextAreaFor(model => model.catDescSC, new { @class = "form-control", @rows = 3 })
+			<textarea id="catDescSC" class="form-control" rows="3">@(edit?Category.catDescSC:"")</textarea>
         </div>
     </div>
 </div>

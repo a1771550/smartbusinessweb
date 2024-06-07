@@ -100,7 +100,7 @@ function removeCattr(cattr: string) {
 		//contentType: "application/json; charset=utf-8",
 		type: "POST",
 		url: "/Customer/RemoveCattr",
-		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), cusCode:$("#cusCode").val(0), cattr },
+		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), cusCode:$("#cusCode").val(), cattr },
 		success: function (data: ICustomAttribute[]) {
 			if (data) {
 				//console.log("data:", data);

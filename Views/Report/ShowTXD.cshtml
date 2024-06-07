@@ -63,7 +63,12 @@
 
             <table class="table table-borderless">
                 <thead class="font-weight-bold">
-                    <tr><td class="text-center" style="border-bottom: 1px solid black !important;">@Resources.Resource.DateTimeHeader</td><td class="text-center" style="border-bottom: 1px solid black !important;">@Resources.Resource.SalesNo</td><td class="text-center" style="border-bottom: 1px solid black !important;">@Resources.Resource.Roundings</td><td class="text-center" style="border-bottom: 1px solid black !important;">@Resources.Resource.PaymentType</td><td class="text-right" style="border-bottom: 1px solid black !important;">@Resources.Resource.Amount ($)</td></tr>
+                    <tr>
+                    <td class="text-center" style="border-bottom: 1px solid black !important;">@Resources.Resource.DateTimeHeader</td>
+                    <td class="text-center" style="border-bottom: 1px solid black !important;">@Resources.Resource.SalesNo</td>
+    
+                    <td class="text-center" style="border-bottom: 1px solid black !important;">@Resources.Resource.PaymentType</td>
+                    <td class="text-right" style="border-bottom: 1px solid black !important;">@Resources.Resource.Amount ($)</td></tr>
                 </thead>
                 <tbody class="table-borderless">
                     @{ int idx = 0; int listlength = Model.SalesList.Count; string bgstyle = "";}
@@ -74,7 +79,7 @@
                         <tr style="@bgstyle" data-idx="@idx">
                             <td class="text-center">@item.rtsTime</td>
                             <td class="text-center">@item.rtsCode</td>
-                            <td class="text-center">@item.Roundings</td>
+                           
                             @if (item.rtsMonthBase)
                             {
                                 <td class="text-center">@Resources.Resource.MonthlyPay</td>

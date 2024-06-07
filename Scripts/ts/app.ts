@@ -1342,8 +1342,6 @@ function OnSuccess(response) {
 	} else {
 		togglePaging("item", false);
 	}
-
-	keyword = "";
 }
 function GetSetSelectedPreSalesLn(): IPreSalesLn {
 	if (PreSalesLnList.length > 0) {
@@ -1886,6 +1884,7 @@ function openItemModal(msg = "") {
 }
 
 function closeItemModal() {
+	keyword = "";
 	itemModal.dialog("close");
 }
 
@@ -17177,7 +17176,6 @@ function validCusForm() {
 }
 
 function FillInCustomer() {
-	/*let phone = $("#cusPhone").val() as string;*/
 	Customer = {} as ICustomer;
 	Customer.cusCustomerID = Number($("#cusCustomerID").val());
 	/*Customer.cusCode = editmode ? $("#cusCode").val() as string : phone;*/
@@ -19568,7 +19566,7 @@ $(document).on("click", ".assign", function (e) {
 	e.stopPropagation();
 	getRowCurrentY.call(this);
 	let codeId = forcustomer ? $(this).data("code") as string : $(this).data("id") as string;
-	//console.log("code:", code);
+	console.log("codeId:", codeId);
 	if (codeId && isNumber(codeId)) { codeId = convertNumToString(codeId).trim(); }
 	handleAssign($(this).data("salespersonid"), codeId);
 });
@@ -19585,12 +19583,12 @@ function handleAssign(salespersonId: number = 0, codeId: string = "") {
 				$.each(data, function (i, e: ISalesman) {
 					let email = formatEmail(e.Email, e.UserName) ?? "N/A";
 					let notes = e.surNotes ?? "N/A";
-					let disabled = "";
+					//let disabled = "";
 					let ondblclick = "";
 					let onclick = "";
 					let trcls = "";
 					if (salespersonId != null && salespersonId == e.surUID) {
-						disabled = "disabled";
+						//disabled = "disabled";
 						trcls = "selected";
 					} else {
 						trcls = "pointer";
@@ -19600,7 +19598,7 @@ function handleAssign(salespersonId: number = 0, codeId: string = "") {
 					html += `<tr data-id="${e.surUID}" class="${trcls}" ${ondblclick}>
 					<td>${email}</td>
 					<td>${notes}</td><td class="text-center"><span class="">${e.ModifyTimeDisplay}</span></td>
-					<td class="text-center"><button type="button" class="btn btn-success" ${disabled} ${onclick}>${assigntxt}</button></td>
+					<td class="text-center"><button type="button" class="btn btn-success" ${onclick}>${assigntxt}</button></td>
 					</tr>`;
 				});
 				$target = $("#tblsalesmen tbody");
@@ -19619,8 +19617,8 @@ function assignSave(salesmanId: number, codeId: string | null) {
 
 	if (forcustomer) {
 		if (codeId && !CodeList.includes(codeId)) CodeList.push(codeId);
-		//console.log("CodeList:", CodeList);
-		//console.log("salesmanId:", salesmanId);
+		console.log("CodeList:", CodeList);
+		console.log("salesmanId:", salesmanId);
 		//return;
 		$.fancyConfirm({
 			title: "",

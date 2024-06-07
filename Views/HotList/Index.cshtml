@@ -1,7 +1,7 @@
 ﻿@model HotListEditModel
 @using PagedList.Mvc;
 @{
-	ViewBag.Title = string.Format(Resources.Resource.ListFormat, Resources.Resource.HotList);
+	ViewBag.Title = Resources.Resource.HotList;
 	int rand = CommonHelper.GetVersionRandomNo();
 	string idlist = string.Join(",", Model.IdList);
 }

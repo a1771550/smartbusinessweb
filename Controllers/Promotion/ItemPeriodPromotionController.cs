@@ -25,9 +25,8 @@ namespace SmartBusinessWeb.Controllers.Item
         [HttpGet]
         public ActionResult Edit(int proId=0)
         {
-            ViewBag.Title = proId == 0 ? string.Format(Resources.Resource.AddFormat, Resources.Resource.ItemPricePromotion) : string.Format(Resources.Resource.EditFormat, Resources.Resource.ItemPricePromotion);
+            ViewBag.Title = proId == 0 ? string.Format(Resources.Resource.AddFormat, Resources.Resource.ItemPeriodPromotion) : string.Format(Resources.Resource.EditFormat, Resources.Resource.ItemPeriodPromotion);
             ViewBag.ParentPage = "promotion";
-            ViewBag.PageName = "ipedit";
             ItemPeriodPromotionEditModel model = new ItemPeriodPromotionEditModel(proId);
             return View(model);
         }
@@ -39,16 +38,9 @@ namespace SmartBusinessWeb.Controllers.Item
         public JsonResult Edit(ItemPeriodPromotionModel model)
         {
             ViewBag.ParentPage = "promotion";
-            ViewBag.PageName = "ipedit";
             ItemPeriodPromotionEditModel cmodel = new ItemPeriodPromotionEditModel();
-            if (model.proId == 0)
-            {
-                cmodel.Add(model);
-            }
-            else
-            {
-                cmodel.Edit(model);
-            }
+            if (model.proId == 0)cmodel.Add(model);           
+            else cmodel.Edit(model);
 
             string msg = Resources.Resource.Saved;
             return Json(msg);

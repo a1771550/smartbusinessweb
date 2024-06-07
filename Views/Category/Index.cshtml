@@ -34,12 +34,12 @@
 				<th scope="col" class="text-center colheader" data-col="2">
 					@Resources.Resource.Name (@Resources.Resource.SC)
 				</th>
-				<th scope="col" class="text-center colheader" data-col="3">
+				<th scope="col" class="text-center colheader order" data-col="3">
 					@Resources.Resource.DisplayOrder
 				</th>
 				
 
-				<th></th>
+				<th class="action"></th>
 			</tr>
             </thead>
             @foreach (var item in Model.PagingCategoryList)
@@ -55,12 +55,12 @@
 						@Html.DisplayFor(modelItem => item.catNameSC)
 					</td>
 
-					<td class="text-center">
+					<td class="text-center order">
 						<input type="number" class="form-control displayorder" title="@item.displayOrder" data-id="@item.Id" value="@item.displayOrder" /> 
 						<span class="msg"></span>
 					</td>
 					
-					<td>
+					<td class="action">
 						@Html.ActionLink(Resources.Resource.Edit, "Edit", new { Id = item.Id }, new { @class = "btn btn-info", @role = "button" })
 						@{
 							string disabled = item.Removable ? "" : "disabled";
