@@ -3,12 +3,15 @@
   "WorkspaceRootPath": "F:\\repos\\PPWProject\\SmartBusinessWeb\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|f:\\repos\\ppwproject\\smartbusinessweb\\controllers\\promotion\\itemperiodpromotioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|solutionrelative:controllers\\promotion\\itemperiodpromotioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|f:\\repos\\ppwproject\\smartbusinessweb\\views\\report\\showtxd.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|solutionrelative:views\\report\\showtxd.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|f:\\repos\\ppwproject\\smartbusinessweb\\views\\itemperiodpromotion\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|solutionrelative:views\\itemperiodpromotion\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|f:\\repos\\ppwproject\\smartbusinessweb\\controllers\\report\\reportcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|solutionrelative:controllers\\report\\reportcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E6585784-6922-4BAD-A92F-3EE21E5BC33D}|..\\PPWLib\\PPWLib.csproj|f:\\repos\\ppwproject\\ppwlib\\helpers\\reporthelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,7 +21,7 @@
       "DocumentGroups": [
         {
           "DockedHeight": 148,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -30,28 +33,41 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Edit.cshtml",
-              "DocumentMoniker": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Views\\ItemPeriodPromotion\\Edit.cshtml",
-              "RelativeDocumentMoniker": "Views\\ItemPeriodPromotion\\Edit.cshtml",
-              "ToolTip": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Views\\ItemPeriodPromotion\\Edit.cshtml",
-              "RelativeToolTip": "Views\\ItemPeriodPromotion\\Edit.cshtml",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "DocumentIndex": 0,
+              "Title": "ShowTXD.cshtml",
+              "DocumentMoniker": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Views\\Report\\ShowTXD.cshtml",
+              "RelativeDocumentMoniker": "Views\\Report\\ShowTXD.cshtml",
+              "ToolTip": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Views\\Report\\ShowTXD.cshtml",
+              "RelativeToolTip": "Views\\Report\\ShowTXD.cshtml",
+              "ViewState": "AQIAADYAAAAAAAAAAAA0wFEAAAAbAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2024-06-07T07:41:27.176Z",
+              "WhenOpened": "2024-06-07T09:41:50.968Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ItemPeriodPromotionController.cs",
-              "DocumentMoniker": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Controllers\\Promotion\\ItemPeriodPromotionController.cs",
-              "RelativeDocumentMoniker": "Controllers\\Promotion\\ItemPeriodPromotionController.cs",
-              "ToolTip": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Controllers\\Promotion\\ItemPeriodPromotionController.cs",
-              "RelativeToolTip": "Controllers\\Promotion\\ItemPeriodPromotionController.cs",
-              "ViewState": "AQIAABMAAAAAAAAAAAAwwCcAAAAtAAAA",
+              "DocumentIndex": 2,
+              "Title": "ReportHelper.cs",
+              "DocumentMoniker": "F:\\repos\\PPWProject\\PPWLib\\Helpers\\ReportHelper.cs",
+              "RelativeDocumentMoniker": "..\\PPWLib\\Helpers\\ReportHelper.cs",
+              "ToolTip": "F:\\repos\\PPWProject\\PPWLib\\Helpers\\ReportHelper.cs",
+              "RelativeToolTip": "..\\PPWLib\\Helpers\\ReportHelper.cs",
+              "ViewState": "AQIAANcAAAAAAAAAAIA0wOYAAAA8AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-07T07:41:23.173Z",
+              "WhenOpened": "2024-06-07T09:41:41.545Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ReportController.cs",
+              "DocumentMoniker": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Controllers\\Report\\ReportController.cs",
+              "RelativeDocumentMoniker": "Controllers\\Report\\ReportController.cs",
+              "ToolTip": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Controllers\\Report\\ReportController.cs",
+              "RelativeToolTip": "Controllers\\Report\\ReportController.cs",
+              "ViewState": "AQIAABEAAAAAAAAAAAAgwFgBAAAWAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-07T09:41:27.444Z",
               "EditorCaption": ""
             }
           ]
