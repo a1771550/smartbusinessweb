@@ -277,14 +277,19 @@
 								<p>@string.Format(Resources.Resource.ReportFormat, "ABSS")</p>
 							</a>
 							<ul class="submenu collapse" id="collapseAbssReports">
-								
+
+								@if (isadmin)
+								{
+									<li>@Html.ActionLink(Resources.Resource.Sales, "Sales", "ABSSReport")</li>
+								}
+
 								<li>@Html.ActionLink(Resources.Resource.Quotation, "Quotation", "ABSSReport")</li>
-							
+
 								<li>@Html.ActionLink(Resources.Resource.AccountReceivable, "AccountReceivable", "ABSSReport")</li>
 
-							
+
 								<li>@Html.ActionLink(Resources.Resource.SalesPersonPerformance, "SPP", "ABSSReport")</li>
-							
+
 								<li>@Html.ActionLink(Resources.Resource.CustomerInvoices, "CI", "ABSSReport")</li>
 							</ul>
 						</li>

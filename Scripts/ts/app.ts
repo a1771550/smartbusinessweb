@@ -63,7 +63,7 @@ interface IReserveLn {
 	CustomerName: string;
 	SellingPriceDisplay: string;
 }
-
+let forAbssSales: boolean = false;
 let forpreorder: boolean = false;
 let Reserve: IReserve;
 let ReserveLn: IReserveLn;

@@ -1,8 +1,6 @@
 ﻿using PPWCommonLib.CommonModels;
-using PPWDAL;
 using PPWLib.Helpers;
 using PPWLib.Models.Item;
-using PPWLib.Models.Quotation;
 using SmartBusinessWeb.Infrastructure;
 using System;
 using System.Collections.Generic;
@@ -10,15 +8,15 @@ using System.Data;
 using System.Linq;
 using System.Web.Mvc;
 using CommonLib.App_GlobalResources;
-using PPWLib.Models.AccountReceivable;
-using PPWLib.Models.SPP;
-using PPWLib.Models.CI;
+using CommonLib.BaseModels.MYOB;
+using PPWLib.Models.AbssReport;
+using PPWCommonLib.Models.Abss;
 
 namespace SmartBusinessWeb.Controllers.Report
 {
     [CustomAuthenticationFilter]
     public class AbssReportController : BaseController
-    {       
+    {
         private string ItemsLastUpdateTimeDisplay;
         private string StocksLastUpdateTimeDisplay;
         int userId => User.surUID;
@@ -27,7 +25,7 @@ namespace SmartBusinessWeb.Controllers.Report
         [CustomAuthorize("reports", "admin1", "admin", "superadmin")]
         public ActionResult CI()
         {
-            ViewBag.ParentPage = "abssreports";         
+            ViewBag.ParentPage = "abssreports";
             ViewBag.Title = Resource.CustomerInvoices;
             CIEditModel model = new CIEditModel();
             return View(model);
@@ -40,6 +38,23 @@ namespace SmartBusinessWeb.Controllers.Report
             ViewBag.ParentPage = "abssreports";
             ViewBag.Title = Resource.SalesPersonPerformance;
             SPPEditModel model = new SPPEditModel();
+            return View(model);
+        }
+
+        [HandleError]
+        [CustomAuthorize("reports", "admin1", "admin", "superadmin")]
+        public ActionResult Sales(SalesDate salesDate = null, int PageNo = 1, int SortCol = 0, string SortOrder = "desc", string Keyword = null)
+        {
+            ViewBag.ParentPage = "abssreports";
+            ViewBag.Title = Resource.Sales;
+            SalesEditModel model = new SalesEditModel
+            {
+                PageNo = PageNo,
+                SortCol = SortCol,
+                SortOrder = SortOrder == "desc" ? "asc" : "desc",
+                Keyword = Keyword
+            };
+            model.GetSalesListFrmDB(salesDate, PageNo, SortCol, SortOrder, Keyword);
             return View(model);
         }
 
@@ -199,7 +214,7 @@ namespace SmartBusinessWeb.Controllers.Report
         }
         public ActionResult GetQuotations(JqueryDatatableParam param)
         {
-            List<QuotationView> quotations = GetFilteredQuotations();
+            List<QuotationModel> quotations = GetFilteredQuotations();
 
             #region Sorting
             if (!string.IsNullOrEmpty(param.sSearch))
@@ -284,7 +299,7 @@ namespace SmartBusinessWeb.Controllers.Report
             }, JsonRequestBehavior.AllowGet);
         }
 
-        private List<QuotationView> GetFilteredQuotations()
+        private List<QuotationModel> GetFilteredQuotations()
         {
             var quotations = QuotationHelper.GetQuotationListFrmDB(apId, User.surUID);
             if (!UserHelper.CheckIfARAdmin(User)) quotations = quotations.Where(x => x.SalesPerson.ID == User.surUID).ToList();
@@ -292,8 +307,8 @@ namespace SmartBusinessWeb.Controllers.Report
         }
 
         public ActionResult GetQuotationsM(JqueryDatatableParam param)
-        {            
-            List<QuotationView> quotations = GetFilteredQuotations();
+        {
+            List<QuotationModel> quotations = GetFilteredQuotations();
 
             if (!string.IsNullOrEmpty(param.sSearch))
             {
@@ -364,7 +379,7 @@ namespace SmartBusinessWeb.Controllers.Report
         }
         public ActionResult GetAccountReceivables(JqueryDatatableParam param)
         {
-            List<AccountReceivableView> accountReceivables = GetFilteredAR();
+            List<AccountReceivableModel> accountReceivables = GetFilteredAR();
 
             if (!string.IsNullOrEmpty(param.sSearch))
             {
@@ -376,7 +391,7 @@ namespace SmartBusinessWeb.Controllers.Report
                                              ).ToList();
             }
 
-            foreach (AccountReceivableView ar in accountReceivables)
+            foreach (AccountReceivableModel ar in accountReceivables)
             {
                 if (ar.TermsOfPayment.TermsID == 1)//cash on delivery
                 {
@@ -451,16 +466,16 @@ namespace SmartBusinessWeb.Controllers.Report
             }, JsonRequestBehavior.AllowGet);
         }
 
-        private List<AccountReceivableView> GetFilteredAR()
+        private List<AccountReceivableModel> GetFilteredAR()
         {
-            List<AccountReceivableView> accountReceivables = ARHelper.GetARListFrmDB(apId);
+            List<AccountReceivableModel> accountReceivables = ARHelper.GetARListFrmDB(apId);
             if (!UserHelper.CheckIfARAdmin(User)) accountReceivables = accountReceivables.Where(x => x.SalesPerson.ID == User.surUID).ToList();
             return accountReceivables;
         }
 
         public ActionResult GetAccountReceivablesM(JqueryDatatableParam param)
         {
-            List<AccountReceivableView> accountReceivables = GetFilteredAR();
+            List<AccountReceivableModel> accountReceivables = GetFilteredAR();
 
             #region Sorting
             if (!string.IsNullOrEmpty(param.sSearch))
@@ -473,7 +488,7 @@ namespace SmartBusinessWeb.Controllers.Report
                                              ).ToList();
             }
 
-            foreach (AccountReceivableView ar in accountReceivables)
+            foreach (AccountReceivableModel ar in accountReceivables)
             {
                 if (ar.TermsOfPayment.TermsID == 1)//cash on delivery
                 {
@@ -536,7 +551,7 @@ namespace SmartBusinessWeb.Controllers.Report
         }
         public ActionResult GetSalesPersonPerformances(JqueryDatatableParam param)
         {
-            List<SPPView> salesPersonPerformances = GetFilteredSSP();
+            List<SPPModel> salesPersonPerformances = GetFilteredSSP();
 
             if (!string.IsNullOrEmpty(param.sSearch))
             {
@@ -639,16 +654,16 @@ namespace SmartBusinessWeb.Controllers.Report
             }, JsonRequestBehavior.AllowGet);
         }
 
-        private List<SPPView> GetFilteredSSP()
+        private List<SPPModel> GetFilteredSSP()
         {
-            List<SPPView> salesPersonPerformances = SPPHelper.GetSPPListFrmDB(apId);
+            List<SPPModel> salesPersonPerformances = SPPHelper.GetSPPListFrmDB(apId);
             if (!UserHelper.CheckIfARAdmin(User)) salesPersonPerformances = salesPersonPerformances.Where(x => x.SalesPersonID == userId).ToList();
             return salesPersonPerformances;
         }
 
         public ActionResult GetSalesPersonPerformancesM(JqueryDatatableParam param)
         {
-            List<SPPView> salesPersonPerformances = GetFilteredSSP();
+            List<SPPModel> salesPersonPerformances = GetFilteredSSP();
 
             if (!string.IsNullOrEmpty(param.sSearch))
             {
@@ -736,7 +751,7 @@ namespace SmartBusinessWeb.Controllers.Report
         }
         public ActionResult GetCustomersInvoicess(JqueryDatatableParam param)
         {
-            List<CIView> customersInvoicess = GetFilteredCI();
+            List<CIModel> customersInvoicess = GetFilteredCI();
 
             if (!string.IsNullOrEmpty(param.sSearch))
             {
@@ -835,16 +850,16 @@ namespace SmartBusinessWeb.Controllers.Report
             }, JsonRequestBehavior.AllowGet);
         }
 
-        private List<CIView> GetFilteredCI()
+        private List<CIModel> GetFilteredCI()
         {
-            List<CIView> customersInvoicess = CIHelper.GetCIListFrmDB(apId);
+            List<CIModel> customersInvoicess = CIHelper.GetCIListFrmDB(apId);
             if (!UserHelper.CheckIfARAdmin(User)) customersInvoicess = customersInvoicess.Where(x => x.SalesPerson.ID == userId).ToList();
             return customersInvoicess;
         }
 
         public ActionResult GetCustomersInvoicessM(JqueryDatatableParam param)
         {
-            List<CIView> customersInvoicess = GetFilteredCI();
+            List<CIModel> customersInvoicess = GetFilteredCI();
 
             if (!string.IsNullOrEmpty(param.sSearch))
             {

@@ -425,6 +425,7 @@
     <Content Include="bundles\images\ui-icons_777777_256x240.png" />
     <Content Include="bundles\images\ui-icons_cc0000_256x240.png" />
     <Content Include="bundles\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\abssreports\sales.css" />
     <Content Include="Content\records\attendance.css" />
     <Content Include="Content\customer\attr\common.css" />
     <Content Include="Content\bootstrap-grid.css" />
@@ -4731,6 +4732,7 @@
     <Content Include="Scripts\ts\js\settings\duty\edit.js.map" />
     <Content Include="Scripts\ts\js\settings\duty\index.js.map" />
     <Content Include="Scripts\ts\js\reports\repotbase.js.map" />
+    <Content Include="Views\AbssReport\Sales.cshtml" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -5096,6 +5098,7 @@
     <TypeScriptCompile Include="Scripts\node_modules\undici-types\webidl.d.ts" />
     <TypeScriptCompile Include="Scripts\node_modules\undici-types\websocket.d.ts" />
     <TypeScriptCompile Include="Scripts\tinymce\tinymce.d.ts" />
+    <TypeScriptCompile Include="Scripts\ts\abssreports\sales.ts" />
     <TypeScriptCompile Include="Scripts\ts\ajaxpostlist.ts" />
     <TypeScriptCompile Include="Scripts\ts\app.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\attributes\index.ts" />

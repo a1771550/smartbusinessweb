@@ -1,0 +1,55 @@
+﻿#dateblk {
+	/*border: 1px solid #dee2e6;*/
+}
+
+#tblSales thead th.invoiceno, #tblSales tbody td.invoiceno {
+	width: 100px;
+	/*max-width:100px;*/
+}
+
+#tblSales tbody td.nopad{
+	padding:0!important;
+}
+
+.tblItem{
+	table-layout:fixed;
+	width:100%;
+}
+
+.tblItem td {
+	border: none;
+}
+	.tblItem td:not(:last-child) {
+		border-right: 1px solid #dee2e6;
+	}
+
+#tblSales thead th.itemno {
+	width: 100px;
+	/*max-width:100px;*/
+}
+.tblItem td.itemno {
+	width: 90px;
+}
+
+#tblSales thead th.itemname {
+	width: 320px;
+	/*max-width: 320px !important;*/
+}
+.tblItem td.itemname {
+	width: 290px;
+}
+
+#tblSales thead th.number {
+	width: 124px;
+	/*max-width:100px!important;*/
+}
+.tblItem td.number {
+	/*width: 100px;*/
+	/*max-width: 133px!important;*/
+	text-align: right;
+}
+
+#tblSales thead th.date, #tblSales tbody td.date {
+	width: 100px;
+	/*max-width:100px;*/
+}

@@ -1,7 +1,10 @@
-﻿@model PPWLib.Models.Quotation.QuotationEditModel
+﻿@model QuotationEditModel
+@{
+	int idx = Model.IsAdmin ? 1 : 0;
+}
 
-    <link href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.css" rel="stylesheet">
-    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.js"></script>
+<link href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.js"></script>
 
 <div class="text-center">
 	<h2 class="d-none d-sm-block">@Resources.Resource.Quotation</h2>
@@ -13,7 +16,7 @@
 		<table id="tblGrid" class="table table-striped table-bordered dt-responsive nowrap display" cellspacing="0">
 			<thead>
 				<tr>
-					<th>@string.Format(Resources.Resource.NumberFormat,Resources.Resource.Order)</th>
+					<th>@string.Format(Resources.Resource.NumberFormat, Resources.Resource.Order)</th>
 					<th>@Resources.Resource.Date</th>
 					<th>@Resources.Resource.Customer</th>
 					<th>@Resources.Resource.ItemNumber</th>
@@ -57,11 +60,11 @@
 	var webbind = false;
 	var mobilebind = false;
 	pagesize = @Model.PageSize;
-	var minDateM, maxDateM;	
+	var minDateM, maxDateM;
 
 	$(function () {
 		setFullPage();
-		triggerMenu(8, 0);
+		triggerMenu(8, @idx);
 		// Execute on load
 		checkWidth();
 		// Bind event listener
@@ -81,7 +84,7 @@
 			},
 			"bLengthChange": false,
 			'scrollY': '65vh',
-			"pageLength": pagesize,		
+			"pageLength": pagesize,
 			"sAjaxSource": "/AbssReport/GetQuotations",
 			"bServerSide": true,
 			"bProcessing": true,
@@ -143,7 +146,7 @@
 					"searchable": true
 				}
 			],
-			
+
 			"columnDefs": [
 				{
 					targets: [1,6,7],
@@ -173,7 +176,7 @@
 
 				setSearchBox4AbssReports()
 
-				localizePagingInfo();		
+				localizePagingInfo();
 			},
 		});
 	}
@@ -268,7 +271,7 @@
 					$detail.empty().append(html).dialog("open");
 				});
 				$('input[type=search]').css({ 'height': '22px' });
-				
+
 			},
 		});
 	}

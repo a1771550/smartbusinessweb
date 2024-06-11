@@ -1,0 +1,120 @@
+﻿@model SalesEditModel
+@using PagedList.Mvc;
+@{
+	ViewBag.Title = Resources.Resource.Sales;
+	int rand = CommonHelper.GetVersionRandomNo();
+	bool isassignor = UserHelper.CheckIfAssignor(Model.User);
+}
+<link href="~/Content/abssreports/sales.css?v=@rand" rel="stylesheet" type="text/css" />
+
+<h2>
+	@ViewBag.Title
+</h2>
+
+@Html.AntiForgeryToken()
+
+@using (Html.BeginForm("Sales", "AbssReport", FormMethod.Get, new { @Id = "frmSales" }))
+{
+	<div id="searchblk" class="my-3">
+
+		<div class="float-right">
+			<div class="form-inline">
+				<div class="form-group">
+					<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Model.Keyword">
+
+					<button id="btnSearch" class="btn btn-secondary mx-1" type="button" title="@Resources.Resource.Search">
+						<i class="fa fa-search"></i>
+					</button>
+					<button id="btnReload" class="btn btn-warning mx-1" type="button" title="@Resources.Resource.Reload">
+						<i class="fa fa-refresh"></i>
+					</button>
+				</div>
+			</div>
+
+
+		</div>
+
+		<div class="clearfix">
+			<div id="dateblk" class="form-inline">
+				<div class="form-group">
+					<input type="datetime" class="form-control datepicker" name="strDate" id="strDate" />
+				</div>
+				<div class="form-group">
+					<select class="form-control datepicker" name="drpDate" id="drpDate">
+					</select>
+				</div>
+				<button id="btnFilter" class="btn btn-success mx-1">@Resources.Resource.Filter</button>
+			</div>
+		</div>
+
+	</div>
+
+	if (Model.SalesList != null && Model.SalesList.Count > 0)
+	{
+		<table id="tblSales" class="table table-bordered table-hover table-condensed">
+			<thead class="gray-header font-weight-bold">
+				<tr>
+					<th class="text-center colheader date" data-col="0">@Resources.Resource.Date</th>
+					<th class="text-left colheader invoiceno" data-col="1">@Resources.Resource.InvoiceNo</th>
+					<th class="text-left itemno">@Resources.Resource.ItemNumber</th>
+					<th class="text-left itemname">@Resources.Resource.ItemNameDesc</th>
+					<th class="text-right qty number">@Resources.Resource.OpenStockQty</th>
+					<th class="text-right qty number">@Resources.Resource.QtyPurchased</th>
+					<th class="text-right amt number">@Resources.Resource.AverageCost (@Model.Currency)</th>
+					<th class="text-right qty number">@Resources.Resource.QuantitySold</th>
+					<th class="text-right amt number">@Resources.Resource.TotalQtySold</th>
+					<th class="text-right amt number">@Resources.Resource.SalesAmount (@Model.Currency)</th>
+					<th class="text-right amt number">@Resources.Resource.TotalSalesAmount (@Model.Currency)</th>
+					<th class="text-right qty number">@Resources.Resource.OnHandStock</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var sales in Model.PagingSalesList)
+				{
+					var ItemList = Model.DicInvoiceItems[sales.InvoiceNumber];
+					<tr>
+						<td class="text-center date">@sales.InvoiceDateDisplay</td>
+						<td class="text-left invoiceno">@sales.InvoiceNumber</td>
+						<td colspan="10" class="nopad">
+							<table class="tblItem">
+								@foreach (var item in ItemList)
+								{
+									<tr>
+										<td class="itemno">@item.ItemNumber</td>
+										<td class="itemname">@item.ItemNameDesc</td>
+										<td class="qty number">@item.OpenStockQtyDisplay</td>
+										<td class="qty number">@item.QtyPurchasedDisplay</td>
+										<td class="amt number">@item.AverageCostDisplay</td>
+										<td class="qty number">@item.QtyDisplay</td>
+										<td class="qty number">@item.TotalQtySoldDisplay</td>
+										<td class="amt number">@item.SalesAmtDisplay</td>
+										<td class="amt number">@item.TotalSalesAmtDisplay</td>
+										<td class="qty number">@item.OnHandStockDisplay</td>
+									</tr>
+								}
+							</table>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+		<div id="pagingblk" class="my-3">
+			@Html.PagedListPager(Model.PagingSalesList, PageNo => Url.Action("Sales",
+	new { PageNo, SortOrder = Model.CurrentSortOrder, SortCol = Model.SortCol, Keyword = Model.Keyword, PageSize = Model.PageSize }))
+		</div>
+
+		@Html.Partial("_SortOrderColHidden")
+	}
+	else
+	{
+		@Html.Partial("_NoRecordFound")
+	}
+}
+
+
+
+@Html.Partial("_WaitingModal")
+<div id="infoblk" data-pagesize="@Model.ComInfo.PageLength"></div>
+<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+<script src="~/Scripts/ts/js/abssreports/sales.js?v=@rand"></script>
