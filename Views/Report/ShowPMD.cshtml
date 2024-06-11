@@ -1,165 +1,149 @@
 ﻿@model PPWLib.Models.PaymentMethodDetail
 
 @{
-    ViewBag.Title = Resources.Resource.PaymentMethodsDetails;
-    int rand = CommonHelper.GetVersionRandomNo();
+	ViewBag.Title = Resources.Resource.PaymentMethodsDetails;
+	int rand = CommonHelper.GetVersionRandomNo();
+}
+
+<h2 class="text-center mb-4">@ViewBag.Title</h2>
+
+@using (Html.BeginForm("ShowPMD", "Report", FormMethod.Post, new { @Id = "frmreport", @class = "form-inline" }))
+{
+	<div id="filterblk" class="my-3">
+		@Html.AntiForgeryToken()
+		<div class="row justify-content-between">
+			<div class="col-12 col-md-5 small input-group my-auto mx-auto text-center">
+				<input class="form-control" type="text" id="datetimesmin" name="datetimesmin" />
+				<span class="mx-2 d-inline-block my-auto">@Resources.Resource.To</span>
+				<input class="form-control" type="text" id="datetimesmax" name="datetimesmax" />
+
+			</div>
+			<div class="col-12 col-md-5 small input-group my-auto mx-auto text-center">
+				<select class="form-control mx-2" id="drpShop" name="SelectedShop">
+					@foreach (var shop in Model.ComInfo.Shops.Split(','))
+					{
+						string _selected = shop == Model.ComInfo.Shop ? "selected" : "";
+						<option value="@shop" @_selected>@shop</option>
+					}
+				</select>
+				<select class="form-control" id="drpDevice" name="SelectedDevice">
+					@foreach (var device in Model.ComInfo.Devices.Split(','))
+					{
+						string _selected = device == Model.ComInfo.Device ? "selected" : "";
+						<option value="@device" @_selected>@device</option>
+					}
+				</select>
+			</div>
+
+			<div class="col-12 col-md-2 text-right input-group">
+				<button id="btnSubmit" class="btn btn-success">@Resources.Resource.Submit</button>
+				<button id="btnReload" type="button" class="btn btn-warning mx-1">@Resources.Resource.Reload</button>
+			</div>
+		</div>
+	</div>
+}
+
+@if (Model.ViewablePayTypeCodes.Count > 0)
+{
+	<div id="printblk" class="printele" style="font-size:1.3em!important;">
+
+		<div class="text-right small">@Resources.Resource.StartDate : @Model.FrmDate</div>
+		<div class="text-right small">@Resources.Resource.EndDate : @Model.ToDate</div>
+
+		<div class="row mx-1 my-5">
+
+			@foreach (var key in Model.ViewablePayTypeCodes)
+			{
+				<table class="table table-borderless">
+					<thead class="font-weight-bold">
+						<tr><td class="text-center" style="border-bottom: 1px solid black !important;font-weight:bold!important;">@Resources.Resource.PaymentType</td><td class="text-left" style="border-bottom: 1px solid black !important;width:30%;">@Resources.Resource.TxTime</td><td class="text-left" style="border-bottom: 1px solid black !important;width:15%!important;">@Resources.Resource.TxNo</td><td class="text-right" style="border-bottom: 1px solid black !important;">@Resources.Resource.TxAmt</td><td class="text-right" style="border-bottom: 1px solid black !important;">@Resources.Resource.PaidAmt</td></tr>
+					</thead>
+					<tbody class="table-borderless">
+						<tr>
+							<td style="font-weight: bold !important;" class="text-center">
+								@Model.DicPayTypes[key]
+							</td>
+							<td colspan="4" style="padding:0!important;">
+								<table class="table table-borderless" style="padding:0!important;">
+									<tbody>
+
+										@foreach (var pl in Model.PayLnViews)
+										{
+											if (pl.pmtCode.ToLower() == key.ToLower())
+											{
+												<tr class="payline">
+
+													@foreach (var item in Model.SalesList)
+													{
+														if (pl.rtpCode == item.rtsCode)
+														{
+															string salescode = item.rtsCode;
+															if (!string.IsNullOrEmpty(item.rtsRefCode))
+															{
+																salescode += string.Format(" (REF:{0})", item.rtsRefCode);
+															}
+															<td class="text-left" style="width:35%!important;">@item.rtsTime</td>
+															<td class="text-left" style="width:13%!important;">@salescode</td>
+															<td class="text-right">@item.rtsFinalTotal</td>
+
+															break;
+														}
+
+													}
+													@foreach (var item in Model.RefundList)
+													{
+														if (pl.rtpCode == item.rtsCode)
+														{
+															string salescode = item.rtsCode;
+															if (!string.IsNullOrEmpty(item.rtsRefCode))
+															{
+																salescode += string.Format(" (REF:{0})", item.rtsRefCode);
+															}
+															<td class="text-left" style="width:35%!important;">@item.rtsTime</td>
+															<td class="text-left" style="width:13%!important;">@salescode</td>
+															<td class="text-right">@item.rtsFinalTotal</td>
+
+															break;
+														}
+
+													}
+
+													<td class="text-right">@pl.Amount</td>
+
+
+												</tr>
+											}
+										}
+
+									</tbody>
+								</table>
+							</td>
+						</tr>
+					</tbody>
+					<tfoot class="table-borderless font-weight-bold">
+						<tr><td colspan="4" class="text-right" style="border-top: 1px solid black !important;">@Model.DicPayTypes[key] @Resources.Resource.Totals</td><td class="text-right" style="border-top: 1px solid black !important;"><span id="@key">@Model.DicPayAmt[key]</span></td></tr>
+
+					</tfoot>
+				</table>
+				<hr style="width:100%!important;border:1px dotted #808080!important;" />
+			}
+		</div>
+
+	</div>
+
+	<div class="my-3 printele">
+		<button type="button" id="btnPrintPreview" class="btn btn-primary">@Resources.Resource.PrintPreview</button>
+	</div>
 }
 
 
-<div id="printblk" class="printele" style="font-size:1.3em!important;">
-    <h2 class="text-center mb-4">@ViewBag.Title</h2>
-
-    @using (Html.BeginForm("ShowPMD", "Report", FormMethod.Post, new { @Id = "frmtxd", @class = "form-inline" }))
-    {
-        <div id="filterblk" class="my-3">
-            @Html.AntiForgeryToken()
-            <div class="row justify-content-between">
-                <div class="col-12 col-md-5 small input-group my-auto mx-auto text-center">
-                    <input class="form-control" type="text" id="datetimesmin" name="datetimesmin" />
-                    <span class="mx-2 d-inline-block my-auto">@Resources.Resource.To</span>
-                    <input class="form-control" type="text" id="datetimesmax" name="datetimesmax" />
-
-                </div>
-                <div class="col-12 col-md-5 small input-group my-auto mx-auto text-center">
-                    <select class="form-control mx-2" id="drpShop" name="SelectedShop">
-                        @foreach (var shop in Model.ComInfo.Shops.Split(','))
-                        {
-                            string _selected = shop == Model.ComInfo.Shop ? "selected" : "";
-                            <option value="@shop" @_selected>@shop</option>
-                        }
-                    </select>
-                    <select class="form-control" id="drpDevice" name="SelectedDevice">
-                        @foreach (var device in Model.ComInfo.Devices.Split(','))
-                        {
-                            string _selected = device == Model.ComInfo.Device ? "selected" : "";
-                            <option value="@device" @_selected>@device</option>
-                        }
-                    </select>
-                </div>
-
-                <div class="col-12 col-md-2 text-right input-group">
-                    <button id="btnSubmit" class="btn btn-success">@Resources.Resource.Submit</button>
-                </div>
-            </div>
-        </div>
-    }
-
-    @if (Model.ViewablePayTypeCodes.Count > 0)
-    {
-        <div class="text-right small">@Resources.Resource.StartDate : @Model.FrmDate</div>
-        <div class="text-right small">@Resources.Resource.EndDate : @Model.ToDate</div>
-
-        <div class="row mx-1 my-5">
-
-            @foreach (var key in Model.ViewablePayTypeCodes)
-            {
-                <table class="table table-borderless">
-                    <thead class="font-weight-bold">
-                        <tr><td class="text-center" style="border-bottom: 1px solid black !important;font-weight:bold!important;">@Resources.Resource.PaymentType</td><td class="text-left" style="border-bottom: 1px solid black !important;width:30%;">@Resources.Resource.TxTime</td><td class="text-left" style="border-bottom: 1px solid black !important;width:15%!important;">@Resources.Resource.TxNo</td><td class="text-right" style="border-bottom: 1px solid black !important;">@Resources.Resource.TxAmt</td><td class="text-right" style="border-bottom: 1px solid black !important;">@Resources.Resource.PaidAmt</td></tr>
-                    </thead>
-                    <tbody class="table-borderless">
-                        <tr>
-                            <td style="font-weight: bold !important;" class="text-center">
-                                @Model.DicPayTypes[key]
-                            </td>
-                            <td colspan="4" style="padding:0!important;">
-                                <table class="table table-borderless" style="padding:0!important;">
-                                    <tbody>
-
-                                        @foreach (var pl in Model.PayLnViews)
-                                        {
-                                            if (pl.pmtCode.ToLower() == key.ToLower())
-                                            {
-                                                <tr class="payline">
-
-                                                    @foreach (var item in Model.SalesList)
-                                                    {
-                                                        if (pl.rtpCode == item.rtsCode)
-                                                        {
-                                                            string salescode = item.rtsCode;
-                                                            if (!string.IsNullOrEmpty(item.rtsRefCode))
-                                                            {
-                                                                salescode += string.Format(" (REF:{0})", item.rtsRefCode);
-                                                            }
-                                                            <td class="text-left" style="width:35%!important;">@item.rtsTime</td>
-                                                            <td class="text-left" style="width:13%!important;">@salescode</td>
-                                                            <td class="text-right">@item.rtsFinalTotal</td>
-
-                                                            break;
-                                                        }
-
-                                                    }
-                                                    @foreach (var item in Model.RefundList)
-                                                    {
-                                                        if (pl.rtpCode == item.rtsCode)
-                                                        {
-                                                            string salescode = item.rtsCode;
-                                                            if (!string.IsNullOrEmpty(item.rtsRefCode))
-                                                            {
-                                                                salescode += string.Format(" (REF:{0})", item.rtsRefCode);
-                                                            }
-                                                            <td class="text-left" style="width:35%!important;">@item.rtsTime</td>
-                                                            <td class="text-left" style="width:13%!important;">@salescode</td>
-                                                            <td class="text-right">@item.rtsFinalTotal</td>
-
-                                                            break;
-                                                        }
-
-                                                    }
-
-                                                    <td class="text-right">@pl.Amount</td>
 
 
-                                                </tr>
-                                            }
-                                        }
-
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tfoot class="table-borderless font-weight-bold">
-                        <tr><td colspan="4" class="text-right" style="border-top: 1px solid black !important;">@Model.DicPayTypes[key] @Resources.Resource.Totals</td><td class="text-right" style="border-top: 1px solid black !important;"><span id="@key">@Model.DicPayAmt[key]</span></td></tr>
-
-                    </tfoot>
-                </table>
-                <hr style="width:100%!important;border:1px dotted #808080!important;" />
-            }
-        </div>
-    }
-
-
-</div>
-
-
-<div class="row justify-content-center my-3 printele">
-    <button type="button" id="btnPrintPreview" class="btn btn-success">@Resources.Resource.PrintPreview</button>
-</div>
-
-
-
-
+@Html.Partial("_NoRecordFound")
 <script src="~/Scripts/printthis/printThis.js"></script>
 <script type="text/javascript" src="~/Scripts/daterangepicker/moment.min.js"></script>
 <script type="text/javascript" src="~/Scripts/daterangepicker/daterangepicker.min.js"></script>
 <link rel="stylesheet" type="text/css" href="~/Scripts/daterangepicker/daterangepicker.css" />
 <script type="text/javascript" src="~/Scripts/DataTables/dataTables.dateTime.min.js"></script>
-<script>
-    $(document).ready(function () {
-        setFullPage();
-		triggerMenu(7, 1);
-        initDatePickers();
-    });
-
-    function doFilter() {
-        if (minDate !== '' && maxDate !== '') {
-            $('#frmtxd').submit();
-        }
-    }
-
-    $(document).on('click', '#btnPrintPreview', function () {
-        $('#printblk').printThis();
-    });
-</script>
-
+<div id="infoblk" data-idx="1" data-ispostback="@Model.PostBack" data-count="@Model.ViewablePayTypeCodes.Count"></div>
+<script src="~/Scripts/ts/js/reports/repotbase.js?v=@rand"></script>

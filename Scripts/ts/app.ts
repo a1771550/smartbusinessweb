@@ -63,6 +63,7 @@ interface IReserveLn {
 	CustomerName: string;
 	SellingPriceDisplay: string;
 }
+
 let forpreorder: boolean = false;
 let Reserve: IReserve;
 let ReserveLn: IReserveLn;
@@ -6426,6 +6427,7 @@ interface ISerialNo {
 interface JQuery {
 	switchClass(arg0: string, arg1: string, arg2: number, arg3: string): any;
 	niceSelect(): any;
+	printThis(): any;
 	ASPSnippets_Pager(arg0: {
 		ActiveCssClass: string;
 		PagerCssClass: string;
@@ -22428,8 +22430,13 @@ function initVariablesFrmInfoblk() {
 	comInfo = $infoblk.data("cominfo");
 }
 
-$(document).on("click", "#btnReload", function () {
-	window.location.href = window.location.pathname;
+$(document).on("click", "#btnReload", function (e) {
+	e.preventDefault();
+	let url = new URL(window.location.href);
+	url.searchParams.set("reload", "1");
+	//console.log("url.href:", url.href);
+	//return;
+	window.location.href = url.href;	
 });
 
 $(document).on("click", "#btnSearch", function (e) {
@@ -22718,3 +22725,9 @@ $(document).on("change", "#drpCurrency", function () {
 		$("#salesamount").text(itotalamt);
 	}
 });
+
+function toggleNoRecord(show: boolean) {
+	if (show)
+		$("#norecord").addClass("d-inline-block my-2").show();
+	else $("#norecord").removeClass("d-inline-block my-2").hide();
+}

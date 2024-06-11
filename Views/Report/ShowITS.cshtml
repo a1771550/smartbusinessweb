@@ -1,346 +1,336 @@
 ﻿@model PPWLib.Models.ItemSales
 
 @{
-    ViewBag.Title = Resources.Resource.ItemSales;
-    bool approvalmode = ConfigurationManager.AppSettings["ApprovalMode"] == "1";
-    int rand = CommonHelper.GetVersionRandomNo();
+	ViewBag.Title = Resources.Resource.ItemSales;
+	bool approvalmode = ConfigurationManager.AppSettings["ApprovalMode"] == "1";
+	int rand = CommonHelper.GetVersionRandomNo();
+	int count = (Model.GroupedBySalesmenItemSales.Count > 0 || Model.GroupedByPOItemSales.Count > 0 || Model.GroupedItemSales.Count > 0) ? 1 : 0;
 }
 
+<h2 class="text-center mb-4">@ViewBag.Title</h2>
 
-<div id="printblk" class="printele" style="font-size:1.3em!important;">
+@using (Html.BeginForm("ShowITS", "Report", FormMethod.Post, new { @Id = "frmreport", @class = "form-inline" }))
+{
+	<div id="filterblk" class="my-3">
+		@Html.AntiForgeryToken()
+		<div class="row justify-content-between">
 
-    <h2 class="text-center mb-4">@ViewBag.Title</h2>
+			<div class="col-12 col-md-4 small input-group my-auto mx-auto">
+				<input class="form-control" type="text" id="datetimesmin" name="datetimesmin" />
+				<span class="mx-2 d-inline-block my-auto">@Resources.Resource.To</span>
+				<input class="form-control" type="text" id="datetimesmax" name="datetimesmax" />
+			</div>
 
-    @using (Html.BeginForm("ShowITS", "Report", FormMethod.Post, new { @Id = "frmtxd", @class = "form-inline" }))
-    {
-        <div id="filterblk" class="my-3">
-            @Html.AntiForgeryToken()
-            <div class="row justify-content-between">
-
-                <div class="col-12 col-md-4 small input-group my-auto mx-auto">
-                    <input class="form-control" type="text" id="datetimesmin" name="datetimesmin" />
-                    <span class="mx-2 d-inline-block my-auto">@Resources.Resource.To</span>
-                    <input class="form-control" type="text" id="datetimesmax" name="datetimesmax" />
-                </div>
-
-                <div class="col-12 col-md-3 small input-group my-auto mx-auto">                
-                    <select class="form-control mx-2" id="drpShop" name="SelectedShop">
-                        @foreach (var shop in Model.ComInfo.Shops.Split(','))
-                        {
-                            string _selected = shop == Model.ComInfo.Shop ? "selected" : "";
-                            <option value="@shop" @_selected>@shop</option>
-                        }
-                    </select>                   
-                    <select class="form-control" id="drpDevice" name="SelectedDevice">
-                        @foreach (var device in Model.ComInfo.Devices.Split(','))
-                        {
-                            string _selected = device == Model.ComInfo.Device ? "selected" : "";
-                            <option value="@device" @_selected>@device</option>
-                        }
-                    </select>
-                </div>
+			<div class="col-12 col-md-3 small input-group my-auto mx-auto">
+				<select class="form-control mx-2" id="drpShop" name="SelectedShop">
+					@foreach (var shop in Model.ComInfo.Shops.Split(','))
+					{
+						string _selected = shop == Model.ComInfo.Shop ? "selected" : "";
+						<option value="@shop" @_selected>@shop</option>
+					}
+				</select>
+				<select class="form-control" id="drpDevice" name="SelectedDevice">
+					@foreach (var device in Model.ComInfo.Devices.Split(','))
+					{
+						string _selected = device == Model.ComInfo.Device ? "selected" : "";
+						<option value="@device" @_selected>@device</option>
+					}
+				</select>
+			</div>
 
 
-                <div class="col-12 col-md-5 input-group">
-                    <div class="form-check form-check-inline small">
-                        <input class="form-check-input chkgroup" type="radio" name="mode" id="groupdefault" value="default" checked>
-                        <label class="form-check-label" for="groupdefault">@Resources.Resource.Default</label>
-                    </div>
-                    <div class="form-check form-check-inline small">
-                        <input class="form-check-input chkgroup" type="radio" name="mode" id="groupbysales" value="sales">
-                        <label class="form-check-label" for="groupbysales">@string.Format(Resources.Resource.GroupedByFormat, Resources.Resource.SalesPerson)</label>
-                    </div>
-                    <div class="form-check form-check-inline small">
-                        <input class="form-check-input chkgroup" type="radio" name="mode" id="groupbypo" value="po">
-                        <label class="form-check-label" for="groupbypo">@string.Format(Resources.Resource.GroupedByFormat, Resources.Resource.CustomerPO)</label>
-                    </div>
-                </div>
+			<div class="col-12 col-md-5 input-group">
+				<div class="form-check form-check-inline small">
+					<input class="form-check-input chkgroup" type="radio" name="mode" id="groupdefault" value="default" checked>
+					<label class="form-check-label" for="groupdefault">@Resources.Resource.Default</label>
+				</div>
+				<div class="form-check form-check-inline small">
+					<input class="form-check-input chkgroup" type="radio" name="mode" id="groupbysales" value="sales">
+					<label class="form-check-label" for="groupbysales">@string.Format(Resources.Resource.GroupedByFormat, Resources.Resource.SalesPerson)</label>
+				</div>
+				<div class="form-check form-check-inline small">
+					<input class="form-check-input chkgroup" type="radio" name="mode" id="groupbypo" value="po">
+					<label class="form-check-label" for="groupbypo">@string.Format(Resources.Resource.GroupedByFormat, Resources.Resource.CustomerPO)</label>
+				</div>
+			</div>
 
-            </div>
+		</div>
 
-            <div class="text-center">
-                <button id="btnSubmit" class="btn btn-success my-2">@Resources.Resource.Submit</button>
-            </div>
+		<div class="text-center">
+			<button id="btnSubmit" class="btn btn-success my-2">@Resources.Resource.Submit</button>
+			<button id="btnReload" type="button" class="btn btn-warning mx-1">@Resources.Resource.Reload</button>
+		</div>
 
-        </div>
-    }
+	</div>
+}
 
-    @if (Model.GroupedBySalesmenItemSales.Count > 0 || Model.GroupedByPOItemSales.Count > 0 || Model.GroupedItemSales.Count > 0)
-    {
-        <div class="row justify-content-center mb-4">
-            @if (Model.Mode == "sales")
-            {
-                <h4 class="text-center">@string.Format(Resources.Resource.GroupedByFormat, Resources.Resource.SalesPerson)</h4>
-            }
-            @if (Model.Mode == "po")
-            {
-                <h4 class="text-center">@string.Format(Resources.Resource.GroupedByFormat, Resources.Resource.CustomerPO)</h4>
-            }
-        </div>
-        <div class="text-right small">@Resources.Resource.StartDate : @Model.FrmDate</div>
-        <div class="text-right small">@Resources.Resource.EndDate : @Model.ToDate</div>
+@if (count > 0)
+{
+	<div id="printblk" class="printele" style="font-size:1.3em!important;">
+		<div class="row justify-content-center mb-4">
+			@if (Model.Mode == "sales")
+			{
+				<h4 class="text-center">@string.Format(Resources.Resource.GroupedByFormat, Resources.Resource.SalesPerson)</h4>
+			}
+			@if (Model.Mode == "po")
+			{
+				<h4 class="text-center">@string.Format(Resources.Resource.GroupedByFormat, Resources.Resource.CustomerPO)</h4>
+			}
+		</div>
+		<div class="text-right small">@Resources.Resource.StartDate : @Model.FrmDate</div>
+		<div class="text-right small">@Resources.Resource.EndDate : @Model.ToDate</div>
 
-        <div class="row mx-1 my-5">
+		<div class="row mx-1 my-5">
 
-            <table class="table table-borderless">
-                <thead class="font-weight-bold">
-                    <tr>
-                        <td class="text-center" style="border-bottom: 1px solid black !important;">@Resources.Resource.ItemCode</td>
-                        <td class="text-left" style="border-bottom: 1px solid black !important;">@Resources.Resource.Description</td>
-                        <td class="text-right" style="border-bottom: 1px solid black !important;">@Resources.Resource.BaseSellingPrice (@Model.Currency)</td>
-                        <td class="text-right" style="border-bottom: 1px solid black !important;">@Resources.Resource.QuantitySold</td>
-                        <td class="text-right" style="border-bottom: 1px solid black !important;">@Resources.Resource.Amount</td>
-                    </tr>
-                </thead>
-                <tbody class="table-borderless">
-                    @{ List<string> commonkeys = new List<string>();}
+			<table class="table table-borderless">
+				<thead class="font-weight-bold">
+					<tr>
+						<td class="text-center" style="border-bottom: 1px solid black !important;">@Resources.Resource.ItemCode</td>
+						<td class="text-left" style="border-bottom: 1px solid black !important;">@Resources.Resource.Description</td>
+						<td class="text-right" style="border-bottom: 1px solid black !important;">@Resources.Resource.BaseSellingPrice (@Model.Currency)</td>
+						<td class="text-right" style="border-bottom: 1px solid black !important;">@Resources.Resource.QuantitySold</td>
+						<td class="text-right" style="border-bottom: 1px solid black !important;">@Resources.Resource.Amount</td>
+					</tr>
+				</thead>
+				<tbody class="table-borderless">
+					@{ List<string> commonkeys = new List<string>();}
 
-                    @if (Model.Mode == "sales")
-                    {
-                        if (Model.GroupedBySalesmenItemRefunds.Count > 0)
-                        {
-                            foreach (var group in Model.GroupedBySalesmenItemRefunds)
-                            {
-                                <tr><td colspan="5">@group.Key</td></tr>
-                                var groupeditemrefunds = group.GroupBy(x => x.rtlItemCode).ToList();
-                                foreach (var sgroup in Model.GroupedBySalesmenItemSales)
-                                {
-                                    var groupeditemsales = sgroup.GroupBy(x => x.rtlItemCode).ToList();
-                                    foreach (var sg in groupeditemsales)
-                                    {
-                                        foreach (var rg in groupeditemrefunds)
-                                        {
-                                            if (sg.Key == rg.Key)
-                                            {
-                                                var qty = sg.Sum(x => x.rtlQty) + rg.Sum(x => x.rtlQty);
-                                                var amt = sg.Sum(x => x.rtlSalesAmt) + rg.Sum(x => x.rtlSalesAmt);
-                                                <tr>
-                                                    <td class="text-center">
-                                                        @sg.Key
-                                                    </td>
-                                                    <td class="text-left">
-                                                        @sg.FirstOrDefault().Item.itmDesc
-                                                    </td>
-                                                    <td class="text-right">
-                                                        @sg.FirstOrDefault().Item.itmLastSellingPrice
-                                                    </td>
-                                                    <td class="text-right">
-                                                        @qty
-                                                    </td>
-                                                    <td class="text-right">
-                                                        @amt
-                                                    </td>
-                                                </tr>
-                                                commonkeys.Add(sg.Key);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+					@if (Model.Mode == "sales")
+					{
+						if (Model.GroupedBySalesmenItemRefunds.Count > 0)
+						{
+							foreach (var group in Model.GroupedBySalesmenItemRefunds)
+							{
+								<tr><td colspan="5">@group.Key</td></tr>
+								var groupeditemrefunds = group.GroupBy(x => x.rtlItemCode).ToList();
+								foreach (var sgroup in Model.GroupedBySalesmenItemSales)
+								{
+									var groupeditemsales = sgroup.GroupBy(x => x.rtlItemCode).ToList();
+									foreach (var sg in groupeditemsales)
+									{
+										foreach (var rg in groupeditemrefunds)
+										{
+											if (sg.Key == rg.Key)
+											{
+												var qty = sg.Sum(x => x.rtlQty) + rg.Sum(x => x.rtlQty);
+												var amt = sg.Sum(x => x.rtlSalesAmt) + rg.Sum(x => x.rtlSalesAmt);
+												<tr>
+													<td class="text-center">
+														@sg.Key
+													</td>
+													<td class="text-left">
+														@sg.FirstOrDefault().Item.itmDesc
+													</td>
+													<td class="text-right">
+														@sg.FirstOrDefault().Item.itmLastSellingPrice
+													</td>
+													<td class="text-right">
+														@qty
+													</td>
+													<td class="text-right">
+														@amt
+													</td>
+												</tr>
+												commonkeys.Add(sg.Key);
+											}
+										}
+									}
+								}
+							}
 
-                        }
+						}
 
-                        foreach (var group in Model.GroupedBySalesmenItemSales)
-                        {
-                            commonkeys = new List<string>();
-                            var groupeditemsales = group.GroupBy(x => x.rtlItemCode).ToList();
-                            <tr>
-                                <td colspan="5">@group.Key</td>
-                            </tr>
-                            foreach (var sg in groupeditemsales.Where(x => !commonkeys.Contains(x.Key)))
-                            {
-                                var qty = sg.Sum(x => x.rtlQty);
-                                var amt = sg.Sum(x => x.rtlSalesAmt);
-                                <tr>
-                                    <td class="text-center">
-                                        @sg.Key
-                                    </td>
-                                    <td class="text-left">
-                                        @sg.FirstOrDefault().Item.itmDesc
-                                    </td>
-                                    <td class="text-right">
-                                        @sg.FirstOrDefault().Item.itmLastSellingPrice
-                                    </td>
-                                    <td class="text-right">
-                                        @qty
-                                    </td>
-                                    <td class="text-right">
-                                        @amt
-                                    </td>
-                                </tr>
-                            }
-                        }
-                    }
+						foreach (var group in Model.GroupedBySalesmenItemSales)
+						{
+							commonkeys = new List<string>();
+							var groupeditemsales = group.GroupBy(x => x.rtlItemCode).ToList();
+							<tr>
+								<td colspan="5">@group.Key</td>
+							</tr>
+							foreach (var sg in groupeditemsales.Where(x => !commonkeys.Contains(x.Key)))
+							{
+								var qty = sg.Sum(x => x.rtlQty);
+								var amt = sg.Sum(x => x.rtlSalesAmt);
+								<tr>
+									<td class="text-center">
+										@sg.Key
+									</td>
+									<td class="text-left">
+										@sg.FirstOrDefault().Item.itmDesc
+									</td>
+									<td class="text-right">
+										@sg.FirstOrDefault().Item.itmLastSellingPrice
+									</td>
+									<td class="text-right">
+										@qty
+									</td>
+									<td class="text-right">
+										@amt
+									</td>
+								</tr>
+							}
+						}
+					}
 
-                    @if (Model.Mode == "po")
-                    {
-                        if (Model.GroupedByPOItemRefunds.Count > 0)
-                        {
-                            foreach (var group in Model.GroupedByPOItemRefunds)
-                            {
-                                <tr><td colspan="5">@group.Key</td></tr>
-                                var groupeditemrefunds = group.GroupBy(x => x.rtlItemCode).ToList();
-                                foreach (var sgroup in Model.GroupedByPOItemSales)
-                                {
-                                    var groupeditemsales = sgroup.GroupBy(x => x.rtlItemCode).ToList();
-                                    foreach (var sg in groupeditemsales)
-                                    {
-                                        foreach (var rg in groupeditemrefunds)
-                                        {
-                                            if (sg.Key == rg.Key)
-                                            {
-                                                var qty = sg.Sum(x => x.rtlQty) + rg.Sum(x => x.rtlQty);
-                                                var amt = sg.Sum(x => x.rtlSalesAmt) + rg.Sum(x => x.rtlSalesAmt);
-                                                <tr>
-                                                    <td class="text-center">
-                                                        @sg.Key
-                                                    </td>
-                                                    <td class="text-left">
-                                                        @sg.FirstOrDefault().Item.itmDesc
-                                                    </td>
-                                                    <td class="text-right">
-                                                        @sg.FirstOrDefault().Item.itmLastSellingPrice
-                                                    </td>
-                                                    <td class="text-right">
-                                                        @qty
-                                                    </td>
-                                                    <td class="text-right">
-                                                        @amt
-                                                    </td>
-                                                </tr>
-                                                commonkeys.Add(sg.Key);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+					@if (Model.Mode == "po")
+					{
+						if (Model.GroupedByPOItemRefunds.Count > 0)
+						{
+							foreach (var group in Model.GroupedByPOItemRefunds)
+							{
+								<tr><td colspan="5">@group.Key</td></tr>
+								var groupeditemrefunds = group.GroupBy(x => x.rtlItemCode).ToList();
+								foreach (var sgroup in Model.GroupedByPOItemSales)
+								{
+									var groupeditemsales = sgroup.GroupBy(x => x.rtlItemCode).ToList();
+									foreach (var sg in groupeditemsales)
+									{
+										foreach (var rg in groupeditemrefunds)
+										{
+											if (sg.Key == rg.Key)
+											{
+												var qty = sg.Sum(x => x.rtlQty) + rg.Sum(x => x.rtlQty);
+												var amt = sg.Sum(x => x.rtlSalesAmt) + rg.Sum(x => x.rtlSalesAmt);
+												<tr>
+													<td class="text-center">
+														@sg.Key
+													</td>
+													<td class="text-left">
+														@sg.FirstOrDefault().Item.itmDesc
+													</td>
+													<td class="text-right">
+														@sg.FirstOrDefault().Item.itmLastSellingPrice
+													</td>
+													<td class="text-right">
+														@qty
+													</td>
+													<td class="text-right">
+														@amt
+													</td>
+												</tr>
+												commonkeys.Add(sg.Key);
+											}
+										}
+									}
+								}
+							}
 
-                        }
+						}
 
-                        foreach (var group in Model.GroupedByPOItemSales)
-                        {
-                            commonkeys = new List<string>();
-                            var groupeditemsales = group.GroupBy(x => x.rtlItemCode).ToList();
-                            <tr>
-                                <td colspan="5">@group.Key</td>
-                            </tr>
-                            foreach (var sg in groupeditemsales.Where(x => !commonkeys.Contains(x.Key)))
-                            {
-                                var qty = sg.Sum(x => x.rtlQty);
-                                var amt = sg.Sum(x => x.rtlSalesAmt);
-                                <tr>
-                                    <td class="text-center">
-                                        @sg.Key
-                                    </td>
-                                    <td class="text-left">
-                                        @sg.FirstOrDefault().Item.itmDesc
-                                    </td>
-                                    <td class="text-right">
-                                        @sg.FirstOrDefault().Item.itmLastSellingPrice
-                                    </td>
-                                    <td class="text-right">
-                                        @qty
-                                    </td>
-                                    <td class="text-right">
-                                        @amt
-                                    </td>
-                                </tr>
-                            }
-                        }
-                    }
+						foreach (var group in Model.GroupedByPOItemSales)
+						{
+							commonkeys = new List<string>();
+							var groupeditemsales = group.GroupBy(x => x.rtlItemCode).ToList();
+							<tr>
+								<td colspan="5">@group.Key</td>
+							</tr>
+							foreach (var sg in groupeditemsales.Where(x => !commonkeys.Contains(x.Key)))
+							{
+								var qty = sg.Sum(x => x.rtlQty);
+								var amt = sg.Sum(x => x.rtlSalesAmt);
+								<tr>
+									<td class="text-center">
+										@sg.Key
+									</td>
+									<td class="text-left">
+										@sg.FirstOrDefault().Item.itmDesc
+									</td>
+									<td class="text-right">
+										@sg.FirstOrDefault().Item.itmLastSellingPrice
+									</td>
+									<td class="text-right">
+										@qty
+									</td>
+									<td class="text-right">
+										@amt
+									</td>
+								</tr>
+							}
+						}
+					}
 
-                    @if (Model.Mode == "default")
-                    {
-                        if (Model.GroupedItemRefunds.Count > 0)
-                        {
-                            foreach (var sg in Model.GroupedItemSales)
-                            {
-                                foreach (var rg in Model.GroupedItemRefunds)
-                                {
-                                    if (sg.Key == rg.Key)
-                                    {
-                                        var qty = sg.Sum(x => x.rtlQty) + rg.Sum(x => x.rtlQty);
-                                        var amt = sg.Sum(x => x.rtlSalesAmt) + rg.Sum(x => x.rtlSalesAmt);
-                                        <tr>
-                                            <td class="text-center">
-                                                @sg.Key
-                                            </td>
-                                            <td class="text-left">
-                                                @sg.FirstOrDefault().Item.itmDesc
-                                            </td>
-                                            <td class="text-right">
-                                                @sg.FirstOrDefault().Item.itmLastSellingPrice
-                                            </td>
-                                            <td class="text-right">
-                                                @qty
-                                            </td>
-                                            <td class="text-right">
-                                                @amt
-                                            </td>
-                                        </tr>
-                                        commonkeys.Add(sg.Key);
-                                    }
-                                }
-                            }
-                        }
+					@if (Model.Mode == "default")
+					{
+						if (Model.GroupedItemRefunds.Count > 0)
+						{
+							foreach (var sg in Model.GroupedItemSales)
+							{
+								foreach (var rg in Model.GroupedItemRefunds)
+								{
+									if (sg.Key == rg.Key)
+									{
+										var qty = sg.Sum(x => x.rtlQty) + rg.Sum(x => x.rtlQty);
+										var amt = sg.Sum(x => x.rtlSalesAmt) + rg.Sum(x => x.rtlSalesAmt);
+										<tr>
+											<td class="text-center">
+												@sg.Key
+											</td>
+											<td class="text-left">
+												@sg.FirstOrDefault().Item.itmDesc
+											</td>
+											<td class="text-right">
+												@sg.FirstOrDefault().Item.itmLastSellingPrice
+											</td>
+											<td class="text-right">
+												@qty
+											</td>
+											<td class="text-right">
+												@amt
+											</td>
+										</tr>
+										commonkeys.Add(sg.Key);
+									}
+								}
+							}
+						}
 
-                        foreach (var sg in Model.GroupedItemSales.Where(x => !commonkeys.Contains(x.Key)))
-                        {
-                            var qty = sg.Sum(x => x.rtlQty);
-                            var amt = sg.Sum(x => x.rtlSalesAmt);
-                            <tr>
-                                <td class="text-center">
-                                    @sg.Key
-                                </td>
-                                <td class="text-left">
-                                    @sg.FirstOrDefault().Item.itmDesc
-                                </td>
-                                <td class="text-right">
-                                    @sg.FirstOrDefault().Item.itmLastSellingPrice
-                                </td>
-                                <td class="text-right">
-                                    @qty
-                                </td>
-                                <td class="text-right">
-                                    @amt
-                                </td>
-                            </tr>
-                        }
+						foreach (var sg in Model.GroupedItemSales.Where(x => !commonkeys.Contains(x.Key)))
+						{
+							var qty = sg.Sum(x => x.rtlQty);
+							var amt = sg.Sum(x => x.rtlSalesAmt);
+							<tr>
+								<td class="text-center">
+									@sg.Key
+								</td>
+								<td class="text-left">
+									@sg.FirstOrDefault().Item.itmDesc
+								</td>
+								<td class="text-right">
+									@sg.FirstOrDefault().Item.itmLastSellingPrice
+								</td>
+								<td class="text-right">
+									@qty
+								</td>
+								<td class="text-right">
+									@amt
+								</td>
+							</tr>
+						}
 
-                    }
+					}
 
 
-                </tbody>
-                <tfoot class="table-borderless font-weight-bold">
-                    <tr><td colspan="3" class="text-right" style="border-top: 1px solid black !important;">@Resources.Resource.Total</td><td class="text-right" style="border-top: 1px solid black !important;"><span id="totalqty">@Model.TotalQty</span></td><td class="text-right" style="border-top: 1px solid black !important;"><span id="totalamt">@Model.TotalAmt</span></td></tr>
+				</tbody>
+				<tfoot class="table-borderless font-weight-bold">
+					<tr><td colspan="3" class="text-right" style="border-top: 1px solid black !important;">@Resources.Resource.Total</td><td class="text-right" style="border-top: 1px solid black !important;"><span id="totalqty">@Model.TotalQty</span></td><td class="text-right" style="border-top: 1px solid black !important;"><span id="totalamt">@Model.TotalAmt</span></td></tr>
 
-                </tfoot>
-            </table>
-        </div>
-    }
-</div>
+				</tfoot>
+			</table>
+		</div>
+	</div>
 
-<div class="row justify-content-center my-3 printele">
-    <button type="button" id="btnPrintPreview" class="btn btn-success mx-2">@Resources.Resource.PrintPreview</button>
-    <button type="button" id="btnBack" class="btn btn-secondary" onclick="history.go(-1);">@Resources.Resource.Back</button>
-</div>
+	<div class="my-3 printele">
+		<button type="button" id="btnPrintPreview" class="btn btn-success mx-2">@Resources.Resource.PrintPreview</button>
+		<button type="button" id="btnBack" class="btn btn-secondary" onclick="history.go(-1);">@Resources.Resource.Back</button>
+	</div>
+}
+
+@Html.Partial("_NoRecordFound")
 
 <script src="~/Scripts/printthis/printThis.js"></script>
 <script type="text/javascript" src="~/Scripts/daterangepicker/moment.min.js"></script>
 <script type="text/javascript" src="~/Scripts/daterangepicker/daterangepicker.min.js"></script>
 <link rel="stylesheet" type="text/css" href="~/Scripts/daterangepicker/daterangepicker.css" />
 <script type="text/javascript" src="~/Scripts/DataTables/dataTables.dateTime.min.js"></script>
-<script>
-
-    $(document).ready(function () {
-        setFullPage();
-		triggerMenu(7, 2);
-        initDatePickers();
-    });
-
-    $(document).on('click', '#btnPrintPreview', function () {
-        $('#printblk').printThis();
-    });
-
-</script>
-
+<div id="infoblk" data-idx="2" data-ispostback="@Model.PostBack" data-count="@count"></div>
+<script src="~/Scripts/ts/js/reports/repotbase.js?v=@rand"></script>

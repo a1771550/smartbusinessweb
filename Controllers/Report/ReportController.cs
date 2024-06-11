@@ -345,8 +345,7 @@ namespace SmartBusinessWeb.Controllers.Report
         public ActionResult ShowTXD()
         {
             ViewBag.ParentPage = "generalreports";
-            ViewBag.PageName = "TXD";
-            TransactionDetail model = ReportHelper.GetTransactionDetail(null, DateFormat);
+            TransactionDetail model = ReportHelper.GetTransactionDetail(null, DateFormat);           
             return View(model);
         }
 
@@ -357,8 +356,8 @@ namespace SmartBusinessWeb.Controllers.Report
         public ActionResult ShowTXD(FormCollection formCollection)
         {
             ViewBag.ParentPage = "generalreports";
-            ViewBag.PageName = "TXD";
-            TransactionDetail model = ReportHelper.GetTransactionDetail(formCollection, DateFormat);    
+            TransactionDetail model = ReportHelper.GetTransactionDetail(formCollection, DateFormat);
+            model.PostBack = true;
             return View(model);
         }
 
@@ -381,6 +380,7 @@ namespace SmartBusinessWeb.Controllers.Report
             ViewBag.ParentPage = "generalreports";
             ViewBag.PageName = "PMD";
             PaymentMethodDetail model = ReportHelper.GetPaymentMethodDetail(formCollection, DateFormat);
+            model.PostBack = true;
             return View(model);
         }
 
@@ -403,6 +403,7 @@ namespace SmartBusinessWeb.Controllers.Report
             ViewBag.ParentPage = "generalreports";
             ViewBag.PageName = "ITS";
             ItemSales model = ReportHelper.GetItemSales(formCollection, DateFormat);
+            model.PostBack = true;
             return View(model);
         }
     }
