@@ -19,27 +19,11 @@ namespace SmartBusinessWeb.Controllers.Settings
         public ActionResult Index()
         {
             ViewBag.ParentPage = "staff";
-            ViewBag.PageName = "accessrights";
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
-            {
-                int apId = ComInfo.AccountProfileId;
+            SetupModel model = new SetupModel();
+            List<UserModel> users = UserEditModel.GetUserList();
 
-                SetupModel model = new SetupModel();
-                List<UserModel> users = UserEditModel.GetUserList(ComInfo, context, "pos");
-                var currentuser = Session["User"] as SessUser;
-                if (currentuser.Role == RoleType.CRMSalesManager)
-                {
-                    model.Users = currentuser.StaffList;
-                }
-                else
-                {
-                    //model.Users = UserEditModel.GetStaffList(users);
-                    model.Users = users;
-                }
-                model.LicensedUserCount = context.GetLicensedUserCount().FirstOrDefault();
-                model.BtnClass = model.LicensedUserCount >= (int)ComInfo.POSLic ? "linkdisabled" : "";
-                return View(model);
-            }
+            return View(model);
+
         }
 
 
@@ -50,7 +34,7 @@ namespace SmartBusinessWeb.Controllers.Settings
             {
                 List<SysFunc> funcs = new List<SysFunc>();
 
-                funcs = context.SysFuncs.Where(x => x.sfnSettings == true).ToList();               
+                funcs = context.SysFuncs.Where(x => x.sfnSettings == true).ToList();
                 TempData["dicAR"] = ModelHelper.GetDicAR();
                 UserEditModel model;
 
@@ -83,7 +67,7 @@ namespace SmartBusinessWeb.Controllers.Settings
         [CustomAuthorize("accessrights", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult Create(FormCollection formCollection)
+        public ActionResult Create(UserModel model)
         {
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
@@ -179,7 +163,7 @@ namespace SmartBusinessWeb.Controllers.Settings
         [CustomAuthorize("accessrights", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(FormCollection formCollection)
+        public ActionResult Edit(UserModel model)
         {
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
@@ -223,8 +207,8 @@ namespace SmartBusinessWeb.Controllers.Settings
                         {
                             UserCode = user.UserCode,
                             FuncCode = code,
-							AccountProfileId = apId,
-							CreateTime = DateTime,
+                            AccountProfileId = apId,
+                            CreateTime = DateTime,
                             ModifyTime = DateTime
                         };
                         ars.Add(ar);

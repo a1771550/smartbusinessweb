@@ -3107,6 +3107,8 @@
     <Content Include="Scripts\ts\js\records\journallist.js" />
     <Content Include="Scripts\ts\js\records\training.js" />
     <Content Include="Scripts\ts\js\reports\repotbase.js" />
+    <Content Include="Scripts\ts\js\settings\accessrights\edit.js" />
+    <Content Include="Scripts\ts\js\settings\accessrights\index.js" />
     <Content Include="Scripts\ts\js\settings\duty\edit.js" />
     <Content Include="Scripts\ts\js\settings\duty\index.js" />
     <Content Include="Scripts\ts\js\settings\email.js" />
@@ -4482,8 +4484,6 @@
     <Content Include="Scripts\ts\js\locale\zh-tw.js" />
     <Content Include="Scripts\ts\js\login.js" />
     <Content Include="Scripts\ts\js\othersettings.js" />
-    <Content Include="Scripts\ts\js\pos\accessrights.js" />
-    <Content Include="Scripts\ts\js\pos\accessrightsedit.js" />
     <Content Include="Scripts\ts\js\pos\dayends.js" />
     <Content Include="Scripts\ts\js\pos\deposit.js" />
     <Content Include="Scripts\ts\js\pos\exchangerate.js" />
@@ -4733,6 +4733,8 @@
     <Content Include="Scripts\ts\js\settings\duty\index.js.map" />
     <Content Include="Scripts\ts\js\reports\repotbase.js.map" />
     <Content Include="Views\AbssReport\Sales.cshtml" />
+    <Content Include="Scripts\ts\js\settings\accessrights\edit.js.map" />
+    <Content Include="Scripts\ts\js\settings\accessrights\index.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4763,8 +4765,6 @@
     <Content Include="Scripts\ts\js\item\stock.js.map" />
     <Content Include="Scripts\ts\js\login.js.map" />
     <Content Include="Scripts\ts\js\othersettings.js.map" />
-    <Content Include="Scripts\ts\js\pos\accessrights.js.map" />
-    <Content Include="Scripts\ts\js\pos\accessrightsedit.js.map" />
     <Content Include="Scripts\ts\js\pos\dayends.js.map" />
     <Content Include="Scripts\ts\js\pos\deposit.js.map" />
     <Content Include="Scripts\ts\js\pos\exchangerate.js.map" />
@@ -5158,8 +5158,8 @@
     <TypeScriptCompile Include="Scripts\ts\records\job.ts" />
     <TypeScriptCompile Include="Scripts\ts\login.ts" />
     <TypeScriptCompile Include="Scripts\ts\settings\othersettings.ts" />
-    <TypeScriptCompile Include="Scripts\ts\pos\accessrights.ts" />
-    <TypeScriptCompile Include="Scripts\ts\pos\accessrightsedit.ts" />
+    <TypeScriptCompile Include="Scripts\ts\settings\accessrights\index.ts" />
+    <TypeScriptCompile Include="Scripts\ts\settings\accessrights\edit.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\dayends.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\deposit.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\kingdeeaccountinfo.ts" />

@@ -3,7 +3,6 @@
 @{
     ViewBag.Title = Resources.Resource.StaffAR;
     var rand = CommonHelper.GetVersionRandomNo();
-    //string btncls = "";
     var btncls = string.Concat("btn btn-info", " ", Model.BtnClass);
 }
 
@@ -11,7 +10,6 @@
 
 <p class="my-3" data-btncls="@Model.BtnClass">
 	<button id="btnAdd" type="button" class="@btncls" data-href="/AccessRight/Edit?userId=0" data-userlicensefullprompt="@Resources.Resource.UserLicensedFullPrompt" >@Resources.Resource.Add</button>
-  @*  @Html.ActionLink(Resources.Resource.Add, "Edit", new { userId = 0 }, new { @class = @btncls,@id="btnAdd" })*@
 </p>
 <table class="table table-bordered  table-hover table-condensed">
 	<thead class="gray-header">
@@ -40,4 +38,4 @@
 </table>
 
 <div id="infoblk" data-userlicensedfullprompt="@Resources.Resource.UserLicensedFullPrompt"></div>
-<script src="~/Scripts/ts/js/pos/accessrights.js?v=@rand"></script>
+<script src="~/Scripts/ts/js/settings/accessrights/index.js?v=@rand"></script>

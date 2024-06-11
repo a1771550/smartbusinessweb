@@ -1,137 +1,125 @@
-﻿@model PPWLib.Models.User.UserEditModel
+﻿@model UserEditModel
 @{
-    ViewBag.Title = Model.surUID == 0 ? string.Format(Resources.Resource.AddFormat, Resources.Resource.SalesPerson) : string.Format(Resources.Resource.EditFormat, Resources.Resource.SalesPerson);
-    Dictionary<string, string> dirAR = (Dictionary<string, string>)TempData["dicAR"];
-    string formaction = Model.surUID == 0 ? "Create" : "Edit";
-    int icheckpass = 0;
-    bool edit = Model.surUID > 0;
-    bool approvalmode = ConfigurationManager.AppSettings["ApprovalMode"] == "1";
+	UserModel User = Model.User;
+	ViewBag.Title = User.surUID == 0 ? string.Format(Resources.Resource.AddFormat, Resources.Resource.SalesPerson) : string.Format(Resources.Resource.EditFormat, Resources.Resource.SalesPerson);
+	bool edit = User.surUID > 0;
+	string userCode = edit ? User.UserCode : Model.MaxSalesCode;
+	Dictionary<string, string> dirAR = (Dictionary<string, string>)TempData["dicAR"];
+	string formaction = User.surUID == 0 ? "Create" : "Edit";
+	int icheckpass = 0;
+
+	bool approvalmode = ConfigurationManager.AppSettings["ApprovalMode"] == "1";
 }
 
 @using (Html.BeginForm(formaction, "AccessRight", FormMethod.Post, new { @id = "arform" }))
 {
-    @Html.AntiForgeryToken()
+	@Html.AntiForgeryToken()
 
-    <h3 class="mb-4">@ViewBag.Title</h3>
+	<h3 class="mb-4">@ViewBag.Title</h3>
 
-    <div class="form-horizontal">
+	<div class="form-horizontal">
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.UserCode, new { @class = "" })
-           
-                @if (Model.surUID == 0)
-                {
-                    <input class="form-control text-box single-line" id="UserCode" name="UserCode" readonly="readonly" type="text" value="@Model.MaxSalesCode">
-                }
-                else
-                {
-                    @Html.EditorFor(model => model.UserCode, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                }
-           
-        </div>
+		<div class="form-group">
+			<label for="UserCode">@Resources.Resource.UserCode</label>
+			<input class="form-control text-box single-line" id="UserCode" name="UserCode" readonly="readonly" type="text" value="@userCode">
+		</div>
 
-        <div class="form-group required">
-            @Html.LabelFor(model => model.UserName, new { @class = "" })
-         
-                @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control" } })
-          
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.Email, new { @class = "" })
-          
-                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @type = "email" } })
-           
-        </div>
+		<div class="form-group required">
+			<label for="UserName">@Resources.Resource.UserName</label>
+			<input type="text" class="form-control" id="UserName" name="UserName" value="@(edit?User.UserName:"")" />
+		</div>
 
-        @if (approvalmode)
-        { 
-            <div class="form-group">
-                <label for="drpPosAdmin">@Resources.Resource.FrmWhomReceiveNotificationEmail</label>            
-                    <select class="form-control" id="drpPosAdmin">
-                        <option value="">-- @Resources.Resource.Select --</option>
-                        @foreach (var a in Model.PosAdminList)
-                        {
-                            var selected = Model.ManagerId == a.surUID ? "selected" : "";
-                            <option value="@a.surUID" @selected>@a.UserName</option>
-                        }
-                    </select>
-              
-            </div>
-        }
+		<div class="form-group">
+			<label for="Email">@Resources.Resource.Email</label>
+			<input type="email" class="form-control" id="Email" name="Email" value="@(edit?User.Email:"")" />
+		</div>
+
+		@if (approvalmode)
+		{
+			<div class="form-group">
+				<label for="drpPosAdmin">@Resources.Resource.FrmWhomReceiveNotificationEmail</label>
+				<select class="form-control" id="drpPosAdmin">
+					<option value="">-- @Resources.Resource.Select --</option>
+					@foreach (var a in Model.PosAdminList)
+					{
+						var selected = User.ManagerId == a.surUID ? "selected" : "";
+						<option value="@a.surUID" @selected>@a.UserName</option>
+					}
+				</select>
+
+			</div>
+		}
 
 
-        @if (edit)
-        {
-            <div id="chkpassblk" class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="chkpass">
-                <label class="form-check-label" for="chkpass">
-                    @Resources.Resource.ChangePass
-                </label>
-            </div>
-        }
+		@if (edit)
+		{
+			<div id="chkpassblk" class="form-check">
+				<input class="form-check-input" type="checkbox" value="" id="chkpass">
+				<label class="form-check-label" for="chkpass">
+					@Resources.Resource.ChangePass
+				</label>
+			</div>
+		}
 
 
-        <div id="passblk" class="hide">
-            <div class="form-group">
-                @Html.LabelFor(model => model.Password, new { @class = "" })
-             
-                    @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control", @id = "Password" } })
+		<div id="passblk" class="hide">
+			<div class="form-group">
+				@Html.LabelFor(model => model.Password, new { @class = "" })
 
-             
-            </div>
-
-            <div class="form-group">
-                @Html.LabelFor(model => model.ConfirmPassword, new { @class = "" })
-              
-                    @Html.EditorFor(model => model.ConfirmPassword, new { htmlAttributes = new { @class = "form-control" } })
-
-              
-            </div>
-        </div>
-
-    </div>
-
-    <hr />
-    <h3>@Resources.Resource.AccessRights</h3>
-
-    <div class="form-inline">
-        @{ var idx = 0;}
-        @foreach (var item in dirAR)
-        {
-            string selected = Model.AccessRights.Any(x => x.FuncCode == item.Key) ? " checked" : "";
-
-            <div class="form-check-inline">
-                <label class="form-check-label">
-                    <input id="@item.Key" type="checkbox" class="form-check-input chkcode" name="FuncCodes[@idx]" data-code="@item.Key" value="@item.Key" @selected>@item.Value
-                </label>
-            </div>
-            idx++;
-        }
-    </div>
-
-    <div class="form-group my-4">
-        <button id="btnSave" type="button" class="btn btn-default">@Resources.Resource.Save</button>
-        @Html.Hidden("UserID", Model.surUID)
-        @if (Model.surUID > 0)
-        {
-            icheckpass = Model.checkpass ? 1 : 0;
-            @Html.HiddenFor(model => model.checkpass, new { @Id = "checkpass" })
-        }
+				@Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control", @id = "Password" } })
 
 
-        @*   <input type="hidden" name="userstatus" id="userstatus" value="1" />*@
+			</div>
 
-        @if (edit)
-        {
-            <input type="hidden" id="currpass" name="Password" value="@Model.Password" />
-            <input type="hidden" id="icheckpass" name="icheckpass" value="@icheckpass" />
-        }
+			<div class="form-group">
+				@Html.LabelFor(model => model.ConfirmPassword, new { @class = "" })
 
-    </div>
+				@Html.EditorFor(model => model.ConfirmPassword, new { htmlAttributes = new { @class = "form-control" } })
+
+
+			</div>
+		</div>
+
+	</div>
+
+	<hr />
+	<h3>@Resources.Resource.AccessRights</h3>
+
+	<div class="form-inline">
+		@{ var idx = 0;}
+		@foreach (var item in dirAR)
+		{
+			string selected = Model.AccessRights.Any(x => x.FuncCode == item.Key) ? " checked" : "";
+
+			<div class="form-check-inline">
+				<label class="form-check-label">
+					<input id="@item.Key" type="checkbox" class="form-check-input chkcode" name="FuncCodes[@idx]" data-code="@item.Key" value="@item.Key" @selected>@item.Value
+				</label>
+			</div>
+			idx++;
+		}
+	</div>
+
+	<div class="form-group my-4">
+		<button id="btnSave" type="button" class="btn btn-default">@Resources.Resource.Save</button>
+		@Html.Hidden("UserID", User.surUID)
+		@if (User.surUID > 0)
+		{
+			icheckpass = User.checkpass ? 1 : 0;
+			@Html.HiddenFor(model => model.checkpass, new { @Id = "checkpass" })
+		}
+
+		@if (edit)
+		{
+			<input type="hidden" id="currpass" name="Password" value="@User.Password" />
+			<input type="hidden" id="icheckpass" name="icheckpass" value="@icheckpass" />
+		}
+
+	</div>
 }
 
 <div>
-    @Html.ActionLink(Resources.Resource.BackToList, "Index", "AccessRight")
+	@Html.ActionLink(Resources.Resource.BackToList, "Index", "AccessRight")
 </div>
 <div id="infoblk" data-addnewlyaddedtxt="@Resources.Resource.AddNewlyAddedEmployeeToABSS"></div>
-<script src="~/Scripts/ts/js/pos/accessrightsedit.js"></script>
+<script src="~/Scripts/ts/js/settings/accessrights/edit.js?v=@CommonHelper.GetVersionRandomNo()"></script>
