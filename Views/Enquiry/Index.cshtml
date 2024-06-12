@@ -11,6 +11,8 @@
 <link href="~/Scripts/paginationjs/pagination.css" rel="stylesheet" type="text/css" />
 <link href="~/Content/enquiry/index.css?v=@rand" rel="stylesheet" type="text/css" />
 <link href="~/Content/enquiry/group/index.css?v=@rand" rel="stylesheet" type="text/css" />
+<script src="~/Scripts/double-scroll/jquery.doubleScroll.js"></script>
+
 <script src="@mgturl"></script>
 
 <h3 class="clearfix">
@@ -21,7 +23,7 @@
 <div id="norecordfound" class="container hide">@Resources.Resource.NoDataFound</div>
 @using (Html.BeginForm("Index", "Enquiry", FormMethod.Post, new { @id = "frmEnquiry" }))
 {
-	@Html.Partial("_AdvSearchBlk", null, new ViewDataDictionary { { "Keyword", Model.Keyword }, { "isassignor", isassignor }, { "additionalcls", "mt-4" }, { "GroupTxt", string.Format(Resources.Resource.AddToFormat, Resources.Resource.EnquiryGroup) },{"HideAdvSearch",true } })
+	@Html.Partial("_AdvSearchBlk", null, new ViewDataDictionary { { "Keyword", Model.Keyword }, { "isassignor", isassignor }, { "additionalcls", "mt-4" }, { "GroupTxt", string.Format(Resources.Resource.AddToFormat, Resources.Resource.EnquiryGroup) }, { "HideAdvSearch", true } })
 
 	@Html.Partial("_DrpLatestRecordCount")
 }
@@ -36,7 +38,9 @@
 		<div class="text-right"><span>@totaltxt: <span id="totalcount" class="font-weight-bold"></span></span></div>
 	</div>
 </div>
-<div class="overflow-x">
+
+
+<div class="double-scroll">
 	<table id="tblmails" class="table table-bordered table-hover table-condensed">
 		<thead class="gray-header">
 			<tr>
@@ -66,6 +70,7 @@
 		</tbody>
 	</table>
 </div>
+
 
 <div class="Pager my-4"></div>
 

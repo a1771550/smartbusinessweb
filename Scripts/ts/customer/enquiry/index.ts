@@ -389,6 +389,9 @@ function enqTemplate(data: IEnquiry[]): string {
 function fillInEnqTable() {
 	var html = enqTemplate(EnquiryList);
 	$("#tblmails tbody").empty().html(html);
+
+	if(window.innerWidth<1000)
+		$(".double-scroll").doubleScroll();
 }
 function initInfoBlkVariables4Enquiry() {
 	assigntosales = $infoblk.data("assignsalestxt");
@@ -555,5 +558,5 @@ $(function () {
 
 	sortCol = 8;
 
-	handleMGTmails(1, Number($("#drpLatestRecordCount").val()));
+	handleMGTmails(1, Number($("#drpLatestRecordCount").val()));	
 });

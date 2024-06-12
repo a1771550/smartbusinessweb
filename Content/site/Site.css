@@ -549,7 +549,8 @@ tr.code {
   border-left: 1px solid white !important;
 }
 .colheader.fa {
-  display: block !important;
+  /*display: block !important;*/
+  display:table-cell!important;
 }
 
 .danger {
@@ -757,7 +758,7 @@ tr.obsolete{
     background-color:#e4e4e4;
 }
 th.fa{
-    line-height:unset!important;
+    /*line-height:unset!important;*/
 }
 #batchModal,#purchaseBatchModal {
     background-color: blanchedalmond;

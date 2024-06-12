@@ -43,7 +43,7 @@ namespace SmartBusinessWeb.Controllers.Report
 
         [HandleError]
         [CustomAuthorize("reports", "admin1", "admin", "superadmin")]
-        public ActionResult Sales(SalesDate salesDate = null, int PageNo = 1, int SortCol = 0, string SortOrder = "desc", string Keyword = null)
+        public ActionResult Sales(SalesDate salesDate, int PageNo = 1, int SortCol = 0, string SortOrder = "desc", string Keyword = null)
         {
             ViewBag.ParentPage = "abssreports";
             ViewBag.Title = Resource.Sales;

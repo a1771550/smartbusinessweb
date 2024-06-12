@@ -10,7 +10,7 @@
 			<div class="txtarea" data-cuscode="@record.cusCode" data-id="@record.Id">
 				<p class="recorddisplay">@record.followUpRecord</p>
 				<input type="text" class="form-control recordentry hide" data-record="@record.followUpRecord" onchange="handleRecordChange(this);" />
-				<span class="small d-inline-block lastedited">@string.Format(Resources.Resource.LastEditedByFormat, string.IsNullOrEmpty(record.ModifiedBy)?record.CreatedBy:record.ModifyBy, string.IsNullOrEmpty(record.ModifyTimeDisplay)?record.CreateTimeDisplay:record.ModifyTimeDisplay)</span>
+				<span class="small d-inline-block lastedited">@string.Format(Resources.Resource.LastEditedByFormat, string.IsNullOrEmpty(record.ModifiedBy) ? record.CreatedBy : record.ModifyBy, record.ModifyTimeDisplay == "N/A" ? record.CreateTimeDisplay : record.ModifyTimeDisplay)</span>
 			</div>
 		</div>
 	</div>

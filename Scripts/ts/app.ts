@@ -5235,7 +5235,7 @@ $.fancyConfirm = function (opts) {
 };
 
 interface ISalesman extends ISysUser {
-    ModifyTimeDisplay: any;
+	ModifyTimeDisplay: any;
 	AssignedCusCodes: string[];
 }
 
@@ -6429,6 +6429,7 @@ interface JQuery {
 	switchClass(arg0: string, arg1: string, arg2: number, arg3: string): any;
 	niceSelect(): any;
 	printThis(): any;
+	doubleScroll(): any;
 	ASPSnippets_Pager(arg0: {
 		ActiveCssClass: string;
 		PagerCssClass: string;
@@ -8377,7 +8378,7 @@ interface ISysUser {
 	UserName: string;
 	DisplayName: string;
 	dvcCode: string;
-	shopCode: string;	
+	shopCode: string;
 	UserRole: string;
 	FirstName: string;
 	LastName: string;
@@ -8387,11 +8388,11 @@ interface ISysUser {
 	ManagerId: number;
 	surDesc: string | null;
 	surNotes: string | null;
-	surScope: string;	
+	surScope: string;
 	surIsAbss: boolean;
 	abssCardID: string;
 	CustomerList: Array<ICustomer>;
-	Phone: string | null;	
+	Phone: string | null;
 	ManagerName: string | null;
 	FuncCodes: string[];
 	checkpass: boolean;
@@ -8561,7 +8562,7 @@ function handleQtyChange(this: any) {
 	let _qty: number = Number($(this).val());
 	//console.log("_qty#0:", _qty);
 	let $price, $discount, _price, _discpc;
-	if (forsales) {		
+	if (forsales) {
 		$price = $tr.find(".price");
 		$discount = $tr.find(".discpc");
 		_price = Number($price.val());
@@ -17174,7 +17175,7 @@ function FillInCustomer() {
 	Customer.cusCode = $("#cusCode").val() as string;
 	Customer.cusPhone = $("#cusPhone").val() as string;
 
-	Customer.cusName = <string>$("#cusName").val();	
+	Customer.cusName = <string>$("#cusName").val();
 	Customer.cusSaleComment = <string>$salecomment.val();
 	Customer.PaymentIsDue = Number($("#PaymentIsDue").val());
 	Customer.BalanceDueDays = Number($("#BalanceDueDays").val());
@@ -19877,7 +19878,7 @@ function infoCallBackOk(data: IInfoBase[]) {
 		data.forEach((x) => {
 			let lastedited: string = lasteditedbyformat
 				.replace("{0}", x.ModifiedBy ?? x.CreatedBy)
-				.replace("{1}", x.ModifyTimeDisplay ?? x.CreateTimeDisplay);
+				.replace("{1}", x.ModifyTimeDisplay == "N/A" ? x.CreateTimeDisplay : x.ModifyTimeDisplay);
 			html += `<div class="displayblk col-12 col-sm-4 mb-1" data-enqid="${x.enId}" data-cuscode="${x.cusCode}" data-id="${x.Id}">
                             <div class="card">
                                 <div class="text-right small"><span class="fa fa-edit text-info record pointer mr-2"></span><span class="fa fa-close text-danger record pointer"></span></div>
@@ -22427,7 +22428,7 @@ $(document).on("click", "#btnReload", function (e) {
 	url.searchParams.set("reload", "1");
 	//console.log("url.href:", url.href);
 	//return;
-	window.location.href = url.href;	
+	window.location.href = url.href;
 });
 
 $(document).on("click", "#btnSearch", function (e) {
@@ -22724,6 +22725,6 @@ function toggleNoRecord(show: boolean) {
 }
 
 //remove querystring from url
-function getPathFromUrl(url:string) {
+function getPathFromUrl(url: string) {
 	return url.split(/[?#]/)[0];
 }

@@ -2126,7 +2126,7 @@ namespace SmartBusinessWeb.Controllers
             }
             if (filename.StartsWith("ItemLoc_"))
             {
-                List<MyobItemLocModel> itemloclist = MYOBHelper.GetItemLocList(ConnectionString, apId);
+                List<MyobItemLocModel> itemloclist = MYOBHelper.GetItemLocList(ConnectionString);
                 return Json(itemloclist, JsonRequestBehavior.AllowGet);
             }
             if (filename.StartsWith("ItemPrice_"))

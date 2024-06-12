@@ -2896,6 +2896,7 @@
     <Content Include="Scripts\datatables.min.js" />
     <Content Include="Scripts\date.format.js" />
     <Content Include="Scripts\datetimepicker\bootstrap-datetimepicker.min.js" />
+    <Content Include="Scripts\double-scroll\jquery.doubleScroll.js" />
     <Content Include="Scripts\filestyle.js" />
     <Content Include="Scripts\glide\css\glide.core.css.map" />
     <Content Include="Scripts\glide\css\glide.core.min.css.map" />
