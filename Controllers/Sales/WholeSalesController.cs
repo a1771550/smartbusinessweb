@@ -104,12 +104,12 @@ namespace SmartBusinessWeb.Controllers.Sales
 
         [HandleError]
         [CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
-        public ActionResult SalesOrderList(string strfrmdate = "", string strtodate = "", int? PageNo = 1, string SortName = "wsDeliveryDate", string SortOrder = "desc", string Keyword = "", int filter = 0, string searchmode = "")
+        public ActionResult SalesOrderList(int? PageNo = 1, string SortName = "wsDeliveryDate", string SortOrder = "desc", string Keyword = "", int filter = 0, string searchmode = "")
         {
             ViewBag.ParentPage = "wholesales";
             ViewBag.PageName = "salesorderlist";
             SalesOrderEditModel model = new();
-            model.GetWholeSalesOrderList(strfrmdate, strtodate, (int)PageNo, SortName, SortOrder, Keyword, filter, searchmode);
+            model.GetWholeSalesOrderList((int)PageNo, SortName, SortOrder, Keyword, filter, searchmode);
             return View(model);
         }
 

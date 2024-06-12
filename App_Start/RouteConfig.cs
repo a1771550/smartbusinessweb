@@ -230,7 +230,7 @@ new {apId=@"\d+"}
 			routes.MapRoute(
 		  null,
 		  "Contact",
-		  new { controller = "SimpleContact", action = "Get" }
+		  new { controller = "SimpleContact", action = "GetUserById" }
 	  );
 
 			routes.MapRoute(

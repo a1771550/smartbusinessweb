@@ -51,8 +51,9 @@ namespace SmartBusinessWeb.Controllers
                     }
                 }
 
-                model.Users = UserEditModel.GetUserList(ComInfo, context, "pos");
-
+                UserEditModel umodel = new();
+                umodel.GetUserList();
+                model.Users = umodel.Users;
                 return View(model);
             }
 

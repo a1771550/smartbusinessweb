@@ -1754,8 +1754,8 @@ namespace SmartBusinessWeb.Controllers
         public JsonResult GetStaffDetail(int staffId)
         {
             UserEditModel model = new();
-            model.Get(staffId);           
-            return Json(model.Staff, JsonRequestBehavior.AllowGet);
+            model.GetUserById(staffId);           
+            return Json(model.User, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]

@@ -50,6 +50,9 @@ namespace SmartBusinessWeb.Controllers
         int AccountProfileId = 1;    
         private string DefaultConnection { get { return Session["DBName"] == null ? ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", "SmartBusinessWeb_db") : ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", Session["DBName"].ToString()); } }
         private SqlConnection connection { get { return new SqlConnection(DefaultConnection); } }
+        public string DbName { get { return "SmartBusinessWeb_db"; } }
+        private PPWDbContext DBContext { get { return new PPWDbContext(DbName); } }
+
         private string centralbaseUrl = UriHelper.GetAppUrl();
         protected string DateFormat { get { return ConfigurationManager.AppSettings["DateFormat"]; } }
 
@@ -79,6 +82,20 @@ namespace SmartBusinessWeb.Controllers
         protected string UploadsPODir { get { return ConfigurationManager.AppSettings["UploadsPODir"]; } }
 
         private SqlConnection SqlConnection { get { return new SqlConnection(DefaultConnection); } }
+
+        public void AddTest()
+        {
+            using var context = new PPWDbContext(DbName);
+            
+                context.DebugLogs.Add(new DebugLog
+                {
+                    Message = "test",
+                    CreateTime = DateTime.Now,
+                    LogType = "test"
+                });
+                context.SaveChanges();
+            
+        }
 
         public ViewResult TimePicker()
         {

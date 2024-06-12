@@ -2714,6 +2714,7 @@
     <Content Include="Content\item\reserve\index.css" />
     <Content Include="Content\records\job.css" />
     <Content Include="Content\jquery-ui.css" />
+    <Content Include="Content\settings\accessrights\index.css" />
     <Content Include="Content\settings\duty\index.css" />
     <Content Include="Content\site\login.css" />
     <Content Include="Content\mean\css\all.min.css" />

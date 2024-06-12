@@ -1,41 +1,61 @@
-﻿@model PPWLib.Models.SetupModel
-
+﻿@model UserEditModel
+@using PagedList.Mvc;
 @{
-    ViewBag.Title = Resources.Resource.StaffAR;
-    var rand = CommonHelper.GetVersionRandomNo();
-    var btncls = string.Concat("btn btn-info", " ", Model.BtnClass);
+	ViewBag.Title = Resources.Resource.StaffAR;
+	var rand = CommonHelper.GetVersionRandomNo();
+	var btncls = string.Concat("btn btn-info", " ", Model.BtnClass);
 }
+<link rel="stylesheet" type="text/css" href="~/Content/settings/accessrights/index.css?v=@rand" />
 
 <h3>@ViewBag.Title</h3>
 
-<p class="my-3" data-btncls="@Model.BtnClass">
-	<button id="btnAdd" type="button" class="@btncls" data-href="/AccessRight/Edit?userId=0" data-userlicensefullprompt="@Resources.Resource.UserLicensedFullPrompt" >@Resources.Resource.Add</button>
+<p class="my-3">
+	<button id="btnAdd" type="button" class="@btncls mx-1" data-href="/AccessRight/Edit?userId=0" data-userlicensefullprompt="@Resources.Resource.UserLicensedFullPrompt">@Resources.Resource.Add</button>
+	<button id="btnReload" type="button" class="btn btn-warning mx-1">@Resources.Resource.Reload</button>
 </p>
-<table class="table table-bordered  table-hover table-condensed">
-	<thead class="gray-header">
-        <tr>
-            <td>@Resources.Resource.StaffCode</td>
-            <td>@Resources.Resource.StaffName</td>
-            <td>@Resources.Resource.Status</td>
-            <td></td>
-        </tr>
-	</thead>
-	<tbody>
-		@foreach (var user in Model.Users)
-		{
-			if (user.UserCode.ToLower() != "superadmin")
-			{
-				string status = (bool)user.surIsActive ? Resources.Resource.Active : Resources.Resource.Inactive;
-				<tr><td>@user.UserCode</td><td>@user.UserName</td>
-		<td>@status</td>
-		<td><button type="button" class="btn btn-info btnedit mx-2" data-userid="@user.surUID">@Resources.Resource.Edit</button>
-            <button type="button" class="btn btn-danger btndelete" data-userid="@user.surUID">@Resources.Resource.Remove</button>
-			</td></tr>
-			}
 
-		}
-	</tbody>
-</table>
+@using (Html.BeginForm("Index", "AccessRight", FormMethod.Get, new { @Id = "frmUser" }))
+{
+	@Html.AntiForgeryToken()
+	<table id="tblUser" class="table table-bordered table-hover table-condensed">
+		<thead class="gray-header">
+			<tr>
+				<th class="text-center colheader" data-col="0">@Resources.Resource.StaffCode</th>
+				<th class="text-center colheader" data-col="1">@Resources.Resource.StaffName</th>
+				<th class="text-center colheader" data-col="2">@Resources.Resource.Status</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var user in Model.PagingUserList)
+			{
+				if (user.UserCode.ToLower() != "superadmin")
+				{
+					string status = (bool)user.surIsActive ? Resources.Resource.Active : Resources.Resource.Inactive;
+					<tr>
+						<td class="text-center">@user.UserCode</td>
+						<td class="text-center">@user.UserName</td>
+						<td class="text-center">@status</td>
+						<td>
+							<button type="button" class="btn btn-info btnedit mx-2" data-userid="@user.surUID">@Resources.Resource.Edit</button>
+							<button type="button" class="btn btn-danger btndelete" data-userid="@user.surUID">@Resources.Resource.Remove</button>
+						</td>
+					</tr>
+				}
+
+			}
+		</tbody>
+	</table>
+
+	<div id="pagingblk" class="my-3">
+		@Html.PagedListPager(Model.PagingUserList, PageNo => Url.Action("Index",
+	new { PageNo, SortOrder = Model.CurrentSortOrder, SortCol = Model.SortCol, Keyword = Model.Keyword, PageSize = Model.PageSize }))
+	</div>
+
+	@Html.Partial("_SortOrderColHidden")
+}
+
+
 
 <div id="infoblk" data-userlicensedfullprompt="@Resources.Resource.UserLicensedFullPrompt"></div>
 <script src="~/Scripts/ts/js/settings/accessrights/index.js?v=@rand"></script>

@@ -39,26 +39,26 @@ else
 
                 <div class="form-check form-check-inline small">
                     <input class="form-check-input searchmode" type="checkbox" id="chkSalesPerson" name="SearchMode[]" value="0" @_salespersonchecked>
-                    <label class="form-check-label" for="chkSalesPerson">銷售員</label>
+                    <label class="form-check-label" for="chkSalesPerson">@Resources.Resource.SalesPeople</label>
                 </div>
                 <div class="form-check form-check-inline small">
                     <input class="form-check-input searchmode" type="checkbox" id="chkSalesOrder" name="SearchMode[]" value="1" @_salesorderchecked>
-                    <label class="form-check-label" for="chkSalesOrder">銷售單資料</label>
+                    <label class="form-check-label" for="chkSalesOrder">@Resources.Resource.SalesOrder</label>
                 </div>
                 <div class="form-check form-check-inline small">
                     <input class="form-check-input searchmode" type="checkbox" id="chkItem" name="SearchMode[]" value="2" @_itemchecked>
-                    <label class="form-check-label" for="chkItem">商品資料</label>
+                    <label class="form-check-label" for="chkItem">@Resources.Resource.Item</label>
                 </div>
                 <div class="form-check form-check-inline small">
                     <input class="form-check-input searchmode" type="checkbox" id="chkCustomer" name="SearchMode[]" value="3" @_customerchecked>
-                    <label class="form-check-label" for="chkCustomer">客戶資料</label>
+                    <label class="form-check-label" for="chkCustomer">@Resources.Resource.Customer</label>
                 </div>
 
                 <input type="hidden" id="searchmode" name="searchmode" value="@Model.SearchModeList" />
             </div>
-            <div class="row justify-content-center py-3 mb-2">
+            @*<div class="row justify-content-center py-3 mb-2">
                 @Html.Partial("_DatesRange", null, new ViewDataDictionary { { "DateFromTxt", Model.DateFromTxt }, { "DateToTxt", Model.DateToTxt } })
-            </div>
+            </div>*@
 
             <div class="row justify-content-center mb-2">
                 <button id="btnFilter" type="submit" name="filter" value="1" class="btn btn-success mr-sm-3">@Resources.Resource.Submit</button>

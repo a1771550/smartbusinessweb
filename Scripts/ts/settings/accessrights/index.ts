@@ -62,5 +62,8 @@ $(document).on("click", ".btnedit", function () {
 $(function () {
 	setFullPage();
 	initModals();
+	gTblId = "tblUser";
+	gFrmId = "frmUser";
+	ConfigSimpleSortingHeaders();
 	triggerMenu(11, 4);
 });

@@ -5235,6 +5235,7 @@ $.fancyConfirm = function (opts) {
 };
 
 interface ISalesman extends ISysUser {
+    ModifyTimeDisplay: any;
 	AssignedCusCodes: string[];
 }
 
@@ -6615,7 +6616,7 @@ function onAjaxFailure(response) {
 }
 
 function staffdetail(data: ISysUser) {
-	let _statustxt = data.IsActive == 1 ? activetxt : inactivetxt;
+	let _statustxt = data.surIsActive ? activetxt : inactivetxt;
 	let manager = data.ManagerName ?? "N/A";
 	let device = data.dvcCode === "" ? "N/A" : data.dvcCode;
 	let html =
@@ -8376,35 +8377,24 @@ interface ISysUser {
 	UserName: string;
 	DisplayName: string;
 	dvcCode: string;
-	shopCode: string;
-	kUserCode: string;
-	kUserName: string;
-	kSalesOrgId: number | null;
-	kSalesGroupId: string;
-	kSalesDeptId: string;
+	shopCode: string;	
 	UserRole: string;
 	FirstName: string;
 	LastName: string;
 	Email: string;
 	dvcIP: string;
 	surNetworkName: string;
-	managerId: number;
+	ManagerId: number;
 	surDesc: string | null;
 	surNotes: string | null;
-	AccountProfileId: number;
-	surScope: string;
-	surLockBy: string;
-	surLockTime: string | null;
-	surCreateBy: string;
-	CreateTimeDisplay: string;
-	surModifyBy: string;
-	ModifyTimeDisplay: string | null;
+	surScope: string;	
 	surIsAbss: boolean;
 	abssCardID: string;
 	CustomerList: Array<ICustomer>;
-	Phone: string | null;
-	IsActive: number;
+	Phone: string | null;	
 	ManagerName: string | null;
+	FuncCodes: string[];
+	checkpass: boolean;
 }
 
 let salesmen: ISalesman[] = [];
@@ -22432,7 +22422,8 @@ function initVariablesFrmInfoblk() {
 
 $(document).on("click", "#btnReload", function (e) {
 	e.preventDefault();
-	let url = new URL(window.location.href);
+	let _url = getPathFromUrl(window.location.href);//remove querystring first, if any...
+	let url = new URL(_url);
 	url.searchParams.set("reload", "1");
 	//console.log("url.href:", url.href);
 	//return;
@@ -22730,4 +22721,9 @@ function toggleNoRecord(show: boolean) {
 	if (show)
 		$("#norecord").addClass("d-inline-block my-2").show();
 	else $("#norecord").removeClass("d-inline-block my-2").hide();
+}
+
+//remove querystring from url
+function getPathFromUrl(url:string) {
+	return url.split(/[?#]/)[0];
 }
