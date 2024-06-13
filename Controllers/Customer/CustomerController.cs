@@ -255,15 +255,14 @@ namespace SmartBusinessWeb.Controllers.Customer
                 PageSize = PageSize,
             };
 
-            model.GetList(SortCol, SortOrder, Keyword, null);
+            model.GetList(PageNo, SortCol, SortOrder, Keyword, null);
 
             if (cusCodes != null)
             {
                 var cusCodeList = cusCodes.Split(',');
                 model.CustomerList = model.CustomerList.Where(x => x.AccountProfileId == apId && cusCodeList.Contains(x.cusCode)).ToList();
             }
-
-            model.PagingCustomerList = model.CustomerList.ToPagedList(PageNo, PageSize);
+          
             model.CusIdList = model.CustomerList.Select(x => x.cusCustomerID).ToHashSet();
             model.GlobalAttrList = ModelHelper.GetGlobalAttrList(apId);
             model.GlobalAttrList.Add(new GlobalAttributeModel

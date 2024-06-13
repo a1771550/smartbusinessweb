@@ -41,9 +41,7 @@
 			<label for="txtPhone" class="col-form-label mx-sm-2">@Resources.Resource.PhoneNo</label>
 			<input type="text" readonly class="form-control" id="txtPhone" value="@phone" />
 		</div>
-
-
-		@Html.Partial("_ExRateModal", null, new ViewDataDictionary { { "fieldname", "rtsCurrency" }, { "currency", rtsCurrency }, { "lblcls", "col-form-label mx-sm-2" }, { "exratecls", "d-block ml-2 hide" }, { "txtboxattr", "readonly" }, { "txtboxstyle", "width:60px;" }, { "txtboxcls", "disabled" } })
+		@*@Html.Partial("_ExRateModal", null, new ViewDataDictionary { { "fieldname", "rtsCurrency" }, { "currency", rtsCurrency }, { "lblcls", "col-form-label mx-sm-2" }, { "exratecls", "d-block ml-2 hide" }, { "txtboxattr", "readonly" }, { "txtboxstyle", "width:60px;" }, { "txtboxcls", "disabled" } })*@
 
 		<div class="form-group">
 			<label for="drpLocation" class="col-form-label mx-sm-2">@Resources.Resource.Shop</label>

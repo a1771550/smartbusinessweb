@@ -165,7 +165,7 @@ let SelectedCountry: number = 1;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
-//const searchcustxt:string = $txtblk.data("searchcustxt");
+const nocustomersfoundtxt: string = $txtblk.data("nocustomersfound");
 const enquirygrouptxt: string = $txtblk.data("enquirygrouptxt");
 const emailnotificationtosalesmentxt: string = $txtblk.data("emailnotificationtosalesmentxt");
 const salesmentxt: string = $txtblk.data("salesmentxt");
@@ -1719,7 +1719,7 @@ function OnGetCustomersSuccess(response) {
 
 	//console.log("modelcustomers:", model.Customers);
 	if (model.Customers.length > 0) {
-		togglePaging("Customer", true);
+		//togglePaging("Customer", true);
 
 		CusList = model.Customers.slice(0);
 		if (CusList.length === 1) {
@@ -1744,8 +1744,21 @@ function OnGetCustomersSuccess(response) {
 				RecordCount: model.RecordCount,
 			});
 		}
-	} else {
-		togglePaging("Customer", false);
+	}
+	else {		
+		$.fancyConfirm({
+			title: "",
+			message: nocustomersfoundtxt,
+			shownobtn: false,
+			okButton: oktxt,
+			noButton: notxt,
+			callback: function (value) {
+				if (value) {					
+					$(".customer").val("");					
+					$("#txtCustomerName").val(defaultcustomer.cusName).trigger("focus");
+				}
+			}
+		});
 	}
 }
 
@@ -2458,7 +2471,7 @@ $(document).on("change", ".chkpayment", function () {
 	} else {
 		$tr.find(".paymenttype").val("0.00");
 		Sales.rtsFinalTotal! -= ServiceChargeAmt;
-		DicPayServiceCharge[type].Added = false;
+		//DicPayServiceCharge[type].Added = false;
 	}
 
 	setAmtDisplay(Sales!.rtsFinalTotal ?? 0, 0);
@@ -2676,6 +2689,7 @@ function initCashTxt(totalamt: number | null) {
 	$("#Cash").val(cashtxt);
 }
 function togglePayModeTxt() {
+	//console.log("check length:", $(".checks:visible").length);
 	if ($(".checks:visible").length > 1) {
 		$("#singlePayMode").hide();
 		$("#multiplePayMode").show();
@@ -8083,7 +8097,7 @@ interface ISaleOrder {
 interface IPayServiceCharge {
 	PayCode: string;
 	Selected: boolean;
-	Added: boolean;
+	//Added: boolean;
 	Percentage: number;
 }
 let DicPayType: { [Key: string]: string } = {};
@@ -15252,16 +15266,15 @@ function calculateServiceChargeAmt(subtotal: number, scpc: number) {
 	return financial(subtotal * scpc / 100);
 }
 function GetServiceChargeAmt(subtotal: number) {
-	for (const [key, value] of Object.entries(DicPayServiceCharge)) {
-		//console.log("key:" + key);
-		//console.log("value.selected:", value.Selected);
-		//console.log("pc:" + value.Percentage);
-		if (value.Selected && !value.Added) { ServiceChargePC += value.Percentage; value.Added = true; }
+	ServiceChargePC = 0;
+	for (const [key, value] of Object.entries(DicPayServiceCharge)) {		
+		/*if (value.Selected && !value.Added) { ServiceChargePC += value.Percentage; value.Added = true; }*/
+		if (value.Selected) { ServiceChargePC += value.Percentage; }
 	}
-	console.log("ServiceChargePC:" + ServiceChargePC);
-	console.log("subtotal:" + subtotal);
+	//console.log("ServiceChargePC:" + ServiceChargePC);
+	//console.log("subtotal:" + subtotal);
 	ServiceChargeAmt = calculateServiceChargeAmt(subtotal, ServiceChargePC);
-	console.log("ServiceChargeAmt:", ServiceChargeAmt);
+	//console.log("ServiceChargeAmt:", ServiceChargeAmt);
 }
 function populateOrderSummary() {
 	$("#receiptno").text(Sales.rtsCode);
@@ -15396,7 +15409,7 @@ $(document).on("dblclick", "#txtCustomerName", function () {
 	GetCustomers4Sales(1);
 });
 
-$(document).on("change", "#txtCustomerName", function (e) {
+$(document).on("change", ".customer", function (e) {
 	handleCustomerNameChange(e);
 });
 
@@ -17563,7 +17576,7 @@ function selectcus() {
 				//setCustomerPriceLevel();
 				$("#txtPriceLevel").val(<string>selectedCus.cusPriceLevelDescription);
 				//console.log("cus joblist:", selectedCus.JobList);
-				if (enableTax && !inclusivetax) {
+				if (enableTax && !inclusivetax && selectedSalesLn) {
 					//console.log("here");
 					updateRows4Tax();
 				}
@@ -17625,13 +17638,9 @@ function getCustomersOk(data) {
 	}
 }
 
-function handleCustomerNameChange(e: any) {
-	// console.log("handlecustomernamechang called");
-	//  console.log("SalesList#txtcustomernamechange:", SalesLnList);
+function handleCustomerNameChange(e: any) {	
 	selectedCusCodeName = <string>e.currentTarget.value;
-	// console.log("selectedcuscodename#handlenamechange:" + selectedCusCodeName);
 	searchCustomer(selectedCusCodeName);
-	// selectCus();
 }
 
 $(document).on("change", ".itemcode", handleItemCodeChange);

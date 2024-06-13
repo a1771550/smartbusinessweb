@@ -4,63 +4,102 @@ let selectedCatId: number = 3;
 let filteredItemList: ISimpleItem[] = [];
 let $norecordfound;
 function togglePayment(code: string, checked: boolean) {
-
+	code = code.toLowerCase();
+	//console.log("code:" + code);
+	//console.log("checked:", checked);
+	let amt = Number($("#salesamount").data("amt"));
 	if (isEpay) {
 		$(".single__add").removeClass("activee");
 		$(".single__add").each(function (i, e) {
-			if ($(e).data("code") == code) {
-				if (checked) $(e).addClass("activee");
-				let amt = Number($("#salesamount").data("amt"));
-				$(e).find(".paymenttype").data("amt", amt).val(formatnumber(amt));
+			let _code = ($(e).data("code") as string).toLowerCase();
+			if (_code == code) {
+				if (checked) $(e).addClass("activee");				
 			}
 		});
 	} else {
 		$(".single__add").each(function (i, e) {
-			if ($(e).data("code") == code) {
-
-				if (checked) $(e).addClass("activee");
-				else $(e).removeClass("activee");
-
-				let amt = $(".single__add").length === 1 ? Number($("#salesamount").data("amt")) : 0;
-				$(e).find(".paymenttype").data("amt", amt).val(formatnumber(amt));
+			let _code = ($(e).data("code") as string).toLowerCase();
+			if (_code == code) {
+				if (checked) {
+					$(e).addClass("activee");
+				}
+				else {
+					if ($(".single__add.activee").length > 1)
+						$(e).removeClass("activee");
+				}
+				$(e).find(".paymenttype").val(formatnumber(0));
+			} else if (_code == "alipay" || _code == "wechat") {
+				$(e).removeClass("activee");
 			}
 		});
 	}
+
+	if (checked && $(".single__add.activee").length === 1) {
+		$target = $(".single__add.activee").first();
+		
+		if (($target.data("code") as string).toLowerCase() == code) {
+			$target.find(".paymenttype").data("amt", amt).val(formatnumber(amt));
+		}
+	}
 }
-
-
-
 $(document).on("click", ".btnpayment", function () {
 	let Id = $(this).attr("id") as string;
 	let code = $(this).data("type") as string;
-	let checked = togglePlusCheck(Id);
-	//console.log("checked:", checked);
-	togglePayModeTxt();
+	let checked = false;
 
-	DicPayServiceCharge[code].Selected = checked;	
+	if ($(".btnpayment.toggle").length == 1 && code.toLowerCase() == "cash") return;
 
-	if (checked) $(this).addClass("toggle");
-	else {
-		$(this).removeClass("toggle");
-		DicPayServiceCharge[code].Added = false;
-	} 
-	
-	isEpay = (code.toLowerCase() == "alipay" || code.toLowerCase() == "wechat");	
-	//console.log("scpc:" + scpc);
-	//console.log("isEay:", isEpay);
-	if (isEpay) {
-		$(".btnpayment").not(this).removeClass("toggle");
-		$(".btnpayment").not(this).find(".pluse").hide();
-		$(".btnpayment").not(this).find(".checks").hide();
-		$("#txtPayerCode").prop("readonly", false).trigger("focus");
+	isEpay = (code.toLowerCase() == "alipay" || code.toLowerCase() == "wechat");
+
+	checked = togglePlusCheck(Id);
+
+	DicPayServiceCharge[code].Selected = checked;
+
+	if (checked) {
+		$(this).addClass("toggle");
+
+		if (isEpay) {
+			$(".btnpayment").not(this).removeClass("toggle");
+			$(".btnpayment").not(this).find(".checks").hide();
+
+			$(".btnpayment").each(function (i, e) {
+				let _id = $(e).attr("id") as string;
+				if (_id != Id) {
+					$(e).removeClass("toggle");
+					$(e).find(".checks").hide();
+					let _code = ($(e).data("type") as string).toLowerCase();
+					if (_code == "cash" || (_code=="alipay"||_code=="wechat")) {
+						if (!($(e).find(".pluse").is(":visible"))) $(e).find(".pluse").show();
+					}
+				}
+			});
+
+			$("#txtPayerCode").prop("readonly", false).trigger("focus");
+		}
+		else {
+			$(".btnpayment").each(function (i, e) {
+				let code = ($(e).data("type") as string).toLowerCase();
+				if (code == "alipay" || code == "wechat") {
+					$(e).removeClass("toggle");
+					$(e).find(".checks").hide();
+					if (!($(e).find(".pluse").is(":visible"))) $(e).find(".pluse").show();
+				}
+			});
+			$("#txtPayerCode").prop("readonly", true);
+		}
 	}
 	else {
-		$("#txtPayerCode").prop("readonly", true);
+		if ($(".btnpayment.toggle").length > 1) {
+			$(this).removeClass("toggle");
+		}
 	}
 
 	togglePayment(code, checked);
 
+	togglePayModeTxt();
+
 	populateOrderSummary();
+
 });
 $(document).on("change", "#txtItemCode", function () {
 	/*console.log("here");*/
@@ -230,10 +269,10 @@ $(document).on("click", ".operator", function () {
 	populateProductList();
 });
 function handleDiscPcChange(this: any) {
-    let discpc: number = Number($(this).val());
-   //console.log("discpc#change:", discpc);//10
-    handleProductCheck(this, discpc, true);
-    populateProductList();
+	let discpc: number = Number($(this).val());
+	//console.log("discpc#change:", discpc);//10
+	handleProductCheck(this, discpc, true);
+	populateProductList();
 }
 
 function openTapContent(ele, tapName, Id) {
@@ -269,7 +308,7 @@ function openTapContent(ele, tapName, Id) {
 	}
 }
 
-function toggleProductCheck(ele: HTMLElement, show: boolean) {	
+function toggleProductCheck(ele: HTMLElement, show: boolean) {
 	if (show) {
 		$target = $(ele).find(".check-product");
 		$target.removeClass("hide");
@@ -277,7 +316,7 @@ function toggleProductCheck(ele: HTMLElement, show: boolean) {
 	} else {
 		$target = $(ele);
 		$target.addClass("hide");
-		$target.parent(".productsetimg").parent(".productset").removeClass("productsethover");		
+		$target.parent(".productsetimg").parent(".productset").removeClass("productsethover");
 	}
 }
 function handleRemoveItem(this: any) {
