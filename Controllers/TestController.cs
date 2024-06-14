@@ -41,6 +41,9 @@ using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using PPWLib.Models.User;
 using PPWLib.Models.POS.Sales;
+using CommonLib.BaseModels.MYOB;
+using PPWLib.Helpers;
+using PPWLib.Models.AbssReport;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -80,8 +83,10 @@ namespace SmartBusinessWeb.Controllers
         private string MyobConnectionString { get { return string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ;", ConfigurationManager.AppSettings["MYOBDriver"], ConfigurationManager.AppSettings["MYOBUId"], ConfigurationManager.AppSettings["MYOBPass"], ConfigurationManager.AppSettings["MYOBDb"], ConfigurationManager.AppSettings["MYOBExe"], ConfigurationManager.AppSettings["MYOBKey"]); } }
         protected string UploadsWSDir { get { return ConfigurationManager.AppSettings["UploadsWSDir"]; } }
         protected string UploadsPODir { get { return ConfigurationManager.AppSettings["UploadsPODir"]; } }
-
+        
         private SqlConnection SqlConnection { get { return new SqlConnection(DefaultConnection); } }
+
+      
 
         public void AddTest()
         {
@@ -128,7 +133,7 @@ namespace SmartBusinessWeb.Controllers
                 if (_ps != null)
                 {
                     payService = new PayService(_ps.auth_code, _ps.out_trade_no, _ps.body.Split(',').ToList(), _ps.total_fee, ePayMode.Refund);
-                    SalesEditModel.GenEpaySignature(ref payService, ePayMode.Refund);
+                    PPWLib.Models.POS.Sales.SalesEditModel.GenEpaySignature(ref payService, ePayMode.Refund);
 
                     string xml = $"<xml><auth_code><![CDATA[{payService.AuthCode}]]></auth_code><body><![CDATA[{payService.Body}]]></body><mch_create_ip><![CDATA[{payService.MachineCreateIP}]]></mch_create_ip><mch_id><![CDATA[{payService.MerchantID}]]></mch_id><nonce_str><![CDATA[{payService.Nonce}]]></nonce_str><op_user_id><![CDATA[{payService.MerchantID}]]></op_user_id><out_refund_no><![CDATA[{payService.OutRefundNo}]]></out_refund_no><out_trade_no><![CDATA[{payService.OutTradeNo}]]></out_trade_no><refund_fee><![CDATA[{payService.RefundFee}]]></refund_fee><service><![CDATA[{payService.Service}]]></service><total_fee><![CDATA[{payService.TotalFee}]]></total_fee><sign><![CDATA[{payService.Signature}]]></sign><notify_url><![CDATA[{payService.NotifyUrl}]]></notify_url></xml>";
 
@@ -141,7 +146,7 @@ namespace SmartBusinessWeb.Controllers
                     if (nodelist != null)
                     {
 
-                        PayService ps = SalesEditModel.GetStatusResult(nodelist);
+                        PayService ps = PPWLib.Models.POS.Sales.SalesEditModel.GetStatusResult(nodelist);
 
                         var status = ps.Status;
                         var resultcode = ps.ResultCode;
@@ -153,13 +158,13 @@ namespace SmartBusinessWeb.Controllers
                             {
                                 if (resultcode == "1")
                                 {
-                                    SalesEditModel.HandleUnSuccessfulResult(context, payService, nodelist, status, resultcode, ePayMode.Refund, apId);
+                                    PPWLib.Models.POS.Sales.SalesEditModel.HandleUnSuccessfulResult(context, payService, nodelist, status, resultcode, ePayMode.Refund, apId);
                                     context.SaveChanges();
                                     return Json(new { msg = Resources.Resource.PaymentRefundFailed, epaystatus = 0 }, JsonRequestBehavior.AllowGet);
                                 }
                                 else if (resultcode == "0")
                                 {
-                                    SalesEditModel.HandleSuccessfulResult(context, payService, nodelist, status, resultcode, ePayMode.Refund);
+                                    PPWLib.Models.POS.Sales.SalesEditModel.HandleSuccessfulResult(context, payService, nodelist, status, resultcode, ePayMode.Refund);
                                     context.SaveChanges();
                                     return Json(new { msg = Resources.Resource.PaymentRefunded, epaystatus = 1 }, JsonRequestBehavior.AllowGet);
                                 }
