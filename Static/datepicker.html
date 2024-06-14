@@ -17,15 +17,16 @@
 
     <link rel="stylesheet" type="text/css" href="../Scripts/jquery-ui/jquery-ui.min.css">
     <script src="../Scripts/jquery-ui/jquery-ui.min.js"></script>
-    <style type="text/css">
+    <script src="../Scripts/datepicker/datepicker-zh-HK.js"></script>
+    <!--<style type="text/css">
         #demo {
             text-align: center;
             background-image: url('../Content/images/calendar.svg');
             background-position: right center;
             background-repeat: no-repeat;
-            padding-right: 18px;           
+            padding-right: 18px;
         }
-    </style>
+    </style>-->
 </head>
 <body>
     <div class="container">
@@ -34,7 +35,7 @@
             <div class="form-group">
                 <label for="demo">Date</label>
 
-                <input type="date" class="form-control datepicker" id="demo" />
+                <input type="text" class="" id="datepicker" />
             </div>
         </form>
     </div>
@@ -44,7 +45,19 @@
     <script src="../Scripts/datetimepicker/jquery.datetimepicker.full.min.js"></script>-->
     <script>
         $(function () {
-            initDatePicker('demo');
+			$("#datepicker").datepicker({
+				dateFormat: "MM yy",
+				changeMonth: true,
+				changeYear: true,
+				showButtonPanel: true,
+				onClose: function (dateText, inst) {
+					var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+					var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+					$(this).datepicker("setDate", new Date(year, month, 1));
+                },                
+            });
+            $("#datepicker").datepicker($.datepicker.regional["zh-HK"]);
+           // initDatePicker('demo',new Date(),true,"yy-mm");
             //$('#demo').datepicker({
             //    //'setDate':new Date()
             //});

@@ -4,6 +4,9 @@
 	ViewBag.Title = Resources.Resource.Sales;
 	int rand = CommonHelper.GetVersionRandomNo();
 	bool isassignor = UserHelper.CheckIfAssignor(Model.User);
+	int currentMon = DateTime.Now.Month;
+	string strMon = currentMon < 10 ? string.Concat("0", currentMon) : currentMon.ToString();
+	string strYM = string.Concat(DateTime.Now.Year, "-", strMon);
 }
 <link href="~/Content/abssreports/sales.css?v=@rand" rel="stylesheet" type="text/css" />
 
@@ -15,7 +18,7 @@
 
 @using (Html.BeginForm("Sales", "AbssReport", FormMethod.Get, new { @Id = "frmSales" }))
 {
-	<div id="searchblk" class="my-3">
+	<div id="searchblk" class="my-3 small">
 
 		<div class="float-right">
 			<div class="form-inline">
@@ -25,7 +28,7 @@
 					<button id="btnSearch" class="btn btn-secondary mx-1" type="button" title="@Resources.Resource.Search">
 						<i class="fa fa-search"></i>
 					</button>
-					<button id="btnReload" class="btn btn-warning mx-1" type="button" title="@Resources.Resource.Reload">
+					<button class="btn btn-warning mx-1 btnReload" type="button" title="@Resources.Resource.Reload">
 						<i class="fa fa-refresh"></i>
 					</button>
 				</div>
@@ -37,13 +40,22 @@
 		<div class="clearfix">
 			<div id="dateblk" class="form-inline">
 				<div class="form-group">
-					<input type="datetime" class="form-control datepicker" name="strDate" id="strDate" />
+					<input type="text" class="form-control datepicker mx-1" id="strDay" />
+					<input type="text" class="form-control datepicker mx-1" id="strMonth" />
+					<div class="form-check form-check-inline">
+						<input class="form-check-input date" type="radio" name="dateOptions" id="radDay" value="day" checked>
+						<label class="form-check-label" for="radDay">@Resources.Resource.Day</label>
+					</div>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input date" type="radio" name="dateOptions" id="radMonth" value="month">
+						<label class="form-check-label" for="radMonth">@Resources.Resource.Month/@Resources.Resource.Year</label>
+					</div>
+					
 				</div>
-				<div class="form-group">
-					<select class="form-control" name="drpDate" id="drpDate">
-					</select>
-				</div>
-				<button id="btnFilter" class="btn btn-success mx-1">@Resources.Resource.Filter</button>
+				<button id="btnFilter" type="button" class="btn btn-success mx-1">@Resources.Resource.Filter</button>
+				<button class="btn btn-warning mx-1 btnReload" type="button" title="@Resources.Resource.Reload">
+					<i class="fa fa-refresh"></i>
+				</button>
 			</div>
 		</div>
 
@@ -115,6 +127,6 @@
 
 
 @Html.Partial("_WaitingModal")
-<div id="infoblk" data-pagesize="@Model.ComInfo.PageLength"></div>
+<div id="infoblk" data-pagesize="@Model.ComInfo.PageLength" data-salesdate="@JsonSerializer.Serialize(Model.SalesDate)"></div>
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script src="~/Scripts/ts/js/abssreports/sales.js?v=@rand"></script>

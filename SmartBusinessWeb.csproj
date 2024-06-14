@@ -2895,6 +2895,9 @@
     <Content Include="Scripts\datatables.js" />
     <Content Include="Scripts\datatables.min.js" />
     <Content Include="Scripts\date.format.js" />
+    <Content Include="Scripts\datepicker\datepicker-zh-CN.js" />
+    <Content Include="Scripts\datepicker\datepicker-zh-HK.js" />
+    <Content Include="Scripts\datepicker\datepicker-zh-TW.js" />
     <Content Include="Scripts\datetimepicker\bootstrap-datetimepicker.min.js" />
     <Content Include="Scripts\double-scroll\jquery.doubleScroll.js" />
     <Content Include="Scripts\filestyle.js" />

@@ -43,7 +43,7 @@ namespace SmartBusinessWeb.Controllers.Report
 
         [HandleError]
         [CustomAuthorize("reports", "admin1", "admin", "superadmin")]
-        public ActionResult Sales(SalesDate salesDate, int PageNo = 1, int SortCol = 0, string SortOrder = "desc", string Keyword = null)
+        public ActionResult Sales(int Year = 0, int Month = 0, int Day = 1, int DateOption = 2, int PageNo = 1, int SortCol = 0, string SortOrder = "desc", string Keyword = null)
         {
             ViewBag.ParentPage = "abssreports";
             ViewBag.Title = Resource.Sales;
@@ -54,7 +54,7 @@ namespace SmartBusinessWeb.Controllers.Report
                 SortOrder = SortOrder == "desc" ? "asc" : "desc",
                 Keyword = Keyword
             };
-            model.GetSalesListFrmDB(salesDate, PageNo, SortCol, SortOrder, Keyword);
+            model.GetSalesListFrmDB(Year, Month, Day, DateOption, PageNo, SortCol, SortOrder, Keyword);
             return View(model);
         }
 

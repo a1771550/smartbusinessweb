@@ -19,11 +19,24 @@ let StartDayEnum = {
 	ThisYear: 7,
 	Beginning: 8,
 }
-
+enum SalesOptions {
+	Daily = 1,
+	Monthly = 0,
+	All = 2
+}
+interface ISalesDate {
+	SalesOptions: SalesOptions;
+	Day: number|null;
+	Year: number;
+	Month: number;
+	delimeter: string;
+	FinancialYear: number|null;
+}
 enum TriggerReferrer {
 	Row,
 	Modal
 }
+let SalesDate: ISalesDate;
 interface IDuty {
 	DutyOn: string;
 	DutyOff: string;
@@ -18245,18 +18258,19 @@ function initDatePicker(
 	setDate: boolean = true,
 	showToday: boolean = false,
 	isClass: boolean = false
-) {
-	/*console.log("here");*/
+) {	
 	if (format === "") format = jsdateformat;
+	//console.log("format:", format);
 
 	let $ele = isClass ? $(`.${selector}`) : $(`#${selector}`);
+	//console.log("$ele:", $ele);
 
-	$ele.datepicker({
+	$ele.datepicker({		
 		dateFormat: format,
 		beforeShow: function () {
 			setTimeout(function () {
 				$(".ui-datepicker").css("z-index", 99999999999999);
-			}, 0);
+			}, 500);
 		},
 	});
 
@@ -18270,8 +18284,33 @@ function initDatePicker(
 			autoOpen: false,
 		});
 	}
+	switch (lang) {
+		case 2:
+			$ele.datepicker($.datepicker.regional[""]);
+			break;
+		case 1:
+			$ele.datepicker($.datepicker.regional["zh-CN"]);
+			break;
+		default:
+		case 0:
+			$ele.datepicker($.datepicker.regional["zh-HK"]);
+			break;
+	}
+	
 }
+function cleanDatepicker() {
+	var old_fn = $.datepicker._updateDatepicker;
 
+	$.datepicker._updateDatepicker = function (inst) {
+		old_fn.call(this, inst);
+
+		var buttonPane = $(this).datepicker("widget").find(".ui-datepicker-buttonpane");
+
+		$("<button type='button' class='ui-datepicker-clean ui-state-default ui-priority-primary ui-corner-all'>Delete</button>").appendTo(buttonPane).on("click",function (ev) {
+			$.datepicker._clearDate(inst.input);
+		});
+	}
+}
 
 
 let whatsapplnk: string = "https://api.whatsapp.com/send?phone={0}&text={1}";
@@ -22430,16 +22469,19 @@ function initVariablesFrmInfoblk() {
 	comInfo = $infoblk.data("cominfo");
 }
 
+$(document).on("click", ".btnReload", function (e) {
+	handleReload(e);
+});
 $(document).on("click", "#btnReload", function (e) {
+	handleReload(e);
+});
+function handleReload(e: JQuery.ClickEvent<Document, undefined, any, any>) {
 	e.preventDefault();
-	let _url = getPathFromUrl(window.location.href);//remove querystring first, if any...
+	let _url = getPathFromUrl(window.location.href); //remove querystring first, if any...
 	let url = new URL(_url);
 	url.searchParams.set("reload", "1");
-	//console.log("url.href:", url.href);
-	//return;
 	window.location.href = url.href;
-});
-
+}
 $(document).on("click", "#btnSearch", function (e) {
 	e.preventDefault();
 	let $sortcol = $("<input>").attr({
@@ -22462,6 +22504,8 @@ $(document).on("click", ".colheader", function () {
 	if (gFrmId)
 		$(`#${gFrmId}`).append($sortcol).trigger("submit");
 });
+
+
 function ConfigSimpleSortingHeaders() {
 	let $sortorder = $("#sortorder");
 

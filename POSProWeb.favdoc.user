@@ -215,6 +215,11 @@
           <path>Scripts\ts\customer\eblast\index.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\customer\eblast\index.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>abssreports-sales.ts</name>
+          <path>Scripts\ts\abssreports\sales.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\abssreports\sales.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -396,6 +401,11 @@
           <path>Views\Account\Login.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Account\Login.cshtml</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>abssreports-Sales.cshtml</name>
+          <path>Views\AbssReport\Sales.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\AbssReport\Sales.cshtml</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -516,6 +526,11 @@
           <name>EnquiryController.cs</name>
           <path>Controllers\Customer\Enquiry\EnquiryController.cs</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Customer\Enquiry\EnquiryController.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>AbssReportController.cs</name>
+          <path>Controllers\Report\AbssReportController.cs</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Controllers\Report\AbssReportController.cs</absolutePath>
         </Favorite>
       </favorites>
     </Folder>
@@ -664,9 +679,9 @@
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\item\index.css</absolutePath>
         </Favorite>
         <Favorite>
-          <name>itemcategory-edit.ts</name>
-          <path>Scripts\ts\item\category\edit.ts</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\item\category\edit.ts</absolutePath>
+          <name>abssreports-sales.css</name>
+          <path>Content\abssreports\sales.css</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Content\abssreports\sales.css</absolutePath>
         </Favorite>
       </favorites>
     </Folder>
