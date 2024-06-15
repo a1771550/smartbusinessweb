@@ -1521,18 +1521,6 @@ namespace SmartBusinessWeb.Controllers
             return Json(msg);
         }
 
-
-
-        [HttpGet]
-        public JsonResult GetContactNamesByIds(string contactIds)
-        {
-            using var context = new PPWDbContext(Session["DBName"].ToString());
-            //var contactIdList = string.Join(",", contactIds);
-            var contactnames = string.Join(",", context.GetContactNamesByIds(contactIds).ToList());
-            return Json(contactnames, JsonRequestBehavior.AllowGet);
-        }
-
-
         [HandleError]
         [HttpPost]
         [ValidateAntiForgeryToken]

@@ -15,11 +15,15 @@
 #tblCustomer th:nth-child(6), #tblCustomer td:nth-child(6), #tblCustomer th.abss, #tblCustomer td.abss {
 	width: 120px !important;
 }
+#tblCustomer th.balance, #tblCustomer td.balance {
+	width: 120px !important;
+}
 #tblCustomer th:nth-child(8), #tblCustomer td:nth-child(8){
 	width: 140px !important;
 }
 #tblCustomer th.action, #tblCustomer td.action {
 	width: 140px !important;
+	min-width:140px;
 }
 #tblCustomer th:last-child, #tblCustomer td:last-child {
 	width: 50px !important;

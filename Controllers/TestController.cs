@@ -1324,26 +1324,6 @@ btest3
             Response.Write(emplist.Count);
         }
 
-
-
-        public void Debug41()
-        {
-            var idList = new List<long>();
-            idList.Add(58);
-            idList.Add(59);
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
-            {
-                var contactnamelist = new List<string>();
-                var _contactlist = context.GetContactListByIDs2(string.Join(",", idList)).ToList();
-                foreach (var contact in _contactlist)
-                {
-                    var contactname = !string.IsNullOrEmpty(contact.cusName) ? contact.cusName : contact.cusContact;
-                    Response.Write(contactname + "<br>");
-                }
-
-            }
-        }
-
         public void JsonTest()
         {
             Response.Write(PPWLib.Helpers.JsonHelper.Test());

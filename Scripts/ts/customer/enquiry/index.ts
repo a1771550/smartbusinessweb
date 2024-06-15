@@ -251,11 +251,11 @@ $(document).on("change", "#iPageSize", function () {
 
 $(document).on("dblclick", ".enquiry", function () {
 	let Id: number = <number>$(this).data("id");
-	if ($(this).hasClass("disabled")) {
-		window.location.href = '/Customer/Edit?enqId=' + Id;
-	} else {
+	//if ($(this).hasClass("disabled")) {
+	//	window.location.href = '/Customer/Edit?enqId=' + Id;
+	//} else {
 		window.location.href = '/Enquiry/Edit?Id=' + Id;
-	}
+	//}
 });
 
 function populateDropDown4SalesmenEnqGroupList() {
@@ -545,7 +545,7 @@ $(function () {
 	forenquiry = true;
 	setFullPage();
 	initModals();
-	triggerMenu(1, 3);
+	triggerMenu(1, 2);
 
 	initInfoBlkVariables4Enquiry();
 

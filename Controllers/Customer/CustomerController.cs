@@ -240,7 +240,7 @@ namespace SmartBusinessWeb.Controllers.Customer
 
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
-        public ActionResult Index(int PageNo = 1, int PageSize = 10, int SortCol = 4, string SortOrder = "desc", string Keyword = "", int CheckAll = 0, string cusCodes = null)
+        public ActionResult Index(int PageNo = 1, int PageSize = 10, int SortCol = 4, string SortOrder = "desc", string Keyword = null, int CheckAll = 0, string cusCodes = null)
         {
             ViewBag.ParentPage = "customer";
             if (string.IsNullOrEmpty(Keyword))
@@ -278,14 +278,14 @@ namespace SmartBusinessWeb.Controllers.Customer
         [HandleError]
         [CustomAuthorize("customer", "boss", "admin", "superadmin")]
         [HttpGet]
-        public ActionResult Edit(string cusCode = null, string enqId = null, string referrer = "")
+        public ActionResult Edit(string cusCode = null, string referrer = "")
         {
             ViewBag.ParentPage = "customer";
             ViewBag.PageName = "edit";
             var region = CommonLib.Helpers.CultureHelper.GetCountryByIP();
             var comInfo = Session["ComInfo"] as ComInfo;
 
-            CustomerEditModel cmodel = new CustomerEditModel(cusCode, enqId)
+            CustomerEditModel cmodel = new CustomerEditModel(cusCode)
             {
                 Referrer = referrer,
                 IpCountry = region != null ? region.EnglishName : "Hong Kong",
