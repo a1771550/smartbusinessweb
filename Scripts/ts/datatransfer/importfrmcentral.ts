@@ -17,6 +17,9 @@ $(document).on("click", ".import", function () {
                 });
             } else {
                 switch (type) {
+                    case "sales":
+                        $("#filename").val("Sales_");
+                        break;
                     case "spp":
                         $("#filename").val("SPP_");
                         break;
@@ -201,4 +204,6 @@ $(function () {
     setFullPage();
     initModals();
     triggerMenu(6, 0);
+    $('#btnGetPath').addClass('hide');
+    $('#dateblk').removeClass('hide');
 });

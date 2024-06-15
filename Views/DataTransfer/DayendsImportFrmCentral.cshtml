@@ -14,35 +14,36 @@
 {
     @Html.AntiForgeryToken() 
    
-<div class="d-flex my-3 mx-1">
+<div class="d-flex my-3">
 	<ul class="horizontallist">
-		<li><button type="button" class="mx-3 btn btn-info" id="btnGetPath">@Resources.Resource.GetPath</button></li>
+		<li><button type="button" class="btn btn-info" id="btnGetPath">@Resources.Resource.GetPath</button></li>
 
-		<li><button type="button" class="btn btn-success mr-3 import" data-type="customer" id="btnImportCustomer">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Customer)</button></li>
-		<li><button type="button" class="btn btn-outline-success mr-3 import" data-type="supplier" id="btnImportSupplier">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Supplier)</button></li>
+		<li><button type="button" class="btn btn-success import" data-type="customer" id="btnImportCustomer">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Customer)</button></li>
+		<li><button type="button" class="btn btn-outline-success import" data-type="supplier" id="btnImportSupplier">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Supplier)</button></li>
 		@if (ViewBag.DefaultCheckoutPortal.ToLower() == "abss")
 		{
-			<li><button type="button" class="btn btn-warning import mr-3" data-type="currency" id="btnImportCurrency">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Currency)</button></li>
+			<li><button type="button" class="btn btn-warning import" data-type="currency" id="btnImportCurrency">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Currency)</button></li>
 		}
 		@{
 			bool abssemployee = ConfigurationManager.AppSettings["AbssEmployeeMode"] == "1";
 			if (abssemployee)
 			{
-				<li><button type="button" class="btn btn-outline-success import mr-3" data-type="employee" id="btnImportEmployee">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Employee)</button></li>
+				<li><button type="button" class="btn btn-outline-success import" data-type="employee" id="btnImportEmployee">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Employee)</button></li>
 			}
 		}
 
-		<li><button type="button" class="btn btn-info mr-3 import" data-type="item" id="btnImportItem">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Item)</button></li>
-		<li><button type="button" class="btn btn-primary mr-3 import" data-type="quotation" id="btnImportQuotation">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Quotation)</button></li>
-		<li><button type="button" class="btn btn-success mr-3 import" data-type="accountreceivable" id="btnImportAR">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.AccountReceivable)</button></li>
-		<li><button type="button" class="btn btn-info mr-3 import" data-type="spp" id="btnImportSPP">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.SalesPersonPerformance)</button></li>
-		<li><button type="button" class="btn btn-warning mr-3 import" data-type="ci" id="btnImportCI">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.CustomerInvoices)</button></li>
+		<li><button type="button" class="btn btn-info import" data-type="item" id="btnImportItem">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Item)</button></li>
+		<li><button type="button" class="btn btn-primary import" data-type="sales" id="btnImportSales">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Sales)</button></li>
+		<li><button type="button" class="btn btn-outline-primary import" data-type="quotation" id="btnImportQuotation">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Quotation)</button></li>
+		<li><button type="button" class="btn btn-success import" data-type="accountreceivable" id="btnImportAR">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.AccountReceivable)</button></li>
+		<li><button type="button" class="btn btn-info import" data-type="spp" id="btnImportSPP">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.SalesPersonPerformance)</button></li>
+		<li><button type="button" class="btn btn-warning import" data-type="ci" id="btnImportCI">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.CustomerInvoices)</button></li>
 
 
 		@if (ViewBag.DefaultCheckoutPortal.ToLower() == "abss")
 		{
-			<li><button type="button" class="btn btn-outline-success mr-3 import" data-type="account" id="btnImportAccount">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.ItemAccount)</button></li>
-			<li><button type="button" class="btn btn-outline-warning import mr-3" data-type="job" id="btnImportJob">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Job4Myob)</button></li>
+			<li><button type="button" class="btn btn-outline-success import" data-type="account" id="btnImportAccount">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.ItemAccount)</button></li>
+			<li><button type="button" class="btn btn-outline-warning import" data-type="job" id="btnImportJob">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Job4Myob)</button></li>
 			<li><button type="button" class="btn btn-outline-info import" data-type="tax" id="btnImportTax">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Tax)</button></li>
 		}
 	</ul>
@@ -73,17 +74,3 @@
 <link rel="stylesheet" type="text/css" href="~/Scripts/daterangepicker/daterangepicker.css" />
 <script type="text/javascript" src="~/Scripts/DataTables/dataTables.dateTime.min.js"></script>
 <script src="~/Scripts/ts/js/datatransfer/importfrmcentral.js?v=@rand"></script>
-<script>
-    $(function () {
-        //isDisabled
-        $('#mode').val(0);
-        let isoffline = parseInt($('#infoblk').data('offline')) === 1;
-        if (isoffline) {
-            $('#btnGetPath').removeClass('hide');
-            $('#dateblk').addClass('hide');
-        } else {
-            $('#btnGetPath').addClass('hide');
-            $('#dateblk').removeClass('hide');
-        }     
-    });
-</script>
