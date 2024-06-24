@@ -86,7 +86,7 @@ namespace SmartBusinessWeb.Controllers
         
         private SqlConnection SqlConnection { get { return new SqlConnection(DefaultConnection); } }
 
-      
+       
 
         public void AddTest()
         {

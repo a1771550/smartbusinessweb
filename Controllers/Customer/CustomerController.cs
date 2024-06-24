@@ -136,8 +136,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                             {
                                 cusCode = cusCode,
                                 fileName = FileList.FirstOrDefault(),
-                                type = "file",
-                                assignedSalesId = user.surUID,
+                                type = "file",                             
                                 CreateBy = user.UserCode,
                                 CreateTime = DateTime.Now,
                                 AccountProfileId = apId

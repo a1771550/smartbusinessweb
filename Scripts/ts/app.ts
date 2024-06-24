@@ -26,11 +26,11 @@ enum SalesOptions {
 }
 interface ISalesDate {
 	SalesOptions: SalesOptions;
-	Day: number|null;
+	Day: number | null;
 	Year: number;
 	Month: number;
 	delimeter: string;
-	FinancialYear: number|null;
+	FinancialYear: number | null;
 }
 enum TriggerReferrer {
 	Row,
@@ -1758,7 +1758,7 @@ function OnGetCustomersSuccess(response) {
 			});
 		}
 	}
-	else {		
+	else {
 		$.fancyConfirm({
 			title: "",
 			message: nocustomersfoundtxt,
@@ -1766,8 +1766,8 @@ function OnGetCustomersSuccess(response) {
 			okButton: oktxt,
 			noButton: notxt,
 			callback: function (value) {
-				if (value) {					
-					$(".customer").val("");					
+				if (value) {
+					$(".customer").val("");
 					$("#txtCustomerName").val(defaultcustomer.cusName).trigger("focus");
 				}
 			}
@@ -15280,7 +15280,7 @@ function calculateServiceChargeAmt(subtotal: number, scpc: number) {
 }
 function GetServiceChargeAmt(subtotal: number) {
 	ServiceChargePC = 0;
-	for (const [key, value] of Object.entries(DicPayServiceCharge)) {		
+	for (const [key, value] of Object.entries(DicPayServiceCharge)) {
 		/*if (value.Selected && !value.Added) { ServiceChargePC += value.Percentage; value.Added = true; }*/
 		if (value.Selected) { ServiceChargePC += value.Percentage; }
 	}
@@ -17208,12 +17208,14 @@ function FillInCustomer() {
 	Customer.cusPointsSoFar = Number($("#cusPointsSoFar").val());
 	Customer.cusEmail = <string>$("#cusEmail").val();
 	Customer.cusContact = <string>$("#cusContact").val();
-	Customer.cusAddrCity = <string>$("#city").val(); //NOT $("#drpCity").val()!
-	Customer.cusAddrCountry = <string>$("#drpCountry").val();
-	Customer.CityTxt = $("#drpCity option:selected").text() as string;
-	Customer.CountryTxt = $("#drpCountry option:selected").text() as string;
-	Customer.cusAddrWeb = <string>$("#cusAddrWeb").val();
 
+	Customer.cusAddrCountry = <string>$("#drpCountry").val();
+	Customer.CountryTxt = $("#drpCountry option:selected").text() as string;
+
+	Customer.cusAddrCity = Customer.cusAddrCountry == "3" ? $("#txtCity").val() as string : <string>$("#city").val(); //NOT $("#drpCity").val()!
+	Customer.CityTxt = Customer.cusAddrCountry == "3" ? $("#txtCity").val() as string : $("#drpCity option:selected").text() as string;
+	
+	Customer.cusAddrWeb = <string>$("#cusAddrWeb").val();
 	Customer.AddressList = [];
 	for (let i = 1; i <= 5; i++) {
 		let address: IAddressView = initAddressView();
@@ -17249,6 +17251,7 @@ function FillInCustomer() {
 	}
 
 	Customer.cusUnsubscribe = $("#chkUnSubscribe").is(":checked");
+	Customer.assignedSalesId = $("#assignedSalesId").val() as number;
 }
 
 $(document).on("click", ".itemremove", function () {
@@ -17651,7 +17654,7 @@ function getCustomersOk(data) {
 	}
 }
 
-function handleCustomerNameChange(e: any) {	
+function handleCustomerNameChange(e: any) {
 	selectedCusCodeName = <string>e.currentTarget.value;
 	searchCustomer(selectedCusCodeName);
 }
@@ -18258,14 +18261,14 @@ function initDatePicker(
 	setDate: boolean = true,
 	showToday: boolean = false,
 	isClass: boolean = false
-) {	
+) {
 	if (format === "") format = jsdateformat;
 	//console.log("format:", format);
 
 	let $ele = isClass ? $(`.${selector}`) : $(`#${selector}`);
 	//console.log("$ele:", $ele);
 
-	$ele.datepicker({		
+	$ele.datepicker({
 		dateFormat: format,
 		beforeShow: function () {
 			setTimeout(function () {
@@ -18296,7 +18299,7 @@ function initDatePicker(
 			$ele.datepicker($.datepicker.regional["zh-HK"]);
 			break;
 	}
-	
+
 }
 function cleanDatepicker() {
 	var old_fn = $.datepicker._updateDatepicker;
@@ -18306,7 +18309,7 @@ function cleanDatepicker() {
 
 		var buttonPane = $(this).datepicker("widget").find(".ui-datepicker-buttonpane");
 
-		$("<button type='button' class='ui-datepicker-clean ui-state-default ui-priority-primary ui-corner-all'>Delete</button>").appendTo(buttonPane).on("click",function (ev) {
+		$("<button type='button' class='ui-datepicker-clean ui-state-default ui-priority-primary ui-corner-all'>Delete</button>").appendTo(buttonPane).on("click", function (ev) {
 			$.datepicker._clearDate(inst.input);
 		});
 	}

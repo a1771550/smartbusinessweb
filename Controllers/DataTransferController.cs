@@ -30,7 +30,6 @@ using PPWLib.Models.Journal;
 using CommonLib.Models.MYOB;
 using PPWLib.Models.Item;
 using PPWCommonLib.Helpers;
-using PPWLib.Models.AbssReport;
 using SalesEditModel = PPWLib.Models.AbssReport.SalesEditModel;
 
 namespace SmartBusinessWeb.Controllers

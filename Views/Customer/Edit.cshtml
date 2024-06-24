@@ -36,6 +36,7 @@
 
 	<input type="hidden" id="cusCustomerID" name="cusCustomerID" value="@Customer.cusCustomerID" />
 	<input type="hidden" id="cusCode" name="cusCode" value="@Customer.cusCode" />
+	<input type="hidden" id="assignedSalesId" value="@Customer.assignedSalesId" />
 
 	<div class="row">
 		<div class="col-12 col-md-4">
@@ -55,7 +56,12 @@
 			</div>
 		</div>
 		<div class="col-12 col-md-4">
+			<div class="form-group">
+				<label class="control-label" for="OutstandingBalance">@Resources.Resource.OutstandingBalance</label>
 
+				<input type="text" class="form-control" id="OutstandingBalance" readonly value="@Customer.CurrentBalanceDisplay" />
+
+			</div>
 		</div>
 	</div>
 
@@ -274,6 +280,7 @@
 	<input type="hidden" id="codeinuse" value="@Customer.cusCode" />
 	<input type="hidden" id="phoneinuse" value="@Customer.cusPhone" />
 	<input type="hidden" id="enqEmail" name="enqEmail" value="@Customer.cusEmail" />
+
 </div>
 }
 

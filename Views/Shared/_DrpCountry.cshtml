@@ -1,8 +1,12 @@
 ﻿@{
     bool edit = (bool)ViewData["edit"];
     List<PPWCommonLib.BaseModels.Country> Countries = (List<PPWCommonLib.BaseModels.Country>)ViewData["Countries"];
-  
-    int selectedCountry = (ViewData["SelectedCountry"] == null || string.IsNullOrEmpty((string)ViewData["SelectedCountry"]))?0: Convert.ToInt32(ViewData["SelectedCountry"]);
+    //Response.Write("selectedCountry:" + (string)ViewData["SelectedCountry"]);
+    //return;
+
+    string selectedCountry = (ViewData["SelectedCountry"] == null || string.IsNullOrEmpty((string)ViewData["SelectedCountry"]))?"": (string)ViewData["SelectedCountry"];
+
+
 
 }
 
@@ -14,7 +18,7 @@
         var _selected = "";
         if (edit)
         {
-            _selected = selectedCountry == country.CountryID ? "selected" : "";
+            _selected = selectedCountry == country.CountryName ? "selected" : "";
         }
         else
         {
