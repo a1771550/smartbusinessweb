@@ -9,15 +9,15 @@
       "AbsoluteMoniker": "D:0:0:{7DDAB902-AC26-4489-AD83-F6DB0081472E}|..\\PPWCommonLib\\PPWCommonLib.csproj|f:\\repos\\ppwproject\\ppwcommonlib\\basemodels\\city.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|f:\\repos\\ppwproject\\smartbusinessweb\\controllers\\datatransfercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|F:\\repos\\PPWProject\\SmartBusinessWeb\\controllers\\datatransfercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|solutionrelative:controllers\\datatransfercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|f:\\repos\\ppwproject\\smartbusinessweb\\scripts\\macau_regions.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|F:\\repos\\PPWProject\\SmartBusinessWeb\\scripts\\macau_regions.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|solutionrelative:scripts\\macau_regions.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|f:\\repos\\ppwproject\\smartbusinessweb\\scripts\\hongkong_regions.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|F:\\repos\\PPWProject\\SmartBusinessWeb\\scripts\\hongkong_regions.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|solutionrelative:scripts\\hongkong_regions.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
@@ -29,7 +29,7 @@
       "RelativeMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|solutionrelative:views\\customer\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|F:\\repos\\PPWProject\\SmartBusinessWeb\\scripts\\ts\\customer\\edit.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|f:\\repos\\ppwproject\\smartbusinessweb\\scripts\\ts\\customer\\edit.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
       "RelativeMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|solutionrelative:scripts\\ts\\customer\\edit.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
     },
     {
@@ -40,7 +40,7 @@
       "RelativeMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|solutionrelative:controllers\\customer\\customercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|f:\\repos\\ppwproject\\smartbusinessweb\\views\\customer\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|F:\\repos\\PPWProject\\SmartBusinessWeb\\views\\customer\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{CDD90D40-9418-4188-8079-2328A6EEB395}|SmartBusinessWeb.csproj|solutionrelative:views\\customer\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
@@ -50,7 +50,7 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedHeight": 199,
+          "DockedHeight": 192,
           "SelectedChildIndex": 8,
           "Children": [
             {
@@ -71,8 +71,7 @@
               "RelativeToolTip": "..\\PPWCommonLib\\BaseModels\\City.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAoAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-24T09:49:37.138Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-24T09:49:37.138Z"
             },
             {
               "$type": "Document",
@@ -84,8 +83,7 @@
               "RelativeToolTip": "Scripts\\macau_regions.json",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAADSBAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-06-24T09:46:26.628Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-24T09:46:26.628Z"
             },
             {
               "$type": "Document",
@@ -97,8 +95,7 @@
               "RelativeToolTip": "Scripts\\hongkong_regions.json",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAADBBAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-06-24T09:37:39.646Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-24T09:37:39.646Z"
             },
             {
               "$type": "Document",
@@ -110,8 +107,7 @@
               "RelativeToolTip": "Scripts\\ts\\app.ts",
               "ViewState": "AQIAAOFWAAAAAAAAAIAwwPhWAAANAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2024-06-24T06:28:54.229Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-24T06:28:54.229Z"
             },
             {
               "$type": "Document",
@@ -123,8 +119,7 @@
               "RelativeToolTip": "Controllers\\DataTransferController.cs",
               "ViewState": "AQIAAKMAAAAAAAAAAAAswDsBAABNAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-24T09:21:56.084Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-24T09:21:56.084Z"
             },
             {
               "$type": "Document",
@@ -136,8 +131,7 @@
               "RelativeToolTip": "Views\\Customer\\Index.cshtml",
               "ViewState": "AQIAADQAAAAAAAAAAAAAABEAAAAYAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2024-06-24T08:44:59.451Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-24T08:44:59.451Z"
             },
             {
               "$type": "Document",
@@ -147,7 +141,7 @@
               "RelativeDocumentMoniker": "..\\PPWLib\\Helpers\\ModelHelper.cs",
               "ToolTip": "F:\\repos\\PPWProject\\PPWLib\\Helpers\\ModelHelper.cs",
               "RelativeToolTip": "..\\PPWLib\\Helpers\\ModelHelper.cs",
-              "ViewState": "AQIAAKMFAAAAAAAAAAAzwKkFAAAXAAAA",
+              "ViewState": "AQIAAN4ZAAAAAAAAAAAuwPcZAAANAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-06-24T06:30:47.732Z",
               "EditorCaption": ""
@@ -162,8 +156,7 @@
               "RelativeToolTip": "Views\\Customer\\Edit.cshtml",
               "ViewState": "AQIAAGcAAAAAAAAAAAAAAHAAAABWAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2024-06-24T04:35:24.756Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-24T04:35:24.756Z"
             },
             {
               "$type": "Document",
@@ -175,8 +168,7 @@
               "RelativeToolTip": "Controllers\\Customer\\CustomerController.cs",
               "ViewState": "AQIAAPAAAAAAAAAAAAAqwAABAAAWAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-24T04:35:11.286Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-24T04:35:11.286Z"
             },
             {
               "$type": "Document",
@@ -188,13 +180,12 @@
               "RelativeToolTip": "..\\PPWLib\\Models\\Customer\\CustomerEditModel.cs",
               "ViewState": "AQIAAGYAAAAAAAAAAIA0wDgBAAAXAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-24T04:34:58.459Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-24T04:34:58.459Z"
             }
           ]
         },
         {
-          "DockedHeight": 63,
+          "DockedHeight": 70,
           "SelectedChildIndex": 0,
           "Children": [
             {
@@ -205,7 +196,7 @@
               "RelativeDocumentMoniker": "Scripts\\ts\\customer\\edit.ts",
               "ToolTip": "F:\\repos\\PPWProject\\SmartBusinessWeb\\Scripts\\ts\\customer\\edit.ts",
               "RelativeToolTip": "Scripts\\ts\\customer\\edit.ts",
-              "ViewState": "AQIAACgAAAAAAAAAAAAkwDUAAAAJAAAA",
+              "ViewState": "AQIAADMAAAAAAAAAAAAAwDUAAAAJAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
               "WhenOpened": "2024-06-24T06:28:48.2Z",
               "EditorCaption": ""
