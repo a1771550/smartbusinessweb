@@ -9,7 +9,7 @@ namespace SmartBusinessWeb.Controllers.Item
     public class CategoryController : BaseController
     {
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         public JsonResult SaveDisplayOrder(CategoryModel Category)
         {
             CategoryEditModel.SaveDisplayOrder(Category);
@@ -17,7 +17,7 @@ namespace SmartBusinessWeb.Controllers.Item
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         public ActionResult Index(int SortCol = 3, string SortOrder = "asc", string Keyword = null, int? PageNo = 1)
         {
             ViewBag.Title = Resources.Resource.Category;
@@ -37,7 +37,7 @@ namespace SmartBusinessWeb.Controllers.Item
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         [HttpGet]
         public ActionResult Edit(int Id = 0)
         {
@@ -49,7 +49,7 @@ namespace SmartBusinessWeb.Controllers.Item
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         [HttpPost]
         public ActionResult Edit(CategoryModel model)
         {
@@ -62,7 +62,7 @@ namespace SmartBusinessWeb.Controllers.Item
         }
 
 		[HandleError]
-		[CustomAuthorize("item", "boss", "admin", "superadmin")]
+		[CustomAuthorize("item", "admin", "superadmin")]
 		[HttpPost]
         public JsonResult Delete(int Id)
         {

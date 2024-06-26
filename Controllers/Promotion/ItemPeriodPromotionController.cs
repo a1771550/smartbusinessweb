@@ -9,7 +9,7 @@ namespace SmartBusinessWeb.Controllers.Item
     public class ItemPeriodPromotionController : BaseController
     {
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         public ActionResult Index(int PageNo = 1, int SortCol = 3, string SortOrder = "desc", string Keyword = null)
         {
             ViewBag.ParentPage = "promotion";
@@ -21,7 +21,7 @@ namespace SmartBusinessWeb.Controllers.Item
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         [HttpGet]
         public ActionResult Edit(int proId=0)
         {
@@ -32,7 +32,7 @@ namespace SmartBusinessWeb.Controllers.Item
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult Edit(ItemPeriodPromotionModel model)
@@ -47,7 +47,7 @@ namespace SmartBusinessWeb.Controllers.Item
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(long Id)

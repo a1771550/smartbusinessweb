@@ -1,7 +1,11 @@
-﻿using PPWDAL;
+﻿using Dapper;
+using Microsoft.Data.SqlClient;
+using PPWDAL;
 using PPWLib.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -11,7 +15,10 @@ namespace SmartBusinessWeb.Infrastructure
 {
 	public class CustomAuthorizeAttribute : AuthorizeAttribute
 	{
-		private readonly string[] alloweduserfuncs;
+        public string DefaultConnection { get { return HttpContext.Current.Session["DBName"] == null ? ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", "SmartBusinessWeb_db") : ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", HttpContext.Current.Session["DBName"].ToString()); } }
+     
+        public SqlConnection SqlConnection { get { return new SqlConnection(DefaultConnection); } }
+        private readonly string[] alloweduserfuncs;
 		public CustomAuthorizeAttribute(params string[] userfuncs)
 		{			
 			this.alloweduserfuncs = userfuncs;
@@ -19,36 +26,26 @@ namespace SmartBusinessWeb.Infrastructure
 
 		protected override bool AuthorizeCore(HttpContextBase httpContext)
 		{
-			bool authorize = false;
 			SessUser user = (SessUser)httpContext.Session["User"];
 			var userCode = user.UserCode;
 			if (!string.IsNullOrEmpty(userCode))
 			{
-				using (var context = new PPWDbContext(HttpContext.Current.Session["DBName"].ToString()))
-				{
-					List<string> userFuncList = new List<string>();
-					
-					userFuncList = (from ar in context.AccessRights
-									join u in context.SysUsers on ar.UserCode equals u.UserCode
-									join r in context.SysFuncs on ar.FuncCode.ToLower() equals r.sfnCode.ToLower()
-									where u.UserCode.ToLower() == userCode.ToLower() && ar.AccountProfileId==user.AccountProfileId
-									select ar.FuncCode.ToLower()
-									  ).Distinct().ToList();
-					foreach (var item in userFuncList)
-					{
-						foreach (var userfunc in alloweduserfuncs)
-						{
-							if (string.Equals(item, userfunc, StringComparison.InvariantCultureIgnoreCase))
-							{
-								return true;
-							}
-						}
-					}
-
-				}
-
+                if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
+                using (SqlConnection) {
+					List<string> userFuncList = SqlConnection.Query<string>("EXEC dbo.GetUserAccessRights @apId=@apId,@userCode=@userCode", new {apId = user.AccountProfileId, userCode}).ToList();
+                    foreach (var item in userFuncList)
+                    {
+                        foreach (var userfunc in alloweduserfuncs)
+                        {
+                            if (string.Equals(item, userfunc, StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
 			}
-			return authorize;
+			return false;
 		}
 
 		protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)

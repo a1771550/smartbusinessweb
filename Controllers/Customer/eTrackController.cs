@@ -46,7 +46,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         /// <param name="page">a paging parameter</param>
         /// <returns>an email-tracking list view with the ViewTrackModel</returns>
         /// [HandleError]
-        [CustomAuthorize("eblast", "boss", "admin", "superadmin")]
+        [CustomAuthorize("eblast", "admin", "superadmin")]
         //[HttpGet]
         public ActionResult TrackResult(string pass, string strfrmdate = "", string strtodate = "", string blastid = "", string contactname = "", string organization = "", string viewdate = "", int SortCol = 0, string SortOrder = "desc", string attrName = "", string attrOperator = "", string attrVal = "", int? PageNo = 1, int? PageSize = 0)
         {

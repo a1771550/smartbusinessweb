@@ -19,7 +19,7 @@ namespace SmartBusinessWeb.Controllers.Customer
 {
     [CustomAuthenticationFilter]
     [HandleError]
-    [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+    [CustomAuthorize("customer", "admin", "superadmin")]
     public class eBlastController : BaseController
     {
         [HttpGet]
@@ -42,7 +42,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         public JsonResult SendTestEmail(int Id, string testemail)
         {
@@ -99,7 +99,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         public ActionResult Log(int Id, int SortCol = 0, string SortOrder = "desc", string Keyword = "", int? PageNo = 1)
         {
             ViewBag.ParentPage = ViewBag.PageName = "customer";
@@ -160,7 +160,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         public JsonResult Start(int Id)
         {
@@ -256,7 +256,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         public ActionResult Index(int PageNo = 1, int SortCol = 2, string SortOrder = "desc", string Keyword = "", string strfrmdate = "", string strtodate = "")
         {
             ViewBag.ParentPage = "promotion";
@@ -276,7 +276,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpGet]
         public ActionResult Create()
         {
@@ -287,7 +287,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult Create(eBlastModel model)
@@ -299,7 +299,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpGet]
         public ActionResult Edit(int Id)
         {
@@ -311,7 +311,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult Edit(eBlastModel model)
@@ -323,7 +323,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int Id)
@@ -334,7 +334,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpGet]
         public ActionResult Detail(int Id)
         {

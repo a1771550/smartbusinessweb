@@ -13,7 +13,7 @@ namespace SmartBusinessWeb.Controllers.Sales
 	public class PreorderController : BaseController
 	{
 		[HandleError]
-		[CustomAuthorize("retail", "boss", "admin", "superadmin")]
+		[CustomAuthorize("retail", "admin", "superadmin")]
 		public ActionResult Index(string strfrmdate = "", string strtodate = "", int? PageNo = 1, string SortName = "rtsTime", string SortOrder = "desc", string Shop = "", string Device = "", string Keyword = "", int filter = 0, string searchmode = "")
 		{
 			ViewBag.ParentPage = "sales";
@@ -24,7 +24,7 @@ namespace SmartBusinessWeb.Controllers.Sales
 		}
 
 		[HandleError]
-		[CustomAuthorize("retail", "boss", "admin", "superadmin")]
+		[CustomAuthorize("retail", "admin", "superadmin")]
 		[HttpGet]
 		public ActionResult Edit(long? Id = 0)
 		{
@@ -36,7 +36,7 @@ namespace SmartBusinessWeb.Controllers.Sales
 		}
 
 		[HandleError]
-		[CustomAuthorize("retail", "boss", "admin", "superadmin")]
+		[CustomAuthorize("retail", "admin", "superadmin")]
 		[HttpPost]
 		public JsonResult Edit(PreSalesModel PreSales, List<PreSalesLn> PreSalesLnList, List<PayLnView> Payments, List<DeliveryItemModel> DeliveryItems=null)
 		{			
@@ -97,7 +97,7 @@ namespace SmartBusinessWeb.Controllers.Sales
 			}
 		}
 		[HandleError]
-		[CustomAuthorize("retail", "boss", "admin", "superadmin")]
+		[CustomAuthorize("retail", "admin", "superadmin")]
 		public ActionResult Delete(long Id)
 		{
 			PreorderEditModel model = new PreorderEditModel();

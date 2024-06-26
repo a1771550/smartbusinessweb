@@ -15,7 +15,7 @@ namespace SmartBusinessWeb.Controllers.Item
     public class ReserveController : BaseController
     {
 		[HandleError]
-		[CustomAuthorize("item", "boss", "admin", "superadmin")]
+		[CustomAuthorize("item", "admin", "superadmin")]
 		[ValidateAntiForgeryToken]
 		[HttpPost]
 		public JsonResult Cancel(int Id)
@@ -25,7 +25,7 @@ namespace SmartBusinessWeb.Controllers.Item
 		}
 		
 		[HandleError]
-		[CustomAuthorize("item", "boss", "admin", "superadmin")]
+		[CustomAuthorize("item", "admin", "superadmin")]
 		public ActionResult Edit(string code)
 		{
 			ReserveEditModel model = new(code);
@@ -33,7 +33,7 @@ namespace SmartBusinessWeb.Controllers.Item
 		}
 
 		[HandleError]
-		[CustomAuthorize("item", "boss", "admin", "superadmin")]
+		[CustomAuthorize("item", "admin", "superadmin")]
 		[ValidateAntiForgeryToken]
 		[HttpPost]
 		public JsonResult EditOrder(ReserveModel Reserve)
@@ -43,7 +43,7 @@ namespace SmartBusinessWeb.Controllers.Item
 		}
 
 		[HandleError]
-		[CustomAuthorize("item", "boss", "admin", "superadmin")]
+		[CustomAuthorize("item", "admin", "superadmin")]
 		[ValidateAntiForgeryToken]
 		[HttpPost]
 		public JsonResult EditLines(List<ReserveLnModel> ReserveLnList)
@@ -53,7 +53,7 @@ namespace SmartBusinessWeb.Controllers.Item
 		}
 
 		[HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         public ActionResult PrintByCode(string code)
         {
             ViewBag.ParentPage = "item";
@@ -63,7 +63,7 @@ namespace SmartBusinessWeb.Controllers.Item
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         public ActionResult Print(int? start, int? end)
         {
             ViewBag.ParentPage = "item";          
@@ -73,7 +73,7 @@ namespace SmartBusinessWeb.Controllers.Item
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult ProcessReserve(ReserveModel Reserve, List<ReserveLnModel> ReserveLnList)
@@ -85,7 +85,7 @@ namespace SmartBusinessWeb.Controllers.Item
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         public ActionResult List(int PageNo = 1, int SortCol = 0, string SortOrder = "desc", string Keyword = null)
         {
             ViewBag.ParentPage = "item";
@@ -103,7 +103,7 @@ namespace SmartBusinessWeb.Controllers.Item
 
         // GET: Reserve
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         public ActionResult Index(int PageNo = 1, string SortName = "code", string SortOrder = "asc", string Keyword = null)
         {
             ViewBag.ParentPage = "item";

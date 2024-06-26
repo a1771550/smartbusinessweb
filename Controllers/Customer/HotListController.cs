@@ -15,7 +15,7 @@ namespace SmartBusinessWeb.Controllers.Customer
     public class HotListController : BaseController
     {
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public JsonResult AddCustomers(List<int> groupIdList, List<int> hotlistIdList)
@@ -28,7 +28,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public JsonResult Edit(HotListModel model)
@@ -39,7 +39,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         public ActionResult Edit(int Id = 0)
         {
             ViewBag.ParentPage = "customer";
@@ -49,7 +49,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         public ActionResult Index(int PageNo = 1, int SortCol = 0, string SortOrder = "desc", string Keyword = "")
         {
             ViewBag.ParentPage = "customer";
@@ -69,7 +69,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public ActionResult Delete(long Id)

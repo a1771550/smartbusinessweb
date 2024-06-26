@@ -583,6 +583,14 @@
           <name>PrintModel.cs</name>
           <absolutePath>F:\repos\PPWProject\PPWLib\Models\Receipt\PrintModel.cs</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>UserEditModel.cs</name>
+          <absolutePath>F:\repos\PPWProject\PPWLib\Models\User\UserEditModel.cs</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>UserModel.cs</name>
+          <absolutePath>F:\repos\PPWProject\PPWLib\Models\User\UserModel.cs</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

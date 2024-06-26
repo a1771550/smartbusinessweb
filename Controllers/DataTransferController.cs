@@ -48,7 +48,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HandleError]
-        //[CustomAuthorize("datatransfer", "boss", "admin", "superadmin")]
+        //[CustomAuthorize("datatransfer", "admin", "superadmin")]
         public JsonResult CreateDayendsFolder(DayEndsModel model)
         {
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
@@ -83,7 +83,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HandleError]
-        [CustomAuthorize("datatransfer_down", "boss", "admin", "superadmin")]
+        [CustomAuthorize("datatransfer_down", "admin", "superadmin")]
         public ActionResult DayendsImportFrmCentral(string defaultCheckoutPortal = "")
         {
             string defaultcheckoutportal = ModelHelper.HandleCheckoutPortal(defaultCheckoutPortal);
@@ -465,7 +465,7 @@ namespace SmartBusinessWeb.Controllers
 
 
         [HandleError]
-        [CustomAuthorize("datatransfer_up", "boss", "admin", "superadmin")]
+        [CustomAuthorize("datatransfer_up", "admin", "superadmin")]
         public ActionResult DayendsImportFrmShop()
         {
             CultureHelper.CurrentCulture = (int)Session["CurrentCulture"];
@@ -529,7 +529,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HandleError]
-        [CustomAuthorize("datatransfer_down", "boss", "admin", "superadmin")]
+        [CustomAuthorize("datatransfer_down", "admin", "superadmin")]
         public ActionResult DayendsExportFrmCentral()
         {
             CultureHelper.CurrentCulture = (int)Session["CurrentCulture"];
@@ -541,7 +541,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HandleError]
-        [CustomAuthorize("datatransfer_up", "boss", "admin", "superadmin")]
+        [CustomAuthorize("datatransfer_up", "admin", "superadmin")]
         public ActionResult DayendsExportFrmShop(string defaultCheckoutPortal = "")
         {
             string defaultcheckoutportal = ModelHelper.HandleCheckoutPortal(defaultCheckoutPortal);

@@ -17,7 +17,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
     public class PurchaseController : BaseController
     {
         [HandleError]
-        [CustomAuthorize("purchase", "boss", "admin", "superadmin")]
+        [CustomAuthorize("purchase", "admin", "superadmin")]
         public ActionResult ExcludedOrders(int PageNo = 1, int SortCol = 0, string SortOrder = "desc", string Keyword = "")
         {
             ViewBag.ParentPage = "purchase";            
@@ -28,7 +28,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
         }
 
         [HandleError]
-        [CustomAuthorize("purchase", "boss", "admin", "superadmin")]
+        [CustomAuthorize("purchase", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult EditPayment(PurchasePaymentModel purchasePayment)
@@ -187,7 +187,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
         }
 
         [HandleError]
-        [CustomAuthorize("purchase", "boss", "admin", "superadmin")]
+        [CustomAuthorize("purchase", "admin", "superadmin")]
         [HttpGet]
         ///Purchase/Review?mode=edit&receiptno=
         public ActionResult Review(string receiptno, int? ireadonly = 1)
@@ -199,7 +199,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
         }
 
         [HandleError]
-        [CustomAuthorize("purchase", "boss", "admin", "superadmin")]
+        [CustomAuthorize("purchase", "admin", "superadmin")]
         public ActionResult PurchaseOrderList(string strfrmdate = "", string strtodate = "", int? PageNo = 1, string SortName = "pstPromisedDate", string SortOrder = "desc", string Keyword = "", int filter = 0, string searchmode = "")
         {
             ViewBag.ParentPage = "purchase";
@@ -211,7 +211,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
 
 
         [HandleError]
-        [CustomAuthorize("purchase", "boss", "admin", "superadmin")]
+        [CustomAuthorize("purchase", "admin", "superadmin")]
         public ActionResult Print(long Id, string type, string mode)
         {
             ViewBag.ParentPage = "purchase";
@@ -222,7 +222,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
         }
         // GET: Purchase
         [HandleError]
-        [CustomAuthorize("purchase", "boss", "admin", "superadmin")]
+        [CustomAuthorize("purchase", "admin", "superadmin")]
         public ActionResult Index(int PageNo = 1, int SortCol = 4, string SortOrder = "desc", string Keyword = "")
         {
             SessUser user = Session["User"] as SessUser;
@@ -238,7 +238,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
         }
 
         [HandleError]
-        [CustomAuthorize("purchase", "boss", "admin", "superadmin")]
+        [CustomAuthorize("purchase", "admin", "superadmin")]
         [HttpGet]
         public ActionResult Edit(long Id, string type)
         {
@@ -248,7 +248,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
         }
 
         [HandleError]
-        [CustomAuthorize("purchase", "boss", "admin", "superadmin")]
+        [CustomAuthorize("purchase", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult Edit(PurchaseModel model, List<PurchaseItemModel> PurchaseItems, RecurOrder recurOrder = null)
@@ -260,7 +260,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
         }
 
         [HandleError]
-        [CustomAuthorize("purchase", "boss", "admin", "superadmin")]
+        [CustomAuthorize("purchase", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int Id)

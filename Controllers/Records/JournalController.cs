@@ -10,7 +10,7 @@ namespace SmartBusinessWeb.Controllers.Records
 	public class JournalController : BaseController
     {
 		[HandleError]
-		[CustomAuthorize("reports", "boss", "admin", "superadmin")]
+		[CustomAuthorize("reports", "admin", "superadmin")]
 		public ActionResult Index(int sortCol = 5, string SortOrder = "desc", string Keyword = null, int? PageNo = 1)
 		{
 			ViewBag.Title = Resources.Resource.Journal;
@@ -29,7 +29,7 @@ namespace SmartBusinessWeb.Controllers.Records
 		}
 
 		[HandleError]
-		[CustomAuthorize("reports", "boss", "admin", "superadmin")]
+		[CustomAuthorize("reports", "admin", "superadmin")]
 		[HttpGet]
 		public ActionResult Edit(string Id = null)
 		{
@@ -41,7 +41,7 @@ namespace SmartBusinessWeb.Controllers.Records
 		}
 
 		[HandleError]
-		[CustomAuthorize("reports", "boss", "admin", "superadmin")]
+		[CustomAuthorize("reports", "admin", "superadmin")]
 		[HttpPost]
 		public ActionResult Edit(JournalModel model, List<JournalLnView> JournalLns)
 		{
@@ -54,7 +54,7 @@ namespace SmartBusinessWeb.Controllers.Records
 		}
 
 		[HandleError]
-		[CustomAuthorize("reports", "boss", "admin", "superadmin")]
+		[CustomAuthorize("reports", "admin", "superadmin")]
 		[HttpPost]
 		public JsonResult Delete(string Id)
 		{

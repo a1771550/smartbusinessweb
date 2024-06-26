@@ -20,7 +20,7 @@ namespace SmartBusinessWeb.Controllers.Customer.Enquiry
     public class EnquiryController : BaseController
     {
         [HttpPost]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
         public JsonResult AddToSalesmen(List<int> groupIdList, int salesmanId, bool notification)
         {
@@ -104,7 +104,7 @@ namespace SmartBusinessWeb.Controllers.Customer.Enquiry
 
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult DeleteRecord(EnquiryInfoModel model)
@@ -114,7 +114,7 @@ namespace SmartBusinessWeb.Controllers.Customer.Enquiry
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult EditRecord(EnquiryInfoModel model)
@@ -125,7 +125,7 @@ namespace SmartBusinessWeb.Controllers.Customer.Enquiry
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult SaveRecord(EnquiryInfoModel model)
@@ -136,7 +136,7 @@ namespace SmartBusinessWeb.Controllers.Customer.Enquiry
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         public ActionResult AddToEnquiry(string enqId, int overwrite = 0)
         {
             CustomerEditModel model = new CustomerEditModel();
@@ -145,7 +145,7 @@ namespace SmartBusinessWeb.Controllers.Customer.Enquiry
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult Assign(List<string> assignEnqIdList, int salesmanId, int notification)
@@ -175,7 +175,7 @@ namespace SmartBusinessWeb.Controllers.Customer.Enquiry
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         public ActionResult Index()
         {
             ViewBag.ParentPage = "customer";
@@ -185,7 +185,7 @@ namespace SmartBusinessWeb.Controllers.Customer.Enquiry
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         public ViewResult Add()
         {
             ViewBag.ParentPage = "customer";
@@ -195,7 +195,7 @@ namespace SmartBusinessWeb.Controllers.Customer.Enquiry
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         public ViewResult Edit(string Id)
         {
             ViewBag.ParentPage = "customer";
@@ -205,7 +205,7 @@ namespace SmartBusinessWeb.Controllers.Customer.Enquiry
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateInput(false)]
@@ -217,7 +217,7 @@ namespace SmartBusinessWeb.Controllers.Customer.Enquiry
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateInput(false)]
@@ -231,7 +231,7 @@ namespace SmartBusinessWeb.Controllers.Customer.Enquiry
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult Delete(string enqId)

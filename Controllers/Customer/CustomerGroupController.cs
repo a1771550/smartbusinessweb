@@ -36,7 +36,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpGet]      
         public ViewResult Edit(int? Id)
         {
@@ -46,7 +46,7 @@ namespace SmartBusinessWeb.Controllers.Customer
             return View(model);
         }
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult Edit(CustomerGroupModel CustomerGroup)
@@ -58,7 +58,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         public ActionResult Index(int PageNo = 1, int PageSize = 10, int SortCol = 0, string SortOrder = "desc", string Keyword = "")
         {
             ViewBag.ParentPage = "customer";

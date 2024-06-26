@@ -80,7 +80,7 @@ namespace SmartBusinessWeb.Controllers.Sales
 
 
         [HandleError]
-        [CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
+        [CustomAuthorize("wholesales", "admin", "superadmin")]
         [HttpGet]
         ///WholeSales/Review?mode=edit&receiptno=
         public ActionResult Review(string receiptno)
@@ -103,7 +103,7 @@ namespace SmartBusinessWeb.Controllers.Sales
         }
 
         [HandleError]
-        [CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
+        [CustomAuthorize("wholesales", "admin", "superadmin")]
         public ActionResult SalesOrderList(int? PageNo = 1, string SortName = "wsDeliveryDate", string SortOrder = "desc", string Keyword = "", int filter = 0, string searchmode = "")
         {
             ViewBag.ParentPage = "wholesales";
@@ -115,7 +115,7 @@ namespace SmartBusinessWeb.Controllers.Sales
 
 
         [HandleError]
-        [CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
+        [CustomAuthorize("wholesales", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult Delivery(List<DeliveryItemModel> model, WholeSalesModel ws, List<WholeSalesLnModel> wslnList)
@@ -130,7 +130,7 @@ namespace SmartBusinessWeb.Controllers.Sales
         }
        
         [HandleError]
-        [CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
+        [CustomAuthorize("wholesales", "admin", "superadmin")]
         public ActionResult Print(int Id, string type)
         {
             ViewBag.ParentPage = "wholesales";            
@@ -139,7 +139,7 @@ namespace SmartBusinessWeb.Controllers.Sales
         }
 
         [HandleError]
-        [CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
+        [CustomAuthorize("wholesales", "admin", "superadmin")]
         public ActionResult Index(string strfrmdate = null, string strtodate = null, int SortCol = 4, string SortOrder = "desc", string Keyword = "", int? PageNo = 1)
         {
             var user = Session["User"] as SessUser;
@@ -155,7 +155,7 @@ namespace SmartBusinessWeb.Controllers.Sales
         }
 
         [HandleError]
-        [CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
+        [CustomAuthorize("wholesales", "admin", "superadmin")]
         [HttpGet]
         public ActionResult Edit(long Id, string type)
         {
@@ -167,7 +167,7 @@ namespace SmartBusinessWeb.Controllers.Sales
 
 
         [HandleError]
-        [CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
+        [CustomAuthorize("wholesales", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult Edit(WholeSalesModel model, List<WholeSalesLnModel> wslnList, RecurOrder recurOrder)
@@ -179,7 +179,7 @@ namespace SmartBusinessWeb.Controllers.Sales
         }
 
         [HandleError]
-        [CustomAuthorize("wholesales", "boss", "admin", "superadmin")]
+        [CustomAuthorize("wholesales", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(long Id)

@@ -91,7 +91,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
 
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         public ActionResult Index(int SortCol = 4, string SortOrder = "desc", string Keyword = "", int PageNo = 1)
         {
             ViewBag.ParentPage = "purchase";
@@ -109,7 +109,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         [HttpGet]
         public ActionResult Edit(int Id)
         {
@@ -120,7 +120,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult Edit(SupplierModel model)
@@ -140,7 +140,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int Id)

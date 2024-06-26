@@ -20,7 +20,7 @@ namespace SmartBusinessWeb.Controllers.Item
     public class ItemController : BaseController
     {
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         [HttpGet]
         public ActionResult Index(int PageNo = 1, string SortName = "code", string SortOrder = "asc", string Keyword = null)
         {
@@ -51,7 +51,7 @@ namespace SmartBusinessWeb.Controllers.Item
        
 
         [HandleError]
-        [CustomAuthorize("stock", "boss", "admin", "superadmin")]
+        [CustomAuthorize("stock", "admin", "superadmin")]
         public ActionResult Stock(int PageNo = 1, string SortName = "code", string SortOrder = "asc", string Keyword = null)
         {
             ViewBag.ParentPage = "item";           
@@ -67,7 +67,7 @@ namespace SmartBusinessWeb.Controllers.Item
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         [HttpGet]
         public ActionResult Edit(int itemId, string referrer)
         {
@@ -79,7 +79,7 @@ namespace SmartBusinessWeb.Controllers.Item
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult Edit(ItemModel model)
@@ -100,7 +100,7 @@ namespace SmartBusinessWeb.Controllers.Item
 		}
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult EditIV(ItemModel Item = null, ItemVariModel ItemVari = null, List<ItemAttributeModel> AttrList = null)
@@ -117,7 +117,7 @@ namespace SmartBusinessWeb.Controllers.Item
 
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int itemId)
@@ -128,7 +128,7 @@ namespace SmartBusinessWeb.Controllers.Item
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         [HttpGet]
         public ActionResult Detail(int itemId)
         {

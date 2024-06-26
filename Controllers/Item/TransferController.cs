@@ -14,7 +14,7 @@ namespace SmartBusinessWeb.Controllers.Item
     public class TransferController : BaseController
     {
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         public ActionResult Edit(string code)
         {
             TransferEditModel model = new(code);
@@ -22,7 +22,7 @@ namespace SmartBusinessWeb.Controllers.Item
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public JsonResult Edit(TransferModel stocktransfer)
@@ -33,7 +33,7 @@ namespace SmartBusinessWeb.Controllers.Item
         }
        
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         public ActionResult PrintByCode(string code)
         {
             ViewBag.ParentPage = "item";
@@ -44,7 +44,7 @@ namespace SmartBusinessWeb.Controllers.Item
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         public ActionResult List(int SortCol = 0, string SortOrder = "asc", string strfrmdate = "", string strtodate = "", string Keyword = null, int? PageNo = 1)
         {
             ViewBag.ParentPage = "item";
@@ -64,7 +64,7 @@ namespace SmartBusinessWeb.Controllers.Item
         /// <param name="type"></param>
         /// <returns></returns>
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         public ActionResult Print(int? start, int? end)
         {
             ViewBag.ParentPage = "item";           
@@ -83,7 +83,7 @@ namespace SmartBusinessWeb.Controllers.Item
         /// <param name="qty"></param>
         /// <returns></returns>
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         [HttpGet]
         public ActionResult Transfer(int itemId, string location, int qty, int hasItemOption = 0, int hasIvOnly = 0)
         {
@@ -93,7 +93,7 @@ namespace SmartBusinessWeb.Controllers.Item
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult ProcessTransferIOVari(List<TransferLnModel> TransferList)
@@ -105,7 +105,7 @@ namespace SmartBusinessWeb.Controllers.Item
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult ProcessTransfer(List<JsStock> JsStockList, List<TransferModel> TransferList)
@@ -117,7 +117,7 @@ namespace SmartBusinessWeb.Controllers.Item
         }
 
         [HandleError]
-        [CustomAuthorize("item", "boss", "admin", "superadmin")]
+        [CustomAuthorize("item", "admin", "superadmin")]
         public ActionResult Index(int PageNo = 1, string SortName = "code", string SortOrder = "asc", string Keyword = null)
         {
             ViewBag.ParentPage = "item";  

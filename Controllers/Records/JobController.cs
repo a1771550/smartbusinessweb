@@ -39,7 +39,7 @@ namespace SmartBusinessWeb.Controllers.Records
 		}
 
 		[HandleError]
-		[CustomAuthorize("reports", "boss", "admin", "superadmin")]
+		[CustomAuthorize("reports", "admin", "superadmin")]
 		public ActionResult Index(string Keyword = "", string strfrmdate = "", string strtodate = "")
 		{
 			ViewBag.ParentPage = "records";

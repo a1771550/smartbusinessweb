@@ -25,7 +25,7 @@ namespace SmartBusinessWeb.Controllers.Sales
         }
 
         [HandleError]
-        [CustomAuthorize("retail", "boss", "admin", "superadmin")]
+        [CustomAuthorize("retail", "admin", "superadmin")]
         public ActionResult Index(int PageNo = 1, int SortCol = 5, string SortOrder = "desc", string Shop = "", string Device = "", string Keyword = "", int filter = 0, string searchmode = "")
         {
             ViewBag.ParentPage = "sales";

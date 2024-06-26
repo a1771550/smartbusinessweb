@@ -18,28 +18,8 @@ namespace SmartBusinessWeb.Controllers.Settings
     [CustomAuthenticationFilter]
     public class OtherSettingsController : BaseController
     {
-        //[HandleError]
-        //[CustomAuthorize("othersettings", "boss", "admin", "superadmin")]
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public JsonResult Duty(DutyModel model)
-        //{  
-        //    DutyEditModel.Save(model);
-        //    return Json(string.Format(Resources.Resource.SavedOkFormat, Resources.Resource.Duty));
-        //}
-
-        //[HandleError]
-        //[CustomAuthorize("othersettings", "boss", "admin", "superadmin")]
-        //public ActionResult Duty()
-        //{
-        //    ViewBag.ParentPage = "setup";          
-        //    DutyEditModel model = new DutyEditModel();
-        //    model.Get();
-        //    return View(model);
-        //}
-
         [HandleError]
-        [CustomAuthorize("othersettings", "boss", "admin", "superadmin")]
+        [CustomAuthorize("othersettings", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult ExchangeRate(Dictionary<string,decimal> model, int useapi=0)
@@ -51,7 +31,7 @@ namespace SmartBusinessWeb.Controllers.Settings
         }
 
         [HandleError]
-        [CustomAuthorize("othersettings", "boss", "admin", "superadmin")]
+        [CustomAuthorize("othersettings", "admin", "superadmin")]
         public ActionResult ExchangeRate()
         {
             ViewBag.ParentPage = "setup";          
@@ -61,7 +41,7 @@ namespace SmartBusinessWeb.Controllers.Settings
 
         
         [HandleError]
-        [CustomAuthorize("othersettings", "boss", "admin", "superadmin")]
+        [CustomAuthorize("othersettings", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult UploadLogo()
@@ -116,11 +96,10 @@ namespace SmartBusinessWeb.Controllers.Settings
         }
 
         [HandleError]
-        [CustomAuthorize("othersettings", "boss", "admin", "superadmin")]
+        [CustomAuthorize("othersettings", "admin", "superadmin")]
         public ActionResult Index()
         {
-            ViewBag.ParentPage = "setup";
-            ViewBag.PageName = "othersettings";
+            ViewBag.ParentPage = "setup";           
             int apId = ComInfo.AccountProfileId;
 
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
@@ -200,7 +179,7 @@ namespace SmartBusinessWeb.Controllers.Settings
         }
 
         [HandleError]
-        [CustomAuthorize("othersettings", "boss", "admin", "superadmin")]
+        [CustomAuthorize("othersettings", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public ActionResult Edit(FormCollection formCollection)

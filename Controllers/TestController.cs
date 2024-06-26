@@ -1638,38 +1638,7 @@ btest3
             Response.Write("debug13 done");
         }
     
-        public void Debug10()
-        {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
-            {
-                string[] managercodes = { "hmx", "imc", "ldm", "drj" };
-
-                List<AccessRight> acs = new List<AccessRight>();
-                var staffrights = context.AccessRights.Where(x => x.UserCode.ToLower() == "lcm").ToList();
-
-                foreach (var sr in staffrights)
-                {
-                    foreach (var mc in managercodes)
-                    {
-                        AccessRight ar = new AccessRight
-                        {
-                            UserCode = mc,
-                            FuncCode = sr.FuncCode
-                        };
-                        acs.Add(ar);
-                    }
-                }
-                context.AccessRights.AddRange(acs);
-                context.SaveChanges();
-
-                var list = context.AccessRights.Where(x => managercodes.Contains(x.UserCode.ToLower())).ToList();
-                foreach (var item in list)
-                {
-                    Response.Write(item.UserCode + ":" + item.FuncCode + "<br>");
-                }
-            }
-        }
-
+     
         public void Debug9()
         {
             List<string> filedirs = new List<string>();

@@ -89,27 +89,27 @@ namespace SmartBusinessWeb.Controllers
                     
 
                     var Roles = UserHelper.GetUserRoles(user);
-                    bool isadmin = UserHelper.CheckIfAdmin(Roles);
+                    bool isadmin = UserHelper.CheckIfAdmin(user);
+                    bool issalesmanager = UserHelper.CheckIfSalesManager(user);
+                    DeviceModel device = isadmin?null: Helpers.ModelHelper.GetDevice(user.surUID);//don't move to below
+
+                    _login(user, context, model, null);
+
                     if (isadmin)
                     {
-                        _login(user, isadmin, context, model, null);
-
+                        model.RedirectUrl = ApprovalMode ? "/OtherSettings/Index" : ComInfo.comLandingPage;
+                        return Redirect(model.RedirectUrl);
+                    }
+                    if (issalesmanager)
+                    {
                         model.RedirectUrl = ApprovalMode ? "/WholeSales/SalesOrderList" : ComInfo.comLandingPage;
-
                         return Redirect(model.RedirectUrl);
                     }
                     else
-                    {
-                        DeviceModel device = Helpers.ModelHelper.GetDevice(user.surUID);//don't move to below
+                    {                       
                         if (device != null)
-                        {
-                            _login(user, isadmin, context, model, device);
-
-                            if (string.IsNullOrEmpty(model.RedirectUrl))
-                            {
-                                model.RedirectUrl = ComInfo.comLandingPage;
-                            }
-
+                        { 
+                            if (string.IsNullOrEmpty(model.RedirectUrl)) model.RedirectUrl = ComInfo.comLandingPage;
                             return Redirect(model.RedirectUrl);
                         }
                         else
@@ -127,7 +127,7 @@ namespace SmartBusinessWeb.Controllers
 
 
 
-        private void _login(SysUser user, bool isadmin, PPWDbContext context, LoginUserModel model, DeviceModel device = null)
+        private void _login(SysUser user, PPWDbContext context, LoginUserModel model, DeviceModel device = null)
         {
             string token = CommonHelper.GenSessionToken();
             DateTime currDate = DateTime.Now.Date;
@@ -204,8 +204,8 @@ namespace SmartBusinessWeb.Controllers
             Session["Device"] = device;
             Session["SessionToken"] = token;
             Session["IsCentral"] = model.IsCentral;
-            Session["eBlastId"] = 0;           
-            Session["IsAdmin"] = isadmin;
+            Session["eBlastId"] = 0;          
+          
             MenuHelper.UpdateMenus(context);
         }
 

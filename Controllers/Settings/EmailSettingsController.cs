@@ -1,13 +1,7 @@
 ﻿using PPWLib.Models;
 using SmartBusinessWeb.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using PagedList;
 using Resources = CommonLib.App_GlobalResources;
-using CommonLib.Helpers;
 using PPWDAL;
 
 namespace SmartBusinessWeb.Controllers.Settings
@@ -15,7 +9,7 @@ namespace SmartBusinessWeb.Controllers.Settings
     [CustomAuthenticationFilter]
 
     [HandleError]
-    [CustomAuthorize("emailsettings", "boss", "admin", "superadmin")]
+    [CustomAuthorize("emailsettings", "admin", "superadmin")]
     public class EmailSettingsController : BaseController
     {
         public ActionResult Index()
@@ -29,7 +23,7 @@ namespace SmartBusinessWeb.Controllers.Settings
         }
 
         [HandleError]
-        [CustomAuthorize("emailsettings", "boss", "admin", "superadmin")]
+        [CustomAuthorize("emailsettings", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult Edit(EmailModel emailsettings)
@@ -42,7 +36,7 @@ namespace SmartBusinessWeb.Controllers.Settings
 
 
         [HandleError]
-        [CustomAuthorize("emailsettings", "boss", "admin", "superadmin")]
+        [CustomAuthorize("emailsettings", "admin", "superadmin")]
         [HttpGet]
         public ActionResult Detail()
         {

@@ -16,7 +16,7 @@ namespace SmartBusinessWeb.Controllers.POS
     public class DepositController : BaseController
     {
         [HandleError]
-        [CustomAuthorize("deposit", "boss", "admin", "superadmin")]
+        [CustomAuthorize("deposit", "admin", "superadmin")]
         public ActionResult Index()
         {
             ViewBag.ParentPage = "sales";

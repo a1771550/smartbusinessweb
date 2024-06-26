@@ -302,7 +302,7 @@ namespace SmartBusinessWeb.Controllers.Report
         private List<QuotationModel> GetFilteredQuotations()
         {
             var quotations = QuotationHelper.GetQuotationListFrmDB(apId, User.surUID);
-            if (!UserHelper.CheckIfARAdmin(User)) quotations = quotations.Where(x => x.SalesPerson.ID == User.surUID).ToList();
+            if (!UserHelper.CheckIfSalesManager(User)) quotations = quotations.Where(x => x.SalesPerson.ID == User.surUID).ToList();
             return quotations;
         }
 
@@ -469,7 +469,7 @@ namespace SmartBusinessWeb.Controllers.Report
         private List<AccountReceivableModel> GetFilteredAR()
         {
             List<AccountReceivableModel> accountReceivables = ARHelper.GetARListFrmDB(apId);
-            if (!UserHelper.CheckIfARAdmin(User)) accountReceivables = accountReceivables.Where(x => x.SalesPerson.ID == User.surUID).ToList();
+            if (!UserHelper.CheckIfSalesManager(User)) accountReceivables = accountReceivables.Where(x => x.SalesPerson.ID == User.surUID).ToList();
             return accountReceivables;
         }
 
@@ -657,7 +657,7 @@ namespace SmartBusinessWeb.Controllers.Report
         private List<SPPModel> GetFilteredSSP()
         {
             List<SPPModel> salesPersonPerformances = SPPHelper.GetSPPListFrmDB(apId);
-            if (!UserHelper.CheckIfARAdmin(User)) salesPersonPerformances = salesPersonPerformances.Where(x => x.SalesPersonID == userId).ToList();
+            if (!UserHelper.CheckIfSalesManager(User)) salesPersonPerformances = salesPersonPerformances.Where(x => x.SalesPersonID == userId).ToList();
             return salesPersonPerformances;
         }
 
@@ -853,7 +853,7 @@ namespace SmartBusinessWeb.Controllers.Report
         private List<CIModel> GetFilteredCI()
         {
             List<CIModel> customersInvoicess = CIHelper.GetCIListFrmDB(apId);
-            if (!UserHelper.CheckIfARAdmin(User)) customersInvoicess = customersInvoicess.Where(x => x.SalesPerson.ID == userId).ToList();
+            if (!UserHelper.CheckIfSalesManager(User)) customersInvoicess = customersInvoicess.Where(x => x.SalesPerson.ID == userId).ToList();
             return customersInvoicess;
         }
 

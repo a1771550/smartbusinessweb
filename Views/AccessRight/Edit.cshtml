@@ -79,11 +79,9 @@
 		@{ var idx = 0;}
 		@foreach (var item in Model.DicAR)
 		{
-			string selected = Model.AccessRights.Any(x => x.FuncCode == item.Key) ? " checked" : "";
-
 			<div class="form-check-inline">
 				<label class="form-check-label">
-					<input id="@item.Key" type="checkbox" class="form-check-input chkcode" name="FuncCodes[@idx]" data-code="@item.Key" value="@item.Key" @selected>@item.Value
+					<input id="@item.Key" type="checkbox" class="form-check-input chkcode" name="FuncCodes[@idx]" data-code="@item.Key" value="@item.Key" disabled>@item.Value
 				</label>
 			</div>
 			idx++;

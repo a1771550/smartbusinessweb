@@ -19,7 +19,7 @@ namespace SmartBusinessWeb.Controllers.Customer
     public class CustomerController : BaseController
     { 
         [HttpPost]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
         public JsonResult AddToSalesmen(List<int> groupIdList, int salesmanId, bool notification)
         {
@@ -30,7 +30,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult Assign(List<string> CodeList, int salesmanId, int notification)
@@ -55,7 +55,7 @@ namespace SmartBusinessWeb.Controllers.Customer
 
 
         [HttpPost]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
         public JsonResult AddToEblast(List<int> groupIdList, List<int> eblastIdList)
         {
@@ -66,7 +66,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult DeleteRecord(CustomerInfoModel model)
@@ -76,7 +76,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult EditRecord(CustomerInfoModel model)
@@ -87,7 +87,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult SaveRecord(CustomerInfoModel model)
@@ -160,7 +160,7 @@ namespace SmartBusinessWeb.Controllers.Customer
 
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult RemoveCattr(string cusCode, string cattr)
@@ -170,7 +170,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult UpdateGattrName(GlobalAttributeModel gattr)
@@ -181,7 +181,7 @@ namespace SmartBusinessWeb.Controllers.Customer
 
         //SaveGAttr4Combo
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult SaveGAttr4Combo(string cusCode, GlobalAttributeModel gAttribute)
@@ -192,7 +192,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult SaveGAttr4Txt(string cusCode, GlobalAttributeModel gAttribute)
@@ -203,7 +203,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult SaveCAttr(string cusCode, CustomAttributeModel cAttribute)
@@ -214,7 +214,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult UpdateFollowUpDate(string cusCode, string followupdate)
@@ -238,7 +238,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         public ActionResult Index(int PageNo = 1, int PageSize = 10, int SortCol = 4, string SortOrder = "desc", string Keyword = null, int CheckAll = 0, string cusCodes = null)
         {
             ViewBag.ParentPage = "customer";
@@ -275,7 +275,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpGet]
         public ActionResult Edit(string cusCode = null, string referrer = "")
         {
@@ -295,7 +295,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         }
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult Edit(CustomerModel model)
@@ -310,7 +310,7 @@ namespace SmartBusinessWeb.Controllers.Customer
 
 
         [HandleError]
-        [CustomAuthorize("customer", "boss", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(string cusCode)

@@ -26,7 +26,7 @@ namespace SmartBusinessWeb.Controllers
     public class POSFuncController : BaseController
     {
         [HandleError]
-        [CustomAuthorize("retail", "boss", "admin", "superadmin")]
+        [CustomAuthorize("retail", "admin", "superadmin")]
         public ActionResult ExcludedInvoices(int PageNo = 1, int SortCol = 0, string SortOrder = "desc", string Keyword = "")
         {
             ViewBag.ParentPage = "sales";
@@ -39,7 +39,7 @@ namespace SmartBusinessWeb.Controllers
 
 
         [HandleError]
-        [CustomAuthorize("retail", "boss", "admin", "superadmin")]
+        [CustomAuthorize("retail", "admin", "superadmin")]
         public ActionResult PendingInvoices(int? PageNo = 1)
         {
             ViewBag.ParentPage = "sales";
@@ -79,7 +79,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HandleError]
-        [CustomAuthorize("countpayment", "boss", "admin", "superadmin")]
+        [CustomAuthorize("countpayment", "admin", "superadmin")]
         public ActionResult Dayends()
         {
             ViewBag.PageName = "dayends";
@@ -107,7 +107,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HandleError]
-        [CustomAuthorize("countpayment", "boss", "admin", "superadmin")]
+        [CustomAuthorize("countpayment", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CountPayments(FormCollection formCollection)
@@ -227,7 +227,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HandleError]
-        [CustomAuthorize("refund", "boss", "admin", "superadmin")]
+        [CustomAuthorize("refund", "admin", "superadmin")]
         public ActionResult Refund()
         {
             ViewBag.ParentPage = "sales";
@@ -595,7 +595,7 @@ namespace SmartBusinessWeb.Controllers
             }
         }
         [HandleError]
-        [CustomAuthorize("retail", "boss", "admin", "superadmin")]
+        [CustomAuthorize("retail", "admin", "superadmin")]
         public ActionResult AdvSales(int? reserveId)
         {
             Session["ImportFrmShopPageTitle"] = Resources.Resource.DayendsImportFrmShop;
@@ -610,7 +610,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HandleError]
-        [CustomAuthorize("retail", "boss", "admin", "superadmin")]
+        [CustomAuthorize("retail", "admin", "superadmin")]
         public ActionResult Sales()
         {
             Session["ImportFrmShopPageTitle"] = Resources.Resource.DayendsImportFrmShop;

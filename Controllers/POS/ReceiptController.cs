@@ -14,7 +14,7 @@ namespace SmartBusinessWeb.Controllers
     public class ReceiptController : BaseController
     {
         [HandleError]
-        [CustomAuthorize("receipt", "admin1", "boss", "admin", "superadmin")]
+        [CustomAuthorize("receipt", "admin1", "admin", "superadmin")]
         public ActionResult Index()
         {
             ViewBag.ParentPage = "setup";
@@ -78,7 +78,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HandleError]
-        [CustomAuthorize("receipt", "admin1", "boss", "admin", "superadmin")]
+        [CustomAuthorize("receipt", "admin1", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public ActionResult Edit(ReceiptModel model, FormCollection formCollection)
