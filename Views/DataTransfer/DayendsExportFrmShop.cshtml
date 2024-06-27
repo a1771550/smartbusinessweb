@@ -1,26 +1,20 @@
 ﻿@model PPWLib.Models.DayEndsModel
 @{
-    int lang = (int)HttpContext.Current.Session["CurrentCulture"];
-    bool iscentral = Model.IsCentral;
-    int SelectedAccountProfile = Model.SelectedAccountProfileId;
-    string absschecked = ViewBag.DefaultCheckoutPortal.ToLower() == "abss" ? "checked" : "";
-    string kingdeechecked = ViewBag.DefaultCheckoutPortal.ToLower() == "kingdee" ? "checked" : "";
-    int rand = CommonHelper.GetVersionRandomNo();
-    ViewBag.Title = HttpContext.Current.Session["ImportFrmShopPageTitle"].ToString();
+	int lang = (int)HttpContext.Current.Session["CurrentCulture"];
+	int SelectedAccountProfile = Model.SelectedAccountProfileId;
+	int rand = CommonHelper.GetVersionRandomNo();
+	ViewBag.Title = Resources.Resource.DayendsExportFrmShop;
 }
 
 <h3>@ViewBag.Title</h3>
-@using (Html.BeginForm("DoExportFrmShop", "DataTransfer", FormMethod.Post, new { @id = "frmExport" }))
+@using (Html.BeginForm("DoExportFrmShopAsync", "DataTransfer", FormMethod.Post, new { @id = "frmExport" }))
 {
     @Html.AntiForgeryToken()
    
 
 <div class="row justify-content-center py-5 px-3">
-	<span class="label mx-3">@Resources.Resource.ExportDatePrompt</span>
-	<input class="col-12 col-md-3 form-control" type="text" id="datetimesmin" name="SalesDateFrmTxt" />
-	<span class="mx-3">@Resources.Resource.To</span>
-	<input class="col-12 col-md-3 form-control" type="text" id="datetimesmax" name="SalesDateToTxt" />
-
+	@Html.Partial("_DatesRange", null, new ViewDataDictionary { { "DateFromTxt", Model.DateFromTxt }, { "DateToTxt", Model.DateToTxt } })
+	
 	<div class="form-check mx-3">
 		<input class="form-check-input" type="checkbox" value="1" name="chkUploaded" id="chkUploaded">
 		<label class="form-check-label" for="chkUploaded">

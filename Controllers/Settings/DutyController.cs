@@ -9,7 +9,7 @@ namespace SmartBusinessWeb.Controllers.Settings
     public class DutyController : BaseController
     {
         [HandleError]
-        [CustomAuthorize("othersettings", "admin", "superadmin")]
+        [CustomAuthorize("basicsettings", "admin", "superadmin")]
 
         public ActionResult Index(int PageNo = 1, int SortCol = 0, string SortOrder = "desc", string Keyword = null)
         {
@@ -19,7 +19,7 @@ namespace SmartBusinessWeb.Controllers.Settings
         }
 
         [HandleError]
-        [CustomAuthorize("othersettings", "admin", "superadmin")]
+        [CustomAuthorize("basicsettings", "admin", "superadmin")]
         public ActionResult Edit(long? Id)
         {
             DutyEditModel model = new DutyEditModel();
@@ -28,7 +28,7 @@ namespace SmartBusinessWeb.Controllers.Settings
         }
 
         [HandleError]
-        [CustomAuthorize("othersettings", "admin", "superadmin")]
+        [CustomAuthorize("basicsettings", "admin", "superadmin")]
         [HttpPost]
         public JsonResult Edit(DutyModel Duty)
         {
@@ -37,7 +37,7 @@ namespace SmartBusinessWeb.Controllers.Settings
         }
 
         [HandleError]
-        [CustomAuthorize("othersettings", "admin", "superadmin")]
+        [CustomAuthorize("basicsettings", "admin", "superadmin")]
         public ActionResult Delete(long Id)
         {
             DutyEditModel.Delete(Id);

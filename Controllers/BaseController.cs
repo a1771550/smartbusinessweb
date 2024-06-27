@@ -11,6 +11,7 @@ using System.Configuration;
 using PPWDAL;
 using Resources = CommonLib.App_GlobalResources;
 using PPWLib.Models;
+using Microsoft.Data.SqlClient;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -19,7 +20,7 @@ namespace SmartBusinessWeb.Controllers
         public string DefaultDbName { get { return ConfigurationManager.AppSettings["DefaultDbName"]; } }
         public string DefaultConnection { get { return Session["DBName"] == null ? ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", "SmartBusinessWeb_db") : ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", Session["DBName"].ToString()); } }
         protected ComInfo ComInfo { get { return Session["ComInfo"] as ComInfo; } }
-        protected int CompanyId { get { return ComInfo.Id; } }
+        protected SqlConnection SqlConnection { get { return new SqlConnection(DefaultConnection); } }
         protected int AccountProfileId { get { return ComInfo.AccountProfileId; } }
         protected int apId { get { return ComInfo.AccountProfileId; } }
         protected string DbName { get { return Session["DBName"].ToString(); } }
@@ -59,9 +60,7 @@ namespace SmartBusinessWeb.Controllers
             }
             // calling CultureHelper class properties for setting  
             CultureHelper.CurrentCulture = culture;
-
-            Session["ImportFrmShopPageTitle"] = Resources.Resource.DayendsImportFrmShop;
-            Session["ImportFrmCentralPageTitle"] = Resources.Resource.DayendsImportFrmCentral;
+           
             Session["SBToABSSOK"] = Resources.Resource.SBToABSSOK;
             Session["ABSSToSBOK"] = Resources.Resource.ABSSToSBOK;
 

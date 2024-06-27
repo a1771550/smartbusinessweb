@@ -1,5 +1,4 @@
-﻿//import * as globals from "./globals";
-abstract class SimpleForm {
+﻿abstract class SimpleForm {
 	edit = false;
 	constructor(edit) {
 		this.edit = edit;
@@ -6465,6 +6464,7 @@ interface JQuery {
 		RecordCount: any;
 	});
 	files({ }): any;
+	filestyle({ }): any;
 	dialog({ }): any;
 	datepicker(): any;
 	datepicker({ }): any;
@@ -8398,6 +8398,7 @@ interface IPayLn {
 	rtplParentId: number | null;
 }
 interface ISysUser {
+    RoleIds: number[];
 	surUID: number;
 	surIsActive: boolean;
 	Password: string;

@@ -220,6 +220,16 @@
           <path>Scripts\ts\abssreports\sales.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\abssreports\sales.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>accessrights-edit.ts</name>
+          <path>Scripts\ts\admin\accessrights\edit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\admin\accessrights\edit.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>accessrights-index.ts</name>
+          <path>Scripts\ts\admin\accessrights\index.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\admin\accessrights\index.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

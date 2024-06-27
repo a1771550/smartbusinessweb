@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<svg width="24.000000000000004" height="24.000000000000004" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <circle cx="9" cy="9" id="svg_1" r="2" stroke="#1C274C" stroke-width="1.5"/>
+  <path d="m13,15c0,1.1 0,2 -4,2c-4,0 -4,-0.9 -4,-2c0,-1.1 1.79,-2 4,-2c2.21,0 4,0.9 4,2z" id="svg_2" stroke="#1C274C" stroke-width="1.5"/>
+  <path d="m22,12c0,3.77 0,5.66 -1.17,6.83c-1.17,1.17 -3.06,1.17 -6.83,1.17l-4,0c-3.77,0 -5.66,0 -6.83,-1.17c-1.17,-1.17 -1.17,-3.06 -1.17,-6.83c0,-3.77 0,-5.66 1.17,-6.83c1.17,-1.17 3.06,-1.17 6.83,-1.17l4,0c3.77,0 5.66,0 6.83,1.17c0.47,0.47 0.75,1.06 0.92,1.83" id="svg_3" stroke="#1C274C" stroke-linecap="round" stroke-width="1.5"/>
+  <path d="m19,12l-4,0" id="svg_4" stroke="#1C274C" stroke-linecap="round" stroke-width="1.5"/>
+  <path d="m19,9l-5,0" id="svg_5" stroke="#1C274C" stroke-linecap="round" stroke-width="1.5"/>
+  <path d="m19,15l-3,0" id="svg_6" stroke="#1C274C" stroke-linecap="round" stroke-width="1.5"/>
+ </g>
+</svg>

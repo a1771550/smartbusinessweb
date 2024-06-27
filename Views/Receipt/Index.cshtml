@@ -1,10 +1,10 @@
-﻿@model PPWLib.Models.ReceiptViewModel
+﻿@model ReceiptModel
 
 @{
     ViewBag.Title = Resources.Resource.ReceiptSettings;
     int rand = new Random().Next(10000, 100000);
 }
-<link rel="stylesheet" type="text/css" href="~/Content/site/Receipt.css?v=@rand" />
+<link rel="stylesheet" type="text/css" href="~/Content/settings/Receipt.css?v=@rand" />
 
 
 @using (Html.BeginForm("Edit", "Receipt", FormMethod.Post, new { @id = "frmReceipt" }))
@@ -14,8 +14,7 @@
     <h3 class="text-center">@ViewBag.Title</h3>
 
     <div class="form-horizontal my-5">
-
-        @Html.HiddenFor(model => model.Id)
+        <input type="hidden" id="Id" value="@Model.Id" />      
 
         <div class="form-group">
             <div class="row justify-content-around">
@@ -120,4 +119,4 @@
     </div>
 }
 <div id="infoblk"></div>
-<script src="~/Scripts/ts/js/pos/receipt.js?v=@rand"></script>
+<script src="~/Scripts/ts/js/settings/receipt.js?v=@rand"></script>

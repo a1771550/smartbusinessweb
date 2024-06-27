@@ -5,7 +5,7 @@
 	var rand = CommonHelper.GetVersionRandomNo();
 	var btncls = string.Concat("btn btn-info", " ", Model.BtnClass);
 }
-<link rel="stylesheet" type="text/css" href="~/Content/settings/accessrights/index.css?v=@rand" />
+<link rel="stylesheet" type="text/css" href="~/Content/admin/accessrights/index.css?v=@rand" />
 
 <h3>@ViewBag.Title</h3>
 
@@ -20,9 +20,9 @@
 	<table id="tblUser" class="table table-bordered table-hover table-condensed">
 		<thead class="gray-header">
 			<tr>
-				<th class="text-center colheader" data-col="0">@Resources.Resource.StaffCode</th>
-				<th class="text-center colheader" data-col="1">@Resources.Resource.StaffName</th>
-				<th class="text-center colheader" data-col="2">@Resources.Resource.Status</th>
+				<th class="text-center colheader" data-col="0">@Resources.Resource.Name</th>
+				<th class="text-center colheader" data-col="1">@Resources.Resource.Status</th>
+				<th class="text-center colheader" data-col="2">@Resources.Resource.ModifyTime</th>
 				<th></th>
 			</tr>
 		</thead>
@@ -33,9 +33,10 @@
 				{
 					string status = (bool)user.surIsActive ? Resources.Resource.Active : Resources.Resource.Inactive;
 					<tr>
-						<td class="text-center">@user.UserCode</td>
+
 						<td class="text-center">@user.UserName</td>
 						<td class="text-center">@status</td>
+						<td class="text-center">@user.ModifyTimeDisplay</td>
 						<td>
 							<button type="button" class="btn btn-info btnedit mx-2" data-userid="@user.surUID">@Resources.Resource.Edit</button>
 							<button type="button" class="btn btn-danger btndelete" data-userid="@user.surUID">@Resources.Resource.Remove</button>
@@ -58,4 +59,4 @@
 
 
 <div id="infoblk" data-userlicensedfullprompt="@Resources.Resource.UserLicensedFullPrompt"></div>
-<script src="~/Scripts/ts/js/settings/accessrights/index.js?v=@rand"></script>
+<script src="~/Scripts/ts/js/admin/accessrights/index.js?v=@rand"></script>

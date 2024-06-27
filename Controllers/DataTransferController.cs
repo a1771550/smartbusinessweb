@@ -13,8 +13,6 @@ using System.Data.Entity.Validation;
 using PPWDAL;
 using ModelHelper = PPWLib.Helpers.ModelHelper;
 using System.Threading.Tasks;
-using System.Net.Http;
-using Newtonsoft.Json;
 using PPWCommonLib.BaseModels;
 using CommonLib.Helpers;
 using CommonLib.Models;
@@ -31,6 +29,7 @@ using CommonLib.Models.MYOB;
 using PPWLib.Models.Item;
 using PPWCommonLib.Helpers;
 using SalesEditModel = PPWLib.Models.AbssReport.SalesEditModel;
+using DocumentFormat.OpenXml.EMMA;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -83,7 +82,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HandleError]
-        [CustomAuthorize("datatransfer_down", "admin", "superadmin")]
+        [CustomAuthorize("datatransfer", "admin", "superadmin")]
         public ActionResult DayendsImportFrmCentral(string defaultCheckoutPortal = "")
         {
             string defaultcheckoutportal = ModelHelper.HandleCheckoutPortal(defaultCheckoutPortal);
@@ -465,7 +464,7 @@ namespace SmartBusinessWeb.Controllers
 
 
         [HandleError]
-        [CustomAuthorize("datatransfer_up", "admin", "superadmin")]
+        [CustomAuthorize("datatransfer", "admin", "superadmin")]
         public ActionResult DayendsImportFrmShop()
         {
             CultureHelper.CurrentCulture = (int)Session["CurrentCulture"];
@@ -529,23 +528,10 @@ namespace SmartBusinessWeb.Controllers
         }
 
         [HandleError]
-        [CustomAuthorize("datatransfer_down", "admin", "superadmin")]
-        public ActionResult DayendsExportFrmCentral()
-        {
-            CultureHelper.CurrentCulture = (int)Session["CurrentCulture"];
-            //匯出中央資料
-            ViewBag.ParentPage = "dayends";
-            ViewBag.PageName = "dayendsexportfrmcentral";
-            DayEndsModel model = new DayEndsModel();
-            return View(model);
-        }
-
-        [HandleError]
-        [CustomAuthorize("datatransfer_up", "admin", "superadmin")]
+        [CustomAuthorize("datatransfer", "admin", "superadmin")]
         public ActionResult DayendsExportFrmShop(string defaultCheckoutPortal = "")
         {
             string defaultcheckoutportal = ModelHelper.HandleCheckoutPortal(defaultCheckoutPortal);
-            ViewBag.Title = Session["ExportFrmShopPageTitle"] = string.Format(Resources.Resource.DayendsImportFrmShop, defaultcheckoutportal);
             ViewBag.DefaultCheckoutPortal = defaultcheckoutportal;
 
             CultureHelper.CurrentCulture = (int)Session["CurrentCulture"];
@@ -554,17 +540,7 @@ namespace SmartBusinessWeb.Controllers
             ViewBag.PageName = "dayendsexportfrmshop";
 
             DayEndsModel model = new DayEndsModel();
-
-            if (ConfigurationManager.AppSettings["DemoOffline"] == "1")
-            {
-                //for debug only:
-                model.DataTransferMode = DataTransferMode.NoInternet;
-            }
-            else
-            {
-                model.DataTransferMode = CommonHelper.CheckForInternetConnection() == true ? DataTransferMode.Internet : DataTransferMode.NoInternet;
-            }
-            //model.IsOffLine = model.DataTransferMode == DataTransferMode.NoInternet ? 1 : 0;
+            model.DataTransferMode = CommonHelper.CheckForInternetConnection() == true ? DataTransferMode.Internet : DataTransferMode.NoInternet;
             return View(model);
         }
 
@@ -578,7 +554,7 @@ namespace SmartBusinessWeb.Controllers
         [HandleError]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DoExportFrmShopAsync(DayEndsModel model, FormCollection formCollection)
+        public ActionResult DoExportFrmShopAsync(DayEndsModel model, FormCollection formCollection, string strfrmdate = "", string strtodate = "")
         {
             VipList = new List<CustomerModel>();
             bool includeUploaded = model.IncludeUploaded = formCollection["chkUploaded"] != null;
@@ -606,41 +582,74 @@ namespace SmartBusinessWeb.Controllers
                 includeUploaded = includeUploaded,
             };
 
+            #region Date Ranges
+            int year = DateTime.Now.Year;
+            DateTime frmdate;
+            DateTime todate;
+            if (string.IsNullOrEmpty(strfrmdate))
+            {
+                //frmdate = new DateTime(year, 1, 1);
+                frmdate = DateTime.Today;
+            }
+            else
+            {
+                int mth = int.Parse(strfrmdate.Split('/')[1]);
+                int day = int.Parse(strfrmdate.Split('/')[0]);
+                year = int.Parse(strfrmdate.Split('/')[2]);
+                frmdate = new DateTime(year, mth, day);
+            }
+            if (string.IsNullOrEmpty(strtodate))
+            {
+                //todate = new DateTime(year, 12, 31);
+                todate = DateTime.Today;
+            }
+            else
+            {
+                int mth = int.Parse(strtodate.Split('/')[1]);
+                int day = int.Parse(strtodate.Split('/')[0]);
+                year = int.Parse(strtodate.Split('/')[2]);
+                todate = new DateTime(year, mth, day);
+            }
+
+            model.DateFromTxt = CommonHelper.FormatDate(frmdate, true);
+            model.DateToTxt = CommonHelper.FormatDate(todate, true);
+            #endregion
+
             switch (type)
             {
                 case "ia":
-                    await ExportData4SB(apId, dmodel, "IA_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
+                    ExportData4SB(dmodel, "IA_", frmdate, todate, includeUploaded, lang);
                     if (dmodel.CheckOutIds_IA.Count == 0) msg = Resources.Resource.NoExportedDataFrmShop;
                     break;
                 case "journal":
-                    await ExportData4SB(apId, dmodel, "Journal_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
+                    ExportData4SB(dmodel, "Journal_", frmdate, todate, includeUploaded, lang);
                     if (dmodel.CheckOutIds_Journal.Count == 0) msg = Resources.Resource.NoExportedDataFrmShop;
                     break;
                 case "supplier":
-                    await ExportData4SB(apId, dmodel, "Suppliers_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
+                    ExportData4SB(dmodel, "Suppliers_", frmdate, todate, includeUploaded, lang);
                     if (dmodel.CheckOutIds_Supplier.Count == 0) msg = Resources.Resource.NoExportedDataFrmShop;
                     break;
                 case "purchase":
-                    await ExportData4SB(apId, dmodel, "Purchase_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
+                    ExportData4SB(dmodel, "Purchase_", frmdate, todate, includeUploaded, lang);
                     if (dmodel.PoCheckOutIds.Count == 0) msg = Resources.Resource.NoExportedDataFrmShop;
                     HandleExcludedOrders(FileType.Purchase, dmodel);
                     break;
                 case "item":
-                    await ExportData4SB(apId, dmodel, "Items_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
+                    ExportData4SB(dmodel, "Items_", frmdate, todate, includeUploaded, lang);
                     if (dmodel.CheckOutIds_Item.Count == 0) msg = Resources.Resource.NoExportedDataFrmShop;
                     break;
                 case "customer":
-                    await ExportData4SB(apId, dmodel, "Customers_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
+                    ExportData4SB(dmodel, "Customers_", frmdate, todate, includeUploaded, lang);
                     if (dmodel.CheckOutIds_Customer.Count == 0) msg = Resources.Resource.NoExportedDataFrmShop;
                     break;
                 case "wholesales":
-                    await ExportData4SB(apId, dmodel, "Wholesales_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
+                    ExportData4SB(dmodel, "Wholesales_", frmdate, todate, includeUploaded, lang);
                     if (dmodel.CheckOutIds_WS.Count == 0) msg = Resources.Resource.NoExportedDataFrmShop;
                     HandleExcludedOrders(FileType.WholeSales, dmodel);
                     break;
                 default:
                 case "sales":
-                    await ExportData4SB(apId, dmodel, "ItemSales_", model.SalesDateFrmTxt, model.SalesDateToTxt, includeUploaded, lang);
+                    ExportData4SB(dmodel, "ItemSales_", frmdate, todate, includeUploaded, lang);
                     if (dmodel.RetailCheckOutIds.Count == 0) msg = Resources.Resource.NoExportedDataFrmShop;
                     HandleExcludedOrders(FileType.Retail, dmodel);
                     break;
@@ -670,533 +679,391 @@ namespace SmartBusinessWeb.Controllers
             return Json(new { msg, PendingInvoices = ret, ExcludedInvoices = excludedinvoices, ExcludedPO = excludedpo, ExcludedWS = excludedws, offlinemode = 0 });
         }
 
-        private async Task ExportData4SB(int accountprofileId, DataTransferModel dmodel, string filename, string strfrmdate = "", string strtodate = "", bool includeUploaded = false, int lang = 0)
+        private void ExportData4SB(DataTransferModel dmodel, string filename, DateTime frmdate, DateTime todate,  bool includeUploaded = false, int lang = 0)
         {
             var comInfo = Session["ComInfo"] as ComInfo;
             SessUser curruser = Session["User"] as SessUser;
             OnlineModeItem onlineModeItem = new OnlineModeItem();
             DateTime dateTime = DateTime.Now;
             string checkoutportal = string.Empty;
-            bool approvalmode = (bool)comInfo.ApprovalMode;
-            int apId = comInfo.AccountProfileId;
+            bool approvalmode = (bool)comInfo.ApprovalMode;          
 
             using var context = new PPWDbContext(Session["DBName"].ToString());
             string ConnectionString = GetAbssConnectionString(context, "READ_WRITE", apId);
 
-            using var connection = new SqlConnection(DefaultConnection);
-            connection.Open();
-
-            if (filename.StartsWith("IA_"))
+            if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
+            using (SqlConnection)
             {
-                #region Date Ranges
-                int year = DateTime.Now.Year;
-                DateTime frmdate;
-                DateTime todate;
-                if (string.IsNullOrEmpty(strfrmdate))
+                if (filename.StartsWith("IA_"))
                 {
-                    //frmdate = new DateTime(year, 1, 1);
-                    frmdate = DateTime.Today;
-                }
-                else
-                {
-                    int mth = int.Parse(strfrmdate.Split('/')[1]);
-                    int day = int.Parse(strfrmdate.Split('/')[0]);
-                    year = int.Parse(strfrmdate.Split('/')[2]);
-                    frmdate = new DateTime(year, mth, day);
-                }
-                if (string.IsNullOrEmpty(strtodate))
-                {
-                    //todate = new DateTime(year, 12, 31);
-                    todate = DateTime.Today;
-                }
-                else
-                {
-                    int mth = int.Parse(strtodate.Split('/')[1]);
-                    int day = int.Parse(strtodate.Split('/')[0]);
-                    year = int.Parse(strtodate.Split('/')[2]);
-                    todate = new DateTime(year, mth, day);
-                }
-                #endregion
+                    var session = ModelHelper.GetCurrentSession(context);
+                    var location = session.sesShop.ToLower();
+                    var device = session.sesDvc.ToLower();
 
-                var session = ModelHelper.GetCurrentSession(context);
-                var location = session.sesShop.ToLower();
-                var device = session.sesDvc.ToLower();
+                    dmodel.RetailCheckOutIds = new HashSet<long>();
+                    dmodel.SelectedLocation = location;
+                    dmodel.Device = device;
 
-                dmodel.RetailCheckOutIds = new HashSet<long>();
-                dmodel.SelectedLocation = location;
-                dmodel.Device = device;
+                    List<string> sqllist = IAEditModel.GetUploadSqlList(includeUploaded, comInfo, apId, context, SqlConnection, frmdate, todate, ref dmodel);
 
-                List<string> sqllist = IAEditModel.GetUploadSqlList(includeUploaded, comInfo, apId, context, connection, frmdate, todate, ref dmodel);
-
-                if (sqllist.Count > 0)
-                {
-                    #region Write to MYOB
-                    using (localhost.Dayends dayends = new localhost.Dayends())
+                    if (sqllist.Count > 0)
                     {
-                        dayends.Url = comInfo.WebServiceUrl;
-                        dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
-                    }
-                    #endregion
-
-                    #region Write sqllist into Log & update checkoutIds
-                    StringBuilder sb = new StringBuilder();
-                    using (var transaction = context.Database.BeginTransaction())
-                    {
-                        try
+                        #region Write to MYOB
+                        using (localhost.Dayends dayends = new localhost.Dayends())
                         {
-                            ModelHelper.WriteLog(context, string.Format("Export IA data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
-                            List<InventoryAdjustment> ialist = context.InventoryAdjustments.Where(x => x.AccountProfileId == apId && dmodel.CheckOutIds_IA.Any(y => x.Id == y)).ToList();
-                            foreach (var ia in ialist)
-                            {
-                                ia.Checkout = true;
-                                ia.ModifyTime = DateTime.Now;
-                                ia.ModifyBy = User.UserCode;
-                            }
-                            context.SaveChanges();
-                            transaction.Commit();
+                            dayends.Url = comInfo.WebServiceUrl;
+                            dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
                         }
-                        catch (DbEntityValidationException e)
-                        {
-                            transaction.Rollback();
+                        #endregion
 
-                            foreach (var eve in e.EntityValidationErrors)
+                        #region Write sqllist into Log & update checkoutIds
+                        StringBuilder sb = new StringBuilder();
+                        using (var transaction = context.Database.BeginTransaction())
+                        {
+                            try
                             {
-                                sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                                foreach (var ve in eve.ValidationErrors)
+                                ModelHelper.WriteLog(context, string.Format("Export IA data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
+                                List<InventoryAdjustment> ialist = context.InventoryAdjustments.Where(x => x.AccountProfileId == apId && dmodel.CheckOutIds_IA.Any(y => x.Id == y)).ToList();
+                                foreach (var ia in ialist)
                                 {
-                                    sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                    ve.PropertyName,
-                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                    ve.ErrorMessage);
+                                    ia.Checkout = true;
+                                    ia.ModifyTime = DateTime.Now;
+                                    ia.ModifyBy = User.UserCode;
+                                }
+                                context.SaveChanges();
+                                transaction.Commit();
+                            }
+                            catch (DbEntityValidationException e)
+                            {
+                                transaction.Rollback();
+
+                                foreach (var eve in e.EntityValidationErrors)
+                                {
+                                    sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                                    foreach (var ve in eve.ValidationErrors)
+                                    {
+                                        sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                        ve.PropertyName,
+                        eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                        ve.ErrorMessage);
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (!string.IsNullOrEmpty(sb.ToString()))
-                    {
-                        using var _context = new PPWDbContext(Session["DBName"].ToString());
-                        ModelHelper.WriteLog(_context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
-                    }
-
-                    #endregion
-                }
-            }
-
-            if (filename.StartsWith("Journal_"))
-            {
-                #region Date Ranges
-                int year = DateTime.Now.Year;
-                DateTime frmdate;
-                DateTime todate;
-                if (string.IsNullOrEmpty(strfrmdate))
-                {
-                    //frmdate = new DateTime(year, 1, 1);
-                    frmdate = DateTime.Today;
-                }
-                else
-                {
-                    int mth = int.Parse(strfrmdate.Split('/')[1]);
-                    int day = int.Parse(strfrmdate.Split('/')[0]);
-                    year = int.Parse(strfrmdate.Split('/')[2]);
-                    frmdate = new DateTime(year, mth, day);
-                }
-                if (string.IsNullOrEmpty(strtodate))
-                {
-                    //todate = new DateTime(year, 12, 31);
-                    todate = DateTime.Today;
-                }
-                else
-                {
-                    int mth = int.Parse(strtodate.Split('/')[1]);
-                    int day = int.Parse(strtodate.Split('/')[0]);
-                    year = int.Parse(strtodate.Split('/')[2]);
-                    todate = new DateTime(year, mth, day);
-                }
-                #endregion
-
-                var session = ModelHelper.GetCurrentSession(context);
-                var location = session.sesShop.ToLower();
-                var device = session.sesDvc.ToLower();
-
-                dmodel.RetailCheckOutIds = new HashSet<long>();
-                dmodel.SelectedLocation = location;
-                dmodel.Device = device;
-
-                List<string> sqllist = JournalEditModel.GetUploadSqlList(includeUploaded, comInfo, apId, context, frmdate, todate, ref dmodel);
-
-                if (sqllist.Count > 0)
-                {
-                    #region Write to MYOB
-                    using (localhost.Dayends dayends = new localhost.Dayends())
-                    {
-                        dayends.Url = comInfo.WebServiceUrl;
-                        dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
-                    }
-                    #endregion
-
-                    #region Write sqllist into Log & update checkoutIds
-                    StringBuilder sb = new StringBuilder();
-                    using (var transaction = context.Database.BeginTransaction())
-                    {
-                        try
+                        if (!string.IsNullOrEmpty(sb.ToString()))
                         {
-                            ModelHelper.WriteLog(context, string.Format("Export Journal data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
-                            List<Journal> journallist = context.Journals.Where(x => x.AccountProfileId == apId && dmodel.CheckOutIds_Journal.Any(y => x.Id == y)).ToList();
-                            foreach (var journal in journallist)
-                            {
-                                journal.IsCheckOut = true;
-                                journal.ModifyTime = DateTime.Now;
-                            }
-                            context.SaveChanges();
-                            transaction.Commit();
+                            using var _context = new PPWDbContext(Session["DBName"].ToString());
+                            ModelHelper.WriteLog(_context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
                         }
-                        catch (DbEntityValidationException e)
-                        {
-                            transaction.Rollback();
 
-                            foreach (var eve in e.EntityValidationErrors)
+                        #endregion
+                    }
+                }
+
+                if (filename.StartsWith("Journal_"))
+                {
+                    var session = ModelHelper.GetCurrentSession(context);
+                    var location = session.sesShop.ToLower();
+                    var device = session.sesDvc.ToLower();
+
+                    dmodel.RetailCheckOutIds = new HashSet<long>();
+                    dmodel.SelectedLocation = location;
+                    dmodel.Device = device;
+
+                    List<string> sqllist = JournalEditModel.GetUploadSqlList(includeUploaded, comInfo, apId, context, frmdate, todate, ref dmodel);
+
+                    if (sqllist.Count > 0)
+                    {
+                        #region Write to MYOB
+                        using (localhost.Dayends dayends = new localhost.Dayends())
+                        {
+                            dayends.Url = comInfo.WebServiceUrl;
+                            dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
+                        }
+                        #endregion
+
+                        #region Write sqllist into Log & update checkoutIds
+                        StringBuilder sb = new StringBuilder();
+                        using (var transaction = context.Database.BeginTransaction())
+                        {
+                            try
                             {
-                                sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                                foreach (var ve in eve.ValidationErrors)
+                                ModelHelper.WriteLog(context, string.Format("Export Journal data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
+                                List<Journal> journallist = context.Journals.Where(x => x.AccountProfileId == apId && dmodel.CheckOutIds_Journal.Any(y => x.Id == y)).ToList();
+                                foreach (var journal in journallist)
                                 {
-                                    sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                    ve.PropertyName,
-                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                    ve.ErrorMessage);
+                                    journal.IsCheckOut = true;
+                                    journal.ModifyTime = DateTime.Now;
+                                }
+                                context.SaveChanges();
+                                transaction.Commit();
+                            }
+                            catch (DbEntityValidationException e)
+                            {
+                                transaction.Rollback();
+
+                                foreach (var eve in e.EntityValidationErrors)
+                                {
+                                    sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                                    foreach (var ve in eve.ValidationErrors)
+                                    {
+                                        sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                        ve.PropertyName,
+                        eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                        ve.ErrorMessage);
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (!string.IsNullOrEmpty(sb.ToString()))
-                    {
-                        using var _context = new PPWDbContext(Session["DBName"].ToString());
-                        ModelHelper.WriteLog(_context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
-                    }
-
-                    #endregion
-                }
-            }
-
-            if (filename.StartsWith("ItemSales_"))
-            {
-                #region Date Ranges
-                int year = DateTime.Now.Year;
-                DateTime frmdate;
-                DateTime todate;
-                if (string.IsNullOrEmpty(strfrmdate))
-                {
-                    //frmdate = new DateTime(year, 1, 1);
-                    frmdate = DateTime.Today;
-                }
-                else
-                {
-                    int mth = int.Parse(strfrmdate.Split('/')[1]);
-                    int day = int.Parse(strfrmdate.Split('/')[0]);
-                    year = int.Parse(strfrmdate.Split('/')[2]);
-                    frmdate = new DateTime(year, mth, day);
-                }
-                if (string.IsNullOrEmpty(strtodate))
-                {
-                    //todate = new DateTime(year, 12, 31);
-                    todate = DateTime.Today;
-                }
-                else
-                {
-                    int mth = int.Parse(strtodate.Split('/')[1]);
-                    int day = int.Parse(strtodate.Split('/')[0]);
-                    year = int.Parse(strtodate.Split('/')[2]);
-                    todate = new DateTime(year, mth, day);
-                }
-                #endregion
-
-                var session = ModelHelper.GetCurrentSession(context);
-                var location = session.sesShop.ToLower();
-                var device = session.sesDvc.ToLower();
-
-                dmodel.RetailCheckOutIds = new HashSet<long>();
-                dmodel.SelectedLocation = location;
-                dmodel.Device = device;
-
-                RetailEditModel model = new RetailEditModel();
-                List<string> sqllist = model.GetUploadSqlList(includeUploaded, lang, comInfo, apId, context, connection, frmdate, todate, ref dmodel);
-
-                if (sqllist.Count > 0)
-                {
-                    #region Write to MYOB
-                    using (localhost.Dayends dayends = new localhost.Dayends())
-                    {
-                        dayends.Url = comInfo.WebServiceUrl;
-                        dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
-                    }
-                    #endregion
-
-                    #region Write sqllist into Log & update checkoutIds
-                    StringBuilder sb = new StringBuilder();
-                    using (var transaction = context.Database.BeginTransaction())
-                    {
-                        try
+                        if (!string.IsNullOrEmpty(sb.ToString()))
                         {
-                            ModelHelper.WriteLog(context, string.Format("Export SalesModel data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
-                            List<RtlSale> saleslist = context.RtlSales.Where(x => x.AccountProfileId == apId && dmodel.RetailCheckOutIds.Any(y => x.rtsUID == y)).ToList();
-                            foreach (var sales in saleslist)
-                            {
-                                sales.rtsCheckout = true;
-                            }
-                            context.SaveChanges();
-                            transaction.Commit();
+                            using var _context = new PPWDbContext(Session["DBName"].ToString());
+                            ModelHelper.WriteLog(_context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
                         }
-                        catch (DbEntityValidationException e)
-                        {
-                            transaction.Rollback();
 
-                            foreach (var eve in e.EntityValidationErrors)
+                        #endregion
+                    }
+                }
+
+                if (filename.StartsWith("ItemSales_"))
+                {
+                    var session = ModelHelper.GetCurrentSession(context);
+                    var location = session.sesShop.ToLower();
+                    var device = session.sesDvc.ToLower();
+
+                    dmodel.RetailCheckOutIds = new HashSet<long>();
+                    dmodel.SelectedLocation = location;
+                    dmodel.Device = device;
+
+                    RetailEditModel model = new RetailEditModel();
+                    List<string> sqllist = model.GetUploadSqlList(includeUploaded, lang, comInfo, apId, context, SqlConnection, frmdate, todate, ref dmodel);
+
+                    if (sqllist.Count > 0)
+                    {
+                        #region Write to MYOB
+                        using (localhost.Dayends dayends = new localhost.Dayends())
+                        {
+                            dayends.Url = comInfo.WebServiceUrl;
+                            dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
+                        }
+                        #endregion
+
+                        #region Write sqllist into Log & update checkoutIds
+                        StringBuilder sb = new StringBuilder();
+                        using (var transaction = context.Database.BeginTransaction())
+                        {
+                            try
                             {
-                                sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                                foreach (var ve in eve.ValidationErrors)
+                                ModelHelper.WriteLog(context, string.Format("Export SalesModel data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
+                                List<RtlSale> saleslist = context.RtlSales.Where(x => x.AccountProfileId == apId && dmodel.RetailCheckOutIds.Any(y => x.rtsUID == y)).ToList();
+                                foreach (var sales in saleslist)
                                 {
-                                    sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                    ve.PropertyName,
-                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                    ve.ErrorMessage);
+                                    sales.rtsCheckout = true;
+                                }
+                                context.SaveChanges();
+                                transaction.Commit();
+                            }
+                            catch (DbEntityValidationException e)
+                            {
+                                transaction.Rollback();
+
+                                foreach (var eve in e.EntityValidationErrors)
+                                {
+                                    sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                                    foreach (var ve in eve.ValidationErrors)
+                                    {
+                                        sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                        ve.PropertyName,
+                        eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                        ve.ErrorMessage);
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (!string.IsNullOrEmpty(sb.ToString()))
-                    {
-                        using var _context = new PPWDbContext(Session["DBName"].ToString());
-                        ModelHelper.WriteLog(_context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
-                    }
-
-
-                    #endregion
-                }
-            }
-
-            if (filename == "Wholesales_")
-            {
-                #region Date Ranges
-                int year = DateTime.Now.Year;
-                DateTime frmdate;
-                DateTime todate;
-                if (string.IsNullOrEmpty(strfrmdate))
-                {
-                    frmdate = new DateTime(year, 1, 1);
-                }
-                else
-                {
-                    int mth = int.Parse(strfrmdate.Split('/')[1]);
-                    int day = int.Parse(strfrmdate.Split('/')[0]);
-                    year = int.Parse(strfrmdate.Split('/')[2]);
-                    frmdate = new DateTime(year, mth, day);
-                }
-                if (string.IsNullOrEmpty(strtodate))
-                {
-                    todate = new DateTime(year, 12, 31);
-                }
-                else
-                {
-                    int mth = int.Parse(strtodate.Split('/')[1]);
-                    int day = int.Parse(strtodate.Split('/')[0]);
-                    year = int.Parse(strtodate.Split('/')[2]);
-                    todate = new DateTime(year, mth, day);
-                }
-                #endregion
-
-                var session = ModelHelper.GetCurrentSession(context);
-                var location = session.sesShop.ToLower();
-                var device = session.sesDvc.ToLower();
-
-                dmodel.CheckOutIds_WS = new HashSet<long>();
-                dmodel.SelectedLocation = location;
-                dmodel.Device = device;
-
-                List<string> sqllist = WholeSalesEditModel.GetUploadSqlList4WS(includeUploaded, lang, comInfo, apId, context, connection, frmdate, todate, ref dmodel);
-
-                if (sqllist.Count > 0)
-                {
-                    using (localhost.Dayends dayends = new localhost.Dayends())
-                    {
-                        dayends.Url = comInfo.WebServiceUrl;
-                        dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
-                    }
-
-                    #region Write sqllist into Log & update checkoutIds
-                    StringBuilder sb = new StringBuilder();
-                    using (var transaction = context.Database.BeginTransaction())
-                    {
-                        try
+                        if (!string.IsNullOrEmpty(sb.ToString()))
                         {
-                            ModelHelper.WriteLog(context, string.Format("Export Wholesales data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
-                            List<WholeSale> saleslist = context.WholeSales.Where(x => x.AccountProfileId == apId && dmodel.CheckOutIds_WS.Any(y => x.wsUID == y)).ToList();
-                            foreach (var sales in saleslist)
-                            {
-                                sales.wsCheckout = true;
-                                sales.ModifyTime = dateTime;
-                            }
-                            context.SaveChanges();
-                            transaction.Commit();
+                            using var _context = new PPWDbContext(Session["DBName"].ToString());
+                            ModelHelper.WriteLog(_context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
                         }
-                        catch (DbEntityValidationException e)
-                        {
-                            transaction.Rollback();
 
-                            foreach (var eve in e.EntityValidationErrors)
+
+                        #endregion
+                    }
+                }
+
+                if (filename == "Wholesales_")
+                {
+                    var session = ModelHelper.GetCurrentSession(context);
+                    var location = session.sesShop.ToLower();
+                    var device = session.sesDvc.ToLower();
+
+                    dmodel.CheckOutIds_WS = new HashSet<long>();
+                    dmodel.SelectedLocation = location;
+                    dmodel.Device = device;
+
+                    List<string> sqllist = WholeSalesEditModel.GetUploadSqlList4WS(includeUploaded, lang, comInfo, apId, context, SqlConnection, frmdate, todate, ref dmodel);
+
+                    if (sqllist.Count > 0)
+                    {
+                        using (localhost.Dayends dayends = new localhost.Dayends())
+                        {
+                            dayends.Url = comInfo.WebServiceUrl;
+                            dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
+                        }
+
+                        #region Write sqllist into Log & update checkoutIds
+                        StringBuilder sb = new StringBuilder();
+                        using (var transaction = context.Database.BeginTransaction())
+                        {
+                            try
                             {
-                                sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                                foreach (var ve in eve.ValidationErrors)
+                                ModelHelper.WriteLog(context, string.Format("Export Wholesales data From Shop done; sqllist:{0}; connectionstring:{1}", string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
+                                List<WholeSale> saleslist = context.WholeSales.Where(x => x.AccountProfileId == apId && dmodel.CheckOutIds_WS.Any(y => x.wsUID == y)).ToList();
+                                foreach (var sales in saleslist)
                                 {
-                                    sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                    ve.PropertyName,
-                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                    ve.ErrorMessage);
+                                    sales.wsCheckout = true;
+                                    sales.ModifyTime = dateTime;
+                                }
+                                context.SaveChanges();
+                                transaction.Commit();
+                            }
+                            catch (DbEntityValidationException e)
+                            {
+                                transaction.Rollback();
+
+                                foreach (var eve in e.EntityValidationErrors)
+                                {
+                                    sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                                    foreach (var ve in eve.ValidationErrors)
+                                    {
+                                        sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                        ve.PropertyName,
+                        eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                        ve.ErrorMessage);
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (!string.IsNullOrEmpty(sb.ToString()))
-                    {
-                        using var _context = new PPWDbContext(Session["DBName"].ToString());
-                        ModelHelper.WriteLog(_context, string.Format("Export Wholesales data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
-                    }
-                    #endregion
-                }
-
-            }
-
-            if (filename == "Purchase_")
-            {
-                List<string> sqllist = PurchaseEditModel.GetUploadPurchaseSqlList(accountprofileId, ref dmodel, strfrmdate, strtodate, comInfo, context);
-
-                if (sqllist.Count > 0)
-                {
-                    using (localhost.Dayends dayends = new localhost.Dayends())
-                    {
-                        dayends.Url = comInfo.WebServiceUrl;
-                        dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
-                    }
-
-                    ModelHelper.WriteLog(context, string.Join(",", sqllist), "ExportFrmShop#Purchase");
-                    List<PPWDAL.Purchase> pslist = context.Purchases.Where(x => x.AccountProfileId == apId && dmodel.PoCheckOutIds.Any(y => x.Id == y)).ToList();
-                    foreach (var ps in pslist)
-                    {
-                        ps.pstCheckout = true;
-                        ps.ModifyTime = DateTime.Now;
-                    }
-
-                    if (dmodel.CheckOutIds_PoPayLn.Count > 0)
-                    {
-                        List<PurchasePayment> pplist = context.PurchasePayments.Where(x => dmodel.CheckOutIds_PoPayLn.Any(y => x.Id == y)).ToList();
-                        foreach (var pp in pplist)
+                        if (!string.IsNullOrEmpty(sb.ToString()))
                         {
-                            pp.ppCheckout = true;
-                            pp.ModifyTime = DateTime.Now;
+                            using var _context = new PPWDbContext(Session["DBName"].ToString());
+                            ModelHelper.WriteLog(_context, string.Format("Export Wholesales data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
                         }
+                        #endregion
                     }
 
-                    context.SaveChanges();
                 }
-            }
 
-            if (filename.StartsWith("Items_"))
-            {
-                ModelHelper.GetDataTransferData(context, accountprofileId, CheckOutType.Items, ref dmodel);
-
-                if (dmodel.ItemList.Count > 0)
+                if (filename == "Purchase_")
                 {
-                    List<string> columns = new List<string>();
+                    List<string> sqllist = PurchaseEditModel.GetUploadPurchaseSqlList(apId, ref dmodel, comInfo, context, frmdate, todate);
 
-                    string sql = MyobHelper.InsertImportItemSql;
-
-                    for (int j = 0; j < MyobHelper.ImportItemColCount; j++)
+                    if (sqllist.Count > 0)
                     {
-                        columns.Add("'{" + j + "}'");
+                        using (localhost.Dayends dayends = new localhost.Dayends())
+                        {
+                            dayends.Url = comInfo.WebServiceUrl;
+                            dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
+                        }
+
+                        ModelHelper.WriteLog(context, string.Join(",", sqllist), "ExportFrmShop#Purchase");
+                        List<PPWDAL.Purchase> pslist = context.Purchases.Where(x => x.AccountProfileId == apId && dmodel.PoCheckOutIds.Any(y => x.Id == y)).ToList();
+                        foreach (var ps in pslist)
+                        {
+                            ps.pstCheckout = true;
+                            ps.ModifyTime = DateTime.Now;
+                        }
+
+                        if (dmodel.CheckOutIds_PoPayLn.Count > 0)
+                        {
+                            List<PurchasePayment> pplist = context.PurchasePayments.Where(x => dmodel.CheckOutIds_PoPayLn.Any(y => x.Id == y)).ToList();
+                            foreach (var pp in pplist)
+                            {
+                                pp.ppCheckout = true;
+                                pp.ModifyTime = DateTime.Now;
+                            }
+                        }
+
+                        context.SaveChanges();
                     }
-                    string strcolumn = string.Join(",", columns);
+                }
 
-                    List<string> values = new List<string>();
-                    foreach (var item in dmodel.ItemList)
+                if (filename.StartsWith("Items_"))
+                {
+                    ModelHelper.GetDataTransferData(context, apId, CheckOutType.Items, ref dmodel);
+
+                    if (dmodel.ItemList.Count > 0)
                     {
-                        string value = "";
-                        string buy = item.itmIsBought ? "Y" : "N";
-                        string sell = item.itmIsSold ? "Y" : "N";
-                        string inventory = item.itmIsNonStock ? "N" : "Y";
-                        string usedesc = item.itmUseDesc ? "Y" : "N";
-                        string taxcode = item.itmIsTaxedWhenSold == null ? "" : (bool)item.itmIsTaxedWhenSold ? comInfo.DefaultTaxCode : "";
-                        string inactivetxt = item.itmIsActive ? "N" : "Y";
-                        string inventoryacc = item.InventoryAccountNo == 0 ? "" : item.InventoryAccountNo.ToString();
-                        string incomeacc = item.IncomeAccountNo == 0 ? "" : item.IncomeAccountNo.ToString();
-                        string expenseacc = item.ExpenseAccountNo == 0 ? "" : item.ExpenseAccountNo.ToString();
-                        //string itemdesc = string.IsNullOrEmpty(item.itmDesc) ? "" : CommonHelper.ConvertUTF8ToASCII(StringHandlingForSQL(CommonHelper.EscapeString(item.itmDesc)));
-                        string itemdesc = string.IsNullOrEmpty(item.itmDesc) ? "" : StringHandlingForSQL(CommonHelper.EscapeString(item.itmDesc));
-                        /*
-						 * ItemNumber,ItemName,Buy,Sell,Inventory,AssetAccount,IncomeAccount,ExpenseAccount,ItemPicture,Description,UseDescriptionOnSale,CustomList1,CustomList2,CustomList3,CustomField1,CustomField2,CustomField3,PrimarySupplier,SupplierItemNumber,TaxWhenBought,BuyUnitMeasure,NumberItemsBuyUnit,ReorderQuantity,MinimumLevel,SellingPrice,SellUnitMeasure,NumberItemsSellUnit,TaxWhenSold,QuantityBreak1,PriceLevelAQtyBreak1,PriceLevelBQtyBreak1,PriceLevelCQtyBreak1,PriceLevelDQtyBreak1,PriceLevelEQtyBreak1,PriceLevelFQtyBreak1,InactiveItem,StandardCost,DefaultShipSellLocation,DefaultReceiveAutoBuildLocation
-						 */
-                        value = string.Format("(" + strcolumn + ")", item.itmCode, item.itmName, buy, sell, inventory, inventoryacc, incomeacc, expenseacc, "", itemdesc, usedesc, "", "", "", "", "", "", "", item.itmSupCode, "", item.itmBuyUnit, 1, 0, 0, item.itmBaseSellingPrice, item.itmSellUnit, item.itmSellUnitQuantity, taxcode, 0, item.PLA, item.PLB, item.PLC, item.PLD, item.PLE, item.PLF, inactivetxt, item.itmBuyStdCost, comInfo.PrimaryLocation, "");
-                        values.Add(value);
+                        List<string> columns = new List<string>();
+
+                        string sql = MyobHelper.InsertImportItemSql;
+
+                        for (int j = 0; j < MyobHelper.ImportItemColCount; j++)
+                        {
+                            columns.Add("'{" + j + "}'");
+                        }
+                        string strcolumn = string.Join(",", columns);
+
+                        List<string> values = new List<string>();
+                        foreach (var item in dmodel.ItemList)
+                        {
+                            string value = "";
+                            string buy = item.itmIsBought ? "Y" : "N";
+                            string sell = item.itmIsSold ? "Y" : "N";
+                            string inventory = item.itmIsNonStock ? "N" : "Y";
+                            string usedesc = item.itmUseDesc ? "Y" : "N";
+                            string taxcode = item.itmIsTaxedWhenSold == null ? "" : (bool)item.itmIsTaxedWhenSold ? comInfo.DefaultTaxCode : "";
+                            string inactivetxt = item.itmIsActive ? "N" : "Y";
+                            string inventoryacc = item.InventoryAccountNo == 0 ? "" : item.InventoryAccountNo.ToString();
+                            string incomeacc = item.IncomeAccountNo == 0 ? "" : item.IncomeAccountNo.ToString();
+                            string expenseacc = item.ExpenseAccountNo == 0 ? "" : item.ExpenseAccountNo.ToString();
+                            //string itemdesc = string.IsNullOrEmpty(item.itmDesc) ? "" : CommonHelper.ConvertUTF8ToASCII(StringHandlingForSQL(CommonHelper.EscapeString(item.itmDesc)));
+                            string itemdesc = string.IsNullOrEmpty(item.itmDesc) ? "" : StringHandlingForSQL(CommonHelper.EscapeString(item.itmDesc));
+                            /*
+                             * ItemNumber,ItemName,Buy,Sell,Inventory,AssetAccount,IncomeAccount,ExpenseAccount,ItemPicture,Description,UseDescriptionOnSale,CustomList1,CustomList2,CustomList3,CustomField1,CustomField2,CustomField3,PrimarySupplier,SupplierItemNumber,TaxWhenBought,BuyUnitMeasure,NumberItemsBuyUnit,ReorderQuantity,MinimumLevel,SellingPrice,SellUnitMeasure,NumberItemsSellUnit,TaxWhenSold,QuantityBreak1,PriceLevelAQtyBreak1,PriceLevelBQtyBreak1,PriceLevelCQtyBreak1,PriceLevelDQtyBreak1,PriceLevelEQtyBreak1,PriceLevelFQtyBreak1,InactiveItem,StandardCost,DefaultShipSellLocation,DefaultReceiveAutoBuildLocation
+                             */
+                            value = string.Format("(" + strcolumn + ")", item.itmCode, item.itmName, buy, sell, inventory, inventoryacc, incomeacc, expenseacc, "", itemdesc, usedesc, "", "", "", "", "", "", "", item.itmSupCode, "", item.itmBuyUnit, 1, 0, 0, item.itmBaseSellingPrice, item.itmSellUnit, item.itmSellUnitQuantity, taxcode, 0, item.PLA, item.PLB, item.PLC, item.PLD, item.PLE, item.PLF, inactivetxt, item.itmBuyStdCost, comInfo.PrimaryLocation, "");
+                            values.Add(value);
+                        }
+
+                        sql += string.Join(",", values) + ")";
+                        ModelHelper.WriteLog(context, string.Format("sql:{0}; checkoutids:{1}", sql, string.Join(",", dmodel.CheckOutIds_Item)), "ExportFrmShop");
+
+                        using (localhost.Dayends dayends = new localhost.Dayends())
+                        {
+                            dayends.Url = comInfo.WebServiceUrl;
+                            dayends.WriteMYOB(ConnectionString, sql);
+                        }
+
+                        updateDB(dmodel.CheckOutIds_Item.ToArray(), apId, CheckOutType.Items);
                     }
+                }
 
-                    sql += string.Join(",", values) + ")";
-                    ModelHelper.WriteLog(context, string.Format("sql:{0}; checkoutids:{1}", sql, string.Join(",", dmodel.CheckOutIds_Item)), "ExportFrmShop");
-
-                    using (localhost.Dayends dayends = new localhost.Dayends())
+                if (filename.StartsWith("Customers_"))
+                {
+                    ModelHelper.GetDataTransferData(context, apId, CheckOutType.Customers, ref dmodel);
+                    if (dmodel.CustomerList.Count > 0)
                     {
-                        dayends.Url = comInfo.WebServiceUrl;
-                        dayends.WriteMYOB(ConnectionString, sql);
+                        WriteMyobCustomerToABSS(AccountProfileId, ref onlineModeItem, dmodel);
+                        updateDB(onlineModeItem.checkoutIds.ToArray(), AccountProfileId, CheckOutType.Customers);
                     }
-
-                    updateDB(dmodel.CheckOutIds_Item.ToArray(), accountprofileId, CheckOutType.Items);
+                    //WriteVipToABSS();
                 }
-            }
 
-            if (filename.StartsWith("Customers_"))
-            {
-                ModelHelper.GetDataTransferData(context, accountprofileId, CheckOutType.Customers, ref dmodel);
-                if (dmodel.CustomerList.Count > 0)
+                if (filename == "Suppliers_")
                 {
-                    WriteMyobCustomerToABSS(AccountProfileId, ref onlineModeItem, dmodel);
-                    updateDB(onlineModeItem.checkoutIds.ToArray(), AccountProfileId, CheckOutType.Customers);
-                }
-                //WriteVipToABSS();
-            }
-
-            if (filename == "Suppliers_")
-            {
-                ModelHelper.GetDataTransferData(context, accountprofileId, CheckOutType.Suppliers, ref dmodel);
-                if (dmodel.Supplierlist.Count > 0)
-                {
-                    WriteSupplierToABSS(accountprofileId, ref onlineModeItem, dmodel);
-                    updateDB(onlineModeItem.checkoutIds.ToArray(), accountprofileId, CheckOutType.Suppliers);
-                }
-            }
-
-            if (filename.StartsWith("Devices_"))
-            {
-
-                ModelHelper.GetDataTransferData(context, accountprofileId, CheckOutType.Device, ref dmodel);
-                var jsondevicelist = JsonConvert.SerializeObject(dmodel.DeviceList);
-                var central4device = ConfigurationManager.AppSettings["CentralApiUrl4Device"];
-
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(CentralBaseUrl);
-                    var content = new FormUrlEncodedContent(new[]
+                    ModelHelper.GetDataTransferData(context, apId, CheckOutType.Suppliers, ref dmodel);
+                    if (dmodel.Supplierlist.Count > 0)
                     {
-                new KeyValuePair<string, string>("jsondevicelist", jsondevicelist),
-                new KeyValuePair<string, string>("accountprofileId", accountprofileId.ToString()),
-            });
-                    await client.PostAsync(central4device, content);
-                    ModelHelper.WriteLog(context, "Device Exported Done", "ExportFrmShop");
+                        WriteSupplierToABSS(apId, ref onlineModeItem, dmodel);
+                        updateDB(onlineModeItem.checkoutIds.ToArray(), apId, CheckOutType.Suppliers);
+                    }
                 }
             }
-
-            connection.Close();
-            connection.Dispose();
-            context.Dispose();
         }
 
         private void HandleExcludedOrders(FileType fileType, DataTransferModel dmodel)

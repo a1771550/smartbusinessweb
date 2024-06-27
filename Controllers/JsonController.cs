@@ -205,7 +205,7 @@ namespace SmartBusinessWeb.Controllers
 
                 var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", dbname);
 
-                data.sqllist = PurchaseEditModel.GetUploadPurchaseSqlList(apId, ref dmodel, strfrmdate, strtodate, comInfo, context, frmdate, todate);
+                data.sqllist = PurchaseEditModel.GetUploadPurchaseSqlList(apId, ref dmodel, comInfo, context, frmdate, todate);
                 data.checkoutIds = dmodel.PoCheckOutIds;
             }
             return System.Text.Json.JsonSerializer.Serialize(data);

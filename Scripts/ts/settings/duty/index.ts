@@ -5,7 +5,7 @@ $(function () {
 	setFullPage();
 	gTblId = "tblDuty";
 	gFrmId = "frmDuty";
-	triggerMenu(11, 6);
+	triggerMenu(0, 5);
 	initModals();
 	PageSize = $infoblk.data("pagesize");
 	ConfigSimpleSortingHeaders();

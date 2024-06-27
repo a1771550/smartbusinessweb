@@ -1,15 +1,5 @@
 ﻿$infoblk = $("#infoblk");
-
-
-$(document).on("change", "#kingdee", function () {
-	changeCheckoutPortal("kingdee", "export");
-});
-$(document).on("change", "#abss", function () {
-	changeCheckoutPortal("abss", "export");
-});
-
 $(document).on("click", ".export", function () {
-	let offline: boolean = $infoblk.data("isoffline") == "1";
 	let type = $(this).data("type") as string;
 	$("#exportType").val(type);
 	$.ajax({
@@ -28,9 +18,7 @@ $(document).on("click", ".export", function () {
 			}
 			else {
 				openWaitingModal();
-				let url = offline
-					? "/DataTransfer/DoExportFrmShop"
-					: "/DataTransfer/DoExportFrmShopAsync";
+				let url = "/DataTransfer/DoExportFrmShopAsync";
 				$.ajax({
 					type: "POST",
 					url: url,

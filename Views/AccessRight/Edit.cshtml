@@ -30,13 +30,24 @@
 			<input type="email" class="form-control" id="Email" name="Email" value="@(edit?User.Email:"")" />
 		</div>
 
+		<div id="roleblk" class="form-group required">
+			<label>@Resources.Resource.Position4POS</label>
+			<select id="drpRoles" class="form-control" multiple>
+				@foreach (var item in Model.RoleList)
+				{
+					var selected = edit && (User.RoleIds.Contains(int.Parse(item.Value))) ? "selected" : item.Text.ToLower() == "staff" ? "selected" : "";
+					<option value="@item.Value" @selected>@item.Text</option>
+				}
+			</select>
+		</div>
+
 		@if (approvalmode)
 		{
 			<div class="form-group">
 				<label for="drpPosAdmin">@Resources.Resource.FrmWhomReceiveNotificationEmail</label>
 				<select class="form-control" id="drpPosAdmin">
 					<option value="">-- @Resources.Resource.Select --</option>
-					@foreach (var a in Model.PosAdminList)
+					@foreach (var a in Model.BossList)
 					{
 						var selected = User.ManagerId == a.surUID ? "selected" : "";
 						<option value="@a.surUID" @selected>@a.UserName</option>
@@ -69,27 +80,16 @@
 				<input type="password" class="form-control" id="ConfirmPassword" name="ConfirmPassword" value="" />
 			</div>
 		</div>
-
 	</div>
 
-	<hr />
-	<h3>@Resources.Resource.AccessRights</h3>
-
-	<div class="form-inline">
-		@{ var idx = 0;}
-		@foreach (var item in Model.DicAR)
-		{
-			<div class="form-check-inline">
-				<label class="form-check-label">
-					<input id="@item.Key" type="checkbox" class="form-check-input chkcode" name="FuncCodes[@idx]" data-code="@item.Key" value="@item.Key" disabled>@item.Value
-				</label>
-			</div>
-			idx++;
-		}
+	var _checked = edit ? User.surIsActive ? "checked" : "" : "checked";
+	<div class="form-check form-check-inline">
+		<input class="form-check-input" type="checkbox" id="surIsActive" @_checked>
+		<label class="form-check-label" for="surIsActive">@Resources.Resource.Active</label>
 	</div>
 
 	<div class="form-group my-4">
-		<button id="btnSave" type="button" class="btn btn-success">@Resources.Resource.Save</button>		
+		<button id="btnSave" type="button" class="btn btn-success">@Resources.Resource.Save</button>
 		<input type="hidden" id="surUID" value="@User.surUID" />
 		<input type="hidden" id="checkpass" value="@(edit?User.checkpass:false)" />
 		<input type="hidden" id="currpass" name="Password" value="@(edit?User.Password:"")" />
@@ -102,4 +102,4 @@
 
 @Html.Partial("_WaitingModal")
 <div id="infoblk" data-addnewlyaddedtxt="@Resources.Resource.AddNewlyAddedEmployeeToABSS" data-debug="@ConfigurationManager.AppSettings["Debug"]"></div>
-<script src="~/Scripts/ts/js/settings/accessrights/edit.js?v=@CommonHelper.GetVersionRandomNo()"></script>
+<script src="~/Scripts/ts/js/admin/accessrights/edit.js?v=@CommonHelper.GetVersionRandomNo()"></script>

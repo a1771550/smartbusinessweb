@@ -1,0 +1,61 @@
+﻿@model ExchangeRateEditModel
+
+@{
+    ViewBag.Title = string.Format(Resources.Resource.SettingsFormat, Resources.Resource.ExchangeRate);
+    var rand = CommonHelper.GetVersionRandomNo();
+    var apichecked = Model.UseForexAPI ? "checked" : "";
+}
+
+<h3>@ViewBag.Title</h3>
+
+@if (!Model.UseForexAPI)
+{
+    <div id="addbtnblk" class="float-right my-3">
+        @Html.Partial("_AddButton")
+    </div>
+}
+
+
+<div class="form-check mt-4" data-useapi="@Model.UseForexAPI">
+    <input class="form-check-input" type="checkbox" value="1" id="chkAPI" @apichecked>
+    <label class="form-check-label" for="chkAPI">
+        @Resources.Resource.UseForexAPI
+    </label>
+    @Html.HiddenFor(model => model.UseForexAPI)
+    <input type="hidden" id="useapi" name="useapi" value="@(Model.UseForexAPI?1:0)" />
+</div>
+<span class="alert alert-info d-inline-block my-2">1 HKD=@Resources.Resource.Currency<span id="forexoperator">/</span>@Resources.Resource.ExchangeRate</span>
+
+<table id="tblExRate" class="table  table-hover table-bordered my-4">
+    <thead class="gray-header">
+        <tr>
+            <th>@Resources.Resource.Currency</th>
+            <th>@Resources.Resource.ExchangeRate</th>
+            @if (!Model.UseForexAPI)
+            {
+                <th></th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @{ int idx = 0;}
+        @foreach (var item in Model.ExRateList)
+        {
+            <tr data-idx="@idx">
+                <td class="currency"><input type="text" class="form-control currency" value="@item.Key" readonly /></td>
+                <td class="rate"><input type="number" class="form-control rate" value="@item.Value" /></td>
+                @if (!Model.UseForexAPI)
+                {
+                    <td><button class="btn btn-danger" data-code="@item.Key">@Resources.Resource.Remove</button></td>
+                }
+            </tr>
+            idx++;
+        }
+    </tbody>
+</table>
+
+@Html.AntiForgeryToken()
+<button type="button" id="btnSave" class="btn btn-success">@Resources.Resource.Save</button>
+
+<div id="infoblk" data-removetxt="@Resources.Resource.Remove"></div>
+<script src="~/Scripts/ts/js/settings/exchangerate.js?v=@rand"></script>

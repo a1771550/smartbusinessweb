@@ -317,7 +317,7 @@ namespace SmartBusinessWeb.Controllers
             using var connection = new SqlConnection(DefaultConnection);
             connection.Open();
             var JobList = connection.Query<MyobJobModel>(@"EXEC dbo.GetJobList @apId=@apId", new { apId }).ToList();
-            var autoStockReport = connection.QueryFirstOrDefault<OtherSettingsView>(@"CheckEnableAutoStockReport @apId=@apId", new { apId });
+            var autoStockReport = connection.QueryFirstOrDefault<BasicSettingsView>(@"CheckEnableAutoStockReport @apId=@apId", new { apId });
 
             List<string> sqllist = new List<string>();
 

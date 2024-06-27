@@ -97,7 +97,7 @@ namespace SmartBusinessWeb.Controllers
 
                     if (isadmin)
                     {
-                        model.RedirectUrl = ApprovalMode ? "/OtherSettings/Index" : ComInfo.comLandingPage;
+                        model.RedirectUrl = ApprovalMode ? "/BasicSettings/Index" : ComInfo.comLandingPage;
                         return Redirect(model.RedirectUrl);
                     }
                     if (issalesmanager)

@@ -1,4 +1,4 @@
-﻿$infoblk = $('#infoblk');
+﻿$infoblk = $("#infoblk");
 let _url = "";
 
 $(document).on("click", "#btnAdvSearch", function () {
@@ -10,68 +10,68 @@ $(document).on("click", "#btnAdvSearch", function () {
     openAdvancedSearchModal();
 });
 
-$(document).on('change', '#iPageSize', function () {
+$(document).on("change", "#iPageSize", function () {
     let pagesize: number = <number>$(this).val();
     if (pagesize <= 0) {
         $.fancyConfirm({
-            title: '',
-            message: $infoblk.data('pagesizenoltzerotxt'),
+            title: "",
+            message: $infoblk.data("pagesizenoltzerotxt"),
             shownobtn: false,
             okButton: oktxt,
             noButton: notxt,
             callback: function (value) {
                 if (value) {
-                    $('#iPageSize').trigger("focus");
+                    $("#iPageSize").trigger("focus");
                 }
             }
         });
     } else {
-        //let url: string = `${_url}?PageNo=${$('#pageno').val()}&SortOrder=${$('#sortorder').val()}&PageSize=${pagesize}&Keyword=${$('#keyword').val()}`;
+        //let url: string = `${_url}?PageNo=${$("#pageno").val()}&SortOrder=${$("#sortorder").val()}&PageSize=${pagesize}&Keyword=${$("#keyword").val()}`;
         window.location.href = `${_url}&PageSize=${pagesize}`;
     }
 });
 
-$(document).on('click', '#btnFilter', function () {
+$(document).on("click", "#btnFilter", function () {
     let url = _url;    
-    let datefrm: string = <string>$('#datetimesmin').val();
-    let dateto: string = <string>$('#datetimesmax').val();
-    let blastid: string = <string>$('#blastid').val();
-    let contact: string = <string>$('#contact').val();
-    let organ: string = <string>$('#organ').val();
-    let viewdate: string = <string>$('#viewdate').val();
-    console.log('viewdate:' + viewdate);
+    let datefrm: string = <string>$("#datetimesmin").val();
+    let dateto: string = <string>$("#datetimesmax").val();
+    let blastid: string = <string>$("#blastid").val();
+    let contact: string = <string>$("#contact").val();
+    let organ: string = <string>$("#organ").val();
+    let viewdate: string = <string>$("#viewdate").val();
+    console.log("viewdate:" + viewdate);
     //return false;
     if (datefrm !== null) {
-        url += '&strfrmdate=' + datefrm;
+        url += "&strfrmdate=" + datefrm;
     }
     if (dateto !== null) {
-        url += '&strtodate=' + dateto;
+        url += "&strtodate=" + dateto;
     }
     if (blastid !== null) {
-        url += '&blastid=' + blastid;
+        url += "&blastid=" + blastid;
     }
     if (contact !== null) {
-        url += '&contactname=' + contact;
+        url += "&contactname=" + contact;
     }
     if (organ !== null) {
-        url += '&organization=' + organ;
+        url += "&organization=" + organ;
     }
     if (viewdate !== null) {
-        url += '&viewdate=' + viewdate;
+        url += "&viewdate=" + viewdate;
     }
-    console.log('url:' + url);
+    console.log("url:" + url);
     //return false;
-    //url += '&strfrmdate=' + $('#datetimesmin').val() + '&strtodate=' + $('#datetimesmax').val() + '&blastid=' + $('#blastid').val() + '&contactname=' + $('#contact').val() + '&organization=' + $('#organ').val() + '&viewdate=' + $('#viewdate').val();
+    //url += "&strfrmdate=" + $("#datetimesmin").val() + "&strtodate=" + $("#datetimesmax").val() + "&blastid=" + $("#blastid").val() + "&contactname=" + $("#contact").val() + "&organization=" + $("#organ").val() + "&viewdate=" + $("#viewdate").val();
     openWaitingModal();
     window.location.href = url;
 });
-$(document).on('click', '#btnReset', function () {
-    $('input[type=search]').val('');
-    $('.select2multiple').empty();
-    $('#blastid').trigger("focus");
+$(document).on("click", "#btnReset", function () {
+    $("input[type=search]").val("");
+    $(".select2multiple").empty();
+    $("#blastid").trigger("focus");
     window.location.href = $infoblk.data("reloadurl");    
 });
-$('#btnReload').on('click', function () {
+$("#btnReload").on("click", function () {
     window.location.href = $infoblk.data("reloadurl");
 });
 
@@ -82,35 +82,32 @@ $(function () {
     gFrmId = "frmTrack";
     eTrackToken = $infoblk.data("token");
 
-    _url = $infoblk.data('reloadurl');
+    _url = $infoblk.data("reloadurl");
 
     initModals();   
 
     triggerMenu(3, 1);
 
-    $('.select2multiple').select2({
+    $(".select2multiple").select2({
         allowClear: true,
-        width: 'resolve',
+        width: "resolve",
     });
-    $('#blastid').select2({
+    $("#blastid").select2({
         placeholder: subjecttxt,
     });
-    $('#contact').select2({
+    $("#contact").select2({
         placeholder: contacttxt,
     });
-    $('#organ').select2({
+    $("#organ").select2({
         placeholder: organizationtxt,
     });
-    $('#viewdate').select2({
-        placeholder: $infoblk.data('viewdatetxt'),
+    $("#viewdate").select2({
+        placeholder: $infoblk.data("viewdatetxt"),
     });
 
     ConfigSimpleSortingHeaders();
 
-    //let totalcount: number = Number($infoblk.data("count"));
-    //if (totalcount > 0) $("#norecord").show();
-    //else $("#norecord").addClass("hide");
-    $("#iPageSize").trigger("focus");
+    initDatePickers(StartDayEnum.LastWeek, "YYYY-MM-DD");
 
-    //console.log("reloadurl:" + $infoblk.data("reloadurl"));
+    $("#iPageSize").trigger("focus");
 });

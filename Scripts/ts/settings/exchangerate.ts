@@ -13,7 +13,7 @@ $(document).on("click", "#btnSave", function () {
 	//return false;
 	$.ajax({
 		type: "POST",
-		url: "/OtherSettings/ExchangeRate",
+		url: "/BasicSettings/ExchangeRate",
 		data: {
 			__RequestVerificationToken: $(
 				"input[name=__RequestVerificationToken]"
@@ -32,7 +32,7 @@ $(document).on("click", "#btnSave", function () {
 					noButton: notxt,
 					callback: function (value) {
 						if (value) {
-							window.location.href = "/OtherSettings/ExchangeRate";
+							window.location.href = "/BasicSettings/ExchangeRate";
 						}
 					},
 				});
@@ -126,7 +126,7 @@ function initExList() {
 $(function () {
 	setFullPage();
 	initModals();
-	triggerMenu(11, 5);
+	triggerMenu(0, 4);
 	const useapi = Number($("#useapi").val());
 	toggleForEx(useapi);
 });

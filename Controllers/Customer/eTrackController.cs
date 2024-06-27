@@ -1,16 +1,13 @@
-﻿using PPWLib.Models;
-using SmartBusinessWeb.Infrastructure;
+﻿using SmartBusinessWeb.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using PagedList;
-using PPWDAL;
 using CommonLib.Helpers;
 using CommonLib.BaseModels;
 using System.Configuration;
-using Resources = CommonLib.App_GlobalResources.Resource;
 using Dapper;
 using PPWLib.Models.Customer;
 using PPWLib.Models.Customer.eBlast;
@@ -46,7 +43,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         /// <param name="page">a paging parameter</param>
         /// <returns>an email-tracking list view with the ViewTrackModel</returns>
         /// [HandleError]
-        [CustomAuthorize("eblast", "admin", "superadmin")]
+        [CustomAuthorize("customer", "admin", "superadmin")]
         //[HttpGet]
         public ActionResult TrackResult(string pass, string strfrmdate = "", string strtodate = "", string blastid = "", string contactname = "", string organization = "", string viewdate = "", int SortCol = 0, string SortOrder = "desc", string attrName = "", string attrOperator = "", string attrVal = "", int? PageNo = 1, int? PageSize = 0)
         {

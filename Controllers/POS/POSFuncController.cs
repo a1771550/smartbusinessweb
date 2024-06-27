@@ -597,13 +597,7 @@ namespace SmartBusinessWeb.Controllers
         [HandleError]
         [CustomAuthorize("retail", "admin", "superadmin")]
         public ActionResult AdvSales(int? reserveId)
-        {
-            Session["ImportFrmShopPageTitle"] = Resources.Resource.DayendsImportFrmShop;
-            Session["ImportFrmCentralPageTitle"] = Resources.Resource.DayendsImportFrmCentral;
-            Session["SBToABSSOK"] = Resources.Resource.SBToABSSOK;
-            Session["ABSSToSBOK"] = Resources.Resource.ABSSToSBOK;
-            ViewBag.DefaultCheckoutPortal = ModelHelper.HandleCheckoutPortal();
-
+        { 
             ViewBag.ParentPage = "sales";
             SalesEditModel model = new SalesEditModel(false, reserveId);
             return View(model);
@@ -612,12 +606,7 @@ namespace SmartBusinessWeb.Controllers
         [HandleError]
         [CustomAuthorize("retail", "admin", "superadmin")]
         public ActionResult Sales()
-        {
-            Session["ImportFrmShopPageTitle"] = Resources.Resource.DayendsImportFrmShop;
-            Session["ImportFrmCentralPageTitle"] = Resources.Resource.DayendsImportFrmCentral;
-            Session["SBToABSSOK"] = Resources.Resource.SBToABSSOK;
-            Session["ABSSToSBOK"] = Resources.Resource.ABSSToSBOK;
-
+        { 
             ViewBag.ParentPage = "sales";
             SalesEditModel model = new SalesEditModel(true);
             return View(model);

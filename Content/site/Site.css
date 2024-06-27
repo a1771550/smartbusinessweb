@@ -954,3 +954,6 @@ table.dataTable thead > tr > th.sorting_asc.text-right:before, table.dataTable t
     position:unset!important;
     display:inline-block!important;
 }
+.icon{
+    width:24px!important;
+}

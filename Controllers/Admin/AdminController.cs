@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
 using PPWLib.Models.User;
+using PPWLib.Models.Settings;
 
 namespace SmartBusinessWeb.Controllers.Admin
 {
@@ -44,9 +45,9 @@ namespace SmartBusinessWeb.Controllers.Admin
                     {
                         func.DisplayName = Resources.Resource.ReceiptHF;
                     }
-                    if (func.sfnCode.ToLower() == "othersettings")
+                    if (func.sfnCode.ToLower() == "basicsettings")
                     {
-                        func.DisplayName = Resources.Resource.OtherSettings;
+                        func.DisplayName = Resources.Resource.BasicSettings;
                     }
                 }
 

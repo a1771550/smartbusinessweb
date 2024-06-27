@@ -2,7 +2,7 @@
 
 @using PagedList.Mvc;
 @{
-	ViewBag.Title = Resources.Resource.Duty;
+	ViewBag.Title = string.Format(Resources.Resource.SettingsFormat, Resources.Resource.Duty);
 	int rand = CommonHelper.GetVersionRandomNo();	
 	bool isassignor = UserHelper.CheckIfAssignor(Model.User);
 }

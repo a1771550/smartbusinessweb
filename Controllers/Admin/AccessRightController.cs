@@ -12,7 +12,8 @@ namespace SmartBusinessWeb.Controllers.Admin
         [CustomAuthorize("accessrights", "admin", "superadmin")]
         public ActionResult Index(int PageNo = 1, int SortCol = 0, string SortOrder = "desc", string Keyword = null)
         {
-            ViewBag.ParentPage = "staff";
+            ViewBag.ParentPage = "admin";
+            ViewBag.PageName = "accessrights";
             UserEditModel model = new UserEditModel
             {
                 CurrentSortOrder = SortOrder,

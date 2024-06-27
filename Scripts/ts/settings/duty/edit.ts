@@ -34,7 +34,7 @@ function setDutyTime(time: string, forDutyOff: boolean): Date {
 $(function () {
 	setFullPage();
 	initModals();
-	triggerMenu(11, 6);
+	triggerMenu(0, 5);
 
 	_setDutyTime("On");
 	_setDutyTime("Off");

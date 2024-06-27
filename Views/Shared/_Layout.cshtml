@@ -70,15 +70,16 @@
 				</div>
 				<div class="dash__menu">
 					<ul>
-						<li class="btn_expand">
-							@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "sales") ? "active_btn" : "expand_btn";}
-							<a class="@lnkcls" data-toggle="collapse" href="#collapseRetail" role="button" aria-expanded="false" aria-controls="collapseRetail">
-								<span><img src="~/Content/mean/img/retail.svg" alt=""></span>
-								<p>@Resources.Resource.Retail</p>
-							</a>
-							<ul class="submenu collapse" id="collapseRetail">
-								@if (!isadmin)
-								{
+						@if (!isadmin)
+						{
+							<li class="btn_expand">
+								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "sales") ? "active_btn" : "expand_btn";}
+								<a class="@lnkcls" data-toggle="collapse" href="#collapseRetail" role="button" aria-expanded="false" aria-controls="collapseRetail">
+									<span><img src="~/Content/mean/img/retail.svg" alt=""></span>
+									<p>@Resources.Resource.Retail</p>
+								</a>
+								<ul class="submenu collapse" id="collapseRetail">
+
 									<li><a href="/POSFunc/Sales">@string.Format(Resources.Resource.OrderFormat, Resources.Resource.Retail)</a></li>
 
 									<li><a href="/POSFunc/AdvSales">@Html.Raw(string.Concat(string.Format(Resources.Resource.OrderFormat, Resources.Resource.Retail), "<span class='small'>(", Resources.Resource.Advanced, ")</span>"))</a></li>
@@ -87,136 +88,139 @@
 									<li><a href="/SalesOrder/Index">@string.Format(Resources.Resource.ListFormat, Resources.Resource.SalesOrder)</a></li>
 									<li><a href="/POSFunc/PendingInvoices">@Resources.Resource.PendingInvoices</a></li>
 									<li><a href="/POSFunc/ExcludedInvoices">@Resources.Resource.ExcludedInvoices</a></li>
-								}
-
-								@if (HttpContext.Current.Session["Reports"] == null)
-								{
-									sublnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "dayends") ? "active" : "";
-									<li><a href="/POSFunc/DayEnds" class="@sublnkcls">@Resources.Resource.DayEnds</a></li>
-
-								}
-								else
-								{
-									reportlnktxt = Resources.Resource.DayEnds;
-
-									reports = (List<ReportView>)System.Web.HttpContext.Current.Session["Reports"];
-									List<DayEndsItem> ExImViews = (List<DayEndsItem>)System.Web.HttpContext.Current.Session["ExImViews"];
-
-									foreach (ReportView report in reports)
+									@if (HttpContext.Current.Session["Reports"] == null)
 									{
-										sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == report.Code.ToLower()) ? "active" : "";
-										<li>
-											@Html.ActionLink(report.Name, "Show" + report.Code, "Report", new { }, new { @class = sublnkcls })
-										</li>
+										sublnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "dayends") ? "active" : "";
+										<li><a href="/POSFunc/DayEnds" class="@sublnkcls">@Resources.Resource.DayEnds</a></li>
 									}
-								}
-							</ul>
-						</li>
-						<li class="btn_expand">
-							@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "customer") ? "active_btn" : "expand_btn";}
-							<a class="@lnkcls" data-toggle="collapse" href="#collapseCustomer" role="button" aria-expanded="false" aria-controls="collapseCustomer">
-								<span><img src="~/Content/mean/img/custom.svg" alt=""></span>
-								<p>@Resources.Resource.Customer</p>
-							</a>
-							<ul class="submenu collapse" id="collapseCustomer">
+									else
+									{
+										reportlnktxt = Resources.Resource.DayEnds;
 
-								<li><a href="/Customer/Index">@string.Format(Resources.Resource.ManagementFormat, Resources.Resource.Customer)</a></li>
+										reports = (List
+										<ReportView>
+											)System.Web.HttpContext.Current.Session["Reports"];
+										List<DayEndsItem>
+											ExImViews = (List<DayEndsItem>
+												)System.Web.HttpContext.Current.Session["ExImViews"];
 
-								<li><a href="/PriceLevels/Index">@Resources.Resource.PointLevel</a></li>
+										foreach (ReportView report in reports)
+										{
+											sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == report.Code.ToLower()) ? "active" : "";
+											<li>
+												@Html.ActionLink(report.Name, "Show" + report.Code, "Report", new { }, new { @class = sublnkcls })
+											</li>
+										}
+									}
 
-								<li><a href="/Enquiry/Index">@Resources.Resource.Enquiry</a></li>
 
-								<li><a href="/HotList/Index">@Resources.Resource.HotList</a></li>
+								</ul>
 
-								<li><a href="/CustomerGroup/Index">@string.Format(Resources.Resource.GroupFormat, Resources.Resource.Customer)</a></li>
-								<li><a href="/EnquiryGroup/Index">@Resources.Resource.EnquiryGroup</a></li>
-							</ul>
-						</li>
-						<li class="btn_expand">
-							@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "item") ? "active_btn" : "expand_btn";}
-							<a class="@lnkcls" data-toggle="collapse" href="#collapseItem" role="button" aria-expanded="false" aria-controls="collapseItem">
-								<span><img src="~/Content/mean/img/Cube.svg" alt=""></span>
-								<p>@Resources.Resource.Item</p>
-							</a>
-							<ul class="submenu collapse" id="collapseItem">
+							</li>
 
-								<li><a href="/Item/Index">@string.Format(Resources.Resource.ListFormat, Resources.Resource.Item)</a></li>
+							<li class="btn_expand">
+								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "customer") ? "active_btn" : "expand_btn";}
+								<a class="@lnkcls" data-toggle="collapse" href="#collapseCustomer" role="button" aria-expanded="false" aria-controls="collapseCustomer">
+									<span><img src="~/Content/mean/img/custom.svg" alt=""></span>
+									<p>@Resources.Resource.Customer</p>
+								</a>
+								<ul class="submenu collapse" id="collapseCustomer">
 
-								<li><a href="/Item/Stock">@Resources.Resource.Stock</a></li>
+									<li><a href="/Customer/Index">@string.Format(Resources.Resource.ManagementFormat, Resources.Resource.Customer)</a></li>
 
-								<li><a href="/Transfer/Index">@string.Format(Resources.Resource.InventoryFormat, Resources.Resource.Transfer)</a></li>
+									<li><a href="/PriceLevels/Index">@Resources.Resource.PointLevel</a></li>
 
-								<li><a href="/Transfer/List">@Resources.Resource.StockTransferOrder</a></li>
+									<li><a href="/Enquiry/Index">@Resources.Resource.Enquiry</a></li>
 
-								<li><a href="/InventoryAdjustment/Index">@Resources.Resource.InventoryAdjustment</a></li>
+									<li><a href="/HotList/Index">@Resources.Resource.HotList</a></li>
 
-								<li><a href="/Reserve/Index">@Resources.Resource.ReserveItems</a></li>
-								<li><a href="/Reserve/List">@string.Format(Resources.Resource.OrderFormat, Resources.Resource.Reserve)</a></li>
-								<li><a href="/Category/Index">@Resources.Resource.Category</a></li>
-							</ul>
-						</li>
-						<li class="btn_expand">
-							@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "promotion") ? "active_btn" : "expand_btn";}
-							<a class="@lnkcls" data-toggle="collapse" href="#collapsePromotion" role="button" aria-expanded="false" aria-controls="collapsePromotion">
-								<span><img src="~/Content/mean/img/promo.svg" alt=""></span>
-								<p>@Resources.Resource.Promotion</p>
-							</a>
-							<ul class="submenu collapse" id="collapsePromotion">
-							
-								<li><a href="/eBlast/Index">@Resources.Resource.eBlast</a></li>
-							
-								<li><a href="/eTrack/TrackResult?pass=@ConfigurationManager.AppSettings["eTrackToken"]">@Resources.Resource.TrackResult</a></li>
-							
-								<li><a href="/ItemPeriodPromotion/Index">@Resources.Resource.ItemPeriodPromotion</a></li>
-							
-								<li><a href="/ItemQtyPromotion/Index">@Resources.Resource.ItemQtyPromotion</a></li>
-						
-								<li><a href="/Promotion/Index">@string.Format(Resources.Resource.ListFormat, Resources.Resource.Promotion)</a></li>
-							</ul>
-						</li>
-						<li class="btn_expand">
-							@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "wholesales") ? "active_btn" : "expand_btn";}
-							<a class="@lnkcls" data-toggle="collapse" href="#collapseWholeSales" role="button" aria-expanded="false" aria-controls="collapseWholeSales">
-								<span><img src="~/Content/mean/img/whole.svg" alt=""></span>
-								<p>@Resources.Resource.WholeSales</p>
-							</a>
-							<ul class="submenu collapse" id="collapseWholeSales">
-								@if (!isadmin)
-								{
+									<li><a href="/CustomerGroup/Index">@string.Format(Resources.Resource.GroupFormat, Resources.Resource.Customer)</a></li>
+									<li><a href="/EnquiryGroup/Index">@Resources.Resource.EnquiryGroup</a></li>
+								</ul>
+							</li>
+							<li class="btn_expand">
+								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "item") ? "active_btn" : "expand_btn";}
+								<a class="@lnkcls" data-toggle="collapse" href="#collapseItem" role="button" aria-expanded="false" aria-controls="collapseItem">
+									<span><img src="~/Content/mean/img/Cube.svg" alt=""></span>
+									<p>@Resources.Resource.Item</p>
+								</a>
+								<ul class="submenu collapse" id="collapseItem">
+
+									<li><a href="/Item/Index">@string.Format(Resources.Resource.ListFormat, Resources.Resource.Item)</a></li>
+
+									<li><a href="/Item/Stock">@Resources.Resource.Stock</a></li>
+
+									<li><a href="/Transfer/Index">@string.Format(Resources.Resource.InventoryFormat, Resources.Resource.Transfer)</a></li>
+
+									<li><a href="/Transfer/List">@Resources.Resource.StockTransferOrder</a></li>
+
+									<li><a href="/InventoryAdjustment/Index">@Resources.Resource.InventoryAdjustment</a></li>
+
+									<li><a href="/Reserve/Index">@Resources.Resource.ReserveItems</a></li>
+									<li><a href="/Reserve/List">@string.Format(Resources.Resource.OrderFormat, Resources.Resource.Reserve)</a></li>
+									<li><a href="/Category/Index">@Resources.Resource.Category</a></li>
+								</ul>
+							</li>
+							<li class="btn_expand">
+								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "promotion") ? "active_btn" : "expand_btn";}
+								<a class="@lnkcls" data-toggle="collapse" href="#collapsePromotion" role="button" aria-expanded="false" aria-controls="collapsePromotion">
+									<span><img src="~/Content/mean/img/promo.svg" alt=""></span>
+									<p>@Resources.Resource.Promotion</p>
+								</a>
+								<ul class="submenu collapse" id="collapsePromotion">
+
+									<li><a href="/eBlast/Index">@Resources.Resource.eBlast</a></li>
+
+									<li><a href="/eTrack/TrackResult?pass=@ConfigurationManager.AppSettings["eTrackToken"]">@Resources.Resource.TrackResult</a></li>
+
+									<li><a href="/ItemPeriodPromotion/Index">@Resources.Resource.ItemPeriodPromotion</a></li>
+
+									<li><a href="/ItemQtyPromotion/Index">@Resources.Resource.ItemQtyPromotion</a></li>
+
+									<li><a href="/Promotion/Index">@string.Format(Resources.Resource.ListFormat, Resources.Resource.Promotion)</a></li>
+								</ul>
+							</li>
+							<li class="btn_expand">
+								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "wholesales") ? "active_btn" : "expand_btn";}
+								<a class="@lnkcls" data-toggle="collapse" href="#collapseWholeSales" role="button" aria-expanded="false" aria-controls="collapseWholeSales">
+									<span><img src="~/Content/mean/img/whole.svg" alt=""></span>
+									<p>@Resources.Resource.WholeSales</p>
+								</a>
+								<ul class="submenu collapse" id="collapseWholeSales">
+
 									<li>
 										<a href="/Wholesales/Edit?Id=0&type=order">@string.Format(Resources.Resource.AddFormat, Resources.Resource.Order)</a>
 									</li>
-								
-									fordelivery = string.Concat("<span class='small'>(", fordelivery, ")</span>");
-									var wholesaleslist = Html.Raw(string.Concat(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.WholeSaleOrder), fordelivery));
+									@{
+										fordelivery = string.Concat("<span class='small'>(", fordelivery, ")</span>");
+										var wholesaleslist = Html.Raw(string.Concat(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.WholeSaleOrder), fordelivery));
+									}
 
 									<li><a href="/WholeSales/Index">@wholesaleslist</a></li>
-								}
 
+									@if (approvalmode && ismanager)
+									{
 
-								@if (approvalmode && ismanager)
-								{									
+										forapproval = string.Concat("<span class='small'>(", forapproval, ")</span>");
+										var wholesalesorderlist = Html.Raw(string.Concat(string.Format(Resources.Resource.ListFormat, Resources.Resource.WholeSaleOrder), forapproval));
+										<li><a href="/WholeSales/SalesOrderList">@wholesalesorderlist</a></li>
+									}
 
-									forapproval = string.Concat("<span class='small'>(", forapproval, ")</span>");
-									var wholesalesorderlist = Html.Raw(string.Concat(string.Format(Resources.Resource.ListFormat, Resources.Resource.WholeSaleOrder), forapproval));
-									<li><a href="/WholeSales/SalesOrderList">@wholesalesorderlist</a></li>
-								}
+								</ul>
+							</li>
+							<li class="btn_expand">
+								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "purchase") ? "active_btn" : "expand_btn";}
+								<a class="@lnkcls" data-toggle="collapse" href="#collapsePurchase" role="button" aria-expanded="false" aria-controls="collapsePurchase">
+									<span><img src="~/Content/mean/img/purchase.svg" alt=""></span>
+									<p>@Resources.Resource.Purchase</p>
+								</a>
+								<ul class="submenu collapse" id="collapsePurchase">
 
-							</ul>
-						</li>
-						<li class="btn_expand">
-							@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "purchase") ? "active_btn" : "expand_btn";}
-							<a class="@lnkcls" data-toggle="collapse" href="#collapsePurchase" role="button" aria-expanded="false" aria-controls="collapsePurchase">
-								<span><img src="~/Content/mean/img/purchase.svg" alt=""></span>
-								<p>@Resources.Resource.Purchase</p>
-							</a>
-							<ul class="submenu collapse" id="collapsePurchase">
-								@if (!isadmin)
-								{
 									<li><a href="/Purchase/Edit?Id=0&type=order">@string.Format(Resources.Resource.NewFormat, Resources.Resource.PurchaseOrder)</a></li>
-
-									forreceival = string.Concat("<span class='small'>(", forreceival, ")</span>");
-									var purchaselist = Html.Raw(string.Concat(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.PurchaseOrder), forreceival));
+									@{
+										forreceival = string.Concat("<span class='small'>(", forreceival, ")</span>");
+										var purchaselist = Html.Raw(string.Concat(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.PurchaseOrder), forreceival));
+									}
 									<li><a href="/Purchase/Index">@purchaselist</a></li>
 									<li>
 										<a href="/Supplier/Index">@string.Format(Resources.Resource.ManagementFormat, Resources.Resource.Supplier)</a>
@@ -224,121 +228,134 @@
 									<li>
 										<a href="/Purchase/ExcludedOrders">@Resources.Resource.ExcludedOrders</a>
 									</li>
-								}
 
-								@if (approvalmode && ismanager)
-								{
-									var purchaseorderlist = Html.Raw(string.Concat(string.Format(Resources.Resource.ListFormat, Resources.Resource.PurchaseOrder), forapproval));
-									<li><a href="/Purchase/PurchaseOrderList">@purchaseorderlist</a></li>
-								}
-							</ul>
-						</li>
 
-						@if (showDataTransfer)
+									@if (approvalmode && ismanager)
+									{
+										var purchaseorderlist = Html.Raw(string.Concat(string.Format(Resources.Resource.ListFormat, Resources.Resource.PurchaseOrder), forapproval));
+										<li><a href="/Purchase/PurchaseOrderList">@purchaseorderlist</a></li>
+									}
+								</ul>
+							</li>
+
+							if (showDataTransfer)
+							{
+								<li class="btn_expand">
+									@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "dayendsexportfrmshop") ? "active_btn" : "expand_btn"; }
+									<a class="@lnkcls" data-toggle="collapse" href="#collapseDataTransfer" role="button" aria-expanded="false" aria-controls="collapseDataTransfer">
+										<span><img src="~/Content/mean/img/data exchange.svg" alt=""></span>
+										<p>@Resources.Resource.DataIntegration</p>
+									</a>
+									<ul class="submenu collapse" id="collapseDataTransfer">
+										<li><a href="/DataTransfer/DayendsImportFrmCentral">@Resources.Resource.DayendsImportFrmCentral</a></li>
+										<li><a href="/DataTransfer/DayendsExportFrmShop">@Resources.Resource.DayendsExportFrmShop</a></li>
+									</ul>
+								</li>
+							}
+
+							<li class="btn_expand">
+								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "generalreports") ? "active_btn" : "expand_btn";}
+								<a class="@lnkcls @Resources.Resource.Report" data-toggle="collapse" href="#collapseGeneralReports" role="button" aria-expanded="false" aria-controls="collapseGeneralReports">
+									<span><img src="~/Content/mean/img/data.svg" alt=""></span>
+									<p>@Resources.Resource.Report</p>
+								</a>
+								<ul class="submenu collapse" id="collapseGeneralReports">
+									@{
+										reports = (List<ReportView>)System.Web.HttpContext.Current.Session["GeneralReports"];
+									}
+
+									@if (reports != null && reports.Count > 0)
+									{
+										foreach (ReportView report in reports)
+										{
+											<li>@Html.ActionLink(report.Name, "Show" + report.Code, "Report")</li>
+										}
+									}
+								</ul>
+							</li>
+							<li class="btn_expand">
+								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "abssreports") ? "active_btn" : "expand_btn";}
+								<a class="@lnkcls @Resources.Resource.Report" data-toggle="collapse" href="#collapseAbssReports" role="button" aria-expanded="false" aria-controls="collapseAbssReports">
+									<span><img src="~/Content/mean/img/report.svg" alt=""></span>
+									<p>@string.Format(Resources.Resource.ReportFormat, "ABSS")</p>
+								</a>
+								<ul class="submenu collapse" id="collapseAbssReports">
+
+									@if (ismanager)
+									{
+										<li>@Html.ActionLink(Resources.Resource.Sales, "Sales", "ABSSReport")</li>
+									}
+
+									<li>@Html.ActionLink(Resources.Resource.Quotation, "Quotation", "ABSSReport")</li>
+
+									<li>@Html.ActionLink(Resources.Resource.AccountReceivable, "AccountReceivable", "ABSSReport")</li>
+
+
+									<li>@Html.ActionLink(Resources.Resource.SalesPersonPerformance, "SPP", "ABSSReport")</li>
+
+									<li>@Html.ActionLink(Resources.Resource.CustomerInvoices, "CI", "ABSSReport")</li>
+								</ul>
+							</li>
+							<li class="btn_expand">
+								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "records") ? "active_btn" : "expand_btn";}
+								<a class="@lnkcls" data-toggle="collapse" href="#collapseRecords" role="link" aria-expanded="false" aria-controls="collapseRecords">
+									<span><img src="~/Content/mean/img/rec.svg" alt=""></span>
+									<p>@Resources.Resource.Record</p>
+								</a>
+								<ul class="submenu collapse" id="collapseRecords">
+									<li>@Html.ActionLink(Resources.Resource.AttendanceRecords, "Index", "Attendance")</li>
+									<li>@Html.ActionLink(Resources.Resource.JobRecords, "Index", "Job")</li>
+									<li>@Html.ActionLink(Resources.Resource.TrainingRecords, "Index", "Training")</li>
+								</ul>
+							</li>
+							<li class="btn_expand">
+								@{ lnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "journal") ? "active_btn" : "expand_btn";}
+								<a href="/Journal/Index" class="@lnkcls" role="button">
+									<span><img src="~/Content/mean/img/rec.svg" alt=""></span>
+									<p>@Resources.Resource.GeneralJournal</p>
+								</a>
+							</li>
+						}
+
+						@if (isadmin)
 						{
 							<li class="btn_expand">
-								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "dayendsexportfrmshop") ? "active_btn" : "expand_btn"; }
-								<a class="@lnkcls" data-toggle="collapse" href="#collapseDataTransfer" role="button" aria-expanded="false" aria-controls="collapseDataTransfer">
-									<span><img src="~/Content/mean/img/data exchange.svg" alt=""></span>
-									<p>@Resources.Resource.DataIntegration</p>
+								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "setup") ? "active_btn" : "expand_btn";}
+								<a class="@lnkcls" data-toggle="collapse" href="#collapseSetup" role="button" aria-expanded="false" aria-controls="collapseSetup">
+									<span><img src="~/Content/mean/img/setup.svg" alt=""></span>
+									<p>@Resources.Resource.Setup</p>
 								</a>
-								<ul class="submenu collapse" id="collapseDataTransfer">
-									@{ 
-										var pagetitle = HttpContext.Current.Session["ImportFrmCentralPageTitle"] ?? string.Format(Resources.Resource.DayendsImportFrmCentral, defaultcheckoutportal.ToUpper()); }
-									<li><a href="/DataTransfer/DayendsImportFrmCentral">@pagetitle</a></li>
-									@{sublnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "dayendsexportfrmshop") ? "active" : ""; pagetitle = HttpContext.Current.Session["ExportFrmShopPageTitle"] ?? string.Format(Resources.Resource.DayendsImportFrmShop, defaultcheckoutportal.ToUpper()); }
-									<li><a href="/DataTransfer/DayendsExportFrmShop">@pagetitle</a></li>
+								<ul class="submenu collapse" id="collapseSetup">
+									@{
+										Dictionary<string, Menu> dicSetupMenus = (Dictionary<string, Menu>)HttpContext.Current.Session["Menus"];
+									}
+									@if (dicSetupMenus != null)
+									{
+										foreach (string key in dicSetupMenus.Keys)
+										{
+											Menu menu = dicSetupMenus[key];
+
+											<li>@Html.ActionLink(menu.DisplayText, menu.ActionName, menu.ControllerName)</li>
+										}
+									}
+									<li><a href="/BasicSettings/ExchangeRate">@string.Format(Resources.Resource.SetupFormat, Resources.Resource.ExchangeRate)</a></li>
+									<li><a href="/Duty/Index">@string.Format(Resources.Resource.SetupFormat, Resources.Resource.Duty)</a></li>
 								</ul>
 							</li>
 						}
 
+
+						@if (ismanager)
+						{
 						<li class="btn_expand">
-							@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "generalreports") ? "active_btn" : "expand_btn";}
-							<a class="@lnkcls @Resources.Resource.Report" data-toggle="collapse" href="#collapseGeneralReports" role="button" aria-expanded="false" aria-controls="collapseGeneralReports">
-								<span><img src="~/Content/mean/img/data.svg" alt=""></span>
-								<p>@Resources.Resource.Report</p>
-							</a>
-							<ul class="submenu collapse" id="collapseGeneralReports">
-								@{
-									reports = (List<ReportView>)System.Web.HttpContext.Current.Session["GeneralReports"];
-								}
-
-								@if (reports != null && reports.Count > 0)
-								{
-									foreach (ReportView report in reports)
-									{										
-										<li>@Html.ActionLink(report.Name, "Show" + report.Code, "Report")</li>
-									}
-								}
-							</ul>
-						</li>
-						<li class="btn_expand">
-							@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "abssreports") ? "active_btn" : "expand_btn";}
-							<a class="@lnkcls @Resources.Resource.Report" data-toggle="collapse" href="#collapseAbssReports" role="button" aria-expanded="false" aria-controls="collapseAbssReports">
-								<span><img src="~/Content/mean/img/report.svg" alt=""></span>
-								<p>@string.Format(Resources.Resource.ReportFormat, "ABSS")</p>
-							</a>
-							<ul class="submenu collapse" id="collapseAbssReports">
-
-								@if (ismanager)
-								{
-									<li>@Html.ActionLink(Resources.Resource.Sales, "Sales", "ABSSReport")</li>
-								}
-
-								<li>@Html.ActionLink(Resources.Resource.Quotation, "Quotation", "ABSSReport")</li>
-
-								<li>@Html.ActionLink(Resources.Resource.AccountReceivable, "AccountReceivable", "ABSSReport")</li>
-
-
-								<li>@Html.ActionLink(Resources.Resource.SalesPersonPerformance, "SPP", "ABSSReport")</li>
-
-								<li>@Html.ActionLink(Resources.Resource.CustomerInvoices, "CI", "ABSSReport")</li>
-							</ul>
-						</li>
-						<li class="btn_expand">
-							@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "records") ? "active_btn" : "expand_btn";}
-							<a class="@lnkcls" data-toggle="collapse" href="#collapseRecords" role="button" aria-expanded="false" aria-controls="collapseRecords">
-								<span><img src="~/Content/mean/img/rec.svg" alt=""></span>
-								<p>@Resources.Resource.Record</p>
-							</a>
-							<ul class="submenu collapse" id="collapseRecords">							
-								<li>@Html.ActionLink(Resources.Resource.AttendanceRecords, "Index", "Attendance")</li>							
-								<li>@Html.ActionLink(Resources.Resource.JobRecords, "Index", "Job")</li>							
-								<li>@Html.ActionLink(Resources.Resource.TrainingRecords, "Index", "Training")</li>
-							</ul>
-						</li>
-						<li class="btn_expand">
-							@{ lnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "journal") ? "active_btn" : "expand_btn";}
-							<a href="/Journal/Index" class="@lnkcls" role="button">
-								<span><img src="~/Content/mean/img/rec.svg" alt=""></span>
-								<p>@Resources.Resource.GeneralJournal</p>
+							@{ lnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "accessrights") ? "active_btn" : "expand_btn";}
+							<a href="/AccessRight/Index" class="@lnkcls" role="link" aria-expanded="false" aria-controls="collapseRecords">
+								<span><img src="~/Content/mean/img/users.svg" class="icon" alt=""></span>
+								<p>@string.Format(Resources.Resource.ManagementFormat, Resources.Resource.User)</p>
 							</a>
 						</li>
-						<li class="btn_expand">
-							@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "setup") ? "active_btn" : "expand_btn";}
-							<a class="@lnkcls" data-toggle="collapse" href="#collapseSetup" role="button" aria-expanded="false" aria-controls="collapseSetup">
-								<span><img src="~/Content/mean/img/setup.svg" alt=""></span>
-								<p>@Resources.Resource.Setup</p>
-							</a>
-							<ul class="submenu collapse" id="collapseSetup">
-								@{
-									Dictionary<string, Menu> dicSetupMenus = (Dictionary<string, Menu>)HttpContext.Current.Session["Menus"];
-								}
-								@if (dicSetupMenus != null)
-								{
-									foreach (string key in dicSetupMenus.Keys)
-									{
-										Menu menu = dicSetupMenus[key];
 
-										<li>@Html.ActionLink(menu.DisplayText, menu.ActionName, menu.ControllerName)</li>
-									}
-								}
-
-								<li>@Html.ActionLink(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.User), "Index", "AccessRight")</li>
-								<li><a href="/Othersettings/ExchangeRate">@string.Format(Resources.Resource.SetupFormat, Resources.Resource.ExchangeRate)</a></li>
-								<li><a href="/Othersettings/Duty">@Resources.Resource.Duty</a></li>
-							</ul>
-						</li>
+						}
 					</ul>
 				</div>
 			</div>
