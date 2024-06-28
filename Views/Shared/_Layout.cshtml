@@ -23,7 +23,7 @@
 	string forreceival = Resources.Resource.ForReceival;
 	string fordelivery = Resources.Resource.ForDelivery;
 	SessUser user = HttpContext.Current.Session["User"] == null ? null : HttpContext.Current.Session["User"] as SessUser;
-	IsUserRole IsUserRole = UserEditModel.GetIsUserRole(user);
+	IsUserRole IsUserRole = UserHelper.GetIsUserRole(user);
 	bool isadmin = IsUserRole.Admin;
 	bool ismanager = IsUserRole.SalesManager;
 	bool showDataTransfer = CommonHelper.GetUrlHost() != "crm.united.com.hk";

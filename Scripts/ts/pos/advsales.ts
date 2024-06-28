@@ -32,43 +32,32 @@ $(document).on("click", ".btnNewSales", function () {
 
 let sessionstartdata: Array<any> = [];
 
-function initInfoBlk4AdvSales() {
-    enablelogo = $infoblk.data("enablelogo") === "True";
+function initInfoBlk4AdvSales() {   
     enableSN = true;
     priceeditable = $infoblk.data("priceeditable") === "True";
     disceditable = $infoblk.data("disceditable") === "True";
     device = $infoblk.data("devicecode");
     DicPayServiceCharge = $infoblk.data("dicpayservicecharge");
-    //console.log("DicPayServiceCharge:", DicPayServiceCharge);
 }
 
 function getSessionStartDataOk(data) {
     closeWaitingModal();
-    //console.log('data:', data);
 
     cpplList = data.CustomerPointPriceLevels.slice(0);
-    companyinfo = data.companyinfo;
     receipt = data.receipt;
     DicPayTypes = data.dicpaytypes;
-    /* itemlist = data.items;*/
     selectedCus = defaultcustomer = data.defaultcustomer;
-    //console.log('selectedCus#getsessionok:', selectedCus);
     PageSize = data.pagelength;
-    //console.log('data.inclusivetax:' + data.inclusivetax);
     inclusivetax = data.inclusivetax;
     inclusivetaxrate = data.inclusivetaxrate;
-    //console.log('inclusivetax#sessionstart:' + inclusivetax + ';inclusivetaxrate:' + inclusivetaxrate);
     salesmen = data.salesmanlist;
     enableTax = data.enableTax;
     DicCurrencyExRate = Object.assign({}, data.DicCurrencyExRate);
-    //console.log(DicCurrencyExRate);
     UseForexAPI = data.UseForexAPI;
-
     MyobJobList = data.JobList.slice(0);
 
     try {
         sessionstartdata.push(cpplList);
-        sessionstartdata.push(companyinfo);
         sessionstartdata.push(receipt);
         sessionstartdata.push(DicPayTypes);
         sessionstartdata.push(defaultcustomer);
@@ -86,23 +75,16 @@ function getSessionStartDataOk(data) {
     }
 
     if (defaultcustomer !== null) {
-        //console.log('default customer:', defaultcustomer);
-        //console.log('cuscode:' + defaultcustomer.cusCode);
         selectedCusCodeName = defaultcustomer.cusCode;
         selectCus();
     } else {
         $("#txtCustomerName").trigger("focus");
     }
-
     Sales = initSales();
-    //console.log("Sales@getsessiondataok:", Sales);
-
 }
 $(document).on("dblclick", ".nopo", function () {
     $("#txtCustomerPO").val("N/A");
 });
-
-
 $(function () {
     forsales = getParameterByName("reserveId") == null;
     forReservePaidOut = !forsales;
@@ -167,7 +149,6 @@ $(function () {
                 );
                 //console.log('sessionstartdata:', sessionstartdata);
                 cpplList = sessionstartdata[0];
-                companyinfo = sessionstartdata[1];
                 receipt = sessionstartdata[2];
                 DicPayTypes = sessionstartdata[3];
                 PageSize = sessionstartdata[5];
@@ -177,16 +158,11 @@ $(function () {
                 salesmen = sessionstartdata[9];
                 defaultcustomer = sessionstartdata[4];
                 DicCurrencyExRate = sessionstartdata[10];
-                //console.log("DicCurrencyExRate:", DicCurrencyExRate);
-                //useForexAPI = sessionstartdata[11];
                 MyobJobList = sessionstartdata[12];
-                //console.log('defaultcustomer:', defaultcustomer);
                 selectedCus = defaultcustomer;
                 Sales = initSales();
-                //console.log("Sales@getsessiondataok:", Sales);
                 Sales.rtsCusCode = selectedCus.cusCode;
                 Sales.rtsRefCode = "";
-
                 selectedCusCodeName = defaultcustomer.cusCode;
                 selectCus();
             }
@@ -194,13 +170,6 @@ $(function () {
     }
 
     if (forReservePaidOut) {
-        Sales = $infoblk.data("sales");
-        SalesLnList = $infoblk.data("saleslnlist");
-        ItemList = $infoblk.data("itemlist");
-        //console.log("Sales:", Sales);
-        //console.log("SalesLnList#load:", SalesLnList);
-        DicCurrencyExRate = $infoblk.data("diccurrencyexrate");
-
         initVTDatePicker();
     }
 

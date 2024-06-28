@@ -2316,6 +2316,8 @@ btest3
 
         public string HashPass(string pass)
         {
+            //Pos123456 = sBcipqs4nH2+Kh658Y4ZU9kCUeCq8Q+H
+            //123456Pos = 0SRHdwMXVepTZgQb4WwlWP4q9FbpWkUx
             return HashHelper.ComputeHash(pass);
         }
 

@@ -15,7 +15,6 @@ using ShopDataModel = PPWCommonLib.Models.ShopDataModel;
 using CommonLib.Helpers;
 using FileHelper = PPWCommonLib.CommonHelpers.FileHelper;
 using ActionResult = System.Web.Mvc.ActionResult;
-using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Data.Entity.Validation;
 using System.Text;
@@ -43,6 +42,7 @@ using PPWLib.Models.Customer;
 using PPWLib.Models.Customer.eBlast;
 using PPWLib.Models.Customer.Enquiry;
 using PPWLib.Models.Receipt;
+using Microsoft.Data.SqlClient;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -1742,7 +1742,7 @@ namespace SmartBusinessWeb.Controllers
         public JsonResult GetStaffDetail(int staffId)
         {
             UserEditModel model = new();
-            model.GetUserById(staffId);           
+            model.GetUserById(staffId);
             return Json(model.User, JsonRequestBehavior.AllowGet);
         }
 
@@ -2606,7 +2606,7 @@ namespace SmartBusinessWeb.Controllers
                         if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
                         using (SqlConnection)
                         {
-                            customers = SqlConnection.Query<CustomerModel>(@"EXEC dbo.GetCustomersByCusCodes @apId=@apId,@cusCodes=@cusCodes", new { apId, cusCodes }).ToList();                            
+                            customers = SqlConnection.Query<CustomerModel>(@"EXEC dbo.GetCustomersByCusCodes @apId=@apId,@cusCodes=@cusCodes", new { apId, cusCodes }).ToList();
                         }
                     }
 
@@ -2717,7 +2717,7 @@ namespace SmartBusinessWeb.Controllers
                     using (SqlConnection)
                     {
                         customers = SqlConnection.Query<CustomerModel>(@"EXEC dbo.GetCustomersByCusCodes @apId=@apId,@cusCodes=@cusCodes", new { apId, cusCodes }).ToList();
-                    }                    
+                    }
 
                     var _snlist = (from se in context.SerialNoes
                                    where se.snoIsActive == true && salescodes.Contains(se.snoRtlSalesCode) && se.snoRtlSalesLoc.ToLower() == location && se.snoRtlSalesDvc.ToLower() == device
@@ -3029,39 +3029,40 @@ namespace SmartBusinessWeb.Controllers
             if (keyword == "") keyword = null;
             if (location == "") location = null;
 
-            using var connection = new SqlConnection(DefaultConnection);
-            connection.Open();
+            if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
+            using (SqlConnection)
+            {
+                var stockinfo = SqlConnection.Query<StockModel>("EXEC dbo.GetStockInfo7 @apId=@apId", new { apId }).ToList(); context.GetStockInfo7(apId).ToList();
 
-            var stockinfo = context.GetStockInfo7(apId).ToList();
+                List<SalesItem> itemlist = ModelHelper.GetItemList(SqlConnection, stockinfo, startIndex, model.PageSize, out model.RecordCount, keyword, location, type);
 
-            List<SalesItem> itemlist = ModelHelper.GetItemList(context, stockinfo, startIndex, model.PageSize, out model.RecordCount, keyword, location, type);
+                ModelHelper.GetItemPriceLevelList(ref itemlist);
+                model.Items = itemlist;
 
-            ModelHelper.GetItemPriceLevelList(ref itemlist);
-            model.Items = itemlist;
+                model.DicItemOptions = ModelHelper.GetDicItemOptions(apId, context);
 
-            model.DicItemOptions = ModelHelper.GetDicItemOptions(apId, context);
-
-            return Json(model, JsonRequestBehavior.AllowGet);
+                return Json(model, JsonRequestBehavior.AllowGet);
+            }
         }
 
-        [HttpPost]
+        [HttpGet]
         public ActionResult GetCustomers4Retail(int pageIndex = 1, string keyword = null, string mode = "")
         {
             CustomerViewModel model = new CustomerViewModel();
             var pagesize = model.PageSize = PageSize;
-            model.PageIndex = pageIndex;           
+            model.PageIndex = pageIndex;
             if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
             using (SqlConnection)
             {
                 model.Customers = (string.IsNullOrEmpty(mode) || mode == "search") ? ModelHelper.GetCustomers4Sales(SqlConnection, pageIndex, pagesize, keyword, true, true) : ModelHelper.GetCustomerList(SqlConnection, false, pageIndex, pagesize, keyword, true);
-                model.RecordCount = ModelHelper.GetCustomersCount(SqlConnection, keyword);
+                model.RecordCount = ModelHelper.GetCustomersCount(SqlConnection, true, keyword);
             }
-            return Json(model);
+            return Json(model, JsonRequestBehavior.AllowGet);
         }
 
 
         [HttpGet]
-        public ActionResult SearchCustomersAjax(int pageIndex = 1, string keyword = "")
+        public ActionResult SearchCustomersAjax(int pageIndex = 1, bool forRetail = true, string keyword = "")
         {
             CustomerViewModel model = new CustomerViewModel();
             if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
@@ -3069,8 +3070,8 @@ namespace SmartBusinessWeb.Controllers
             {
                 int pagesize = model.PageSize = PageSize;
                 model.PageIndex = pageIndex;
-                var customerlist = ModelHelper.GetCustomerList(SqlConnection, false, pageIndex, pagesize, keyword);                
-                model.RecordCount = SqlConnection.QueryFirstOrDefault<int>("EXEC dbo.GetCustomerCount @apId=@apId,@keyword=@keyword", new { apId, keyword });
+                var customerlist = ModelHelper.GetCustomerList(SqlConnection, false, pageIndex, pagesize, keyword);
+                model.RecordCount = SqlConnection.QueryFirstOrDefault<int>("EXEC dbo.GetCustomerCount @apId=@apId,@forRetail=@forRetail,@keyword=@keyword", new { apId, forRetail, keyword });
 
                 model.Customers = customerlist;
             }

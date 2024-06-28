@@ -34,7 +34,7 @@ namespace SmartBusinessWeb.Controllers
         public ActionResult Login(LoginUserModel model)
         {
             SysUser user = null;
-            string msg = string.Empty;           
+            string msg = string.Empty;
             string hash = string.Empty;
             GetUserByEmail3_Result _user = null;
 
@@ -43,29 +43,29 @@ namespace SmartBusinessWeb.Controllers
                 hash = HashHelper.ComputeHash(model.Password);
                 int lang = CultureHelper.CurrentCulture;
                 _user = context.GetUserByEmail3(model.Email).FirstOrDefault();
-                if (_user == null) return RedirectToAction("Login", new { err = "2" });               
+                if (_user == null) return RedirectToAction("Login", new { err = "2" });
                 Session["DBName"] = _user.dbName;
             }
 
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
-				ComInfo comInfo = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == _user.AccountProfileId);
-				
-				var _roleuser = context.LoginPCUser8(model.Email, hash, model.SelectedDevice, model.SelectedShop).ToList();//because of multi-roles!
+                ComInfo comInfo = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == _user.AccountProfileId);
+
+                var _roleuser = context.LoginPCUser8(model.Email, hash, model.SelectedDevice, model.SelectedShop).ToList();//because of multi-roles!
                 var roles = _roleuser.Select(x => x.rlCode).Distinct().ToList();
                 if (_roleuser != null && _roleuser.Count >= 1)
                 {
-					Session["AccountProfileId"] = _user.AccountProfileId;
-					Session["ComInfo"] = comInfo;
+                    Session["AccountProfileId"] = _user.AccountProfileId;
+                    Session["ComInfo"] = comInfo;
 
-					model.UserCode = _user.UserCode;
-					model.CompanyCode = _user.CompanyCode;
-					model.SelectedShop = _user.shopCode;
-					model.SelectedDevice = _user.dvcCode;
-					model.AccountProfileId = _user.AccountProfileId;
-					model.IsCentral = _user.IsCentral;
+                    model.UserCode = _user.UserCode;
+                    model.CompanyCode = _user.CompanyCode;
+                    model.SelectedShop = _user.shopCode;
+                    model.SelectedDevice = _user.dvcCode;
+                    model.AccountProfileId = _user.AccountProfileId;
+                    model.IsCentral = _user.IsCentral;
 
-					var __user = _roleuser.FirstOrDefault();
+                    var __user = _roleuser.FirstOrDefault();
                     user = new SysUser
                     {
                         surUID = __user.surUID,
@@ -86,14 +86,12 @@ namespace SmartBusinessWeb.Controllers
                         surCreateTime = __user.surCreateTime,
                         surModifyTime = __user.surModifyTime,
                     };
-                    
 
-                    var Roles = UserHelper.GetUserRoles(user);
                     bool isadmin = UserHelper.CheckIfAdmin(user);
                     bool issalesmanager = UserHelper.CheckIfSalesManager(user);
-                    DeviceModel device = isadmin?null: Helpers.ModelHelper.GetDevice(user.surUID);//don't move to below
+                    DeviceModel device = isadmin ? null : Helpers.ModelHelper.GetDevice(user.surUID);//don't move to below
 
-                    _login(user, context, model, null);
+                    _login(user, context, model, device);
 
                     if (isadmin)
                     {
@@ -106,9 +104,9 @@ namespace SmartBusinessWeb.Controllers
                         return Redirect(model.RedirectUrl);
                     }
                     else
-                    {                       
+                    {
                         if (device != null)
-                        { 
+                        {
                             if (string.IsNullOrEmpty(model.RedirectUrl)) model.RedirectUrl = ComInfo.comLandingPage;
                             return Redirect(model.RedirectUrl);
                         }
@@ -144,16 +142,16 @@ namespace SmartBusinessWeb.Controllers
 
             int seq;
             if (lastsess != null)
-            {  
+            {
                 int lastseq = lastsess.sesDvcSeq;
                 if (lastseq < 3)
                 {
                     lastseq++;
                     seq = lastseq;
                 }
-                else seq = 1;				
+                else seq = 1;
             }
-            else seq = 1;			
+            else seq = 1;
 
             session = new Session
             {
@@ -179,7 +177,7 @@ namespace SmartBusinessWeb.Controllers
             };
             context.Sessions.Add(session);
             context.SaveChanges();
-           
+
 
             SessUser sessUser = new SessUser
             {
@@ -204,8 +202,8 @@ namespace SmartBusinessWeb.Controllers
             Session["Device"] = device;
             Session["SessionToken"] = token;
             Session["IsCentral"] = model.IsCentral;
-            Session["eBlastId"] = 0;          
-          
+            Session["eBlastId"] = 0;
+
             MenuHelper.UpdateMenus(context);
         }
 
@@ -268,7 +266,7 @@ namespace SmartBusinessWeb.Controllers
         public ActionResult LogOff()
         {
             SessUser user = Session["User"] as SessUser;
-            if (user == null) { FormsAuthentication.SignOut(); return RedirectToAction("Login", "Account"); }           
+            if (user == null) { FormsAuthentication.SignOut(); return RedirectToAction("Login", "Account"); }
 
             var usercode = user.UserCode;
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
@@ -288,7 +286,7 @@ namespace SmartBusinessWeb.Controllers
                 Session["Reports"] = null;
                 Session["ExImViews"] = null;
                 Session["CurrentCulture"] = null;
-                Session["Menus"] = null; 
+                Session["Menus"] = null;
                 Session["PendingInvoices"] = null;
                 Session["IsCentral"] = null;
                 Session["eBlastId"] = null;

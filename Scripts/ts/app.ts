@@ -149,10 +149,6 @@ let $txtblk = $("#txtblk");
 let isEpay: boolean = false;
 let salesman: ISalesman;
 
-let checkoutportal: string =
-	$appInfo.length === 0
-		? ""
-		: ($appInfo.data("checkoutportal") as string).toLowerCase();
 let approvalmode: boolean = false;
 let reviewmode: boolean = false;
 let enableCRM: boolean = false;
@@ -793,7 +789,6 @@ let allownegativestock = false;
 //let Sale.Roundings = 0;
 let iremain = 0;
 let _openSerialModal = false;
-let companyinfo: ICompanyInfo;
 let receipt: IReceipt;
 let DicPayTypes: { [Key: string]: IPayType } = {};
 let DicInvoiceItemSeqSerialNoList: { [Key: string]: ISerialNo[] } = {};
@@ -854,7 +849,6 @@ let itotalremainamt = 0;
 let cpplList: Array<ICustomerPointPriceLevel> = [];
 let priceeditable: boolean;
 let disceditable: boolean;
-let enablelogo: boolean;
 let enableSN: boolean;
 let enableTax: boolean;
 let printurl: string = "/Print/Index";
@@ -877,6 +871,7 @@ let selectedItem: IItem | null;
 let forsales: boolean = false;
 let forReservePaidOut: boolean = false;
 let forsimplesales: boolean = false;
+let forretailcustomer: boolean = false;
 let fordeposit: boolean = false;
 let forpurchase: boolean = false;
 let forpurchasepayments: boolean = false;
@@ -1555,6 +1550,7 @@ $(document).on("click", ".Pager .page", function () {
 	else if (fortraining) GetTrainings(PageNo);
 	else if (forstock) GetStocks(PageNo);
 	else if (forcustomer) GetCustomerGroupList(PageNo);
+	else if (forretailcustomer)	GetCustomers4Sales(PageNo);
 	else GetItems(PageNo);
 });
 $(document).on("click", "#tblItem th a", function () {
@@ -1632,6 +1628,7 @@ function closeCusModal() {
 		}
 	}
 	$("#txtCustomer").val("");
+	forretailcustomer = !forretailcustomer;
 }
 
 function updateRows4Tax() {
@@ -1695,13 +1692,7 @@ function GetTaxPc(): number {
 }
 
 function GetCustomers4Sales(pageIndex, mode = "") {
-	let data = `{PageNo:${pageIndex},mode:'${mode}'`;
-	if (typeof keyword !== "undefined" && keyword !== "") {
-		data = `{PageNo:${pageIndex},mode:'${mode}',keyword:'${keyword}'}`;
-		// console.log("data#0:" + data);
-	} else {
-		data = `{PageNo:${pageIndex},mode:'${mode}',keyword:''}`;
-	}
+	let	data = {pageIndex:pageIndex,mode:mode,keyword:keyword};	
 	// console.log("data:", data);
 	/*return false;*/
 	openWaitingModal();
@@ -1715,9 +1706,9 @@ function GetCustomers4Sales(pageIndex, mode = "") {
 
 	$.ajax({
 		url: "/Api/GetCustomers4Retail",
-		type: "POST",
+		type: "GET",
 		data: data,
-		contentType: "application/json; charset=utf-8",
+		/*contentType: "application/json; charset=utf-8",*/
 		dataType: "json",
 		success: callback,
 		error: onAjaxFailure,
@@ -1748,7 +1739,7 @@ function OnGetCustomersSuccess(response) {
 		if (searchcusmode) {
 			searchcusmode = false;
 		} else {
-			$(".CusPager").ASPSnippets_Pager({
+			$(".Pager").ASPSnippets_Pager({
 				ActiveCssClass: "current",
 				PagerCssClass: "pager",
 				PageIndex: model.PageIndex,
@@ -1869,7 +1860,7 @@ function OnSearchCustomersSuccess(response) {
 				$("#tblCus").append(row);
 				row = $("#tblCus tr:last-child").clone(false);
 			});
-			$(".CusPager").ASPSnippets_Pager({
+			$(".Pager").ASPSnippets_Pager({
 				ActiveCssClass: "current",
 				PagerCssClass: "pager",
 				PageIndex: model.PageIndex,
@@ -1883,10 +1874,6 @@ function OnSearchCustomersSuccess(response) {
 	}
 }
 
-$(document).on("click", ".CusPager .page", function () {
-	PageNo = Number($(this).attr("page"));
-	GetCustomers4Sales(PageNo);
-});
 $(document).on("click", "#tblCus th a", function () {
 	sortName = $(this).data("category");
 	sortDirection = sortDirection == "ASC" ? "DESC" : "ASC";
@@ -15420,6 +15407,7 @@ $(document).on("change", "#drpSalesman", function () {
 });
 
 $(document).on("dblclick", "#txtCustomerName", function () {
+	forretailcustomer = true;
 	GetCustomers4Sales(1);
 });
 
@@ -17096,7 +17084,7 @@ function SearchCustomers() {
 	$.ajax({
 		url: "/Api/SearchCustomersAjax",
 		type: "GET",
-		data: { pageIndex: 1, keyword: keyword.toLowerCase() },
+		data: { pageIndex: 1,forRetail:forretailcustomer,keyword: keyword.toLowerCase() },
 		contentType: "application/json; charset=utf-8",
 		dataType: "json",
 		success: OnSearchCustomersOK,
@@ -22443,10 +22431,10 @@ function getBalance(this: any, onhandstock: number) {
 }
 
 function initVariablesFrmInfoblk() {
-	DicLocation = $infoblk.data("jsondiclocation");
-	//console.log("diclocation:", DicLocation);
-	MyobJobList = $infoblk.data("jsonjoblist");
 	enableTax = $infoblk.data("enabletax") === "True";
+	DicLocation = $infoblk.data("jsondiclocation");
+	if(forwholesales)
+		MyobJobList = $infoblk.data("jsonjoblist");	
 
 	DicBatTotalQty = $infoblk.data("jsondicbattotalqty");
 	DicItemBatchQty = $infoblk.data("jsondicitembatchqty");
@@ -22465,12 +22453,16 @@ function initVariablesFrmInfoblk() {
 	DicIvDelQtyList = $infoblk.data("dicivdelqtylist");
 
 	uploadsizelimit = Number($infoblk.data("uploadsizelimit"));
-	//console.log("uploadsizelimit:" + uploadsizelimit);
 	uploadsizelimitmb = Number($infoblk.data("uploadsizelimitmb"));
 	shop = $infoblk.data("shop") as string;
 	UseForexAPI = $infoblk.data("useforexapi") === "True";
 	approvalmode = $infoblk.data("approvalmode") == "True";
 	comInfo = $infoblk.data("cominfo");
+
+	Sales = $infoblk.data("sales");
+	SalesLnList = $infoblk.data("saleslnlist");
+	ItemList = $infoblk.data("itemlist");
+	DicCurrencyExRate = $infoblk.data("diccurrencyexrate");
 }
 
 $(document).on("click", ".btnReload", function (e) {

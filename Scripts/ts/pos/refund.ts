@@ -14,7 +14,6 @@ let salesrefundlist: Array<ISalesRefundBase> = [];
 salesType = SalesType.refund;
 let refundsalesln: IRefundSales;
 let epaytype: string = "";
-checkoutportal = $infoblk.data("checkoutportal");
 RefundList = [];
 function updateRefRow() {
 	$target = $("#tblRefund tbody tr").eq(currentY);
@@ -288,7 +287,6 @@ function getReceiptOk(data) {
 		selectedSalesCode = RefundSales.rtsCode;
 		selectedCus = data.customer;
 		selectedCusCodeName = selectedCus.cusCode;
-		companyinfo = data.companyinfo;
 		receipt = data.receipt;
 		ItemList = data.items.slice(0);
 		snlist = data.snlist.slice(0);

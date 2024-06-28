@@ -112,18 +112,11 @@ function getReceiptOk_De(data) {
 		selectedSalesCode = Deposit.rtsCode;
 		selectedCus = data.customer;
 		selectedCusCodeName = selectedCus.cusCode;
-		companyinfo = data.companyinfo;
-		//receipt = data.receipt;
 		DicPayTypes = data.dicpaytypes;
 		DepositLnList = data.salesLns.slice(0);
-		//console.log('saleslnlist:', DepositLnList);
-
 		ItemList = data.items.slice(0);
 		snlist = data.snlist.slice(0);
 		cpplList = data.customerpointpricelevels.slice(0);
-
-		//dicPayTypes = $infoblk.data("dicpaytypes");
-		////defaultcustomer = $infoblk.data("defaultcustomer");
 		taxModel = data.taxModel;
 		inclusivetax = data.inclusivetax;
 		inclusivetaxrate = data.inclusivetaxrate;

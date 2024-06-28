@@ -34,10 +34,7 @@ function GetRecurOrders(pageIndex) {
 	/*return false;*/
 	openWaitingModal();
 	$.ajax({
-		url:
-			checkoutportal == "abss"
-				? "/Api/GetRecurOrdersAjax"
-				: "/Api/GetKRecurOrdersAjax",
+		url: "/Api/GetRecurOrdersAjax",
 		type: "POST",
 		data: data,
 		contentType: "application/json; charset=utf-8",

@@ -66,8 +66,7 @@ $(document).on("click", ".export", function () {
 });
 
 $(function () {
-	lang = parseInt($infoblk.data("lang"));
-	checkoutportal = $infoblk.data("checkoutportal");
+	lang = parseInt($infoblk.data("lang"));	
 	setFullPage();
 	initModals();
 	triggerMenu(6, 1);
