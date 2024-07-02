@@ -349,6 +349,7 @@
     <Compile Include="Controllers\Admin\AccessRightController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\Admin\AdminController.cs" />
+    <Compile Include="Controllers\Settings\CouponController.cs" />
     <Compile Include="Controllers\Settings\DutyController.cs" />
     <Compile Include="Controllers\ApiController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
@@ -2714,6 +2715,8 @@
     <Content Include="Content\records\job.css" />
     <Content Include="Content\jquery-ui.css" />
     <Content Include="Content\admin\accessrights\index.css" />
+    <Content Include="Content\settings\coupon\edit.css" />
+    <Content Include="Content\settings\coupon\index.css" />
     <Content Include="Content\settings\duty\index.css" />
     <Content Include="Content\site\login.css" />
     <Content Include="Content\mean\css\all.min.css" />
@@ -3114,6 +3117,8 @@
     <Content Include="Scripts\ts\js\records\training.js" />
     <Content Include="Scripts\ts\js\reports\repotbase.js" />
     <Content Include="Scripts\ts\js\settings\basicsettings.js" />
+    <Content Include="Scripts\ts\js\settings\coupon\edit.js" />
+    <Content Include="Scripts\ts\js\settings\coupon\index.js" />
     <Content Include="Scripts\ts\js\settings\duty\edit.js" />
     <Content Include="Scripts\ts\js\settings\duty\index.js" />
     <Content Include="Scripts\ts\js\settings\email.js" />
@@ -4735,6 +4740,10 @@
     <Content Include="Scripts\ts\js\settings\receipt.js.map" />
     <Content Include="Scripts\ts\js\admin\accessrights\edit.js.map" />
     <Content Include="Scripts\ts\js\admin\accessrights\index.js.map" />
+    <Content Include="Views\Coupon\Index.cshtml" />
+    <Content Include="Views\Coupon\Edit.cshtml" />
+    <Content Include="Scripts\ts\js\settings\coupon\index.js.map" />
+    <Content Include="Scripts\ts\js\settings\coupon\edit.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -5109,6 +5118,8 @@
     <TypeScriptCompile Include="Scripts\ts\lang.ts" />
     <TypeScriptCompile Include="Scripts\ts\logout.ts" />
     <TypeScriptCompile Include="Scripts\ts\menu.ts" />
+    <TypeScriptCompile Include="Scripts\ts\settings\coupon\edit.ts" />
+    <TypeScriptCompile Include="Scripts\ts\settings\coupon\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\settings\paymenttypes\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\advsales.ts" />
     <TypeScriptCompile Include="Scripts\ts\pos\excludedinvoices.ts" />

@@ -88,8 +88,6 @@ namespace SmartBusinessWeb.Controllers
             string defaultcheckoutportal = ModelHelper.HandleCheckoutPortal(defaultCheckoutPortal);
             //ViewBag.Title = Session["ImportFrmCentralPageTitle"] = Resources.Resource.DayendsImportFrmCentral;
             ViewBag.DefaultCheckoutPortal = defaultcheckoutportal;
-
-            CultureHelper.CurrentCulture = (int)Session["CurrentCulture"];
             //匯入中央資料            
             ViewBag.ParentPage = "dayends";
             ViewBag.PageName = "dayendsimportfrmcentral";
@@ -466,8 +464,7 @@ namespace SmartBusinessWeb.Controllers
         [HandleError]
         [CustomAuthorize("datatransfer", "admin", "superadmin")]
         public ActionResult DayendsImportFrmShop()
-        {
-            CultureHelper.CurrentCulture = (int)Session["CurrentCulture"];
+        {  
             //匯入分店資料
             ViewBag.ParentPage = "dayends";
             ViewBag.PageName = "dayendsimportfrmshop";
@@ -533,8 +530,6 @@ namespace SmartBusinessWeb.Controllers
         {
             string defaultcheckoutportal = ModelHelper.HandleCheckoutPortal(defaultCheckoutPortal);
             ViewBag.DefaultCheckoutPortal = defaultcheckoutportal;
-
-            CultureHelper.CurrentCulture = (int)Session["CurrentCulture"];
             //匯出分店資料
             ViewBag.ParentPage = "dayends";
             ViewBag.PageName = "dayendsexportfrmshop";
@@ -559,17 +554,7 @@ namespace SmartBusinessWeb.Controllers
             VipList = new List<CustomerModel>();
             bool includeUploaded = model.IncludeUploaded = formCollection["chkUploaded"] != null;
             string type = formCollection["type"];
-
-            Session currsess;
-            int apId = 0;
-            int lang = -1;
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
-            {
-                currsess = ModelHelper.GetCurrentSession(context);
-                apId = currsess.AccountProfileId;
-                lang = currsess.sesLang;
-            }
-
+            int lang = CultureHelper.CurrentCulture;
             int ret = 0;
             int excludedinvoices = 0;
             int excludedpo = 0;

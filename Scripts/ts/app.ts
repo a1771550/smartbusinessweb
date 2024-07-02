@@ -132,6 +132,34 @@ interface ICodeName {
 }
 let CodeNameList: ICodeName[] = [];
 
+interface ICoupon {
+	Id: number;
+	cpCode: string;
+	cpTitle: string;
+	cpHeader: string;
+	cpDesc: string;
+	cpRemark: string;
+	cpFooter: string;
+	cpPrice: number;
+	cpDiscPc: number | null;
+	cpExpiryDate: string;
+	cpIssuedQty: number;
+	cpIsActive: boolean;
+	CouponLines: ICouponLn[];
+	JsExpiryDate: string;
+}
+let Coupon: ICoupon;
+
+interface ICouponLn {
+	Id: number;
+	cpCode: string;
+	cplCode: string;
+	cplIsRedeemed: boolean;
+	cplIsVoided: boolean;
+}
+let CouponLn: ICouponLn;
+let CouponLines: ICoupon[] = [];
+
 //for myobCustomer & myobSupplier
 interface IPhoneNameEmail {
 	Phone: string;
@@ -173,6 +201,8 @@ let SelectedCountry: number = 1;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
+//const searchcustxt:string = $txtblk.data("searchcustxt");
+const changetxt:string = $txtblk.data("changetxt");
 const nocustomersfoundtxt: string = $txtblk.data("nocustomersfound");
 const enquirygrouptxt: string = $txtblk.data("enquirygrouptxt");
 const emailnotificationtosalesmentxt: string = $txtblk.data("emailnotificationtosalesmentxt");
@@ -466,7 +496,7 @@ const onlyalphanumericallowedtxt: string = $txtblk.data(
 );
 const txtremove: string = $txtblk.data("txtremove");
 const roundingstxt: string = $txtblk.data("roundingstxt");
-const changetxt: string = $txtblk.data("changetxt");
+const saleschangetxt: string = $txtblk.data("saleschangetxt");
 const remaintxt: string = $txtblk.data("remaintxt");
 const plswaittxt: string = $txtblk.data("plswaittxt");
 const closetxt: string = $txtblk.data("closetxt");
@@ -2248,7 +2278,7 @@ function _setremain(_remain: number, _amt: number) {
 				if (_remain <= 0) {
 					$("#remainblk").removeClass("alert-danger").addClass("alert-success");
 					if (_remain < 0) {
-						$("#remaintxt").text(changetxt);
+						$("#remaintxt").text(saleschangetxt);
 						_remain *= -1;
 						//console.log('_remain:' + _remain);
 						$("#remainamt").text(formatmoney(_remain));
@@ -2271,7 +2301,7 @@ function _setremain(_remain: number, _amt: number) {
 		//console.log('iremain:' + iremain);
 		if (_remain < 0) {
 			_remain *= -1;
-			$("#remaintxt").text(changetxt);
+			$("#remaintxt").text(saleschangetxt);
 		}
 	}
 
@@ -19801,8 +19831,9 @@ function removeAnchorTag(str: string): string {
 	return str.replace(/<\/?a[^>]*>/g, "");
 }
 
-function makeId(length) {
+function makeId(length):string {
 	let result = "";
+	//0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 	const characters =
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	const charactersLength = characters.length;
@@ -22093,7 +22124,10 @@ function setInputsFilter(textboxes: any, inputFilter: (value: string) => boolean
 }
 
 function getRowCurrentY(this: any, forTd: boolean = false) {
+	//console.log("this:", this);
 	$tr = forTd ? $(this).parent("tr") : $(this).parent("td").parent("tr");
+	//console.log("td:", $(this).parent("td"));
+	//console.log("$tr:", $tr);
 	currentY = $tr.index();
 	seq = currentY + 1;
 }
@@ -22776,4 +22810,12 @@ function toggleNoRecord(show: boolean) {
 //remove querystring from url
 function getPathFromUrl(url: string) {
 	return url.split(/[?#]/)[0];
+}
+function addMonths(months, date: Date = new Date()) {
+	var d = date.getDate();
+	date.setMonth(date.getMonth() + +months);
+	if (date.getDate() != d) {
+		date.setDate(0);
+	}
+	return date;
 }

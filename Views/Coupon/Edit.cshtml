@@ -1,0 +1,110 @@
+﻿@model CouponEditModel
+@using PagedList.Mvc;
+@{
+	CouponLnModel Coupon = Model.Coupon;
+	bool edit = Coupon.Id > 0;
+	int rand = CommonHelper.GetVersionRandomNo();
+	ViewBag.Title = edit ? string.Format(Resources.Resource.EditFormat, Resources.Resource.Coupon) : string.Format(Resources.Resource.AddFormat, Resources.Resource.Coupon);
+}
+<link rel="stylesheet" type="text/css" href="~/Content/settings/coupon/edit.css?v=@rand" />
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("Edit", "Coupon", FormMethod.Post, new { @Id = "frmCoupon", @class = "my-4" }))
+{
+	@Html.AntiForgeryToken()
+
+	<input type="hidden" id="Id" value="@(edit?Coupon.Id:0)" />
+
+	<div class="row">
+		<div class="col-12 col-md-3">
+			<div class="form-group required">
+				<label>@Resources.Resource.Title4Coupon</label>
+				<input type="text" id="cpTitle" class="form-control" value="@(edit?Coupon.cpTitle:"")" />
+			</div>
+		</div>
+		<div class="col-12 col-md-3">
+			<div class="form-group required">
+				<label>@Resources.Resource.Price ($)</label>
+				<input type="text" id="cpPrice" class="form-control num" value="@(edit?Coupon.cpPrice:CommonHelper.FormatNumber(0))" />
+			</div>
+		</div>
+		<div class="col-12 col-md-3">
+			<div class="form-group">
+				<label>@Resources.Resource.DiscPc</label>
+				<input type="text" id="cpDiscPc" class="form-control num" value="@(edit?Coupon.cpDiscPc:CommonHelper.FormatNumber(0))" />
+			</div>
+		</div>
+		<div class="col-12 col-md-3">
+			<div class="form-group required">
+				<label>@Resources.Resource.ExpiryDate</label>
+				<input type="text" id="cpExpiryDate" class="form-control" value="@(edit?Coupon.cpExpiryDate:"")" />
+			</div>
+		</div>
+
+	</div>
+	<div class="row">
+		<div class="col-12 col-md-3">
+			<div class="form-group required">
+				<label>@Resources.Resource.IssuedQty</label>
+				<input type="number" id="cpIssuedQty" class="form-control" value="@(edit?Coupon.cpIssuedQty:0)" />
+			</div>
+		</div>
+		<div class="col-12 col-md-3">
+			<div class="form-group">
+				<label>@Resources.Resource.Description</label>
+				<textarea id="cpDesc" class="form-control" rows="3">@(edit?Coupon.cpDesc:"")</textarea>
+			</div>
+		</div>
+		<div class="col-12 col-md-3">
+			<div class="form-group">
+				<label>@Resources.Resource.Remark</label>
+				<textarea id="cpRemark" class="form-control" rows="3">@(edit?Coupon.cpRemark:"")</textarea>
+			</div>
+		</div>
+	</div>
+
+	if (edit)
+	{
+		<table id="tblCouponLn" class="table table-bordered table-hover table-condensed">
+			<thead class="gray-header font-weight-bold">
+				<tr>
+					<th class="text-center colheader code" data-col="0">@Resources.Resource.Code</th>
+					<th class="text-center colheader redeemed" data-col="1">@Resources.Resource.Redeemed</th>
+					<th class="text-center colheader voided" data-col="2">@Resources.Resource.Voided</th>
+					<th class="text-center colheader" data-col="3">@Resources.Resource.CreateTime</th>
+					<th class="text-center colheader" data-col="4">@Resources.Resource.ModifyTime</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var coupon in Model.PagingCouponLnList)
+				{
+					<tr data-id="@coupon.Id">
+						<td class="text-center code pointer" data-type="code" data-code="@coupon.cplCode">@coupon.cplCode</td>
+						<td class="text-center redeemed drp pointer" data-type="redeemed" data-redeemed="@coupon.cplIsRedeemed">@coupon.IsRedeemedDisplay</td>
+						<td class="text-center voided drp pointer" data-type="voided" data-voided="@coupon.cplIsVoided">@coupon.IsVoidedDisplay</td>
+						<td class="text-center">@coupon.CreateTimeDisplay</td>
+						<td class="text-center">@coupon.ModifyTimeDisplay</td>						
+					</tr>
+				}
+			</tbody>
+		</table>
+
+		<div id="pagingblk" class="my-3">
+			@Html.PagedListPager(Model.PagingCouponLnList, PageNo => Url.Action("Edit",
+	new { PageNo, SortOrder = Model.CurrentSortOrder, SortCol = Model.SortCol, PageSize = Model.PageSize }))
+		</div>
+
+		@Html.Partial("_SortOrderColHidden")
+	}
+
+	<button type="button" id="btnSave" class="btn btn-success">@Resources.Resource.Save</button>
+}
+<div>
+	@Html.ActionLink(Resources.Resource.BackToList, "Index")
+</div>
+@Html.Partial("_WaitingModal")
+<div id="infoblk" data-titlerequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Title4Coupon)" data-pricerequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Price)" data-issuedqtyrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.IssuedQty)" data-pagesize="@Model.ComInfo.PageLength"></div>
+
+<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+<script src="~/Scripts/ts/js/settings/coupon/edit.js?v=@rand"></script>

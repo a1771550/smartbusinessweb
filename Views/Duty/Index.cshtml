@@ -4,7 +4,6 @@
 @{
 	ViewBag.Title = string.Format(Resources.Resource.SettingsFormat, Resources.Resource.Duty);
 	int rand = CommonHelper.GetVersionRandomNo();	
-	bool isassignor = UserHelper.CheckIfAssignor(Model.User);
 }
 <link href="~/Content/settings/duty/index.css?v=@rand" rel="stylesheet" type="text/css" />
 

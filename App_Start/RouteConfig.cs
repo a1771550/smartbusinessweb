@@ -239,7 +239,12 @@ new {apId=@"\d+"}
            new { controller = "Api", action = "GetContacts" }
        );
 
-          
+            routes.MapRoute(
+                name: null,
+                url: "Culture/{Id}",
+                defaults: new { controller = "Home", action = "ChangeCurrentCulture" },
+ new { Id = @"\d+" }
+            );
 
 
             routes.MapRoute(
@@ -248,22 +253,11 @@ new {apId=@"\d+"}
                 defaults: new { controller = "Account", action = "Login", id = UrlParameter.Optional }
             );
 
-            
-           
-
             routes.MapRoute(
                 name: null,
                 url: "{action}",
                 defaults: new { controller = "Home" }
             );
-
-
-            routes.MapRoute(
-               name: null,
-               url: "Culture/{Id}",
-               defaults: new { controller = "Home", action = "ChangeCurrentCulture" },
-new { Id = @"\d+" }
-           );
         }
     }
 }
