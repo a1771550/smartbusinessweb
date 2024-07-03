@@ -4,8 +4,8 @@ $(function () {
 	setFullPage();
 	gTblId = "tblCoupon";
 	gFrmId = "frmCoupon";
-	triggerMenu(0, 6);
 	initModals();
+	triggerMenu(0, 6);
 	PageSize = $infoblk.data("pagesize");
 	ConfigSimpleSortingHeaders();
 });

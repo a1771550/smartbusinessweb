@@ -38,6 +38,7 @@ function initInfoBlk4AdvSales() {
     disceditable = $infoblk.data("disceditable") === "True";
     device = $infoblk.data("devicecode");
     DicPayServiceCharge = $infoblk.data("dicpayservicecharge");
+    defaultcustomer = $infoblk.data("defaultcustomer");
 }
 
 function getSessionStartDataOk(data) {
@@ -46,7 +47,7 @@ function getSessionStartDataOk(data) {
     cpplList = data.CustomerPointPriceLevels.slice(0);
     receipt = data.receipt;
     DicPayTypes = data.dicpaytypes;
-    selectedCus = defaultcustomer = data.defaultcustomer;
+    selectedCus = defaultcustomer;
     PageSize = data.pagelength;
     inclusivetax = data.inclusivetax;
     inclusivetaxrate = data.inclusivetaxrate;
@@ -54,13 +55,13 @@ function getSessionStartDataOk(data) {
     enableTax = data.enableTax;
     DicCurrencyExRate = Object.assign({}, data.DicCurrencyExRate);
     UseForexAPI = data.UseForexAPI;
-    MyobJobList = data.JobList.slice(0);
+    //MyobJobList = data.JobList.slice(0);
 
     try {
         sessionstartdata.push(cpplList);
         sessionstartdata.push(receipt);
         sessionstartdata.push(DicPayTypes);
-        sessionstartdata.push(defaultcustomer);
+        //sessionstartdata.push(defaultcustomer);
         sessionstartdata.push(PageSize);
         sessionstartdata.push(enableTax);
         sessionstartdata.push(inclusivetax);
@@ -68,7 +69,7 @@ function getSessionStartDataOk(data) {
         sessionstartdata.push(salesmen);
         sessionstartdata.push(DicCurrencyExRate);
         sessionstartdata.push(UseForexAPI);
-        sessionstartdata.push(MyobJobList);
+        //sessionstartdata.push(MyobJobList);
         localStore.setItem("sessionstartdata", JSON.stringify(sessionstartdata));
     } catch (e) {
         alert("Please go away");
@@ -156,9 +157,9 @@ $(function () {
                 inclusivetax = sessionstartdata[7];
                 inclusivetaxrate = sessionstartdata[8];
                 salesmen = sessionstartdata[9];
-                defaultcustomer = sessionstartdata[4];
+                //defaultcustomer = sessionstartdata[4];
                 DicCurrencyExRate = sessionstartdata[10];
-                MyobJobList = sessionstartdata[12];
+                //MyobJobList = sessionstartdata[12];
                 selectedCus = defaultcustomer;
                 Sales = initSales();
                 Sales.rtsCusCode = selectedCus.cusCode;

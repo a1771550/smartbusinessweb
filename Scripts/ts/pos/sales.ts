@@ -1,8 +1,7 @@
 ﻿$infoblk = $("#infoblk");
-const formatzero = formatnumber(0);
+
 let selectedCatId: number = 3;
 let filteredItemList: ISimpleItem[] = [];
-let $norecordfound;
 function togglePayment(code: string, checked: boolean) {
 	code = code.toLowerCase();
 	//console.log("code:" + code);
@@ -50,6 +49,7 @@ $(document).on("click", ".btnpayment", function () {
 	if ($(".btnpayment.toggle").length == 1 && code.toLowerCase() == "cash") return;
 
 	isEpay = (code.toLowerCase() == "alipay" || code.toLowerCase() == "wechat");
+	isCoupon = code.toLowerCase() == "coupon";
 
 	checked = togglePlusCheck(Id);
 
@@ -92,6 +92,10 @@ $(document).on("click", ".btnpayment", function () {
 		if ($(".btnpayment.toggle").length > 1) {
 			$(this).removeClass("toggle");
 		}
+	}
+
+	if (checked && isCoupon) {
+		openBarCodeModal();
 	}
 
 	togglePayment(code, checked);
@@ -431,13 +435,8 @@ $(document).on("change", "#searchItem", function () {
 	$(".productblk").empty().append(populateProductBlk(filteredItemList));
 
 });
-$(function () {
-	forsimplesales = true;
-	salesType = SalesType.simplesales;
-	setFullPage();
-	initModals();
-	triggerMenu(0, 0);
 
+function initInfoVariables4SimpleSales() {
 	comInfo = $infoblk.data("cominfo");
 	PayTypes = $infoblk.data("paytypes");
 	//console.log("PayTypes:", PayTypes);
@@ -445,9 +444,18 @@ $(function () {
 	//console.log("DicPayTypes:", DicPayTypes);
 	DicPayServiceCharge = $infoblk.data("dicpayservicecharge");
 	//console.log("DicPayServiceCharge:", DicPayServiceCharge);
-
 	DicCurrencyExRate = $infoblk.data("diccurrencyexrate");
 	defaultcustomer = $infoblk.data("defaultcustomer");
+	SimpleItemList = $infoblk.data("itemlist");
+	filteredItemList = $infoblk.data("filteredlist");
+}
+$(function () {
+	forsimplesales = true;
+	salesType = SalesType.simplesales;
+	setFullPage();
+	initModals();
+	triggerMenu(0, 0);
+	initInfoVariables4SimpleSales();
 
 	$("#rtsExRate").val(1);
 	displayExRate(1);
@@ -460,9 +468,7 @@ $(function () {
 	$(".tab").find("button").first().addClass("active");
 
 	Sales = initSimpleSales();
-
-	SimpleItemList = $infoblk.data("itemlist");
-	filteredItemList = $infoblk.data("filteredlist");
+	
 	$norecordfound = $("#norecordfound");
 
 	if (SimpleItemList.length == 0)

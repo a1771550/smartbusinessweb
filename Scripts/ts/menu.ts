@@ -13,7 +13,7 @@ $(".overlay").on("click", function () {
 	$(".dash__left, .overlay, .dash__body").removeClass("active");
 });
 
-$(document).on("click", ".btn_expand", function () {
+$(document).on("click", ".btn_expand", function () {	
 	//console.log("this:", $(this));
 	let idx = $(this).index();
 	//console.log("idx:" + idx);
@@ -25,14 +25,14 @@ $(document).on("click", ".btn_expand", function () {
 		}
 	});
 	$(this).find(".expand_btn").addClass("active_btn").removeClass("expand_btn");
-	
+
 	$(".submenu").each(function (i, e) {
-		$(e).find("li a").removeClass("active");		
+		$(e).find("li a").removeClass("active");
 	});
-	//console.log("target a:", $(this).find(".collapse").find("li").first().find("a").first());
-	//console.log("submenu:", $(this).find(".submenu"));
-	$(this).find(".submenu").find("li").first().find("a").first().addClass("active");
-	
+
+	let $a = $(this).find(".submenu").find("li").first().find("a").first();
+	$a.addClass("active");
+	window.location.href = $a.attr("href") as string;
 });
 
 

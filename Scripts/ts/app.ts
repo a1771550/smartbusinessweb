@@ -134,7 +134,9 @@ let CodeNameList: ICodeName[] = [];
 
 interface ICoupon {
 	Id: number;
+	cpId: number;//equal to Id;MUST NOT be removed!!!
 	cpCode: string;
+	cpCompanyName: string;
 	cpTitle: string;
 	cpHeader: string;
 	cpDesc: string;
@@ -147,6 +149,8 @@ interface ICoupon {
 	cpIsActive: boolean;
 	CouponLines: ICouponLn[];
 	JsExpiryDate: string;
+	IsAllRedeemed: boolean;
+	IsAllVoided: boolean;
 }
 let Coupon: ICoupon;
 
@@ -170,11 +174,13 @@ let PhoneNameEmailList: IPhoneNameEmail[] = [];
 let Supplier: ISupplier;
 
 let triggerReferrer: TriggerReferrer;
-
+const formatzero = formatnumber(0);
+let $norecordfound: any;
 let $appInfo = $("#appInfo");
 let $txtblk = $("#txtblk");
 
 let isEpay: boolean = false;
+let isCoupon: boolean = false;
 let salesman: ISalesman;
 
 let approvalmode: boolean = false;
@@ -202,7 +208,7 @@ let SelectedCountry: number = 1;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
-const changetxt:string = $txtblk.data("changetxt");
+const changetxt: string = $txtblk.data("changetxt");
 const nocustomersfoundtxt: string = $txtblk.data("nocustomersfound");
 const enquirygrouptxt: string = $txtblk.data("enquirygrouptxt");
 const emailnotificationtosalesmentxt: string = $txtblk.data("emailnotificationtosalesmentxt");
@@ -1580,7 +1586,7 @@ $(document).on("click", ".Pager .page", function () {
 	else if (fortraining) GetTrainings(PageNo);
 	else if (forstock) GetStocks(PageNo);
 	else if (forcustomer) GetCustomerGroupList(PageNo);
-	else if (forretailcustomer)	GetCustomers4Sales(PageNo);
+	else if (forretailcustomer) GetCustomers4Sales(PageNo);
 	else GetItems(PageNo);
 });
 $(document).on("click", "#tblItem th a", function () {
@@ -1722,7 +1728,7 @@ function GetTaxPc(): number {
 }
 
 function GetCustomers4Sales(pageIndex, mode = "") {
-	let	data = {pageIndex:pageIndex,mode:mode,keyword:keyword};	
+	let data = { pageIndex: pageIndex, mode: mode, keyword: keyword };
 	// console.log("data:", data);
 	/*return false;*/
 	openWaitingModal();
@@ -3780,7 +3786,12 @@ function initModals() {
 		modal: true,
 		buttons: [
 			{
-				text: closetxt,
+				text: confirmtxt,
+				class: "savebtn",
+				click: confirmBarCodeClose,
+			},
+			{
+				text: canceltxt,
 				class: "secondarybtn",
 				click: closeBarCodeModal,
 			},
@@ -8415,7 +8426,7 @@ interface IPayLn {
 	rtplParentId: number | null;
 }
 interface ISysUser {
-    RoleIds: number[];
+	RoleIds: number[];
 	surUID: number;
 	surIsActive: boolean;
 	Password: string;
@@ -17114,7 +17125,7 @@ function SearchCustomers() {
 	$.ajax({
 		url: "/Api/SearchCustomersAjax",
 		type: "GET",
-		data: { pageIndex: 1,forRetail:forretailcustomer,keyword: keyword.toLowerCase() },
+		data: { pageIndex: 1, forRetail: forretailcustomer, keyword: keyword.toLowerCase() },
 		contentType: "application/json; charset=utf-8",
 		dataType: "json",
 		success: OnSearchCustomersOK,
@@ -17233,7 +17244,7 @@ function FillInCustomer() {
 
 	Customer.cusAddrCity = Customer.cusAddrCountry == "3" ? $("#txtCity").val() as string : <string>$("#city").val(); //NOT $("#drpCity").val()!
 	Customer.CityTxt = Customer.cusAddrCountry == "3" ? $("#txtCity").val() as string : $("#drpCity option:selected").text() as string;
-	
+
 	Customer.cusAddrWeb = <string>$("#cusAddrWeb").val();
 	Customer.AddressList = [];
 	for (let i = 1; i <= 5; i++) {
@@ -19831,7 +19842,7 @@ function removeAnchorTag(str: string): string {
 	return str.replace(/<\/?a[^>]*>/g, "");
 }
 
-function makeId(length):string {
+function makeId(length): string {
 	let result = "";
 	//0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 	const characters =
@@ -22257,7 +22268,7 @@ let IALs: IIAL[] = [];
 let SelectedIAL: IIAL;
 
 function triggerMenu(dashmenuIdx: number, submenuIdx: number) {
-	$(".dash__menu").find("ul").find(".btn_expand").eq(dashmenuIdx).trigger("click").find(".submenu").first().addClass("show").find("a").removeClass("active").parent("li").parent(".submenu").find("li").eq(submenuIdx).find("a").addClass("active");
+	$(".dash__menu").find("ul").find(".btn_expand").eq(dashmenuIdx).find(".submenu").first().addClass("show").find("a").removeClass("active").parent("li").parent(".submenu").find("li").eq(submenuIdx).find("a").addClass("active");
 }
 
 function initCityDropDown(selectedCity: string = "", lang: number = 1) {
@@ -22467,9 +22478,9 @@ function getBalance(this: any, onhandstock: number) {
 function initVariablesFrmInfoblk() {
 	enableTax = $infoblk.data("enabletax") === "True";
 	DicLocation = $infoblk.data("jsondiclocation");
-	if(forwholesales)
-		MyobJobList = $infoblk.data("jsonjoblist");	
-
+	if (forwholesales || forsales)
+		MyobJobList = $infoblk.data("jsonjoblist");
+	//console.log("MyobJobList:", MyobJobList);
 	DicBatTotalQty = $infoblk.data("jsondicbattotalqty");
 	DicItemBatchQty = $infoblk.data("jsondicitembatchqty");
 	DicItemBatDelQty = $infoblk.data("jsondicitembatdelqty");
@@ -22818,4 +22829,11 @@ function addMonths(months, date: Date = new Date()) {
 		date.setDate(0);
 	}
 	return date;
+}
+
+function confirmBarCodeClose() {
+	let barcode: string = barcodeModal.find("#txtBarCode").val() as string;
+	closeBarCodeModal();
+	console.log("barcode:" + barcode);
+	//todo:
 }

@@ -18,8 +18,8 @@ $(function () {
 			//$("#Email").val("utservice_sb1@united.com.hk");
 			//$("#Email").val("sunnyy@united.com.hk");//boss			
 			//$("#Email").val("vincent@abssasia.com.hk"); //sales
-			//$("#Email").val("utservice@united.com.hk"); //manager & sales
-			 $("#Email").val("enquiry@united.com.hk"); //admin    
+			$("#Email").val("utservice@united.com.hk"); //manager & sales
+			// $("#Email").val("enquiry@united.com.hk"); //admin    
 			$("#Password").val(password);
 			$("#btnLogin").trigger("click");
 		} else {

@@ -1,12 +1,34 @@
 ﻿$infoblk = $("#infoblk");
 editmode = Number($("#Id").val()) > 0;
+let selectedCouponLnId: number = 0;
 
+$(document).on("change", ".chklnall", function () {
+	let type: string = $(this).hasClass("redeemed") ? "redeemed" : "voided";
+	let all: number = $(this).is(":checked") ? 1 : 0;
+	$("#btnSave").prop("disabled", true);
+	openWaitingModal();
+	$.ajax({
+		type: "POST",
+		url: "/Coupon/ToggleAllLn",
+		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), code: $("#cpCode").val(), all, type },
+		success: function (data) {
+			closeWaitingModal();
+			if (data) window.location.href = "/Coupon/Index";
+		},
+		dataType: "json"
+	});
+});
 function fillInCoupon() {
-	Coupon = {Id:Number($("#Id").val()), cpTitle: $("#cpTitle").val() as string, cpPrice: Number($("#cpPrice").val()), cpDiscPc: Number($("#cpDiscPc").val()), JsExpiryDate: $("#cpExpiryDate").val() as string, cpIssuedQty: Number($("#cpIssuedQty").val()), cpDesc: $("#cpDesc").val() as string, cpRemark: $("#cpRemark").val() as string } as ICoupon;
+	Coupon = { Id: Number($("#Id").val()), cpCode: $("#cpCode").val() as string, cpCompanyName: $("#cpCompanyName").val() as string, cpTitle: $("#cpTitle").val() as string, cpPrice: Number($("#cpPrice").val()), cpDiscPc: Number($("#cpDiscPc").val()), JsExpiryDate: $("#cpExpiryDate").val() as string, cpIssuedQty: Number($("#cpIssuedQty").val()), cpDesc: $("#cpDesc").val() as string, cpRemark: $("#cpRemark").val() as string } as ICoupon;
 }
 
 function validCPForm(): boolean {
 	let msg: string = "";
+	let $company = $("#cpCompanyName");
+	if ($company.val() == "") {
+		msg += $infoblk.data("companynamerequiredtxt") + "<br>";
+		$company.addClass("focus");
+	}
 	let $title = $("#cpTitle");
 	if ($title.val() == "") {
 		msg += $infoblk.data("titlerequiredtxt") + "<br>";
@@ -43,8 +65,7 @@ function validCPForm(): boolean {
 $(document).on("click", "#btnSave", function () {
 	fillInCoupon();
 	if (validCPForm()) {
-		// console.log("here");
-		//console.log(ItemCoupon);
+		//console.log("Coupon:", Coupon);
 		//return;
 		openWaitingModal();
 		$.ajax({
@@ -70,18 +91,26 @@ $(document).on("click", "#btnSave", function () {
 
 $(document).on("click", ".btnChange", function () {
 	let Id: number = Number($(this).data("id"));
-	let idx: number = Number($(this).data("idx"));
-	let code: string = makeId(10);
+	let type = $(this).data("type");
 	let $td = $(this).parent("td");
-	console.log("Id:" + Id + ";idx:" + idx);
-	CouponLn = {Id:Id,cplCode:code} as ICouponLn;
+	//console.log("Id:" + Id + ";idx:" + idx);
+	if (type == "code") CouponLn = { Id, cplCode: makeId(10) } as ICouponLn;
+	let data = { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), CouponLn, type };
+	openWaitingModal();
+	//console.log("data:", data);
+	//return;
 	$.ajax({
 		type: "POST",
 		url: "/Coupon/EditLn",
-		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(),CouponLn,type:"code" },
+		data: data,
 		success: function (data) {
+			closeWaitingModal();
 			if (data) {
-				$td.empty().text(code);
+				if (type == "code")
+					$td.empty().data("code", CouponLn.cplCode).text(CouponLn.cplCode);
+				else {
+					$td.empty().data("val", type == "redeemed" ? CouponLn.cplIsRedeemed : CouponLn.cplIsVoided).text(type == "redeemed" ? CouponLn.cplIsRedeemed ? yestxt : notxt : CouponLn.cplIsVoided ? yestxt : notxt);
+				}
 			}
 
 		},
@@ -92,29 +121,50 @@ $(document).on("click", ".btnChange", function () {
 $(document).on("dblclick", ".code", function () {
 	getRowCurrentY.call(this, true);
 	let Id: number = Number($tr.data("id"));
-	let html = `<input type="text" class="form-control lncode mx-1" readonly value="${$(this).data("code")}"><button type="button" class="btn btn-warning mx-1 btnChange" data-idx="${$tr.index()}" data-id="${Id}" title="${changetxt}"><i class="fa fa-refresh"></i></button>`;
-	if ($(this).find("input").length) {
+	let html = `<input type="text" class="form-control lncode mx-1" readonly value="${$(this).data("code")}"><button type="button" class="btn btn-warning mx-1 btnChange" data-idx="${$tr.index()}" data-id="${Id}" title="${changetxt}" data-type="code"><i class="fa fa-refresh"></i></button>`;
 
-		$(this).empty().text($(this).find("input").val() as string);
+	$(this).empty().append(html).find("input").trigger("focus");
 
-	} else {
-		$(this).empty().append(html).find("input").trigger("focus");
-	}
 });
 $(document).on("dblclick", ".drp", function () {
 	getRowCurrentY.call(this, true);
 	let Id: number = Number($tr.data("id"));
+	let yes: boolean = $(this).data("val") == "True";
+	let yesselected: string = yes ? "selected" : "";
+	let noselected: string = yes ? "" : "selected";
 	//console.log("Id:" + Id);
 	let type = $(this).data("type") as string;
-	
-	let drphtml = `<select class="form-control drpln ${type}"><option value="1">${yestxt}</option><option value="0">${notxt}</option></select>`;
-	if (type == "code") {
-		
+	let html = `<select class="form-control drpln mx-1" data-id="${Id}" data-type="${type}"><option value="1" ${yesselected}>${yestxt}</option><option value="0" ${noselected}>${notxt}</option></select><button type="button" class="btn btn-success mx-1 btnChange" data-idx="${$tr.index()}" data-id="${Id}" title="${savetxt}" data-type="${type}"><i class="fa fa-save"></i></button>`;
+	$(this).empty().append(html).find("select").trigger("focus");
+	$(`#${gTblId} tbody tr`).each(function (i, e) {
+		if (Number($(e).data("id")) != Id) {
+			let $td = $(e).find(".redeemed");
+			toggleDrpTxt($td);
+			$td = $(e).find(".voided");
+			toggleDrpTxt($td);
+		}
+	});
+	function toggleDrpTxt($td: JQuery<HTMLElement>) {
+		$td.empty().text($td.data("val") == "True" ? yestxt : notxt);
 	}
-	else {
+});
 
-	}
-	
+$(document).on("change", ".drpln", function () {
+	handleDrpLnChanged.call(this);
+});
+function handleDrpLnChanged(this: any) {
+	let $e = $(this);
+	console.log("Id:" + $e.data("id"));
+	selectedCouponLnId = $e.data("id");
+	let type = $e.data("type");
+	CouponLn = type == "redeemed" ? { Id: selectedCouponLnId, cplIsRedeemed: $e.val() == "1" } as ICouponLn : { Id: selectedCouponLnId, cplIsVoided: $e.val() == "1" } as ICouponLn;
+	console.log("CouponLn:", CouponLn);
+}
+
+$(document).on("click", ".page-item:not(.active)", function (e) {
+	e.preventDefault();
+	e.stopPropagation();
+	window.location.href = $(this).find("a").prop("href").concat(`&Id=${Coupon.cpId}`);
 });
 
 $(function () {
@@ -127,5 +177,6 @@ $(function () {
 	triggerMenu(0, 6);
 	initDatePicker("cpExpiryDate", addMonths(1));
 	setInput4NumberOnly("num");
-	$("#cpTitle").trigger("focus");	
+	$("#cpCompanyName").trigger("focus");
+	Coupon = $infoblk.data("coupon");
 });

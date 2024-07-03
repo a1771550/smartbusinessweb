@@ -599,7 +599,7 @@ namespace SmartBusinessWeb.Controllers
         public ActionResult AdvSales(int? reserveId)
         { 
             ViewBag.ParentPage = "sales";
-            SalesEditModel model = new SalesEditModel(false, reserveId);
+            SalesEditModel model = new(false, reserveId);
             return View(model);
         }
 
@@ -608,7 +608,7 @@ namespace SmartBusinessWeb.Controllers
         public ActionResult Sales()
         { 
             ViewBag.ParentPage = "sales";
-            SalesEditModel model = new SalesEditModel(true);
+            SalesEditModel model = new(true);
             return View(model);
         }
 

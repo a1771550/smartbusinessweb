@@ -13,6 +13,7 @@ namespace SmartBusinessWeb.Controllers.Settings
 
         public ActionResult Index(int PageNo = 1, int SortCol = 0, string SortOrder = "desc", string Keyword = null)
         {
+            ViewBag.ParentPage = "setup";
             DutyEditModel model = new DutyEditModel { PageNo = PageNo, SortCol = SortCol, SortOrder = SortOrder == "desc" ? "asc" : "desc", Keyword = Keyword };
             model.GetList(PageNo, SortCol, SortOrder, Keyword);
             return View(model);
@@ -22,6 +23,7 @@ namespace SmartBusinessWeb.Controllers.Settings
         [CustomAuthorize("basicsettings", "admin", "superadmin")]
         public ActionResult Edit(long? Id)
         {
+            ViewBag.ParentPage = "setup";
             DutyEditModel model = new DutyEditModel();
             model.Get(Id);
             return View(model);

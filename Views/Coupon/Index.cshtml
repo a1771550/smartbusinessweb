@@ -22,12 +22,13 @@
 		<table id="tblCoupon" class="table table-bordered table-hover table-condensed">
 			<thead class="gray-header font-weight-bold">
 				<tr>
-					<th class="text-center colheader" data-col="0">@Resources.Resource.Title4Coupon</th>
-					<th class="text-center colheader" data-col="1">@Resources.Resource.Price ($)</th>
-					<th class="text-center colheader" data-col="2">@Resources.Resource.DiscPc</th>
-					<th class="text-center colheader" data-col="3">@Resources.Resource.ExpiryDate</th>
-					<th class="text-center colheader" data-col="4">@Resources.Resource.IssuedQty</th>
-					<th class="text-center colheader" data-col="5">@Resources.Resource.CreateTime</th>
+					<th class="text-center colheader" data-col="0">@Resources.Resource.CompanyName1</th>
+					<th class="text-center colheader" data-col="1">@Resources.Resource.Title4Coupon</th>
+					<th class="text-center colheader" data-col="2">@Resources.Resource.Price ($)</th>
+					<th class="text-center colheader" data-col="3">@Resources.Resource.DiscPc</th>
+					<th class="text-center colheader" data-col="4">@Resources.Resource.ExpiryDate</th>
+					<th class="text-center colheader" data-col="5">@Resources.Resource.IssuedQty</th>
+					<th class="text-center colheader" data-col="6">@Resources.Resource.CreateTime</th>
 					<th class="text-center action"></th>
 
 				</tr>
@@ -36,6 +37,7 @@
 				@foreach (var coupon in Model.PagingCouponList)
 				{
 					<tr>
+						<td class="text-center">@coupon.cpCompanyName</td>
 						<td class="text-center">@coupon.cpTitle</td>
 						<td class="text-center">@coupon.PriceDisplay</td>
 						<td class="text-center">@coupon.DiscPcDisplay</td>
