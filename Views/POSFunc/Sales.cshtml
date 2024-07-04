@@ -17,9 +17,14 @@
 
 				<!-- Tab links -->
 				<div class="tab small">
+					
+						
+							<input type="text" class="form-control float-right mt-2 mx-2" id="searchItem" placeholder="@Resources.Resource.Search" />
+						
+					
 					@foreach (var category in catList)
 					{
-						<button type="button" title="@category.NameDisplay" class="tablinks" data-id="@category.Id"  onclick="openTapContent(this, '@category.NameDisplay', @category.Id)">@category.NameDisplay</button>
+						<button type="button" title="@category.NameDisplay" class="tablinks" data-id="@category.Id" onclick="openTapContent(this, '@category.NameDisplay', @category.Id)">@category.NameDisplay</button>
 					}
 				</div>
 
@@ -30,11 +35,7 @@
 						<div class="page-header ">
 							<div class="page-title">
 								<h4>@category.NameDisplay</h4>
-								<span class="small">@Resources.Resource.ManageYourPurchases</span>
-							</div>
-							<div class="clearfix">
-								<input type="text" class="form-control float-right" id="searchItem" placeholder="@Resources.Resource.Search" />
-							</div>
+							</div>							
 						</div>
 
 						<div class="row productblk">
@@ -58,9 +59,9 @@
 
 												<h6><span class="itmprice" data-id="@item.itmItemID" data-namedesc="@item.NameDesc" data-code="@item.itmCode" data-price="@item.itmBaseSellingPrice" data-pricetxt="@CommonHelper.FormatNumber(item.itmBaseSellingPrice)" data-file="@item.itmPicFile">@Model.Currency@CommonHelper.FormatNumber(item.itmBaseSellingPrice)</span></h6>
 												@*<div class="price-box">
-													<label class="small">@Model.Currency</label>
-													 <input type="text" class="number itmprice small flex" value="@CommonHelper.FormatNumber(item.itmBaseSellingPrice)" />
-												</div>*@
+									<label class="small">@Model.Currency</label>
+									 <input type="text" class="number itmprice small flex" value="@CommonHelper.FormatNumber(item.itmBaseSellingPrice)" />
+								</div>*@
 
 												<div class="discount-box">
 													<label class="small">@Resources.Resource.DiscPc:</label>
@@ -197,7 +198,7 @@
 @Html.Partial("_BarcodeModal")
 @Html.Partial("_ChangeModal")
 
-<div id="infoblk" data-defaultcatname="@defaultCat.NameDisplay" data-currency="@Model.Currency" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicpaytypes="@JsonSerializer.Serialize(Model.DicPayTypes)" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)" data-defaultcustomer="@JsonSerializer.Serialize(Model.DefaultCustomer)" data-itemlist="@JsonSerializer.Serialize(Model.SimpleItemList)" data-filteredlist="@JsonSerializer.Serialize(FilteredItemList)" data-paytypes="@JsonSerializer.Serialize(Model.PaymentTypes)" data-sales="@JsonSerializer.Serialize(Model.Sales)" data-dicpayservicecharge="@JsonSerializer.Serialize(Model.DicPayServiceCharge)"></div>
+<div id="infoblk" data-defaultcatname="@defaultCat.NameDisplay" data-defaultcatid="@defaultCat.Id" data-currency="@Model.Currency" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicpaytypes="@JsonSerializer.Serialize(Model.DicPayTypes)" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)" data-defaultcustomer="@JsonSerializer.Serialize(Model.DefaultCustomer)" data-itemlist="@JsonSerializer.Serialize(Model.SimpleItemList)" data-filtereditemlist="@JsonSerializer.Serialize(FilteredItemList)" data-paytypes="@JsonSerializer.Serialize(Model.PaymentTypes)" data-sales="@JsonSerializer.Serialize(Model.Sales)" data-dicpayservicecharge="@JsonSerializer.Serialize(Model.DicPayServiceCharge)" data-debug="@(ConfigurationManager.AppSettings["Debug"])" data-dicpaytypeschecked="@JsonSerializer.Serialize(Model.DicPayTypesChecked)"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script src="~/Scripts/ts/js/pos/sales.js?v=@rand"></script>

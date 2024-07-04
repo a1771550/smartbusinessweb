@@ -154,9 +154,7 @@ interface ICoupon {
 }
 let Coupon: ICoupon;
 
-interface ICouponLn {
-	Id: number;
-	cpCode: string;
+interface ICouponLn extends ICoupon {
 	cplCode: string;
 	cplIsRedeemed: boolean;
 	cplIsVoided: boolean;
@@ -180,7 +178,6 @@ let $appInfo = $("#appInfo");
 let $txtblk = $("#txtblk");
 
 let isEpay: boolean = false;
-let isCoupon: boolean = false;
 let salesman: ISalesman;
 
 let approvalmode: boolean = false;
@@ -208,6 +205,8 @@ let SelectedCountry: number = 1;
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
 //const searchcustxt:string = $txtblk.data("searchcustxt");
+const couponvoidedwarning: string = $txtblk.data("couponvoidedwarning");
+const couponredeemedwarning: string = $txtblk.data("couponredeemedwarning");
 const changetxt: string = $txtblk.data("changetxt");
 const nocustomersfoundtxt: string = $txtblk.data("nocustomersfound");
 const enquirygrouptxt: string = $txtblk.data("enquirygrouptxt");
@@ -853,7 +852,7 @@ let chkIdx = -1,
 	activePayIdx = -1,
 	paymenttypechange = false,
 	chkchange = false;
-let usecoupon = false;
+let CouponInUse = false;
 let couponamt = 0;
 let form = null,
 	currentX = -1;
@@ -1459,7 +1458,7 @@ function writeItems(itemList: IItem[]) {
 	$.each(itemList, function () {
 		var item = this;
 		const itemcode: string = item.itmCode;
-		let _qty: number = item.lstQtyAvailable;
+		let _qty: number = item.QtySellable;
 
 		let trcls = "itmcode", proId = 0;
 
@@ -2177,7 +2176,6 @@ function getTotalPayments(): number {
 		if ($chk.is(":checked")) {
 			let $pay = $(e).find(".paymenttype");
 			if ($chk.is(":checked")) {
-				//payments += (Number($pay.val()) / exRate);
 				payments += Number($pay.val());
 			}
 		}
@@ -2225,7 +2223,7 @@ function _setRemain(
 	$e: JQuery
 ) {
 	if (_totalpay > _totalamt) {
-		if (!iscash && !usecoupon) {
+		if (!iscash && !CouponInUse) {
 			$.fancyConfirm({
 				title: "",
 				message: noncashgtremainamterrmsg,
@@ -2365,7 +2363,7 @@ function resetPay(partial: boolean = false) {
 	activePayIdx = -1;
 
 	//reset coupon
-	usecoupon = false;
+	CouponInUse = false;
 	//reset paymenttypechange & chkchange
 	paymenttypechange = false;
 	chkchange = false;
@@ -2416,6 +2414,7 @@ function GetPaymentsInfo() {
 			pmtCode: typecode,
 			Amount: amt,
 			pmtIsCash: typecode.toLowerCase() == "cash",
+			couponLnCode: $.isEmptyObject(CouponLn) ? null : CouponLn.cplCode,
 			TotalAmt: 0,
 		};
 
@@ -2491,34 +2490,49 @@ $(document).on("change", ".chkpayment", function () {
 	//console.log("$tr:", $tr);
 	chkIdx = $tr.index();
 
-	let type = $(this).data("type");
-	if (type === "Coupon") {
-		usecoupon = checked;
-	}
-	//console.log("type:", type);
+	let type = $(this).data("type") as string;
+	DicPayTypesChecked[type.toLowerCase()] = checked;
 	DicPayServiceCharge[type].Selected = checked;
+
+	CouponInUse = DicPayTypesChecked["coupon"];
+	//console.log("isCoupon:", isCoupon);
+
 	$tr.find(".paymenttype").prop("readonly", !checked);
 
-
-	if (checked) {
-		GetServiceChargeAmt(Sales.rtsFinalTotal!);
-		Sales.rtsFinalTotal! += ServiceChargeAmt;
-	} else {
-		$tr.find(".paymenttype").val("0.00");
-		Sales.rtsFinalTotal! -= ServiceChargeAmt;
-		//DicPayServiceCharge[type].Added = false;
+	if (type.toLowerCase() == "visa" || type.toLowerCase() == "mastercard") {
+		if (checked) {
+			GetServiceChargeAmt(Sales.rtsFinalTotal!);
+			Sales.rtsFinalTotal! += ServiceChargeAmt;
+		} else {
+			Sales.rtsFinalTotal! -= ServiceChargeAmt;
+		}
 	}
 
+	if (!checked) $tr.find(".paymenttype").val("0.00");
+
+
 	setAmtDisplay(Sales!.rtsFinalTotal ?? 0, 0);
+
+	if (CouponInUse && $.isEmptyObject(CouponLn)) {
+		openBarCodeModal();
+		/*for debug only*/
+		if (debug) {
+			barcodeModal.find("#txtBarCode").val("FYGoQQ0cg3");
+		}
+	}
+
+	if ($(".chkpayment:checked").length == 0) {
+		DicPayTypesChecked["cash"] = true;
+		$(".chkpayment").first().prop("checked", true);
+		initCashTxt(Sales!.rtsFinalTotal);
+	}
 });
 
 $(document).on("change", ".paymenttype", function () {
 	if (fordayends) return false;
 
 	let payamt: number = Number($(this).val());
-	//console.log("payamt:" + payamt);
-	//let scpc: number = Number($(this).data("scpc"));
-
+	console.log("payamt:", payamt);
 	if (payamt == 0) {
 		$(this).val(formatnumber(0));
 		if (Sales.Deposit == 0) {
@@ -2526,17 +2540,11 @@ $(document).on("change", ".paymenttype", function () {
 		}
 	}
 	if (payamt > 0) {
-		//ServiceChargePC += Number($(this).data("scpc"));
-		//console.log("ServiceChargePC:" + ServiceChargePC);
 		if (forsimplesales) populateOrderSummary();
-
 		$(this).val(formatnumber(payamt));
-		/*payamt = payamt / exRate;*/
-		//console.log("amt:" + amt);
 		if (payamt >= 0) {
-			couponamt = payamt;
+			/*couponamt = payamt;*/
 			if ((Sales && Sales.Deposit == 0) || (PreSales && PreSales.rtsStatus == SalesStatus.presettling)) {
-				//console.log("ready for setremain...");
 				setRemain($(this), payamt);
 			}
 		}
@@ -2569,9 +2577,6 @@ function confirmPay() {
 			break;
 	}
 
-	//if (isEpay) {
-	//	submitSimpleSales();
-	//} else {
 	let paymentsInfo = GetPaymentsInfo();
 	//console.log("paymentsInfo:", paymentsInfo);
 	let _couponamt: number = paymentsInfo.couponamt;
@@ -2586,7 +2591,6 @@ function confirmPay() {
 	} else if (_totalpay < _totalamt) {
 		switch (salesType) {
 			case SalesType.simplesales:
-				//submitSimpleSales();
 				falert(paymentnotenough, oktxt);
 				_totalpay = 0;
 				break;
@@ -2624,7 +2628,7 @@ function confirmPay() {
 			});
 		} else {
 			//console.log("usecoupon:" + usecoupon + ";_couponamt:" + _couponamt);
-			if (!usecoupon) {
+			if (!CouponInUse) {
 				Sales.rtpChange = _totalpay - _totalamt;
 				//console.log('ichange:' + ichange + ';ready to open changemodal...');
 				openChangeModal();
@@ -2685,7 +2689,13 @@ function closeChangeModal() {
 	}
 }
 
+function resetPayModal() {
+	$("#tblPay tbody tr").each(function (i, e) {
+		$(e).find("td").first().find(".chkpayment").prop("checked", false);
+	});
+}
 function openPayModal(totalamt: number = 0) {
+	resetPayModal();
 	payModal.dialog("option", { width: 600, title: processpayments });
 	payModal.dialog("open");
 
@@ -2693,7 +2703,7 @@ function openPayModal(totalamt: number = 0) {
 		let $deposit: JQuery = $("#deposit");
 		$deposit.prop("checked", true);
 	}
-	//console.log("setexratedropdown");
+
 	setExRateDropDown();
 
 	if (totalamt === 0)
@@ -2701,13 +2711,24 @@ function openPayModal(totalamt: number = 0) {
 
 	if (forsales) Sales.rtsFinalTotal = totalamt;
 
-	//console.log("totalamt:" + totalamt);
-	/*if (!forsimplesales)*/
 	setForexPayment(totalamt);
 
 	setAmtDisplay(totalamt);
 
 	initCashTxt(totalamt);
+
+	setServiceChargeAmt(totalamt);
+}
+
+function setServiceChargeAmt(totalamt: number) {
+	$("#tblPay tbody tr").each(function (i, e) {
+		let $td = $(e).find(".scpc");
+		if ($td.length) {
+			let scpc = Number($td.find("input").data("scpc"));
+			let scamt = calculateServiceChargeAmt(totalamt, scpc);
+			$td.find("input").data("amt", scamt).val(formatnumber(scamt));
+		}
+	});
 }
 function setAmtDisplay(totalamt: number, remainamt: number = 0) {
 	$("#salesamount").data("amt", totalamt).text(formatmoney(totalamt));
@@ -2719,9 +2740,16 @@ function initCashTxt(totalamt: number | null) {
 		totalamt = getTotalAmt4Order();
 	}
 	cashtxt = totalamt.toFixed(2);
-	//console.log("cashtxt:" + cashtxt);
-	togglePlusCheck("btnCash");
 	$("#Cash").val(cashtxt);
+
+	DicPayTypesChecked["cash"] = true;
+	if (forsales)
+		$("#tblPay tbody tr").first().find(".chkpayment").prop("checked", true);
+
+	if (forsimplesales) {
+		togglePlusCheck("btnCash");
+		togglePayment("cash", true);
+	}
 }
 function togglePayModeTxt() {
 	//console.log("check length:", $(".checks:visible").length);
@@ -2735,14 +2763,13 @@ function togglePayModeTxt() {
 }
 
 function togglePlusCheck(Id: string): boolean {
-	$(`#${Id}`).find(".pluse").toggle();
+	$(`#${Id}`).toggleClass("toggle").find(".pluse").toggle();
 	let $return = $(`#${Id}`).find(".checks").toggle();
 	return $return.is(":visible");
 }
 function setForexPayment(totalamt: number | null) {
 	if (!totalamt) totalamt = getTotalAmt4Order();
 	$("#forexPayment").html(formatnumber(totalamt));
-	//initCashTxt(totalamt);
 }
 
 function closePayModal() {
@@ -6000,7 +6027,7 @@ function initItem(): IItem {
 		itmUnitCost: 0,
 		itmItemID: Number($("#itmItemID").val()),
 		itmDSN: "",
-		lstQtyAvailable: 1,
+		QtySellable: 1,
 		PLA: Number($("#PLA").val()),
 		PLB: Number($("#PLB").val()),
 		PLC: Number($("#PLC").val()),
@@ -6066,7 +6093,7 @@ function initItem(): IItem {
 
 interface ISimpleItem {
 	itmPicFile: string | null;
-	lstQtyAvailable: number;
+	QtySellable: number;
 	itmItemID: number;
 	itmCode: string;
 	itmName: string;
@@ -6335,6 +6362,7 @@ interface IPayType {
 	Amount: number;
 	pmtIsCash: boolean;
 	TotalAmt: number;
+	couponLnCode: string | null;
 }
 let PayType: IPaymentType;
 interface ICompanyInfo {
@@ -8144,7 +8172,7 @@ interface IPayServiceCharge {
 let DicPayType: { [Key: string]: string } = {};
 let DicItemSNs: { [Key: string]: Array<ISerialNo> } = {};
 let DicPayServiceCharge: { [Key: string]: IPayServiceCharge } = {};
-
+let DicPayTypesChecked: { [Key: string]: boolean } = {};
 interface IPreSales {
 	rtsCusCode: string;
 	rtsServiceChargeAmt: number;
@@ -8994,12 +9022,12 @@ function populateSalesRow(proId: number | null = 0, triggerChange: boolean = tru
 			selectedSimpleSalesLn!.rtlSeq = seq;
 			selectedSimpleSalesLn!.Item.singleProId = proId;
 			namedesc = selectedSimpleSalesLn!.Item.NameDesc;
-			qtysellable = selectedSimpleSalesLn!.Item.lstQtyAvailable;
+			qtysellable = selectedSimpleSalesLn!.Item.QtySellable;
 		} else {
 			selectedSalesLn!.rtlSeq = seq;
 			selectedSalesLn!.Item.singleProId = proId;
 			namedesc = selectedSalesLn!.Item.NameDesc;
-			qtysellable = selectedSalesLn!.Item.lstQtyAvailable;
+			qtysellable = selectedSalesLn!.Item.QtySellable;
 		}
 
 	}
@@ -9008,14 +9036,14 @@ function populateSalesRow(proId: number | null = 0, triggerChange: boolean = tru
 		selectedPreSalesLn!.rtlSeq = seq;
 		selectedPreSalesLn!.Item.singleProId = proId;
 		namedesc = selectedPreSalesLn!.Item.NameDesc;
-		qtysellable = selectedPreSalesLn!.Item.lstQtyAvailable;
+		qtysellable = selectedPreSalesLn!.Item.QtySellable;
 	}
 	if (forwholesales && selectedWholesalesLn) {
 		discpc = selectedWholesalesLn!.wslLineDiscPc ?? 0;
 		selectedWholesalesLn!.wslSeq = seq;
 		selectedWholesalesLn!.Item.singleProId = proId;
 		namedesc = selectedWholesalesLn!.Item.NameDesc;
-		qtysellable = selectedWholesalesLn!.Item.lstQtyAvailable;
+		qtysellable = selectedWholesalesLn!.Item.QtySellable;
 	}
 	if (forpurchase && SelectedPurchaseItem) {
 		discpc = SelectedPurchaseItem!.piDiscPc ?? 0;
@@ -15310,13 +15338,10 @@ function calculateServiceChargeAmt(subtotal: number, scpc: number) {
 function GetServiceChargeAmt(subtotal: number) {
 	ServiceChargePC = 0;
 	for (const [key, value] of Object.entries(DicPayServiceCharge)) {
-		/*if (value.Selected && !value.Added) { ServiceChargePC += value.Percentage; value.Added = true; }*/
 		if (value.Selected) { ServiceChargePC += value.Percentage; }
 	}
-	//console.log("ServiceChargePC:" + ServiceChargePC);
-	//console.log("subtotal:" + subtotal);
 	ServiceChargeAmt = calculateServiceChargeAmt(subtotal, ServiceChargePC);
-	//console.log("ServiceChargeAmt:", ServiceChargeAmt);
+	console.log("ServiceChargeAmt:", ServiceChargeAmt);
 }
 function populateOrderSummary() {
 	$("#receiptno").text(Sales.rtsCode);
@@ -15329,11 +15354,11 @@ function populateOrderSummary() {
 	let html = "";
 
 	SelectedSimpleItemList.forEach((x: ISimpleItem) => {
-		let _subtotal: number = x.lstQtyAvailable * (x.itmBaseSellingPrice ?? 0);
+		let _subtotal: number = x.QtySellable * (x.itmBaseSellingPrice ?? 0);
 		let _disc: number = financial(_subtotal * x.discpc / 100);
 		subtotal += _subtotal;
 		disc += _disc;
-		html += `<h3>${x.NameDesc} x ${x.lstQtyAvailable} <span>${currencySym}${formatnumber(_subtotal)}</span></h3>`;
+		html += `<h3>${x.NameDesc} x ${x.QtySellable} <span>${currencySym}${formatnumber(_subtotal)}</span></h3>`;
 	});
 
 	$(".table__single.items").empty().html(html);
@@ -18783,7 +18808,7 @@ function _submitSales() {
 	let data = forpreorder
 		? { PreSales, PreSalesLnList, Payments, DeliveryItems }
 		: { Sales, SalesLnList, Payments, DeliveryItems };
-	console.log("data:", data);
+	//console.log("data:", data);
 	//return false;
 	openWaitingModal();
 	$.ajax({
@@ -22825,15 +22850,63 @@ function getPathFromUrl(url: string) {
 function addMonths(months, date: Date = new Date()) {
 	var d = date.getDate();
 	date.setMonth(date.getMonth() + +months);
-	if (date.getDate() != d) {
-		date.setDate(0);
-	}
+	if (date.getDate() != d) date.setDate(0);
 	return date;
 }
 
 function confirmBarCodeClose() {
 	let barcode: string = barcodeModal.find("#txtBarCode").val() as string;
-	closeBarCodeModal();
-	console.log("barcode:" + barcode);
-	//todo:
+	//console.log("barcode:" + barcode);
+	if (forsimplesales || forsales) {
+		openWaitingModal();
+		$.ajax({
+			type: "GET",
+			url: "/Coupon/GetCouponLn",
+			data: { code: barcode },
+			success: function (data: ICouponLn) {
+				closeWaitingModal();
+				if (data) {
+					CouponLn = structuredClone(data);
+					if (CouponLn.cplIsRedeemed || CouponLn.cplIsVoided) {
+						let msg = CouponLn.cplIsRedeemed ? couponredeemedwarning : couponvoidedwarning;
+						$.fancyConfirm({
+							title: "",
+							message: msg,
+							shownobtn: false,
+							okButton: oktxt,
+							noButton: notxt,
+							callback: function (value) {
+								if (value) {
+									$("#txtBarCode").val("").trigger("focus");
+									CouponLn = {} as ICouponLn;
+									//console.log("CouponLn#fail:", CouponLn);
+								}
+							}
+						});
+					} else {
+						closeBarCodeModal();
+						if (forsimplesales) {
+							togglePayment("Coupon", true);
+							togglePayModeTxt();
+							populateOrderSummary();
+						}
+						if (forsales) {						
+							let remainamt: number = 0;
+							if (Sales!.rtsFinalTotal! > CouponLn.cpPrice) remainamt = Sales!.rtsFinalTotal! - CouponLn.cpPrice;
+							$("#tblPay tbody tr").each(function (i, e) {
+								if (i == 0) {
+									if ($(e).find(".chkpayment").is(":checked"))$(e).find(".paymenttype").val(formatnumber(remainamt)); 
+								} else {
+									if (($(e).find(".chkpayment").data("type") as string).toLowerCase() == "coupon") $(e).find(".paymenttype").val(formatnumber(CouponLn.cpPrice));
+									else $(e).find(".paymenttype").val(formatnumber(0));
+								}
+							});
+						}
+					}
+
+				}
+			},
+			dataType: "json"
+		});
+	}
 }

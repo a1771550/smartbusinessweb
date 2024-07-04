@@ -99,7 +99,7 @@
 
 		<table id="tblPay" class="table table-bordered table-hover  table-condensed">
 			<thead class="gray-header">
-				<tr><th class="text-center">@Resources.Resource.PaymentType</th><th class="text-right">@Resources.Resource.ServiceCharge</th><th class="text-right">@Resources.Resource.Amount</th></tr>
+				<tr><th class="text-center">@Resources.Resource.PaymentType</th><th class="text-right">@Resources.Resource.ServiceCharge $</th><th class="text-right">@Resources.Resource.Amount $</th></tr>
 			</thead>
 			<tbody>
 				@if ((forpreorder && PaymentTypes != null) || (fordeposit && PaymentTypes != null))
@@ -110,6 +110,7 @@
 						string chkId = string.Concat("chk" + payment.pmtCode);
 						string _checked = idx == 0 ? "checked" : "";
 						string _readonly = idx == 0 ? "" : "readonly";
+						string scpccls = payment.pmtServiceChargePercent == 0 ? "" : "scpc";
 						<tr data-idx="@idx">
 							<td>
 								
@@ -121,7 +122,9 @@
 									</div>
 								
 							</td>
-							<td class="text-right"><input type="text" class="form-control scpc number flex text-right" value="@payment.pmtServiceChargePercent" readonly /></td>
+							<td class="text-right @scpccls">
+								<input type="text" class="form-control number flex text-right" data-scpc="@payment.pmtServiceChargePercent" value="0.00" readonly />
+							</td>
 							<td class="text-right"><input type="text" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype flex number text-right" value="0.00" @_readonly data-scpc="@payment.pmtServiceChargePercent" /></td>
 						</tr>
 						idx++;
@@ -136,6 +139,7 @@
 						string chkId = string.Concat("chk" + payment.pmtCode);
 						string _checked = idx == 0 ? "checked" : "";
 						string _readonly = idx == 0 ? "" : "readonly";
+						string scpccls = payment.pmtServiceChargePercent == 0 ? "" : "scpc";
 						<tr data-idx="@idx">
 							<td>
 								
@@ -147,7 +151,9 @@
 									</div>
 								
 							</td>
-							<td class="text-right"><input type="text" class="form-control scpc number flex text-right" value="@payment.pmtServiceChargePercent" readonly /></td>
+							<td class="text-right @scpccls">
+								<input type="text" class="form-control number flex text-right" data-scpc="@payment.pmtServiceChargePercent" value="0.00" readonly />
+							</td>
 							<td class="text-right"><input type="text" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype flex number text-right" value="0.00" @_readonly data-scpc="@payment.pmtServiceChargePercent" /></td>
 						</tr>
 						idx++;
@@ -158,11 +164,14 @@
 				{
 					foreach (PaymentType payment in PaymentTypes)
 					{
+						string scpccls = payment.pmtServiceChargePercent == 0 ? "" : "scpc";
 						if (payment.pmtCode != "Coupon")
 						{
 							<tr data-code="@payment.pmtCode">
 								<td>@DicPayTypes[payment.pmtCode]</td>
-								<td class="text-right"><input type="text" class="form-control scpc number flex text-right" value="@payment.pmtServiceChargePercent" readonly /></td>
+								<td class="text-right @scpccls">
+									<input type="text" class="form-control number flex text-right" data-scpc="@payment.pmtServiceChargePercent" value="0.00" readonly />
+								</td>
 								<td class="text-right">
 									<input type="text" id="@payment.pmtCode" name="@payment.pmtCode" class="form-control paymenttype flex number text-right" value="0.00" data-scpc="@payment.pmtServiceChargePercent" />
 								</td>

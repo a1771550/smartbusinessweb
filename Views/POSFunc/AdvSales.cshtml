@@ -9,7 +9,7 @@
 
 	var currency = Model.Currency;
 	bool showrecur = false;
-	SessUser user = System.Web.HttpContext.Current.Session["User"] as SessUser;	
+	SessUser user = System.Web.HttpContext.Current.Session["User"] as SessUser;
 	var Sales = Model.Sales;
 	bool editmode = !string.IsNullOrEmpty(Model.Mode) && Model.Mode == "edit";
 	string subtitle = Resources.Resource.MakeSales;
@@ -63,17 +63,16 @@ else
 
 @Html.Partial("_ValidThruModal")
 
-@Html.Partial("_PayModal", null, new ViewDataDictionary { { "forsales", true }, { "enableEpay", enableEpay }, { "PaymentTypes", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes },{"DicPayServiceCharge",Model.DicPayServiceCharge } })
+@Html.Partial("_PayModal", null, new ViewDataDictionary { { "forsales", true }, { "enableEpay", enableEpay }, { "PaymentTypes", Model.PaymentTypes }, { "DicPayTypes", Model.DicPayTypes }, { "DicPayServiceCharge", Model.DicPayServiceCharge } })
 
 @Html.Partial("_ItemVariModal")
 
 @Html.Partial("_ChangeModal")
 
+@Html.Partial("_BarcodeModal")
+
 @Html.Partial("_WaitingModal")
 
 
-<div id="infoblk" data-currency="@Model.Currency" data-priceeditable="@Model.PriceEditable" data-disceditable="@Model.DiscEditable" data-enabletax="@Model.TaxModel.EnableTax" data-salesmanrequiredtxt="@string.Format(Resources.Resource.PleaseFormat,string.Format(Resources.Resource.SelectFormat,Resources.Resource.SalesPerson))" data-jsondiclocation="@Model.JsonDicLocation" data-jsondicbattotalqty="@JsonSerializer.Serialize(Model.DicBatTotalQty)" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicitemsns="@JsonSerializer.Serialize(Model.DicItemSNs)" data-dicitemoptions="@JsonSerializer.Serialize(Model.DicItemOptions)" data-jsonpoitembatvqlist="@JsonSerializer.Serialize(Model.PoItemBatVQList)" data-jsondicitembatsnvtlist="@JsonSerializer.Serialize(Model.DicItemBatSnVtList)" data-jsondicitemvtqtylist="@JsonSerializer.Serialize(Model.DicItemVtQtyList)" data-jsondicitembatchqty="@JsonSerializer.Serialize(Model.DicItemBatchQty)" data-jsondicitemsnvtlist="@JsonSerializer.Serialize(Model.DicItemSnVtList)" data-jsondicitembatdelqty="@JsonSerializer.Serialize(Model.DicItemBatDelQty)" data-jsondicitemvtdelqtylist="@JsonSerializer.Serialize(Model.DicItemVtDelQtyList)" data-jsondicseqdeliveryitems="@JsonSerializer.Serialize(Model.DicSeqDeliveryItems)" data-jsondicitembatsnvt="@JsonSerializer.Serialize(Model.DicItemBatSnVt)" data-jsonpoivinfo="@JsonSerializer.Serialize(Model.PoIvInfo)" data-jsondicivinfo="@JsonSerializer.Serialize(Model.DicIvInfo)" data-dicitemgroupedvariations="@JsonSerializer.Serialize(Model.DicItemGroupedVariations)" data-dicivqtylist="@JsonSerializer.Serialize(Model.DicIvQtyList)" data-dicivdelqtylist="@JsonSerializer.Serialize(Model.DicIvDelQtyList)" data-sales="@JsonSerializer.Serialize(Model.Sales)" data-saleslnlist="@JsonSerializer.Serialize(Model.SalesLnList)" data-itemlist="@JsonSerializer.Serialize(Model.ItemList)" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)" data-dicpayservicecharge="@JsonSerializer.Serialize(Model.DicPayServiceCharge)" data-defaultcustomer="@JsonSerializer.Serialize(Model.DefaultCustomer)" data-jsonjoblist="@JsonSerializer.Serialize(Model.JobList)"></div>
-
-
-
+<div id="infoblk" data-currency="@Model.Currency" data-priceeditable="@Model.PriceEditable" data-disceditable="@Model.DiscEditable" data-enabletax="@Model.TaxModel.EnableTax" data-salesmanrequiredtxt="@string.Format(Resources.Resource.PleaseFormat,string.Format(Resources.Resource.SelectFormat,Resources.Resource.SalesPerson))" data-jsondiclocation="@Model.JsonDicLocation" data-jsondicbattotalqty="@JsonSerializer.Serialize(Model.DicBatTotalQty)" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)" data-dicitemsns="@JsonSerializer.Serialize(Model.DicItemSNs)" data-dicitemoptions="@JsonSerializer.Serialize(Model.DicItemOptions)" data-jsonpoitembatvqlist="@JsonSerializer.Serialize(Model.PoItemBatVQList)" data-jsondicitembatsnvtlist="@JsonSerializer.Serialize(Model.DicItemBatSnVtList)" data-jsondicitemvtqtylist="@JsonSerializer.Serialize(Model.DicItemVtQtyList)" data-jsondicitembatchqty="@JsonSerializer.Serialize(Model.DicItemBatchQty)" data-jsondicitemsnvtlist="@JsonSerializer.Serialize(Model.DicItemSnVtList)" data-jsondicitembatdelqty="@JsonSerializer.Serialize(Model.DicItemBatDelQty)" data-jsondicitemvtdelqtylist="@JsonSerializer.Serialize(Model.DicItemVtDelQtyList)" data-jsondicseqdeliveryitems="@JsonSerializer.Serialize(Model.DicSeqDeliveryItems)" data-jsondicitembatsnvt="@JsonSerializer.Serialize(Model.DicItemBatSnVt)" data-jsonpoivinfo="@JsonSerializer.Serialize(Model.PoIvInfo)" data-jsondicivinfo="@JsonSerializer.Serialize(Model.DicIvInfo)" data-dicitemgroupedvariations="@JsonSerializer.Serialize(Model.DicItemGroupedVariations)" data-dicivqtylist="@JsonSerializer.Serialize(Model.DicIvQtyList)" data-dicivdelqtylist="@JsonSerializer.Serialize(Model.DicIvDelQtyList)" data-sales="@JsonSerializer.Serialize(Model.Sales)" data-saleslnlist="@JsonSerializer.Serialize(Model.SalesLnList)" data-itemlist="@JsonSerializer.Serialize(Model.ItemList)" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)" data-dicpayservicecharge="@JsonSerializer.Serialize(Model.DicPayServiceCharge)" data-defaultcustomer="@JsonSerializer.Serialize(Model.DefaultCustomer)" data-jsonjoblist="@JsonSerializer.Serialize(Model.JobList)" data-debug="@(ConfigurationManager.AppSettings["Debug"])" data-dicpaytypeschecked="@JsonSerializer.Serialize(Model.DicPayTypesChecked)"></div>
 <script src="~/Scripts/ts/js/pos/advsales.js?v=@rand"></script>

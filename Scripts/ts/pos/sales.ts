@@ -2,23 +2,28 @@
 
 let selectedCatId: number = 3;
 let filteredItemList: ISimpleItem[] = [];
-function togglePayment(code: string, checked: boolean) {
-	code = code.toLowerCase();
-	//console.log("code:" + code);
-	//console.log("checked:", checked);
+function togglePayment(type: string, checked: boolean) {
+	type = type.toLowerCase();
 	let amt = Number($("#salesamount").data("amt"));
+	console.log("type:" + type);
+	console.log("checked:", checked);
+	isEpay = DicPayTypesChecked["alipay"] || DicPayTypesChecked["wechat"];
 	if (isEpay) {
 		$(".single__add").removeClass("activee");
 		$(".single__add").each(function (i, e) {
-			let _code = ($(e).data("code") as string).toLowerCase();
-			if (_code == code) {
-				if (checked) $(e).addClass("activee");				
+			let _type = ($(e).data("type") as string).toLowerCase();
+			if (_type == type) {
+				if (checked) {
+					$(e).addClass("activee");
+					$(e).find(".paymenttype").data("amt", amt).val(formatnumber(amt));
+					return false;
+				}
 			}
 		});
 	} else {
 		$(".single__add").each(function (i, e) {
-			let _code = ($(e).data("code") as string).toLowerCase();
-			if (_code == code) {
+			let _type = ($(e).data("type") as string).toLowerCase();
+			if (_type == type) {
 				if (checked) {
 					$(e).addClass("activee");
 				}
@@ -27,35 +32,47 @@ function togglePayment(code: string, checked: boolean) {
 						$(e).removeClass("activee");
 				}
 				$(e).find(".paymenttype").val(formatnumber(0));
-			} else if (_code == "alipay" || _code == "wechat") {
+			} else if (_type == "alipay" || _type == "wechat") {
 				$(e).removeClass("activee");
 			}
 		});
-	}
 
-	if (checked && $(".single__add.activee").length === 1) {
-		$target = $(".single__add.activee").first();
-		
-		if (($target.data("code") as string).toLowerCase() == code) {
-			$target.find(".paymenttype").data("amt", amt).val(formatnumber(amt));
+		CouponInUse = DicPayTypesChecked["coupon"];
+
+		if ($(".single__add.activee").length === 1) {
+			$(".single__add.activee").first().find(".paymenttype").val(formatnumber(amt));
+		} else {
+			let remainamt: number = amt;
+			if (CouponInUse) {
+				if (amt > CouponLn.cpPrice) remainamt = amt - CouponLn.cpPrice;
+			}
+			$(".single__add.activee").each(function (i, e) {
+				if (i == 0) $(e).find(".paymenttype").val(formatnumber(remainamt));
+				else {
+					if (($(e).data("type") as string).toLowerCase() == "coupon") $(e).find(".paymenttype").val(formatnumber(CouponLn.cpPrice));
+					else $(e).find(".paymenttype").val(formatnumber(0));
+				}
+			});
 		}
 	}
 }
+
 $(document).on("click", ".btnpayment", function () {
 	let Id = $(this).attr("id") as string;
-	let code = $(this).data("type") as string;
+	let type = $(this).data("type") as string;
 	let checked = false;
-
-	if ($(".btnpayment.toggle").length == 1 && code.toLowerCase() == "cash") return;
-
-	isEpay = (code.toLowerCase() == "alipay" || code.toLowerCase() == "wechat");
-	isCoupon = code.toLowerCase() == "coupon";
+	//if ($(".btnpayment.toggle").length == 1 && type.toLowerCase() == "cash") return;
 
 	checked = togglePlusCheck(Id);
 
-	DicPayServiceCharge[code].Selected = checked;
+	DicPayTypesChecked[type.toLowerCase()] = checked;
+	DicPayServiceCharge[type].Selected = checked;
+
+	isEpay = DicPayTypesChecked["wechat"] || DicPayTypesChecked["alipay"];
+	CouponInUse = DicPayTypesChecked["coupon"];
 
 	if (checked) {
+
 		$(this).addClass("toggle");
 
 		if (isEpay) {
@@ -67,8 +84,8 @@ $(document).on("click", ".btnpayment", function () {
 				if (_id != Id) {
 					$(e).removeClass("toggle");
 					$(e).find(".checks").hide();
-					let _code = ($(e).data("type") as string).toLowerCase();
-					if (_code == "cash" || (_code=="alipay"||_code=="wechat")) {
+					let _type = ($(e).data("type") as string).toLowerCase();
+					if (_type == "cash" || (_type == "alipay" || _type == "wechat")) {
 						if (!($(e).find(".pluse").is(":visible"))) $(e).find(".pluse").show();
 					}
 				}
@@ -78,8 +95,8 @@ $(document).on("click", ".btnpayment", function () {
 		}
 		else {
 			$(".btnpayment").each(function (i, e) {
-				let code = ($(e).data("type") as string).toLowerCase();
-				if (code == "alipay" || code == "wechat") {
+				let type = ($(e).data("type") as string).toLowerCase();
+				if (type == "alipay" || type == "wechat") {
 					$(e).removeClass("toggle");
 					$(e).find(".checks").hide();
 					if (!($(e).find(".pluse").is(":visible"))) $(e).find(".pluse").show();
@@ -89,21 +106,29 @@ $(document).on("click", ".btnpayment", function () {
 		}
 	}
 	else {
-		if ($(".btnpayment.toggle").length > 1) {
-			$(this).removeClass("toggle");
-		}
+		$(this).removeClass("toggle");
 	}
 
-	if (checked && isCoupon) {
+	if (CouponInUse && $.isEmptyObject(CouponLn)) {
 		openBarCodeModal();
+		/*for debug only*/
+		if (debug) {
+			barcodeModal.find("#txtBarCode").val("VYwGYNc7Zo");
+		}
+	} else {
+		togglePayment(type, checked);
+		togglePayModeTxt();
+		populateOrderSummary();
 	}
 
-	togglePayment(code, checked);
-
-	togglePayModeTxt();
-
-	populateOrderSummary();
-
+	if ($(".btnpayment.toggle").length == 0) {
+		$(".single__add").removeClass("activee");
+		DicPayTypesChecked["cash"] = true;
+		togglePlusCheck("btnCash");
+		togglePayment("cash", true);
+		togglePayModeTxt();
+		populateOrderSummary();
+	}
 });
 $(document).on("change", "#txtItemCode", function () {
 	/*console.log("here");*/
@@ -148,8 +173,8 @@ function handleProductCheck(ele: HTMLElement | null, discpc: number, increment: 
 	function populateSimpleItem() {
 		//console.log("ele.price:", $(ele!).data("price"));
 		if (!ele)
-			selectedSimpleItem = { itmCode: "ABSSV28.9", NameDesc: "ABSS Accounting v28.9", itmItemID: Id, lstQtyAvailable: 1, itmBaseSellingPrice: 4188, itmPicFile: "abss2p.jpg", discpc } as ISimpleItem;
-		else selectedSimpleItem = { itmCode: $(ele!).data("code"), NameDesc: $(ele!).data("namedesc"), itmItemID: Id, lstQtyAvailable: 1, itmBaseSellingPrice: Number($(ele!).data("price")), itmPicFile: $(ele!).data("file"), discpc } as ISimpleItem;
+			selectedSimpleItem = { itmCode: "ABSSV28.9", NameDesc: "ABSS Accounting v28.9", itmItemID: Id, QtySellable: 1, itmBaseSellingPrice: 4188, itmPicFile: "abss2p.jpg", discpc } as ISimpleItem;
+		else selectedSimpleItem = { itmCode: $(ele!).data("code"), NameDesc: $(ele!).data("namedesc"), itmItemID: Id, QtySellable: 1, itmBaseSellingPrice: Number($(ele!).data("price")), itmPicFile: $(ele!).data("file"), discpc } as ISimpleItem;
 		//console.log("selectedSimpleItem:", selectedSimpleItem);
 	}
 }
@@ -159,7 +184,7 @@ function populateProductList() {
 
 	SelectedSimpleItemList.forEach((x: ISimpleItem) => {
 		let imgpath = x.itmPicFile ? `images/items/${x.itmPicFile}` : `images/default.png`;
-		let _subtotal: number = x.lstQtyAvailable * (x.itmBaseSellingPrice ?? 0);
+		let _subtotal: number = x.QtySellable * (x.itmBaseSellingPrice ?? 0);
 		//console.log("x.discpc:" + x.discpc);
 		let _disc: number = _subtotal * x.discpc / 100;
 
@@ -186,7 +211,7 @@ function populateProductList() {
 												<div class="increment-decrement">
 													<div class="input-groups">
 														<input type="button" value="-" class="button-minus dec button operator" data-id="${x.itmItemID}">
-														<input type="text" name="child" value="${x.lstQtyAvailable}" class="quantity-field simpleqty" data-id="${x.itmItemID}">
+														<input type="text" name="child" value="${x.QtySellable}" class="quantity-field simpleqty" data-id="${x.itmItemID}">
 														<input type="button" value="+" class="button-plus inc button operator" data-id="${x.itmItemID}">
 													</div>
 												</div>
@@ -216,13 +241,8 @@ $(document).on("click", "#btnConfirmPay", function () {
 	confirmPay();
 });
 $(document).on("click", "#btnCheckout", function () {
-	//Sales.rtsFinalTotal = 5000;
-	//togglePaymentBlk("open", "salesBlk", Sales.rtsFinalTotal); return false;
 	Sales.rtsFinalTotal = Number($(this).find(".totalamt").text());
-	//console.log("Sales.rtsFinalTotal:", Sales.rtsFinalTotal);
-	//console.log("amt:" + amt);
-	//console.log("Sales:", Sales);
-	//return false;
+
 	if (Sales.rtsFinalTotal > 0) {
 		//console.log("cusid:" + Sales.rtsCusID);
 		if (Sales.rtsCusCode) {
@@ -268,7 +288,7 @@ $(document).on("click", ".operator", function () {
 	}
 	if (qty < 0) qty = 0;
 
-	SelectedSimpleItemList[idx].lstQtyAvailable = qty;
+	SelectedSimpleItemList[idx].QtySellable = qty;
 	//console.log("qty:", qty);
 	populateProductList();
 });
@@ -279,7 +299,7 @@ function handleDiscPcChange(this: any) {
 	populateProductList();
 }
 
-function openTapContent(ele, tapName, Id) {
+function openTapContent(tapName, Id) {
 	// Declare all variables
 	var i, tab_content, tablinks;
 
@@ -297,10 +317,9 @@ function openTapContent(ele, tapName, Id) {
 
 	// Show the current tab, and add an "active" class to the button that opened the tab
 	document.getElementById(tapName)!.style.display = "block";
-	ele.className += " active";
+	//ele.className += " active";
 
-	selectedCatId = Id;
-	//console.log("selectedCatId:" + selectedCatId + ";Id:" + Id);
+	//selectedCatId = Id;
 	filteredItemList = [];
 	if (SimpleItemList) {
 		SimpleItemList.forEach((x) => {
@@ -375,11 +394,12 @@ $(document).on("dblclick", ".itmprice", function () {
 function populateProductBlk(itemList: ISimpleItem[]): string {
 	let html = "";
 	itemList.forEach((item) => {
+		//console.log("item:", item);
 		html += `<div class="col-lg-3 col-sm-6 d-flex ">
 									<div class="productset flex-fill pointer" id="${item.itmCode}" data-id="${item.itmItemID}" data-namedesc="${item.NameDesc}" data-code="${item.itmCode}" data-price="${item.itmBaseSellingPrice}" data-file="${item.itmPicFile}">
 										<div class="productsetimg">
 											<img src="/images/items/${item.itmPicFile}" alt="${item.NameDesc}">
-											<h6>${qtytxt}: ${item.lstQtyAvailable}</h6>
+											<h6>${qtytxt}: ${item.QtySellable}</h6>
 
 											<div class="check-product hide" data-id="${item.itmItemID}" data-namedesc="${item.NameDesc}" data-code="${item.itmCode}" data-price="${item.itmBaseSellingPrice}" data-file="${item.itmPicFile}">
 												<i class="fa fa-check"></i>
@@ -405,37 +425,37 @@ function populateProductBlk(itemList: ISimpleItem[]): string {
 }
 $(document).on("change", "#searchItem", function () {
 	keyword = $(this).val() as string;
-	console.log("keyword:", keyword);
+	//console.log("keyword:", keyword);
 	filteredItemList = [];
 	if (keyword != "") {
-		keyword = keyword.toLowerCase();
-		console.log("SimpleItemList:", SimpleItemList);
+		//console.log("SimpleItemList:", SimpleItemList);
 		SimpleItemList.forEach((x) => {
-			console.log("x.catId:" + x.catId);
-			if (x.catId == selectedCatId) {
-				console.log("x.itmcode:" + x.itmCode + ";x.namedesc:" + x.NameDesc + ";x.itmCode.indexOf(keyword):" + x.itmCode.indexOf(keyword) + ";x.NameDesc.indexOf(keyword):" + x.NameDesc.indexOf(keyword));
-				if (x.itmCode.toLowerCase().indexOf(keyword) >= 0 || x.NameDesc.toLowerCase().indexOf(keyword) >= 0) filteredItemList.push(x);
-			}
+			/*	console.log("x.itmcode:" + x.itmCode + ";x.namedesc:" + x.NameDesc + ";x.itmCode.indexOf(keyword):" + x.itmCode.indexOf(keyword) + ";x.NameDesc.indexOf(keyword):" + x.NameDesc.indexOf(keyword));*/
+			if (x.itmCode.toLowerCase().indexOf(keyword.toLowerCase()) >= 0 || x.NameDesc.toLowerCase().indexOf(keyword.toLowerCase()) >= 0) filteredItemList.push(x);
+
 		});
 		//console.log("filteredItemList#keyword:", filteredItemList);		
 		if (filteredItemList.length === 0) {
-			console.log("ready to show norecord");
+			//console.log("ready to show norecord");
 			$norecordfound.removeClass("hide");
-			console.log("filteredItemList:", filteredItemList);
+			//console.log("filteredItemList:", filteredItemList);
+		} else {
+			$(".tab.small").find("button").removeClass("active");
+			$(".tab_content").find(".page-header").find(".page-title").find("h4").text("");
+			$(".productblk").empty().append(populateProductBlk(filteredItemList));
 		}
 	} else {
 		if (filteredItemList.length === 0) {
-			filteredItemList = $infoblk.data("filteredlist");
-			//console.log("filteredItemList:", filteredItemList);
+			filteredItemList = $infoblk.data("filtereditemlist");			
+			$(".productblk").empty().append(populateProductBlk(filteredItemList));
+			initTapContent();
 		}
 	}
-
-
-
-	$(".productblk").empty().append(populateProductBlk(filteredItemList));
-
 });
-
+function initTapContent() {
+	openTapContent($infoblk.data("defaultcatname"), selectedCatId);
+	$(".tab").find("button").first().addClass("active");
+}
 function initInfoVariables4SimpleSales() {
 	comInfo = $infoblk.data("cominfo");
 	PayTypes = $infoblk.data("paytypes");
@@ -447,7 +467,12 @@ function initInfoVariables4SimpleSales() {
 	DicCurrencyExRate = $infoblk.data("diccurrencyexrate");
 	defaultcustomer = $infoblk.data("defaultcustomer");
 	SimpleItemList = $infoblk.data("itemlist");
-	filteredItemList = $infoblk.data("filteredlist");
+	filteredItemList = $infoblk.data("filtereditemlist");
+	//console.log("SimpleItemList:", SimpleItemList);
+	//console.log("filteredItemList:", filteredItemList);
+	selectedCatId = Number($infoblk.data("defaultcatid"));
+	debug = $infoblk.data("debug") == "1";
+	DicPayTypesChecked = $infoblk.data("dicpaytypeschecked");
 }
 $(function () {
 	forsimplesales = true;
@@ -464,11 +489,10 @@ $(function () {
 	lang = Number($("#lang").val());
 	if (lang != 2) $(".btn-scanner-set").css({ "letter-spacing": ".7rem" });
 
-	openTapContent(this, $infoblk.data("defaultcatname"), selectedCatId);
-	$(".tab").find("button").first().addClass("active");
+	initTapContent();
 
 	Sales = initSimpleSales();
-	
+
 	$norecordfound = $("#norecordfound");
 
 	if (SimpleItemList.length == 0)
@@ -480,6 +504,6 @@ $(function () {
 	setInputs4NumberOnly(["number", "paymenttype"]);
 
 	$("#searchItem").trigger("focus");
-	/* for debug only */
-	//$("#btnCheckout").trigger("click");	
 });
+
+

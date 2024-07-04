@@ -71,9 +71,9 @@
 							foreach (PaymentType payment in PaymentTypes)
 							{
 								string btnName = string.Concat("btn" + payment.pmtCode);
-								activecls = idx == 0 ? "toggle" : "";
+								//activecls = idx == 0 ? "toggle" : "";
 
-								<button id="@btnName" class="btnpayment toggle-button @activecls" data-target="payMode" data-type="@payment.pmtCode" data-scpc="@payment.pmtServiceChargePercent">
+								<button id="@btnName" class="btnpayment toggle-button" data-target="payMode" data-type="@payment.pmtCode" data-scpc="@payment.pmtServiceChargePercent">
 									<span class="pluse">
 										<i class="fal fa-plus"></i>
 									</span><span class="checks">
@@ -93,9 +93,9 @@
 								if (payment.pmtCode != "Coupon")
 								{
 									string btnName = string.Concat("btn" + payment.pmtCode);
-									activecls = idx == 0 ? "toggle" : "";
+									//activecls = idx == 0 ? "toggle" : "";
 
-									<button id="@btnName" class="btnpayment toggle-button @activecls" data-target="payMode" data-type="@payment.pmtCode" data-scpc="@payment.pmtServiceChargePercent">
+									<button id="@btnName" class="btnpayment toggle-button" data-target="payMode" data-type="@payment.pmtCode" data-scpc="@payment.pmtServiceChargePercent">
 										<span class="pluse">
 											<i class="fal fa-plus"></i>
 										</span><span class="checks">
@@ -113,8 +113,8 @@
 							foreach (var payment in PaymentTypes)
 							{
 								string btnName = string.Concat("btn" + payment.pmtCode);
-								activecls = idx == 0 ? "toggle" : "";
-								<button id="@btnName" class="btnpayment toggle-button @activecls" data-target="payMode" data-type="@payment.pmtCode" data-scpc="@payment.pmtServiceChargePercent">
+								//activecls = idx == 0 ? "toggle" : "";
+								<button id="@btnName" class="btnpayment toggle-button" data-target="payMode" data-type="@payment.pmtCode" data-scpc="@payment.pmtServiceChargePercent">
 									<span class="pluse">
 										<i class="fal fa-plus"></i>
 									</span><span class="checks">
@@ -139,13 +139,12 @@
 					@if (forsales && PaymentTypes != null)
 					{
 						int idx = 0;
-						//.Where(x=>x.pmtCode.ToLower()!="wechat"&&x.pmtCode.ToLower()!="alipay").ToList()
 						foreach (PaymentType payment in PaymentTypes)
 						{
-							activecls = idx == 0 ? "activee" : "";
-							<div class="single__add @activecls" data-code="@payment.pmtCode">
+							string _readonly = payment.pmtCode.ToLower() == "coupon" ? "readonly" : "";
+							<div class="single__add" data-type="@payment.pmtCode">
 								<span>@DicPayTypes[payment.pmtCode]</span>
-								<input type="text" id="@payment.pmtCode" class="paymenttype" placeholder="0" data-scpc="@payment.pmtServiceChargePercent">
+								<input type="text" id="@payment.pmtCode" @_readonly class="paymenttype" placeholder="0" data-scpc="@payment.pmtServiceChargePercent">
 								<a href="#" class="currencyCode">HKD</a>
 							</div>
 							idx++;

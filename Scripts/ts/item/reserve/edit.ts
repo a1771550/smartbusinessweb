@@ -25,8 +25,8 @@ function populateReserveRow() {
 				$tr.find("td.itemprice").find(".itemprice").val(formatnumber(selectedItem.itmBaseSellingPrice ?? 0));
 				$tr.find("td.itemoptions").html(selectedItem.ItemOptionsDisplay ?? "");
 				$tr.find("td.itemvari").html(selectedItem.ItemVariDisplay ?? "");
-				let stockcls = selectedItem.lstQtyAvailable >= 0 ? `text-secondary` : `text-danger`;
-				$tr.find("td.onhandstock").html(`<span class="${stockcls}">${selectedItem.lstQtyAvailable}</span>`);
+				let stockcls = selectedItem.QtySellable >= 0 ? `text-secondary` : `text-danger`;
+				$tr.find("td.onhandstock").html(`<span class="${stockcls}">${selectedItem.QtySellable}</span>`);
 				//console.log("shops:", shops);
 				shops.forEach((shop) => {
 					let qty = 0;

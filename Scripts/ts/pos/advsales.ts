@@ -1,8 +1,6 @@
 ﻿$infoblk = $("#infoblk");
 
-
 let zerostockItemList: Array<IItem> = [];
-
 $(document).on("click", ".btnRequestApproval", function () {
     if (validSalesForm()) {
         // $("#txtConvertDate").val("");
@@ -39,6 +37,8 @@ function initInfoBlk4AdvSales() {
     device = $infoblk.data("devicecode");
     DicPayServiceCharge = $infoblk.data("dicpayservicecharge");
     defaultcustomer = $infoblk.data("defaultcustomer");
+    debug = $infoblk.data("debug") == "1";
+    DicPayTypesChecked = $infoblk.data("dicpaytypeschecked");
 }
 
 function getSessionStartDataOk(data) {

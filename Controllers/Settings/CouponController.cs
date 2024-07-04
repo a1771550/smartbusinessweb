@@ -9,6 +9,12 @@ namespace SmartBusinessWeb.Controllers.Settings
 {
     public class CouponController : BaseController
     {
+        [HttpGet]
+        public JsonResult GetCouponLn(string code)
+        {
+            return Json(CouponEditModel.GetLn(code), JsonRequestBehavior.AllowGet);
+        }
+
         [HandleError]
         [CustomAuthorize("basicsettings", "admin", "superadmin")]
 
