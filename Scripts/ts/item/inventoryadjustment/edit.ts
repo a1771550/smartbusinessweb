@@ -142,7 +142,7 @@ $(function () {
 	DicAcAccounts = $infoblk.data("dicacaccounts");
 	DicLocation = $infoblk.data("diclocation");
 
-	triggerMenu(2, 4);
+	triggerMenuByCls("menuitem", 4);
 
 	editmode = $infoblk.data("edit") === "True";
 	IA = $infoblk.data("ia");

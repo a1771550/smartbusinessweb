@@ -2,7 +2,7 @@
 $(function () {
 	setFullPage();
 	gFrmId = "frmreport";
-	triggerMenu(7, Number($infoblk.data("idx")));
+	triggerMenuByCls("menugeneralreports", Number($infoblk.data("idx")));
 	initDatePickers();
 	let ispostback = $infoblk.data("ispostback") == "True";	
 	let count: number = Number($infoblk.data("count"));

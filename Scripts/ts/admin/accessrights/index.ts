@@ -65,5 +65,5 @@ $(function () {
 	gTblId = "tblUser";
 	gFrmId = "frmUser";
 	ConfigSimpleSortingHeaders();
-	triggerMenu(11, 0);
+	triggerMenuByCls("menuaccessrights", 0);
 });

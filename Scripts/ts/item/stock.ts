@@ -14,7 +14,7 @@ $(function () {
     shops = (<string>$infoblk.data("shops")).split(",");
     enablebuysellunits = $infoblk.data("enablebuysellunits") == "True";
     initModals();
-    triggerMenu(2, 1);
+    triggerMenuByCls("menuitem", 1);
     keyword = "";
     $("#drpWarehouse").val($infoblk.data("shop"));
     stocklocation = <string>$("#drpLocation").val();

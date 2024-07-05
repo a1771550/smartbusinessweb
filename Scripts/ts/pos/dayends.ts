@@ -179,7 +179,7 @@ $(function () {
 	setFullPage();
 	initModals();
 	fordayends = true;
-	triggerMenu(0, 6);
+	triggerMenuByCls("menusales", 6);
 
 	if (getParameterByName("postback") === null) {
 		$("#lblTotal").text(formatmoney(0));

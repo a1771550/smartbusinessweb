@@ -106,7 +106,7 @@ $(function () {
 	isapprover = $infoblk.data("isapprover") === "True";
 	gFrmId = "frmSalesOrder";
 	setFullPage();
-	triggerMenu(0, 3);
+	triggerMenuByCls("menusales", 3);
 
 	ConfigSimpleSortingHeaders();
 

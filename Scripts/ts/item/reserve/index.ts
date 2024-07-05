@@ -40,7 +40,7 @@ $(document).on("dblclick", ".vari.locqty", function () {
 
 $(function () {
 	setFullPage();
-	triggerMenu(2, 5);
+	triggerMenuByCls("menuitem", 5);
 	initModals();
 	forCreateReserve = true;
 	gTblId = "tblReserve";

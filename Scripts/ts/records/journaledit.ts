@@ -257,7 +257,7 @@ $(function () {
 	setFullPage();
 	gTblId = "tblJournal";
 	initModals();
-	triggerMenu(10, 0);
+	triggerMenuByCls("menuabssreports", 0);
 
 	initDatePicker("strDate");
 

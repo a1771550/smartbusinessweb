@@ -14,11 +14,12 @@ $(function () {
 	var receiptno = getParameterByName("receiptno");
 
 	if ((salesmanId == 0 && adminId == 0) || receiptno == null) {
-		if (isLocal) {
+		if (isLocal) {			
+			$("#Email").val("kevinlau@united.com.hk"); //superadmin
 			//$("#Email").val("utservice_sb1@united.com.hk");
 			//$("#Email").val("sunnyy@united.com.hk");//boss			
 			//$("#Email").val("vincent@abssasia.com.hk"); //sales
-			$("#Email").val("utservice@united.com.hk"); //manager & sales
+			//$("#Email").val("utservice@united.com.hk"); //manager & sales
 			// $("#Email").val("enquiry@united.com.hk"); //admin    
 			$("#Password").val(password);
 			$("#btnLogin").trigger("click");

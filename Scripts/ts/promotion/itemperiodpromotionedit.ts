@@ -29,7 +29,7 @@ $(document).on("click", "#btnSaveIP", function () {
 $(function () {
 	setFullPage();
 	initModals();
-	triggerMenu(3, 2);
+	triggerMenuByCls("menupromotion", 2);
 	$(".s2").select2({
 		tags: true,
 	});

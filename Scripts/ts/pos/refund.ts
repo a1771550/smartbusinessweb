@@ -1345,7 +1345,7 @@ $(function () {
 	forrefund = true;
 	setFullPage();
 	initModals();
-	triggerMenu(0, 2);
+	triggerMenuByCls("menusales", 2);
 
 	comInfo = $infoblk.data("cominfo");
 	exRate = 1;

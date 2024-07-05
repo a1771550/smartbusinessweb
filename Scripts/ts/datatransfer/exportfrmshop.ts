@@ -69,7 +69,7 @@ $(function () {
 	lang = parseInt($infoblk.data("lang"));	
 	setFullPage();
 	initModals();
-	triggerMenu(6, 1);
+	triggerMenuByCls("menudatatransfer", 1);
 	initDatePickers();
 });
 

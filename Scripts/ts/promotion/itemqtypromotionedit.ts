@@ -63,7 +63,7 @@ $(document).on("change", "#drpCategories", function () {
 $(function () {
 	setFullPage();
 	initModals();
-	triggerMenu(3, 3);
+	triggerMenuByCls("menupromotion", 3);
 	$(".s2").select2();
 	$("#drpCategories").trigger("focus");
 });

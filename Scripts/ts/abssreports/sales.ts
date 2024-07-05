@@ -87,7 +87,7 @@ $(function () {
 	setFullPage();
 	gTblId = "tblSales";
 	gFrmId = "frmSales";
-	triggerMenu(8, 0);
+	triggerMenuByCls("sales", 0);
 	initModals();
 	PageSize = $infoblk.data("pagesize");
 	ConfigSimpleSortingHeaders();

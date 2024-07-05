@@ -5,6 +5,7 @@
 	bool edit = Coupon.cpId > 0;
 	int rand = CommonHelper.GetVersionRandomNo();
 	ViewBag.Title = edit ? string.Format(Resources.Resource.EditFormat, Resources.Resource.Coupon) : string.Format(Resources.Resource.AddFormat, Resources.Resource.Coupon);
+	string checkall = Model.CheckAll == 1 ? "checked" : "";
 }
 <link rel="stylesheet" type="text/css" href="~/Content/settings/coupon/edit.css?v=@rand" />
 
@@ -14,120 +15,177 @@
 {
 	@Html.AntiForgeryToken()
 
-	<input type="hidden" id="Id" value="@(edit?Coupon.cpId:0)" />
-	<input type="hidden" id="cpCode" value="@(edit?Coupon.cpCode:"")" />
+	<input type="hidden" id="Id" value="@Coupon.cpId" />
+	<input type="hidden" id="cpCode" value="@Coupon.cpCode" />
+	<input type="hidden" id="cpIssuedQty" value="@Resources.Resource.IssuedQty" />
 
 	<div class="row">
 		<div class="col-12 col-md-3">
 			<div class="form-group required">
 				<label>@Resources.Resource.CompanyName1</label>
-				<input type="text" id="cpCompanyName" class="form-control" value="@(edit?Coupon.cpCompanyName:"")" />
+				<input type="text" id="cpCompanyName" class="form-control" value="@(edit ? Coupon.cpCompanyName : "")" />
 			</div>
 		</div>
 		<div class="col-12 col-md-3">
 			<div class="form-group required">
 				<label>@Resources.Resource.Title4Coupon</label>
-				<input type="text" id="cpTitle" class="form-control" value="@(edit?Coupon.cpTitle:"")" />
+				<input type="text" id="cpTitle" class="form-control" value="@Coupon.cpTitle" />
 			</div>
 		</div>
 		<div class="col-12 col-md-3">
 			<div class="form-group required">
 				<label>@Resources.Resource.Price $</label>
-				<input type="text" id="cpPrice" class="form-control num" value="@(edit?Coupon.cpPrice:CommonHelper.FormatNumber(0))" />
+				<input type="text" id="cpPrice" class="form-control num" value="@CommonHelper.FormatNumber(Coupon.cpPrice)" />
 			</div>
 		</div>
 		<div class="col-12 col-md-3">
 			<div class="form-group">
 				<label>@Resources.Resource.DiscPc</label>
-				<input type="text" id="cpDiscPc" class="form-control num" value="@(edit?Coupon.cpDiscPc:CommonHelper.FormatNumber(0))" />
+				<input type="text" id="cpDiscPc" class="form-control num" value="@CommonHelper.FormatNumber(Coupon.cpDiscPc ?? 0)" />
 			</div>
 		</div>
-		
-
 	</div>
+
 	<div class="row">
 		<div class="col-12 col-md-3">
 			<div class="form-group required">
 				<label>@Resources.Resource.IssuedQty</label>
-				<input type="number" id="cpIssuedQty" class="form-control" value="@(edit?Coupon.cpIssuedQty:0)" />
+				<input type="number" id="cpIssuedQty" class="form-control" value="@Coupon.cpIssuedQty" />
 			</div>
 
-			<div class="form-check">
-				<input class="form-check-input chklnall redeemed" type="checkbox" id="allRedeemed" checked="@(Model.CouponLnList.All(x=>x.cplIsRedeemed))">
-				<label class="" for="allRedeemed">@string.Format(Resources.Resource.AllFormat, Resources.Resource.Redeemed)</label>
-			</div>
-			<div class="form-check">
-				<input class="form-check-input chklnall voided" type="checkbox" id="allVoided" checked="@(Model.CouponLnList.All(x=>x.cplIsVoided))">
-				<label class="" for="allVoided">@string.Format(Resources.Resource.AllFormat, Resources.Resource.Voided)</label>
-			</div>
+			@if (edit)
+			{
+				<div class="form-check">
+					<input class="form-check-input chklnall redeemed" type="checkbox" id="allRedeemed" checked="@(Model.CouponLnList.All(x => x.cplIsRedeemed))">
+					<label class="" for="allRedeemed">@string.Format(Resources.Resource.AllFormat, Resources.Resource.Redeemed)</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input chklnall voided" type="checkbox" id="allVoided" checked="@(Model.CouponLnList.All(x => x.cplIsVoided))">
+					<label class="" for="allVoided">@string.Format(Resources.Resource.AllFormat, Resources.Resource.Voided)</label>
+				</div>
+			}
+
 		</div>
 		<div class="col-12 col-md-3">
 			<div class="form-group required">
 				<label>@Resources.Resource.ExpiryDate</label>
-				<input type="text" id="cpExpiryDate" class="form-control" value="@(edit?Coupon.cpExpiryDate:"")" />
+				<input type="text" id="cpExpiryDate" class="form-control" value="@(edit ? Coupon.cpExpiryDate : "")" />
 			</div>
 		</div>
 		<div class="col-12 col-md-3">
 			<div class="form-group">
 				<label>@Resources.Resource.Description</label>
-				<textarea id="cpDesc" class="form-control" rows="3">@(edit?Coupon.cpDesc:"")</textarea>
+				<textarea id="cpDesc" class="form-control" rows="3">@Coupon.cpDesc</textarea>
 			</div>
 		</div>
 		<div class="col-12 col-md-3">
 			<div class="form-group">
 				<label>@Resources.Resource.Remark</label>
-				<textarea id="cpRemark" class="form-control" rows="3">@(edit?Coupon.cpRemark:"")</textarea>
+				<textarea id="cpRemark" class="form-control" rows="3">@Coupon.cpRemark</textarea>
 			</div>
-		</div>
-		<div class="col-12 col-md-3">
-
 		</div>
 	</div>
 
 	<button type="button" id="btnSave" class="btn btn-success my-2">@Resources.Resource.Save</button>
-	<hr />
 
 	if (edit)
 	{
-		<table id="tblCouponLn" class="table table-bordered table-hover table-condensed">
-			<thead class="gray-header font-weight-bold">
-				<tr>
-					<th class="text-center colheader code" data-col="0">@Resources.Resource.Code</th>
-					<th class="text-center colheader redeemed" data-col="1">@Resources.Resource.Redeemed</th>
-					<th class="text-center colheader voided" data-col="2">@Resources.Resource.Voided</th>
-					<th class="text-center colheader" data-col="3">@Resources.Resource.CreateTime</th>
-					<th class="text-center colheader" data-col="4">@Resources.Resource.ModifyTime</th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var couponLn in Model.PagingCouponLnList)
-				{
-					<tr data-id="@couponLn.Id">
-						<td class="text-center code pointer" data-type="code" data-code="@couponLn.cplCode">@couponLn.cplCode</td>
-						<td class="text-center redeemed drp pointer" data-type="redeemed" data-val="@couponLn.cplIsRedeemed">@couponLn.IsRedeemedDisplay</td>
-						<td class="text-center voided drp pointer" data-type="voided" data-val="@couponLn.cplIsVoided">@couponLn.IsVoidedDisplay</td>
-						<td class="text-center">@couponLn.CreateTimeDisplay</td>
-						<td class="text-center">@couponLn.ModifyTimeDisplay</td>
+		<hr />
+		<div id="couponlnblk">
+			<table id="tblCouponLn" class="table table-bordered table-hover table-condensed">
+				<thead class="gray-header font-weight-bold">
+					<tr>
+						<th class="text-center colheader code" data-col="0">@Resources.Resource.Code</th>
+						<th class="text-center colheader redeemed" data-col="1">@Resources.Resource.Redeemed</th>
+						<th class="text-center colheader voided" data-col="2">@Resources.Resource.Voided</th>
+						<th class="text-center colheader" data-col="3">@Resources.Resource.CreateTime</th>
+						<th class="text-center colheader" data-col="4">@Resources.Resource.ModifyTime</th>
 					</tr>
-				}
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+					@foreach (var couponLn in Model.PagingCouponLnList)
+					{
+						<tr data-id="@couponLn.Id">
+							<td class="text-center code pointer" data-type="code" data-code="@couponLn.cplCode">@couponLn.cplCode</td>
+							<td class="text-center redeemed drp pointer" data-type="redeemed" data-val="@couponLn.cplIsRedeemed">@couponLn.IsRedeemedDisplay</td>
+							<td class="text-center voided drp pointer" data-type="voided" data-val="@couponLn.cplIsVoided">@couponLn.IsVoidedDisplay</td>
+							<td class="text-center">@couponLn.CreateTimeDisplay</td>
+							<td class="text-center">@couponLn.ModifyTimeDisplay</td>
+						</tr>
+					}
+				</tbody>
+			</table>
 
-		<div id="pagingblk" class="my-3">
-			@Html.PagedListPager(Model.PagingCouponLnList, PageNo => Url.Action("Edit",
-	new { PageNo, SortOrder = Model.CurrentSortOrder, SortCol = Model.SortCol, PageSize = Model.PageSize }))
+			<div class="pagingblk my-3">
+				@Html.PagedListPager(Model.PagingCouponLnList, PageNo => Url.Action("Edit",
+	 new { PageNo, SortOrder = Model.CurrentSortOrder, SortCol = Model.SortCol, PageSize = Model.PageSize }))
+			</div>
+
+			@Html.Partial("_SortOrderColHidden")
 		</div>
 
-		@Html.Partial("_SortOrderColHidden")
+		if (Model.CustomerList != null && Model.CustomerList.Count > 0)
+		{
+			<div id="customerblk">
+				<hr />
+				<div class="form-group">
+					<label>@Resources.Resource.DayIntervals4SendingEmails</label>
+					<input type="number" id="txtInterval" class="form-control mr-2" /><span id="msg"></span>
+					<div class="clearfix">
+						<button type="button" id="btnSaveInterval4Customers" class="btn btn-primary" title="@Resources.Resource.SaveInterval4Customers"><i class="fa fa-save"></i></button>
+					</div>
+				</div>
+
+				<table id="tblCustomer" class="table table-bordered table-hover table-condensed">
+					<thead class="gray-header font-weight-bold">
+						<tr>
+							<th class="text-center">@Resources.Resource.Name</th>
+							<th class="text-center">@Resources.Resource.Email</th>
+							<th class="text-center">@Resources.Resource.Interval (@Resources.Resource.Day4Interval)</th>
+							<th class="text-center">@Resources.Resource.IsEmailSent</th>
+							<th class="text-center">
+								<input type="checkbox" id="chkall" @checkall />
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var customer in Model.PagingCustomerList)
+						{
+							string cname = customer.cusName;						
+							<tr class="@customer.statuscls pointer" data-id="@customer.cusCustomerID" data-code="@customer.cusCode">
+								<td class="text-center">@cname</td>
+								<td class="text-center">@Html.Raw(customer.EmailDisplay)</td>
+								<td class="text-center">@customer.Interval</td>
+								<td class="text-center">@customer.IsEmailSentDisplay</td>
+								<td class="text-center">
+									<input type="checkbox" class="chk" data-code="@customer.cusCode" value="@customer.cusCode" />
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+
+				<div class="my-3 pagingblk">
+					@Html.PagedListPager(Model.PagingCustomerList, PageNo4C => Url.Action("Edit",
+		 new { PageNo4C, SortOrder4C = Model.CurrentSortOrder4C, SortCol4C = Model.SortCol4C, PageSize = Model.PageSize }))
+				</div>
+
+				@Html.Partial("_SortOrderColHidden")
+			</div>
+		}
 	}
 
-
 }
+
+
 <div>
 	@Html.ActionLink(Resources.Resource.BackToList, "Index")
 </div>
+
+
 @Html.Partial("_WaitingModal")
-<div id="infoblk" data-titlerequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Title4Coupon)" data-pricerequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Price)" data-issuedqtyrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.IssuedQty)" data-pagesize="@Model.ComInfo.PageLength" data-coupon="@JsonSerializer.Serialize(Coupon)" data-companynamerequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.CompanyName1)"></div>
+
+<div id="infoblk" data-titlerequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Title4Coupon)" data-pricerequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Price)" data-issuedqtyrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.IssuedQty)" data-pagesize="@Model.ComInfo.PageLength" data-coupon="@JsonSerializer.Serialize(Coupon)" data-companynamerequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.CompanyName1)" data-codelist="@JsonSerializer.Serialize(Model.CodeList)"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script src="~/Scripts/ts/js/settings/coupon/edit.js?v=@rand"></script>

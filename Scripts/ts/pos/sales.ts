@@ -479,7 +479,7 @@ $(function () {
 	salesType = SalesType.simplesales;
 	setFullPage();
 	initModals();
-	triggerMenu(0, 0);
+	triggerMenuByCls("menusales", 0);
 	initInfoVariables4SimpleSales();
 
 	$("#rtsExRate").val(1);

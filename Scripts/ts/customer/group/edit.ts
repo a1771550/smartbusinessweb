@@ -23,6 +23,6 @@ $(document).on("click", "#btnSave", function () {
 $(function () {
 	forcustomergroup = true;	
 	setFullPage();	
-	triggerMenu(1, 4);
+	triggerMenuByCls("menucustomer", 4);
 	initModals();
 });

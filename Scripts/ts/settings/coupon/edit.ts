@@ -167,16 +167,35 @@ $(document).on("click", ".page-item:not(.active)", function (e) {
 	window.location.href = $(this).find("a").prop("href").concat(`&Id=${Coupon.cpId}`);
 });
 
+$(document).on("change", "#txtInterval", function () {
+	let interval = Number($(this).val());
+	if (interval > 0) {
+		Coupon = { Id: $("#Id").val(), } as ICoupon;
+		//todo:
+	}
+	
+});
 $(function () {
 	setFullPage();
+	forcoupon = true;
 	gTblId = "tblCouponLn";
 	gFrmId = "frmCoupon";
 	PageSize = $infoblk.data("pagesize");
 	ConfigSimpleSortingHeaders();
 	initModals();
-	triggerMenu(0, 6);
+	triggerMenuByCls("menusetup", 6);
 	initDatePicker("cpExpiryDate", addMonths(1));
 	setInput4NumberOnly("num");
 	$("#cpCompanyName").trigger("focus");
 	Coupon = $infoblk.data("coupon");
+
+	var checkall = getParameterByName("CheckAll");
+	if (checkall !== null) {
+		//console.log("checkall:" + checkall);
+		let checked = checkall == "1";
+		$(".chk").prop("checked", checked);
+		handleCheckAll(checked);
+	}
+
+	showMsg("msg", "saved", "success");
 });

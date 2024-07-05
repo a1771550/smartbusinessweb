@@ -90,7 +90,7 @@ $(function () {
 	setFullPage();
 	forenquiry = true;
 	initModals();
-	triggerMenu(1, 3);
+	triggerMenuByCls("menucustomer", 3);
 
 	fillInEnquiry();
 

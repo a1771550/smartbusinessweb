@@ -91,7 +91,7 @@ $(function () {
     forReservePaidOut = !forsales;
     salesType = SalesType.retail;
     setFullPage();
-    triggerMenu(0, 1);
+    triggerMenuByCls("menusales", 1);
     initInfoBlk4AdvSales();
     initVariablesFrmInfoblk();
    

@@ -49,7 +49,7 @@ $(function () {
     $target.addClass(sortcls);
 
     initModals();
-    triggerMenu(10, 0);
+    triggerMenuByCls("menuabssreports", 0);
 
     $("#txtKeyword").trigger("focus");
 

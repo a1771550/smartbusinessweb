@@ -31,5 +31,5 @@ $(function () {
 	}
 	$(".pagination li").addClass("page-item");
 
-	triggerMenu(2, 4);
+	triggerMenuByCls("menuitem", 4);
 });

@@ -151,7 +151,7 @@ $(document).on("dblclick", ".vari.locqty", function () {
 });
 $(function () {
 	setFullPage();
-	triggerMenu(2, 2);
+	triggerMenuByCls("menuitem", 2);
 	initModals();
 	fortransfer = true;
 	gTblId = "tblTransfer";

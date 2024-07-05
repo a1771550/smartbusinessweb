@@ -58,7 +58,7 @@ $(function () {
 	setFullPage();
 	gTblId = "tblCustomerGroup";
 	gFrmId = "frmCustomerGroup";
-	triggerMenu(1, 4);
+	triggerMenuByCls("menucustomer", 4);
 	initModals();
 
 	ConfigSimpleSortingHeaders();

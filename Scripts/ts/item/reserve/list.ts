@@ -33,7 +33,7 @@ $(function () {
 	forCreateReserve = true;
 	gTblId = "tblReserveList";
 	gFrmId = "frmReserveList";
-	triggerMenu(2, 6);
+	triggerMenuByCls("menuitem", 6);
 	initModals();
 
 	ConfigSimpleSortingHeaders();

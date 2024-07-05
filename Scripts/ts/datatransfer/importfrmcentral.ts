@@ -203,7 +203,7 @@ $(document).on("change", ".chkfile", function () {
 $(function () {
     setFullPage();
     initModals();
-    triggerMenu(6, 0);
+    triggerMenuByCls("menudatatransfer", 0);
     $('#btnGetPath').addClass('hide');
     $('#dateblk').removeClass('hide');
 });

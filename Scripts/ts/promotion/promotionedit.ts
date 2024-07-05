@@ -98,7 +98,7 @@ $(document).on("change", ".desc", function () {
 $(function () {
     setFullPage();
     initModals();
-    triggerMenu(3, 4);
+    triggerMenuByCls("menupromotion", 4);
 
     initDatePicker(
         "proDateFrm",

@@ -7,7 +7,7 @@ $(function () {
   fortransfer = true;
     gTblId = "TransferList";
     gFrmId = "frmTransferList";
-    triggerMenu(2, 3);
+    triggerMenuByCls("menuitem", 3);
 
   $target = $(".colheader").eq(parseInt(<string>$("#sortcol").val()));
   let sortcls =

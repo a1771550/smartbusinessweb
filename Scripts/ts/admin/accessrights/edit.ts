@@ -119,7 +119,7 @@ $(document).on("click", "#btnSave", function (e) {
 $(function () {
 	setFullPage();
 	initModals();
-	triggerMenu(11, 0);
+	triggerMenuByCls("", 0);
 
 	editmode = Number($("#surUID").val()) > 0;
 

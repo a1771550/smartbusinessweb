@@ -116,7 +116,7 @@ $(document).on("click", "#btnUpload", function () {
 $(function () {
 	setFullPage();
 	initModals();
-	triggerMenu(0, 0);
+	triggerMenuByCls("menusetup", 0);
 
 	uploadsizelimit = parseInt($infoblk.data("uploadsizelimit"));
 	uploadsizelimitmb = parseInt($infoblk.data("uploadsizelimitmb"));

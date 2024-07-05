@@ -2,7 +2,7 @@
 
 $(function () {    	
 	setFullPage();
-    triggerMenu(2, 0);  
+	triggerMenuByCls("menuitem", 0);  
     EditItem = $infoblk.data("edititem") == "True";
     CodeNameList = $infoblk.data("codenamelist");  
     supcodelist = $infoblk.data("supcodelist").split(",");

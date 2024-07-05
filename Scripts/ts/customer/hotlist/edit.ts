@@ -52,7 +52,7 @@ $(document).on('click', '#btnSave', function () {
 
 $(function () {
     setFullPage();
-    triggerMenu(1, 3);
+    triggerMenuByCls("menucustomer", 3);
     initModals();
     HotList = initHotList(null);
     $('#hoName').trigger("focus");

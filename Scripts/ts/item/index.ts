@@ -7,7 +7,7 @@ $(function () {
 	gFrmId = "frmItem";
 
 	initModals();
-	triggerMenu(2, 0);	
+	triggerMenuByCls("menuitem", 0);	
 
 	sortByName = true;
 	ConfigSimpleSortingHeaders();

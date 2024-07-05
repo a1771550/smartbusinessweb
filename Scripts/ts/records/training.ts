@@ -80,7 +80,7 @@ $(function () {
 	daterangechange = false;
 	setFullPage();
 	initModals();
-	triggerMenu(9, 2);
+	triggerMenuByCls("menurecords", 2);
 
 	PageSize = Number($infoblk.data("pagesize"));
 	trainingIdList = $infoblk.data("trainingidlist") as string[];

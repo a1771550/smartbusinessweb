@@ -65,7 +65,7 @@ $(function () {
 	gTblId = "tblPurchase";
 	setFullPage();
 	initModals();
-	triggerMenu(5, 1);
+	triggerMenuByCls("menupurchase", 1);
 
 	ConfigSimpleSortingHeaders();
 });

@@ -454,7 +454,7 @@ function initPurchaseForm():boolean {
 	uploadsizelimitmb = parseInt($infoblk.data("uploadsizelimitmb"));
 	shop = $infoblk.data("shop") as string;
 	initModals();
-	triggerMenu(5, 0);
+	triggerMenuByCls("menupurchase", 0);
 
 	gTblId = "tblPSI";
 	itotalamt = 0;

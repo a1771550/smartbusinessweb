@@ -50,7 +50,7 @@ $(function () {
     forhotlist = true;
     setFullPage();
     gTblId = "tblHotList";
-    triggerMenu(1, 3);
+    triggerMenuByCls("menucustomer", 3);
     initModals();
 
     let $sortorder = $("#sortorder");

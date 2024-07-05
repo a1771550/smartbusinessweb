@@ -47,7 +47,7 @@ $(function () {
 	setFullPage();
 	
 	initModals();
-	triggerMenu(2, 7);
+	triggerMenuByCls("menuitem", 7);
 
 	ConfigSimpleSortingHeaders();
 	

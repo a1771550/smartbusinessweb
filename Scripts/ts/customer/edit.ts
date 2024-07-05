@@ -137,7 +137,7 @@ function displayCustomAttributes() {
 
 $(function () {
 	setFullPage();
-	triggerMenu(1, 0);
+	triggerMenuByCls("menucustomer", 0);
 	forcustomer = true;
 	apId = Number($infoblk.data("apid"));
 

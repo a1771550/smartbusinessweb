@@ -88,5 +88,5 @@ function checkIfDuplicatedPayTypeName(pmtname) {
 $(function () {
 	initModals();
 	setFullPage();
-	triggerMenu(0, 1);	
+	triggerMenuByCls("menusetup", 1);	
 });

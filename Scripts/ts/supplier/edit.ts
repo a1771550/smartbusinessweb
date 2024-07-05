@@ -85,7 +85,7 @@ function fillInSupplier() {
 
 $(function () {
     setFullPage();
-    triggerMenu(5,2);
+    triggerMenuByCls("menupurchase",2);
     forsupplier = true;
     initModals();
     fillInSupplier();

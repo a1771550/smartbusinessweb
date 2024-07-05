@@ -126,7 +126,7 @@ function initExList() {
 $(function () {
 	setFullPage();
 	initModals();
-	triggerMenu(0, 4);
+	triggerMenuByCls("menusetup", 4);
 	const useapi = Number($("#useapi").val());
 	toggleForEx(useapi);
 });

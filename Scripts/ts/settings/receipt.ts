@@ -14,6 +14,6 @@ function validReForm() {
 $(function () {
     setFullPage();
     initModals();
-    triggerMenu(0, 2);
+    triggerMenuByCls("menusetup", 2);
     $("#CompanyName").trigger("focus");
 });

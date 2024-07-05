@@ -123,9 +123,6 @@ $(document).on("click", "#btnBlast", function (e) {
 	populateDropDown4EblastCusGroupList();
 	openDropDownModal();
 });
-
-
-
 function handleEblastCustomers() {
 	let eblastIdList: number[] = [];
 	let eblasts: string[] = dropdownModal.find("#drpEblast").val() as string[];
@@ -468,7 +465,7 @@ $(function () {
 	setFullPage();
 	gTblId = "tblCustomer";
 	gFrmId = "frmCustomer";
-	triggerMenu(1, 0);
+	triggerMenuByCls("menucustomer", 0);
 	initModals();
 	PageSize = $infoblk.data("pagesize");
 

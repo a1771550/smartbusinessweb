@@ -185,7 +185,7 @@ $(document).on("click", "#btnSave", function () {
 $(function () {
     setFullPage();
     initModals();
-    triggerMenu(0, 3);
+    triggerMenuByCls("menusetup", 3);
     emailsetting = initEmailSetting();
     $("#enableSSL").prop("checked", emailsetting.emSMTP_EnableSSL);
     $("#chk365").prop("checked", emailsetting.emOffice365);

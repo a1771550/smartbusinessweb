@@ -72,6 +72,6 @@ $(function () {
 	gFrmId = "StockTransfer";
 	gTblId = "tblTransferEdit";
 	setFullPage();
-	triggerMenu(2, 3);
+	triggerMenuByCls("menuitem", 3);
     initModals();
 });

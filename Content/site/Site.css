@@ -856,6 +856,9 @@ table.dataTable thead > tr > th.sorting_asc.text-right:before, table.dataTable t
 #pagingblk, #pagingblk_a{
     font-size:.8rem!important;
 }
+.pagingblk {
+    font-size: .8rem !important;
+}
 .scroll{
     overflow:scroll!important;
 }

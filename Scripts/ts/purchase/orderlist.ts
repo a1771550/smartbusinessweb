@@ -150,7 +150,7 @@ $(function () {
 	
 
 	initModals();
-	triggerMenu(5, 1);
+	triggerMenuByCls("menupurchase", 1);
 
 	$(".disabled").off("click");
 

@@ -83,7 +83,7 @@ $(function () {
 	daterangechange = false;
 	setFullPage();
 	initModals();
-	triggerMenu(9, 0);
+	triggerMenuByCls("menurecords", 0);
 
 	initInfoBlkVariables4Attendence();
 

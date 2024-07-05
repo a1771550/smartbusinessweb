@@ -70,9 +70,9 @@
 				</div>
 				<div class="dash__menu">
 					<ul>
-						@if (!isadmin)
+						@if (IsUserRole.SalesPerson||IsUserRole.SalesManagerSalesPerson||IsUserRole.SuperAdmin)
 						{
-							<li class="btn_expand">
+							<li class="btn_expand menusales">
 								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "sales") ? "active_btn" : "expand_btn";}
 								<a class="@lnkcls" data-toggle="collapse" href="#collapseRetail" role="button" aria-expanded="false" aria-controls="collapseRetail">
 									<span><img src="~/Content/mean/img/retail.svg" alt=""></span>
@@ -118,7 +118,7 @@
 
 							</li>
 
-							<li class="btn_expand">
+							<li class="btn_expand menucustomer">
 								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "customer") ? "active_btn" : "expand_btn";}
 								<a class="@lnkcls" data-toggle="collapse" href="#collapseCustomer" role="button" aria-expanded="false" aria-controls="collapseCustomer">
 									<span><img src="~/Content/mean/img/custom.svg" alt=""></span>
@@ -138,7 +138,8 @@
 									<li><a href="/EnquiryGroup/Index">@Resources.Resource.EnquiryGroup</a></li>
 								</ul>
 							</li>
-							<li class="btn_expand">
+							
+							<li class="btn_expand menuitem">
 								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "item") ? "active_btn" : "expand_btn";}
 								<a class="@lnkcls" data-toggle="collapse" href="#collapseItem" role="button" aria-expanded="false" aria-controls="collapseItem">
 									<span><img src="~/Content/mean/img/Cube.svg" alt=""></span>
@@ -161,7 +162,8 @@
 									<li><a href="/Category/Index">@Resources.Resource.Category</a></li>
 								</ul>
 							</li>
-							<li class="btn_expand">
+							
+							<li class="btn_expand menupromotion">
 								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "promotion") ? "active_btn" : "expand_btn";}
 								<a class="@lnkcls" data-toggle="collapse" href="#collapsePromotion" role="button" aria-expanded="false" aria-controls="collapsePromotion">
 									<span><img src="~/Content/mean/img/promo.svg" alt=""></span>
@@ -180,7 +182,8 @@
 									<li><a href="/Promotion/Index">@string.Format(Resources.Resource.ListFormat, Resources.Resource.Promotion)</a></li>
 								</ul>
 							</li>
-							<li class="btn_expand">
+							
+							<li class="btn_expand menuwholesales">
 								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "wholesales") ? "active_btn" : "expand_btn";}
 								<a class="@lnkcls" data-toggle="collapse" href="#collapseWholeSales" role="button" aria-expanded="false" aria-controls="collapseWholeSales">
 									<span><img src="~/Content/mean/img/whole.svg" alt=""></span>
@@ -208,7 +211,8 @@
 
 								</ul>
 							</li>
-							<li class="btn_expand">
+							
+							<li class="btn_expand menupurchase">
 								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "purchase") ? "active_btn" : "expand_btn";}
 								<a class="@lnkcls" data-toggle="collapse" href="#collapsePurchase" role="button" aria-expanded="false" aria-controls="collapsePurchase">
 									<span><img src="~/Content/mean/img/purchase.svg" alt=""></span>
@@ -240,7 +244,7 @@
 
 							if (showDataTransfer)
 							{
-								<li class="btn_expand">
+								<li class="btn_expand menudatatransfer">
 									@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "dayendsexportfrmshop") ? "active_btn" : "expand_btn"; }
 									<a class="@lnkcls" data-toggle="collapse" href="#collapseDataTransfer" role="button" aria-expanded="false" aria-controls="collapseDataTransfer">
 										<span><img src="~/Content/mean/img/data exchange.svg" alt=""></span>
@@ -253,7 +257,7 @@
 								</li>
 							}
 
-							<li class="btn_expand">
+							<li class="btn_expand menugeneralreports">
 								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "generalreports") ? "active_btn" : "expand_btn";}
 								<a class="@lnkcls @Resources.Resource.Report" data-toggle="collapse" href="#collapseGeneralReports" role="button" aria-expanded="false" aria-controls="collapseGeneralReports">
 									<span><img src="~/Content/mean/img/data.svg" alt=""></span>
@@ -273,7 +277,8 @@
 									}
 								</ul>
 							</li>
-							<li class="btn_expand">
+							
+							<li class="btn_expand menuabssreports">
 								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "abssreports") ? "active_btn" : "expand_btn";}
 								<a class="@lnkcls @Resources.Resource.Report" data-toggle="collapse" href="#collapseAbssReports" role="button" aria-expanded="false" aria-controls="collapseAbssReports">
 									<span><img src="~/Content/mean/img/report.svg" alt=""></span>
@@ -296,7 +301,8 @@
 									<li>@Html.ActionLink(Resources.Resource.CustomerInvoices, "CI", "ABSSReport")</li>
 								</ul>
 							</li>
-							<li class="btn_expand">
+							
+							<li class="btn_expand menurecords">
 								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "records") ? "active_btn" : "expand_btn";}
 								<a class="@lnkcls" data-toggle="collapse" href="#collapseRecords" role="link" aria-expanded="false" aria-controls="collapseRecords">
 									<span><img src="~/Content/mean/img/rec.svg" alt=""></span>
@@ -308,7 +314,8 @@
 									<li>@Html.ActionLink(Resources.Resource.TrainingRecords, "Index", "Training")</li>
 								</ul>
 							</li>
-							<li class="btn_expand">
+							
+							<li class="btn_expand menujournals">
 								@{ lnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "journal") ? "active_btn" : "expand_btn";}
 								<a href="/Journal/Index" class="@lnkcls" role="button">
 									<span><img src="~/Content/mean/img/rec.svg" alt=""></span>
@@ -317,9 +324,9 @@
 							</li>
 						}
 
-						@if (isadmin)
+						@if (isadmin||IsUserRole.SuperAdmin)
 						{
-							<li class="btn_expand">
+							<li class="btn_expand menusetup">
 								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "setup") ? "active_btn" : "expand_btn";}
 								<a class="@lnkcls" data-toggle="collapse" href="#collapseSetup" role="button" aria-expanded="false" aria-controls="collapseSetup">
 									<span><img src="~/Content/mean/img/setup.svg" alt=""></span>
@@ -345,10 +352,9 @@
 							</li>
 						}
 
-
-						@if (ismanager)
+						@if (ismanager||IsUserRole.SuperAdmin)
 						{
-						<li class="btn_expand">
+						<li class="btn_expand menuaccessrights">
 							@{ lnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "accessrights") ? "active_btn" : "expand_btn";}
 							<a href="/AccessRight/Index" class="@lnkcls" role="link" aria-expanded="false" aria-controls="collapseRecords">
 								<span><img src="~/Content/mean/img/users.svg" class="icon" alt=""></span>

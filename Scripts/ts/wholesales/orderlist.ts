@@ -144,7 +144,7 @@ $(document).on("click", ".colheader", function () {
 $(function () {
 	forwholesales = true;
 	setFullPage();
-	triggerMenu(4, 0);
+	triggerMenuByCls("menuwholesales", 0);
 	const filter: any = getParameterByName("filter");
 	if (filter !== null && Number(filter) === 1) {
 		$(".colheader").each(function (i, e) {

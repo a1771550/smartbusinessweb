@@ -21,6 +21,11 @@
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\func.ts</absolutePath>
         </Favorite>
         <Favorite>
+          <name>login.ts</name>
+          <path>Scripts\ts\login.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\login.ts</absolutePath>
+        </Favorite>
+        <Favorite>
           <name>sales.ts</name>
           <path>Scripts\ts\pos\sales.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\sales.ts</absolutePath>
@@ -29,6 +34,16 @@
           <name>itemedit.ts</name>
           <path>Scripts\ts\item\itemedit.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\item\itemedit.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>customer-index.ts</name>
+          <path>Scripts\ts\customer\index.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\customer\index.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>coupon-edit.ts</name>
+          <path>Scripts\ts\settings\coupon\edit.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\settings\coupon\edit.ts</absolutePath>
         </Favorite>
         <Favorite>
           <name>stock.ts</name>
@@ -49,11 +64,6 @@
           <name>refund.ts</name>
           <path>Scripts\ts\pos\refund.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\refund.ts</absolutePath>
-        </Favorite>
-        <Favorite>
-          <name>login.ts</name>
-          <path>Scripts\ts\login.ts</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\login.ts</absolutePath>
         </Favorite>
         <Favorite>
           <name>preorderlist.ts</name>
@@ -166,11 +176,6 @@
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\customer\edit.ts</absolutePath>
         </Favorite>
         <Favorite>
-          <name>customer-index.ts</name>
-          <path>Scripts\ts\customer\index.ts</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\customer\index.ts</absolutePath>
-        </Favorite>
-        <Favorite>
           <name>transfer-index.ts</name>
           <path>Scripts\ts\item\transfer\index.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\item\transfer\index.ts</absolutePath>
@@ -234,11 +239,6 @@
           <name>accessrights-index.ts</name>
           <path>Scripts\ts\admin\accessrights\index.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\admin\accessrights\index.ts</absolutePath>
-        </Favorite>
-        <Favorite>
-          <name>coupon-edit.ts</name>
-          <path>Scripts\ts\settings\coupon\edit.ts</path>
-          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\settings\coupon\edit.ts</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

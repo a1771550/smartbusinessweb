@@ -107,7 +107,7 @@ $(function () {
 	forEditReserve = true;
 	gTblId = "tblEdit";
 	setFullPage();
-	triggerMenu(2, 6);
+	triggerMenuByCls("menuitem", 6);
 	initModals();
 	
 	ReserveLnList = [];

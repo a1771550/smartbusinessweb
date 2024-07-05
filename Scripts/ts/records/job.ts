@@ -84,7 +84,7 @@ $(function () {
     daterangechange = false;
     setFullPage();
     initModals();
-    triggerMenu(9, 1);
+    triggerMenuByCls("menurecords", 1);
 
     PageSize = Number($infoblk.data("pagesize"));
     jobIdList = $infoblk.data("jobidlist") as string[];

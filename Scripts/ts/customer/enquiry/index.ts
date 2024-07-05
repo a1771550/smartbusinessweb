@@ -545,7 +545,7 @@ $(function () {
 	forenquiry = true;
 	setFullPage();
 	initModals();
-	triggerMenu(1, 2);
+	triggerMenuByCls("menucustomer", 2);
 
 	initInfoBlkVariables4Enquiry();
 

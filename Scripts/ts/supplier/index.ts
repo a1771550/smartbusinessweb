@@ -151,7 +151,7 @@ $(document).on("click", ".remove", function () {
 
 
 $(function () {
-	triggerMenu(5, 2);
+	triggerMenuByCls("menupurchase", 2);
 	setFullPage();
 	let $sortorder = $("#sortorder");
 	let $sortcol = $("#sortcol");

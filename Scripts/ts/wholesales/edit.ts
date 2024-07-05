@@ -897,7 +897,7 @@ $(function () {
 
 	setFullPage();
 	initModals();
-	triggerMenu(4, 0);
+	triggerMenuByCls("menuwholesales", 0);
 
 	gTblId = "tblWSI";
 	itotalamt = 0;
