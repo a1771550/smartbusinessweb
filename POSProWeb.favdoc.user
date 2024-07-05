@@ -16,6 +16,11 @@
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\app.ts</absolutePath>
         </Favorite>
         <Favorite>
+          <name>func.ts</name>
+          <path>Scripts\ts\func.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\func.ts</absolutePath>
+        </Favorite>
+        <Favorite>
           <name>sales.ts</name>
           <path>Scripts\ts\pos\sales.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\pos\sales.ts</absolutePath>

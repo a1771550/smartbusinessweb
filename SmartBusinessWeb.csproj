@@ -3080,6 +3080,7 @@
     <Content Include="Scripts\ts\js\customer\hotlist\edit.js" />
     <Content Include="Scripts\ts\js\customer\hotlist\index.js" />
     <Content Include="Scripts\ts\js\customer\index.js" />
+    <Content Include="Scripts\ts\js\func.js" />
     <Content Include="Scripts\ts\js\inventoryadjustment\edit.js" />
     <Content Include="Scripts\ts\js\inventoryadjustment\index.js" />
     <Content Include="Scripts\ts\js\item\category\edit.js" />
@@ -4744,6 +4745,8 @@
     <Content Include="Views\Coupon\Edit.cshtml" />
     <Content Include="Scripts\ts\js\settings\coupon\index.js.map" />
     <Content Include="Scripts\ts\js\settings\coupon\edit.js.map" />
+    <Content Include="Views\Shared\_TxtBlk1.cshtml" />
+    <Content Include="Scripts\ts\js\func.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -5099,6 +5102,7 @@
     <TypeScriptCompile Include="Scripts\tinymce\tinymce.d.ts" />
     <TypeScriptCompile Include="Scripts\ts\abssreports\sales.ts" />
     <TypeScriptCompile Include="Scripts\ts\ajaxpostlist.ts" />
+    <TypeScriptCompile Include="Scripts\ts\func.ts" />
     <TypeScriptCompile Include="Scripts\ts\app.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\attributes\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\attributes\common.ts" />

@@ -380,10 +380,12 @@
 				</div>
 
 				@Html.Partial("_TxtBlk")
+				@Html.Partial("_TxtBlk1")
 
 				<div id="appInfo" data-lang="@CultureHelper.CurrentCulture" data-shop="@shop" data-checkoutportal="@defaultcheckoutportal" data-enablewhatsapplnk="@ComInfo.enableWhatsappLink" data-whatsappapilnk="@ConfigurationManager.AppSettings["WhatsappLinkUrl"]" data-whatsappapidefaulttxt="@ConfigurationManager.AppSettings["WhatsappAPIDefaultText"]"></div>
 
 				<script src="~/Scripts/ts/js/app.js?v=@rand"></script>
+				<script src="~/Scripts/ts/js/func.js?v=@rand"></script>
 
 				<div class="container body-content p-0">
 
