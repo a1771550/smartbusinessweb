@@ -71,6 +71,7 @@
 				<label>@Resources.Resource.ExpiryDate</label>
 				<input type="text" id="cpExpiryDate" class="form-control" value="@(edit ? Coupon.cpExpiryDate : "")" />
 			</div>
+		
 		</div>
 		<div class="col-12 col-md-3">
 			<div class="form-group">
@@ -123,56 +124,7 @@
 
 			@Html.Partial("_SortOrderColHidden")
 		</div>
-
-		if (Model.CustomerList != null && Model.CustomerList.Count > 0)
-		{
-			<div id="customerblk">
-				<hr />
-				<div class="form-group">
-					<label>@Resources.Resource.DayIntervals4SendingEmails</label>
-					<input type="number" id="txtInterval" class="form-control mr-2" /><span id="msg"></span>
-					<div class="clearfix">
-						<button type="button" id="btnSaveInterval4Customers" class="btn btn-primary" title="@Resources.Resource.SaveInterval4Customers"><i class="fa fa-save"></i></button>
-					</div>
-				</div>
-
-				<table id="tblCustomer" class="table table-bordered table-hover table-condensed">
-					<thead class="gray-header font-weight-bold">
-						<tr>
-							<th class="text-center">@Resources.Resource.Name</th>
-							<th class="text-center">@Resources.Resource.Email</th>
-							<th class="text-center">@Resources.Resource.Interval (@Resources.Resource.Day4Interval)</th>
-							<th class="text-center">@Resources.Resource.IsEmailSent</th>
-							<th class="text-center">
-								<input type="checkbox" id="chkall" @checkall />
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						@foreach (var customer in Model.PagingCustomerList)
-						{
-							string cname = customer.cusName;						
-							<tr class="@customer.statuscls pointer" data-id="@customer.cusCustomerID" data-code="@customer.cusCode">
-								<td class="text-center">@cname</td>
-								<td class="text-center">@Html.Raw(customer.EmailDisplay)</td>
-								<td class="text-center">@customer.Interval</td>
-								<td class="text-center">@customer.IsEmailSentDisplay</td>
-								<td class="text-center">
-									<input type="checkbox" class="chk" data-code="@customer.cusCode" value="@customer.cusCode" />
-								</td>
-							</tr>
-						}
-					</tbody>
-				</table>
-
-				<div class="my-3 pagingblk">
-					@Html.PagedListPager(Model.PagingCustomerList, PageNo4C => Url.Action("Edit",
-		 new { PageNo4C, SortOrder4C = Model.CurrentSortOrder4C, SortCol4C = Model.SortCol4C, PageSize = Model.PageSize }))
-				</div>
-
-				@Html.Partial("_SortOrderColHidden")
-			</div>
-		}
+	
 	}
 
 }
@@ -185,7 +137,7 @@
 
 @Html.Partial("_WaitingModal")
 
-<div id="infoblk" data-titlerequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Title4Coupon)" data-pricerequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Price)" data-issuedqtyrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.IssuedQty)" data-pagesize="@Model.ComInfo.PageLength" data-coupon="@JsonSerializer.Serialize(Coupon)" data-companynamerequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.CompanyName1)" data-codelist="@JsonSerializer.Serialize(Model.CodeList)"></div>
+<div id="infoblk" data-titlerequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Title4Coupon)" data-pricerequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Price)" data-issuedqtyrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.IssuedQty)" data-pagesize="@Model.ComInfo.PageLength" data-coupon="@JsonSerializer.Serialize(Coupon)" data-companynamerequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.CompanyName1)"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script src="~/Scripts/ts/js/settings/coupon/edit.js?v=@rand"></script>

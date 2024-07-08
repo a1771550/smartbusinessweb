@@ -16,8 +16,8 @@ namespace SmartBusinessWeb.Controllers.Settings
         {
             ViewBag.ParentPage = "setup";
             ViewBag.PageName = "emailsettings";
-            EmailEditModel model = new EmailEditModel();
-            EmailModel emailModel = model.Get();         
+            EmailSettingsEditModel model = new EmailSettingsEditModel();
+            EmailSettingsModel emailModel = model.Get();         
             emailModel.enableCRM = (bool)ComInfo.enableCRM;
             return View(emailModel);
         }
@@ -26,9 +26,9 @@ namespace SmartBusinessWeb.Controllers.Settings
         [CustomAuthorize("emailsettings", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult Edit(EmailModel emailsettings)
+        public JsonResult Edit(EmailSettingsModel emailsettings)
         {            
-            EmailEditModel model = new EmailEditModel();
+            EmailSettingsEditModel model = new EmailSettingsEditModel();
             model.Edit(emailsettings);
             string msg = string.Format(Resources.Resource.SavedOkFormat, Resources.Resource.EmailSettings);            
             return Json(new { msg });
@@ -40,8 +40,8 @@ namespace SmartBusinessWeb.Controllers.Settings
         [HttpGet]
         public ActionResult Detail()
         {
-            EmailEditModel emodel = new EmailEditModel();
-            EmailModel model = emodel.Get();
+            EmailSettingsEditModel emodel = new EmailSettingsEditModel();
+            EmailSettingsModel model = emodel.Get();
             return Json(model, JsonRequestBehavior.AllowGet);
         }
     }

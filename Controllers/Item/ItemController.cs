@@ -1,18 +1,9 @@
 ﻿using PPWDAL;
-using PagedList;
 using SmartBusinessWeb.Infrastructure;
-using PPWLib.Models;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
-using CommonLib.Helpers;
-using CommonLib.Models;
-using System;
-using ModelHelper = PPWLib.Helpers.ModelHelper;
 using PPWLib.Models.Item;
-using PPWLib.Models.Sales;
-using DocumentFormat.OpenXml.EMMA;
 
 namespace SmartBusinessWeb.Controllers.Item
 {
@@ -69,11 +60,11 @@ namespace SmartBusinessWeb.Controllers.Item
         [HandleError]
         [CustomAuthorize("item", "admin", "superadmin")]
         [HttpGet]
-        public ActionResult Edit(int itemId, string referrer)
+        public ActionResult Edit(string referrer, string itemCode=null)
         {
             ViewBag.ParentPage = ViewBag.PageName = "item";
             ItemEditModel model = new ItemEditModel();
-            model.Get(itemId);
+            model.Get(itemCode);
             model.Referrer = referrer;
             return View(model);
         }
@@ -120,19 +111,19 @@ namespace SmartBusinessWeb.Controllers.Item
         [CustomAuthorize("item", "admin", "superadmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int itemId)
+        public ActionResult Delete(string itemCode)
         {
-            ViewBag.ParentPage = ViewBag.PageName = "item";
-            string msg = ItemEditModel.Delete(itemId);
+            ViewBag.ParentPage = "item";
+            string msg = ItemEditModel.Delete(itemCode);
             return Json(msg);
         }
 
         [HandleError]
         [CustomAuthorize("item", "admin", "superadmin")]
         [HttpGet]
-        public ActionResult Detail(int itemId)
+        public ActionResult Detail(string itemCode)
         {
-            ItemEditModel model = new ItemEditModel(itemId, true);
+            ItemEditModel model = new ItemEditModel(itemCode, true);
             return Json(model.Item, JsonRequestBehavior.AllowGet);
         }
     }

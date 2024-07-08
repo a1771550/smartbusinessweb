@@ -233,8 +233,8 @@ namespace SmartBusinessWeb.Controllers
             {
                 try
                 {
-                    List<int> customerIds = customers.Select(x => x.cusCustomerID).Distinct().ToList();
-                    List<MyobCustomer> _customers = context.MyobCustomers.Where(x => x.AccountProfileId == apId && customerIds.Contains(x.cusCustomerID)).ToList();
+                    List<string> customerCodes = customers.Select(x => x.cusCode).Distinct().ToList();
+                    List<MyobCustomer> _customers = context.MyobCustomers.Where(x => x.AccountProfileId == apId && customerCodes.Contains(x.cusCode)).ToList();
 
                     #region Backup Customer Point Information 
                     Dictionary<string, CustomerPointInfo> DicCusPointInfo = new Dictionary<string, CustomerPointInfo>();
@@ -543,8 +543,8 @@ namespace SmartBusinessWeb.Controllers
                 {
                     #region remove current data first:
                     //context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Item]");
-                    List<int> itemIds = items.Select(x => x.itmItemID).Distinct().ToList();
-                    List<MyobItem> _items = context.MyobItems.Where(x => x.AccountProfileId == apId && itemIds.Contains(x.itmItemID)).ToList();
+                    List<string> itemCodes = items.Select(x => x.itmCode).Distinct().ToList();
+                    List<MyobItem> _items = context.MyobItems.Where(x => x.AccountProfileId == apId && itemCodes.Contains(x.itmCode)).ToList();
                     context.MyobItems.RemoveRange(_items);
                     context.SaveChanges();
                     #endregion

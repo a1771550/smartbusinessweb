@@ -8,7 +8,7 @@
 }
 <div class="form-inline @additionalcls">
 	<div class="form-group">
-		<input type="text" class="form-control" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Keyword" />
+		<input type="text" class="form-control mr-1" id="txtKeyword" name="Keyword" placeholder="@Resources.Resource.KeywordRequired" value="@Keyword" />
 		<button id="btnSearch" type="button" class="btn btn-success mx-1">@Resources.Resource.Search</button>
 		<button id="btnReload" type="button" class="btn btn-warning mx-1">@Resources.Resource.Reload</button>
 		@if (!hideadvsearch)
@@ -24,6 +24,7 @@
 		{
 			<button id="btnHotList" type="button" class="btn btn-outline-info mx-1">@string.Format(Resources.Resource.AddTo, Resources.Resource.HotList)</button>
 			<button id="btnBlast" type="button" class="btn btn-primary mx-1">@string.Format(Resources.Resource.AddTo, Resources.Resource.eBlast)</button>
+			<button id="btnEmail" type="button" class="btn btn-outline-primary mx-1">@string.Format(Resources.Resource.AddTo, Resources.Resource.PromotionalEmail)</button>
 		}
 	</div>
 </div>

@@ -23,6 +23,7 @@ $(document).on('change', '.format', function () {
 });
 
 $(function () {       
+    setFullPage();
     initModals();   
     triggerMenuByCls("menupromotion", 0);
     editmode = $('#Id').length == 1;

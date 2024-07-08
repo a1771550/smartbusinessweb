@@ -36,7 +36,7 @@ $(document).on("click", "#btnTransfer", function () {
 					if ($input.hasClass("locqty")) {
 						let jsstock: IJsStock = initJsStock();
 						let Id: string = $input.data("id") as string;
-						let itmCode: string = $input.data("code") as string;
+						let itmCode: string = $input.data("itemcode") as string;
 						//console.log('id:' + Id);
 						//if (Id > 0) {
 						jsstock.Id = Id;
@@ -93,7 +93,7 @@ $(document).on("click", "#btnTransfer", function () {
 });
 
 $(document).on("change", "input.locqty", function () {
-	let itmcode: string = $(this).data("code") as string;
+	let itmcode: string = $(this).data("itemcode") as string;
 	let shop: string = convertNumToString($(this).data("shop"));
 	//console.log('itemcode:' + itmcode + ';shop:' + shop);
 	let originalqty: number = Number($(this).data("oldval"));
@@ -143,11 +143,11 @@ $(document).on("change", "input.locqty", function () {
 
 $(document).on("dblclick", ".itemoption.locqty", function () {
 	openWaitingModal();
-	window.location.href = "/Transfer/Transfer?hasItemOption=1&hasIvOnly=0&itemId=" + $(this).data("itemid") + "&location=" + $(this).data("shop") + "&qty=" + $(this).val() + "&stcode=" + $("#stCode").text();
+	window.location.href = "/Transfer/Transfer?hasItemOption=1&hasIvOnly=0&itemCode=" + $(this).data("itemcode") + "&location=" + $(this).data("shop") + "&qty=" + $(this).val() + "&stcode=" + $("#stCode").text();
 });
 $(document).on("dblclick", ".vari.locqty", function () {
 	openWaitingModal();
-	window.location.href = "/Transfer/Transfer?hasItemOption=0&hasIvOnly=1&itemId=" + $(this).data("itemid") + "&location=" + $(this).data("shop") + "&qty=" + $(this).val() + "&stcode=" + $("#stCode").text();
+	window.location.href = "/Transfer/Transfer?hasItemOption=0&hasIvOnly=1&itemCode=" + $(this).data("itemcode") + "&location=" + $(this).data("shop") + "&qty=" + $(this).val() + "&stcode=" + $("#stCode").text();
 });
 $(function () {
 	setFullPage();
@@ -162,6 +162,6 @@ $(function () {
 	sortByName = true;
 	ConfigSimpleSortingHeaders();
 
-	DicIDItemOptions = $infoblk.data("jsondiciditemoptions");
+	DicCodeItemOptions = $infoblk.data("jsondiccodeitemoptions");
 	setInput4NumberOnly("number");
 });

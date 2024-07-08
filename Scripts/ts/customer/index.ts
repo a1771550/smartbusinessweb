@@ -1,5 +1,56 @@
 ﻿$infoblk = $("#infoblk");
 
+$(document).on("click", "#btnEmail", function (e) {
+	foremail = true;
+	foreblast = false;
+	forhotlist = false;
+	forassignsalesmen = false;
+	e.preventDefault();
+	e.stopPropagation();
+	populateDropDown4EmailCusGroupList();
+	openDropDownModal();
+});
+function handleEmailCustomers() {
+	let emailId: number = Number(dropdownModal.find("#drpEmail").val());
+
+	let groupIdList: number[] = [];
+	let groups = dropdownModal.find("#drpCustomerGroup").val() as string[];
+	console.log(groups);
+	if (groups.length == 1) groupIdList.push(Number(groups[0]));
+	else {
+		groups.forEach((x) => {
+			groupIdList.push(Number(x));
+		});
+	}
+	console.log("emailId:", emailId);
+	console.log("groupIdList:", groupIdList);
+	return;
+	openWaitingModal();
+	$.ajax({
+		type: "POST",
+		url: "/Customer/AddToPromotionalEmail",
+		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), groupIdList, emailId },
+		success: function (msg) {
+			closeWaitingModal();
+			//console.log(msg);
+			if (msg) {
+				$.fancyConfirm({
+					title: "",
+					message: msg,
+					shownobtn: false,
+					okButton: oktxt,
+					noButton: notxt,
+					callback: function (value) {
+						if (value) {
+							$("#txtKeyword").trigger("focus");
+						}
+					}
+				});
+			}
+		},
+		dataType: "json"
+	});
+}
 function handleSalesmenCustomers(notification:boolean) {
 	let salesmanId: number = Number(dropdownModal.find("select").first().val());	
 	let groupIdList: number[] = [];
@@ -40,6 +91,7 @@ function handleSalesmenCustomers(notification:boolean) {
 	});
 }
 $(document).on("click", "#btnAssign", function (e) {
+	foremail = false;
 	foreblast = false;
 	forhotlist = false;
 	forassignsalesmen = true;
@@ -105,6 +157,7 @@ function handleHotListCustomers() {
 
 }
 $(document).on("click", "#btnHotList", function (e) {
+	foremail = false;
 	forhotlist = true;
 	foreblast = false;
 	forassignsalesmen = false;
@@ -115,6 +168,7 @@ $(document).on("click", "#btnHotList", function (e) {
 });
 
 $(document).on("click", "#btnBlast", function (e) {
+	foremail = false;
 	foreblast = true;
 	forhotlist = false;
 	forassignsalesmen = false;
@@ -357,6 +411,45 @@ function populateCustomerGroupList() {
 			RecordCount: RecordCount,
 		});
 	}
+}
+
+function populateDropDown4EmailCusGroupList() {
+	$.ajax({
+		type: "GET",
+		url: "/Api/GetEmailListCusGroupList",
+		data: {},
+		success: function (data) {
+			if (data) {
+				EmailList = data.EmailList.slice(0);
+				//console.log("EmailList:", EmailList);
+				$target = dropdownModal.find("select").first();
+				$target.parent("div").find("label").text(promotionalemailtxt);
+				$target.attr("id","#drpEmail");
+				$target.empty();
+				EmailList.forEach((x) => {
+					openDropDownModal();
+					$target.append($("<option>", {
+						value: x.Id,
+						text: x.Subject
+					}));
+				});
+
+				$target = dropdownModal.find("#drpCustomerGroup");
+				$target.empty();
+				CustomerGroupList = data.CustomerGroupList.slice(0);
+				CustomerGroupList.forEach((x) => {
+					openDropDownModal();
+					$target.append($("<option>", {
+						value: x.Id,
+						text: x.cgName
+					}));
+				});
+
+				dropdownModal.find("select").select2();
+			}
+		},
+		dataType: "json"
+	});
 }
 function populateDropDown4EblastCusGroupList() {
 	$.ajax({

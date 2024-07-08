@@ -47,7 +47,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         public JsonResult SendTestEmail(int Id, string testemail)
         {
             string msg;
-            EmailEditModel model = new EmailEditModel();
+            EmailSettingsEditModel model = new EmailSettingsEditModel();
             var mailsettings = model.Get();
             string host = mailsettings.emEmailTrackingURL;
             int blastId = Id;
@@ -165,7 +165,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         public JsonResult Start(int Id)
         {
             string msg;
-            EmailEditModel model = new EmailEditModel();
+            EmailSettingsEditModel model = new EmailSettingsEditModel();
             var mailsettings = model.Get();
             string host = Request.IsLocal ? string.Concat("http://", UriHelper.GetLocalIPAddress(), @"/Track") : mailsettings.emEmailTrackingURL;
             //Response.Write(host);

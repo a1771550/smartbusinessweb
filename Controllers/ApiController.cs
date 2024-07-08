@@ -43,6 +43,7 @@ using PPWLib.Models.Customer.eBlast;
 using PPWLib.Models.Customer.Enquiry;
 using PPWLib.Models.Receipt;
 using Microsoft.Data.SqlClient;
+using PPWLib.Models.Promotion.Email;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -215,6 +216,16 @@ namespace SmartBusinessWeb.Controllers
             CustomerGroupEditModel cmodel = new CustomerGroupEditModel();
             cmodel.GetList(1);
             return Json(new { emodel.HotLists, CustomerGroupList = cmodel.GroupList }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public JsonResult GetEmailListCusGroupList()
+        {
+            EmailEditModel emodel = new EmailEditModel();
+            emodel.GetList();
+            CustomerGroupEditModel cmodel = new CustomerGroupEditModel();
+            cmodel.GetList(1);
+            return Json(new { emodel.EmailList, CustomerGroupList = cmodel.GroupList }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
@@ -1130,7 +1141,7 @@ namespace SmartBusinessWeb.Controllers
             int okcount = 0;
             int ngcount = 0;
 
-            EmailEditModel model = new EmailEditModel();
+            EmailSettingsEditModel model = new EmailSettingsEditModel();
             var mailsettings = model.Get();
 
             MailAddress frm = new MailAddress(mailsettings.emEmail, mailsettings.emDisplayName);

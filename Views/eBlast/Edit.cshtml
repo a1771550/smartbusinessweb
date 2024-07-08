@@ -1,114 +1,113 @@
 ﻿@model eBlastEditModel
 @{
-    bool editmode = Model.eBlast != null;
-    string mandatory = Resources.Resource.StarMarkedMandatory.Replace("*", "<span class='asterisk'>*</span>");
-    string edittxt = editmode ? Resources.Resource.Edit : Resources.Resource.Add;
-    ViewBag.Title = edittxt + " " + Resources.Resource.eBlast;
-    int rand = CommonHelper.GetVersionRandomNo();
-    int lang = (int)HttpContext.Current.Session["CurrentCulture"];
-    string _htmlchecked = "checked";
-    string _textchecked = "";
-    eBlastModel tmpblast = new eBlastModel();
+	bool editmode = Model.eBlast != null;
+	string mandatory = Resources.Resource.StarMarkedMandatory.Replace("*", "<span class='asterisk'>*</span>");
+	string edittxt = editmode ? Resources.Resource.Edit : Resources.Resource.Add;
+	ViewBag.Title = edittxt + " " + Resources.Resource.eBlast;
+	int rand = CommonHelper.GetVersionRandomNo();
+	int lang = CultureHelper.CurrentCulture;
+	string _htmlchecked = "checked";
+	string _textchecked = "";
+	eBlastModel tmpblast = new eBlastModel();
 
-    if (editmode)
-    {
-        tmpblast = Model.eBlast;
-        if (tmpblast.blHtml)
-        {
-            _htmlchecked = "checked";
-            _textchecked = "";
-        }
-        else
-        {
-            _textchecked = "checked";
-            _htmlchecked = "";
-        }
-    }
+	if (editmode)
+	{
+		tmpblast = Model.eBlast;
+		if (tmpblast.blHtml)
+		{
+			_htmlchecked = "checked";
+			_textchecked = "";
+		}
+		else
+		{
+			_textchecked = "checked";
+			_htmlchecked = "";
+		}
+	}
 
 }
 
 <link rel="stylesheet" type="text/css" href="~/Content/datetimepicker/jquery.datetimepicker.min.css">
 <script src="~/Scripts/datetimepicker/jquery.datetimepicker.full.min.js"></script>
+<!-- TinyMCE Script Reference -->
+<script src="~/Scripts/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
 
 <h2>@ViewBag.Title</h2>
 
 @using (Html.BeginForm("Edit", "eBlast", FormMethod.Post, new { @Id = "frmeBlast" }))
 {
-    @Html.AntiForgeryToken()
-    if (editmode)
-    {
-        @Html.Hidden("Id", tmpblast.Id)
-    }
+	@Html.AntiForgeryToken()
+	if (editmode)
+	{
+		@Html.Hidden("Id", tmpblast.Id)
+	}
 
 
-    <h6>@Html.Raw(mandatory)</h6>
-    <div class="my-4" data-editmode="@editmode" data-ishtml="@tmpblast.blHtml">
-        <div class="form-group">
-            <div class="form-check form-check-inline">
-                <input class="form-check-input format" type="radio" name="format" id="formathtml" value="html" @_htmlchecked>
-                <label class="form-check-label" for="formathtml">@Resources.Resource.Html</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input format" type="radio" name="format" id="formattext" value="text" @_textchecked>
-                <label class="form-check-label" for="formattext">@Resources.Resource.Text</label>
-            </div>
-        </div>
+	<h6>@Html.Raw(mandatory)</h6>
+	<div class="my-4" data-editmode="@editmode" data-ishtml="@tmpblast.blHtml">
+		<div class="form-group">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input format" type="radio" name="format" id="formathtml" value="html" @_htmlchecked>
+				<label class="form-check-label" for="formathtml">@Resources.Resource.Html</label>
+			</div>
+			<div class="form-check form-check-inline">
+				<input class="form-check-input format" type="radio" name="format" id="formattext" value="text" @_textchecked>
+				<label class="form-check-label" for="formattext">@Resources.Resource.Text</label>
+			</div>
+		</div>
 
-        @Html.Hidden("blHtml", tmpblast.blHtml)
+		@Html.Hidden("blHtml", tmpblast.blHtml)
 
-        <div class="form-group required">
-            <label class="control-label col-md-2" for="blSubject">@Resources.Resource.Subject</label>
-            <div class="col-md-10">
-                <input type="text" class="form-control" id="blSubject" name="blSubject" value="@tmpblast.blSubject" />
-            </div>
-        </div>
+		<div class="form-group required">
+			<label for="blSubject">@Resources.Resource.Subject</label>
+			
+				<input type="text" class="form-control flex" id="blSubject" name="blSubject" value="@tmpblast.blSubject" />
+		
+		</div>
 
-        @{
-            string contentnotetag = string.Concat("<div style='margin-top:-.5em;'><span class='small alert'>(", $"<span class='font-weight-bold font-italic'>{Resources.Resource.Note}: </span>", Resources.Resource.eBlastContentNotes, ")</span></div>");
-        }
-        <div id="textblk" class="form-group required">
-            <label class="control-label col-md-2" for="textContent">@Resources.Resource.Content</label>
-            @Html.Raw(contentnotetag)
-            <div class="col-md-10">
-                <textarea class="form-control" id="textContent" name="textContent" rows="10" style="max-width:none;">@tmpblast.blContent</textarea>
-            </div>
-        </div>
+		@{
+			string contentnotetag = string.Concat("<div style='margin-top:-.5em;'><span class='small alert'>(", $"<span class='font-weight-bold font-italic'>{Resources.Resource.Note}: </span>", Resources.Resource.eBlastContentNotes, ")</span></div>");
+		}
+		<div id="textblk" class="form-group required">
+			<label for="textContent">@Resources.Resource.Content</label>
+			@Html.Raw(contentnotetag)
+			
+				<textarea class="form-control" id="textContent" name="textContent" rows="10" style="max-width:none;">@tmpblast.blContent</textarea>
+		
+		</div>
 
-        <div id="htmlblk" class="form-group required">
-            <label class="control-label col-md-2" for="htmlContent">@Resources.Resource.Content</label>
-            @Html.Raw(contentnotetag)
-            <div class="col-md-10">
-                <textarea class="" id="htmlContent" name="htmlContent">@tmpblast.blContent</textarea>
-            </div>
-        </div>
+		<div id="htmlblk" class="overflow-x">
+			<div class="form-group required">
+				<label for="htmlContent">@Resources.Resource.Content</label>
+				@Html.Raw(contentnotetag)
 
-        <div class="form-group required">
-            <label class="control-label col-md-3" for="blSendTime">@Resources.Resource.ScheduledSendTime</label>
-            <div class="col-md-9">
-                <input type="datetime" class="form-control datetimepicker" id="blSendTime" name="blSendTime" value="@tmpblast.blSendTime" />
-            </div>
-        </div>
+				<textarea class="" id="htmlContent" name="htmlContent">@tmpblast.blContent</textarea>
+			</div>
+		</div>
 
-        <div class="form-group">
-            <label class="control-label col-md-4" for="blPause">@Resources.Resource.PauseSendLabel</label>
-            <div class="col-md-10">
-                <input type="number" class="form-control" id="blPause" name="blPause" value="@tmpblast.blPause" />
-            </div>
-        </div>
+		<div class="form-group required">
+			<label for="blSendTime">@Resources.Resource.ScheduledSendTime</label>
+		
+				<input type="datetime" class="form-control datetimepicker" id="blSendTime" name="blSendTime" value="@tmpblast.blSendTime" />
+			
+		</div>
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <a role="button" href="#" id="btnSave" class="btn btn-success">@Resources.Resource.Save</a>
-            </div>
-        </div>
+		<div class="form-group">
+			<label for="blPause">@Resources.Resource.PauseSendLabel</label>
+		
+				<input type="number" class="form-control" id="blPause" name="blPause" value="@tmpblast.blPause" />
+		
+		</div>
 
-        <input type="hidden" id="AccountProfileId" name="AccountProfieId" value="@Model.AccountProfileId" />
-        <input type="hidden" id="blContent" name="blContent" />
-    </div>
+		<button type="button" id="btnSave" class="btn btn-success">@Resources.Resource.Save</button>
+
+		<input type="hidden" id="AccountProfileId" name="AccountProfieId" value="@Model.AccountProfileId" />
+		<input type="hidden" id="blContent" name="blContent" />
+	</div>
 }
 
 <div>
-    @Html.ActionLink(Resources.Resource.BackToList, "Index")
+	@Html.ActionLink(Resources.Resource.BackToList, "Index")
 </div>
 
 <div id="infoblk" data-accountprofileid="@Model.AccountProfileId" data-subjectrequired="@Resources.Resource.SubjectRequired" data-contentrequired="@Resources.Resource.ContentRequired" data-sendtimerequired="@Resources.Resource.ScheduledSendTimeRequired" data-contentnotetxt="@Resources.Resource.eBlastContentNotes"></div>
@@ -116,17 +115,16 @@
 @Html.Partial("_WaitingModal")
 
 
-@{ 
-   string postbackurl = Request.IsLocal ? string.Concat("http://", UriHelper.GetLocalIPAddress()) : "https://app.united.com.hk";
-    postbackurl = string.Concat("/Api/UnsubscribeEblast?cusCode=##CUSCODE##");
+@{
+	string postbackurl = Request.IsLocal ? string.Concat("http://", UriHelper.GetLocalIPAddress()) : "https://app.united.com.hk";
+	postbackurl = string.Concat("/Api/UnsubscribeEblast?cusCode=##CUSCODE##");
 }
-<!-- TinyMCE Script Reference -->
-<script src="~/Scripts/tinymce/tinymce.min.js"></script>
+
 <!-- Script to wire up your TinyMCE editor -->
 <script type="text/javascript">
-    // Initialize your tinyMCE Editor with your preferred options
-    tinyMCE.init({
-        selector: 'textarea#htmlContent',
+    // Initialize your tinymce Editor with your preferred options
+    tinymce.init({
+        selector: '#htmlContent',
         setup: function (editor) {
             editor.on('init', function (e) {
                 if (!editmode) {
@@ -139,7 +137,7 @@
         // General options
         @*mode: "textareas",*@
         theme: "silver",
-        width: 900,
+        width: 1488,
         height: 600,
         plugins: [
             'advlist', 'autolink', 'link', 'image', 'lists', 'charmap', 'preview', 'anchor', 'pagebreak',
@@ -262,7 +260,7 @@
         return msg === '';
     }
 
-    $(document).on('click', '#btnSave', function () {   
+    $(document).on('click', '#btnSave', function () {
 
         if (validform_eblast()) {
             let _blast = initeBlast();
@@ -276,7 +274,7 @@
 
             @*if (!editmode) {
                 _blast.blContent += `<span style="display:none;">##EMAIL##</span>`;
-            }*@            
+            }*@
 
             console.log('content:' + _blast.blContent);
 
@@ -301,8 +299,8 @@
         }
     });
 
-    if (tinymce.activeEditor !== null) {
-        let _content = tinymce.activeEditor.getContent();
+	if (tinymce.activeEditor !== null) {
+		let _content = tinymce.activeEditor.getContent();
         $('#blContent').val(_content);
     }
 </script>

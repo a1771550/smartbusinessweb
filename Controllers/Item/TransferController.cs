@@ -78,17 +78,17 @@ namespace SmartBusinessWeb.Controllers.Item
         /// </summary>
         /// <param name="hasItemOption"></param>
         /// <param name="hasIvOnly">for those items without batch but with item variations</param>
-        /// <param name="itemId"></param>
+        /// <param name="itemCode"></param>
         /// <param name="location"></param>
         /// <param name="qty"></param>
         /// <returns></returns>
         [HandleError]
         [CustomAuthorize("item", "admin", "superadmin")]
         [HttpGet]
-        public ActionResult Transfer(int itemId, string location, int qty, int hasItemOption = 0, int hasIvOnly = 0)
+        public ActionResult Transfer(string itemCode, string location, int qty, int hasItemOption = 0, int hasIvOnly = 0)
         {
             ViewBag.ParentPage = "item";
-            ItemEditModel model = new ItemEditModel(itemId, true, hasItemOption==1,hasIvOnly==1, location, qty);
+            ItemEditModel model = new ItemEditModel(itemCode, true, hasItemOption==1,hasIvOnly==1, location, qty);
             return View(model);
         }
 

@@ -1,22 +1,16 @@
 ﻿@{
+	int rand = CommonHelper.GetVersionRandomNo();
 	string sitename = Resources.Resource.SiteName;
 	string lnkcls = "";
 	string sublnkcls = "";
 	string reportlnktxt = string.Empty;
 	System.Collections.Generic.List<ReportView> reports = null;
 	string pagename = ViewBag.PageName ?? string.Empty;
-	string eximtxt = string.Concat(Resources.Resource.Export, "-", Resources.Resource.Import);
 	ComInfo ComInfo = HttpContext.Current.Session["ComInfo"] as ComInfo;
-	bool enableNonM = ComInfo == null ? ConfigurationManager.AppSettings["enableNonM"] == "1" : (bool)ComInfo.enableNonM;
 
-	bool enableCRM = ComInfo == null ? ConfigurationManager.AppSettings["enableCRM"] == "1" : (bool)ComInfo.enableCRM;
-
-	string accessmode = HttpContext.Current.Session["AccessMode"] == null ? "pos" : (string)HttpContext.Current.Session["AccessMode"];
-	int rand = CommonHelper.GetVersionRandomNo();
 	string defaultcheckoutportal = CommonHelper.FirstCharToUpper(ComInfo == null ? ConfigurationManager.AppSettings["DefaultCheckoutPortal"] : ComInfo.DefaultCheckoutPortal);
 	string cssbsfile = HttpContext.Current.Session["CssBSFile"] == null ? @"Content/bs4" : HttpContext.Current.Session["CssBSFile"].ToString();
-	string scriptbsfile = HttpContext.Current.Session["ScriptBSFile"] == null ? @"Scripts/bs4" : HttpContext.Current.Session["ScriptBSFile"].ToString();
-	bool nonabss = defaultcheckoutportal.ToLower() == "nonabss";
+	string scriptbsfile = HttpContext.Current.Session["ScriptBSFile"] == null ? @"Scripts/bs4" : HttpContext.Current.Session["ScriptBSFile"].ToString();	
 	string shop = ComInfo == null ? ConfigurationManager.AppSettings["Shop"] : ComInfo.Shop;
 	bool approvalmode = ComInfo == null ? false : (bool)ComInfo.ApprovalMode;
 	string forapproval = Resources.Resource.ForApproval;
@@ -26,6 +20,7 @@
 	IsUserRole IsUserRole = UserHelper.GetIsUserRole(user);
 	bool isadmin = IsUserRole.Admin;
 	bool ismanager = IsUserRole.SalesManager;
+	//todo: replace the url with the new one.
 	bool showDataTransfer = CommonHelper.GetUrlHost() != "crm.united.com.hk";
 }
 <!DOCTYPE html>
@@ -136,6 +131,7 @@
 
 									<li><a href="/CustomerGroup/Index">@string.Format(Resources.Resource.GroupFormat, Resources.Resource.Customer)</a></li>
 									<li><a href="/EnquiryGroup/Index">@Resources.Resource.EnquiryGroup</a></li>
+									
 								</ul>
 							</li>
 							
@@ -180,6 +176,8 @@
 									<li><a href="/ItemQtyPromotion/Index">@Resources.Resource.ItemQtyPromotion</a></li>
 
 									<li><a href="/Promotion/Index">@string.Format(Resources.Resource.ListFormat, Resources.Resource.Promotion)</a></li>
+
+									<li><a href="/Email/Index">@Resources.Resource.PromotionalEmail</a></li>
 								</ul>
 							</li>
 							

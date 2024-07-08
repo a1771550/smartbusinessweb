@@ -2,22 +2,7 @@
 editmode = Number($("#Id").val()) > 0;
 let selectedCouponLnId: number = 0;
 
-$(document).on("change", ".chklnall", function () {
-	let type: string = $(this).hasClass("redeemed") ? "redeemed" : "voided";
-	let all: number = $(this).is(":checked") ? 1 : 0;
-	$("#btnSave").prop("disabled", true);
-	openWaitingModal();
-	$.ajax({
-		type: "POST",
-		url: "/Coupon/ToggleAllLn",
-		data: { __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val(), code: $("#cpCode").val(), all, type },
-		success: function (data) {
-			closeWaitingModal();
-			if (data) window.location.href = "/Coupon/Index";
-		},
-		dataType: "json"
-	});
-});
+
 function fillInCoupon() {
 	Coupon = { Id: Number($("#Id").val()), cpCode: $("#cpCode").val() as string, cpCompanyName: $("#cpCompanyName").val() as string, cpTitle: $("#cpTitle").val() as string, cpPrice: Number($("#cpPrice").val()), cpDiscPc: Number($("#cpDiscPc").val()), JsExpiryDate: $("#cpExpiryDate").val() as string, cpIssuedQty: Number($("#cpIssuedQty").val()), cpDesc: $("#cpDesc").val() as string, cpRemark: $("#cpRemark").val() as string } as ICoupon;
 }
@@ -167,14 +152,6 @@ $(document).on("click", ".page-item:not(.active)", function (e) {
 	window.location.href = $(this).find("a").prop("href").concat(`&Id=${Coupon.cpId}`);
 });
 
-$(document).on("change", "#txtInterval", function () {
-	let interval = Number($(this).val());
-	if (interval > 0) {
-		Coupon = { Id: $("#Id").val(), } as ICoupon;
-		//todo:
-	}
-	
-});
 $(function () {
 	setFullPage();
 	forcoupon = true;
@@ -188,14 +165,4 @@ $(function () {
 	setInput4NumberOnly("num");
 	$("#cpCompanyName").trigger("focus");
 	Coupon = $infoblk.data("coupon");
-
-	var checkall = getParameterByName("CheckAll");
-	if (checkall !== null) {
-		//console.log("checkall:" + checkall);
-		let checked = checkall == "1";
-		$(".chk").prop("checked", checked);
-		handleCheckAll(checked);
-	}
-
-	showMsg("msg", "saved", "success");
 });

@@ -349,6 +349,7 @@
     <Compile Include="Controllers\Admin\AccessRightController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\Admin\AdminController.cs" />
+    <Compile Include="Controllers\Promotion\EmailController.cs" />
     <Compile Include="Controllers\Settings\CouponController.cs" />
     <Compile Include="Controllers\Settings\DutyController.cs" />
     <Compile Include="Controllers\ApiController.cs" />
@@ -425,6 +426,7 @@
     <Content Include="bundles\images\ui-icons_cc0000_256x240.png" />
     <Content Include="bundles\images\ui-icons_ffffff_256x240.png" />
     <Content Include="Content\abssreports\sales.css" />
+    <Content Include="Content\customer\email\index.css" />
     <Content Include="Content\mean\img\users.svg" />
     <Content Include="Content\records\attendance.css" />
     <Content Include="Content\customer\attr\common.css" />
@@ -3107,6 +3109,8 @@
     <Content Include="Scripts\ts\js\promotion\eblast\etrack.js" />
     <Content Include="Scripts\ts\js\promotion\eblast\index.js" />
     <Content Include="Scripts\ts\js\promotion\eblast\log.js" />
+    <Content Include="Scripts\ts\js\promotion\email\edit.js" />
+    <Content Include="Scripts\ts\js\promotion\email\index.js" />
     <Content Include="Scripts\ts\js\purchase\edit.js" />
     <Content Include="Scripts\ts\js\purchase\excludedorders.js" />
     <Content Include="Scripts\ts\js\purchase\index.js" />
@@ -3180,6 +3184,7 @@
     <Content Include="Static\POS_draft\assets\plugins\sweetalert\sweetalert2.all.min.js" />
     <Content Include="Static\POS_draft\assets\plugins\sweetalert\sweetalerts.min.js" />
     <Content Include="Static\POS_draft\index.HTML" />
+    <Content Include="Static\tinymce.html" />
     <Content Include="Static\ui_enhancement\assets\css\all.min.css" />
     <Content Include="Static\ui_enhancement\assets\css\bootstrap.min.css" />
     <Content Include="Static\ui_enhancement\assets\css\default.css" />
@@ -4747,6 +4752,11 @@
     <Content Include="Scripts\ts\js\promotion\eblast\etrack.js.map" />
     <Content Include="Scripts\ts\js\promotion\eblast\index.js.map" />
     <Content Include="Scripts\ts\js\promotion\eblast\log.js.map" />
+    <Content Include="Views\Email\Index.cshtml" />
+    <Content Include="Views\Email\Edit.cshtml" />
+    <Content Include="Views\Shared\_HtmlPreviewModal.cshtml" />
+    <Content Include="Scripts\ts\js\promotion\email\edit.js.map" />
+    <Content Include="Scripts\ts\js\promotion\email\index.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -5102,6 +5112,8 @@
     <TypeScriptCompile Include="Scripts\tinymce\tinymce.d.ts" />
     <TypeScriptCompile Include="Scripts\ts\abssreports\sales.ts" />
     <TypeScriptCompile Include="Scripts\ts\ajaxpostlist.ts" />
+    <TypeScriptCompile Include="Scripts\ts\promotion\email\edit.ts" />
+    <TypeScriptCompile Include="Scripts\ts\promotion\email\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\func.ts" />
     <TypeScriptCompile Include="Scripts\ts\app.ts" />
     <TypeScriptCompile Include="Scripts\ts\customer\attributes\index.ts" />

@@ -356,7 +356,7 @@ namespace SmartBusinessWeb.Controllers
         }
         public void GetHost()
         {
-            EmailEditModel model = new EmailEditModel();
+            EmailSettingsEditModel model = new EmailSettingsEditModel();
             var mailsettings = model.Get();
             string host = Request.IsLocal ? string.Concat("http://", UriHelper.GetLocalIPAddress(), @"/Track") : mailsettings.emEmailTrackingURL;
             //http://192.168.123.78/Track
@@ -1417,7 +1417,7 @@ btest3
         {
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
-                var model = new EmailModel();
+                var model = new EmailSettingsModel();
                 EmailSetting EmailSetting = context.EmailSettings.FirstOrDefault(x => x.Id == 1 && x.AccountProfileId == 1);
                 if (EmailSetting != null)
                 {

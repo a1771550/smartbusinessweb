@@ -2662,7 +2662,33 @@ function closeEnquiryGroupModal() {
 	enquiryGroupModal.dialog("close");
 }
 
+function resetHtmlPreviewModal() {
+	htmlPreviewModal.find("div").empty();
+}
+function openHtmlPreviewModal() {	
+	htmlPreviewModal.dialog("open");	
+}
+function closeHtmlPreviewModal() {
+	resetHtmlPreviewModal();
+	htmlPreviewModal.dialog("close");
+}
 function initModals() {
+	if ($("#htmlPreviewModal").length) {
+		htmlPreviewModal = $("#htmlPreviewModal").dialog({
+			width: 960,
+			title: previewtxt,
+			autoOpen: false,
+			modal: true,
+			buttons: [				
+				{
+					class: "secondarybtn",
+					text: closetxt,
+					click: closeHtmlPreviewModal
+				},
+			],
+		});
+	}
+
 	if ($("#enquiryGroupModal").length) {
 		enquiryGroupModal = $("#enquiryGroupModal").dialog({
 			width: 960,
@@ -2683,6 +2709,7 @@ function initModals() {
 			],
 		});
 	}
+
 	if ($("#customerGroupModal").length) {
 		customerGroupModal = $("#customerGroupModal").dialog({
 			width: 960,
@@ -3818,6 +3845,7 @@ function initModals() {
 						$target = dropdownModal.find("select");
 						closeDropDownModal();
 						if (forcustomer) {
+							if (foremail) handleEmailCustomers();
 							if (forhotlist) handleHotListCustomers();
 							if (foreblast) handleEblastCustomers();
 							if (forassignsalesmen) {
@@ -8373,8 +8401,8 @@ function OnGetStocksOK(response) {
 			DicStockTransferList[itemcode] = [];
 
 			let itemoption: IItemOptions | null = null;
-			if (DicIDItemOptions) {
-				itemoption = DicIDItemOptions[item.itmItemID!];
+			if (DicCodeItemOptions) {
+				itemoption = DicCodeItemOptions[item.itmCode!];
 			}
 
 			html += `<tr class="{0}" data-code="${itemcode}" data-jsstocklist="${item.JsonJsStockList}" ondblclick="{1}">`;
@@ -13306,7 +13334,7 @@ function FillInCustomer() {
 }
 
 $(document).on("click", ".itemremove", function () {
-	let itemId = $(this).data("id");
+	let itemCode = $(this).data("code");
 	$.fancyConfirm({
 		title: "",
 		message: confirmremovetxt,
@@ -13323,7 +13351,7 @@ $(document).on("click", ".itemremove", function () {
 						__RequestVerificationToken: $(
 							"input[name=__RequestVerificationToken]"
 						).val(),
-						itemId,
+						itemCode,
 					},
 					success: function (data) {
 						window.location.reload();
@@ -18330,3 +18358,20 @@ function confirmBarCodeClose() {
 		});
 	}
 }
+
+$(document).on("click", ".preview", function () {
+	let url = (foremail || forcustomer) ? "/Email/Get" : "";
+	let Id = $(this).data("id");
+	$.ajax({
+		type: "GET",
+		url: url,
+		data: { Id },
+		success: function (data: IEmail) {
+			if (data) {
+				htmlPreviewModal.find("div").html(data.Content);
+				openHtmlPreviewModal();
+			}
+		},
+		dataType: "json"
+	});
+});

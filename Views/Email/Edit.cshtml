@@ -1,0 +1,204 @@
+﻿@model EmailEditModel
+@{
+	EmailModel Email = Model.Email;
+	bool editmode = Email.Id > 0;
+	ViewBag.Title = editmode ? string.Format(Resources.Resource.EditFormat, Resources.Resource.PromotionalEmail) : string.Format(Resources.Resource.AddFormat, Resources.Resource.PromotionalEmail);
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("Edit", "Email", FormMethod.Post, new { @Id = "frmEmail" }))
+{
+	@Html.AntiForgeryToken()
+
+	@Html.Hidden("Id", Email.Id)
+
+<div class="my-4">
+	<div class="form-group required">
+		<label for="txtSubject">@Resources.Resource.Subject</label>
+		<input type="text" class="form-control flex" id="txtSubject" value="@Email.Subject" />
+		<span class="text-danger font-weight-bold hide">@string.Format(Resources.Resource.Required, Resources.Resource.Subject)</span>
+	</div>
+
+	<div class="overflow-x">
+		<div class="form-group required">
+			<label for="txtContent">@Resources.Resource.Content</label>
+			<textarea id="txtContent">@Email.Content</textarea>
+			<span class="text-danger font-weight-bold hide">@string.Format(Resources.Resource.Required, Resources.Resource.Content)</span>
+		</div>
+	</div>
+	<div class="form-group my-4">
+		<label for="txtInterval">@Resources.Resource.Interval (@Resources.Resource.Day4Interval)</label>
+		<input type="number" id="txtInterval" class="form-control" value="@Email.Interval" />
+	</div>
+	<div class="form-group my-4">
+		<label for="txtRemark">@Resources.Resource.Remark</label>
+		<textarea id="txtRemark" class="form-control flex" rows="5">@Email.Remark</textarea>
+	</div>
+</div>
+}
+
+<button type="button" id="btnSave" class="btn btn-success my-2">@Resources.Resource.Save</button>
+
+<div>
+	@Html.ActionLink(Resources.Resource.BackToList, "Index")
+</div>
+
+
+<div id="infoblk" data-subjectrequired="@Resources.Resource.SubjectRequired" data-contentrequired="@Resources.Resource.ContentRequired"></div>
+
+@Html.Partial("_WaitingModal")
+<!-- TinyMCE Script Reference -->
+<script src="~/Scripts/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
+<!-- Script to wire up your TinyMCE editor -->
+<script type="text/javascript">
+    // Initialize your tinymce Editor with your preferred options
+    tinymce.init({
+        selector: "#txtContent",
+        //setup: function (editor) {
+        //    editor.on("init", function (e) {
+        //        if (!editmode) {
+        //            editor.setContent(`<p>##SUBJECT##</p>`);
+        //        }
+        //    });
+        //},
+        @*auto_focus: "htmlContent",*@
+        // General options
+        @*mode: "textareas",*@
+        theme: "silver",
+        width: 1488,
+        height: 600,
+        plugins: [
+            "advlist", "autolink", "link", "image", "lists", "charmap", "preview", "anchor", "pagebreak",
+            "searchreplace", "wordcount", "visualblocks", "code", "fullscreen", "insertdatetime", "media",
+            "table", "emoticons", "template", "help"
+        ],
+        toolbar: "undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | " +
+            "bullist numlist outdent indent | link image | print preview media fullscreen | " +
+            "forecolor backcolor emoticons | help",
+        menu: {
+            favs: { title: "My Favorites", items: "code visualaid | searchreplace | emoticons" }
+        },
+        menubar: "favs file edit view insert format tools table help",
+        extended_valid_elements: "script[charset|defer|language|src|type]",
+        /* enable title field in the Image dialog*/
+        image_title: true,
+        /* enable automatic uploads of images represented by blob or data URIs*/
+        automatic_uploads: true,
+        /*
+          URL of our upload handler (for more details check: https://www.tiny.cloud/docs/configure/file-image-upload/#images_upload_url)
+          images_upload_url: "postAcceptor.php",
+          here we add custom filepicker only to Image dialog
+        */
+        file_picker_types: "image",
+        /* and here"s our custom image picker*/
+        file_picker_callback: function (cb, value, meta) {
+            var input = document.createElement("input");
+            input.setAttribute("type", "file");
+            input.setAttribute("accept", "image/*");
+            /*
+              Note: In modern browsers input[type="file"] is functional without
+              even adding it to the DOM, but that might not be the case in some older
+              or quirky browsers like IE, so you might want to add it to the DOM
+              just in case, and visually hide it. And do not forget do remove it
+              once you do not need it anymore.
+            */
+            input.onchange = function () {
+                var file = this.files[0];
+
+                var reader = new FileReader();
+                reader.onload = function () {
+                    /*
+                      Note: Now we need to register the blob in TinyMCEs image blob
+                      registry. In the next release this part hopefully won"t be
+                      necessary, as we are looking to handle it internally.
+                    */
+                    var id = "blobid" + (new Date()).getTime();
+                    var blobCache = tinymce.activeEditor.editorUpload.blobCache;
+                    var base64 = reader.result.split(",")[1];
+                    var blobInfo = blobCache.create(id, file, base64);
+                    blobCache.add(blobInfo);
+
+                    /* call the callback and populate the Title field with the file name */
+                    cb(blobInfo.blobUri(), { title: file.name });
+                };
+                reader.readAsDataURL(file);
+            };
+
+            input.click();
+        },
+
+        content_style: "body { font-family:Helvetica,Arial,sans-serif; font-size:16px }"
+        // Example content CSS (should be your site CSS)
+        //content_css: "css/example.css",
+    });
+</script>
+
+<script src="~/Scripts/ts/js/promotion/email/edit.js?v=@CommonHelper.GetVersionRandomNo()"></script>
+
+<script>
+	function validMailForm() {
+		let invalidcount = 0;
+
+		if ($("#txtSubject").val() === "") {			
+			$("#txtSubject").addClass("error");
+			$("#txtSubject").next("span").removeClass("hide");
+			invalidcount+=1;
+		} else {
+			$("#txtSubject").next("span").addClass("hide");
+			invalidcount-=1;
+		}				
+
+		let _content = tinymce.activeEditor.getContent();
+		let $span = $("#txtContent").parent("div").find("span").last();
+		if (_content === "") {			
+			$(".tox-tinymce").css({ "border": "2px solid red" });
+			$span.removeClass("hide");
+			invalidcount+=1;
+		} else {
+			_contenterr = false;
+			$(".tox-tinymce").css({ "border": "none" });
+			$span.addClass("hide");
+			invalidcount-=1;
+		}	
+
+		return invalidcount<=0;
+	}
+
+	$(document).on("click", "#btnSave", function (e) {
+		e.preventDefault();
+		fillInEmail();
+		if (validMailForm()) {
+			//console.log("Email:", Email);
+			//return;
+			openWaitingModal();
+			$.ajax({
+				//contentType: 'application/json; charset=utf-8',
+				type: "POST",
+				url: "/Email/Edit",
+				data: {
+					__RequestVerificationToken: $(
+						"input[name=__RequestVerificationToken]"
+					).val(),
+					Email,
+				},
+				success: function (data) {
+					closeWaitingModal();
+					if (data) {
+						window.location.href = "/Email/Index";
+					}
+				},
+				dataType: "json",
+			});
+		}
+	});
+
+	function fillInEmail() {
+
+		Email = { Id: Number($("#Id").val()), Subject: $("#txtSubject").val(),Interval:Number($("#txtInterval").val()), Remark: $("#txtRemark").val() };
+
+		if (tinymce.activeEditor !== null) {
+			Email.Content = tinymce.activeEditor.getContent();
+		}
+	}
+</script>

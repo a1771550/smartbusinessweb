@@ -240,6 +240,11 @@
           <path>Scripts\ts\admin\accessrights\index.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\admin\accessrights\index.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>email-index.ts</name>
+          <path>Scripts\ts\customer\email\index.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\customer\email\index.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>
@@ -430,6 +435,11 @@
           <name>coupon-Edit.cshtml</name>
           <path>Views\Coupon\Edit.cshtml</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Coupon\Edit.cshtml</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>_TxtBlk1.cshtml</name>
+          <path>Views\Shared\_TxtBlk1.cshtml</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Views\Shared\_TxtBlk1.cshtml</absolutePath>
         </Favorite>
       </favorites>
     </Folder>

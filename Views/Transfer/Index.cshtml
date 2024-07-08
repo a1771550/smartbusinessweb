@@ -73,7 +73,7 @@
 						string disabled = Id == "N/A" ? "disabled" : "";
 
 						<td class="text-right locqty">
-							<input type="text" class="form-control text-right btnsmall locqty" data-id="@Id" data-isprimary="@isprimary" data-code="@item.itmCode" data-shop="@shop" data-onhandstock="@item.lstQtyAvailable" data-oldval="@qty" data-itemid="@item.itmItemID" value="@qty" title="@qty" @disabled>
+							<input type="text" class="form-control text-right btnsmall locqty" data-id="@Id" data-isprimary="@isprimary" data-itemcode="@item.itmCode" data-shop="@shop" data-onhandstock="@item.lstQtyAvailable" data-oldval="@qty" data-itemid="@item.itmItemID" value="@qty" title="@qty" @disabled>
 						</td>
 					}
 
@@ -103,7 +103,7 @@ new { PageNo, SortName = Model.SortName, SortOrder = Model.CurrentSortOrder, Key
 	<button type="button" class="btn btn-success" id="btnTransfer">@Resources.Resource.MoveItems</button>
 </div>
 
-<div id="infoblk" data-shop="@user.shopCode" data-shops="@string.Join(",",Model.Shops)" data-enablebuysellunits="@Model.EnableBuySellUnits" data-outofbalancewarningtxt="@Resources.Resource.OutOfBalanceWarning" data-jsondiciditemoptions="@JsonSerializer.Serialize(Model.DicIDItemOptions)"></div>
+<div id="infoblk" data-shop="@user.shopCode" data-shops="@string.Join(",",Model.Shops)" data-enablebuysellunits="@Model.EnableBuySellUnits" data-outofbalancewarningtxt="@Resources.Resource.OutOfBalanceWarning" data-jsondiccodeitemoptions="@JsonSerializer.Serialize(Model.DicCodeItemOptions)"></div>
 
 
 <script src="~/Scripts/ts/js/item/transfer/index.js?v=@rand"></script>

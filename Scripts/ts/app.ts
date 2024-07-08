@@ -23,6 +23,15 @@ enum SalesOptions {
 	Monthly = 0,
 	All = 2
 }
+interface IEmail {
+	Id: number;
+	Subject: string;
+	Content: string;
+	Remark: string;
+	IsActive: boolean;
+}
+let Email: IEmail;
+let EmailList: IEmail[] = [];
 interface ISalesDate {
 	SalesOptions: SalesOptions;
 	Day: number | null;
@@ -151,8 +160,6 @@ interface ICoupon {
 	JsExpiryDate: string;
 	IsAllRedeemed: boolean;
 	IsAllVoided: boolean;
-	Interval: number|null;
-	DicCusInterval: { [Key: string]: number };
 }
 let Coupon: ICoupon;
 
@@ -204,9 +211,11 @@ let recreateOnVoid: number = 0;
 let UserName: string = "";
 let NamesMatch: boolean = false;
 let SelectedCountry: number = 1;
-//const searchcustxt:string = $txtblk.data("searchcustxt");
-//const searchcustxt:string = $txtblk.data("searchcustxt");
-//const searchcustxt:string = $txtblk.data("searchcustxt");
+//const searchcustxt:string = $txtblk.eq(1).data("searchcustxt");
+//const searchcustxt:string = $txtblk.eq(1).data("searchcustxt");
+//const searchcustxt:string = $txtblk.eq(1).data("searchcustxt");
+const promotionalemailtxt: string = $txtblk.eq(1).data("promotionalemailtxt");
+const previewtxt:string = $txtblk.eq(1).data("previewtxt");
 const couponexpiredwarning: string = $txtblk.eq(1).data("couponexpiredwarning");
 const couponvoidedwarning: string = $txtblk.data("couponvoidedwarning");
 const couponredeemedwarning: string = $txtblk.data("couponredeemedwarning");
@@ -774,6 +783,7 @@ let waitingModal: any,
 	transferModal: any,
 	paymentTypeModal: any,
 	voidPaymentModal: any,
+	htmlPreviewModal:any,
 	reserveModal: any;
 
 let sysdateformat: string = "yyyy-mm-dd";
@@ -3437,7 +3447,7 @@ interface IItemOptions {
 	Disabled: boolean;
 }
 let itemOptions: IItemOptions | null;
-let DicItemOptions: { [Key: string | number]: IItemOptions } = {};
+let DicItemOptions: { [Key: string]: IItemOptions } = {};
 
 
 interface ISnVtPo extends ISnVt {
@@ -3957,6 +3967,7 @@ let forattendance: boolean = false;
 let forjob: boolean = false;
 let fortraining: boolean = false;
 let forcustomer: boolean = false;
+let foremail: boolean = false;
 let forduty: boolean = false;
 let forcoupon: boolean = false;
 let forcustomergroup: boolean = false;
@@ -3968,6 +3979,8 @@ let foreblast: boolean = false;
 let forassignsalesmen: boolean = false;
 let forrejectedcustomer: boolean = false;
 let forapprovedcustomer: boolean = false;
+
+//let tinymce: any;
 interface ISalesReturnMsg {
 	msg: string | null;
 	status: string | null;
@@ -4124,7 +4137,7 @@ let oldestEnquiries: IEnquiry[] = [];
 let trainingIdList: string[] = [];
 let jobIdList: string[] = [];
 let attdIdList: string[] = [];
-let DicIDItemOptions: { [Key: number]: IItemOptions };
+let DicCodeItemOptions: { [Key: string]: IItemOptions };
 let chkSN: boolean = false;
 let chkBat: boolean = false;
 let chkVT: boolean = false;

@@ -494,6 +494,11 @@ tr.code {
   border-radius: 7px;
 }
 
+.error {
+    border: 2px solid red;
+    border-radius: 7px;
+}
+
 .glowing-border.focus {
   outline: none;
   border-color: #9ecaed;

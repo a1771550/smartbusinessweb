@@ -1,5 +1,4 @@
-﻿using PagedList;
-using SmartBusinessWeb.Infrastructure;
+﻿using SmartBusinessWeb.Infrastructure;
 using PPWDAL;
 using PPWLib.Models;
 using PPWLib.Models.Customer;
@@ -17,7 +16,17 @@ namespace SmartBusinessWeb.Controllers.Customer
 {
     [CustomAuthenticationFilter]
     public class CustomerController : BaseController
-    { 
+    {
+        //todo:
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [CustomAuthorize("customer", "admin", "superadmin")]
+        public JsonResult AddToPromotionalEmail(List<int> groupIdList, int emailId)
+        {
+            CustomerEditModel.AddToPromotionalEmail(groupIdList, emailId);
+            return Json(Resource.Saved);
+        }
+
         [HttpPost]
         [CustomAuthorize("customer", "admin", "superadmin")]
         [ValidateAntiForgeryToken]
@@ -261,8 +270,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                 var cusCodeList = cusCodes.Split(',');
                 model.CustomerList = model.CustomerList.Where(x => x.AccountProfileId == apId && cusCodeList.Contains(x.cusCode)).ToList();
             }
-          
-            model.CusIdList = model.CustomerList.Select(x => x.cusCustomerID).ToHashSet();
+           
             model.GlobalAttrList = ModelHelper.GetGlobalAttrList(apId);
             model.GlobalAttrList.Add(new GlobalAttributeModel
             {

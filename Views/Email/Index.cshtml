@@ -1,0 +1,69 @@
+﻿@model EmailEditModel
+@using PagedList.Mvc;
+@{
+	ViewBag.Title = Resources.Resource.PromotionalEmail;
+	int rand = CommonHelper.GetVersionRandomNo();
+}
+<link href="~/Content/customer/email/index.css?v=@rand" rel="stylesheet" type="text/css" />
+
+<h2 class="clearfix">
+	@ViewBag.Title
+	<a href="/Email/Edit?Id=0" class="btn btn-warning btnsmall40 float-right" title="@Resources.Resource.Add">@Resources.Resource.Add</a>
+</h2>
+
+@Html.AntiForgeryToken()
+
+@using (Html.BeginForm("Index", "Email", FormMethod.Get, new { @Id = "frmEmail" }))
+{
+	@Html.Partial("_SearchBlk", null, new ViewDataDictionary { { "Keyword", Model.Keyword }, { "additionalcls", "my-4" } })
+
+	if (Model.EmailList != null && Model.EmailList.Count > 0)
+	{
+		<table id="tblEmail" class="table table-bordered table-hover table-condensed">
+			<thead class="gray-header font-weight-bold">
+				<tr>
+					<th class="text-center colheader" data-col="0">@Resources.Resource.Subject</th>
+					<th class="text-center colheader" data-col="1">@Resources.Resource.Interval (@Resources.Resource.Day4Interval)</th>
+					<th class="text-center colheader" data-col="2">@Resources.Resource.CreateTime</th>
+					<th class="text-center action"></th>
+
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var email in Model.PagingEmailList)
+				{
+					<tr>
+						<td class="text-center">@email.Subject</td>
+						<td class="text-center">@email.Interval</td>
+						<td class="text-center">@email.CreateTimeDisplay</td>
+						<td class="text-center action">
+							<button class="btn btn-info btnsmall preview" type="button" data-id="@email.Id" title="@Resources.Resource.Preview"><i class="fa fa-eye"></i></button>
+							<a class="btn btn-warning btnsmall" role="button" href="/Email/Edit?Id=@email.Id" title="@Resources.Resource.Edit"><i class="fa fa-edit"></i></a>
+							<a class="btn btn-danger btnsmall remove" role="button" href="#" data-id="@email.Id" title="@Resources.Resource.Remove"><i class="fa fa-trash"></i></a>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+		<div id="pagingblk" class="my-3">
+			@Html.PagedListPager(Model.PagingEmailList, PageNo => Url.Action("Index",
+	new { PageNo, SortOrder = Model.CurrentSortOrder, SortCol = Model.SortCol, Keyword = Model.Keyword, PageSize = Model.PageSize }))
+		</div>
+
+		@Html.Partial("_SortOrderColHidden")
+	}
+	else
+	{
+		@Html.Partial("_NoRecordFound")
+	}
+}
+
+@Html.Partial("_HtmlPreviewModal")
+
+@Html.Partial("_WaitingModal")
+<div id="infoblk" data-pagesize="@Model.ComInfo.PageLength"></div>
+
+<script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
+
+<script src="~/Scripts/ts/js/promotion/email/index.js?v=@rand"></script>

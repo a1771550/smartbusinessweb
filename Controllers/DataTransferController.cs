@@ -612,7 +612,7 @@ namespace SmartBusinessWeb.Controllers
                     break;
                 case "supplier":
                     ExportData4SB(dmodel, "Suppliers_", frmdate, todate, includeUploaded, lang);
-                    if (dmodel.CheckOutIds_Supplier.Count == 0) msg = Resources.Resource.NoExportedDataFrmShop;
+                    if (dmodel.CheckOutCodes_Supplier.Count == 0) msg = Resources.Resource.NoExportedDataFrmShop;
                     break;
                 case "purchase":
                     ExportData4SB(dmodel, "Purchase_", frmdate, todate, includeUploaded, lang);
@@ -621,11 +621,11 @@ namespace SmartBusinessWeb.Controllers
                     break;
                 case "item":
                     ExportData4SB(dmodel, "Items_", frmdate, todate, includeUploaded, lang);
-                    if (dmodel.CheckOutIds_Item.Count == 0) msg = Resources.Resource.NoExportedDataFrmShop;
+                    if (dmodel.CheckOutCodes_Item.Count == 0) msg = Resources.Resource.NoExportedDataFrmShop;
                     break;
                 case "customer":
                     ExportData4SB(dmodel, "Customers_", frmdate, todate, includeUploaded, lang);
-                    if (dmodel.CheckOutIds_Customer.Count == 0) msg = Resources.Resource.NoExportedDataFrmShop;
+                    if (dmodel.CheckOutCodes_Customer.Count == 0) msg = Resources.Resource.NoExportedDataFrmShop;
                     break;
                 case "wholesales":
                     ExportData4SB(dmodel, "Wholesales_", frmdate, todate, includeUploaded, lang);
@@ -1016,7 +1016,7 @@ namespace SmartBusinessWeb.Controllers
                         }
 
                         sql += string.Join(",", values) + ")";
-                        ModelHelper.WriteLog(context, string.Format("sql:{0}; checkoutids:{1}", sql, string.Join(",", dmodel.CheckOutIds_Item)), "ExportFrmShop");
+                        ModelHelper.WriteLog(context, string.Format("sql:{0}; checkoutids:{1}", sql, string.Join(",", dmodel.CheckOutCodes_Item)), "ExportFrmShop");
 
                         using (localhost.Dayends dayends = new localhost.Dayends())
                         {
@@ -1024,7 +1024,7 @@ namespace SmartBusinessWeb.Controllers
                             dayends.WriteMYOB(ConnectionString, sql);
                         }
 
-                        updateDB(dmodel.CheckOutIds_Item.ToArray(), apId, CheckOutType.Items);
+                        updateDB(dmodel.CheckOutCodes_Item.ToArray(), apId, CheckOutType.Items);
                     }
                 }
 
@@ -1034,7 +1034,7 @@ namespace SmartBusinessWeb.Controllers
                     if (dmodel.CustomerList.Count > 0)
                     {
                         WriteMyobCustomerToABSS(AccountProfileId, ref onlineModeItem, dmodel);
-                        updateDB(onlineModeItem.checkoutIds.ToArray(), AccountProfileId, CheckOutType.Customers);
+                        updateDB(onlineModeItem.checkoutcodes.ToArray(), AccountProfileId, CheckOutType.Customers);
                     }
                     //WriteVipToABSS();
                 }
@@ -1045,7 +1045,7 @@ namespace SmartBusinessWeb.Controllers
                     if (dmodel.Supplierlist.Count > 0)
                     {
                         WriteSupplierToABSS(apId, ref onlineModeItem, dmodel);
-                        updateDB(onlineModeItem.checkoutIds.ToArray(), apId, CheckOutType.Suppliers);
+                        updateDB(onlineModeItem.checkoutcodes.ToArray(), apId, CheckOutType.Suppliers);
                     }
                 }
             }
@@ -1084,17 +1084,17 @@ namespace SmartBusinessWeb.Controllers
 
 
 
-        private void updateDB(long[] _checkoutIds, int accountProfileId, CheckOutType checkOutType)
+        private void updateDB(string[] _checkoutCodes, int accountProfileId, CheckOutType checkOutType)
         {
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
-                List<long> checkoutIds = new List<long>();
-                checkoutIds = _checkoutIds.ToList();
+                List<string> checkoutCodes = new List<string>();
+                checkoutCodes = _checkoutCodes.ToList();
 
                 switch (checkOutType)
                 {
                     case CheckOutType.Suppliers:
-                        List<MyobSupplier> suppliers = context.MyobSuppliers.Where(x => checkoutIds.Any(y => x.supId == y) && x.AccountProfileId == accountProfileId).ToList();
+                        List<MyobSupplier> suppliers = context.MyobSuppliers.Where(x => checkoutCodes.Any(y => x.supCode == y) && x.AccountProfileId == accountProfileId).ToList();
 
                         foreach (var supplier in suppliers)
                         {
@@ -1104,7 +1104,7 @@ namespace SmartBusinessWeb.Controllers
 
                         break;
                     case CheckOutType.Customers:
-                        List<MyobCustomer> mcustomers = context.MyobCustomers.Where(x => checkoutIds.Any(y => x.cusCustomerID == y) && x.AccountProfileId == accountProfileId).ToList();
+                        List<MyobCustomer> mcustomers = context.MyobCustomers.Where(x => checkoutCodes.Any(y => x.cusCode == y) && x.AccountProfileId == accountProfileId).ToList();
                         foreach (var customer in mcustomers)
                         {
                             customer.cusCheckout = true;
@@ -1113,7 +1113,7 @@ namespace SmartBusinessWeb.Controllers
                         break;
 
                     case CheckOutType.Items:
-                        List<MyobItem> mitems = context.MyobItems.Where(x => checkoutIds.Any(y => x.itmItemID == y) && x.AccountProfileId == accountProfileId).ToList();
+                        List<MyobItem> mitems = context.MyobItems.Where(x => checkoutCodes.Any(y => x.itmCode == y) && x.AccountProfileId == accountProfileId).ToList();
                         foreach (var item in mitems)
                         {
                             item.itmCheckout = true;
@@ -1122,7 +1122,7 @@ namespace SmartBusinessWeb.Controllers
                         break;
                     default:
                     case CheckOutType.ItemSales:
-                        List<RtlSale> saleslist = context.RtlSales.Where(x => checkoutIds.Any(y => x.rtsUID == y) && x.AccountProfileId == accountProfileId).ToList();
+                        List<RtlSale> saleslist = context.RtlSales.Where(x => checkoutCodes.Any(y => x.rtsCode == y) && x.AccountProfileId == accountProfileId).ToList();
                         foreach (var sales in saleslist)
                         {
                             sales.rtsCheckout = true;
@@ -1130,7 +1130,7 @@ namespace SmartBusinessWeb.Controllers
                         }
                         break;
                 }
-                ModelHelper.WriteLog(context, string.Format("checkouttype:{0}; checkoutids:{1}", checkOutType, string.Join(",", checkoutIds)), "ExportFrmShop#checkoutIds");
+                ModelHelper.WriteLog(context, string.Format("checkouttype:{0}; checkoutcodes:{1}", checkOutType, string.Join(",", checkoutCodes)), "ExportFrmShop#checkoutCodes");
             }
         }
 
@@ -1174,7 +1174,7 @@ namespace SmartBusinessWeb.Controllers
 
             sql += string.Join(",", values) + ")";
             ModelHelper.WriteLog(context, sql, "ExportFrmShop#Supplier");
-            onlineModeItem.checkoutIds = dmodel.CheckOutIds_Supplier;
+            onlineModeItem.checkoutcodes = dmodel.CheckOutCodes_Supplier;
 
             context.SaveChanges();
 
@@ -1261,7 +1261,7 @@ namespace SmartBusinessWeb.Controllers
                     }
 
                     ModelHelper.WriteLog(context, string.Join(",", sqllist), "ExportFrmShop");
-                    onlineModeItem.checkoutIds = dmodel.CheckOutIds_Customer;
+                    onlineModeItem.checkoutcodes = dmodel.CheckOutCodes_Customer;
                 }
             }
         }

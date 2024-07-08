@@ -7,7 +7,7 @@
 <link href="~/Content/item/index.css?v=@rand" rel="stylesheet" type="text/css" />
 <h2>@ViewBag.Title</h2>
 <p class="my-3">
-	@Html.ActionLink(Resources.Resource.Add, "Edit", new { itemId = 0, referrer = "Index" }, new { @class = "btn btn-info" })
+	@Html.ActionLink(Resources.Resource.Add, "Edit", new { referrer = "Index" }, new { @class = "btn btn-info" })
 </p>
 
 @using (Html.BeginForm("Index", "Item", FormMethod.Get, new { @Id = "frmItem" }))
@@ -52,8 +52,8 @@
 				<td class="text-center abss">@abssdisplay</td>
 
 				<td class="action">
-					<a class="btn btn-info mx-1" role="button" href="/Item/Edit?itemId=@item.itmItemID&referrer=Index">@Resources.Resource.Edit</a>
-					<a class="btn btn-outline-danger itemremove mx-1 @disabled" role="button" href="#" data-id="@item.itmItemID">@Resources.Resource.Remove</a>
+					<a class="btn btn-info mx-1" role="button" href="/Item/Edit?itemCode=@item.itmCode&referrer=Index">@Resources.Resource.Edit</a>
+					<a class="btn btn-outline-danger itemremove mx-1 @disabled" role="button" href="#" data-code="@item.itmCode">@Resources.Resource.Remove</a>
 				</td>
 			</tr>
 		}
