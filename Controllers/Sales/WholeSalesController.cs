@@ -83,11 +83,11 @@ namespace SmartBusinessWeb.Controllers.Sales
         [CustomAuthorize("wholesales", "admin", "superadmin")]
         [HttpGet]
         ///WholeSales/Review?mode=edit&receiptno=
-        public ActionResult Review(string receiptno)
+        public ActionResult Review(string receiptno, int? ireadonly = 1)
         {
             ViewBag.ParentPage = "wholesales";
             ViewBag.PageName = "edit";
-            WholeSalesEditModel model = new WholeSalesEditModel(receiptno);
+            WholeSalesEditModel model = new WholeSalesEditModel(receiptno, ireadonly);
             return View("Edit", model);
         }
 
@@ -128,13 +128,15 @@ namespace SmartBusinessWeb.Controllers.Sales
             string[] zerostockItemcodes = wemodel.OutOfStockWholeSalesLns.Select(x => x.itmCode).ToArray();
             return Json(new { msg, ws.wsCode, zerostockItemcodes = zerostockItemcodes.Length > 0 ? string.Join(",", zerostockItemcodes) : "" });
         }
-       
+
         [HandleError]
         [CustomAuthorize("wholesales", "admin", "superadmin")]
-        public ActionResult Print(int Id, string type)
+        public ActionResult Print(int Id, string type, string mode)
         {
-            ViewBag.ParentPage = "wholesales";            
-            WholeSalesEditModel model = new WholeSalesEditModel(Id, null, type, true);
+            ViewBag.ParentPage = "wholesales";
+            //long Id, string status = null, int? ireadonly = 0, bool forprint = false
+            WholeSalesEditModel model = new WholeSalesEditModel(Id, type, 0, true);
+            model.PrintMode = mode;
             return View(model);
         }
 
@@ -157,11 +159,11 @@ namespace SmartBusinessWeb.Controllers.Sales
         [HandleError]
         [CustomAuthorize("wholesales", "admin", "superadmin")]
         [HttpGet]
-        public ActionResult Edit(long Id, string type)
+        public ActionResult Edit(long Id, string status=null, int? ireadonly=0)
         {
             ViewBag.ParentPage = "wholesales";
             ViewBag.PageName = "edit";
-            WholeSalesEditModel model = new WholeSalesEditModel(Id, null, type);
+            WholeSalesEditModel model = new WholeSalesEditModel(Id, status, ireadonly, false);
             return View(model);
         }
 

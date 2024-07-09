@@ -245,6 +245,16 @@
           <path>Scripts\ts\customer\email\index.ts</path>
           <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\customer\email\index.ts</absolutePath>
         </Favorite>
+        <Favorite>
+          <name>purchase-orderlist.ts</name>
+          <path>Scripts\ts\purchase\orderlist.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\purchase\orderlist.ts</absolutePath>
+        </Favorite>
+        <Favorite>
+          <name>wholesales-orderlist.ts</name>
+          <path>Scripts\ts\wholesales\orderlist.ts</path>
+          <absolutePath>F:\repos\PPWProject\SmartBusinessWeb\Scripts\ts\wholesales\orderlist.ts</absolutePath>
+        </Favorite>
       </favorites>
     </Folder>
     <Folder>

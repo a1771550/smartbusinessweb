@@ -15,10 +15,7 @@
 	bool approvalmode = (bool)Model.ApprovalMode;
 	var currency = Model.Currency;
 	bool showrecur = false;
-	SessUser user = System.Web.HttpContext.Current.Session["User"] as SessUser;
-	bool isapprover = user.Roles.Any(x => x == RoleType.Admin || x == RoleType.SalesManager);
-	bool ismanager = user.Roles.Any(x => x == RoleType.SalesManager);
-	bool isadmin = user.Roles.Any(x => x == RoleType.Admin && x != RoleType.SalesManager);
+	SessUser user = Model.User;
 }
 
 <link rel="stylesheet" type="text/css" href="~/Content/purchase/edit.css?v=@rand" />
@@ -118,43 +115,43 @@
 		</div>
 	</div>
 
-	
-		<div class="auto">
-			@{ string tbodycls = Purchase.pstStatus == PurchaseStatus.opened.ToString() ? "small" : "";}
-			<table id="tblPSI" class="table table-hover table-bordered table-condensed">
-				<thead class="gray-header">
-					<tr class="">
-						<th class="text-center seq"></th>
-						<th class="text-center code" title="@Resources.Resource.ItemCode">@Resources.Resource.ItemCode</th>
-						<th class="text-center namedesc" title="@Resources.Resource.ItemName">@Resources.Resource.ItemName</th>
-						<th class="text-right unit" title="@Resources.Resource.BaseUnit">@Resources.Resource.BaseUnit</th>
-						<th class="text-right sellqty" title="@Resources.Resource.Qty">@Resources.Resource.Qty</th>
-						@if (Purchase.pstStatus == PurchaseStatus.opened.ToString() || Purchase.pstStatus == PurchaseStatus.partialreceival.ToString())
-						{
-							<th class="text-center ip" title="@Resources.Resource.Batch">@Resources.Resource.Batch</th>
-							<th class="text-center ip" title="@Resources.Resource.SerialNo">@Resources.Resource.SerialNoItemHeader</th>
-							<th class="text-center ip" title="@Resources.Resource.ExpiryDate">@Resources.Resource.ExpiryDate</th>
-							<th class="text-center iv" title="@Resources.Resource.ItemVariations">@Resources.Resource.ItemVariations</th>
-						}
-						<th class="text-right sellprice num">@Resources.Resource.UnitPrice (@Model.Currency)</th>
-						<th class="text-right selldiscpc num" title="@Resources.Resource.DiscPc">@Resources.Resource.DiscPc</th>
-						@if (Model.EnableTax && !Model.InclusiveTax)
-						{
-							<th class="text-right selltax num" title="@Resources.Resource.Tax">@Resources.Resource.TaxItemHeader</th>
-						}
-						<th class="text-center selllocation">@Resources.Resource.Location</th>
-						<th class="text-center selljob">@Resources.Resource.Job4Myob</th>
-						<th class="text-right sellamt num" title="@Resources.Resource.Amount">@Resources.Resource.Amount (@Model.Currency)</th>
-						@if (Purchase.pstStatus == PurchaseStatus.opened.ToString() || Purchase.pstStatus == PurchaseStatus.partialreceival.ToString())
-						{
-							<th class="text-right treceived" title="@Resources.Resource.ReceivedQty">@Resources.Resource.ReceivedQty</th>
-						}
-					</tr>
-				</thead>
-				<tbody class="@tbodycls"></tbody>
-			</table>
-		</div>
-	
+
+	<div class="auto">
+		@{ string tbodycls = Purchase.pstStatus == PurchaseStatus.opened.ToString() ? "small" : "";}
+		<table id="tblPSI" class="table table-hover table-bordered table-condensed">
+			<thead class="gray-header">
+				<tr class="">
+					<th class="text-center seq"></th>
+					<th class="text-center code" title="@Resources.Resource.ItemCode">@Resources.Resource.ItemCode</th>
+					<th class="text-center namedesc" title="@Resources.Resource.ItemName">@Resources.Resource.ItemName</th>
+					<th class="text-right unit" title="@Resources.Resource.BaseUnit">@Resources.Resource.BaseUnit</th>
+					<th class="text-right sellqty" title="@Resources.Resource.Qty">@Resources.Resource.Qty</th>
+					@if (Purchase.pstStatus == PurchaseStatus.opened.ToString() || Purchase.pstStatus == PurchaseStatus.partialreceival.ToString())
+					{
+						<th class="text-center ip" title="@Resources.Resource.Batch">@Resources.Resource.Batch</th>
+						<th class="text-center ip" title="@Resources.Resource.SerialNo">@Resources.Resource.SerialNoItemHeader</th>
+						<th class="text-center ip" title="@Resources.Resource.ExpiryDate">@Resources.Resource.ExpiryDate</th>
+						<th class="text-center iv" title="@Resources.Resource.ItemVariations">@Resources.Resource.ItemVariations</th>
+					}
+					<th class="text-right sellprice num">@Resources.Resource.UnitPrice (@Model.Currency)</th>
+					<th class="text-right selldiscpc num" title="@Resources.Resource.DiscPc">@Resources.Resource.DiscPc</th>
+					@if (Model.EnableTax && !Model.InclusiveTax)
+					{
+						<th class="text-right selltax num" title="@Resources.Resource.Tax">@Resources.Resource.TaxItemHeader</th>
+					}
+					<th class="text-center selllocation">@Resources.Resource.Location</th>
+					<th class="text-center selljob">@Resources.Resource.Job4Myob</th>
+					<th class="text-right sellamt num" title="@Resources.Resource.Amount">@Resources.Resource.Amount (@Model.Currency)</th>
+					@if (Purchase.pstStatus == PurchaseStatus.opened.ToString() || Purchase.pstStatus == PurchaseStatus.partialreceival.ToString())
+					{
+						<th class="text-right treceived" title="@Resources.Resource.ReceivedQty">@Resources.Resource.ReceivedQty</th>
+					}
+				</tr>
+			</thead>
+			<tbody class="@tbodycls"></tbody>
+		</table>
+	</div>
+
 
 
 	var decimaltotal = CommonHelper.FormatNumber(Purchase.Total);
@@ -299,77 +296,85 @@
 		</div>
 	</div>
 
-	<div id="btnblk" class="row justify-content-end px-4" data-approvalmode="@approvalmode" data-isapprover="@isapprover" data-editmode="@editmode" data-status="@Purchase.pstStatus" data-ismanager="@ismanager">
+	<div id="btnblk" class="row justify-content-end px-4" data-approvalmode="@approvalmode" data-isapprover="@user.IsApprover" data-editmode="@editmode" data-status="@Purchase.pstStatus" data-ismanager="@user.IsManager" data-issalesperson="@user.IsSalesPerson">
 
 		@if (approvalmode)
 		{
 			<input type="hidden" id="mode" value="@Purchase.Mode" />
 
-			if (isapprover)
+			if (user.IsApprover)
 			{
-				if (Request.QueryString["ireadonly"] != null && Request.QueryString["ireadonly"] == "1")
+				if ((Request.QueryString["ireadonly"] != null && Request.QueryString["ireadonly"] == "1")&&Purchase.pstStatus.ToLower()!=PurchaseStatus.created.ToString())
 				{
 					<div class="d-none d-md-block text-right">
-						<button type="button" id="" class="btn btn-primary mr-2 respond btnApprove" data-type="approve" data-code="">@Resources.Resource.Approve</button>
-						<button type="button" id="" class="btn btn-danger mr-4 respond btnReject" data-type="reject" data-code="">@Resources.Resource.Reject</button>
+						<button type="button" id="" class="btn btn-primary mx-1 respond btnApprove" data-type="approve" data-code="">@Resources.Resource.Approve</button>
+						<button type="button" id="" class="btn btn-danger mx-1 respond btnReject" data-type="reject" data-code="">@Resources.Resource.Reject</button>
 					</div>
 					<div class="d-block d-md-none">
 						<button type="button" id="" class="btn btn-primary d-flex respond btnApprove" data-type="approve" data-code="">@Resources.Resource.Approve</button>
 						<button type="button" id="" class="btn btn-danger d-flex respond btnReject" data-type="reject" data-code="">@Resources.Resource.Reject</button>
 					</div>
 				}
-
-				if (ismanager && Purchase.pstStatus.ToLower() == PurchaseStatus.order.ToString() || Purchase.pstStatus.ToLower() == PurchaseStatus.created.ToString() || Purchase.pstStatus.ToLower() == PurchaseStatus.opened.ToString())
-				{
-					@Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "showViewBtn", false }, { "status", Purchase.pstStatus }, { "approvalmode", approvalmode } })
-				}
-
 			}
-			else
+
+			if (user.IsSalesPerson)
 			{
-				if (editmode && (Purchase.pstStatus.ToLower() == PurchaseStatus.order.ToString() || Purchase.pstStatus.ToLower() == PurchaseStatus.created.ToString() || Purchase.pstStatus.ToLower() == PurchaseStatus.rejected.ToString()))
+				if (editmode)
 				{
-					<div class="text-right">
-						@Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "showViewBtn", false }, { "status", Purchase.pstStatus }, { "approvalmode", approvalmode } })
-					</div>
+					if (Purchase.pstStatus.ToLower() == PurchaseStatus.order.ToString() || Purchase.pstStatus.ToLower() == PurchaseStatus.created.ToString() || Purchase.pstStatus.ToLower() == PurchaseStatus.rejected.ToString())
+					{
+						<div class="text-right">
+							@Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "purchasemode", Purchase.Mode }, { "showViewBtn", Purchase.FileList.Count > 0 }, { "status", Purchase.pstStatus }, { "approvalmode", approvalmode } })
+						</div>
+					}
 				}
-				else if (!editmode)
+				else
 				{
-					<div class="d-none d-md-block text-right">
-						<button id="" type="button" class="btn btn-primary ml-3 my-2 request makeorder btnRequestApproval">@Resources.Resource.Request4Approval</button>
+					<div class="d-none d-md-block text-right my-2">
+						<button id="" type="button" class="btn btn-primary mx-1 request makeorder btnRequestApproval">@Resources.Resource.Request4Approval</button>
 						@if (showrecur)
 						{
-							<button id="" type="button" class="btn btn-info ml-3 my-2 btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
+							<button id="" type="button" class="btn btn-info mx-1 btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
 						}
 
 						@if (Purchase.pstStatus != PurchaseStatus.draft.ToString())
 						{
-							<button id="" type="button" class="btn btn-success ml-3 my-2 btnNewPurchase">@string.Format(Resources.Resource.NewFormat, Resources.Resource.Purchase)</button>
+							<button id="" type="button" class="btn btn-success mx-1 btnNewPurchase">@string.Format(Resources.Resource.NewFormat, Resources.Resource.Purchase)</button>
 						}
 
 					</div>
 
-					<div class="d-block d-sm-block d-md-none text-right">
-						<button id="" type="button" class="btn btn-primary d-flex my-2 request btnRequestApproval makeorder">@Resources.Resource.Request4Approval</button>
+					<div class="d-block d-sm-block d-md-none text-right my-2">
+						<button id="" type="button" class="btn btn-primary d-flex request btnRequestApproval makeorder">@Resources.Resource.Request4Approval</button>
 						@if (showrecur)
 						{
-							<button id="" type="button" class="btn btn-info d-flex my-2 btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
+							<button id="" type="button" class="btn btn-info d-flex btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
 						}
 
 						@if (Purchase.pstStatus != PurchaseStatus.draft.ToString())
 						{
-							<button id="" type="button" class="btn btn-success d-flex my-2 btnNewPurchase">@string.Format(Resources.Resource.NewFormat, Resources.Resource.Purchase)</button>
+							<button id="" type="button" class="btn btn-success d-flex btnNewPurchase">@string.Format(Resources.Resource.NewFormat, Resources.Resource.Purchase)</button>
 						}
 
 					</div>
 				}
 			}
-		}
-		else if (Purchase.pstStatus.ToLower() == PurchaseStatus.order.ToString())
-		{
+			if (user.IsManagerSales)
+			{
+				@Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "purchasemode", Purchase.Mode }, { "status", Purchase.pstStatus }, { "showViewBtn", false } })
+			}
 
-			@Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "status", Purchase.pstStatus }, { "approvalmode", approvalmode }, { "showViewBtn", false } })
 		}
+		else
+		{
+			if (Purchase.pstStatus.ToLower() == PurchaseStatus.order.ToString())
+			{
+				@Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "purchasemode", Purchase.Mode }, { "status", Purchase.pstStatus }, { "showViewBtn", false } })
+			}
+
+		}
+
+		<button type="button" class="btn btn-secondary mx-1" id="btnReload">@Resources.Resource.Reload</button>
 	</div>
 }
 
@@ -404,7 +409,7 @@
 	string UploadSizeLimitMB = ConfigurationManager.AppSettings["MaxUploadSize"];
 	string exceeduploadfilelimittxt = string.Format(Resources.Resource.ExceedUploadSizeLimitWarning, UploadSizeLimitMB);
 }
-<div id="infoblk" data-isadmin="@isadmin" data-jsonpurchaseitems="@Purchase.JsonPurchaseItems" data-supplierrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Supplier)" data-locationrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Location)" data-emptyitemwarning="@string.Format(Resources.Resource.EnterAtLeastOneFormat,Resources.Resource.ItemStock)" data-subtotal="@Purchase.SubTotal" data-disctotal="@Purchase.DiscTotal" data-total="@Purchase.Total" data-currencyrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Currency)" data-priceeditable="@Model.PriceEditable" data-disceditable="@Model.DiscEditable" data-enabletax="@Model.EnableTax" data-enablesn="@Model.EnableSerialNo" data-jsondiccurrencyexrate="@Model.JsonDicCurrencyExRate" data-batchtxt="@Resources.Resource.Batch" data-sntxt="@Resources.Resource.SerialNoItemHeader" data-validthrutxt="@Resources.Resource.ValidThru" data-itemsrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Item)" data-approvalmode="@approvalmode" data-whatsapplinkurl="@ConfigurationManager.AppSettings["WhatsappLinkUrl"]" data-isapprover="@isapprover" data-jsondiclocation="@Model.JsonDicLocation" data-shop="@Model.ShopCode" data-jsonjoblist="@Model.JsonJobList" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-filecode="@Purchase.pstCode" data-uploadurl="/Purchase/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@string.Join(",",Purchase.UploadFileList)" data-dicitemoptions="@Model.JsonDicItemOptions" data-dicitemgroupedvariations="@Model.JsonDicItemGroupedVariations" data-user="@JsonSerializer.Serialize(Model.User)" data-dicacaccounts="@JsonSerializer.Serialize(Model.DicAcAccounts)" data-savepaymenttxt="@string.Format(Resources.Resource.SaveFormat, Resources.Resource.Payment)" data-lastppid="@lastppId" data-purchasepayments="@JsonSerializer.Serialize(Model.PurchasePayments)" data-apid="@Model.AccountProfileId"></div>
+<div id="infoblk" data-isadmin="@user.IsAdmin" data-isapprover="@user.IsApprover" data-ismanager="@user.IsManager" data-issalesperson="@user.IsSalesPerson" data-ismanagersales="@user.IsManagerSales" data-jsonpurchaseitems="@Purchase.JsonPurchaseItems" data-supplierrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Supplier)" data-locationrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Location)" data-emptyitemwarning="@string.Format(Resources.Resource.EnterAtLeastOneFormat,Resources.Resource.ItemStock)" data-subtotal="@Purchase.SubTotal" data-disctotal="@Purchase.DiscTotal" data-total="@Purchase.Total" data-currencyrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Currency)" data-priceeditable="@Model.PriceEditable" data-disceditable="@Model.DiscEditable" data-enabletax="@Model.EnableTax" data-enablesn="@Model.EnableSerialNo" data-jsondiccurrencyexrate="@Model.JsonDicCurrencyExRate" data-batchtxt="@Resources.Resource.Batch" data-sntxt="@Resources.Resource.SerialNoItemHeader" data-validthrutxt="@Resources.Resource.ValidThru" data-itemsrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Item)" data-approvalmode="@approvalmode" data-whatsapplinkurl="@ConfigurationManager.AppSettings["WhatsappLinkUrl"]" data-jsondiclocation="@Model.JsonDicLocation" data-shop="@Model.ShopCode" data-jsonjoblist="@Model.JsonJobList" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-filecode="@Purchase.pstCode" data-uploadurl="/Purchase/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@string.Join(",",Purchase.UploadFileList)" data-dicitemoptions="@Model.JsonDicItemOptions" data-dicitemgroupedvariations="@Model.JsonDicItemGroupedVariations" data-user="@JsonSerializer.Serialize(Model.User)" data-dicacaccounts="@JsonSerializer.Serialize(Model.DicAcAccounts)" data-savepaymenttxt="@string.Format(Resources.Resource.SaveFormat, Resources.Resource.Payment)" data-lastppid="@lastppId" data-purchasepayments="@JsonSerializer.Serialize(Model.PurchasePayments)" data-apid="@Model.AccountProfileId"></div>
 
 
 

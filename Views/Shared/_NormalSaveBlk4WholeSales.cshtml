@@ -1,35 +1,33 @@
 ﻿@{
     bool editmode = (bool)ViewData["editmode"];
     string status = (string)ViewData["status"];
-    bool ismanager = (bool)ViewData["ismanager"];
     bool showViewBtn = (bool)ViewData["showViewBtn"];
     string viewbtncls = showViewBtn ? "" : "hide";
+    string wholesalesmode = (string)ViewData["wholesalesmode"];
 }
-@if (editmode && status != WholeSalesStatus.invoice.ToString())
-{
-    <a role="button" href="#" id="btnInvoice" class="btn btn-primary mr-2">@Resources.Resource.Invoice</a>
-    <a role="button" href="#" class="btn btn-success mr-2 hide btnSave">@Resources.Resource.Save</a>
-}
+<div class="form-group" data-status="@status" data-editmode="@editmode" data-wholesalesmode="@wholesalesmode">
 
-else if (status == WholeSalesStatus.created.ToString())
-{
-    <a role="button" href="#" id="btnEdit" class="btn btn-info mr-2">@Resources.Resource.Edit</a>
-    if (!ismanager)
-    {
-        <button id="" type="button" class="btn btn-primary mr-2 my-2 request makeorder btnRequestApproval hide" style="height:5em;">@Resources.Resource.Request4Approval</button>
-    }
-}
+	@if (editmode)
+	{
+		if (!string.IsNullOrEmpty(wholesalesmode) && wholesalesmode != "readonly")
+		{
+			<button type="button" class="btn btn-warning mx-1" id="btnFile">@Resources.Resource.UploadFile</button>
+			<button type="button" class="btn btn-primary @viewbtncls mx-1" id="btnViewFile">@Resources.Resource.ViewFile</button>
 
-else
-{
-    <a role="button" href="#" class="btn btn-success mr-2 btnSave">@Resources.Resource.Save</a>
-}
+			if (status.ToLower() != WholeSalesStatus.invoice.ToString())
+			{
+				<a role="button" href="#" id="btnInvoice" class="btn btn-primary mr-2">@Resources.Resource.Invoice</a>
+			}
+		}
 
+		if (status == WholeSalesStatus.created.ToString())
+		{
+			<a role="button" href="#" id="btnEdit" class="btn btn-info mr-2">@Resources.Resource.Edit</a>
+		}
+	}
 
-@if (editmode)
-{
-    <button type="button" class="btn btn-warning mr-2" id="btnFile">@Resources.Resource.UploadFile</button>
-    <button type="button" class="btn btn-primary mr-2 @viewbtncls" id="btnViewFile">@Resources.Resource.ViewFile</button>   
-}
-
-<button type="button" class="btn btn-secondary" id="btnReload">@Resources.Resource.Reload</button>
+	@if (!string.IsNullOrEmpty(wholesalesmode) && wholesalesmode != "readonly")
+	{
+		<a role="button" href="#" id="btnSave" class="btn btn-success mx-1">@Resources.Resource.Save</a>
+	}
+</div>

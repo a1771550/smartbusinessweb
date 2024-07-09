@@ -10,26 +10,28 @@ $(function () {
 	$("#RedirectUrl").val(getParameterByName("redirectUrl") as string);
 
 	var salesmanId = Number(getParameterByName("salesmanId") ?? 0);
-	var adminId = Number(getParameterByName("adminId") ?? 0);
+	var approverId = Number(getParameterByName("approverId") ?? 0);
 	var receiptno = getParameterByName("receiptno");
 
-	if ((salesmanId == 0 && adminId == 0) || receiptno == null) {
+
+	if ((salesmanId == 0 && approverId == 0) || receiptno == null) {
 		if (isLocal) {			
-			$("#Email").val("kevinlau@united.com.hk"); //superadmin
+			//$("#Email").val("kevinlau@united.com.hk"); //superapprover
 			//$("#Email").val("utservice_sb1@united.com.hk");
 			//$("#Email").val("sunnyy@united.com.hk");//boss			
-			//$("#Email").val("vincent@abssasia.com.hk"); //sales
+			$("#Email").val("vincent@abssasia.com.hk"); //sales
 			//$("#Email").val("utservice@united.com.hk"); //manager & sales
-			// $("#Email").val("enquiry@united.com.hk"); //admin    
+			// $("#Email").val("enquiry@united.com.hk"); //approver    
 			$("#Password").val(password);
-			$("#btnLogin").trigger("click");
+			//$("#btnLogin").trigger("click");
 		} else {
 			$("#Email").trigger("focus");
 		}
 	}
 
 	if (receiptno != null) {
-		$("#Email").val("enquiry@united.com.hk");
+		
+		$("#Email").val("utservice@united.com.hk");
 		if (salesmanId != 0) {
 			$("#Email").val(
 				salesmanId === 6 ? "sunnyy@united.com.hk" : "utservice@united.com.hk"

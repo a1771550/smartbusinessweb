@@ -147,10 +147,8 @@ $(function () {
 	gTblId = "tblpurchaseorder";
 	setFullPage();
 
-	
-
 	initModals();
-	triggerMenuByCls("menupurchase", 1);
+	triggerMenuByCls("menupurchase", 2);
 
 	$(".disabled").off("click");
 

@@ -3,6 +3,7 @@
 @{
 
 	int rand = CommonHelper.GetVersionRandomNo();
+	bool approvalmode = Model.ApprovalMode;
 }
 
 <h2>@ViewBag.Title</h2>
@@ -63,6 +64,65 @@
 
 			@foreach (var item in Model.PagingPSList)
 			{
+				string bgcls = "";
+				string approvedisabled = "";
+				string rejectdisabled = "";
+				string voiddisabled = "";
+				//string passdisabled;
+				string btncls = (item.pstType == "PS" || approvalmode) ? "" : "disabled";
+				string statustxt = "";
+				string _readonly = "1";
+
+				switch (item.pstStatus)
+				{
+					case "opened":
+						bgcls = "openedstatusbg";
+						statustxt = Resources.Resource.Received4Purchase;;
+						voiddisabled = "disabled";
+						_readonly = "1";
+						break;
+					case "VOIDED":
+						bgcls = "voidedstatusbg";
+						voiddisabled = "disabled";
+						statustxt = Resources.Resource.Voided;
+						break;
+					case "PASSED":
+						bgcls = "passedstatusbg";
+						//passdisabled = "disabled";
+						statustxt = Resources.Resource.PassToManager;
+						break;
+					case "order":
+					case "APPROVED":
+					case "created":
+					case "CREATED":
+						bgcls = "approvedstatusbg";
+						approvedisabled = "disabled";
+						rejectdisabled = "disabled";
+						voiddisabled = "disabled";
+						//passdisabled = "disabled";
+						statustxt = Resources.Resource.Ready4ReceiveItems;
+						break;
+					case "REJECTED":
+						bgcls = "rejectedstatusbg";
+						rejectdisabled = "disabled";
+						statustxt = Resources.Resource.Rejected;
+						break;
+					case "KPENDING":
+						bgcls = "kpendingstatusbg";
+						statustxt = "期貨單";
+						break;
+					case "draft":
+						bgcls = "draftstatusbg";
+						statustxt = Resources.Resource.Draft;
+						break;
+					default:
+					case "REQUESTING":
+						bgcls = "requestingstatusbg";
+						statustxt = Resources.Resource.Requesting4Approval; ;
+						_readonly = "0";
+						break;
+				}
+
 				<tr>
 					<td class="text-center">
 						@Html.DisplayFor(modelPurchaseStock => item.pstCode)
@@ -76,9 +136,9 @@
 						</td>*@
 					@if (Model.ListMode == PurchaseStatus.all)
 					{
-						string bgcls = string.Concat(item.pstStatus.ToLower(), "bg");
+						//string bgcls = string.Concat(item.pstStatus.ToLower(), "bg");
 						<td class="text-center @bgcls">
-							@item.pstStatus.ToUpper()
+							@statustxt
 						</td>
 					}
 
@@ -89,14 +149,14 @@
 						@Html.DisplayFor(modelPurchaseStock => item.PromisedDateDisplay)
 					</td>
 					<td>
-						<a class="btn btn-info edit mr-1 btnsmall" role="button" href="/Purchase/Edit?Id=@item.Id">@Resources.Resource.Edit</a>
+						<a class="btn btn-info edit mx-1 btnsmall" role="button" href="/Purchase/Edit?Id=@item.Id&ireadonly=@_readonly">@Resources.Resource.Edit</a>
 						@if (item.pstStatus == PurchaseStatus.quote.ToString())
 						{
-							<a role="button" href="#" class="btn btn-secondary order mr-1 btnsmall" data-id="@item.Id">@Resources.Resource.Order4Purchase</a>
+							<a role="button" href="#" class="btn btn-secondary order mx-1 btnsmall" data-id="@item.Id">@Resources.Resource.Order4Purchase</a>
 						}
 
-						<a class="btn btn-primary print mr-1 btnsmall" role="button" href="/Purchase/Print?Id=@item.Id&type=@item.pstStatus&mode=po" target="_blank">@Resources.Resource.PurchaseOrder</a>
-						<a class="btn btn-primary print mr-1 btnsmall" role="button" href="/Purchase/Print?Id=@item.Id&type=@item.pstStatus&mode=io" target="_blank">@Resources.Resource.InBoundOrder</a>
+						<a class="btn btn-primary print mx-1 btnsmall" role="button" href="/Purchase/Print?Id=@item.Id&type=@item.pstStatus&mode=po" target="_blank">@Resources.Resource.PurchaseOrder</a>
+						<a class="btn btn-primary print mx-1 btnsmall" role="button" href="/Purchase/Print?Id=@item.Id&type=@item.pstStatus&mode=io" target="_blank">@Resources.Resource.InBoundOrder</a>
 						<a class="btn btn-danger remove btnsmall" role="button" href="#" data-id="@item.Id">@Resources.Resource.Remove</a>
 					</td>
 				</tr>

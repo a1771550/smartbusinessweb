@@ -17,7 +17,7 @@ $(function () {
 	$target.addClass(sortcls);
 
 	initModals();
-	triggerMenuByCls("menupurchase", 3);
+	triggerMenuByCls("menupurchase", 4);
 
 	$("#txtKeyword").trigger("focus");
 

@@ -69,7 +69,7 @@ $(document).ready(function () {
 	let bgcls: string = "deliverybg";
 	$("body").addClass(bgcls);
 
-	WholeSales = fillInWholeSales();
+	FillInWholeSales();
 
 	wholesaleslnswosn = $infoblk.data("jsonwholesaleslnswosn");
 	console.log("wholesaleslnswosn:", wholesaleslnswosn);

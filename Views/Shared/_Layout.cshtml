@@ -190,7 +190,7 @@
 								<ul class="submenu collapse" id="collapseWholeSales">
 
 									<li>
-										<a href="/Wholesales/Edit?Id=0&type=order">@string.Format(Resources.Resource.AddFormat, Resources.Resource.Order)</a>
+										<a href="/Wholesales/Edit?Id=0">@string.Format(Resources.Resource.AddFormat, Resources.Resource.Order)</a>
 									</li>
 									@{
 										fordelivery = string.Concat("<span class='small'>(", fordelivery, ")</span>");
@@ -224,6 +224,13 @@
 										var purchaselist = Html.Raw(string.Concat(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.PurchaseOrder), forreceival));
 									}
 									<li><a href="/Purchase/Index">@purchaselist</a></li>
+
+									@if (approvalmode && ismanager)
+									{
+										var purchaseorderlist = Html.Raw(string.Concat(string.Format(Resources.Resource.ListFormat, Resources.Resource.PurchaseOrder), forapproval));
+										<li><a href="/Purchase/PurchaseOrderList">@purchaseorderlist</a></li>
+									}
+
 									<li>
 										<a href="/Supplier/Index">@string.Format(Resources.Resource.ManagementFormat, Resources.Resource.Supplier)</a>
 									</li>
@@ -232,11 +239,7 @@
 									</li>
 
 
-									@if (approvalmode && ismanager)
-									{
-										var purchaseorderlist = Html.Raw(string.Concat(string.Format(Resources.Resource.ListFormat, Resources.Resource.PurchaseOrder), forapproval));
-										<li><a href="/Purchase/PurchaseOrderList">@purchaseorderlist</a></li>
-									}
+
 								</ul>
 							</li>
 

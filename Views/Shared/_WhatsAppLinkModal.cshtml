@@ -2,23 +2,23 @@
     SessUser user = HttpContext.Current.Session["User"] as SessUser;
     var salescode = ViewData["salescode"] == null ? (HttpContext.Current.Request.QueryString["receiptno"] ?? "") : ViewData["salescode"] as string;
     int newcustomerId = ViewData["NewCustomerId"] == null ? 0 : Convert.ToInt32(ViewData["NewCustomerId"]);
-    var adminlist = ViewData["AdminList"] == null ? null : ViewData["AdminList"] as List<SalesmanModel>;
+    var managerlist = ViewData["ManagerList"] == null ? null : ViewData["ManagerList"] as List<UserModel>;
 }
-<div id="whatsappLinkModal" data-adminlist="@adminlist">
+<div id="whatsappLinkModal" data-managerlist="@managerlist">
     <div class="container">
         <table id="tblwhatsapplnk" class="table table-hover  table-bordered">
             <thead class="gray-header">
                 <tr><th>@Resources.Resource.Name</th><th></th></tr>
             </thead>
             <tbody>
-                @if (adminlist != null)
+                @if (managerlist != null)
                 {
-                    var admin = adminlist[0];
-                    //foreach (var admin in adminlist)
+                    var manager = managerlist[0];
+                    //foreach (var manager in manager)
                     //{
-                    var salesurl = HttpUtility.UrlEncode(UriHelper.GetReviewSalesOrderUrl(ConfigurationManager.AppSettings["ReviewSalesOrderBaseUrl"], salescode, 0, admin.surUID));
-                    var customerurl = HttpUtility.UrlEncode(UriHelper.GetReviewCustomerUrl(ConfigurationManager.AppSettings["ReviewCustomerBaseUrl"], newcustomerId, 0, admin.surUID));
-                    <tr><td>@admin.UserName</td><td><button type="button" class="btn btn-primary whatspplink" data-code="@salescode" data-customerid="@newcustomerId" data-phone="@admin.Phone" data-name="@admin.UserName" data-salesurl="@salesurl" data-customerurl="@customerurl">@Resources.Resource.Send</button></td></tr>
+                    var salesurl = HttpUtility.UrlEncode(UriHelper.GetReviewSalesOrderUrl(ConfigurationManager.AppSettings["ReviewSalesOrderBaseUrl"], salescode, 0, manager.surUID));
+                    var customerurl = HttpUtility.UrlEncode(UriHelper.GetReviewCustomerUrl(ConfigurationManager.AppSettings["ReviewCustomerBaseUrl"], newcustomerId, 0, manager.surUID));
+                    <tr><td>@manager.UserName</td><td><button type="button" class="btn btn-primary whatspplink" data-code="@salescode" data-customerid="@newcustomerId" data-phone="@manager.Phone" data-name="@manager.UserName" data-salesurl="@salesurl" data-customerurl="@customerurl">@Resources.Resource.Send</button></td></tr>
                     //}
                 }
 

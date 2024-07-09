@@ -454,7 +454,7 @@ function initPurchaseForm():boolean {
 	uploadsizelimitmb = parseInt($infoblk.data("uploadsizelimitmb"));
 	shop = $infoblk.data("shop") as string;
 	initModals();
-	triggerMenuByCls("menupurchase", 0);
+	
 
 	gTblId = "tblPSI";
 	itotalamt = 0;
@@ -491,11 +491,16 @@ function initPurchaseForm():boolean {
 		getParameterByName("mode") == "editapproved";
 
 	let _receiptno = getParameterByName("receiptno");
-	let isadmin: boolean = $infoblk.data("isadmin") === "True";
+	// data-isapprover="@isapprover" data-ismanager="@ismanager" data-issalesperson="@issalesperson" data-ismanagersales="@ismanagersales"
+	isapprover = $infoblk.data("isapprover") === "True";
+	ismanager = $infoblk.data("ismanager") === "True";
+	issalesperson = $infoblk.data("issalesperson") === "True";
+	ismanagersales = $infoblk.data("ismanagersales") === "True";
+	
 	//console.log("isadmin:", isadmin);
 	if (_receiptno !== null) {
 		receiptno = _receiptno as string;
-		reviewmode = _receiptno !== null && isadmin;
+		reviewmode = _receiptno !== null && isapprover;
 	}
 
 	//console.log("Purchase:", Purchase);
@@ -514,7 +519,7 @@ function initPurchaseForm():boolean {
 	$("#drpSupplier").select2();
 	backUpCardDrpOptions();
 
-	return isadmin;
+	return isapprover;
 }
 
 function populatePurchaseItems() {
@@ -624,7 +629,7 @@ function initForEx() {
 	}
 }
 $(function () {	
-	let isadmin: boolean = initPurchaseForm();
+	initPurchaseForm();
 
 	if (reviewmode || editmode) initPurchaseFormWModes();
 	else addRow();
@@ -697,5 +702,9 @@ $(function () {
 		}
 	}
 
+
 	setInput4NumberOnly("number");
+
+	let idx = (!reviewmode && !editmode) ? 0 : 2;
+	triggerMenuByCls("menupurchase", idx);
 });

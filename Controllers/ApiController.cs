@@ -63,6 +63,8 @@ namespace SmartBusinessWeb.Controllers
         private string DefaultConnection { get { return Session["DBName"] == null ? ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", "SmartBusinessWeb_db") : ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", Session["DBName"].ToString()); } }
         private SqlConnection SqlConnection { get { return new SqlConnection(DefaultConnection); } }
 
+        private new SessUser User { get { var user = Session["User"] as SessUser; UserEditModel.GetUserInRoles(user); return user; } }
+
         private List<string> Shops;
         private string ShopCode { get; set; }
 
@@ -348,7 +350,7 @@ namespace SmartBusinessWeb.Controllers
             #region Purchase
             var checkoutIds4po = new HashSet<long>();
             List<string> sqllist4po = new List<string>();
-            sqllist4po = ModelHelper.Prepare4UploadPurchaseOrder(comInfo, apId, context, connection, "", "", false, ref checkoutIds4po);
+            sqllist4po = ModelHelper.Prepare4UploadPurchaseOrder(comInfo, context, connection, "", "", false, ref checkoutIds4po);
             #endregion
 
             #region Write to MYOB
@@ -653,20 +655,22 @@ namespace SmartBusinessWeb.Controllers
         [ValidateAntiForgeryToken]
         public JsonResult RespondPurchaseOrderReview(string type, string receiptno, string usercode = "", string rejectreason = "", int recreateOnVoid = 0)
         {
-            List<SalesmanModel> AdminList = new List<SalesmanModel>();
             string msg = Resource.NoReceiptFound;
             SalesmanModel salesman = null;
             SupplierModel supplier = null;
             string url = "";
-            SessUser user = Session["User"] as SessUser;
+           
             bool enableSendMail = (bool)ComInfo.enableEmailNotification;
+            List<UserModel> approvers = [];
 
             if (string.IsNullOrEmpty(usercode))
             {
-                usercode = user.UserCode;
+                usercode = User.UserCode;
             }
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
-            {
+            using var context = new PPWDbContext(Session["DBName"].ToString());
+            if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
+            using (SqlConnection) {
+                approvers = SqlConnection.Query<UserModel>("EXEC dbo.GetPosApproverList @apId=@apId", new { apId }).ToList();               
                 var purchaseorder = context.PurchaseOrderReviews.FirstOrDefault(x => x.PurchaseOrder.ToLower() == receiptno.ToLower());
                 var purchase = context.Purchases.FirstOrDefault(x => x.pstCode.ToLower() == receiptno.ToLower());
                 ShopCode = purchase.pstLocStock;
@@ -677,6 +681,8 @@ namespace SmartBusinessWeb.Controllers
                     supName = _supplier.supName,
                     supId = _supplier.supId
                 };
+                var salesmanname = purchase.CreateBy;
+                var __salesman = context.SysUsers.FirstOrDefault(x => x.AccountProfileId == apId && x.UserName.ToLower() == salesmanname.ToLower() && x.surIsActive);
 
                 switch (type)
                 {
@@ -693,33 +699,23 @@ namespace SmartBusinessWeb.Controllers
                             if (recreateOnVoid == 1)
                             {
                                 Dictionary<string, string> DicInvoice = new Dictionary<string, string>();
-                                var newpurchasecode = ModelHelper.GetNewPurchaseCode(user, context);
+                                var newpurchasecode = ModelHelper.GetNewPurchaseCode(User, context);
                                 ObjectParameter newId = new("newId", 0);
-                                context.RecreateOrder4Void2(purchase.Id, newpurchasecode, user.UserName, newId, "purchase");
+                                context.RecreateOrder4Void2(purchase.Id, newpurchasecode, User.UserName, newId, "purchase");
                                 context.SaveChanges();
 
-                                var admins = context.GetPosAdmin4Notification4(AccountProfileId, ShopCode).ToList();
-                                foreach (var admin in admins)
+                               
+                                foreach (var approver in approvers)
                                 {
-                                    url = UriHelper.GetReviewPurchaseOrderUrl(ConfigurationManager.AppSettings["ReviewPurchaseOrderBaseUrl"], newpurchasecode, 0, admin.surUID);
-                                    var key = string.Concat(admin.UserName, ":", admin.Email, ":", newpurchasecode);
+                                    url = UriHelper.GetReviewPurchaseOrderUrl(ConfigurationManager.AppSettings["ReviewPurchaseOrderBaseUrl"], newpurchasecode, 0, approver.surUID);
+                                    var key = string.Concat(approver.UserName, ":", approver.Email, ":", newpurchasecode);
                                     DicInvoice[key] = url;
-                                    AdminList.Add(
-                                        new SalesmanModel
-                                        {
-                                            UserName = admin.UserName,
-                                            Email = admin.Email,
-                                            Phone = admin.Phone,
-                                            surUID = admin.surUID,
-                                            UserCode = admin.UserCode
-                                        }
-                                        );
                                 }
 
-                                var adminnames = string.Join(",", admins.Select(x => x.UserName).ToList());
-                                sendmsg = string.Format(Resource.NotificationEmailWillBeSentToFormat, adminnames);
+                                var approvernames = string.Join(",", approvers.Select(x => x.UserName).ToList());
+                                sendmsg = string.Format(Resource.NotificationEmailWillBeSentToFormat, approvernames);
                                 #region Send Notification Email   
-                                if (enableSendMail && ModelHelper.SendNotificationEmail(DicInvoice, 0, true))
+                                if (enableSendMail && ModelHelper.SendNotificationEmail(sendmsg, DicInvoice, salesman, RespondType.Voided, null, POSTransactionType.Purchase))
                                 {
                                     var _purchase = context.Purchases.FirstOrDefault(x => x.pstRefCode == receiptno);
                                     _purchase.pstSendNotification = true;
@@ -778,7 +774,7 @@ namespace SmartBusinessWeb.Controllers
                                 salesman.Email = salesmanager.Email;
                                 salesman.Phone = salesmanager.Phone;
 
-                                if (enableSendMail && SendNotificationEmail(DicInvoice, salesman, RespondType.PassToManager, rejectreason))
+                                if (enableSendMail && ModelHelper.SendNotificationEmail(msg, DicInvoice, salesman, RespondType.PassToManager, rejectreason, POSTransactionType.Purchase))
                                 {
                                     purchaseorder = context.PurchaseOrderReviews.FirstOrDefault(x => x.PurchaseOrder.ToLower() == receiptno.ToLower());
                                     purchaseorder.EmailNotified = true;
@@ -806,19 +802,16 @@ namespace SmartBusinessWeb.Controllers
                             }
                             context.SaveChanges();
 
-                            var salesmanname = purchase.CreateBy;
-                            //var ksalesmancode = purchase.wsKawadaUpldBy;
-                            var __salesman = context.SysUsers.FirstOrDefault(x => x.UserName.ToLower() == salesmanname.ToLower() && x.surIsActive);
                             //var ksalesman = context.SysUsers.FirstOrDefault(x => x.AbssCardID.ToLower() == ksalesmancode.ToLower() && x.surIsAbss);
                             if (__salesman != null)
                             {
-                                ///POSFunc/Search?receiptno={0}&amp;salesmanId={1}&amp;adminIds={2}&amp;ksalesmancode={3}  
+                                ///POSFunc/Search?receiptno={0}&amp;salesmanId={1}&amp;approverIds={2}&amp;ksalesmancode={3}  
                                 string reviewurl = "";
                                 var salesmanId = __salesman.surUID;
                                 url = HttpUtility.UrlEncode(UriHelper.GetReviewPurchaseOrderUrl(ConfigurationManager.AppSettings["ReviewPurchaseOrderBaseUrl"], receiptno, salesmanId));
                                 msg = string.Format(Resource.RejectedFormat, string.Concat(Resource.Invoice, " ", receiptno));
 
-                                ///POSFunc/Purchase?receiptno={0}&amp;salesmanId={1}&amp;adminId={2}&amp;ksalesmancode={3}
+                                ///POSFunc/Purchase?receiptno={0}&amp;salesmanId={1}&amp;approverId={2}&amp;ksalesmancode={3}
                                 reviewurl = UriHelper.GetReviewPurchaseOrderUrl(ConfigurationManager.AppSettings["ReviewPurchaseOrderBaseUrl"], receiptno, salesmanId, 0);
                                 Dictionary<string, string> DicInvoice = new Dictionary<string, string>();
                                 DicInvoice[receiptno] = reviewurl;
@@ -833,7 +826,7 @@ namespace SmartBusinessWeb.Controllers
                                     salesman.Email = _salesman.Email;
                                     salesman.Phone = _salesman.Phone;
 
-                                    if (enableSendMail && SendNotificationEmail(DicInvoice, salesman, RespondType.Rejected, rejectreason))
+                                    if (enableSendMail && ModelHelper.SendNotificationEmail(msg, DicInvoice, salesman, RespondType.Rejected, rejectreason, POSTransactionType.Purchase))
                                     {
                                         purchaseorder = context.PurchaseOrderReviews.FirstOrDefault(x => x.PurchaseOrder.ToLower() == receiptno.ToLower());
                                         purchaseorder.EmailNotified = true;
@@ -853,13 +846,13 @@ namespace SmartBusinessWeb.Controllers
                             purchaseorder.IsRejected = false;
                             purchaseorder.ApprovedBy = usercode;
                             purchaseorder.ModifyTime = DateTime.Now;
-                            var salesmanname = purchase.CreateBy;
-                            var __salesman = context.SysUsers.FirstOrDefault(x => x.UserName.ToLower() == salesmanname.ToLower() && x.surIsActive);
+
+
                             if (__salesman != null)
                             {
                                 var salesmanId = __salesman.surUID;
                                 url = HttpUtility.UrlEncode(UriHelper.GetReviewPurchaseOrderUrl(ConfigurationManager.AppSettings["ReviewPurchaseOrderBaseUrl"], receiptno, salesmanId, 0, null));
-                                msg = string.Format(Resource.ApprovedFormat, string.Concat(Resource.Invoice, " ", receiptno));
+                                msg = string.Format(Resource.ApprovedFormat, string.Concat(Resource.Purchase, " ", receiptno));
                                 context.SaveChanges();
 
                                 purchase.pstStatus = "created";
@@ -882,14 +875,18 @@ namespace SmartBusinessWeb.Controllers
                                 Dictionary<string, string> DicInvoice = new Dictionary<string, string>();
                                 DicInvoice[receiptno] = url;
                                 if (enableSendMail)
-                                    SendNotificationEmail(DicInvoice, salesman, RespondType.Approved, null);
+                                    ModelHelper.SendNotificationEmail(msg, DicInvoice, salesman, RespondType.Approved, null, POSTransactionType.Purchase);
                             }
                         }
                         break;
                 }
+
+
+                return Json(new { msg, salesman, url, supplier, approvers });
+
             }
 
-            return Json(new { msg, salesman, url, supplier, AdminList });
+           
         }
 
 
@@ -897,7 +894,7 @@ namespace SmartBusinessWeb.Controllers
         [ValidateAntiForgeryToken]
         public JsonResult RespondSalesOrderReview(string type, string receiptno, string usercode = "", string rejectreason = "", int recreateOnVoid = 0)
         {
-            List<SalesmanModel> AdminList = new List<SalesmanModel>();
+            List<UserModel> approvers = [];
             string msg = Resource.NoReceiptFound;
             SalesmanModel salesman = null;
             CustomerModel customer = null;
@@ -941,29 +938,18 @@ namespace SmartBusinessWeb.Controllers
                                 ObjectParameter newId = new("newId", 0);
                                 context.RecreateOrder4Void2(sales.wsUID, newsalescode, user.UserName, newId, "wholesales");
                                 context.SaveChanges();
-
-                                var admins = context.GetPosAdmin4Notification4(AccountProfileId, ShopCode).ToList();
-                                foreach (var admin in admins)
+                              
+                                foreach (var approver in approvers)
                                 {
-                                    url = UriHelper.GetReviewSalesOrderUrl(ConfigurationManager.AppSettings["ReviewSalesOrderBaseUrl"], newsalescode, 0, admin.surUID);
-                                    var key = string.Concat(admin.UserName, ":", admin.Email, ":", newsalescode);
+                                    url = UriHelper.GetReviewSalesOrderUrl(ConfigurationManager.AppSettings["ReviewSalesOrderBaseUrl"], newsalescode, 0, approver.surUID);
+                                    var key = string.Concat(approver.UserName, ":", approver.Email, ":", newsalescode);
                                     DicInvoice[key] = url;
-                                    AdminList.Add(
-                                        new SalesmanModel
-                                        {
-                                            UserName = admin.UserName,
-                                            Email = admin.Email,
-                                            Phone = admin.Phone,
-                                            surUID = admin.surUID,
-                                            UserCode = admin.UserCode
-                                        }
-                                        );
                                 }
 
-                                var adminnames = string.Join(",", admins.Select(x => x.UserName).ToList());
-                                sendmsg = string.Format(Resource.NotificationEmailWillBeSentToFormat, adminnames);
+                                var approvernames = string.Join(",", approvers.Select(x => x.UserName).ToList());
+                                sendmsg = string.Format(Resource.NotificationEmailWillBeSentToFormat, approvernames);
                                 #region Send Notification Email   
-                                if (enableSendMail && ModelHelper.SendNotificationEmail(DicInvoice, 0, true))
+                                if (enableSendMail && ModelHelper.SendNotificationEmail(sendmsg, DicInvoice, salesman, RespondType.Voided, null, POSTransactionType.WholeSales))
                                 {
                                     var _sales = context.WholeSales.FirstOrDefault(x => x.wsRefCode == receiptno);
                                     _sales.wsSendNotification = true;
@@ -1022,7 +1008,7 @@ namespace SmartBusinessWeb.Controllers
                                 salesman.Email = salesmanager.Email;
                                 salesman.Phone = salesmanager.Phone;
 
-                                if (enableSendMail && SendNotificationEmail(DicInvoice, salesman, RespondType.PassToManager, rejectreason))
+                                if (enableSendMail && ModelHelper.SendNotificationEmail(msg, DicInvoice, salesman, RespondType.PassToManager, rejectreason, POSTransactionType.WholeSales))
                                 {
                                     salesorder = context.SalesOrderReviews.FirstOrDefault(x => x.SalesOrder.ToLower() == receiptno.ToLower());
                                     salesorder.EmailNotified = true;
@@ -1056,13 +1042,13 @@ namespace SmartBusinessWeb.Controllers
                             //var ksalesman = context.SysUsers.FirstOrDefault(x => x.AbssCardID.ToLower() == ksalesmancode.ToLower() && x.surIsAbss);
                             if (__salesman != null)
                             {
-                                ///POSFunc/Search?receiptno={0}&amp;salesmanId={1}&amp;adminIds={2}&amp;ksalesmancode={3}  
+                                ///POSFunc/Search?receiptno={0}&amp;salesmanId={1}&amp;approverIds={2}&amp;ksalesmancode={3}  
                                 string reviewurl = "";
                                 var salesmanId = __salesman.surUID;
                                 url = HttpUtility.UrlEncode(UriHelper.GetReviewSalesOrderUrl(ConfigurationManager.AppSettings["ReviewSalesOrderBaseUrl"], receiptno, salesmanId));
                                 msg = string.Format(Resource.RejectedFormat, string.Concat(Resource.Invoice, " ", receiptno));
 
-                                ///POSFunc/Sales?receiptno={0}&amp;salesmanId={1}&amp;adminId={2}&amp;ksalesmancode={3}
+                                ///POSFunc/Sales?receiptno={0}&amp;salesmanId={1}&amp;approverId={2}&amp;ksalesmancode={3}
                                 reviewurl = UriHelper.GetReviewSalesOrderUrl(ConfigurationManager.AppSettings["ReviewSalesOrderBaseUrl"], receiptno, salesmanId, 0);
                                 Dictionary<string, string> DicInvoice = new Dictionary<string, string>();
                                 DicInvoice[receiptno] = reviewurl;
@@ -1077,7 +1063,7 @@ namespace SmartBusinessWeb.Controllers
                                     salesman.Email = _salesman.Email;
                                     salesman.Phone = _salesman.Phone;
 
-                                    if (enableSendMail && SendNotificationEmail(DicInvoice, salesman, RespondType.Rejected, rejectreason))
+                                    if (enableSendMail && ModelHelper.SendNotificationEmail(msg, DicInvoice, salesman, RespondType.Rejected, rejectreason, POSTransactionType.WholeSales))
                                     {
                                         salesorder = context.SalesOrderReviews.FirstOrDefault(x => x.SalesOrder.ToLower() == receiptno.ToLower());
                                         salesorder.EmailNotified = true;
@@ -1126,83 +1112,17 @@ namespace SmartBusinessWeb.Controllers
                                 Dictionary<string, string> DicInvoice = new Dictionary<string, string>();
                                 DicInvoice[receiptno] = url;
                                 if (enableSendMail)
-                                    SendNotificationEmail(DicInvoice, salesman, RespondType.Approved, null);
+                                    ModelHelper.SendNotificationEmail(msg, DicInvoice, salesman, RespondType.Approved, null, POSTransactionType.WholeSales);
                             }
                         }
                         break;
                 }
             }
 
-            return Json(new { msg, salesman, url, customer, AdminList });
+            return Json(new { msg, salesman, url, customer, approvers });
         }
 
-        private static bool SendNotificationEmail(Dictionary<string, string> DicInvoice, SalesmanModel salesman, RespondType respondType, string rejectreason)
-        {
-            int okcount = 0;
-            int ngcount = 0;
-
-            EmailSettingsEditModel model = new EmailSettingsEditModel();
-            var mailsettings = model.Get();
-
-            MailAddress frm = new MailAddress(mailsettings.emEmail, mailsettings.emDisplayName);
-
-            while (okcount == 0)
-            {
-                if (ngcount >= mailsettings.emMaxEmailsFailed || okcount > 0)
-                {
-                    break;
-                }
-
-                MailAddress to = new MailAddress(salesman.Email, salesman.UserName);
-                bool addbc = int.Parse(ConfigurationManager.AppSettings["AddBccToDeveloper"]) == 1;
-                MailAddress addressBCC = new MailAddress(ConfigurationManager.AppSettings["DeveloperEmailAddress"], ConfigurationManager.AppSettings["DeveloperEmailName"]);
-                MailMessage message = new MailMessage(frm, to);
-                if (addbc)
-                {
-                    message.Bcc.Add(addressBCC);
-                }
-
-                message.Subject = Resource.InvoicePending4Approval;
-                message.BodyEncoding = Encoding.UTF8;
-                message.IsBodyHtml = true;
-
-                var lilist = "";
-                foreach (var item in DicInvoice)
-                {
-                    lilist += $"<li><a href='{item.Value}' target='_blank'>{item.Key}</a></li>";
-                }
-
-                string mailbody = string.Empty;
-                if (respondType == RespondType.Rejected)
-                {
-                    var rejectreasontxt = string.Format(Resource.ReasonForFormat, Resource.Reject);
-                    mailbody = $"<h3>Hi {salesman.UserName}</h3><p>The following invoice is pending for your review:</p><ul>{lilist}</ul><h4>{rejectreasontxt}</h4><p>{rejectreason}</p>";
-                }
-                if (respondType == RespondType.PassToManager)
-                {
-                    mailbody = $"<h3>Hi {salesman.UserName}</h3><p>The following invoice is pending for your approval:</p><ul>{lilist}</ul>";
-                }
-
-                message.Body = mailbody;
-
-                using (SmtpClient smtp = new SmtpClient(mailsettings.emSMTP_Server, mailsettings.emSMTP_Port))
-                {
-                    smtp.UseDefaultCredentials = false;
-                    smtp.EnableSsl = mailsettings.emSMTP_EnableSSL;
-                    smtp.Credentials = new NetworkCredential(mailsettings.emSMTP_UserName, mailsettings.emSMTP_Pass);
-                    try
-                    {
-                        smtp.Send(message);
-                        okcount++;
-                    }
-                    catch (Exception)
-                    {
-                        ngcount++;
-                    }
-                }
-            }
-            return okcount > 0;
-        }
+     
 
         private static bool SendSimpleEmail(string receiverEmail, string receiverName, string msg, string subject, PPWDbContext context, int apId)
         {

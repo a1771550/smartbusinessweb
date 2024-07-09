@@ -3861,7 +3861,7 @@ function initModals() {
 						}
 						else {
 							let _id: string = <string>$target.attr("id");
-							console.log("_id:" + _id);
+							//console.log("_id:" + _id);
 							let _val: string = <string>$target.val();
 							if (_val !== "") {
 								$target = $("#gattrblk").find(".form-group");
@@ -6559,7 +6559,7 @@ function addRow() {
 
 
 	if (forsales ||
-		(forwholesales &&
+		(forwholesales && editmode &&
 			WholeSales.wsStatus != "order" &&
 			WholeSales.wsStatus.toLowerCase() !== "requesting" &&
 			WholeSales.wsStatus.toLowerCase() !== "created" &&
@@ -8720,11 +8720,11 @@ function getExRate(currencyCode: string): number {
 function displayExRate(exrate: number) {
 	if (exrate) $("#exratedisplay").text(formatexrate(exrate.toString()));
 }
-function fillInWholeSales(): IWholeSales {
+function FillInWholeSales() {
 	batchidx = 6;
 	snidx = batchidx + 1;
 	vtidx = snidx + 1;
-	return {
+	WholeSales = {
 		wsUID: $("#WholeSales_wsUID").val() as number,
 		wsCode: $("#WholeSales_wsCode").val() as string,
 		wsCusID: 0,
@@ -8775,7 +8775,7 @@ function fillInWholeSales(): IWholeSales {
 		UploadFileList: [],
 		FileList: [],
 		ImgList: []
-	};
+	} as IWholeSales;
 }
 function initWholeSalesLn(): IWholeSalesLn {
 	return {
@@ -14466,8 +14466,8 @@ function respondReview(type) {
 					let phoneno: string = "";
 
 					if (type == "void") {
-						let admins: Array<ISalesman> = data.AdminList;
-						phoneno = admins[0].Phone as string;
+						let approvers: Array<ISysUser> = data.approvers;
+						phoneno = approvers[0].Phone as string;
 					} else {
 						phoneno = data.salesman.Phone;
 					}
@@ -14537,8 +14537,8 @@ function respondReview(type) {
 					let phoneno: string = "";
 
 					if (type == "void") {
-						let admins: Array<ISalesman> = data.AdminList;
-						phoneno = admins[0].Phone as string;
+						let approvers: Array<ISysUser> = data.approvers;
+						phoneno = approvers[0].Phone as string;
 					} else {
 						phoneno = data.salesman.Phone;
 					}
@@ -14573,7 +14573,33 @@ function respondReview(type) {
 
 function SubmitSimpleSales() {
 	UpdateSimpleSales();
-	_submitSimpleSales();
+
+	if (selectedCus.CusEmailList) {
+		//<a class="btnsmall preview" role="button" data-id="1" data-interval="x" title="Mail Test 1" href="#">Mail Test 1</a>,<a class="btnsmall preview" role="button" data-id="2" title="Mail Test 2" href="#">Mail Test 2</a>
+		//促銷電子郵件 {0} 將在 {2} 天後發送至 {1}。
+		let msglist: string[] = [];
+		selectedCus.CusEmailList.split(",").forEach((x) => {			
+			let msg = promotionemailmsgformat.replace("{0}", x).replace("{1}", selectedCus.cusName).replace("{2}", $(x).data("interval"));
+			msglist.push(msg);
+		});
+		console.log(msglist.join("<br>"));
+		return;
+
+		$.fancyConfirm({
+			title: "",
+			message: msglist.join("<br>"),
+			shownobtn: false,
+			okButton: oktxt,
+			noButton: notxt,
+			callback: function (value) {
+				if (value) {
+					_submitSimpleSales();
+				}
+			}
+		});	
+	} else {
+		_submitSimpleSales();
+	}
 }
 function submitSales() {
 	if (forsales || forReservePaidOut) {
@@ -14594,7 +14620,6 @@ function submitSales() {
 
 function _submitSimpleSales() {
 	let url = "/POSFunc/ProcessSales";
-
 	let data = { Sales, SimpleSalesLns, Payments };
 	//console.log("data:", data);
 	//return false;
@@ -14803,7 +14828,7 @@ function handleRecurOrderList(this: any) {
 		success: function (data) {
 			let ws = data.sales as IWholeSales;
 			//console.log("recurorder data:", data);
-			WholeSales = fillInWholeSales();
+			FillInWholeSales();
 			WholeSales.wsCode = ws.wsCode;
 			WholeSales.wsCusID = ws.wsCusID;
 			WholeSales.wsDvc = ws.wsDvc;
@@ -14886,7 +14911,7 @@ function handleApprovalMode4Sales(data: ISalesReturnMsg) {
 			$infoblk.data("whatsapplinkurl") as string
 		);
 		whatsapplnk = whatsapplnk
-			.replace("{0}", handleWhatsAppPhone(data.adminphone ?? ""))
+			.replace("{0}", handleWhatsAppPhone(data.approverphone ?? ""))
 			.replace("{1}", msg);
 		window.open(whatsapplnk, "_blank");
 	}
@@ -14910,7 +14935,7 @@ function handleApprovalMode4Purchase(data: IPurchaseReturnMsg) {
 			$infoblk.data("whatsapplinkurl") as string
 		);
 		whatsapplnk = whatsapplnk
-			.replace("{0}", handleWhatsAppPhone(data.adminphone ?? ""))
+			.replace("{0}", handleWhatsAppPhone(data.approverphone ?? ""))
 			.replace("{1}", msg);
 		window.open(whatsapplnk, "_blank");
 	}

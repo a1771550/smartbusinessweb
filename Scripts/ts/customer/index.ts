@@ -15,16 +15,16 @@ function handleEmailCustomers() {
 
 	let groupIdList: number[] = [];
 	let groups = dropdownModal.find("#drpCustomerGroup").val() as string[];
-	console.log(groups);
+	//console.log(groups);
 	if (groups.length == 1) groupIdList.push(Number(groups[0]));
 	else {
 		groups.forEach((x) => {
 			groupIdList.push(Number(x));
 		});
 	}
-	console.log("emailId:", emailId);
-	console.log("groupIdList:", groupIdList);
-	return;
+	//console.log("emailId:", emailId);
+	//console.log("groupIdList:", groupIdList);
+	//return;
 	openWaitingModal();
 	$.ajax({
 		type: "POST",
@@ -42,7 +42,8 @@ function handleEmailCustomers() {
 					noButton: notxt,
 					callback: function (value) {
 						if (value) {
-							$("#txtKeyword").trigger("focus");
+							//$("#txtKeyword").trigger("focus");
+							window.location.href = "/Customer/Index";
 						}
 					}
 				});
@@ -190,15 +191,15 @@ function handleEblastCustomers() {
 
 	let groupIdList: number[] = [];
 	let groups = dropdownModal.find("#drpCustomerGroup").val() as string[];
-	console.log(groups);
+	//console.log(groups);
 	if (groups.length == 1) groupIdList.push(Number(groups[0]));
 	else {
 		groups.forEach((x) => {
 			groupIdList.push(Number(x));
 		});
 	}
-	console.log("eblastIdList:", eblastIdList);
-	console.log("groupIdList:", groupIdList);
+	//console.log("eblastIdList:", eblastIdList);
+	//console.log("groupIdList:", groupIdList);
 	//return;
 	openWaitingModal();
 	$.ajax({
@@ -217,7 +218,8 @@ function handleEblastCustomers() {
 					noButton: notxt,
 					callback: function (value) {
 						if (value) {
-							$("#txtKeyword").trigger("focus");
+							//$("#txtKeyword").trigger("focus");
+							window.location.href = "/Customer/Index";
 						}
 					}
 				});
@@ -424,7 +426,7 @@ function populateDropDown4EmailCusGroupList() {
 				//console.log("EmailList:", EmailList);
 				$target = dropdownModal.find("select").first();
 				$target.parent("div").find("label").text(promotionalemailtxt);
-				$target.attr("id","#drpEmail");
+				$target.attr("id","drpEmail");
 				$target.empty();
 				EmailList.forEach((x) => {
 					openDropDownModal();

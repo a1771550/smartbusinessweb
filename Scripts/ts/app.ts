@@ -214,6 +214,8 @@ let SelectedCountry: number = 1;
 //const searchcustxt:string = $txtblk.eq(1).data("searchcustxt");
 //const searchcustxt:string = $txtblk.eq(1).data("searchcustxt");
 //const searchcustxt:string = $txtblk.eq(1).data("searchcustxt");
+//const searchcustxt:string = $txtblk.eq(1).data("searchcustxt");
+const promotionemailmsgformat: string = $txtblk.eq(1).data("promotionemailmsgformat");
 const promotionalemailtxt: string = $txtblk.eq(1).data("promotionalemailtxt");
 const previewtxt:string = $txtblk.eq(1).data("previewtxt");
 const couponexpiredwarning: string = $txtblk.eq(1).data("couponexpiredwarning");
@@ -320,6 +322,8 @@ let current_page = 1;
 let records_per_page = 5;
 let frmId: string = "";
 let ismanager: boolean = false;
+let ismanagersales: boolean = false;
+let issalesperson: boolean = false;
 let TransferList: Array<IStockTransfer> = [];
 let isLocal: boolean = false;
 let $infoblk: any;
@@ -1352,6 +1356,9 @@ interface ICustomer {
 	Interval: number|null; //for coupon only
 	IsEmailSent: boolean; //for coupon only
 	IsEmailSentDisplay: string //for coupon only
+	CusEblastList: string | null;
+	CusHotList: string | null;
+	CusEmailList: string | null;
 }
 interface IAddressView {
 	Id: number;
@@ -3984,7 +3991,8 @@ let forapprovedcustomer: boolean = false;
 interface ISalesReturnMsg {
 	msg: string | null;
 	status: string | null;
-	adminphone: string | null;
+	approverphone: string | null;
+	approveremail: string | null;
 	salescode: string | null;
 	reviewurl: string | null;
 	cusname: string | null;
@@ -3995,11 +4003,11 @@ interface IPurchaseReturnMsg {
 	msg: string;
 	purchasecode: string;
 	reviewurl: string;
-	adminphone: string;
+	approverphone: string;
 	status: string;
 	supname: string;
 	purchaselnlength: number;
-	adminemail: string;
+	approveremail: string;
 	ismanager: boolean;
 }
 let editapproved: boolean = false;

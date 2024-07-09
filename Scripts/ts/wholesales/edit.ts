@@ -668,12 +668,12 @@ function handleSubmit4Wholesales(forRecurOrder: boolean = false) {
 			}
 		}
 		else {
-			WholeSales = fillInWholeSales();
+			FillInWholeSales();
 			updateWholesales();
-			console.log("WholeSales:", WholeSales);
-			 console.log("recurOrder:", recurOrder);
-			console.log("WholeSalesLns:", WholeSalesLns);
-			return;
+			//console.log("WholeSales:", WholeSales);
+			// console.log("recurOrder:", recurOrder);
+			//console.log("WholeSalesLns:", WholeSalesLns);
+			//return;
 			openWaitingModal();
 			$.ajax({
 				type: "POST",
@@ -897,7 +897,6 @@ $(function () {
 
 	setFullPage();
 	initModals();
-	triggerMenuByCls("menuwholesales", 0);
 
 	gTblId = "tblWSI";
 	itotalamt = 0;
@@ -916,26 +915,25 @@ $(function () {
 	let bgcls: string = status.toLowerCase().concat("statusbg");
 	$("body").addClass(bgcls);
 
-	editmode = Number($("#WholeSales_wsUID").val()) > 0;
+	FillInWholeSales();
+
+	let _receiptno = getParameterByName("receiptno");
+	let readonly: boolean = $infoblk.data("ismanager") === "True";
+	//console.log("readonly:", readonly);
+
+	if (_receiptno !== null) {
+		receiptno = selectedSalesCode = _receiptno as string;
+		reviewmode = _receiptno !== null && !editmode;
+	}
+	editmode = editmode = WholeSales.wsStatus != "draft" && !reviewmode;
 	editapproved =
 		getParameterByName("mode") != null &&
 		getParameterByName("mode") == "editapproved";
 
-	let _receiptno = getParameterByName("receiptno");
-	let readonly: boolean = $infoblk.data("isadmin") === "True";
-	//console.log("readonly:", readonly);
-
-	if (_receiptno !== null || editmode) {
-		receiptno = selectedSalesCode = _receiptno as string;
-		reviewmode = _receiptno !== null && !editmode;
-	}
-	// console.log("receiptno:" + receiptno);
-
 	if (!editmode)
 		$("#WholeSales_wsExRate").val(1);
 
-	if (reviewmode || editmode || editapproved) {
-		WholeSales = fillInWholeSales();
+	if (reviewmode || editmode || editapproved) {		
 		wholesaleslns = $infoblk.data("jsonwholesaleslns");
 
 		if (WholeSales.wsStatus.toLowerCase() === "deliver" || WholeSales.wsStatus.toLowerCase() === "partialdeliver") {
@@ -1075,7 +1073,7 @@ $(function () {
 		if (getParameterByName("status") && getParameterByName("status") == "invoice")
 			$("#btnInvoice").trigger("click");
 	} else {
-		WholeSales = fillInWholeSales();
+		
 
 		$("#drpLocation").val(shop);
 		initDatePicker("deliveryDate", tomorrow, false, "", true, true);
@@ -1123,4 +1121,6 @@ $(function () {
 	}
 
 	setInput4NumberOnly("number");
+
+	triggerMenuByCls("menuwholesales", 0);
 });

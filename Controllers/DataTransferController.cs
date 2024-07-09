@@ -12,7 +12,6 @@ using Resources = CommonLib.App_GlobalResources;
 using System.Data.Entity.Validation;
 using PPWDAL;
 using ModelHelper = PPWLib.Helpers.ModelHelper;
-using System.Threading.Tasks;
 using PPWCommonLib.BaseModels;
 using CommonLib.Helpers;
 using CommonLib.Models;
@@ -29,7 +28,6 @@ using CommonLib.Models.MYOB;
 using PPWLib.Models.Item;
 using PPWCommonLib.Helpers;
 using SalesEditModel = PPWLib.Models.AbssReport.SalesEditModel;
-using DocumentFormat.OpenXml.EMMA;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -120,27 +118,9 @@ namespace SmartBusinessWeb.Controllers
                     }
                 }
             }
-            //else
-            //{
-            //    //to be handled by DoImportFrmCentralAsync
-            //}
-
             return View(model);
         }
-
-        private void popAttribute4Contact(string attname, ref CustomAttribute attribute, Contact contact)
-        {
-            //string attname = "FollowUpDate";
-            const string atttype = "text";
-            attribute.attrId = contact.cusContactID + attname + atttype + contact.AccountProfileId;
-            attribute.contactId = contact.cusContactID;
-            attribute.AccountProfileId = contact.AccountProfileId;
-            attribute.CreateTime = DateTime.Now;
-            attribute.ModifyTime = DateTime.Now;
-            attribute.attrName = attname;
-            attribute.attrType = atttype;
-        }
-
+       
         /// <summary>
         /// for online mode only
         /// </summary>
@@ -156,7 +136,7 @@ namespace SmartBusinessWeb.Controllers
             SessUser curruser = Session["User"] as SessUser;
 
             using var context = new PPWDbContext(Session["DBName"].ToString());
-            string AbssConnectionString = GetAbssConnectionString(context, "READ", apId);
+            string AbssConnectionString = GetAbssConnectionString(context, "READ");
 
             if (filename.StartsWith("Sales_")) SalesEditModel.WriteAbssSalesToDb();
 
@@ -674,7 +654,7 @@ namespace SmartBusinessWeb.Controllers
             bool approvalmode = (bool)comInfo.ApprovalMode;          
 
             using var context = new PPWDbContext(Session["DBName"].ToString());
-            string ConnectionString = GetAbssConnectionString(context, "READ_WRITE", apId);
+            string ConnectionString = GetAbssConnectionString(context, "READ_WRITE");
 
             if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
             using (SqlConnection)
@@ -945,7 +925,7 @@ namespace SmartBusinessWeb.Controllers
 
                 if (filename == "Purchase_")
                 {
-                    List<string> sqllist = PurchaseEditModel.GetUploadPurchaseSqlList(apId, ref dmodel, comInfo, context, frmdate, todate);
+                    List<string> sqllist = PurchaseEditModel.GetUploadPurchaseSqlList(ref dmodel, comInfo, context, frmdate, todate);
 
                     if (sqllist.Count > 0)
                     {
@@ -979,7 +959,7 @@ namespace SmartBusinessWeb.Controllers
 
                 if (filename.StartsWith("Items_"))
                 {
-                    ModelHelper.GetDataTransferData(context, apId, CheckOutType.Items, ref dmodel);
+                    ModelHelper.GetDataTransferData(context, CheckOutType.Items, ref dmodel);
 
                     if (dmodel.ItemList.Count > 0)
                     {
@@ -1024,28 +1004,28 @@ namespace SmartBusinessWeb.Controllers
                             dayends.WriteMYOB(ConnectionString, sql);
                         }
 
-                        updateDB(dmodel.CheckOutCodes_Item.ToArray(), apId, CheckOutType.Items);
+                        updateDB(dmodel.CheckOutCodes_Item.ToArray(), CheckOutType.Items);
                     }
                 }
 
                 if (filename.StartsWith("Customers_"))
                 {
-                    ModelHelper.GetDataTransferData(context, apId, CheckOutType.Customers, ref dmodel);
+                    ModelHelper.GetDataTransferData(context, CheckOutType.Customers, ref dmodel);
                     if (dmodel.CustomerList.Count > 0)
                     {
-                        WriteMyobCustomerToABSS(AccountProfileId, ref onlineModeItem, dmodel);
-                        updateDB(onlineModeItem.checkoutcodes.ToArray(), AccountProfileId, CheckOutType.Customers);
+                        WriteMyobCustomerToABSS(ref onlineModeItem, dmodel);
+                        updateDB(onlineModeItem.checkoutcodes.ToArray(), CheckOutType.Customers);
                     }
                     //WriteVipToABSS();
                 }
 
                 if (filename == "Suppliers_")
                 {
-                    ModelHelper.GetDataTransferData(context, apId, CheckOutType.Suppliers, ref dmodel);
+                    ModelHelper.GetDataTransferData(context, CheckOutType.Suppliers, ref dmodel);
                     if (dmodel.Supplierlist.Count > 0)
                     {
                         WriteSupplierToABSS(apId, ref onlineModeItem, dmodel);
-                        updateDB(onlineModeItem.checkoutcodes.ToArray(), apId, CheckOutType.Suppliers);
+                        updateDB(onlineModeItem.checkoutcodes.ToArray(), CheckOutType.Suppliers);
                     }
                 }
             }
@@ -1084,7 +1064,7 @@ namespace SmartBusinessWeb.Controllers
 
 
 
-        private void updateDB(string[] _checkoutCodes, int accountProfileId, CheckOutType checkOutType)
+        private void updateDB(string[] _checkoutCodes, CheckOutType checkOutType)
         {
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
@@ -1094,7 +1074,7 @@ namespace SmartBusinessWeb.Controllers
                 switch (checkOutType)
                 {
                     case CheckOutType.Suppliers:
-                        List<MyobSupplier> suppliers = context.MyobSuppliers.Where(x => checkoutCodes.Any(y => x.supCode == y) && x.AccountProfileId == accountProfileId).ToList();
+                        List<MyobSupplier> suppliers = context.MyobSuppliers.Where(x => checkoutCodes.Any(y => x.supCode == y) && x.AccountProfileId == apId).ToList();
 
                         foreach (var supplier in suppliers)
                         {
@@ -1104,7 +1084,7 @@ namespace SmartBusinessWeb.Controllers
 
                         break;
                     case CheckOutType.Customers:
-                        List<MyobCustomer> mcustomers = context.MyobCustomers.Where(x => checkoutCodes.Any(y => x.cusCode == y) && x.AccountProfileId == accountProfileId).ToList();
+                        List<MyobCustomer> mcustomers = context.MyobCustomers.Where(x => checkoutCodes.Any(y => x.cusCode == y) && x.AccountProfileId == apId).ToList();
                         foreach (var customer in mcustomers)
                         {
                             customer.cusCheckout = true;
@@ -1113,7 +1093,7 @@ namespace SmartBusinessWeb.Controllers
                         break;
 
                     case CheckOutType.Items:
-                        List<MyobItem> mitems = context.MyobItems.Where(x => checkoutCodes.Any(y => x.itmCode == y) && x.AccountProfileId == accountProfileId).ToList();
+                        List<MyobItem> mitems = context.MyobItems.Where(x => checkoutCodes.Any(y => x.itmCode == y) && x.AccountProfileId == apId).ToList();
                         foreach (var item in mitems)
                         {
                             item.itmCheckout = true;
@@ -1122,7 +1102,7 @@ namespace SmartBusinessWeb.Controllers
                         break;
                     default:
                     case CheckOutType.ItemSales:
-                        List<RtlSale> saleslist = context.RtlSales.Where(x => checkoutCodes.Any(y => x.rtsCode == y) && x.AccountProfileId == accountProfileId).ToList();
+                        List<RtlSale> saleslist = context.RtlSales.Where(x => checkoutCodes.Any(y => x.rtsCode == y) && x.AccountProfileId == apId).ToList();
                         foreach (var sales in saleslist)
                         {
                             sales.rtsCheckout = true;
@@ -1140,8 +1120,8 @@ namespace SmartBusinessWeb.Controllers
         {
             using var context = new PPWDbContext(Session["DBName"].ToString());
 
-            string ConnectionString = GetAbssConnectionString(context, "READ_WRITE", apId);
-            ModelHelper.GetDataTransferData(context, accountprofileId, CheckOutType.Suppliers, ref dmodel);
+            string ConnectionString = GetAbssConnectionString(context, "READ_WRITE");
+            ModelHelper.GetDataTransferData(context, CheckOutType.Suppliers, ref dmodel);
 
             List<string> columns = new List<string>();
 
@@ -1238,15 +1218,15 @@ namespace SmartBusinessWeb.Controllers
             }
         }
 
-        private void WriteMyobCustomerToABSS(int AccountProfileId, ref OnlineModeItem onlineModeItem, DataTransferModel dmodel)
+        private void WriteMyobCustomerToABSS(ref OnlineModeItem onlineModeItem, DataTransferModel dmodel)
         {
             string sql = MyobHelper.InsertImportCustomer4ApprovalSql.Replace("0", "{0}");
             List<string> sqllist = new List<string>();
 
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
-                string ConnectionString = GetAbssConnectionString(context, "READ_WRITE", AccountProfileId);
-                ModelHelper.GetDataTransferData(context, AccountProfileId, CheckOutType.Customers, ref dmodel);
+                string ConnectionString = GetAbssConnectionString(context, "READ_WRITE");
+                ModelHelper.GetDataTransferData(context, CheckOutType.Customers, ref dmodel);
 
                 if (dmodel.CustomerList.Count > 0)
                 {
@@ -1269,12 +1249,12 @@ namespace SmartBusinessWeb.Controllers
         private void WriteVipToABSS()
         {
             string sql = ApprovalMode ? MyobHelper.InsertImportCustomerBasicSql4Approval : MyobHelper.InsertImportCustomerBasicSql;
-            List<string> sqllist = new List<string>();
+            List<string> sqllist = [];
 
             using (var context = new PPWDbContext(Session["DBName"].ToString()))
             {
-                string ConnectionString = GetAbssConnectionString(context, "READ_WRITE", AccountProfileId);
-                List<string> columns = new List<string>();
+                string ConnectionString = GetAbssConnectionString(context, "READ_WRITE");
+                List<string> columns = [];
 
                 int colcount = ApprovalMode ? MyobHelper.ImportCustomerBasicColCount4Approval : MyobHelper.ImportCustomerBasicColCount;
                 for (int j = 0; j < colcount; j++)
@@ -1283,7 +1263,7 @@ namespace SmartBusinessWeb.Controllers
                 }
                 string strcolumn = string.Join(",", columns);
 
-                List<string> values = new List<string>();
+                List<string> values = [];
 
                 var customerpointpricelevels = (
                 from cp in context.CustomerPointPriceLevels
@@ -1327,7 +1307,7 @@ namespace SmartBusinessWeb.Controllers
                 }
             }
         }
-        private string GetAbssConnectionString(PPWDbContext context, string accesstype, int apId)
+        private string GetAbssConnectionString(PPWDbContext context, string accesstype)
         {
             return MYOBHelper.GetConnectionString(context, accesstype, apId);
         }

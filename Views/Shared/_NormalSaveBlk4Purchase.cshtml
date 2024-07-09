@@ -1,32 +1,29 @@
 ﻿@{
-    bool editmode = (bool)ViewData["editmode"];
-    string status = (string)ViewData["status"];
-    bool approvalmode = (bool)ViewData["approvalmode"];
-    bool showViewBtn = (bool)ViewData["showViewBtn"];
-    string viewbtncls = showViewBtn ? "" : "hide";
+	bool editmode = (bool)ViewData["editmode"];
+	string status = (string)ViewData["status"];
+	bool showViewBtn = (bool)ViewData["showViewBtn"];
+	string viewbtncls = showViewBtn ? "" : "hide";
+	string purchasemode = (string)ViewData["purchasemode"];
 }
-<div class="form-group">
-    @if (approvalmode && status.ToLower() == PurchaseStatus.created.ToString())
-    {       
-        <a role="button" href="#" id="btnBill" class="btn btn-primary mr-2">@Resources.Resource.ReceiveItems</a>
-        <a role="button" href="#" id="btnSave" class="btn btn-success mr-2">@Resources.Resource.Save</a>
-    }
-    else if (editmode && status.ToLower() != PurchaseStatus.opened.ToString())
-    {
-        <a role="button" href="#" id="btnBill" class="btn btn-primary mr-2">@Resources.Resource.ReceiveItems</a>
-        <a role="button" href="#" id="btnSave" class="btn btn-success mr-2">@Resources.Resource.Save</a>
-    }
-    else
-    {
-        
-    }
+<div class="form-group" data-status="@status" data-editmode="@editmode" data-purchasemode="@purchasemode">
 
-    @if (editmode)
-    {
-        <button type="button" class="btn btn-warning mr-2" id="btnFile">@Resources.Resource.UploadFile</button>
-        <button type="button" class="btn btn-primary @viewbtncls mr-2" id="btnViewFile">@Resources.Resource.ViewFile</button>
-    }
+	@if (editmode)
+	{
+		if (purchasemode != "readonly")
+		{
+			<button type="button" class="btn btn-warning mx-1" id="btnFile">@Resources.Resource.UploadFile</button>
+			<button type="button" class="btn btn-primary @viewbtncls mx-1" id="btnViewFile">@Resources.Resource.ViewFile</button>
 
-    <button type="button" class="btn btn-secondary" id="btnReload">@Resources.Resource.Reload</button>
+			if (status.ToLower() != PurchaseStatus.opened.ToString())
+			{
+				<a role="button" href="#" id="btnBill" class="btn btn-primary mx-1">@Resources.Resource.ReceiveItems</a>
+			}
+		}
+	}
+
+	@if (purchasemode != "readonly")
+	{
+		<a role="button" href="#" id="btnSave" class="btn btn-success mx-1">@Resources.Resource.Save</a>
+	}
 </div>
 

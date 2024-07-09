@@ -1,25 +1,28 @@
-﻿#tblCustomer th:nth-child(1), #tblCustomer td:nth-child(1){
+﻿#tblCustomer th.name, #tblCustomer td.name{
 	width:220px!important;
 }
-#tblCustomer th:nth-child(2), #tblCustomer th:nth-child(3), #tblCustomer th:nth-child(7), #tblCustomer td:nth-child(2), #tblCustomer td:nth-child(3), #tblCustomer td:nth-child(7) {
+#tblCustomer th.contact, #tblCustomer td.contact {
+	width: 150px !important;
+}
+#tblCustomer th.email, #tblCustomer th.abss, #tblCustomer td.email, #tblCustomer td.abss {
 	width: 110px !important;
 }
-#tblCustomer th:nth-child(4), #tblCustomer td:nth-child(4) {
+#tblCustomer th.customattrs, #tblCustomer td.customattrs {
 	width: 250px !important;
-	min-width:250px!important;
+	min-width: 250px !important;
 }
 
-#tblCustomer th:nth-child(5), #tblCustomer td:nth-child(5) {
-	width: 90px !important;
+#tblCustomer th.status, #tblCustomer td.status {
+	width: 95px !important;
 }
-#tblCustomer th:nth-child(6), #tblCustomer td:nth-child(6), #tblCustomer th.abss, #tblCustomer td.abss {
+#tblCustomer th.date, #tblCustomer td.date {
 	width: 120px !important;
 }
 #tblCustomer th.balance, #tblCustomer td.balance {
 	width: 120px !important;
 }
-#tblCustomer th:nth-child(8), #tblCustomer td:nth-child(8){
-	width: 140px !important;
+#tblCustomer th.list, #tblCustomer td.list{
+	width: 120px !important;
 }
 #tblCustomer th.action, #tblCustomer td.action {
 	width: 140px !important;

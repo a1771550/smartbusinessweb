@@ -1,31 +1,32 @@
-﻿using PPWDAL;
+﻿using CommonLib.Helpers;
+using PPWDAL;
 using PPWLib.Helpers;
 using PPWLib.Models;
+using PPWLib.Models.User;
 using System;
+using System.Configuration;
 using System.Linq;
 using System.Web.Mvc;
-using Resources = CommonLib.App_GlobalResources;
-using FileHelper = PPWCommonLib.CommonHelpers.FileHelper;
-using CommonLib.Helpers;
-using System.Configuration;
 using System.Web.Security;
+using FileHelper = PPWCommonLib.CommonHelpers.FileHelper;
 using Helpers = PPWLib.Helpers;
+using Resources = CommonLib.App_GlobalResources;
 
 namespace SmartBusinessWeb.Controllers
 {
     public class AccountController : BaseController
     {
+        //https://localhost:7777/Account/Login?redirectUrl=/WholeSales/Review?receiptno=VS100002&salesmanId=0&approverId=40&ksalesmancode=
         [HttpGet]
-        public ActionResult Login(string redirectUrl = "", string err = "0")
+        public ActionResult Login(string redirectUrl = null,string err = "0")
         {
             Session["CssBSFile"] = @"Content/bs4"; //Content/bootstrap.min.css
             Session["ScriptBSFile"] = @"Scripts/bs4"; //Content/bootstrap.min.css           
             ViewBag.Title = Resources.Resource.Login;
             ViewBag.Err = err;
-
-            LoginUserModel loginUserModel = new LoginUserModel();
-            if (!string.IsNullOrEmpty(redirectUrl)) return Redirect(redirectUrl);
-
+            //https://localhost:7777/Account/Login?redirectUrl=/WholeSales/Review?receiptno=VS100002&salesmanId=0&approverId=40&ksalesmancode=
+            //if (!string.IsNullOrEmpty(redirectUrl)) return Redirect(redirectUrl);
+            LoginUserModel loginUserModel = new LoginUserModel(redirectUrl);
             return View(loginUserModel);
         }
 
@@ -33,7 +34,7 @@ namespace SmartBusinessWeb.Controllers
         //[ValidateAntiForgeryToken]
         public ActionResult Login(LoginUserModel model)
         {
-            SysUser user = null;
+            SessUser user = null;
             string msg = string.Empty;
             string hash = string.Empty;
             GetUserByEmail3_Result _user = null;
@@ -66,13 +67,34 @@ namespace SmartBusinessWeb.Controllers
                     model.IsCentral = _user.IsCentral;
 
                     var __user = _roleuser.FirstOrDefault();
-                    user = new SysUser
+                    /*
+                     * sesIsActive = true,
+                sesDvc = model.SelectedDevice ?? "",
+                sesShop = model.SelectedShop ?? "",
+                sesLang = (int)Session["CurrentCulture"],
+                UserCode = user.UserCode,
+                IsCentral = false,
+                sesDateFr = currDate,
+                sesTimeFr = currTime,
+                sesCreateBy = user.surUID.ToString(),
+                sesCreateTime = DateTime.Now,
+                sesToken = token,
+                AccountNo = accountno,
+                AccountProfileId = apId,
+                sesDvcSeq = seq,
+                sesSalesPrefix = salesprefix,
+                sesRefundPrefix = refundprefix,
+                sesIP = CommonHelper.GetIPAddress(),
+                sesCheckout = false,
+                Email = user.Email,
+                     */
+                    user = new SessUser
                     {
                         surUID = __user.surUID,
                         surIsActive = __user.surIsActive,
                         UserCode = __user.UserCode,
                         UserName = __user.UserName,
-                        UserRole = string.Join(",", roles),
+                        UserRole = string.Join(",", roles),                        
                         DisplayName = __user.DisplayName,
                         Email = __user.Email,
                         dvcCode = model.SelectedDevice,
@@ -82,25 +104,26 @@ namespace SmartBusinessWeb.Controllers
                         ManagerId = __user.ManagerId,
                         surDesc = __user.surDesc,
                         surNotes = __user.surNotes,
+                        PrinterName = "",
                         AccountProfileId = apId,
                         surCreateTime = __user.surCreateTime,
                         surModifyTime = __user.surModifyTime,
                     };
-
-                    bool isadmin = UserHelper.CheckIfAdmin(user);
-                    bool issalesmanager = UserHelper.CheckIfSalesManager(user);
-                    DeviceModel device = isadmin ? null : Helpers.ModelHelper.GetDevice(user.surUID);//don't move to below
+                    user.Roles = UserHelper.GetUserRoles(user);
+                    UserEditModel.GetUserInRoles(user);
+                    Session["User"] = user;
+                    DeviceModel device = user.IsAdmin ? null : Helpers.ModelHelper.GetDevice(user.surUID);//don't move to below
 
                     _login(user, context, model, device);
 
-                    if (isadmin)
+                    if (user.IsAdmin)
                     {
                         model.RedirectUrl = ApprovalMode ? "/BasicSettings/Index" : ComInfo.comLandingPage;
                         return Redirect(model.RedirectUrl);
                     }
-                    if (issalesmanager)
+                    if (user.IsManager)
                     {
-                        model.RedirectUrl = ApprovalMode ? "/WholeSales/SalesOrderList" : ComInfo.comLandingPage;
+                        if (string.IsNullOrEmpty(model.RedirectUrl)) model.RedirectUrl = ApprovalMode ? "/WholeSales/SalesOrderList" : ComInfo.comLandingPage;
                         return Redirect(model.RedirectUrl);
                     }
                     else
@@ -125,7 +148,7 @@ namespace SmartBusinessWeb.Controllers
 
 
 
-        private void _login(SysUser user, PPWDbContext context, LoginUserModel model, DeviceModel device = null)
+        private void _login(SessUser user, PPWDbContext context, LoginUserModel model, DeviceModel device = null)
         {
             string token = CommonHelper.GenSessionToken();
             DateTime currDate = DateTime.Now.Date;
@@ -177,28 +200,9 @@ namespace SmartBusinessWeb.Controllers
             };
             context.Sessions.Add(session);
             context.SaveChanges();
-
-
-            SessUser sessUser = new SessUser
-            {
-                UserName = user.UserName,
-                UserCode = user.UserCode,
-                surUID = user.surUID,
-                surIsActive = user.surIsActive,
-                EnableCheckDayends = true,
-                NetworkName = user.surNetworkName,
-                PrinterName = "",
-                Roles = UserHelper.GetUserRoles(user),
-                AccountProfileId = apId,
-                ManagerId = user.ManagerId,
-                Device = device,
-                Email = user.Email,
-                shopCode = user.shopCode,
-                dvcCode = user.dvcCode,
-            };
-            FormsAuthentication.SetAuthCookie(sessUser.UserName, false);
+            FormsAuthentication.SetAuthCookie(user.UserName, false);
             Session["Session"] = session;
-            Session["User"] = sessUser;
+            //Session["User"] = sessUser;
             Session["Device"] = device;
             Session["SessionToken"] = token;
             Session["IsCentral"] = model.IsCentral;

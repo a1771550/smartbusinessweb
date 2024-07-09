@@ -1,7 +1,7 @@
 ﻿@model PPWLib.Models.WholeSales.WholeSalesEditModel
 @{
     WholeSalesModel WholeSales = Model.WholeSales;
-    bool editmode = WholeSales.wsUID > 0;
+    bool editmode = WholeSales.wsStatus != PurchaseStatus.draft.ToString();
     string edittxt = editmode ? Resources.Resource.Edit : Resources.Resource.Add;
     ViewBag.Title = edittxt + " " + Resources.Resource.WholeSales;
     int rand = CommonHelper.GetVersionRandomNo();
@@ -13,9 +13,7 @@
     bool approvalmode = (bool)Model.ComInfo.ApprovalMode;
     var currency = Model.ComInfo.Currency;
     bool showrecur = (bool)Model.ComInfo.ShowRecurOrderOption;
-    SessUser user = System.Web.HttpContext.Current.Session["User"] as SessUser;
-    bool isapprover = user.Roles.Any(x => x == RoleType.Admin || x == RoleType.SalesManager);
-    bool ismanager = user.Roles.Any(x => x == RoleType.SalesManager);
+    SessUser user = Model.User;
 }
 
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -196,7 +194,7 @@
 		
     </div>
 
-            var decimaltotal = editmode? CommonHelper.FormatNumber((decimal)WholeSales.wsFinalTotal): CommonHelper.FormatNumber(0);
+            var decimaltotal = editmode? WholeSales.wsFinalTotal==null? CommonHelper.FormatNumber(0) : CommonHelper.FormatNumber((decimal)WholeSales.wsFinalTotal): CommonHelper.FormatNumber(0);
     <div class="row mx-1">
         <div class="col-12 col-md-4">
             <div class="form-group">
@@ -217,89 +215,81 @@
 
   
 
-    <div id="btnblk" class="row justify-content-end px-4">
+	<div id="btnblk" class="row justify-content-end px-4" data-editmode="@editmode" data-isapprover="@user.IsApprover" data-wsstatus="@WholeSales.wsStatus" data-issalesperson="@user.IsSalesPerson">
 
-        @if (approvalmode)
-        {
-            if (isapprover)
-            {
-                if (ismanager)
-                {
-                    if (editmode && WholeSales.wsStatus != WholeSalesStatus.invoice.ToString())
-                    {
-                        <div class="text-right">
-                            @Html.Partial("_NormalSaveBlk4WholeSales", null, new ViewDataDictionary { { "editmode", editmode }, { "showViewBtn", WholeSales.FileList.Count > 0 }, { "status", WholeSales.wsStatus }, { "ismanager", ismanager } })
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="d-none d-md-block text-right">
-                            <a role="button" href="#" class="btn btn-success mr-2 btnSave">@Resources.Resource.Save</a>
-                            @if (showrecur)
-                            {
-                                <button id="" type="button" class="btn btn-info ml-3 my-2 btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
-                            }
-                            @*<button id="" type="button" class="btn btn-success ml-3 my-2 btnNewSales">@string.Format(Resources.Resource.NewFormat, Resources.Resource.WholeSales)</button>*@
-                        </div>
+		@if (approvalmode)
+		{
+			<input type="hidden" id="mode" value="@WholeSales.Mode" />
 
-                        <div class="d-block d-sm-block d-md-none text-right">
-                            <a role="button" href="#" class="btn btn-success d-flex my-2 btnSave">@Resources.Resource.Save</a>
-                            @if (showrecur)
-                            {
-                                <button id="" type="button" class="btn btn-info d-flex my-2 btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
-                            }
-                            @*<button id="" type="button" class="btn btn-success d-flex my-2 btnNewSales">@string.Format(Resources.Resource.NewFormat, Resources.Resource.WholeSales)</button>*@
-                        </div>
-                    }
-                }
-                else if (!ismanager)
-                {
-                    <div class="d-none d-md-block text-right" data-approve="@Resources.Resource.Approve" data-reject="@Resources.Resource.Reject">
-                        <button type="button" id="" class="btn btn-primary mr-2 respond btnApprove" data-type="approve" data-code="">@Resources.Resource.Approve</button>
-                        <button type="button" id="" class="btn btn-danger mr-4 respond btnReject" data-type="reject" data-code="">@Resources.Resource.Reject</button>
-                    </div>
-                    <div class="d-block d-md-none">
-                        <button type="button" id="" class="btn btn-primary d-flex respond my-2 btnApprove" data-type="approve" data-code="">@Resources.Resource.Approve</button>
-                        <button type="button" id="" class="btn btn-danger d-flex respond my-2 btnReject" data-type="reject" data-code="">@Resources.Resource.Reject</button>
-                    </div>
-                }
-            }
-            else if (!isapprover)
-            {
-                if (editmode && WholeSales.wsStatus != WholeSalesStatus.invoice.ToString())
-                {
-                    <div class="text-right">
-                        @Html.Partial("_NormalSaveBlk4WholeSales", null, new ViewDataDictionary { { "editmode", editmode }, { "showViewBtn", WholeSales.FileList.Count > 0 }, { "status", WholeSales.wsStatus }, { "ismanager", ismanager } })
-                    </div>
-                }
-                else
-                {
-                    <div class="d-none d-md-block text-right">
-                        <button id="" type="button" class="btn btn-primary ml-3 my-2 request makeorder btnRequestApproval" style="height:5em;">@Resources.Resource.Request4Approval</button>
-                        @if (showrecur)
-                        {
-                            <button id="" type="button" class="btn btn-info ml-3 my-2 btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
-                        }
-                        <button id="" type="button" class="btn btn-success ml-3 my-2 btnNewSales">@string.Format(Resources.Resource.NewFormat, Resources.Resource.WholeSales)</button>
-                    </div>
+			if (user.IsApprover)
+			{
+				if (Request.QueryString["ireadonly"] != null && Request.QueryString["ireadonly"] == "1")
+				{
+					<div class="d-none d-md-block text-right">
+						<button type="button" id="" class="btn btn-primary mx-1 respond btnApprove" data-type="approve" data-code="">@Resources.Resource.Approve</button>
+						<button type="button" id="" class="btn btn-danger mx-1 respond btnReject" data-type="reject" data-code="">@Resources.Resource.Reject</button>
+					</div>
+					<div class="d-block d-md-none">
+						<button type="button" id="" class="btn btn-primary d-flex respond btnApprove" data-type="approve" data-code="">@Resources.Resource.Approve</button>
+						<button type="button" id="" class="btn btn-danger d-flex respond btnReject" data-type="reject" data-code="">@Resources.Resource.Reject</button>
+					</div>
+				}
+			}
 
-                    <div class="d-block d-sm-block d-md-none text-right">
-                        <button id="" type="button" class="btn btn-primary d-flex my-2 request btnRequestApproval makeorder">@Resources.Resource.Request4Approval</button>
-                        @if (showrecur)
-                        {
-                            <button id="" type="button" class="btn btn-info d-flex my-2 btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
-                        }
-                        <button id="" type="button" class="btn btn-success d-flex my-2 btnNewSales">@string.Format(Resources.Resource.NewFormat, Resources.Resource.WholeSales)</button>
-                    </div>
-                }
-            }
+			if (user.IsSalesPerson)
+			{
+				if (editmode)
+				{
+					if (WholeSales.wsStatus != WholeSalesStatus.invoice.ToString())
+					{
+						<div class="text-right">
+							@Html.Partial("_NormalSaveBlk4WholeSales", null, new ViewDataDictionary { { "editmode", editmode }, { "wholesalesmode", WholeSales.Mode }, { "showViewBtn", WholeSales.FileList.Count > 0 }, { "status", WholeSales.wsStatus } })
+						</div>
+					}
+				}
+				else
+				{
+					<div class="d-none d-md-block text-right my-2">
+						<button id="" type="button" class="btn btn-primary mx-1 request makeorder btnRequestApproval">@Resources.Resource.Request4Approval</button>
+						@if (showrecur)
+						{
+							<button id="" type="button" class="btn btn-info mx-1 btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
+						}
 
-        }
-        else
-        {
-            @Html.Partial("_NormalSaveBlk4WholeSales", null, new ViewDataDictionary { { "editmode", editmode }, { "showViewBtn", WholeSales.FileList.Count > 0 }, { "status", WholeSales.wsStatus } })
-        }
-    </div>
+						@if (WholeSales.wsStatus != WholeSalesStatus.draft.ToString())
+						{
+							<button id="" type="button" class="btn btn-success mx-1 btnNewPurchase">@string.Format(Resources.Resource.NewFormat, Resources.Resource.WholeSales)</button>
+						}
+
+					</div>
+
+					<div class="d-block d-sm-block d-md-none text-right my-2">
+						<button id="" type="button" class="btn btn-primary d-flex request btnRequestApproval makeorder">@Resources.Resource.Request4Approval</button>
+						@if (showrecur)
+						{
+							<button id="" type="button" class="btn btn-info d-flex btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
+						}
+
+						@if (WholeSales.wsStatus != WholeSalesStatus.draft.ToString())
+						{
+							<button id="" type="button" class="btn btn-success d-flex btnNewWholeSales">@string.Format(Resources.Resource.NewFormat, Resources.Resource.WholeSales)</button>
+						}
+
+					</div>
+				}
+			}
+			if (user.IsManagerSales)
+			{
+				@Html.Partial("_NormalSaveBlk4WholeSales", null, new ViewDataDictionary { { "editmode", editmode }, { "wholesalesmode", WholeSales.Mode }, { "showViewBtn", WholeSales.FileList.Count > 0 }, { "status", WholeSales.wsStatus } })
+			}
+
+		}
+
+		else
+		{
+			@Html.Partial("_NormalSaveBlk4WholeSales", null, new ViewDataDictionary { { "editmode", editmode }, { "wholesalesmode", WholeSales.Mode }, { "showViewBtn", WholeSales.FileList.Count > 0 }, { "status", WholeSales.wsStatus } })
+		}
+	</div>
 }
 
 <div>
@@ -334,7 +324,7 @@
     string exceeduploadfilelimittxt = string.Format(Resources.Resource.ExceedUploadSizeLimitWarning, UploadSizeLimitMB);
 }
 
-<div id="infoblk" data-locationrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Location)" data-emptyitemwarning="@string.Format(Resources.Resource.EnterAtLeastOneFormat,Resources.Resource.ItemStock)" data-currencyrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Currency)" data-enabletax="@Model.EnableTax" data-jsondiccurrencyexrate="@(JsonSerializer.Serialize(Model.DicCurrencyExRate))" data-batchtxt="@Resources.Resource.Batch" data-sntxt="@Resources.Resource.SerialNoItemHeader" data-validthrutxt="@Resources.Resource.ValidThru" data-jsonwholesaleslns="@JsonSerializer.Serialize(Model.WholeSalesLns)" data-customerrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Customer)" data-jsonpoitembatvqlist="@JsonSerializer.Serialize(Model.PoItemBatVQList)" data-jsondicitembatsnvtlist="@JsonSerializer.Serialize(Model.DicItemBatSnVtList)" data-jsondicitemvtqtylist="@JsonSerializer.Serialize(Model.DicItemVtQtyList)" data-jsondicitemoptions="@JsonSerializer.Serialize(Model.DicItemOptions)" data-jsondicitembatchqty="@JsonSerializer.Serialize(Model.DicItemBatchQty)" data-jsondicitemsnvtlist="@JsonSerializer.Serialize(Model.DicItemSnVtList)" data-jsondicitembatdelqty="@JsonSerializer.Serialize(Model.DicItemBatDelQty)" data-jsondicitemvtdelqtylist="@JsonSerializer.Serialize(Model.DicItemVtDelQtyList)" data-itemsrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Item)" data-jscustomer="@JsonSerializer.Serialize(WholeSales.Customer)" data-approvalmode="@approvalmode" data-whatsapplinkurl="@ConfigurationManager.AppSettings["WhatsappLinkUrl"]" data-isapprover="@isapprover" data-delqtymustnotgtorderqtytxt="@Resources.Resource.DeliveryQtyMustNotGtOrderQty" data-jsondiclocation="@JsonSerializer.Serialize(Model.DicLocation)" data-shop="@Model.ComInfo.Shop" data-jsonjoblist="@JsonSerializer.Serialize(Model.JobList)" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-filecode="@WholeSales.wsCode" data-uploadurl="/WholeSales/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@WholeSales.UploadFileName" data-jsondicbattotalqty="@JsonSerializer.Serialize(Model.DicBatTotalQty)" data-jsondicseqdeliveryitems="@JsonSerializer.Serialize(Model.DicSeqDeliveryItems)" data-jsondicitembatsnvt="@JsonSerializer.Serialize(Model.DicItemBatSnVt)" data-jsonpoivinfo="@JsonSerializer.Serialize(Model.PoIvInfo)" data-jsondicivinfo="@JsonSerializer.Serialize(Model.DicIvInfo)" data-dicitemgroupedvariations="@JsonSerializer.Serialize(Model.DicItemGroupedVariations)" data-dicivqtylist="@JsonSerializer.Serialize(Model.DicIvQtyList)" data-dicivdelqtylist="@JsonSerializer.Serialize(Model.DicIvDelQtyList)" data-useforexapi="@Model.UseForexAPI" data-cominfo="@Model.ComInfo"></div>
+<div id="infoblk" data-isadmin="@user.IsAdmin" data-isapprover="@user.IsApprover" data-ismanager="@user.IsManager" data-issalesperson="@user.IsSalesPerson" data-ismanagersales="@user.IsManagerSales"  data-locationrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Location)" data-emptyitemwarning="@string.Format(Resources.Resource.EnterAtLeastOneFormat,Resources.Resource.ItemStock)" data-currencyrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Currency)" data-enabletax="@Model.EnableTax" data-jsondiccurrencyexrate="@(JsonSerializer.Serialize(Model.DicCurrencyExRate))" data-batchtxt="@Resources.Resource.Batch" data-sntxt="@Resources.Resource.SerialNoItemHeader" data-validthrutxt="@Resources.Resource.ValidThru" data-jsonwholesaleslns="@JsonSerializer.Serialize(Model.WholeSalesLns)" data-customerrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Customer)" data-jsonpoitembatvqlist="@JsonSerializer.Serialize(Model.PoItemBatVQList)" data-jsondicitembatsnvtlist="@JsonSerializer.Serialize(Model.DicItemBatSnVtList)" data-jsondicitemvtqtylist="@JsonSerializer.Serialize(Model.DicItemVtQtyList)" data-jsondicitemoptions="@JsonSerializer.Serialize(Model.DicItemOptions)" data-jsondicitembatchqty="@JsonSerializer.Serialize(Model.DicItemBatchQty)" data-jsondicitemsnvtlist="@JsonSerializer.Serialize(Model.DicItemSnVtList)" data-jsondicitembatdelqty="@JsonSerializer.Serialize(Model.DicItemBatDelQty)" data-jsondicitemvtdelqtylist="@JsonSerializer.Serialize(Model.DicItemVtDelQtyList)" data-itemsrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Item)" data-jscustomer="@JsonSerializer.Serialize(WholeSales.Customer)" data-approvalmode="@approvalmode" data-whatsapplinkurl="@ConfigurationManager.AppSettings["WhatsappLinkUrl"]" data-delqtymustnotgtorderqtytxt="@Resources.Resource.DeliveryQtyMustNotGtOrderQty" data-jsondiclocation="@JsonSerializer.Serialize(Model.DicLocation)" data-shop="@Model.ComInfo.Shop" data-jsonjoblist="@JsonSerializer.Serialize(Model.JobList)" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-filecode="@WholeSales.wsCode" data-uploadurl="/WholeSales/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@WholeSales.UploadFileName" data-jsondicbattotalqty="@JsonSerializer.Serialize(Model.DicBatTotalQty)" data-jsondicseqdeliveryitems="@JsonSerializer.Serialize(Model.DicSeqDeliveryItems)" data-jsondicitembatsnvt="@JsonSerializer.Serialize(Model.DicItemBatSnVt)" data-jsonpoivinfo="@JsonSerializer.Serialize(Model.PoIvInfo)" data-jsondicivinfo="@JsonSerializer.Serialize(Model.DicIvInfo)" data-dicitemgroupedvariations="@JsonSerializer.Serialize(Model.DicItemGroupedVariations)" data-dicivqtylist="@JsonSerializer.Serialize(Model.DicIvQtyList)" data-dicivdelqtylist="@JsonSerializer.Serialize(Model.DicIvDelQtyList)" data-useforexapi="@Model.UseForexAPI" data-cominfo="@Model.ComInfo"></div>
 
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>

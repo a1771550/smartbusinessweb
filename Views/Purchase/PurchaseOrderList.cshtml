@@ -1,11 +1,11 @@
-﻿@model PPWLib.Models.Purchase.PurchaseOrderEditModel
+﻿@model PurchaseOrderEditModel
 @using PagedList.Mvc;
 @{
     ViewBag.Title = string.Format(Resources.Resource.ListFormat, Resources.Resource.PurchaseOrder);
     var rand = CommonHelper.GetVersionRandomNo();
     bool approvalmode = Model.ApprovalMode;
-    SessUser user = HttpContext.Current.Session["User"] as SessUser;   
-    bool isapprover = user.Roles.Any(x => x == RoleType.Admin || x == RoleType.SalesManager);
+    SessUser user = Model.User;
+  
 }
 <link href="~/Scripts/paginationjs/pagination.css" rel="stylesheet" type="text/css" />
 
@@ -35,7 +35,7 @@ else
 
             <div class="d-flex justify-content-center my-4">
 
-                <input type="text" class="form-control mr-2" id="txtKeyword" name="Keyword" value="@Model.Keyword" placeholder="@Resources.Resource.KeywordRequired" />
+                <input type="text" class="form-control mx-1" id="txtKeyword" name="Keyword" value="@Model.Keyword" placeholder="@Resources.Resource.KeywordRequired" />
 
                 <div class="form-check form-check-inline small">
     <input class="form-check-input searchmode" type="checkbox" id="chkPurchasePerson" name="SearchMode[]" value="0" @_purchasepersonchecked>
@@ -103,28 +103,27 @@ else
                     string rejectdisabled = "";
                     string voiddisabled = "";
                     //string passdisabled;
-                    string btncls = (item.pstType == "WS"||approvalmode) ? "" : "disabled";
+                    string btncls = (item.pstType == "PS"||approvalmode) ? "" : "disabled";
                     string statustxt = "";
                     string _readonly = "1";
-
 
                     switch (item.pstStatus)
                     {
                         case "opened":
                             bgclr = "openedstatusbg";
-                            statustxt = "已收貨";
+                            statustxt = Resources.Resource.Received4Purchase; ;
                             voiddisabled = "disabled";
                             _readonly = "1";
                             break;
                         case "VOIDED":
                             bgclr = "voidedstatusbg";
                             voiddisabled = "disabled";
-                            statustxt = "廢單";
+                            statustxt = Resources.Resource.Voided;
                             break;
                         case "PASSED":
                             bgclr = "passedstatusbg";
                             //passdisabled = "disabled";
-                            statustxt = "經理待批";
+                            statustxt = Resources.Resource.PassToManager;
                             break;
                         case "order":
                         case "APPROVED":
@@ -135,12 +134,12 @@ else
                             rejectdisabled = "disabled";
                             voiddisabled = "disabled";
                             //passdisabled = "disabled";
-                            statustxt = "已批核";
+                            statustxt = Resources.Resource.Approved;
                             break;
                         case "REJECTED":
                             bgclr = "rejectedstatusbg";
                             rejectdisabled = "disabled";
-                            statustxt = "拒絕";
+                            statustxt = Resources.Resource.Rejected;
                             break;
                         case "KPENDING":
                             bgclr = "kpendingstatusbg";
@@ -149,7 +148,7 @@ else
                         default:
                         case "REQUESTING":
                             bgclr = "requestingstatusbg";
-                            statustxt = "申請中";
+                            statustxt = Resources.Resource.Requesting4Approval; ;
                             _readonly = "0";
                             break;
                     }
@@ -172,33 +171,32 @@ else
                         </td>
                         <td class="text-center">@item.PurchaseTimeDisplay</td>
                         <td class="text-center" data-date="@item.pstPromisedDate">@item.PromisedDateDisplay</td>
-                        <td class="button">
+						<td class="button">
 
-                            @if (approvalmode)
-                            {
-                                if (isapprover)
-                                {
-                                    <button class="btn btn-info detail btnsmall mr-2 @btncls" data-id="@item.Id" data-code="@item.pstCode" data-readonly="1">@Resources.Resource.Detail</button>
-                                    if (item.pstStatus == "REQUESTING" || item.pstStatus == "KPENDING")
-                                    {
-                                        <button class="btn btn-primary respond btnsmall mr-2 @approvedisabled" data-type="approve" data-id="@item.Id" data-code="@item.pstCode">@Resources.Resource.Approve</button>
-                                        <button class="btn btn-danger respond btnsmall mr-2 @rejectdisabled" data-type="reject" data-id="@item.Id" data-code="@item.pstCode">@Resources.Resource.Reject</button>
-                                    }
-                                
-                                    <button class="btn btn-outline-danger btnsmall void @voiddisabled" data-type="void" data-id="@item.Id" data-code="@item.pstCode">@Resources.Resource.Void4Order</button>
-                                }
+							@if (approvalmode)
+							{
+								if (user.IsApprover)
+								{
+									<button class="btn btn-info detail btnsmall mx-1 @btncls" data-id="@item.Id" data-code="@item.pstCode" data-readonly="1">@Resources.Resource.Detail</button>
+									if (item.pstStatus == "REQUESTING" || item.pstStatus == "KPENDING")
+									{
+										<button class="btn btn-primary respond btnsmall mx-1 @approvedisabled" data-type="approve" data-id="@item.Id" data-code="@item.pstCode">@Resources.Resource.Approve</button>
+										<button class="btn btn-danger respond btnsmall mx-1 @rejectdisabled" data-type="reject" data-id="@item.Id" data-code="@item.pstCode">@Resources.Resource.Reject</button>
+										<button class="btn btn-outline-danger btnsmall void @voiddisabled" data-type="void" data-id="@item.Id" data-code="@item.pstCode">@Resources.Resource.Void4Order</button>
+									}
+								}
 
-                                if (!isapprover)
-                                {
-                                    string edittxt = _readonly == "" ? Resources.Resource.Edit : Resources.Resource.Detail;
-                                    <button class="btn btn-info edit mr-2 btnsmall" data-id="@item.Id" data-code="@item.pstCode" data-readonly="@_readonly">@edittxt</button>
-                                    <button class="btn btn-secondary copy mr-2 btnsmall @btncls" data-id="@item.Id">@Resources.Resource.Copy</button>
-                                    <button class="btn btn-primary whatsapp mr-2 btnsmall" data-id="@item.Id" data-code="@item.pstCode"><span class="small">重發 WhatsApp 訊息</span></button>
-                                }
-                            }
+								else
+								{
+									string edittxt = _readonly == "" ? Resources.Resource.Edit : Resources.Resource.Detail;
+									<button class="btn btn-info edit mx-1 btnsmall" data-id="@item.Id" data-code="@item.pstCode" data-readonly="@_readonly">@edittxt</button>
+									@*<button class="btn btn-secondary copy mx-1 btnsmall @btncls" data-id="@item.Id">@Resources.Resource.Copy</button>*@
+									<button class="btn btn-primary whatsapp mx-1 btnsmall" data-id="@item.Id" data-code="@item.pstCode"><span class="small">重發 WhatsApp 訊息</span></button>
+								}
+							}
 
 
-                        </td>
+						</td>
                     </tr>
                 }
             </tbody>
