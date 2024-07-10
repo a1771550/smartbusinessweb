@@ -10,16 +10,17 @@
 
 	string defaultcheckoutportal = CommonHelper.FirstCharToUpper(ComInfo == null ? ConfigurationManager.AppSettings["DefaultCheckoutPortal"] : ComInfo.DefaultCheckoutPortal);
 	string cssbsfile = HttpContext.Current.Session["CssBSFile"] == null ? @"Content/bs4" : HttpContext.Current.Session["CssBSFile"].ToString();
-	string scriptbsfile = HttpContext.Current.Session["ScriptBSFile"] == null ? @"Scripts/bs4" : HttpContext.Current.Session["ScriptBSFile"].ToString();	
+	string scriptbsfile = HttpContext.Current.Session["ScriptBSFile"] == null ? @"Scripts/bs4" : HttpContext.Current.Session["ScriptBSFile"].ToString();
 	string shop = ComInfo == null ? ConfigurationManager.AppSettings["Shop"] : ComInfo.Shop;
 	bool approvalmode = ComInfo == null ? false : (bool)ComInfo.ApprovalMode;
 	string forapproval = Resources.Resource.ForApproval;
 	string forreceival = Resources.Resource.ForReceival;
 	string fordelivery = Resources.Resource.ForDelivery;
 	SessUser user = HttpContext.Current.Session["User"] == null ? null : HttpContext.Current.Session["User"] as SessUser;
-	IsUserRole IsUserRole = UserHelper.GetIsUserRole(user);
-	bool isadmin = IsUserRole.Admin;
-	bool ismanager = IsUserRole.SalesManager;
+	if (user != null)
+	{
+		UserEditModel.GetUserInRoles(user);
+	}	
 	//todo: replace the url with the new one.
 	bool showDataTransfer = CommonHelper.GetUrlHost() != "crm.united.com.hk";
 }
@@ -65,7 +66,7 @@
 				</div>
 				<div class="dash__menu">
 					<ul>
-						@if (IsUserRole.SalesPerson||IsUserRole.SalesManagerSalesPerson||IsUserRole.SuperAdmin)
+						@if (user.IsSalesPerson||user.IsManagerSalesAdmin||user.IsSuperAdmin)
 						{
 							<li class="btn_expand menusales">
 								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "sales") ? "active_btn" : "expand_btn";}
@@ -190,7 +191,7 @@
 								<ul class="submenu collapse" id="collapseWholeSales">
 
 									<li>
-										<a href="/Wholesales/Edit?Id=0">@string.Format(Resources.Resource.AddFormat, Resources.Resource.Order)</a>
+										<a href="/Wholesales/Edit">@string.Format(Resources.Resource.AddFormat, Resources.Resource.Order)</a>
 									</li>
 									@{
 										fordelivery = string.Concat("<span class='small'>(", fordelivery, ")</span>");
@@ -199,7 +200,7 @@
 
 									<li><a href="/WholeSales/Index">@wholesaleslist</a></li>
 
-									@if (approvalmode && ismanager)
+									@if (approvalmode && (user.IsManager || user.IsManagerSalesAdmin))
 									{
 
 										forapproval = string.Concat("<span class='small'>(", forapproval, ")</span>");
@@ -218,14 +219,14 @@
 								</a>
 								<ul class="submenu collapse" id="collapsePurchase">
 
-									<li><a href="/Purchase/Edit?Id=0&type=order">@string.Format(Resources.Resource.NewFormat, Resources.Resource.PurchaseOrder)</a></li>
+									<li><a href="/Purchase/Edit">@string.Format(Resources.Resource.NewFormat, Resources.Resource.PurchaseOrder)</a></li>
 									@{
 										forreceival = string.Concat("<span class='small'>(", forreceival, ")</span>");
 										var purchaselist = Html.Raw(string.Concat(string.Format(Resources.Resource.ManagementFormat, Resources.Resource.PurchaseOrder), forreceival));
 									}
 									<li><a href="/Purchase/Index">@purchaselist</a></li>
 
-									@if (approvalmode && ismanager)
+									@if (approvalmode && (user.IsManager||user.IsManagerSalesAdmin))
 									{
 										var purchaseorderlist = Html.Raw(string.Concat(string.Format(Resources.Resource.ListFormat, Resources.Resource.PurchaseOrder), forapproval));
 										<li><a href="/Purchase/PurchaseOrderList">@purchaseorderlist</a></li>
@@ -287,7 +288,7 @@
 								</a>
 								<ul class="submenu collapse" id="collapseAbssReports">
 
-									@if (ismanager)
+									@if (user.IsManager || user.IsManagerSalesAdmin)
 									{
 										<li>@Html.ActionLink(Resources.Resource.Sales, "Sales", "ABSSReport")</li>
 									}
@@ -325,7 +326,7 @@
 							</li>
 						}
 
-						@if (isadmin||IsUserRole.SuperAdmin)
+						@if (user.IsAdmin||user.IsManagerSalesAdmin||user.IsSuperAdmin)
 						{
 							<li class="btn_expand menusetup">
 								@{ lnkcls = (ViewBag.ParentPage != null && (string)ViewBag.ParentPage.ToLower() == "setup") ? "active_btn" : "expand_btn";}
@@ -353,7 +354,7 @@
 							</li>
 						}
 
-						@if (ismanager||IsUserRole.SuperAdmin)
+						@if (user.IsAdmin||user.IsManagerSalesAdmin||user.IsSuperAdmin)
 						{
 						<li class="btn_expand menuaccessrights">
 							@{ lnkcls = (ViewBag.PageName != null && (string)ViewBag.PageName.ToLower() == "accessrights") ? "active_btn" : "expand_btn";}

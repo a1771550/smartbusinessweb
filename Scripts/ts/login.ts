@@ -19,8 +19,8 @@ $(function () {
 			//$("#Email").val("kevinlau@united.com.hk"); //superapprover
 			//$("#Email").val("utservice_sb1@united.com.hk");
 			//$("#Email").val("sunnyy@united.com.hk");//boss			
-			$("#Email").val("vincent@abssasia.com.hk"); //sales
-			//$("#Email").val("utservice@united.com.hk"); //manager & sales
+			//$("#Email").val("vincent@abssasia.com.hk"); //sales
+			$("#Email").val("utservice@united.com.hk"); //manager & sales & admin
 			// $("#Email").val("enquiry@united.com.hk"); //approver    
 			$("#Password").val(password);
 			//$("#btnLogin").trigger("click");

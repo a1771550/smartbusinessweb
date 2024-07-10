@@ -435,17 +435,21 @@ tr.code {
   background-color: #999;
   color: #fff;
 }
-.quotebg {
+.draftstatusbg {
   background-color: #f8d8b8; /*fbd19d;*/
 }
 
-.createdbg,
+.createdbg, .createdstatusbg {
+    background-color:#b6ea93;
+}
+
+
 .needstatusbg,
 .orderbg,
 .orderstatusbg,
 .requestingstatusbg,
-.passedstatusbg,
-.createdstatusbg {
+.passedstatusbg
+ {
   background-color: #f9f9f0!important;
 }
 /*partialdeliverstatusbg*/

@@ -1094,10 +1094,7 @@ namespace SmartBusinessWeb.Controllers
 
                                 sales.wsStatus = "created";
                                 var saleslns = context.WholeSalesLns.Where(x => x.wslCode == receiptno);
-                                foreach (var salesln in saleslns)
-                                {
-                                    salesln.wslStatus = "created";
-                                }
+                                foreach (var salesln in saleslns)salesln.wslStatus = "created";
                                 context.SaveChanges();
 
                                 var _salesman = context.SysUsers.FirstOrDefault(x => x.UserName.ToLower() == sales.CreateBy.ToLower());

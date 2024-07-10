@@ -5,7 +5,7 @@
 	string viewbtncls = showViewBtn ? "" : "hide";
 	string purchasemode = (string)ViewData["purchasemode"];
 }
-<div class="form-group" data-status="@status" data-editmode="@editmode" data-purchasemode="@purchasemode">
+<div data-status="@status" data-editmode="@editmode" data-purchasemode="@purchasemode">
 
 	@if (editmode)
 	{
@@ -23,7 +23,13 @@
 
 	@if (purchasemode != "readonly")
 	{
-		<a role="button" href="#" id="btnSave" class="btn btn-success mx-1">@Resources.Resource.Save</a>
+		<a role="button" href="#" id="btnSave" class="btn btn-success mx-1">@Resources.Resource.Submit</a>
+	}
+
+	<!--for managersales only-->
+	@if (status == "draft")
+	{
+		<button type="button" id="btnSaveDraft" class="btn btn-success mx-1">@string.Format(Resources.Resource.SaveFormat, Resources.Resource.Draft)</button>
 	}
 </div>
 

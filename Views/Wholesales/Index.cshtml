@@ -117,22 +117,24 @@
 						break;
 					case "created":
 					case "CREATED":
-						bgcls = "createdstatusbg";
-						statustxt = Resources.Resource.Ready4Delivery;
-						break;
+					//bgcls = "createdstatusbg";
+					//statustxt = Resources.Resource.Ready4Delivery;
+					//break;
 					case "order":
 					case "APPROVED":
-						bgcls = item?.wsSpecialApproval != null && (bool)item?.wsSpecialApproval ? "approved_sp_statusbg" : "approvedstatusbg";
+						bgcls = "approvedstatusbg";
 						approvedisabled = "disabled";
 						rejectdisabled = "disabled";
 						voiddisabled = "disabled";
 						//passdisabled = "disabled";
-						statustxt = item?.wsSpecialApproval != null && (bool)item?.wsSpecialApproval ? "特批已批核" : Resources.Resource.Approved;
+						statustxt = Resources.Resource.Ready4Delivery;
+						_readonly = "0";
 						break;
 					case "REJECTED":
 						bgcls = "rejectedstatusbg";
 						rejectdisabled = "disabled";
 						statustxt = Resources.Resource.Rejected;
+						_readonly = "0";
 						break;
 					case "KPENDING":
 						bgcls = "kpendingstatusbg";
@@ -141,6 +143,7 @@
 					case "draft":
 						bgcls = "draftstatusbg";
 						statustxt = Resources.Resource.Draft;
+						_readonly = "0";
 						break;
 					default:
 					case "REQUESTING":
@@ -178,7 +181,7 @@
 					@Html.DisplayFor(modelWholeSales => item.DeliveryDateDisplay)
 				</td>
 				<td>
-					@{var edittxt = item.wsStatus == WholeSalesStatus.order.ToString() ? Resources.Resource.Edit : Resources.Resource.Detail;}
+					@{var edittxt = (item.wsStatus == WholeSalesStatus.deliver.ToString()|| item.wsStatus == WholeSalesStatus.partialdeliver.ToString()) ? Resources.Resource.Detail:Resources.Resource.Edit;}
 					<a class="btn btn-info edit mx-1 btnsmall" role="button" href="/WholeSales/Edit?Id=@item.wsUID&status=@item.wsStatus&ireadonly=@_readonly">@edittxt</a>
 					<a class="btn btn-danger remove btnsmall" role="button" href="#" data-id="@item.wsUID">@Resources.Resource.Remove</a>
 				</td>

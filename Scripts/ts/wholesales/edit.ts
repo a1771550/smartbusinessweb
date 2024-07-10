@@ -2,6 +2,34 @@
 enableSN = true;
 let recurOrderList: IRecurOrder[] = [];
 
+$(document).on("click", "#btnSaveDraft", function () {
+	FillInWholeSales();
+	updateWholesales();
+	//console.log("WholeSales:", WholeSales);
+	// console.log("recurOrder:", recurOrder);
+	//console.log("WholeSalesLns:", WholeSalesLns);
+	//return;
+	openWaitingModal();
+	$.ajax({
+		type: "POST",
+		url: "/WholeSales/SaveDraft",
+		data: {
+			__RequestVerificationToken: $(
+				"input[name=__RequestVerificationToken]"
+			).val(),
+			model: WholeSales,
+			wslnList: WholeSalesLns,
+			recurOrder,
+		},
+		success: function (data) {
+			closeWaitingModal();
+			if (data) {
+				window.location.href = "/WholeSales/Index";
+			}
+		},
+		dataType: "json",
+	});
+});
 $(document).on("change", "#chkDelAddr", function () {
 	if ($(this).is(":checked")) {
 		$("#txtDelAddr").removeClass('hide').trigger("focus");
@@ -175,6 +203,10 @@ $(document).on("click", "#btnUseRecur", function () {
 	}
 });
 
+$(document).on("click", "#btnSave", function () {
+	handleSubmit4WholeSales();
+});
+
 $(document).on("click", "#btnEdit", function () {
 	window.location.href = `/WholeSales/Review?receiptno=${WholeSales.wsCode}&mode=editapproved`;
 });
@@ -189,7 +221,7 @@ $(document).on("click", ".btnSaveRecur", function () {
 });
 
 $(document).on("click", ".btnRequestApproval", function () {
-	handleSubmit4Wholesales();
+	handleSubmit4WholeSales();
 });
 
 $(document).on("click", "#btnInvoice", function () {
@@ -555,7 +587,7 @@ function updateWholesales() {
 	isPromotion = !isPromotion;
 }
 
-function handleSubmit4Wholesales(forRecurOrder: boolean = false) {
+function handleSubmit4WholeSales(forRecurOrder: boolean = false) {
 	if (validateWSIForm()) {
 		//add those itemoptionless items:
 		if (WholeSales.wsStatus == "invoice") {
@@ -719,7 +751,7 @@ function handleSubmit4Wholesales(forRecurOrder: boolean = false) {
 }
 
 $(document).on("click", ".btnSave", function () {
-	handleSubmit4Wholesales();
+	handleSubmit4WholeSales();
 });
 
 function validateWSIForm(): boolean {
@@ -845,7 +877,7 @@ $(document).on("click", "#btnReload", function () {
 	const Id = $("#WholeSales_wsUID").val();
 	let invoicepara = "";
 	if (WholeSales.wsStatus == "invoice") invoicepara = "&status=invoice";
-	window.location.href = `/WholeSales/Edit?Id=${Id}&type=order${invoicepara}`;
+	window.location.href = `/WholeSales/Edit?Id=${Id}${invoicepara}`;
 });
 
 function fillInDeliveryItems() {
@@ -920,12 +952,12 @@ $(function () {
 	let _receiptno = getParameterByName("receiptno");
 	let readonly: boolean = $infoblk.data("ismanager") === "True";
 	//console.log("readonly:", readonly);
-
+	editmode = WholeSales.wsStatus != "draft" && !reviewmode;
 	if (_receiptno !== null) {
 		receiptno = selectedSalesCode = _receiptno as string;
-		reviewmode = _receiptno !== null && !editmode;
+		reviewmode = _receiptno !== null;
 	}
-	editmode = editmode = WholeSales.wsStatus != "draft" && !reviewmode;
+	
 	editapproved =
 		getParameterByName("mode") != null &&
 		getParameterByName("mode") == "editapproved";
@@ -933,7 +965,7 @@ $(function () {
 	if (!editmode)
 		$("#WholeSales_wsExRate").val(1);
 
-	if (reviewmode || editmode || editapproved) {		
+	if (reviewmode||editmode||editapproved) {
 		wholesaleslns = $infoblk.data("jsonwholesaleslns");
 
 		if (WholeSales.wsStatus.toLowerCase() === "deliver" || WholeSales.wsStatus.toLowerCase() === "partialdeliver") {
@@ -971,7 +1003,7 @@ $(function () {
 			const sellunit: string = wholesalesln.wslSellUnit ?? "N/A";
 			const _readonly: string =
 				status.toUpperCase() == "CREATED" ||
-					status == "order"
+					status == "order" || editmode
 					? ""
 					: "readonly";
 			//console.log("readonly:", _readonly);
@@ -984,7 +1016,7 @@ $(function () {
 					? wholesalesln.wslSeq!
 					: i + 1;
 			//console.log("wslseq:" + wslseq);
-			html += `<tr data-idx="${idx}" data-id="${wholesalesln.wslUID}"><td><span>${wslseq}</span></td><td><input type="text" name="itemcode" class="itemcode text-left" value="${wholesalesln.wslItemCode}" readonly></td><td><input type="text" name="itemdesc" class="itemdesc text-left" data-itemname="${wholesalesln.itmName}" value="${wholesalesln.itmNameDesc}" readonly></td><td class="text-right"><input type="text" name="sellunit" class="sellunit text-right" value="${sellunit}" readonly></td><td class="text-right"><input type="number" name="qty" class="qty text-right" value="${wholesalesln.wslQty}" ${_readonly}></td>`;
+			html += `<tr data-idx="${idx}" data-id="${wholesalesln.wslUID}"><td><span>${wslseq}</span></td><td><input type="text" name="itemcode" class="itemcode text-left" value="${wholesalesln.wslItemCode}" ${_readonly}></td><td><input type="text" name="itemdesc" class="itemdesc text-left" data-itemname="${wholesalesln.itmName}" value="${wholesalesln.itmNameDesc}" readonly></td><td class="text-right"><input type="text" name="sellunit" class="sellunit text-right" value="${sellunit}" readonly></td><td class="text-right"><input type="number" name="qty" class="qty text-right" value="${wholesalesln.wslQty}" ${_readonly}></td>`;
 
 			if (
 				status != "order" &&
@@ -999,7 +1031,7 @@ $(function () {
 				html += `<td class="text-center"><input type="text" name="vari" class="text-center vari pointer" value="${vari}" /></td>`;
 			}
 
-			html += `<td class="text-right"><input type="number" name="price" class="price text-right" data-price="${wholesalesln.wslSellingPrice}" value="${formattedprice}" readonly></td><td class="text-right"><input type="number" name="discpc" class="discpc text-right" data-discpc="${wholesalesln.wslLineDiscPc}" value="${formatteddiscpc}" ${_readonly}></td>`;
+			html += `<td class="text-right"><input type="number" name="price" class="price text-right" data-price="${wholesalesln.wslSellingPrice}" value="${formattedprice}"  ${_readonly}></td><td class="text-right"><input type="number" name="discpc" class="discpc text-right" data-discpc="${wholesalesln.wslLineDiscPc}" value="${formatteddiscpc}" ${_readonly}></td>`;
 			if (enableTax && !inclusivetax) {
 				html += `<td class="text-right"><input type="number" name="taxpc" class="taxpc text-right" data-taxpc="${wholesalesln.wslTaxPc}" value="${formattedtaxpc}" ${_readonly}></td>`;
 			}
@@ -1073,8 +1105,6 @@ $(function () {
 		if (getParameterByName("status") && getParameterByName("status") == "invoice")
 			$("#btnInvoice").trigger("click");
 	} else {
-		
-
 		$("#drpLocation").val(shop);
 		initDatePicker("deliveryDate", tomorrow, false, "", true, true);
 		// initDatePicker("promisedDate", tomorrow);
@@ -1122,5 +1152,6 @@ $(function () {
 
 	setInput4NumberOnly("number");
 
-	triggerMenuByCls("menuwholesales", 0);
+	let idx = (!reviewmode && !editmode) ? 0 : 2;
+	triggerMenuByCls("menuwholesales", idx);
 });

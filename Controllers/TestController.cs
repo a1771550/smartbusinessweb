@@ -74,7 +74,7 @@ namespace SmartBusinessWeb.Controllers
         private string kingdeeApiBaseUrl = ConfigurationManager.AppSettings["KingdeeApiBaseUrl"];
         private string CentralBaseUrl = UriHelper.GetAppUrl();
         private string location = "office";
-        private string Shop = "office";
+        //private string Shop = "office";
         //private string device = "P10";
         //private int lang = 0;
         private const int apId = 1;

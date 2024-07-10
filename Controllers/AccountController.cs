@@ -18,15 +18,14 @@ namespace SmartBusinessWeb.Controllers
     {
         //https://localhost:7777/Account/Login?redirectUrl=/WholeSales/Review?receiptno=VS100002&salesmanId=0&approverId=40&ksalesmancode=
         [HttpGet]
-        public ActionResult Login(string redirectUrl = null,string err = "0")
+        public ActionResult Login(string redirectUrl = null,string err = "0",int? approverId=0)
         {
             Session["CssBSFile"] = @"Content/bs4"; //Content/bootstrap.min.css
             Session["ScriptBSFile"] = @"Scripts/bs4"; //Content/bootstrap.min.css           
             ViewBag.Title = Resources.Resource.Login;
             ViewBag.Err = err;
-            //https://localhost:7777/Account/Login?redirectUrl=/WholeSales/Review?receiptno=VS100002&salesmanId=0&approverId=40&ksalesmancode=
-            //if (!string.IsNullOrEmpty(redirectUrl)) return Redirect(redirectUrl);
-            LoginUserModel loginUserModel = new LoginUserModel(redirectUrl);
+            //https://localhost:7777/Account/Login?redirectUrl=/WholeSales/Review?receiptno=VS100002&salesmanId=0&approverId=40&ksalesmancode=           
+            LoginUserModel loginUserModel = new(redirectUrl, approverId);
             return View(loginUserModel);
         }
 
@@ -124,6 +123,7 @@ namespace SmartBusinessWeb.Controllers
                     if (user.IsManager)
                     {
                         if (string.IsNullOrEmpty(model.RedirectUrl)) model.RedirectUrl = ApprovalMode ? "/WholeSales/SalesOrderList" : ComInfo.comLandingPage;
+                        else model.RedirectUrl += "&ireadonly=1";
                         return Redirect(model.RedirectUrl);
                     }
                     else

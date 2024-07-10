@@ -5,11 +5,11 @@
     string viewbtncls = showViewBtn ? "" : "hide";
     string wholesalesmode = (string)ViewData["wholesalesmode"];
 }
-<div class="form-group" data-status="@status" data-editmode="@editmode" data-wholesalesmode="@wholesalesmode">
+<div data-status="@status" data-editmode="@editmode" data-wholesalesmode="@wholesalesmode">
 
 	@if (editmode)
 	{
-		if (!string.IsNullOrEmpty(wholesalesmode) && wholesalesmode != "readonly")
+		if (wholesalesmode != "readonly")
 		{
 			<button type="button" class="btn btn-warning mx-1" id="btnFile">@Resources.Resource.UploadFile</button>
 			<button type="button" class="btn btn-primary @viewbtncls mx-1" id="btnViewFile">@Resources.Resource.ViewFile</button>
@@ -20,14 +20,20 @@
 			}
 		}
 
-		if (status == WholeSalesStatus.created.ToString())
-		{
-			<a role="button" href="#" id="btnEdit" class="btn btn-info mr-2">@Resources.Resource.Edit</a>
-		}
+		@*if (status == WholeSalesStatus.created.ToString())
+			{
+				<a role="button" href="#" id="btnEdit" class="btn btn-info mr-2">@Resources.Resource.Edit</a>
+			}*@
 	}
 
-	@if (!string.IsNullOrEmpty(wholesalesmode) && wholesalesmode != "readonly")
+	@if (wholesalesmode != "readonly")
 	{
-		<a role="button" href="#" id="btnSave" class="btn btn-success mx-1">@Resources.Resource.Save</a>
+		<a role="button" href="#" id="btnSave" class="btn btn-success mx-1">@Resources.Resource.Submit</a>
+	}
+
+	<!--for managersales only-->
+	@if (status == "draft")
+	{
+		<button type="button" id="btnSaveDraft" class="btn btn-success mx-1">@string.Format(Resources.Resource.SaveFormat, Resources.Resource.Draft)</button>
 	}
 </div>

@@ -2,6 +2,32 @@
 
 
 let purchaseitems: IPurchaseItem[] = [];
+
+
+$(document).on("click", "#btnSaveDraft", function () {
+	updatePurchase();
+	//console.log("purchase:", Purchase);
+	//console.log("purchaseitems:", Purchase.PurchaseItems);
+	//return false;
+	openWaitingModal();
+	$.ajax({
+		type: "POST",
+		url: "/Purchase/SaveDraft",
+		data: {
+			__RequestVerificationToken: $(
+				"input[name=__RequestVerificationToken]"
+			).val(),
+			model: Purchase,
+			PurchaseItems: Purchase.PurchaseItems,
+			recurOrder,
+		},
+		success: function (data) {
+			closeWaitingModal();
+			if (data)window.location.href = "/Purchase/Index";
+		},
+		dataType: "json",
+	});
+});
 $(document).on("click", ".btnSave", function () {
 	getRowCurrentY.call(this);
 	ppId = Number($(this).data("id"));
@@ -496,15 +522,16 @@ function initPurchaseForm():boolean {
 	ismanager = $infoblk.data("ismanager") === "True";
 	issalesperson = $infoblk.data("issalesperson") === "True";
 	ismanagersales = $infoblk.data("ismanagersales") === "True";
-	
+
+	editmode = Purchase.pstStatus != "draft" && !reviewmode;
 	//console.log("isadmin:", isadmin);
 	if (_receiptno !== null) {
 		receiptno = _receiptno as string;
-		reviewmode = _receiptno !== null && isapprover;
+		/*reviewmode = _receiptno !== null && !editmode;*/
+		reviewmode = _receiptno !== null;
 	}
-
 	//console.log("Purchase:", Purchase);
-	editmode = Purchase.pstStatus != "draft" && !reviewmode;
+	
 	// console.log("receiptno:" + receiptno);
 	if (!editmode)
 		$("#pstExRate").val(1);
@@ -560,7 +587,7 @@ function populatePurchaseItems() {
 
 		
 		inputcls = "form-control ip";
-		if (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") {			
+		if (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected" && Purchase.pstStatus!="draft") {			
 			html += `<td class="text-center ip"><input type="text" class="${inputcls} pobatch text-center pointer flex" data-batcode="${batcode}" value="${batch}" /></td><td class="text-center ip"><input type="text" class="${sncls} ${inputcls} text-center flex" value="${sntxt}" /></td><td class="text-center ip"><input type="text" class="${inputcls} ${vtcls} text-center flex" value="${vt}" title="${vt}" /></td>`;
 
 			
@@ -581,7 +608,7 @@ function populatePurchaseItems() {
 		html += `<td class="text-center selllocation"><select class="form-control location flex text-center">${locations}</td>`;
 		html += `<td class="text-center selljob"><select class="form-control job flex text-center">${setJobListOptions(purchaseitem.JobID ?? 0)}</select></td>`;
 		html += `<td class="text-right sellamt num"><input type="text" name="amount" class="form-control amount number text-right flex" data-amt="${purchaseitem.piAmtPlusTax}" value="${formattedamt}" readonly></td>`;
-		if (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected") {
+		if (Purchase.pstStatus !== "order" && Purchase.pstStatus.toLowerCase() !== "requesting" && Purchase.pstStatus.toLowerCase() !== "created" && Purchase.pstStatus.toLowerCase() !== "rejected" && Purchase.pstStatus != "draft") {
 			html += `<td class="text-right treceived"><input type="number" class="form-control received text-right flex" min="0" data-received="${purchaseitem.piReceivedQty}" value="${purchaseitem.piReceivedQty}"></td>`;
 		}
 		html += "</tr>";
@@ -707,4 +734,6 @@ $(function () {
 
 	let idx = (!reviewmode && !editmode) ? 0 : 2;
 	triggerMenuByCls("menupurchase", idx);
+
+
 });

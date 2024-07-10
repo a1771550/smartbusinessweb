@@ -193,7 +193,6 @@ namespace SmartBusinessWeb.Controllers.Purchase
         public ActionResult Review(string receiptno, int? ireadonly = 1)
         {
             ViewBag.ParentPage = "purchase";
-            ViewBag.PageName = "edit";
             PurchaseEditModel model = new PurchaseEditModel(receiptno, ireadonly);
             return View("Edit", model);
         }
@@ -240,7 +239,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
         [HandleError]
         [CustomAuthorize("purchase", "admin", "superadmin")]
         [HttpGet]
-        public ActionResult Edit(long Id, string type)
+        public ActionResult Edit(long? Id, string type=null)
         {
             ViewBag.ParentPage = "purchase";          
             PurchaseEditModel model = new PurchaseEditModel(Id, type);
@@ -257,6 +256,18 @@ namespace SmartBusinessWeb.Controllers.Purchase
             ViewBag.PageName = "purchase";
             PurchaseReturnMsg msg = PurchaseEditModel.Edit(model, PurchaseItems, recurOrder);
             return Json(msg);
+        }
+
+        [HandleError]
+        [CustomAuthorize("purchase", "admin", "superadmin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult SaveDraft(PurchaseModel model, List<PurchaseItemModel> PurchaseItems, RecurOrder recurOrder = null)
+        {
+            ViewBag.ParentPage = "purchaseedit";
+            ViewBag.PageName = "purchase";
+            PurchaseEditModel.SaveDraft(model, PurchaseItems, recurOrder);
+            return Json(Resources.Resource.Saved);
         }
 
         [HandleError]

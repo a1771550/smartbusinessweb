@@ -27,7 +27,7 @@
 		</div>
 	</div>
 
-	<div class="float-right"><a role="button" class="btn btn-primary btnexsmall my-2" href="/Purchase/Edit/0?type=order" title="@string.Format(Resources.Resource.AddFormat,Resources.Resource.Purchase)"><i class="fa fa-plus"></i></a></div>
+	<div class="float-right"><a role="button" class="btn btn-primary btnexsmall my-2" href="/Purchase/Edit" title="@string.Format(Resources.Resource.AddFormat,Resources.Resource.Purchase)"><i class="fa fa-plus"></i></a></div>
 
 	if (Model.PagingPSList==null)
 	{
@@ -101,11 +101,13 @@
 						voiddisabled = "disabled";
 						//passdisabled = "disabled";
 						statustxt = Resources.Resource.Ready4ReceiveItems;
+						_readonly = "0";
 						break;
 					case "REJECTED":
 						bgcls = "rejectedstatusbg";
 						rejectdisabled = "disabled";
 						statustxt = Resources.Resource.Rejected;
+						_readonly = "0";
 						break;
 					case "KPENDING":
 						bgcls = "kpendingstatusbg";
@@ -114,6 +116,7 @@
 					case "draft":
 						bgcls = "draftstatusbg";
 						statustxt = Resources.Resource.Draft;
+						_readonly = "0";
 						break;
 					default:
 					case "REQUESTING":
@@ -130,10 +133,7 @@
 					<td class="text-center">
 						@Html.DisplayFor(modelPurchaseStock => item.SupplierName)
 					</td>
-
-					@*<td class="text-center">
-							@Html.DisplayFor(modelPurchaseStock => item.pstLocStock)
-						</td>*@
+					
 					@if (Model.ListMode == PurchaseStatus.all)
 					{
 						//string bgcls = string.Concat(item.pstStatus.ToLower(), "bg");
@@ -149,7 +149,8 @@
 						@Html.DisplayFor(modelPurchaseStock => item.PromisedDateDisplay)
 					</td>
 					<td>
-						<a class="btn btn-info edit mx-1 btnsmall" role="button" href="/Purchase/Edit?Id=@item.Id&ireadonly=@_readonly">@Resources.Resource.Edit</a>
+						@{var edittxt = (item.pstStatus == PurchaseStatus.opened.ToString() || item.pstStatus == PurchaseStatus.partialreceival.ToString()) ? Resources.Resource.Detail : Resources.Resource.Edit;}
+						<a class="btn btn-info edit mx-1 btnsmall" role="button" href="/Purchase/Edit?Id=@item.Id&ireadonly=@_readonly">@edittxt</a>
 						@if (item.pstStatus == PurchaseStatus.quote.ToString())
 						{
 							<a role="button" href="#" class="btn btn-secondary order mx-1 btnsmall" data-id="@item.Id">@Resources.Resource.Order4Purchase</a>

@@ -11,6 +11,7 @@ using PPWLib.Models;
 using PPWLib.Models.POS.Sales;
 using PPWDAL;
 using System.IO;
+using PPWLib.Models.Purchase;
 
 namespace SmartBusinessWeb.Controllers.Sales
 {
@@ -86,7 +87,6 @@ namespace SmartBusinessWeb.Controllers.Sales
         public ActionResult Review(string receiptno, int? ireadonly = 1)
         {
             ViewBag.ParentPage = "wholesales";
-            ViewBag.PageName = "edit";
             WholeSalesEditModel model = new WholeSalesEditModel(receiptno, ireadonly);
             return View("Edit", model);
         }
@@ -107,7 +107,6 @@ namespace SmartBusinessWeb.Controllers.Sales
         public ActionResult SalesOrderList(int? PageNo = 1, string SortName = "wsDeliveryDate", string SortOrder = "desc", string Keyword = "", int filter = 0, string searchmode = "")
         {
             ViewBag.ParentPage = "wholesales";
-            ViewBag.PageName = "salesorderlist";
             SalesOrderEditModel model = new();
             model.GetWholeSalesOrderList((int)PageNo, SortName, SortOrder, Keyword, filter, searchmode);
             return View(model);
@@ -134,7 +133,6 @@ namespace SmartBusinessWeb.Controllers.Sales
         public ActionResult Print(int Id, string type, string mode)
         {
             ViewBag.ParentPage = "wholesales";
-            //long Id, string status = null, int? ireadonly = 0, bool forprint = false
             WholeSalesEditModel model = new WholeSalesEditModel(Id, type, 0, true);
             model.PrintMode = mode;
             return View(model);
@@ -146,7 +144,6 @@ namespace SmartBusinessWeb.Controllers.Sales
         {
             var user = Session["User"] as SessUser;
             ViewBag.ParentPage = "wholesales";
-            ViewBag.PageName = "list";
             WholeSalesEditModel model = new WholeSalesEditModel();
             model.Keyword = Keyword == "" ? null : Keyword;
             model.GetList(user, strfrmdate, strtodate, model.Keyword);
@@ -159,10 +156,9 @@ namespace SmartBusinessWeb.Controllers.Sales
         [HandleError]
         [CustomAuthorize("wholesales", "admin", "superadmin")]
         [HttpGet]
-        public ActionResult Edit(long Id, string status=null, int? ireadonly=0)
+        public ActionResult Edit(long? Id, string status=null, int? ireadonly=0)
         {
-            ViewBag.ParentPage = "wholesales";
-            ViewBag.PageName = "edit";
+            ViewBag.ParentPage = "wholesales";           
             WholeSalesEditModel model = new WholeSalesEditModel(Id, status, ireadonly, false);
             return View(model);
         }
@@ -174,10 +170,20 @@ namespace SmartBusinessWeb.Controllers.Sales
         [ValidateAntiForgeryToken]
         public JsonResult Edit(WholeSalesModel model, List<WholeSalesLnModel> wslnList, RecurOrder recurOrder)
         {
-            ViewBag.ParentPage = "wholesalesedit";
-            ViewBag.PageName = "wholesales";
+            ViewBag.ParentPage = "wholesales";        
             SalesReturnMsg msg = WholeSalesEditModel.Edit(model, wslnList, recurOrder);
             return Json(msg);
+        }
+
+        [HandleError]
+        [CustomAuthorize("wholesales", "admin", "superadmin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult SaveDraft(WholeSalesModel model, List<WholeSalesLnModel> wslnList, RecurOrder recurOrder)
+        {
+            ViewBag.ParentPage = "wholesales";
+            WholeSalesEditModel.SaveDraft(model, wslnList, recurOrder);
+            return Json(Resources.Resource.Saved);
         }
 
         [HandleError]

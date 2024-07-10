@@ -3079,7 +3079,7 @@ function initModals() {
 						//console.log('recurorder:', recurOrder);
 						//return false;
 						if (recurOrder!.Mode === "save") {
-							handleSubmit4Wholesales(true);
+							handleSubmit4WholeSales(true);
 						}
 						if (recurOrder!.Mode === "savefrmposted") {
 							openWaitingModal();
@@ -14916,7 +14916,7 @@ function handleApprovalMode4Sales(data: ISalesReturnMsg) {
 		window.open(whatsapplnk, "_blank");
 	}
 
-	window.location.href = "/WholeSales/Edit/0?type=order";
+	window.location.href = "/WholeSales/Edit";
 }
 function handleApprovalMode4Purchase(data: IPurchaseReturnMsg) {
 	if (enableWhatsappLnk) {
@@ -14939,7 +14939,7 @@ function handleApprovalMode4Purchase(data: IPurchaseReturnMsg) {
 			.replace("{1}", msg);
 		window.open(whatsapplnk, "_blank");
 	}
-	window.location.href = "/Purchase/Edit/0?type=order";
+	window.location.href = "/Purchase/Edit";
 }
 //A function for formatting a date to yyMMdd
 function formatDate(d: Date = new Date(), delimeter: string = "-") {

@@ -1,19 +1,20 @@
 ﻿@model PPWLib.Models.WholeSales.WholeSalesEditModel
 @{
-    WholeSalesModel WholeSales = Model.WholeSales;
-    bool editmode = WholeSales.wsStatus != PurchaseStatus.draft.ToString();
-    string edittxt = editmode ? Resources.Resource.Edit : Resources.Resource.Add;
-    ViewBag.Title = edittxt + " " + Resources.Resource.WholeSales;
-    int rand = CommonHelper.GetVersionRandomNo();
+	WholeSalesModel WholeSales = Model.WholeSales;
+	bool editmode = WholeSales.wsStatus != WholeSalesStatus.draft.ToString();
+	string edittxt = editmode ? Resources.Resource.Edit : Resources.Resource.Add;
+	ViewBag.Title = edittxt + " " + Resources.Resource.WholeSales;
+	int rand = CommonHelper.GetVersionRandomNo();
 
-    if (!editmode)
-    {
-        WholeSales.wsSalesLoc = Model.ComInfo.Shop;
-    }
-    bool approvalmode = (bool)Model.ComInfo.ApprovalMode;
-    var currency = Model.ComInfo.Currency;
-    bool showrecur = (bool)Model.ComInfo.ShowRecurOrderOption;
-    SessUser user = Model.User;
+	if (!editmode)
+	{
+		WholeSales.wsSalesLoc = Model.ComInfo.Shop;
+	}
+	bool approvalmode = (bool)Model.ComInfo.ApprovalMode;
+	var currency = Model.ComInfo.Currency;
+	//bool showrecur = (bool)Model.ComInfo.ShowRecurOrderOption;
+	bool showrecur = false;
+	SessUser user = Model.User;
 }
 
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -26,140 +27,141 @@
 
 @using (Html.BeginForm("Edit", "WholeSales", FormMethod.Post))
 {
-    @Html.AntiForgeryToken()
-    @Html.HiddenFor(model => WholeSales.wsUID)
-    @Html.HiddenFor(model => WholeSales.wsCode)
-    @Html.HiddenFor(model => WholeSales.wsRefCode)
-    @Html.HiddenFor(model => WholeSales.wsDvc)
-    @Html.HiddenFor(model => WholeSales.wsType)
-    @Html.HiddenFor(model => WholeSales.wsSalesLoc)
-    @Html.HiddenFor(model => WholeSales.wsAllLoc)
-    @Html.HiddenFor(model => WholeSales.wsDeliveryAddressId)
-    @Html.HiddenFor(model => WholeSales.wsExRate)
-    @Html.HiddenFor(model => WholeSales.wsChkManualDelAddr)
-    @Html.HiddenFor(model => WholeSales.wsStatus)
-    @Html.HiddenFor(model=> WholeSales.DeliveryDateDisplay)
+	@Html.AntiForgeryToken()
+	@Html.HiddenFor(model => WholeSales.wsUID)
+	@Html.HiddenFor(model => WholeSales.wsCode)
+	@Html.HiddenFor(model => WholeSales.wsRefCode)
+	@Html.HiddenFor(model => WholeSales.wsDvc)
+	@Html.HiddenFor(model => WholeSales.wsType)
+	@Html.HiddenFor(model => WholeSales.wsSalesLoc)
+	@Html.HiddenFor(model => WholeSales.wsAllLoc)
+	@Html.HiddenFor(model => WholeSales.wsDeliveryAddressId)
+	@Html.HiddenFor(model => WholeSales.wsExRate)
+	@Html.HiddenFor(model => WholeSales.wsChkManualDelAddr)
+	@Html.HiddenFor(model => WholeSales.wsStatus)
+	@Html.HiddenFor(model => WholeSales.DeliveryDateDisplay)
 
-    <div class="row justify-content-between my-4 px-4">
+	<div class="row justify-content-end my-4 px-4">
+		<h5 id="status" class="">
+			@WholeSales.wsStatus.ToUpper()
+		</h5>
+		@Html.HiddenFor(model => WholeSales.wsStatus)
+	</div>
 
-        @if (showrecur)
-        {
-            <button type="button" id="btnUseRecur" class="btn btn-outline-info">@Resources.Resource.UseRecurring</button>
-        }
-        <h5 id="status" class="">@WholeSales.wsStatus.ToUpper()</h5>
-        @Html.HiddenFor(model => WholeSales.wsStatus)
+	if (showrecur)
+	{
+		<button type="button" id="btnUseRecur" class="btn btn-outline-info">@Resources.Resource.UseRecurring</button>
+	}
 
-    </div>
+	<div class="row">
+		<div class="col-12 col-md-3">
+			<div class="form-group">
+				<label class="control-label">@string.Format(Resources.Resource.WholeSalesFormat, Resources.Resource.Code)</label>
+				<input type="text" class="form-control" id="wsCode" name="wsCode" value="@WholeSales.wsCode" readonly />
+			</div>
+		</div>
+		<div class="col-12 col-md-3">
+			<div class="form-group required">
+				<label class="control-label">@string.Format(Resources.Resource.DateFormat, Resources.Resource.WholeSales)</label>
 
-    <div class="row mb-4">
-        <div class="col-12 col-md-3">
-            <div class="form-group">
-                <label class="control-label">@string.Format(Resources.Resource.WholeSalesFormat, Resources.Resource.Code)</label>
-                <input type="text" class="form-control" id="wsCode" name="wsCode" value="@WholeSales.wsCode" readonly />
-            </div>
-        </div>
-        <div class="col-12 col-md-3">
-            <div class="form-group required">
-                <label class="control-label">@string.Format(Resources.Resource.DateFormat, Resources.Resource.WholeSales)</label>
+				<input type="datetime" class="form-control datepicker" id="wholesalesDate" />
+				@Html.HiddenFor(model => WholeSales.wsDate)
+				@Html.HiddenFor(model => WholeSales.WsDateDisplay)
 
-                <input type="datetime" class="form-control datepicker" id="wholesalesDate" />
-                @Html.HiddenFor(model => WholeSales.wsDate)
-                @Html.HiddenFor(model => WholeSales.WsDateDisplay)
+			</div>
+		</div>
 
-            </div>
-        </div>
+		@{
+			var wscurrency = WholeSales.wsCurrency ?? "HKD";
+		}
+		<div class="col-12 col-md-3">
+			@Html.Partial("_ExRateModal", null, new ViewDataDictionary { { "fieldname", "wsCurrency" }, { "currency", wscurrency }, { "required", "required" }, { "exratestyle", "margin-top:-1rem;" } })
+		</div>
 
-        @{
-            var wscurrency = WholeSales.wsCurrency ?? "HKD";
-        }
-        <div class="col-12 col-md-3">
-            @Html.Partial("_ExRateModal", null, new ViewDataDictionary { { "fieldname", "wsCurrency" }, { "currency", wscurrency }, { "required", "required" }, { "exratestyle", "margin-top:-1rem;" } })
-        </div>
+		<div class="col-12 col-md-3">
+			<div class="form-group required">
+				<label class="control-label" for="drpLocation">@Resources.Resource.Location</label>
 
-        <div class="col-12 col-md-3">
-            <div class="form-group required">
-                <label class="control-label" for="drpLocation">@Resources.Resource.Location</label>
+				<select id="drpLocation" name="wsSalesLoc" class="form-control">
+					@* <option value="">-- @Resources.Resource.Select --</option>*@
+					@foreach (var item in Model.LocationList)
+					{
+						string selected = "";
+						if (editmode)
+						{
+							selected = WholeSales.wsSalesLoc == item.Value ? "selected" : "";
+						}
 
-                <select id="drpLocation" name="wsSalesLoc" class="form-control">
-                    @* <option value="">-- @Resources.Resource.Select --</option>*@
-                    @foreach (var item in Model.LocationList)
-                    {
-                        string selected = "";
-                        if (editmode)
-                        {
-                            selected = WholeSales.wsSalesLoc == item.Value ? "selected" : "";
-                        }
+						<option value="@item.Value" @selected>@item.Text</option>
+					}
+				</select>
+				@{ var _checked = editmode && WholeSales.wsAllLoc != null ? (bool)WholeSales.wsAllLoc ? "checked" : "" : "";}
+				@Html.Partial("_ApplyToAllSalesLocation", null, new ViewDataDictionary { { "checked", _checked } })
 
-                        <option value="@item.Value" @selected>@item.Text</option>
-                    }
-                </select>
-                @{ var _checked = editmode && WholeSales.wsAllLoc != null ? (bool)WholeSales.wsAllLoc ? "checked" : "" : "";}
-                @Html.Partial("_ApplyToAllSalesLocation", null, new ViewDataDictionary { { "checked", _checked } })
+			</div>
+		</div>
+	</div>
 
-            </div>
-        </div>
-    </div>
+	<div class="row">
+		<div class="col-12 col-md-2">
+			<div class="form-group required">
+				<label class="control-label" for="drpCustomer">@Resources.Resource.Customer</label>
 
-    <div class="row">
-        <div class="col-12 col-md-2">
-            <div class="form-group required">
-                <label class="control-label" for="drpCustomer">@Resources.Resource.Customer</label>
+				<select id="drpCustomer" name="wsCusID" class="form-control card">
+					<option value="">-- @Resources.Resource.Select --</option>
+					@foreach (var item in Model.CustomerList)
+					{
+						var selected = WholeSales.wsCusCode == item.Value ? "selected" : "";
+						<option value="@item.Value" @selected>@item.Text</option>
+					}
+				</select>
+			</div>
+		</div>
 
-                <select id="drpCustomer" name="wsCusID" class="form-control card">
-                    <option value="">-- @Resources.Resource.Select --</option>
-                    @foreach (var item in Model.CustomerList)
-                    {
-                        var selected = WholeSales.wsCusCode == item.Value ? "selected" : "";
-                        <option value="@item.Value" @selected>@item.Text</option>
-                    }
-                </select>
-            </div>
-        </div>
+		@{
+			var drphide = !editmode ? "" : WholeSales.wsChkManualDelAddr == null ? "" : (bool)WholeSales.wsChkManualDelAddr ? "hide" : "";
+			var txthide = !editmode ? "hide" : WholeSales.wsChkManualDelAddr == null ? "hide" : (bool)WholeSales.wsChkManualDelAddr ? "" : "hide";
+			var chkdel = !editmode ? "" : WholeSales.wsChkManualDelAddr == null ? "" : (bool)WholeSales.wsChkManualDelAddr ? "checked" : "";
+		}
 
-        @{
-            var drphide = !editmode ? "" : WholeSales.wsChkManualDelAddr==null?"": (bool)WholeSales.wsChkManualDelAddr ? "hide" : "";
-            var txthide = !editmode ? "hide" : WholeSales.wsChkManualDelAddr == null ?"hide": (bool)WholeSales.wsChkManualDelAddr ? "" : "hide";
-            var chkdel = !editmode ? "" : WholeSales.wsChkManualDelAddr == null ?"": (bool)WholeSales.wsChkManualDelAddr ? "checked" : "";
-        }
+		<div class="col-12 col-md-4">
+			<div class="form-group">
+				<label for="drpDeliveryAddr" class="mr-4">@string.Format(Resources.Resource.DeliveryFormat, Resources.Resource.Address)</label>
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" id="chkDelAddr" value="1" @chkdel>
+					<label class="form-check-label small" for="chkDelAddr">@Resources.Resource.ManualEntry</label>
+				</div>
+				<input type="text" id="txtDelAddr" class="form-control @txthide" style="max-width:none;" value="@WholeSales.wsDeliveryAddress1" max="250" />
+				<select id="drpDeliveryAddr" class="form-control @drphide" style="max-width:none;">
+				</select>
+			</div>
+		</div>
 
-        <div class="col-12 col-md-4">
-            <div class="form-group">
-                <label for="drpDeliveryAddr" class="mr-4">@string.Format(Resources.Resource.DeliveryFormat, Resources.Resource.Address)</label>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" id="chkDelAddr" value="1" @chkdel>
-                    <label class="form-check-label small" for="chkDelAddr">@Resources.Resource.ManualEntry</label>
-                </div>
-                <input type="text" id="txtDelAddr" class="form-control @txthide" style="max-width:none;" value="@WholeSales.wsDeliveryAddress1" max="250" />
-                <select id="drpDeliveryAddr" class="form-control @drphide" style="max-width:none;">
-                </select>
-            </div>
-        </div>
+		<div class="col-12 col-md-2">
+			<div class="form-group">
+				<label class="control-label" for="wsCustomerTerms">@Resources.Resource.CustomerTerms</label>
+				<input type="text" class="form-control pointer" id="wsCustomerTerms" name="wsCustomerTerms" readonly value="@WholeSales.wsCustomerTerms" />
+			</div>
+		</div>
+		<div class="col-12 col-md-2">
+			<div class="form-group">
+				<label class="control-label" for="wsCustomerPO">@Resources.Resource.CustomerPO</label>
+				<input type="text" class="form-control" id="wsCustomerPO" name="wsCustomerPO" value="@WholeSales.wsCustomerPO" />
+			</div>
+		</div>
+		<div class="col-12 col-md-2">
+			<div class="form-group">
+				<label for="deliveryDate" class="mx-sm-2">@Resources.Resource.DeliveryDate</label>
+				<input type="datetime" id="deliveryDate" class="form-control datepicker" />
+				@Html.HiddenFor(model => WholeSales.wsDeliveryDate)
 
-        <div class="col-12 col-md-2">
-            <div class="form-group">
-                <label class="control-label" for="wsCustomerTerms">@Resources.Resource.CustomerTerms</label>
-                <input type="text" class="form-control pointer" id="wsCustomerTerms" name="wsCustomerTerms" readonly value="@WholeSales.wsCustomerTerms" />
-            </div>
-        </div>
-        <div class="col-12 col-md-2">
-            <div class="form-group">
-                <label class="control-label" for="wsCustomerPO">@Resources.Resource.CustomerPO</label>
-                <input type="text" class="form-control" id="wsCustomerPO" name="wsCustomerPO" value="@WholeSales.wsCustomerPO" />
-            </div>
-        </div>
-        <div class="col-12 col-md-2">
-            <div class="form-group">
-                <label for="deliveryDate" class="mx-sm-2">@Resources.Resource.DeliveryDate</label>
-                <input type="datetime" id="deliveryDate" class="form-control datepicker" />
-                @Html.HiddenFor(model => WholeSales.wsDeliveryDate)
-           
-            </div>
-        </div>
-    </div>
+			</div>
+		</div>
+	</div>
 
 
-    <div class="justify-content-center my-4">
-        @{ var colcls = (WholeSales.wsStatus == WholeSalesStatus.invoice.ToString() || WholeSales.wsStatus == WholeSalesStatus.deliver.ToString() || WholeSales.wsStatus == WholeSalesStatus.partialdeliver.ToString()) ? "" : "hide";}
+	<div class="justify-content-center my-4">
+		@{ var colcls = (WholeSales.wsStatus == WholeSalesStatus.invoice.ToString() || WholeSales.wsStatus == WholeSalesStatus.deliver.ToString() || WholeSales.wsStatus == WholeSalesStatus.partialdeliver.ToString()) ? "" : "hide";}
 		<div class="overflow-auto">
 			<table id="tblWSI" class="table table-hover table-bordered table-condensed">
 				<thead class="gray-header">
@@ -191,29 +193,29 @@
 				<tbody></tbody>
 			</table>
 		</div>
-		
-    </div>
 
-            var decimaltotal = editmode? WholeSales.wsFinalTotal==null? CommonHelper.FormatNumber(0) : CommonHelper.FormatNumber((decimal)WholeSales.wsFinalTotal): CommonHelper.FormatNumber(0);
-    <div class="row mx-1">
-        <div class="col-12 col-md-4">
-            <div class="form-group">
-                <label class="control-label" for="wsRemark">@Resources.Resource.Remark</label>
-                <textarea class="form-control" id="wsRemark" name="wsRemark" rows="5" placeholder="">@WholeSales.wsRemark</textarea>
-            </div>
-        </div>
+	</div>
 
-        <div class="col-12 col-md-8">
-            <div class="float-right">
-                <div class="form-group">
-                    <label for="txtTotal" class="col-form-label mx-sm-3 font-weight-bold">@Resources.Resource.TotalAmount (@Model.Currency)</label>
-                    <input type="number" class="form-control" id="txtTotal" readonly name="TotalAmount" value="@decimaltotal" />
-                </div>
-            </div>
-        </div>
-    </div>
+	var decimaltotal = editmode ? WholeSales.wsFinalTotal == null ? CommonHelper.FormatNumber(0) : CommonHelper.FormatNumber((decimal)WholeSales.wsFinalTotal) : CommonHelper.FormatNumber(0);
+	<div class="row mx-1">
+		<div class="col-12 col-md-4">
+			<div class="form-group">
+				<label class="control-label" for="wsRemark">@Resources.Resource.Remark</label>
+				<textarea class="form-control" id="wsRemark" name="wsRemark" rows="5" placeholder="">@WholeSales.wsRemark</textarea>
+			</div>
+		</div>
 
-  
+		<div class="col-12 col-md-8">
+			<div class="float-right">
+				<div class="form-group">
+					<label for="txtTotal" class="col-form-label mx-sm-3 font-weight-bold">@Resources.Resource.TotalAmount (@Model.Currency)</label>
+					<input type="number" class="form-control" id="txtTotal" readonly name="TotalAmount" value="@decimaltotal" />
+				</div>
+			</div>
+		</div>
+	</div>
+
+
 
 	<div id="btnblk" class="row justify-content-end px-4" data-editmode="@editmode" data-isapprover="@user.IsApprover" data-wsstatus="@WholeSales.wsStatus" data-issalesperson="@user.IsSalesPerson">
 
@@ -223,7 +225,7 @@
 
 			if (user.IsApprover)
 			{
-				if (Request.QueryString["ireadonly"] != null && Request.QueryString["ireadonly"] == "1")
+				if ((Request.QueryString["ireadonly"] != null && Request.QueryString["ireadonly"] == "1") && WholeSales.wsStatus.ToLower() != WholeSalesStatus.created.ToString())
 				{
 					<div class="d-none d-md-block text-right">
 						<button type="button" id="" class="btn btn-primary mx-1 respond btnApprove" data-type="approve" data-code="">@Resources.Resource.Approve</button>
@@ -240,7 +242,7 @@
 			{
 				if (editmode)
 				{
-					if (WholeSales.wsStatus != WholeSalesStatus.invoice.ToString())
+					if (WholeSales.wsStatus.ToLower() == WholeSalesStatus.order.ToString() || WholeSales.wsStatus.ToLower() == WholeSalesStatus.created.ToString() || WholeSales.wsStatus.ToLower() == WholeSalesStatus.rejected.ToString() || WholeSales.wsStatus.ToUpper() == WholeSalesStatus.REQUESTING.ToString())
 					{
 						<div class="text-right">
 							@Html.Partial("_NormalSaveBlk4WholeSales", null, new ViewDataDictionary { { "editmode", editmode }, { "wholesalesmode", WholeSales.Mode }, { "showViewBtn", WholeSales.FileList.Count > 0 }, { "status", WholeSales.wsStatus } })
@@ -256,11 +258,14 @@
 							<button id="" type="button" class="btn btn-info mx-1 btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
 						}
 
-						@if (WholeSales.wsStatus != WholeSalesStatus.draft.ToString())
+						@if (WholeSales.wsStatus == WholeSalesStatus.draft.ToString())
 						{
-							<button id="" type="button" class="btn btn-success mx-1 btnNewPurchase">@string.Format(Resources.Resource.NewFormat, Resources.Resource.WholeSales)</button>
+							<button type="button" id="btnSaveDraft" class="btn btn-success mx-1">@string.Format(Resources.Resource.SaveFormat, Resources.Resource.Draft)</button>
 						}
-
+						else
+						{
+							<a id="" role="button" class="btn btn-outline-success mx-1" href="/WholeSales/Edit">@string.Format(Resources.Resource.NewFormat, Resources.Resource.WholeSales)</a>
+						}
 					</div>
 
 					<div class="d-block d-sm-block d-md-none text-right my-2">
@@ -272,15 +277,18 @@
 
 						@if (WholeSales.wsStatus != WholeSalesStatus.draft.ToString())
 						{
-							<button id="" type="button" class="btn btn-success d-flex btnNewWholeSales">@string.Format(Resources.Resource.NewFormat, Resources.Resource.WholeSales)</button>
+							<a id="" role="button" class="btn btn-outline-success d-flex" href="/WholeSales/Edit">@string.Format(Resources.Resource.NewFormat, Resources.Resource.WholeSales)</a>
 						}
-
 					</div>
 				}
 			}
-			if (user.IsManagerSales)
+			if (user.IsManagerSalesAdmin)
 			{
 				@Html.Partial("_NormalSaveBlk4WholeSales", null, new ViewDataDictionary { { "editmode", editmode }, { "wholesalesmode", WholeSales.Mode }, { "showViewBtn", WholeSales.FileList.Count > 0 }, { "status", WholeSales.wsStatus } })
+				if (WholeSales.wsStatus != WholeSalesStatus.draft.ToString() && WholeSales.Mode != "readonly")
+				{
+					<a id="" role="button" class="btn btn-outline-success mx-1" href="/WholeSales/Edit">@string.Format(Resources.Resource.NewFormat, Resources.Resource.WholeSales)</a>
+				}
 			}
 
 		}
@@ -288,12 +296,18 @@
 		else
 		{
 			@Html.Partial("_NormalSaveBlk4WholeSales", null, new ViewDataDictionary { { "editmode", editmode }, { "wholesalesmode", WholeSales.Mode }, { "showViewBtn", WholeSales.FileList.Count > 0 }, { "status", WholeSales.wsStatus } })
+			if (WholeSales.wsStatus != WholeSalesStatus.draft.ToString() && WholeSales.Mode != "readonly")
+			{
+				<a id="" role="button" class="btn btn-outline-success mx-1" href="/WholeSales/Edit">@string.Format(Resources.Resource.NewFormat, Resources.Resource.WholeSales)</a>
+			}
 		}
+
+		<button type="button" class="btn btn-secondary mx-1" id="btnReload">@Resources.Resource.Reload</button>
 	</div>
 }
 
 <div>
-    @Html.ActionLink(Resources.Resource.BackToList, "Index")
+	@Html.ActionLink(Resources.Resource.BackToList, "Index")
 </div>
 
 
@@ -320,11 +334,11 @@
 @Html.Partial("_ItemVariModal", null, new ViewDataDictionary { { "status", WholeSales.wsStatus } })
 
 @{
-    string UploadSizeLimitMB = ConfigurationManager.AppSettings["MaxUploadSize"];
-    string exceeduploadfilelimittxt = string.Format(Resources.Resource.ExceedUploadSizeLimitWarning, UploadSizeLimitMB);
+	string UploadSizeLimitMB = ConfigurationManager.AppSettings["MaxUploadSize"];
+	string exceeduploadfilelimittxt = string.Format(Resources.Resource.ExceedUploadSizeLimitWarning, UploadSizeLimitMB);
 }
 
-<div id="infoblk" data-isadmin="@user.IsAdmin" data-isapprover="@user.IsApprover" data-ismanager="@user.IsManager" data-issalesperson="@user.IsSalesPerson" data-ismanagersales="@user.IsManagerSales"  data-locationrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Location)" data-emptyitemwarning="@string.Format(Resources.Resource.EnterAtLeastOneFormat,Resources.Resource.ItemStock)" data-currencyrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Currency)" data-enabletax="@Model.EnableTax" data-jsondiccurrencyexrate="@(JsonSerializer.Serialize(Model.DicCurrencyExRate))" data-batchtxt="@Resources.Resource.Batch" data-sntxt="@Resources.Resource.SerialNoItemHeader" data-validthrutxt="@Resources.Resource.ValidThru" data-jsonwholesaleslns="@JsonSerializer.Serialize(Model.WholeSalesLns)" data-customerrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Customer)" data-jsonpoitembatvqlist="@JsonSerializer.Serialize(Model.PoItemBatVQList)" data-jsondicitembatsnvtlist="@JsonSerializer.Serialize(Model.DicItemBatSnVtList)" data-jsondicitemvtqtylist="@JsonSerializer.Serialize(Model.DicItemVtQtyList)" data-jsondicitemoptions="@JsonSerializer.Serialize(Model.DicItemOptions)" data-jsondicitembatchqty="@JsonSerializer.Serialize(Model.DicItemBatchQty)" data-jsondicitemsnvtlist="@JsonSerializer.Serialize(Model.DicItemSnVtList)" data-jsondicitembatdelqty="@JsonSerializer.Serialize(Model.DicItemBatDelQty)" data-jsondicitemvtdelqtylist="@JsonSerializer.Serialize(Model.DicItemVtDelQtyList)" data-itemsrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Item)" data-jscustomer="@JsonSerializer.Serialize(WholeSales.Customer)" data-approvalmode="@approvalmode" data-whatsapplinkurl="@ConfigurationManager.AppSettings["WhatsappLinkUrl"]" data-delqtymustnotgtorderqtytxt="@Resources.Resource.DeliveryQtyMustNotGtOrderQty" data-jsondiclocation="@JsonSerializer.Serialize(Model.DicLocation)" data-shop="@Model.ComInfo.Shop" data-jsonjoblist="@JsonSerializer.Serialize(Model.JobList)" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-filecode="@WholeSales.wsCode" data-uploadurl="/WholeSales/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@WholeSales.UploadFileName" data-jsondicbattotalqty="@JsonSerializer.Serialize(Model.DicBatTotalQty)" data-jsondicseqdeliveryitems="@JsonSerializer.Serialize(Model.DicSeqDeliveryItems)" data-jsondicitembatsnvt="@JsonSerializer.Serialize(Model.DicItemBatSnVt)" data-jsonpoivinfo="@JsonSerializer.Serialize(Model.PoIvInfo)" data-jsondicivinfo="@JsonSerializer.Serialize(Model.DicIvInfo)" data-dicitemgroupedvariations="@JsonSerializer.Serialize(Model.DicItemGroupedVariations)" data-dicivqtylist="@JsonSerializer.Serialize(Model.DicIvQtyList)" data-dicivdelqtylist="@JsonSerializer.Serialize(Model.DicIvDelQtyList)" data-useforexapi="@Model.UseForexAPI" data-cominfo="@Model.ComInfo"></div>
+<div id="infoblk" data-isadmin="@user.IsAdmin" data-isapprover="@user.IsApprover" data-ismanager="@user.IsManager" data-issalesperson="@user.IsSalesPerson" data-ismanagersales="@user.IsManagerSalesAdmin" data-locationrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Location)" data-emptyitemwarning="@string.Format(Resources.Resource.EnterAtLeastOneFormat,Resources.Resource.ItemStock)" data-currencyrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Currency)" data-enabletax="@Model.EnableTax" data-jsondiccurrencyexrate="@(JsonSerializer.Serialize(Model.DicCurrencyExRate))" data-batchtxt="@Resources.Resource.Batch" data-sntxt="@Resources.Resource.SerialNoItemHeader" data-validthrutxt="@Resources.Resource.ValidThru" data-jsonwholesaleslns="@JsonSerializer.Serialize(Model.WholeSalesLns)" data-customerrequiredtxt="@string.Format(Resources.Resource.Required, Resources.Resource.Customer)" data-jsonpoitembatvqlist="@JsonSerializer.Serialize(Model.PoItemBatVQList)" data-jsondicitembatsnvtlist="@JsonSerializer.Serialize(Model.DicItemBatSnVtList)" data-jsondicitemvtqtylist="@JsonSerializer.Serialize(Model.DicItemVtQtyList)" data-jsondicitemoptions="@JsonSerializer.Serialize(Model.DicItemOptions)" data-jsondicitembatchqty="@JsonSerializer.Serialize(Model.DicItemBatchQty)" data-jsondicitemsnvtlist="@JsonSerializer.Serialize(Model.DicItemSnVtList)" data-jsondicitembatdelqty="@JsonSerializer.Serialize(Model.DicItemBatDelQty)" data-jsondicitemvtdelqtylist="@JsonSerializer.Serialize(Model.DicItemVtDelQtyList)" data-itemsrequiredtxt="@string.Format(Resources.Resource.Required,Resources.Resource.Item)" data-jscustomer="@JsonSerializer.Serialize(WholeSales.Customer)" data-approvalmode="@approvalmode" data-whatsapplinkurl="@ConfigurationManager.AppSettings["WhatsappLinkUrl"]" data-delqtymustnotgtorderqtytxt="@Resources.Resource.DeliveryQtyMustNotGtOrderQty" data-jsondiclocation="@JsonSerializer.Serialize(Model.DicLocation)" data-shop="@Model.ComInfo.Shop" data-jsonjoblist="@JsonSerializer.Serialize(Model.JobList)" data-uploadsizelimit="@ConfigurationManager.AppSettings["MaxUploadSizeBytes"]" data-uploadsizelimitmb="@ConfigurationManager.AppSettings["MaxUploadSize"]" data-filecode="@WholeSales.wsCode" data-uploadurl="/WholeSales/UploadFile" data-exceeduploadfilelimittxt="@exceeduploadfilelimittxt" data-uploadfilelist="@WholeSales.UploadFileName" data-jsondicbattotalqty="@JsonSerializer.Serialize(Model.DicBatTotalQty)" data-jsondicseqdeliveryitems="@JsonSerializer.Serialize(Model.DicSeqDeliveryItems)" data-jsondicitembatsnvt="@JsonSerializer.Serialize(Model.DicItemBatSnVt)" data-jsonpoivinfo="@JsonSerializer.Serialize(Model.PoIvInfo)" data-jsondicivinfo="@JsonSerializer.Serialize(Model.DicIvInfo)" data-dicitemgroupedvariations="@JsonSerializer.Serialize(Model.DicItemGroupedVariations)" data-dicivqtylist="@JsonSerializer.Serialize(Model.DicIvQtyList)" data-dicivdelqtylist="@JsonSerializer.Serialize(Model.DicIvDelQtyList)" data-useforexapi="@Model.UseForexAPI" data-cominfo="@Model.ComInfo"></div>
 
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
