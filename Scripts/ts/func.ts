@@ -18024,15 +18024,19 @@ function handleReload(e: JQuery.ClickEvent<Document, undefined, any, any>) {
 	window.location.href = url.href;
 }
 $(document).on("click", "#btnSearch", function (e) {
-	e.preventDefault();
-	let $sortcol = $("<input>").attr({
+	e.preventDefault();	
+	//console.log("sortorder:" + $("#sortorder").val());
+	let sortorder = $("#sortorder").val() == "desc" ? "asc" : "desc";
+	$("#sortorder").remove();
+	let $sortorder = $("<input>").attr({
 		type: "hidden",
-		name: "SortCol",
-		value: $("#sortcol").val(),
+		name: "SortOrder",		
+		value: sortorder,
 	});
-	console.log("gfrmId:", gFrmId);
+	//console.log("gfrmId:", gFrmId);
+	//return;
 	if (gFrmId)
-		$(`#${gFrmId}`).append($sortcol).trigger("submit");
+		$(`#${gFrmId}`).append($sortorder).trigger("submit");
 });
 
 $(document).on("click", ".colheader", function () {

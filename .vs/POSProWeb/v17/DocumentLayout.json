@@ -8,7 +8,7 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedHeight": 68,
+          "DockedHeight": 133,
           "SelectedChildIndex": -1,
           "Children": [
             {
@@ -22,7 +22,7 @@
           ]
         },
         {
-          "DockedHeight": 41,
+          "DockedHeight": 45,
           "SelectedChildIndex": -1,
           "Children": [
             {
@@ -36,7 +36,7 @@
           ]
         },
         {
-          "DockedHeight": 117,
+          "DockedHeight": 41,
           "SelectedChildIndex": -1,
           "Children": [
             {
@@ -54,7 +54,7 @@
           ]
         },
         {
-          "DockedHeight": 37,
+          "DockedHeight": 117,
           "SelectedChildIndex": -1,
           "Children": [
             {

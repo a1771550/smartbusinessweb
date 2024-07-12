@@ -44,6 +44,7 @@ using PPWLib.Models.POS.Sales;
 using CommonLib.BaseModels.MYOB;
 using PPWLib.Helpers;
 using PPWLib.Models.AbssReport;
+using PPWLib.Models.Promotion;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -87,6 +88,33 @@ namespace SmartBusinessWeb.Controllers
         private SqlConnection SqlConnection { get { return new SqlConnection(DefaultConnection); } }
 
        
+        public void PromotionalEmail()
+        {
+            StringBuilder sb = new();
+            try
+            {
+                if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
+                List<PromotionalEmailModel> EmailList = PromotionalEmailEditModel.GetList4Promotion(apId, SqlConnection);
+                if (EmailList != null && EmailList.Count > 0)
+                {
+                    var mailsettings = EmailSettingsEditModel.Get(SqlConnection, apId);
+                    foreach (var mail in EmailList)
+                    {
+                        Helpers.ModelHelper.SendSimpleEmail(mail.cusEmail, mail.cusName, mail.Content, mail.Subject, mailsettings);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                sb.Append(ex.Message);
+            }
+
+            if (!string.IsNullOrEmpty(sb.ToString()))
+            {
+                using var context = new PPWDbContext("SmartBusinessWeb_db");
+                Helpers.ModelHelper.WriteLog(context, sb.ToString(), "AlertFollowUp:Done");
+            }
+        }
 
         public void AddTest()
         {

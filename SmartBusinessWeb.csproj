@@ -2862,6 +2862,7 @@
     <Content Include="Images\sample500.jpg" />
     <Content Include="Images\samples\blackbuck.bmp" />
     <Content Include="Images\samples\FLAG_B24.BMP" />
+    <Content Include="Images\samples\hamburger.jpeg" />
     <Content Include="Images\samples\logo.bmp" />
     <Content Include="Images\samples\photo1.jpg" />
     <Content Include="Images\samples\photo10.jpg" />

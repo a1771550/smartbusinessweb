@@ -1,6 +1,6 @@
-﻿@model EmailEditModel
+﻿@model PromotionalEmailEditModel
 @{
-	EmailModel Email = Model.Email;
+	PromotionalEmailModel Email = Model.Email;
 	bool editmode = Email.Id > 0;
 	ViewBag.Title = editmode ? string.Format(Resources.Resource.EditFormat, Resources.Resource.PromotionalEmail) : string.Format(Resources.Resource.AddFormat, Resources.Resource.PromotionalEmail);
 }

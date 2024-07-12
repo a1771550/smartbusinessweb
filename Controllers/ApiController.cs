@@ -43,7 +43,7 @@ using PPWLib.Models.Customer.eBlast;
 using PPWLib.Models.Customer.Enquiry;
 using PPWLib.Models.Receipt;
 using Microsoft.Data.SqlClient;
-using PPWLib.Models.Promotion.Email;
+using PPWLib.Models.Promotion;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -71,11 +71,40 @@ namespace SmartBusinessWeb.Controllers
         public List<string> ShopNames;
         public ApiController() { }
 
+        [HttpGet]
+        public void SendPromotionalEmail(int apId = 1)
+        {
+            StringBuilder sb = new();
+            try
+            {
+                if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
+                List<PromotionalEmailModel> EmailList = PromotionalEmailEditModel.GetList4Promotion(apId, SqlConnection);
+                if (EmailList != null && EmailList.Count > 0)
+                {                   
+                    var mailsettings = EmailSettingsEditModel.Get(SqlConnection, apId);
+                    foreach (var mail in EmailList)
+                    {
+                        ModelHelper.SendSimpleEmail(mail.cusEmail,mail.cusName,mail.Content,mail.Subject,mailsettings);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                sb.Append(ex.Message);
+            }
+
+            if (!string.IsNullOrEmpty(sb.ToString()))
+            {
+                using var context = new PPWDbContext("SmartBusinessWeb_db");
+                ModelHelper.WriteLog(context, sb.ToString(), "AlertFollowUp:Done");
+            }
+        }
 
 
         [HttpGet]
         public void AlertFollowUp(int apId = 1)
         {
+            StringBuilder sb = new StringBuilder();
             try
             {
                 if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
@@ -88,7 +117,7 @@ namespace SmartBusinessWeb.Controllers
                     enquiryInfoes = SqlConnection.Query<EnquiryInfoModel>("EXEC dbo.GetEnquiryInfoes4FollowUpSales @apId=@apId", new { apId }).ToList();
                     emailSettings = SqlConnection.QueryFirstOrDefault<EmailSetting>("EXEC dbo.GetEmailSettings @apId=@apId", new { apId });
                 }
-                StringBuilder sb = new StringBuilder();
+                
                 if (customerInfoes != null && customerInfoes.Count > 0)
                 {
                     string msg = "";
@@ -104,7 +133,7 @@ namespace SmartBusinessWeb.Controllers
                             msg += "<ul>";
                             foreach (var customername in customernames) msg += $"<li>{customername}</li>";
                             msg += "</ul>";
-                            SendSimpleEmail(customerInfo.Email, customerInfo.UserName, msg, subject, emailSettings);
+                            ModelHelper.SendSimpleEmail(customerInfo.Email, customerInfo.UserName, msg, subject, emailSettings);
                             sb.Append(msg);
                         }
                     }
@@ -124,71 +153,27 @@ namespace SmartBusinessWeb.Controllers
                             msg += "<ul>";
                             foreach (var companyname in companynames) msg += $"<li>{companyname}</li>";
                             msg += "</ul>";
-                            SendSimpleEmail(enquiryInfo.Email, enquiryInfo.UserName, msg, subject, emailSettings);
+                            ModelHelper.SendSimpleEmail(enquiryInfo.Email, enquiryInfo.UserName, msg, subject, emailSettings);
                             sb.Append(msg);
                         }
                     }
                 }
 
-                if (!string.IsNullOrEmpty(sb.ToString()))
-                {
-                    using var context = new PPWDbContext("SmartBusinessWeb_db");
-                    ModelHelper.WriteLog(context, sb.ToString(), "AlertFollowUp:Done");
-                }
+                
             }
             catch (Exception ex)
             {
-                using var context = new PPWDbContext("SmartBusinessWeb_db");
-                ModelHelper.WriteLog(context, ex.Message, "AlertFollowUp:Failed");
+                sb.Append(ex.Message);
             }
-        }
 
-        private static bool SendSimpleEmail(string receiverEmail, string receiverName, string msg, string subject, EmailSetting mailsettings)
-        {
-            int okcount = 0;
-            int ngcount = 0;
-
-            MailAddress frm = new MailAddress(mailsettings.emEmail, mailsettings.emDisplayName);
-
-            while (okcount == 0)
+            if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                if (ngcount >= mailsettings.emMaxEmailsFailed || okcount > 0)
-                {
-                    break;
-                }
-
-                MailAddress to = new MailAddress(receiverEmail, receiverName);
-                bool addbc = int.Parse(ConfigurationManager.AppSettings["AddBccToDeveloper"]) == 1;
-                MailAddress addressBCC = new MailAddress(ConfigurationManager.AppSettings["DeveloperEmailAddress"], ConfigurationManager.AppSettings["DeveloperEmailName"]);
-                MailMessage message = new MailMessage(frm, to);
-                if (addbc)
-                {
-                    message.Bcc.Add(addressBCC);
-                }
-
-                message.Subject = subject;
-                message.BodyEncoding = Encoding.UTF8;
-                message.IsBodyHtml = true;
-                message.Body = msg;
-
-                using (SmtpClient smtp = new SmtpClient(mailsettings.emSMTP_Server, mailsettings.emSMTP_Port))
-                {
-                    smtp.UseDefaultCredentials = false;
-                    smtp.EnableSsl = mailsettings.emSMTP_EnableSSL;
-                    smtp.Credentials = new NetworkCredential(mailsettings.emSMTP_UserName, mailsettings.emSMTP_Pass);
-                    try
-                    {
-                        smtp.Send(message);
-                        okcount++;
-                    }
-                    catch (Exception)
-                    {
-                        ngcount++;
-                    }
-                }
+                using var context = new PPWDbContext("SmartBusinessWeb_db");
+                ModelHelper.WriteLog(context, sb.ToString(), "AlertFollowUp:Done");
             }
-            return okcount > 0;
         }
+
+       
 
         [HttpGet]
         public JsonResult GetSalesmenEnqGroupList()
@@ -223,7 +208,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public JsonResult GetEmailListCusGroupList()
         {
-            EmailEditModel emodel = new EmailEditModel();
+            PromotionalEmailEditModel emodel = new PromotionalEmailEditModel();
             emodel.GetList();
             CustomerGroupEditModel cmodel = new CustomerGroupEditModel();
             cmodel.GetList(1);
@@ -715,7 +700,7 @@ namespace SmartBusinessWeb.Controllers
                                 var approvernames = string.Join(",", approvers.Select(x => x.UserName).ToList());
                                 sendmsg = string.Format(Resource.NotificationEmailWillBeSentToFormat, approvernames);
                                 #region Send Notification Email   
-                                if (enableSendMail && ModelHelper.SendNotificationEmail(sendmsg, DicInvoice, salesman, RespondType.Voided, null, POSTransactionType.Purchase))
+                                if (enableSendMail && ModelHelper.SendNotificationEmail(sendmsg, DicInvoice, salesman, RespondType.Voided, null, POSTransactionType.Purchase, context))
                                 {
                                     var _purchase = context.Purchases.FirstOrDefault(x => x.pstRefCode == receiptno);
                                     _purchase.pstSendNotification = true;
@@ -774,7 +759,7 @@ namespace SmartBusinessWeb.Controllers
                                 salesman.Email = salesmanager.Email;
                                 salesman.Phone = salesmanager.Phone;
 
-                                if (enableSendMail && ModelHelper.SendNotificationEmail(msg, DicInvoice, salesman, RespondType.PassToManager, rejectreason, POSTransactionType.Purchase))
+                                if (enableSendMail && ModelHelper.SendNotificationEmail(msg, DicInvoice, salesman, RespondType.PassToManager, rejectreason, POSTransactionType.Purchase,context))
                                 {
                                     purchaseorder = context.PurchaseOrderReviews.FirstOrDefault(x => x.PurchaseOrder.ToLower() == receiptno.ToLower());
                                     purchaseorder.EmailNotified = true;
@@ -826,7 +811,7 @@ namespace SmartBusinessWeb.Controllers
                                     salesman.Email = _salesman.Email;
                                     salesman.Phone = _salesman.Phone;
 
-                                    if (enableSendMail && ModelHelper.SendNotificationEmail(msg, DicInvoice, salesman, RespondType.Rejected, rejectreason, POSTransactionType.Purchase))
+                                    if (enableSendMail && ModelHelper.SendNotificationEmail(msg, DicInvoice, salesman, RespondType.Rejected, rejectreason, POSTransactionType.Purchase, context))
                                     {
                                         purchaseorder = context.PurchaseOrderReviews.FirstOrDefault(x => x.PurchaseOrder.ToLower() == receiptno.ToLower());
                                         purchaseorder.EmailNotified = true;
@@ -875,7 +860,7 @@ namespace SmartBusinessWeb.Controllers
                                 Dictionary<string, string> DicInvoice = new Dictionary<string, string>();
                                 DicInvoice[receiptno] = url;
                                 if (enableSendMail)
-                                    ModelHelper.SendNotificationEmail(msg, DicInvoice, salesman, RespondType.Approved, null, POSTransactionType.Purchase);
+                                    ModelHelper.SendNotificationEmail(msg, DicInvoice, salesman, RespondType.Approved, null, POSTransactionType.Purchase, context);
                             }
                         }
                         break;
@@ -949,7 +934,7 @@ namespace SmartBusinessWeb.Controllers
                                 var approvernames = string.Join(",", approvers.Select(x => x.UserName).ToList());
                                 sendmsg = string.Format(Resource.NotificationEmailWillBeSentToFormat, approvernames);
                                 #region Send Notification Email   
-                                if (enableSendMail && ModelHelper.SendNotificationEmail(sendmsg, DicInvoice, salesman, RespondType.Voided, null, POSTransactionType.WholeSales))
+                                if (enableSendMail && ModelHelper.SendNotificationEmail(sendmsg, DicInvoice, salesman, RespondType.Voided, null, POSTransactionType.WholeSales, context))
                                 {
                                     var _sales = context.WholeSales.FirstOrDefault(x => x.wsRefCode == receiptno);
                                     _sales.wsSendNotification = true;
@@ -1008,7 +993,7 @@ namespace SmartBusinessWeb.Controllers
                                 salesman.Email = salesmanager.Email;
                                 salesman.Phone = salesmanager.Phone;
 
-                                if (enableSendMail && ModelHelper.SendNotificationEmail(msg, DicInvoice, salesman, RespondType.PassToManager, rejectreason, POSTransactionType.WholeSales))
+                                if (enableSendMail && ModelHelper.SendNotificationEmail(msg, DicInvoice, salesman, RespondType.PassToManager, rejectreason, POSTransactionType.WholeSales, context))
                                 {
                                     salesorder = context.SalesOrderReviews.FirstOrDefault(x => x.SalesOrder.ToLower() == receiptno.ToLower());
                                     salesorder.EmailNotified = true;
@@ -1063,7 +1048,7 @@ namespace SmartBusinessWeb.Controllers
                                     salesman.Email = _salesman.Email;
                                     salesman.Phone = _salesman.Phone;
 
-                                    if (enableSendMail && ModelHelper.SendNotificationEmail(msg, DicInvoice, salesman, RespondType.Rejected, rejectreason, POSTransactionType.WholeSales))
+                                    if (enableSendMail && ModelHelper.SendNotificationEmail(msg, DicInvoice, salesman, RespondType.Rejected, rejectreason, POSTransactionType.WholeSales, context))
                                     {
                                         salesorder = context.SalesOrderReviews.FirstOrDefault(x => x.SalesOrder.ToLower() == receiptno.ToLower());
                                         salesorder.EmailNotified = true;
@@ -1109,7 +1094,7 @@ namespace SmartBusinessWeb.Controllers
                                 Dictionary<string, string> DicInvoice = new Dictionary<string, string>();
                                 DicInvoice[receiptno] = url;
                                 if (enableSendMail)
-                                    ModelHelper.SendNotificationEmail(msg, DicInvoice, salesman, RespondType.Approved, null, POSTransactionType.WholeSales);
+                                    ModelHelper.SendNotificationEmail(msg, DicInvoice, salesman, RespondType.Approved, null, POSTransactionType.WholeSales, context);
                             }
                         }
                         break;
@@ -1125,9 +1110,7 @@ namespace SmartBusinessWeb.Controllers
         {
             int okcount = 0;
             int ngcount = 0;
-
-            //EmailEditModel model = new EmailEditModel();
-            //var mailsettings = model.Get();
+           
             EmailSetting mailsettings = context.EmailSettings.FirstOrDefault(x => x.AccountProfileId == apId);
             MailAddress frm = new MailAddress(mailsettings.emEmail, mailsettings.emDisplayName);
 
