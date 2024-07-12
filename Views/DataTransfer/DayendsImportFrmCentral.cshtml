@@ -1,73 +1,62 @@
 ﻿@model PPWLib.Models.DayEndsModel
 
 @{
-    int lang = (int)HttpContext.Current.Session["CurrentCulture"];
-    string importpathmsg = string.Format(Resources.Resource.ImportPathMsg, Model.ImportBasePath);
-    string absschecked = ViewBag.DefaultCheckoutPortal.ToLower() == "abss" ? "checked" : "";
-    string kingdeechecked = ViewBag.DefaultCheckoutPortal.ToLower() == "kingdee" ? "checked" : "";
-    ViewBag.Title = (string)HttpContext.Current.Session["ImportFrmCentralPageTitle"];
-    int rand = CommonHelper.GetVersionRandomNo();
+	string importpathmsg = string.Format(Resources.Resource.ImportPathMsg, Model.ImportBasePath);
+	ViewBag.Title = Resources.Resource.DayendsImportFrmCentral;
+	int rand = CommonHelper.GetVersionRandomNo();
 }
 
-<h3>@ViewBag.Title</h3>
+<h3 data-lang="@CultureHelper.CurrentCulture">@ViewBag.Title</h3>
 @using (Html.BeginForm("DoImportFrmCentral", "DataTransfer", FormMethod.Post, new { @id = "frmImport" }))
 {
-    @Html.AntiForgeryToken() 
-   
-<div class="d-flex my-3">
-	<ul class="horizontallist">
-		<li><button type="button" class="btn btn-info" id="btnGetPath">@Resources.Resource.GetPath</button></li>
+	@Html.AntiForgeryToken()
 
-		<li><button type="button" class="btn btn-success import" data-type="customer" id="btnImportCustomer">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Customer)</button></li>
-		<li><button type="button" class="btn btn-outline-success import" data-type="supplier" id="btnImportSupplier">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Supplier)</button></li>
-		@if (ViewBag.DefaultCheckoutPortal.ToLower() == "abss")
-		{
+	<div class="d-flex my-3">
+		<ul class="horizontallist">
+			<li><button type="button" class="btn btn-info" id="btnGetPath">@Resources.Resource.GetPath</button></li>
+
+			<li><button type="button" class="btn btn-success import" data-type="customer" id="btnImportCustomer">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Customer)</button></li>
+			<li><button type="button" class="btn btn-outline-success import" data-type="supplier" id="btnImportSupplier">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Supplier)</button></li>
+
 			<li><button type="button" class="btn btn-warning import" data-type="currency" id="btnImportCurrency">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Currency)</button></li>
-		}
-		@{
-			bool abssemployee = ConfigurationManager.AppSettings["AbssEmployeeMode"] == "1";
-			if (abssemployee)
-			{
-				<li><button type="button" class="btn btn-outline-success import" data-type="employee" id="btnImportEmployee">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Employee)</button></li>
+
+			@{
+				bool abssemployee = ConfigurationManager.AppSettings["AbssEmployeeMode"] == "1";
+				if (abssemployee)
+				{
+					<li><button type="button" class="btn btn-outline-success import" data-type="employee" id="btnImportEmployee">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Employee)</button></li>
+				}
 			}
-		}
 
-		<li><button type="button" class="btn btn-info import" data-type="item" id="btnImportItem">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Item)</button></li>
-		<li><button type="button" class="btn btn-primary import" data-type="sales" id="btnImportSales">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Sales)</button></li>
-		<li><button type="button" class="btn btn-outline-primary import" data-type="quotation" id="btnImportQuotation">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Quotation)</button></li>
-		<li><button type="button" class="btn btn-success import" data-type="accountreceivable" id="btnImportAR">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.AccountReceivable)</button></li>
-		<li><button type="button" class="btn btn-info import" data-type="spp" id="btnImportSPP">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.SalesPersonPerformance)</button></li>
-		<li><button type="button" class="btn btn-warning import" data-type="ci" id="btnImportCI">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.CustomerInvoices)</button></li>
+			<li><button type="button" class="btn btn-info import" data-type="item" id="btnImportItem">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Item)</button></li>
+			<li><button type="button" class="btn btn-primary import" data-type="sales" id="btnImportSales">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Sales)</button></li>
+			<li><button type="button" class="btn btn-outline-primary import" data-type="quotation" id="btnImportQuotation">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Quotation)</button></li>
+			<li><button type="button" class="btn btn-success import" data-type="accountreceivable" id="btnImportAR">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.AccountReceivable)</button></li>
+			<li><button type="button" class="btn btn-info import" data-type="spp" id="btnImportSPP">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.SalesPersonPerformance)</button></li>
+			<li><button type="button" class="btn btn-warning import" data-type="ci" id="btnImportCI">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.CustomerInvoices)</button></li>
 
 
-		@if (ViewBag.DefaultCheckoutPortal.ToLower() == "abss")
-		{
+
 			<li><button type="button" class="btn btn-outline-success import" data-type="account" id="btnImportAccount">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.ItemAccount)</button></li>
 			<li><button type="button" class="btn btn-outline-warning import" data-type="job" id="btnImportJob">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Job4Myob)</button></li>
 			<li><button type="button" class="btn btn-outline-info import" data-type="tax" id="btnImportTax">@string.Format(Resources.Resource.ImportFormat, Resources.Resource.Tax)</button></li>
-		}
-	</ul>
+		</ul>
+
+		<input type="hidden" id="filename" name="filename" />
+	</div>
 	
-
-
-	<input type="hidden" id="filename" name="filename" />
-</div>
-    if (Model.DataTransferMode == PPWCommonLib.BaseModels.DataTransferMode.NoInternet)
-    {
-        <div id="importpathmsg" class="alert alert-success my-3">@importpathmsg</div>
-    }
-    @Html.HiddenFor(model => model.mode)
+	@Html.HiddenFor(model => model.mode)
 }
 
 
 <div id="waitingModal">
-    <img src="~/Images/giphy.gif" alt="@Resources.Resource.PleaseWait" />
+	<img src="~/Images/giphy.gif" alt="@Resources.Resource.PleaseWait" />
 </div>
 
 @{
-    string confirmmsg = lang == 2 ? Resources.Resource.Confirm + " " + Resources.Resource.Import : Resources.Resource.Confirm + Resources.Resource.Import;
+	string confirmmsg = string.Format(Resources.Resource.ConfirmFormat, Resources.Resource.Import);
 }
-<div id="infoblk" class="hide" data-lang="@lang" data-confirmmsg="@confirmmsg" data-myobfilename="@Model.MyobFileName" data-importdonemsg="@HttpContext.Current.Session["ABSSToSBOK"].ToString()" data-importngmsg="@Resources.Resource.ABSSToSBNG"></div>
+<div id="infoblk" data-confirmmsg="@confirmmsg" data-myobfilename="@Model.MyobFileName" data-importdonemsg="@HttpContext.Current.Session["ABSSToSBOK"].ToString()" data-importngmsg="@Resources.Resource.ABSSToSBNG"></div>
 
 <script type="text/javascript" src="~/Scripts/daterangepicker/moment.min.js"></script>
 <script type="text/javascript" src="~/Scripts/daterangepicker/daterangepicker.min.js"></script>

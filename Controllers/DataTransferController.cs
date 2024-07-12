@@ -39,10 +39,10 @@ namespace SmartBusinessWeb.Controllers
         private string centralbaseUrl = UriHelper.GetAppUrl();
         private string ShopApiUrl = ConfigurationManager.AppSettings["ShopApiUrl"];
 
-        protected override bool DisableAsyncSupport
-        {
-            get { return false; }
-        }
+        //protected override bool DisableAsyncSupport
+        //{
+        //    get { return false; }
+        //}
 
         [HandleError]
         //[CustomAuthorize("datatransfer", "admin", "superadmin")]
@@ -81,43 +81,11 @@ namespace SmartBusinessWeb.Controllers
 
         [HandleError]
         [CustomAuthorize("datatransfer", "admin", "superadmin")]
-        public ActionResult DayendsImportFrmCentral(string defaultCheckoutPortal = "")
-        {
-            string defaultcheckoutportal = ModelHelper.HandleCheckoutPortal(defaultCheckoutPortal);
-            //ViewBag.Title = Session["ImportFrmCentralPageTitle"] = Resources.Resource.DayendsImportFrmCentral;
-            ViewBag.DefaultCheckoutPortal = defaultcheckoutportal;
+        public ActionResult DayendsImportFrmCentral()
+        {          
             //匯入中央資料            
             ViewBag.ParentPage = "dayends";
-            ViewBag.PageName = "dayendsimportfrmcentral";
-
-            DayEndsModel model = new DayEndsModel();
-
-            if (ConfigurationManager.AppSettings["DemoOffline"] == "1")
-            {
-                model.DataTransferMode = DataTransferMode.NoInternet;
-            }
-            else
-            {
-                model.DataTransferMode = CommonHelper.CheckForInternetConnection() == true ? DataTransferMode.Internet : DataTransferMode.NoInternet;
-            }
-
-            //for debug only:
-            model.DataTransferMode = DataTransferMode.Internet;
-
-            model.IsOffLine = model.DataTransferMode == DataTransferMode.Internet ? 0 : 1;
-
-            if (model.DataTransferMode == DataTransferMode.NoInternet)
-            {
-                dayendsFolder = FileHelper.GetDayendFolder(0, model.MyobFileName);
-                if (!string.IsNullOrEmpty(dayendsFolder))
-                {
-                    List<FileInfo> filelist = FileHelper.GetFileInfoList(dayendsFolder, true);
-                    foreach (FileInfo fileinfo in filelist)
-                    {
-                        model.FileInfoList.Add(fileinfo);
-                    }
-                }
-            }
+            DayEndsModel model = new DayEndsModel();           
             return View(model);
         }
        

@@ -38,7 +38,7 @@ namespace SmartBusinessWeb.Controllers
             string hash = string.Empty;
             GetUserByEmail3_Result _user = null;
 
-            using (var context = new PPWDbContext("SmartBusinessWeb_db"))
+            using (var context = new PPWDbContext(ConfigurationManager.AppSettings["DefaultDbName"]))
             {
                 hash = HashHelper.ComputeHash(model.Password);
                 int lang = CultureHelper.CurrentCulture;
