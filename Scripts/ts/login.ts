@@ -23,7 +23,7 @@ $(function () {
 			$("#Email").val("utservice@united.com.hk"); //manager & sales & admin
 			// $("#Email").val("enquiry@united.com.hk"); //approver    
 			$("#Password").val(password);
-			//$("#btnLogin").trigger("click");
+			$("#btnLogin").trigger("click");
 		} else {
 			$("#Email").trigger("focus");
 		}

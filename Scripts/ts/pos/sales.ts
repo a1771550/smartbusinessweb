@@ -362,10 +362,7 @@ $(document).on("click", ".check-product", function (e) {
 $(document).on("click", ".productset.pointer", function (e) {
 	e.stopPropagation();
 	//console.log("productset click");
-	toggleProductCheck(this, true);
-	let discpc: number = Number($(this).find(".productsetcontent").find(".discount-box").find(".sdiscpc").val());
-	handleProductCheck(this, discpc, true);
-	populateProductList();
+	handleProductSelected.call(this);
 });
 $(document).on("change", ".sdiscpc", function () {
 	handleDiscPcChange.call(this);
@@ -390,6 +387,12 @@ $(document).on("dblclick", ".itmprice", function () {
 	$parent.find(".itmprice").trigger("focus");
 });
 
+function handleProductSelected(this: any) {
+    toggleProductCheck(this, true);
+    let discpc: number = Number($(this).find(".productsetcontent").find(".discount-box").find(".sdiscpc").val());
+    handleProductCheck(this, discpc, true);
+    populateProductList();
+}
 
 function populateProductBlk(itemList: ISimpleItem[]): string {
 	let html = "";
@@ -443,6 +446,14 @@ $(document).on("change", "#searchItem", function () {
 			$(".tab.small").find("button").removeClass("active");
 			$(".tab_content").find(".page-header").find(".page-title").find("h4").text("");
 			$(".productblk").empty().append(populateProductBlk(filteredItemList));
+
+			if (filteredItemList.length == 1) {
+				//console.log(filteredItemList);
+				$(".productset").each(function () {
+					if ($(this).data("code") == filteredItemList[0].itmCode)
+						handleProductSelected.call(this);
+				});
+			}
 		}
 	} else {
 		if (filteredItemList.length === 0) {

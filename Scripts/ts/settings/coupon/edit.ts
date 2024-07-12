@@ -160,7 +160,7 @@ $(function () {
 	PageSize = $infoblk.data("pagesize");
 	ConfigSimpleSortingHeaders();
 	initModals();
-	triggerMenuByCls("menusetup", 6);
+	triggerMenuByCls("menusetup", 5);
 	initDatePicker("cpExpiryDate", addMonths(1));
 	setInput4NumberOnly("num");
 	$("#cpCompanyName").trigger("focus");
