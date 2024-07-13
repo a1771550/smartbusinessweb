@@ -1,7 +1,7 @@
-﻿using PPWDAL;
-using PPWLib.Helpers;
+﻿using DAL;
+using SBLib.Helpers;
 using SmartBusinessWeb.Infrastructure;
-using PPWLib.Models;
+using SBLib.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +20,7 @@ namespace SmartBusinessWeb.Controllers.Customer
 		{
 			ViewBag.ParentPage = "customer";
 			ViewBag.PageName = "pricelevels";
-			using (var context = new PPWDbContext(Session["DBName"].ToString()))
+			using (var context = new SBDbContext(Session["DBName"].ToString()))
 			{
 				List<CustomerPointPriceLevelModel> model = new List<CustomerPointPriceLevelModel>();
 
@@ -46,7 +46,7 @@ namespace SmartBusinessWeb.Controllers.Customer
 		[HttpPost]
 		public ActionResult Create(CustomerPointPriceLevelModel model)
 		{
-			using (var context = new PPWDbContext(Session["DBName"].ToString()))
+			using (var context = new SBDbContext(Session["DBName"].ToString()))
 			{				
 				CustomerPointPriceLevel cppl = new CustomerPointPriceLevel
 				{
@@ -75,7 +75,7 @@ namespace SmartBusinessWeb.Controllers.Customer
 		[HttpPost]
 		public ActionResult Edit(CustomerPointPriceLevelModel model)
 		{
-			using (var context = new PPWDbContext(Session["DBName"].ToString()))
+			using (var context = new SBDbContext(Session["DBName"].ToString()))
 			{
 				CustomerPointPriceLevel cppl = context.CustomerPointPriceLevels.Find(model.Id);
 				string pld = cppl.PriceLevelID;
@@ -102,7 +102,7 @@ namespace SmartBusinessWeb.Controllers.Customer
 		[HttpPost]
 		public ActionResult Delete(int Id)
 		{
-			using (var context = new PPWDbContext(Session["DBName"].ToString()))
+			using (var context = new SBDbContext(Session["DBName"].ToString()))
 			{
 				CustomerPointPriceLevel cppl = context.CustomerPointPriceLevels.Find(Id);
 				PriceLevel priceLevel = context.PriceLevels.FirstOrDefault(x => x.AccountProfileId==apId && x.PriceLevelID == cppl.PriceLevelID);

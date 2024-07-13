@@ -1,8 +1,8 @@
-﻿@model PPWLib.Models.WholeSales.WholeSalesEditModel
+﻿@model SBLib.Models.WholeSales.WholeSalesEditModel
 @{
     ViewBag.Title = Resources.Resource.PrintPreview;
     ComInfo comInfo = Model.ComInfo;
-    PPWLib.Models.WholeSales.WholeSalesModel ws = Model.WholeSales;
+    SBLib.Models.WholeSales.WholeSalesModel ws = Model.WholeSales;
     Layout = null;
     string cssbsfile = HttpContext.Current.Session["CssBSFile"] == null ? @"Content/bs4" : HttpContext.Current.Session["CssBSFile"].ToString();
     string scriptbsfile = HttpContext.Current.Session["ScriptBSFile"] == null ? @"Scripts/bs4" : HttpContext.Current.Session["ScriptBSFile"].ToString();
@@ -207,7 +207,7 @@
                         </td>
                         <td colspan="4">                            
                             @{ 
-                                PPWCommonLib.BaseModels.AddressView cusAddress = null;
+                                SBCommonLib.BaseModels.AddressView cusAddress = null;
 
                                 if(ws.Customer.AddressList != null && ws.Customer.AddressList.Count > 0)
                                 {

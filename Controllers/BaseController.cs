@@ -8,9 +8,9 @@ using Microsoft.Owin.Security.Cookies;
 using graph_tutorial.Models;
 using System.Collections.Generic;
 using System.Configuration;
-using PPWDAL;
+using DAL;
 using Resources = CommonLib.App_GlobalResources;
-using PPWLib.Models;
+using SBLib.Models;
 using Microsoft.Data.SqlClient;
 
 namespace SmartBusinessWeb.Controllers

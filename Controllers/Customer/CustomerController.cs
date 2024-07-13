@@ -1,7 +1,7 @@
 ﻿using SmartBusinessWeb.Infrastructure;
-using PPWDAL;
-using PPWLib.Models;
-using PPWLib.Models.Customer;
+using DAL;
+using SBLib.Models;
+using SBLib.Models.Customer;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +10,7 @@ using System.Web;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
 using CommonLib.App_GlobalResources;
-using PPWLib.Helpers;
+using SBLib.Helpers;
 
 namespace SmartBusinessWeb.Controllers.Customer
 {
@@ -58,7 +58,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         public ActionResult RemoveFile(string cusCode, string filename)
         {
             string msg = string.Format(Resources.Resource.FileFormat, Resources.Resource.Removed);
-            PPWCommonLib.Helpers.FileHelper.Remove(cusCode, filename, CommonLib.Helpers.FuncType.Customer);
+            SBCommonLib.Helpers.FileHelper.Remove(cusCode, filename, CommonLib.Helpers.FuncType.Customer);
             return Json(msg);
         }
 
@@ -135,7 +135,7 @@ namespace SmartBusinessWeb.Controllers.Customer
                         _file.SaveAs(fname);
                         FileList.Add(filename);
                     }
-                    using (var context = new PPWDbContext(Session["DBName"].ToString()))
+                    using (var context = new SBDbContext(Session["DBName"].ToString()))
                     {
                         var cusInfo = context.CustomerInfoes.FirstOrDefault(x => x.fileName == filename && x.AccountProfileId == apId && x.cusCode == cusCode);
                         if (cusInfo == null)

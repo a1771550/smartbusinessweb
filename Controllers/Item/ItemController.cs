@@ -1,9 +1,9 @@
-﻿using PPWDAL;
+﻿using DAL;
 using SmartBusinessWeb.Infrastructure;
 using System.Collections.Generic;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
-using PPWLib.Models.Item;
+using SBLib.Models.Item;
 
 namespace SmartBusinessWeb.Controllers.Item
 {

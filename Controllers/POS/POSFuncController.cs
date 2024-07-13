@@ -1,5 +1,5 @@
 ﻿using SmartBusinessWeb.Infrastructure;
-using PPWLib.Models;
+using SBLib.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -8,16 +8,15 @@ using System.Linq;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
 using PagedList;
-using PPWDAL;
-using ModelHelper = PPWLib.Helpers.ModelHelper;
+using DAL;
+using ModelHelper = SBLib.Helpers.ModelHelper;
 using Newtonsoft.Json;
 using CommonLib.Models;
 using CommonLib.Helpers;
 using System.Xml;
-using PPWLib.Models.Item;
-using PPWLib.Models.POS.Sales;
-using PPWLib.Models.Sales;
-using DocumentFormat.OpenXml.ExtendedProperties;
+using SBLib.Models.Item;
+using SBLib.Models.POS.Sales;
+using SBLib.Models.Sales;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -45,7 +44,7 @@ namespace SmartBusinessWeb.Controllers
             ViewBag.ParentPage = "sales";
             ViewBag.PageName = "pendinginvoices";
             PendingInvoice model = new PendingInvoice();
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 model.PendingInvoiceList = (from st in context.MyobLocStocks
                                             join sl in context.RtlSalesLns
@@ -83,7 +82,7 @@ namespace SmartBusinessWeb.Controllers
         public ActionResult Dayends()
         {
             ViewBag.PageName = "dayends";
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 DayEndsModel model = new DayEndsModel();
                 model.DayEndsItems = (from f in context.SysFuncs
@@ -112,7 +111,7 @@ namespace SmartBusinessWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CountPayments(FormCollection formCollection)
         {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 DateTime currDate = DateTime.Now.Date;
                 DateTime currTime = DateTime.Now;
@@ -253,7 +252,7 @@ namespace SmartBusinessWeb.Controllers
             string epaytype = Refund.epaytype;
             #endregion
 
-            using var context = new PPWDbContext(Session["DBName"].ToString());
+            using var context = new SBDbContext(Session["DBName"].ToString());
             using var transaction = context.Database.BeginTransaction();
             try
             {
@@ -276,7 +275,7 @@ namespace SmartBusinessWeb.Controllers
             }
         }
 
-        private string HandleNormalRefund(List<SalesViewModel> RefundList, string CusCode, string Notes, List<PayLnView> Payments, decimal Change, string salescode, string devicecode, int isepay, string epaytype, PPWDbContext context, string refundcode, SessUser user)
+        private string HandleNormalRefund(List<SalesViewModel> RefundList, string CusCode, string Notes, List<PayLnView> Payments, decimal Change, string salescode, string devicecode, int isepay, string epaytype, SBDbContext context, string refundcode, SessUser user)
         {
             List<RtlSalesLn> SalesLines = new List<RtlSalesLn>();
             List<RtlPayLn> PayLnList = new List<RtlPayLn>();
@@ -324,9 +323,9 @@ namespace SmartBusinessWeb.Controllers
                         {
                             if (taxableitems.Count > 0 && taxableitems.Any(x => x.itmCode.ToLower() == refundln.itemcode.ToLower()))
                             {
-                                sellingprice = PPWCommonLib.CommonHelpers.ModelHelper.GetUnIncluTaxedPrice(refundln.price, taxModel.TaxRate);
+                                sellingprice = SBCommonLib.CommonHelpers.ModelHelper.GetUnIncluTaxedPrice(refundln.price, taxModel.TaxRate);
                                 //taxrate = taxModel.TaxRate; MUST NOT UNCOMMENT!!!
-                                taxamt = incltaxamt = refundln.qtyToRefund * PPWCommonLib.CommonHelpers.ModelHelper.GetIncluTax(refundln.price, taxModel.TaxRate);
+                                taxamt = incltaxamt = refundln.qtyToRefund * SBCommonLib.CommonHelpers.ModelHelper.GetIncluTax(refundln.price, taxModel.TaxRate);
                                 taxrate = CheckoutPortal == "kingdee" ? (decimal)taxableitems.FirstOrDefault(x => x.itmCode == refundln.itemcode).itmTaxPc : taxModel.TaxRate;
                             }
                         }
@@ -523,7 +522,7 @@ namespace SmartBusinessWeb.Controllers
                 Status = 0,
             };
 
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 var _ps = context.ePayments.FirstOrDefault(x => x.out_trade_no.ToUpper() == salescode.ToUpper());
                 if (_ps != null)
@@ -618,7 +617,7 @@ namespace SmartBusinessWeb.Controllers
             SalesEditModel model = new SalesEditModel();
             decimal totalpayamt = 0;
 
-            using var context = new PPWDbContext(Session["DBName"].ToString());
+            using var context = new SBDbContext(Session["DBName"].ToString());
             string finalsalescode = model.ProcessSimpleSales(context, Sales, SimpleSalesLns, Payments, ref totalpayamt);
             string msg = Resources.Resource.OrderSavedSuccessfully;
             if (string.IsNullOrEmpty(Sales.authcode)) return Json(new { msg = "", finalsalescode });            
@@ -675,7 +674,7 @@ namespace SmartBusinessWeb.Controllers
             SalesEditModel model = new SalesEditModel();
             decimal totalpayamt = 0;
 
-            using var context = new PPWDbContext(Session["DBName"].ToString());
+            using var context = new SBDbContext(Session["DBName"].ToString());
             string finalsalescode = model.ProcessSales(context, Sales, SalesLnList, Payments, ref totalpayamt, DeliveryItems);
             string msg = Resources.Resource.OrderSavedSuccessfully;
             if (string.IsNullOrEmpty(Sales.authcode)) return Json(new { msg = "", finalsalescode });            
@@ -734,7 +733,7 @@ namespace SmartBusinessWeb.Controllers
     */
             PayService payService = new PayService();
 
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 var _ps = context.ePayments.FirstOrDefault(x => x.out_trade_no.ToUpper() == salescode.ToUpper());
                 if (_ps != null)
@@ -809,7 +808,7 @@ namespace SmartBusinessWeb.Controllers
         {
             PayService payService = new PayService();
 
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 var _ps = context.ePayments.FirstOrDefault(x => x.out_trade_no.ToUpper() == salescode.ToUpper());
                 if (_ps != null)

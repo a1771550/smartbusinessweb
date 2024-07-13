@@ -1,7 +1,7 @@
 ﻿using SmartBusinessWeb.Infrastructure;
 using System.Collections.Generic;
 using System.Web.Mvc;
-using PPWLib.Models.Customer.Enquiry;
+using SBLib.Models.Customer.Enquiry;
 using Resources = CommonLib.App_GlobalResources;
 
 namespace SmartBusinessWeb.Controllers.Enquiry.Enquiry

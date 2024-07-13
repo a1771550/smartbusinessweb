@@ -13,7 +13,7 @@
 // 
 #pragma warning disable 1591
 
-namespace SmartBusinessWeb.localhost {
+namespace Web.localhost {
     using System.Diagnostics;
     using System;
     using System.Xml.Serialization;
@@ -23,11 +23,13 @@ namespace SmartBusinessWeb.localhost {
     
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Web.Services.WebServiceBindingAttribute(Name="DayendsSoap", Namespace="http://tempuri.org/")]
     public partial class Dayends : System.Web.Services.Protocols.SoapHttpClientProtocol {
+        
+        private System.Threading.SendOrPostCallback WriteAbssSalesToDbOperationCompleted;
         
         private System.Threading.SendOrPostCallback ReadMYOBOperationCompleted;
         
@@ -53,7 +55,7 @@ namespace SmartBusinessWeb.localhost {
         
         /// <remarks/>
         public Dayends() {
-            this.Url = global::SmartBusinessWeb.Properties.Settings.Default.SmartBusinessWeb_localhost_Dayends;
+            this.Url = global::Web.Properties.Settings.Default.Web_localhost_Dayends;
             if ((this.IsLocalFileSystemWebService(this.Url) == true)) {
                 this.UseDefaultCredentials = true;
                 this.useDefaultCredentialsSetExplicitly = false;
@@ -88,6 +90,9 @@ namespace SmartBusinessWeb.localhost {
         }
         
         /// <remarks/>
+        public event WriteAbssSalesToDbCompletedEventHandler WriteAbssSalesToDbCompleted;
+        
+        /// <remarks/>
         public event ReadMYOBCompletedEventHandler ReadMYOBCompleted;
         
         /// <remarks/>
@@ -116,6 +121,33 @@ namespace SmartBusinessWeb.localhost {
         
         /// <remarks/>
         public event MoveFileCompletedEventHandler MoveFileCompleted;
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/WriteAbssSalesToDb", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public string WriteAbssSalesToDb() {
+            object[] results = this.Invoke("WriteAbssSalesToDb", new object[0]);
+            return ((string)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void WriteAbssSalesToDbAsync() {
+            this.WriteAbssSalesToDbAsync(null);
+        }
+        
+        /// <remarks/>
+        public void WriteAbssSalesToDbAsync(object userState) {
+            if ((this.WriteAbssSalesToDbOperationCompleted == null)) {
+                this.WriteAbssSalesToDbOperationCompleted = new System.Threading.SendOrPostCallback(this.OnWriteAbssSalesToDbOperationCompleted);
+            }
+            this.InvokeAsync("WriteAbssSalesToDb", new object[0], this.WriteAbssSalesToDbOperationCompleted, userState);
+        }
+        
+        private void OnWriteAbssSalesToDbOperationCompleted(object arg) {
+            if ((this.WriteAbssSalesToDbCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.WriteAbssSalesToDbCompleted(this, new WriteAbssSalesToDbCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
         
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/ReadMYOB", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
@@ -434,7 +466,7 @@ namespace SmartBusinessWeb.localhost {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -443,11 +475,37 @@ namespace SmartBusinessWeb.localhost {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
+    public delegate void WriteAbssSalesToDbCompletedEventHandler(object sender, WriteAbssSalesToDbCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class WriteAbssSalesToDbCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal WriteAbssSalesToDbCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public string Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void ReadMYOBCompletedEventHandler(object sender, ReadMYOBCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ReadMYOBCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -469,15 +527,15 @@ namespace SmartBusinessWeb.localhost {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void WriteMYOBBulkCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void WriteMYOBCompletedEventHandler(object sender, WriteMYOBCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class WriteMYOBCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -499,11 +557,11 @@ namespace SmartBusinessWeb.localhost {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void WriteTestCompletedEventHandler(object sender, WriteTestCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class WriteTestCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -525,11 +583,11 @@ namespace SmartBusinessWeb.localhost {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void TestMyobConnectionCompletedEventHandler(object sender, TestMyobConnectionCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class TestMyobConnectionCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -551,11 +609,11 @@ namespace SmartBusinessWeb.localhost {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void AsynTestCompletedEventHandler(object sender, AsynTestCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class AsynTestCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -577,11 +635,11 @@ namespace SmartBusinessWeb.localhost {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void ParameterTestCompletedEventHandler(object sender, ParameterTestCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ParameterTestCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -603,15 +661,15 @@ namespace SmartBusinessWeb.localhost {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void ConsoleArgsCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void CheckConnectedCompletedEventHandler(object sender, CheckConnectedCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class CheckConnectedCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -633,7 +691,7 @@ namespace SmartBusinessWeb.localhost {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void MoveFileCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
 }
 

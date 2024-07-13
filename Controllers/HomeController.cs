@@ -1,9 +1,9 @@
 ﻿using System.Web.Mvc;
 using System.Linq;
 using Resources = CommonLib.App_GlobalResources;
-using PPWDAL;
-using ModelHelper = PPWLib.Helpers.ModelHelper;
-using PPWCommonLib.CommonHelpers;
+using DAL;
+using ModelHelper = SBLib.Helpers.ModelHelper;
+using SBCommonLib.CommonHelpers;
 using CommonLib.Helpers;
 using System.Configuration;
 
@@ -25,7 +25,7 @@ namespace SmartBusinessWeb.Controllers
             Session["CurrentCulture"] = Id;
             string dbname = Session["DBName"] == null ? DefaultDbName : Session["DBName"].ToString();
 
-			using (var context = new PPWDbContext(dbname))
+			using (var context = new SBDbContext(dbname))
 			{
                 Session currsess = null;
                 if (Session["SessionToken"] == null)
@@ -43,7 +43,7 @@ namespace SmartBusinessWeb.Controllers
                     context.SaveChanges();
 
                     //update menu
-                    PPWLib.Helpers.MenuHelper.UpdateMenus(context);
+                    SBLib.Helpers.MenuHelper.UpdateMenus(context);
                 }
                 else
                 {

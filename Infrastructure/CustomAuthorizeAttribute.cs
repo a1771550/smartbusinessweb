@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
-using PPWDAL;
-using PPWLib.Models;
+using DAL;
+using SBLib.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;

@@ -1,4 +1,4 @@
-﻿using PPWLib.Models.Customer;
+﻿using SBLib.Models.Customer;
 using SmartBusinessWeb.Infrastructure;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;

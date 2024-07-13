@@ -1,11 +1,11 @@
 ﻿using SmartBusinessWeb.Infrastructure;
-using PPWLib.Models.Purchase.Supplier;
+using SBLib.Models.Purchase.Supplier;
 using System.Web.Mvc;
 using PagedList;
 using Resources = CommonLib.App_GlobalResources;
 using System.Linq;
-using PPWDAL;
-using PPWLib.Models;
+using DAL;
+using SBLib.Models;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
@@ -21,7 +21,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
         public ActionResult RemoveFile(string supCode, string filename)
         {
             string msg = string.Format(Resources.Resource.FileFormat, Resources.Resource.Removed);
-            PPWCommonLib.Helpers.FileHelper.Remove(supCode, filename, CommonLib.Helpers.FuncType.Supplier);
+            SBCommonLib.Helpers.FileHelper.Remove(supCode, filename, CommonLib.Helpers.FuncType.Supplier);
             return Json(msg);
         }
 
@@ -54,7 +54,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
                         _file.SaveAs(fname);
                         FileList.Add(filename);
                     }
-                    using (var context = new PPWDbContext(Session["DBName"].ToString()))
+                    using (var context = new SBDbContext(Session["DBName"].ToString()))
                     {
                         var supInfo = context.SupplierInfoes.FirstOrDefault(x => x.fileName == filename && x.AccountProfileId == apId && x.supCode==supCode);
                         if (supInfo == null)

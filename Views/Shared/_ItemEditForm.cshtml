@@ -3,7 +3,7 @@
     List<ItemAttribute> ItemAttrList = ViewData["ItemAttrList"] == null ? null : ViewData["ItemAttrList"] as List<ItemAttribute>;
 
    
-    PPWLib.Models.Item.ItemModel Item = ViewData["Item"] == null ? null : ViewData["Item"] as ItemModel;
+    SBLib.Models.Item.ItemModel Item = ViewData["Item"] == null ? null : ViewData["Item"] as ItemModel;
 
     string Currency = ViewData["Currency"] as string;
 
@@ -13,7 +13,7 @@
     string frmId =  "frmItem";
     int lang = Convert.ToInt32(ViewData["lang"]);
     bool EnableBuySellUnits = Convert.ToBoolean(ViewData["EnableBuySellUnits"]);
-    List<PPWLib.Models.MYOB.AccountModel> ACList = ViewData["ACList"] as List<PPWLib.Models.MYOB.AccountModel>;
+    List<SBLib.Models.MYOB.AccountModel> ACList = ViewData["ACList"] as List<SBLib.Models.MYOB.AccountModel>;
     bool nonabss = Convert.ToBoolean(ViewData["nonabss"]);
     int AccountProfileId = Convert.ToInt32(ViewData["AccountProfileId"]);
     int MaxCodeLength = Convert.ToInt32(ViewData["MaxCodeLength"]);

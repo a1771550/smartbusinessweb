@@ -1,6 +1,6 @@
 ﻿using System.Web.Optimization;
 
-namespace SmartBusinessWeb.App_Start
+namespace Web.App_Start
 {
     public class BundleConfig
     {

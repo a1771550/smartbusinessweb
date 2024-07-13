@@ -11,7 +11,7 @@
 	string Currency = ViewData["currency"].ToString();
 
 	int lang = Convert.ToInt32(ViewData["lang"]);
-	List<PPWLib.Models.MYOB.AccountModel> ACList = ViewData["ACList"] as List<PPWLib.Models.MYOB.AccountModel>;
+	List<SBLib.Models.MYOB.AccountModel> ACList = ViewData["ACList"] as List<SBLib.Models.MYOB.AccountModel>;
 	bool EnableBuySellUnits = Convert.ToBoolean(ViewData["EnableBuySellUnits"]);
 
 	string disabled = editmode && Item.HasSalesRecords ? "disabled" : "";

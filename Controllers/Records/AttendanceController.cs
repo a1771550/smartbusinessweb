@@ -1,8 +1,8 @@
 ﻿using CommonLib.App_GlobalResources;
 using CommonLib.Helpers;
 using Dapper;
-using PPWLib.Models;
-using PPWLib.Models.Attendance;
+using SBLib.Models;
+using SBLib.Models.Attendance;
 using SmartBusinessWeb.Infrastructure;
 using System;
 using System.Collections.Generic;

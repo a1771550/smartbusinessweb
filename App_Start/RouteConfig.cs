@@ -5,7 +5,7 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
 
-namespace SmartBusinessWeb
+namespace Web
 {
     public class RouteConfig
     {

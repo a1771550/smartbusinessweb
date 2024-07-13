@@ -1,12 +1,12 @@
-﻿using PPWDAL;
+﻿using DAL;
 using SmartBusinessWeb.Infrastructure;
-using PPWLib.Models;
+using SBLib.Models;
 using System.Linq;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
 using CommonLib.Helpers;
 using System.Collections.Generic;
-using PPWLib.Models.Receipt;
+using SBLib.Models.Receipt;
 
 namespace SmartBusinessWeb.Controllers.Settings
 {
@@ -19,7 +19,7 @@ namespace SmartBusinessWeb.Controllers.Settings
         {
             ViewBag.ParentPage = "setup";
             ViewBag.PageName = "receipt";
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 ReceiptModel model = (from r in context.Receipts
                                           where r.deviceCode.ToLower() == ComInfo.Device.ToLower() && r.shopCode.ToLower() == ComInfo.Shop.ToLower() && r.AccountProfileId == ComInfo.AccountProfileId
@@ -83,7 +83,7 @@ namespace SmartBusinessWeb.Controllers.Settings
         [HttpPost]
         public ActionResult Edit(ReceiptModel model, FormCollection formCollection)
         {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {                
                 Receipt receipt = context.Receipts.Find(model.Id);
                 int lang = CultureHelper.CurrentCulture;

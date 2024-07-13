@@ -1,11 +1,11 @@
 ﻿using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
-using PPWLib.Models;
-using PPWDAL;
+using SBLib.Models;
+using DAL;
 using System.Configuration;
-using Helpers = PPWLib.Helpers;
+using Helpers = SBLib.Helpers;
 using Dapper;
-using PPWLib.Models.Receipt;
+using SBLib.Models.Receipt;
 
 namespace SmartBusinessWeb.Controllers
 {

@@ -1,9 +1,9 @@
-﻿@model PPWLib.Models.Purchase.PurchaseEditModel
+﻿@model SBLib.Models.Purchase.PurchaseEditModel
 
 @{
     ViewBag.Title = Resources.Resource.PrintPreview;
     ComInfo comInfo = Model.ComInfo;
-    PPWLib.Models.Purchase.PurchaseModel ps = Model.Purchase;
+    SBLib.Models.Purchase.PurchaseModel ps = Model.Purchase;
     Layout = null;
     string cssbsfile = HttpContext.Current.Session["CssBSFile"] == null ? @"Content/bs4" : HttpContext.Current.Session["CssBSFile"].ToString();
     string scriptbsfile = HttpContext.Current.Session["ScriptBSFile"] == null ? @"Scripts/bs4" : HttpContext.Current.Session["ScriptBSFile"].ToString();

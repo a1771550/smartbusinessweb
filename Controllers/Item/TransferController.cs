@@ -1,6 +1,6 @@
 ﻿using SmartBusinessWeb.Infrastructure;
-using PPWDAL;
-using PPWLib.Models.Item;
+using DAL;
+using SBLib.Models.Item;
 using System;
 using System.Collections.Generic;
 using System.Linq;

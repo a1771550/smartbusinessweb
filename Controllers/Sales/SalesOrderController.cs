@@ -1,7 +1,7 @@
 ﻿using CommonLib.Models;
-using PPWDAL;
-using PPWLib.Models.POS.Sales;
-using PPWLib.Models.Purchase;
+using DAL;
+using SBLib.Models.POS.Sales;
+using SBLib.Models.Purchase;
 using SmartBusinessWeb.Infrastructure;
 using System;
 using System.Collections.Generic;

@@ -1,16 +1,16 @@
 ﻿using CommonLib.Helpers;
-using PPWCommonLib.CommonHelpers;
-using PPWDAL;
-using PPWLib.Helpers;
+using SBCommonLib.CommonHelpers;
+using DAL;
+using SBLib.Helpers;
 using SmartBusinessWeb.Infrastructure;
-using PPWLib.Models;
+using SBLib.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
-using PPWLib.Models.Sales;
+using SBLib.Models.Sales;
 
 namespace SmartBusinessWeb.Controllers.Settings
 {
@@ -44,7 +44,7 @@ namespace SmartBusinessWeb.Controllers.Settings
         [HttpPost]
         public ActionResult Create(PayTypeModel model)
         {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 int lang = (int)Session["CurrentCulture"];
                 byte displayorder = (byte)context.PaymentTypes.OrderByDescending(x => x.pmtDisplayOrder).Select(x => x.pmtDisplayOrder).FirstOrDefault();
@@ -90,7 +90,7 @@ namespace SmartBusinessWeb.Controllers.Settings
         [HttpGet]
         public ActionResult Edit(int Id)
         {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 PaymentType paymentType = context.PaymentTypes.Find(Id);
                 int lang = (int)Session["CurrentCulture"];
@@ -129,7 +129,7 @@ namespace SmartBusinessWeb.Controllers.Settings
         [HttpPost]
         public ActionResult Edit(PayTypeModel model)
         {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 PaymentType paymentType = context.PaymentTypes.Find(model.Id);
 
@@ -171,7 +171,7 @@ namespace SmartBusinessWeb.Controllers.Settings
         [HttpPost]
         public ActionResult Delete(int Id)
         {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 PaymentType paymentType = context.PaymentTypes.Find(Id);
                 string msg = string.Empty;

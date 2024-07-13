@@ -1,33 +1,33 @@
 ﻿using SmartBusinessWeb.Infrastructure;
-using PPWLib.Models;
+using SBLib.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.IO;
+using localhost = Web.localhost;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
 using System.Data.Entity.Validation;
-using PPWDAL;
-using ModelHelper = PPWLib.Helpers.ModelHelper;
-using PPWCommonLib.BaseModels;
+using DAL;
+using ModelHelper = SBLib.Helpers.ModelHelper;
+using SBCommonLib.BaseModels;
 using CommonLib.Helpers;
 using CommonLib.Models;
-using PPWLib.Models.MYOB;
-using FileHelper = PPWCommonLib.CommonHelpers.FileHelper;
-using PPWLib.Helpers;
-using PPWLib.Models.Purchase;
-using PPWLib.Models.WholeSales;
-using PPWLib.Models.Customer;
+using SBLib.Models.MYOB;
+using FileHelper = SBCommonLib.CommonHelpers.FileHelper;
+using SBLib.Helpers;
+using SBLib.Models.Purchase;
+using SBLib.Models.WholeSales;
+using SBLib.Models.Customer;
 using Microsoft.Data.SqlClient;
-using PPWLib.Models.POS.Sales;
-using PPWLib.Models.Journal;
+using SBLib.Models.POS.Sales;
+using SBLib.Models.Journal;
 using CommonLib.Models.MYOB;
-using PPWLib.Models.Item;
-using PPWCommonLib.Helpers;
-using SalesEditModel = PPWLib.Models.AbssReport.SalesEditModel;
+using SBLib.Models.Item;
+using SBCommonLib.Helpers;
+using SalesEditModel = SBLib.Models.AbssReport.SalesEditModel;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -48,7 +48,7 @@ namespace SmartBusinessWeb.Controllers
         //[CustomAuthorize("datatransfer", "admin", "superadmin")]
         public JsonResult CreateDayendsFolder(DayEndsModel model)
         {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 Session currsess = ModelHelper.GetCurrentSession(context);
                 int lang = currsess.sesLang;
@@ -103,7 +103,7 @@ namespace SmartBusinessWeb.Controllers
             DateTime dateTime = DateTime.Now;
             SessUser curruser = Session["User"] as SessUser;
 
-            using var context = new PPWDbContext(Session["DBName"].ToString());
+            using var context = new SBDbContext(Session["DBName"].ToString());
             string AbssConnectionString = GetAbssConnectionString(context, "READ");
 
             if (filename.StartsWith("Sales_")) SalesEditModel.WriteAbssSalesToDb();
@@ -181,7 +181,7 @@ namespace SmartBusinessWeb.Controllers
                 }
                 if (!string.IsNullOrEmpty(sb.ToString()))
                 {
-                    using var _context = new PPWDbContext(Session["DBName"].ToString());
+                    using var _context = new SBDbContext(Session["DBName"].ToString());
                     ModelHelper.WriteLog(_context, string.Format("Import JobName data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
                 }
 
@@ -249,7 +249,7 @@ namespace SmartBusinessWeb.Controllers
                 }
                 if (!string.IsNullOrEmpty(sb.ToString()))
                 {
-                    using var _context = new PPWDbContext(Session["DBName"].ToString());
+                    using var _context = new SBDbContext(Session["DBName"].ToString());
                     ModelHelper.WriteLog(_context, string.Format("Import Currency data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
                 }
             }
@@ -341,7 +341,7 @@ namespace SmartBusinessWeb.Controllers
                 }
                 if (!string.IsNullOrEmpty(sb.ToString()))
                 {
-                    using var _context = new PPWDbContext(Session["DBName"].ToString());
+                    using var _context = new SBDbContext(Session["DBName"].ToString());
                     ModelHelper.WriteLog(_context, string.Format("Import Tax data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
                 }
             }
@@ -400,7 +400,7 @@ namespace SmartBusinessWeb.Controllers
                 }
                 if (!string.IsNullOrEmpty(sb.ToString()))
                 {
-                    using var _context = new PPWDbContext(Session["DBName"].ToString());
+                    using var _context = new SBDbContext(Session["DBName"].ToString());
                     ModelHelper.WriteLog(_context, string.Format("Import Account data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
                 }
             }
@@ -432,7 +432,7 @@ namespace SmartBusinessWeb.Controllers
             return View(model);
         }
 
-        private static void WriteFileLog(List<string> donefilelist, List<string> failedfilelist, PPWDbContext context)
+        private static void WriteFileLog(List<string> donefilelist, List<string> failedfilelist, SBDbContext context)
         {
             if (donefilelist.Count > 0)
             {
@@ -621,7 +621,7 @@ namespace SmartBusinessWeb.Controllers
             string checkoutportal = string.Empty;
             bool approvalmode = (bool)comInfo.ApprovalMode;          
 
-            using var context = new PPWDbContext(Session["DBName"].ToString());
+            using var context = new SBDbContext(Session["DBName"].ToString());
             string ConnectionString = GetAbssConnectionString(context, "READ_WRITE");
 
             if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
@@ -686,7 +686,7 @@ namespace SmartBusinessWeb.Controllers
                         }
                         if (!string.IsNullOrEmpty(sb.ToString()))
                         {
-                            using var _context = new PPWDbContext(Session["DBName"].ToString());
+                            using var _context = new SBDbContext(Session["DBName"].ToString());
                             ModelHelper.WriteLog(_context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
                         }
 
@@ -752,7 +752,7 @@ namespace SmartBusinessWeb.Controllers
                         }
                         if (!string.IsNullOrEmpty(sb.ToString()))
                         {
-                            using var _context = new PPWDbContext(Session["DBName"].ToString());
+                            using var _context = new SBDbContext(Session["DBName"].ToString());
                             ModelHelper.WriteLog(_context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
                         }
 
@@ -818,7 +818,7 @@ namespace SmartBusinessWeb.Controllers
                         }
                         if (!string.IsNullOrEmpty(sb.ToString()))
                         {
-                            using var _context = new PPWDbContext(Session["DBName"].ToString());
+                            using var _context = new SBDbContext(Session["DBName"].ToString());
                             ModelHelper.WriteLog(_context, string.Format("Export PreSalesModel data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
                         }
 
@@ -883,7 +883,7 @@ namespace SmartBusinessWeb.Controllers
                         }
                         if (!string.IsNullOrEmpty(sb.ToString()))
                         {
-                            using var _context = new PPWDbContext(Session["DBName"].ToString());
+                            using var _context = new SBDbContext(Session["DBName"].ToString());
                             ModelHelper.WriteLog(_context, string.Format("Export Wholesales data From Shop failed: {0}; sql:{1}; connectionstring: {2}", sb, string.Join(",", sqllist), ConnectionString), "ExportFrmShop");
                         }
                         #endregion
@@ -904,7 +904,7 @@ namespace SmartBusinessWeb.Controllers
                         }
 
                         ModelHelper.WriteLog(context, string.Join(",", sqllist), "ExportFrmShop#Purchase");
-                        List<PPWDAL.Purchase> pslist = context.Purchases.Where(x => x.AccountProfileId == apId && dmodel.PoCheckOutIds.Any(y => x.Id == y)).ToList();
+                        List<DAL.Purchase> pslist = context.Purchases.Where(x => x.AccountProfileId == apId && dmodel.PoCheckOutIds.Any(y => x.Id == y)).ToList();
                         foreach (var ps in pslist)
                         {
                             ps.pstCheckout = true;
@@ -1034,7 +1034,7 @@ namespace SmartBusinessWeb.Controllers
 
         private void updateDB(string[] _checkoutCodes, CheckOutType checkOutType)
         {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 List<string> checkoutCodes = new List<string>();
                 checkoutCodes = _checkoutCodes.ToList();
@@ -1086,7 +1086,7 @@ namespace SmartBusinessWeb.Controllers
 
         private void WriteSupplierToABSS(int accountprofileId, ref OnlineModeItem onlineModeItem, DataTransferModel dmodel)
         {
-            using var context = new PPWDbContext(Session["DBName"].ToString());
+            using var context = new SBDbContext(Session["DBName"].ToString());
 
             string ConnectionString = GetAbssConnectionString(context, "READ_WRITE");
             ModelHelper.GetDataTransferData(context, CheckOutType.Suppliers, ref dmodel);
@@ -1131,7 +1131,7 @@ namespace SmartBusinessWeb.Controllers
             dayends.WriteMYOB(ConnectionString, sql);
         }
 
-        private static void GetMyobSQL4Customer(PPWDbContext context, out List<string> values, List<CustomerModel> customerlist)
+        private static void GetMyobSQL4Customer(SBDbContext context, out List<string> values, List<CustomerModel> customerlist)
         {
             List<string> columns = new List<string>();
             List<CustomerPointPriceLevelModel> customerpointpricelevels = new List<CustomerPointPriceLevelModel>();
@@ -1191,7 +1191,7 @@ namespace SmartBusinessWeb.Controllers
             string sql = MyobHelper.InsertImportCustomer4ApprovalSql.Replace("0", "{0}");
             List<string> sqllist = new List<string>();
 
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 string ConnectionString = GetAbssConnectionString(context, "READ_WRITE");
                 ModelHelper.GetDataTransferData(context, CheckOutType.Customers, ref dmodel);
@@ -1219,7 +1219,7 @@ namespace SmartBusinessWeb.Controllers
             string sql = ApprovalMode ? MyobHelper.InsertImportCustomerBasicSql4Approval : MyobHelper.InsertImportCustomerBasicSql;
             List<string> sqllist = [];
 
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 string ConnectionString = GetAbssConnectionString(context, "READ_WRITE");
                 List<string> columns = [];
@@ -1275,7 +1275,7 @@ namespace SmartBusinessWeb.Controllers
                 }
             }
         }
-        private string GetAbssConnectionString(PPWDbContext context, string accesstype)
+        private string GetAbssConnectionString(SBDbContext context, string accesstype)
         {
             return MYOBHelper.GetConnectionString(context, accesstype, apId);
         }

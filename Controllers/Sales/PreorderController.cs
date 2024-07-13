@@ -1,6 +1,6 @@
-﻿using PPWLib.Helpers;
-using PPWLib.Models;
-using PPWLib.Models.POS.Sales;
+﻿using SBLib.Helpers;
+using SBLib.Models;
+using SBLib.Models.POS.Sales;
 using SmartBusinessWeb.Infrastructure;
 using System.Collections.Generic;
 using System.Web.Mvc;
@@ -51,7 +51,7 @@ namespace SmartBusinessWeb.Controllers.Sales
 			{
 				#region ePayment
 				decimal totalpayamt = 0;
-				using var context = new PPWDAL.PPWDbContext(ModelHelper.GetDbName(apId));
+				using var context = new DAL.SBDbContext(ModelHelper.GetDbName(apId));
 				//var salescode = Sale.salescode;
 				var epayReturn = SalesEditModel.HandleEPayMent(PreSales, PreSalesLnList, ref totalpayamt, context, finalsalescode, apId);
 				var _ps = epayReturn.ps;

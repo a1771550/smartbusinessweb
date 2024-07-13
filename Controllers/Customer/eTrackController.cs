@@ -9,8 +9,8 @@ using CommonLib.Helpers;
 using CommonLib.BaseModels;
 using System.Configuration;
 using Dapper;
-using PPWLib.Models.Customer;
-using PPWLib.Models.Customer.eBlast;
+using SBLib.Models.Customer;
+using SBLib.Models.Customer.eBlast;
 
 namespace SmartBusinessWeb.Controllers.Customer
 {
@@ -201,7 +201,7 @@ namespace SmartBusinessWeb.Controllers.Customer
         /// </summary>
         //public string MockData()
         //{
-        //    econtext = new PPWDbContext(Session["DBName"].ToString());
+        //    econtext = new SBDbContext(Session["DBName"].ToString());
         //    for (int i = 0; i < 100; i++)
         //    {
         //        eTrack log = new eTrack

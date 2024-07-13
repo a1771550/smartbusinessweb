@@ -1,4 +1,4 @@
-﻿@model PPWLib.Models.Item.ItemEditModel
+﻿@model SBLib.Models.Item.ItemEditModel
 
 @{
     bool editmode = Model.Item.itmItemID > 0;
@@ -8,7 +8,7 @@
     string supcodelist = string.Join(",", Model.ItemSupCodeList);
     int rand = CommonHelper.GetVersionRandomNo();
     int lang = CultureHelper.CurrentCulture;
-    PPWLib.Models.Item.ItemModel Item = Model.Item;
+    SBLib.Models.Item.ItemModel Item = Model.Item;
     bool nonabss = Model.NonABSS;
 
 }

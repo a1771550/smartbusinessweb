@@ -1,9 +1,9 @@
 ﻿using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using SmartBusinessWeb.App_Start;
+using Web.App_Start;
 
-namespace SmartBusinessWeb
+namespace Web
 {
     public class MvcApplication : System.Web.HttpApplication
     {

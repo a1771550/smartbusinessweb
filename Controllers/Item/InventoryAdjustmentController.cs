@@ -1,7 +1,7 @@
 using SmartBusinessWeb.Infrastructure;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
-using PPWLib.Models.Item;
+using SBLib.Models.Item;
 
 namespace SmartBusinessWeb.Controllers.Item
 {

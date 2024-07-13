@@ -3,16 +3,16 @@ using System.Linq;
 using System.Web.Mvc;
 using Resource = CommonLib.App_GlobalResources.Resource;
 using System.Configuration;
-using PPWLib.Models;
+using SBLib.Models;
 using SmartBusinessWeb.Infrastructure;
 using Dapper;
-using PPWDAL;
+using DAL;
 using System.IO;
 using System.Web;
 using System;
 using CommonLib.Helpers;
-using PPWLib.Models.Customer;
-using PPWLib.Models.Customer.Enquiry;
+using SBLib.Models.Customer;
+using SBLib.Models.Customer.Enquiry;
 
 namespace SmartBusinessWeb.Controllers.Customer.Enquiry
 {
@@ -35,7 +35,7 @@ namespace SmartBusinessWeb.Controllers.Customer.Enquiry
         public ActionResult RemoveFile(string enqId, string filename)
         {
             string msg = string.Format(Resource.FileFormat, Resource.Removed);
-            PPWCommonLib.Helpers.FileHelper.Remove(enqId, filename, FuncType.Enquiry);
+            SBCommonLib.Helpers.FileHelper.Remove(enqId, filename, FuncType.Enquiry);
             return Json(msg);
         }
 
@@ -68,7 +68,7 @@ namespace SmartBusinessWeb.Controllers.Customer.Enquiry
                         _file.SaveAs(fname);
                         FileList.Add(filename);
                     }
-                    using (var context = new PPWDbContext(Session["DBName"].ToString()))
+                    using (var context = new SBDbContext(Session["DBName"].ToString()))
                     {
                         var enqInfo = context.EnquiryInfoes.FirstOrDefault(x => x.fileName == filename && x.AccountProfileId == apId && x.enId == enqId);
                         if (enqInfo == null)

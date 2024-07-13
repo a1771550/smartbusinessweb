@@ -1,13 +1,13 @@
-﻿using PPWDAL;
+﻿using DAL;
 using SmartBusinessWeb.Infrastructure;
-using PPWLib.Models;
+using SBLib.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using ModelHelper = PPWLib.Helpers.ModelHelper;
-using PPWLib.Models.Item;
-using PPWLib.Helpers;
+using ModelHelper = SBLib.Helpers.ModelHelper;
+using SBLib.Models.Item;
+using SBLib.Helpers;
 
 namespace SmartBusinessWeb.Controllers.Report
 {
@@ -21,7 +21,7 @@ namespace SmartBusinessWeb.Controllers.Report
             SessUser user = Session["User"] as SessUser;
             ViewBag.ParentPage = "dayends";
             ViewBag.PageName = "CPS";
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 CountPaymentSummary model = new CountPaymentSummary();
                 Session session = ModelHelper.GetCurrentSession(context);
@@ -84,7 +84,7 @@ namespace SmartBusinessWeb.Controllers.Report
             SessUser user = Session["User"] as SessUser;
             ViewBag.ParentPage = "dayends";
             ViewBag.PageName = "CPD";
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 CountPaymentDetail model = new CountPaymentDetail();
                 //string token = Session["SessionToken"].ToString();
@@ -215,7 +215,7 @@ namespace SmartBusinessWeb.Controllers.Report
             SessUser user = Session["User"] as SessUser;
             ViewBag.ParentPage = "dayends";
             ViewBag.PageName = "SIS";
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 SessionItemSales model = new SessionItemSales();
                 Session session = ModelHelper.GetCurrentSession(context);

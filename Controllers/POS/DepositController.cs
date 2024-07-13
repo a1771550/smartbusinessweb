@@ -1,12 +1,12 @@
-﻿using PPWLib.Models.POS.Sales;
-using PPWLib.Models;
+﻿using SBLib.Models.POS.Sales;
+using SBLib.Models;
 using SmartBusinessWeb.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using PPWLib.Helpers;
+using SBLib.Helpers;
 using CommonLib.Models;
 
 namespace SmartBusinessWeb.Controllers.POS

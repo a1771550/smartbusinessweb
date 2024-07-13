@@ -1,8 +1,8 @@
 ﻿using CommonLib.Models;
-using PPWDAL;
-using PPWLib.Helpers;
+using DAL;
+using SBLib.Helpers;
 using SmartBusinessWeb.Infrastructure;
-using PPWLib.Models;
+using SBLib.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +11,7 @@ using System.Web;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
 using CommonLib.Helpers;
-using PPWLib.Models.Settings;
+using SBLib.Models.Settings;
 
 namespace SmartBusinessWeb.Controllers.Settings
 {
@@ -71,7 +71,7 @@ namespace SmartBusinessWeb.Controllers.Settings
                         string fname = Path.Combine(absdir, string.Format(logo, ext));
                         file.SaveAs(fname);
                     }
-                    using (var context = new PPWDbContext(Session["DBName"].ToString()))
+                    using (var context = new SBDbContext(Session["DBName"].ToString()))
                     {
                         AppParam logofile = context.AppParams.FirstOrDefault(x => x.appParam == "ReceiptLogoFileName");
                         string filename = string.Format(logo, ext);
@@ -102,7 +102,7 @@ namespace SmartBusinessWeb.Controllers.Settings
             ViewBag.ParentPage = "setup";           
             int apId = ComInfo.AccountProfileId;
 
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 BasicSettingsModel model = new BasicSettingsModel();
                 model.Device = Session["Device"] as DeviceModel;
@@ -166,13 +166,13 @@ namespace SmartBusinessWeb.Controllers.Settings
                 model.EnableLogo = context.AppParams.FirstOrDefault(x => x.appParam.ToLower() == "logoreceipt" && x.AccountProfileId == apId).appVal == "1";
                 if (model.EnableLogo)
                 {
-                    model.ReceiptLogo = PPWCommonLib.CommonHelpers.ModelHelper.GetReceiptLogo(ProjectEnum.G3);
+                    model.ReceiptLogo = SBCommonLib.CommonHelpers.ModelHelper.GetReceiptLogo(ProjectEnum.G3);
                 }
                 else
                 {
-                    model.ReceiptLogo = PPWCommonLib.CommonHelpers.ModelHelper.GetDefaultImg();
+                    model.ReceiptLogo = SBCommonLib.CommonHelpers.ModelHelper.GetDefaultImg();
                 }
-                model.DicAcNo = PPWLib.Helpers.ModelHelper.GetDicAcNo(context);
+                model.DicAcNo = SBLib.Helpers.ModelHelper.GetDicAcNo(context);
                 model.AccountNo = model.DicAcNo[ComInfo.AccountProfileId];
                 return View(model);
             }
@@ -184,7 +184,7 @@ namespace SmartBusinessWeb.Controllers.Settings
         [HttpPost]
         public ActionResult Edit(FormCollection formCollection)
         {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 foreach (var key in formCollection.AllKeys)
                 {

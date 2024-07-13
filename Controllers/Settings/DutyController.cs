@@ -1,4 +1,4 @@
-﻿using PPWLib.Models.Settings.Duty;
+﻿using SBLib.Models.Settings.Duty;
 using SmartBusinessWeb.Infrastructure;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;

@@ -1,7 +1,7 @@
 ﻿using CommonLib.App_GlobalResources;
 using CommonLib.Helpers;
 using Dapper;
-using PPWLib.Models.Training;
+using SBLib.Models.Training;
 using SmartBusinessWeb.Infrastructure;
 using System.Collections.Generic;
 using System.Configuration;

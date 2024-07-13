@@ -1,4 +1,4 @@
-﻿using PPWLib.Models.Coupon;
+﻿using SBLib.Models.Coupon;
 using SmartBusinessWeb.Infrastructure;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;

@@ -3,7 +3,7 @@
 	string Currency = ViewData["Currency"].ToString();
 	var rtsCurrency = ViewData["rtsCurrency"] == null ? "HKD" : (string)ViewData["rtsCurrency"];
 	List<SelectListItem> LocationList = (List<SelectListItem>)ViewData["LocationList"];
-	List<PPWLib.Models.MYOB.MyobJobModel> JobList = (List<PPWLib.Models.MYOB.MyobJobModel>)ViewData["JobList"];
+	List<SBLib.Models.MYOB.MyobJobModel> JobList = (List<SBLib.Models.MYOB.MyobJobModel>)ViewData["JobList"];
 	bool showrecur = ViewData["showrecur"] == null ? false : (bool)ViewData["showrecur"];
 	string Device = ViewData["Device"].ToString();
 	string Devices = ViewData["Devices"].ToString();

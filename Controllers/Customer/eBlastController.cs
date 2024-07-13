@@ -5,15 +5,15 @@ using System.Linq;
 using System.Web.Mvc;
 using PagedList;
 using Resources = CommonLib.App_GlobalResources;
-using PPWLib.Models;
+using SBLib.Models;
 using System.Net.Mail;
 using System.Text;
 using System.Net;
 using System.Threading;
 using System.Configuration;
 using CommonLib.Helpers;
-using PPWLib.Models.Customer;
-using PPWLib.Models.Customer.eBlast;
+using SBLib.Models.Customer;
+using SBLib.Models.Customer.eBlast;
 
 namespace SmartBusinessWeb.Controllers.Customer
 {

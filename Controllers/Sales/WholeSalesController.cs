@@ -5,13 +5,13 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
-using PPWLib.Models.WholeSales;
+using SBLib.Models.WholeSales;
 using PagedList;
-using PPWLib.Models;
-using PPWLib.Models.POS.Sales;
-using PPWDAL;
+using SBLib.Models;
+using SBLib.Models.POS.Sales;
+using DAL;
 using System.IO;
-using PPWLib.Models.Purchase;
+using SBLib.Models.Purchase;
 
 namespace SmartBusinessWeb.Controllers.Sales
 {
@@ -47,7 +47,7 @@ namespace SmartBusinessWeb.Controllers.Sales
                         _file.SaveAs(fname);
                         FileList.Add(filename);
                     }
-                    using (var context = new PPWDbContext(Session["DBName"].ToString()))
+                    using (var context = new SBDbContext(Session["DBName"].ToString()))
                     {
                         var wsInfo = context.WholeSalesInfoes.FirstOrDefault(x => x.fileName == filename && x.AccountProfileId == apId && x.wsCode == wsCode);
                         if (wsInfo == null)

@@ -2,6 +2,16 @@
 <wsdl:definitions xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tns="http://tempuri.org/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="WriteAbssSalesToDb">
+        <s:complexType />
+      </s:element>
+      <s:element name="WriteAbssSalesToDbResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="WriteAbssSalesToDbResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="ReadMYOB">
         <s:complexType>
           <s:sequence>
@@ -134,6 +144,12 @@
       </s:element>
     </s:schema>
   </wsdl:types>
+  <wsdl:message name="WriteAbssSalesToDbSoapIn">
+    <wsdl:part name="parameters" element="tns:WriteAbssSalesToDb" />
+  </wsdl:message>
+  <wsdl:message name="WriteAbssSalesToDbSoapOut">
+    <wsdl:part name="parameters" element="tns:WriteAbssSalesToDbResponse" />
+  </wsdl:message>
   <wsdl:message name="ReadMYOBSoapIn">
     <wsdl:part name="parameters" element="tns:ReadMYOB" />
   </wsdl:message>
@@ -195,6 +211,10 @@
     <wsdl:part name="parameters" element="tns:MoveFileResponse" />
   </wsdl:message>
   <wsdl:portType name="DayendsSoap">
+    <wsdl:operation name="WriteAbssSalesToDb">
+      <wsdl:input message="tns:WriteAbssSalesToDbSoapIn" />
+      <wsdl:output message="tns:WriteAbssSalesToDbSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="ReadMYOB">
       <wsdl:input message="tns:ReadMYOBSoapIn" />
       <wsdl:output message="tns:ReadMYOBSoapOut" />
@@ -238,6 +258,15 @@
   </wsdl:portType>
   <wsdl:binding name="DayendsSoap" type="tns:DayendsSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="WriteAbssSalesToDb">
+      <soap:operation soapAction="http://tempuri.org/WriteAbssSalesToDb" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="ReadMYOB">
       <soap:operation soapAction="http://tempuri.org/ReadMYOB" style="document" />
       <wsdl:input>
@@ -331,6 +360,15 @@
   </wsdl:binding>
   <wsdl:binding name="DayendsSoap12" type="tns:DayendsSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="WriteAbssSalesToDb">
+      <soap12:operation soapAction="http://tempuri.org/WriteAbssSalesToDb" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="ReadMYOB">
       <soap12:operation soapAction="http://tempuri.org/ReadMYOB" style="document" />
       <wsdl:input>

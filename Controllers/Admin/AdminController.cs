@@ -1,12 +1,12 @@
-﻿using PPWDAL;
-using PPWLib.Helpers;
+﻿using DAL;
+using SBLib.Helpers;
 using SmartBusinessWeb.Infrastructure;
-using PPWLib.Models;
+using SBLib.Models;
 using System.Linq;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;
-using PPWLib.Models.User;
-using PPWLib.Models.Settings;
+using SBLib.Models.User;
+using SBLib.Models.Settings;
 
 namespace SmartBusinessWeb.Controllers.Admin
 {
@@ -18,7 +18,7 @@ namespace SmartBusinessWeb.Controllers.Admin
         public ActionResult Setup()
         {
             ViewBag.PageName = "setup";
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 SetupModel model = new SetupModel();
                 Session session = ModelHelper.GetCurrentSession(context);

@@ -1,6 +1,6 @@
-﻿using PPWDAL;
-using PPWLib.Models.Customer;
-using PPWLib.Models.Item;
+﻿using DAL;
+using SBLib.Models.Customer;
+using SBLib.Models.Item;
 using SmartBusinessWeb.Infrastructure;
 using System;
 using System.Collections.Generic;

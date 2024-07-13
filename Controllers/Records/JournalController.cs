@@ -1,4 +1,4 @@
-﻿using PPWLib.Models.Journal;
+﻿using SBLib.Models.Journal;
 using SmartBusinessWeb.Infrastructure;
 using System.Collections.Generic;
 using System.Web.Mvc;

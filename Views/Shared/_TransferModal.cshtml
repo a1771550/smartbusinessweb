@@ -14,7 +14,7 @@
     bool hasItemOption = (bool)ViewData["hasItemOption"];
     bool hasIvOnly = (bool)ViewData["hasIvOnly"];
 
-    List<PPWLib.Models.WholeSales.BatSnVt> batsnvtlist = (List<PPWLib.Models.WholeSales.BatSnVt>)ViewData["batsnvtlist"];
+    List<SBLib.Models.WholeSales.BatSnVt> batsnvtlist = (List<SBLib.Models.WholeSales.BatSnVt>)ViewData["batsnvtlist"];
     List<SnVt> snvtlist = (List<SnVt>)ViewData["snvtlist"];
     var snpolist = snvtlist.Select(x => x.pocode).Distinct().ToList();
     List<VtQty> vtqtylist = (List<VtQty>)ViewData["vtqtylist"];

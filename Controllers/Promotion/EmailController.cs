@@ -1,4 +1,4 @@
-﻿using PPWLib.Models.Promotion;
+﻿using SBLib.Models.Promotion;
 using SmartBusinessWeb.Infrastructure;
 using System.Web.Mvc;
 using Resources = CommonLib.App_GlobalResources;

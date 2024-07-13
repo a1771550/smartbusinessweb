@@ -1,8 +1,8 @@
 ﻿using PagedList;
 using SmartBusinessWeb.Infrastructure;
-using PPWDAL;
-using PPWLib.Models;
-using PPWLib.Models.Purchase;
+using DAL;
+using SBLib.Models;
+using SBLib.Models.Purchase;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -69,7 +69,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
                         _file.SaveAs(fname);
                         FileList.Add(filename);
                     }
-                    using (var context = new PPWDbContext(Session["DBName"].ToString()))
+                    using (var context = new SBDbContext(Session["DBName"].ToString()))
                     {
                         PurchasePayment purchase = context.PurchasePayments.FirstOrDefault(x => x.Id == Id);
                         if (purchase != null)
@@ -111,7 +111,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
         public ActionResult RemoveFile4Payment(long Id, string filename)
         {
             string msg = string.Format(Resources.Resource.FileFormat, Resources.Resource.Removed);
-            PPWCommonLib.Helpers.FileHelper.Remove(Id, filename);
+            SBCommonLib.Helpers.FileHelper.Remove(Id, filename);
             return Json(msg);
         }
 
@@ -121,7 +121,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
         public ActionResult RemoveFile(string pstCode, string filename)
         {
             string msg = string.Format(Resources.Resource.FileFormat, Resources.Resource.Removed);
-            PPWCommonLib.Helpers.FileHelper.Remove(pstCode, filename, CommonLib.Helpers.FuncType.Purchase);
+            SBCommonLib.Helpers.FileHelper.Remove(pstCode, filename, CommonLib.Helpers.FuncType.Purchase);
             return Json(msg);
         }
 
@@ -154,7 +154,7 @@ namespace SmartBusinessWeb.Controllers.Purchase
                         _file.SaveAs(fname);
                         FileList.Add(filename);
                     }
-                    using (var context = new PPWDbContext(Session["DBName"].ToString()))
+                    using (var context = new SBDbContext(Session["DBName"].ToString()))
                     {
                         var pstInfo = context.PurchaseInfoes.FirstOrDefault(x => x.fileName == filename && x.AccountProfileId == apId && x.pstCode == pstCode);
                         if (pstInfo == null)

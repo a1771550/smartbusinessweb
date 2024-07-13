@@ -1,15 +1,15 @@
 ﻿using CommonLib.Helpers;
-using PPWDAL;
-using PPWLib.Helpers;
-using PPWLib.Models;
-using PPWLib.Models.User;
+using DAL;
+using SBLib.Helpers;
+using SBLib.Models;
+using SBLib.Models.User;
 using System;
 using System.Configuration;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Security;
-using FileHelper = PPWCommonLib.CommonHelpers.FileHelper;
-using Helpers = PPWLib.Helpers;
+using FileHelper = SBCommonLib.CommonHelpers.FileHelper;
+using Helpers = SBLib.Helpers;
 using Resources = CommonLib.App_GlobalResources;
 
 namespace SmartBusinessWeb.Controllers
@@ -18,7 +18,7 @@ namespace SmartBusinessWeb.Controllers
     {
         //https://localhost:7777/Account/Login?redirectUrl=/WholeSales/Review?receiptno=VS100002&salesmanId=0&approverId=40&ksalesmancode=
         [HttpGet]
-        public ActionResult Login(string redirectUrl = null,string err = "0",int? approverId=0)
+        public ActionResult Login(string redirectUrl = null, string err = "0", int? approverId = 0)
         {
             Session["CssBSFile"] = @"Content/bs4"; //Content/bootstrap.min.css
             Session["ScriptBSFile"] = @"Scripts/bs4"; //Content/bootstrap.min.css           
@@ -37,21 +37,25 @@ namespace SmartBusinessWeb.Controllers
             string msg = string.Empty;
             string hash = string.Empty;
             GetUserByEmail3_Result _user = null;
+            string UserDbName = "";
 
-            using (var context = new PPWDbContext(ConfigurationManager.AppSettings["DefaultDbName"]))
+            using (var context = new SBDbContext(ConfigurationManager.AppSettings["DefaultDbName"]))
             {
                 hash = HashHelper.ComputeHash(model.Password);
                 int lang = CultureHelper.CurrentCulture;
                 _user = context.GetUserByEmail3(model.Email).FirstOrDefault();
                 if (_user == null) return RedirectToAction("Login", new { err = "2" });
-                Session["DBName"] = _user.dbName;
+                UserDbName = _user.dbName;
             }
 
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            try
             {
-                ComInfo comInfo = context.ComInfoes.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == _user.AccountProfileId);
+                Session["DBName"] = UserDbName;
+                using var context1 = new SBDbContext(UserDbName);
 
-                var _roleuser = context.LoginPCUser8(model.Email, hash, model.SelectedDevice, model.SelectedShop).ToList();//because of multi-roles!
+                ComInfo comInfo = context1.ComInfoes.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == _user.AccountProfileId);
+
+                var _roleuser = context1.LoginPCUser8(model.Email, hash, model.SelectedDevice, model.SelectedShop).ToList();//because of multi-roles!
                 var roles = _roleuser.Select(x => x.rlCode).Distinct().ToList();
                 if (_roleuser != null && _roleuser.Count >= 1)
                 {
@@ -66,34 +70,13 @@ namespace SmartBusinessWeb.Controllers
                     model.IsCentral = _user.IsCentral;
 
                     var __user = _roleuser.FirstOrDefault();
-                    /*
-                     * sesIsActive = true,
-                sesDvc = model.SelectedDevice ?? "",
-                sesShop = model.SelectedShop ?? "",
-                sesLang = (int)Session["CurrentCulture"],
-                UserCode = user.UserCode,
-                IsCentral = false,
-                sesDateFr = currDate,
-                sesTimeFr = currTime,
-                sesCreateBy = user.surUID.ToString(),
-                sesCreateTime = DateTime.Now,
-                sesToken = token,
-                AccountNo = accountno,
-                AccountProfileId = apId,
-                sesDvcSeq = seq,
-                sesSalesPrefix = salesprefix,
-                sesRefundPrefix = refundprefix,
-                sesIP = CommonHelper.GetIPAddress(),
-                sesCheckout = false,
-                Email = user.Email,
-                     */
                     user = new SessUser
                     {
                         surUID = __user.surUID,
                         surIsActive = __user.surIsActive,
                         UserCode = __user.UserCode,
                         UserName = __user.UserName,
-                        UserRole = string.Join(",", roles),                        
+                        UserRole = string.Join(",", roles),
                         DisplayName = __user.DisplayName,
                         Email = __user.Email,
                         dvcCode = model.SelectedDevice,
@@ -113,7 +96,7 @@ namespace SmartBusinessWeb.Controllers
                     Session["User"] = user;
                     DeviceModel device = user.IsAdmin ? null : Helpers.ModelHelper.GetDevice(user.surUID);//don't move to below
 
-                    _login(user, context, model, device);
+                    _login(user, context1, model, device);
 
                     if (user.IsAdmin)
                     {
@@ -144,11 +127,15 @@ namespace SmartBusinessWeb.Controllers
                     return RedirectToAction("Login", new { err = "2" });
                 }
             }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message, ex.InnerException);
+            }
         }
 
 
 
-        private void _login(SessUser user, PPWDbContext context, LoginUserModel model, DeviceModel device = null)
+        private void _login(SessUser user, SBDbContext context, LoginUserModel model, DeviceModel device = null)
         {
             string token = CommonHelper.GenSessionToken();
             DateTime currDate = DateTime.Now.Date;
@@ -211,7 +198,7 @@ namespace SmartBusinessWeb.Controllers
             MenuHelper.UpdateMenus(context);
         }
 
-        private DeviceModel GetDeviceInfo(LoginUserModel model, PPWDbContext context)
+        private DeviceModel GetDeviceInfo(LoginUserModel model, SBDbContext context)
         {
             DeviceModel device = new DeviceModel();
 
@@ -273,7 +260,7 @@ namespace SmartBusinessWeb.Controllers
             if (user == null) { FormsAuthentication.SignOut(); return RedirectToAction("Login", "Account"); }
 
             var usercode = user.UserCode;
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 context.CheckoutCurrentPCSession1(usercode, DateTime.Now.Date, apId, ConfigurationManager.AppSettings["Device"], ConfigurationManager.AppSettings["Shop"]);
                 context.SaveChanges();

@@ -6,8 +6,8 @@ using PagedList;
 using Resources = CommonLib.App_GlobalResources;
 using System.Configuration;
 using SmartBusinessWeb.Infrastructure;
-using PPWLib.Models;
-using PPWLib.Models.Customer;
+using SBLib.Models;
+using SBLib.Models.Customer;
 
 namespace SmartBusinessWeb.Controllers.Customer
 {
