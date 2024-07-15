@@ -284,6 +284,7 @@
     <Compile Include="Controllers\Item\ItemController.cs" />
     <Compile Include="Controllers\Item\ReserveController.cs" />
     <Compile Include="Controllers\Item\TransferController.cs" />
+    <Compile Include="Controllers\JsonController.cs" />
     <Compile Include="Controllers\POS\DepositController.cs" />
     <Compile Include="Controllers\POS\PayServiceController.cs" />
     <Compile Include="Controllers\POS\POSFuncController.cs" />
@@ -309,6 +310,8 @@
     <Compile Include="Controllers\Settings\EmailSettingsController.cs" />
     <Compile Include="Controllers\Settings\PaymentTypesController.cs" />
     <Compile Include="Controllers\Settings\ReceiptController.cs" />
+    <Compile Include="Controllers\SimpleContactController.cs" />
+    <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -3109,6 +3112,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="Web References\localhost\Dayends.disco" />
+    <Content Include="Web.favdoc.user" />
     <Content Include="_app_offline.htm" />
     <Content Include="PrivateSettings.config" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />

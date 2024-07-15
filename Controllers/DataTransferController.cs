@@ -28,6 +28,7 @@ using CommonLib.Models.MYOB;
 using SBLib.Models.Item;
 using SBCommonLib.Helpers;
 using SalesEditModel = SBLib.Models.AbssReport.SalesEditModel;
+using Dapper;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -104,308 +105,314 @@ namespace SmartBusinessWeb.Controllers
             SessUser curruser = Session["User"] as SessUser;
 
             using var context = new SBDbContext(Session["DBName"].ToString());
-            string AbssConnectionString = GetAbssConnectionString(context, "READ");
+            if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
+            
+            using (SqlConnection) {
+                string AbssConnectionString = GetAbssConnectionString(SqlConnection, "READ");
+                var comInfo = SqlConnection.QueryFirstOrDefault<ComInfoModel>("EXEC dbo.GetComInfo @apId=@apId", new { apId });
 
-            if (filename.StartsWith("Sales_")) SalesEditModel.WriteAbssSalesToDb();
+                if (filename.StartsWith("Sales_")) SalesEditModel.WriteAbssSalesToDb();
 
-            if (filename.StartsWith("SPP_")) SPPHelper.SaveSPPsToDB();
+                if (filename.StartsWith("SPP_")) SPPHelper.SaveSPPsToDB();
 
-            if (filename.StartsWith("CI_")) CIHelper.SaveCIsToDB();
+                if (filename.StartsWith("CI_")) CIHelper.SaveCIsToDB();
 
-            if (filename.StartsWith("AccountReceivable_")) ARHelper.SaveARsToDB();
+                if (filename.StartsWith("AccountReceivable_")) ARHelper.SaveARsToDB();
 
-            if (filename.StartsWith("Quotation_")) QuotationHelper.SaveQuotationsToDB();
+                if (filename.StartsWith("Quotation_")) QuotationHelper.SaveQuotationsToDB();
 
-            if (filename.StartsWith("Job_"))
-            {
-                List<MyobJobModel> joblist = MYOBHelper.GetJobList(AbssConnectionString);
-                StringBuilder sb = new StringBuilder();
-                using (var transaction = context.Database.BeginTransaction())
+                if (filename.StartsWith("Job_"))
                 {
-                    try
+                    List<MyobJobModel> joblist = MYOBHelper.GetJobList(AbssConnectionString);
+                    StringBuilder sb = new StringBuilder();
+                    using (var transaction = context.Database.BeginTransaction())
                     {
-                        /* remove current records first: */
-                        List<MyobJob> jobss = context.MyobJobs.Where(x => x.AccountProfileId == apId).ToList();
-                        context.MyobJobs.RemoveRange(jobss);
-                        context.SaveChanges();
-                        /*********************************/
-
-                        List<MyobJob> newjobs = new List<MyobJob>();
-
-                        foreach (var job in joblist)
+                        try
                         {
-                            newjobs.Add(new MyobJob
-                            {
-                                JobID = job.JobID,
-                                ParentJobID = job.ParentJobID,
-                                IsInactive = job.IsInactive,
-                                JobName = job.JobName,
-                                JobNumber = job.JobNumber,
-                                IsHeader = job.IsHeader,
-                                JobLevel = job.JobLevel,
-                                IsTrackingReimburseable = job.IsTrackingReimburseable,
-                                JobDescription = job.JobDescription,
-                                ContactName = job.ContactName,
-                                Manager = job.Manager,
-                                PercentCompleted = job.PercentCompleted,
-                                StartDate = job.StartDate,
-                                FinishDate = job.FinishDate,
-                                CustomerID = job.CustomerID,
-                                AccountProfileId = apId,
-                                CreateTime = DateTime.Now,
-                                ModifyTime = DateTime.Now
-                            });
-                        }
-                        context.MyobJobs.AddRange(newjobs);
-                        context.SaveChanges();
-                        ModelHelper.WriteLog(context, "Import JobName data from Central done", "ImportFrmCentral");
-                        transaction.Commit();
-                    }
-                    catch (DbEntityValidationException e)
-                    {
-                        transaction.Rollback();
-
-                        foreach (var eve in e.EntityValidationErrors)
-                        {
-                            sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                            foreach (var ve in eve.ValidationErrors)
-                            {
-                                sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                ve.PropertyName,
-                eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                ve.ErrorMessage);
-                            }
-                        }
-                    }
-                }
-                if (!string.IsNullOrEmpty(sb.ToString()))
-                {
-                    using var _context = new SBDbContext(Session["DBName"].ToString());
-                    ModelHelper.WriteLog(_context, string.Format("Import JobName data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
-                }
-
-            }
-
-            if (filename.StartsWith("Currency_"))
-            {
-                List<MyobCurrencyModel> emplist = MYOBHelper.GetCurrencyList(AbssConnectionString);
-                StringBuilder sb = new StringBuilder();
-                using (var transaction = context.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        /* remove current records first: */
-                        List<MyobCurrency> currencys = context.MyobCurrencies.Where(x => x.AccountProfileId == apId).ToList();
-                        context.MyobCurrencies.RemoveRange(currencys);
-                        context.SaveChanges();
-                        /*********************************/
-
-                        List<MyobCurrency> newcurrencys = new List<MyobCurrency>();
-
-                        foreach (var currency in emplist)
-                        {
-                            newcurrencys.Add(new MyobCurrency
-                            {
-                                CurrencyID = currency.CurrencyID,
-                                CurrencyCode = currency.CurrencyCode,
-                                CurrencyName = currency.CurrencyName,
-                                ExchangeRate = currency.ExchangeRate,
-                                CurrencySymbol = currency.CurrencySymbol,
-                                DigitGroupingSymbol = currency.DigitGroupingSymbol,
-                                SymbolPosition = currency.SymbolPosition,
-                                DecimalPlaces = currency.DecimalPlaces,
-                                NumberDigitsInGroup = currency.NumberDigitsInGroup,
-                                DecimalPlaceSymbol = currency.DecimalPlaceSymbol,
-                                NegativeFormat = currency.NegativeFormat,
-                                UseLeadingZero = currency.UseLeadingZero,
-                                AccountProfileId = apId,
-                                CreateTime = DateTime.Now,
-                                ModifyTime = DateTime.Now
-                            });
-                        }
-                        context.MyobCurrencies.AddRange(newcurrencys);
-                        context.SaveChanges();
-                        ModelHelper.WriteLog(context, "Import Currency data from Central done", "ImportFrmCentral");
-                        transaction.Commit();
-                    }
-                    catch (DbEntityValidationException e)
-                    {
-                        transaction.Rollback();
-
-                        foreach (var eve in e.EntityValidationErrors)
-                        {
-                            sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                            foreach (var ve in eve.ValidationErrors)
-                            {
-                                sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                ve.PropertyName,
-                eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                ve.ErrorMessage);
-                            }
-                        }
-                    }
-                }
-                if (!string.IsNullOrEmpty(sb.ToString()))
-                {
-                    using var _context = new SBDbContext(Session["DBName"].ToString());
-                    ModelHelper.WriteLog(_context, string.Format("Import Currency data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
-                }
-            }
-
-            if (filename.StartsWith("Suppliers_")) ModelHelper.SaveSuppliersFrmCentral(context, apId, ComInfo);
-
-            if (filename.StartsWith("Employees_")) ModelHelper.SaveEmployeesFrmCentral(apId, context, AbssConnectionString, curruser);
-
-            if (filename.StartsWith("Customers_")) ModelHelper.SaveCustomersFrmCentral(context, AbssConnectionString, apId, ComInfo);
-
-            if (filename.StartsWith("Items_")) ModelHelper.SaveItemsFrmCentral(apId, context, AbssConnectionString);
-
-            if (filename.StartsWith("Tax_"))
-            {
-                AbssConn abssConn = ModelHelper.GetAbssConn(ComInfo);
-                List<CommonLib.Models.MYOB.TaxModel> taxlist = MYOBHelper.GetTaxList(abssConn);
-                decimal taxrate = (decimal)taxlist.FirstOrDefault().TaxPercentageRate;
-                string taxcode = taxlist.FirstOrDefault().TaxCode;
-                StringBuilder sb = new StringBuilder();
-                using (var transaction = context.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        #region Remove Current Data first:
-                        var currentrecords = context.MyobTaxCodes.Count() > 0 ? context.MyobTaxCodes.Where(x => x.AccountProfileId == apId) : null;
-                        if (currentrecords != null && currentrecords.Count() > 0)
-                        {
-                            context.MyobTaxCodes.RemoveRange(currentrecords);
+                            /* remove current records first: */
+                            List<MyobJob> jobss = context.MyobJobs.Where(x => x.AccountProfileId == apId).ToList();
+                            context.MyobJobs.RemoveRange(jobss);
                             context.SaveChanges();
-                        }
+                            /*********************************/
 
-                        #endregion
-                        #region Insert Records:
-                        List<MyobTaxCode> newtaxcodes = new List<MyobTaxCode>();
-                        foreach (var tax in taxlist)
-                        {
-                            newtaxcodes.Add(new MyobTaxCode
+                            List<MyobJob> newjobs = new List<MyobJob>();
+
+                            foreach (var job in joblist)
                             {
-                                TaxCodeID = tax.TaxCodeID,
-                                TaxCode = tax.TaxCode,
-                                TaxCodeDescription = tax.TaxCodeDescription,
-                                TaxPercentageRate = tax.TaxPercentageRate,
-                                TaxCodeTypeID = tax.TaxCodeTypeID,
-                                TaxCollectedAccountID = tax.TaxCollectedAccountID,
-                                AccruedDutyAccountID = tax.AccruedDutyAccountID,
-                                LinkedCardID = tax.LinkedCardID,
-                                AccountProfileId = apId,
-                                CreateTime = dateTime
-                            });
+                                newjobs.Add(new MyobJob
+                                {
+                                    JobID = job.JobID,
+                                    ParentJobID = job.ParentJobID,
+                                    IsInactive = job.IsInactive,
+                                    JobName = job.JobName,
+                                    JobNumber = job.JobNumber,
+                                    IsHeader = job.IsHeader,
+                                    JobLevel = job.JobLevel,
+                                    IsTrackingReimburseable = job.IsTrackingReimburseable,
+                                    JobDescription = job.JobDescription,
+                                    ContactName = job.ContactName,
+                                    Manager = job.Manager,
+                                    PercentCompleted = job.PercentCompleted,
+                                    StartDate = job.StartDate,
+                                    FinishDate = job.FinishDate,
+                                    CustomerID = job.CustomerID,
+                                    AccountProfileId = apId,
+                                    CreateTime = DateTime.Now,
+                                    ModifyTime = DateTime.Now
+                                });
+                            }
+                            context.MyobJobs.AddRange(newjobs);
+                            context.SaveChanges();
+                            ModelHelper.WriteLog(context, "Import JobName data from Central done", "ImportFrmCentral");
+                            transaction.Commit();
                         }
-                        context.MyobTaxCodes.AddRange(newtaxcodes);
-                        context.SaveChanges();
-                        #endregion
-
-                        var items = context.MyobItems.Where(x => x.AccountProfileId == apId).ToList();
-
-                        foreach (var item in items)
+                        catch (DbEntityValidationException e)
                         {
-                            if (item.itmIsTaxedWhenSold != null && (bool)item.itmIsTaxedWhenSold)
+                            transaction.Rollback();
+
+                            foreach (var eve in e.EntityValidationErrors)
                             {
-                                item.itmTaxCode = taxcode;
-                                item.itmTaxPc = taxrate;
+                                sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                                foreach (var ve in eve.ValidationErrors)
+                                {
+                                    sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                    ve.PropertyName,
+                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                    ve.ErrorMessage);
+                                }
                             }
                         }
-
-                        ModelHelper.WriteLog(context, "Import Tax data from Central done", "ExportFrmCentral");
-                        context.SaveChanges();
-                        transaction.Commit();
-
                     }
-                    catch (DbEntityValidationException e)
+                    if (!string.IsNullOrEmpty(sb.ToString()))
                     {
-                        transaction.Rollback();
+                        using var _context = new SBDbContext(Session["DBName"].ToString());
+                        ModelHelper.WriteLog(_context, string.Format("Import JobName data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
+                    }
 
-                        foreach (var eve in e.EntityValidationErrors)
+                }
+
+                if (filename.StartsWith("Currency_"))
+                {
+                    List<MyobCurrencyModel> emplist = MYOBHelper.GetCurrencyList(AbssConnectionString);
+                    StringBuilder sb = new StringBuilder();
+                    using (var transaction = context.Database.BeginTransaction())
+                    {
+                        try
                         {
-                            sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                            foreach (var ve in eve.ValidationErrors)
+                            /* remove current records first: */
+                            List<MyobCurrency> currencys = context.MyobCurrencies.Where(x => x.AccountProfileId == apId).ToList();
+                            context.MyobCurrencies.RemoveRange(currencys);
+                            context.SaveChanges();
+                            /*********************************/
+
+                            List<MyobCurrency> newcurrencys = new List<MyobCurrency>();
+
+                            foreach (var currency in emplist)
                             {
-                                sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                ve.PropertyName,
-                eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                ve.ErrorMessage);
+                                newcurrencys.Add(new MyobCurrency
+                                {
+                                    CurrencyID = currency.CurrencyID,
+                                    CurrencyCode = currency.CurrencyCode,
+                                    CurrencyName = currency.CurrencyName,
+                                    ExchangeRate = currency.ExchangeRate,
+                                    CurrencySymbol = currency.CurrencySymbol,
+                                    DigitGroupingSymbol = currency.DigitGroupingSymbol,
+                                    SymbolPosition = currency.SymbolPosition,
+                                    DecimalPlaces = currency.DecimalPlaces,
+                                    NumberDigitsInGroup = currency.NumberDigitsInGroup,
+                                    DecimalPlaceSymbol = currency.DecimalPlaceSymbol,
+                                    NegativeFormat = currency.NegativeFormat,
+                                    UseLeadingZero = currency.UseLeadingZero,
+                                    AccountProfileId = apId,
+                                    CreateTime = DateTime.Now,
+                                    ModifyTime = DateTime.Now
+                                });
+                            }
+                            context.MyobCurrencies.AddRange(newcurrencys);
+                            context.SaveChanges();
+                            ModelHelper.WriteLog(context, "Import Currency data from Central done", "ImportFrmCentral");
+                            transaction.Commit();
+                        }
+                        catch (DbEntityValidationException e)
+                        {
+                            transaction.Rollback();
+
+                            foreach (var eve in e.EntityValidationErrors)
+                            {
+                                sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                                foreach (var ve in eve.ValidationErrors)
+                                {
+                                    sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                    ve.PropertyName,
+                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                    ve.ErrorMessage);
+                                }
                             }
                         }
-
+                    }
+                    if (!string.IsNullOrEmpty(sb.ToString()))
+                    {
+                        using var _context = new SBDbContext(Session["DBName"].ToString());
+                        ModelHelper.WriteLog(_context, string.Format("Import Currency data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
                     }
                 }
-                if (!string.IsNullOrEmpty(sb.ToString()))
+
+                if (filename.StartsWith("Suppliers_")) ModelHelper.SaveSuppliersFrmCentral(context, apId, comInfo);
+
+                if (filename.StartsWith("Employees_")) ModelHelper.SaveEmployeesFrmCentral(apId, context, AbssConnectionString, curruser);
+
+                if (filename.StartsWith("Customers_")) ModelHelper.SaveCustomersFrmCentral(context, AbssConnectionString, apId, comInfo);
+
+                if (filename.StartsWith("Items_")) ModelHelper.SaveItemsFrmCentral(apId, context, AbssConnectionString);
+
+                if (filename.StartsWith("Tax_"))
                 {
-                    using var _context = new SBDbContext(Session["DBName"].ToString());
-                    ModelHelper.WriteLog(_context, string.Format("Import Tax data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
+                    AbssConn abssConn = ModelHelper.GetAbssConn(comInfo);
+                    List<CommonLib.Models.MYOB.TaxModel> taxlist = MYOBHelper.GetTaxList(abssConn);
+                    decimal taxrate = (decimal)taxlist.FirstOrDefault().TaxPercentageRate;
+                    string taxcode = taxlist.FirstOrDefault().TaxCode;
+                    StringBuilder sb = new StringBuilder();
+                    using (var transaction = context.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            #region Remove Current Data first:
+                            var currentrecords = context.MyobTaxCodes.Count() > 0 ? context.MyobTaxCodes.Where(x => x.AccountProfileId == apId) : null;
+                            if (currentrecords != null && currentrecords.Count() > 0)
+                            {
+                                context.MyobTaxCodes.RemoveRange(currentrecords);
+                                context.SaveChanges();
+                            }
+
+                            #endregion
+                            #region Insert Records:
+                            List<MyobTaxCode> newtaxcodes = new List<MyobTaxCode>();
+                            foreach (var tax in taxlist)
+                            {
+                                newtaxcodes.Add(new MyobTaxCode
+                                {
+                                    TaxCodeID = tax.TaxCodeID,
+                                    TaxCode = tax.TaxCode,
+                                    TaxCodeDescription = tax.TaxCodeDescription,
+                                    TaxPercentageRate = tax.TaxPercentageRate,
+                                    TaxCodeTypeID = tax.TaxCodeTypeID,
+                                    TaxCollectedAccountID = tax.TaxCollectedAccountID,
+                                    AccruedDutyAccountID = tax.AccruedDutyAccountID,
+                                    LinkedCardID = tax.LinkedCardID,
+                                    AccountProfileId = apId,
+                                    CreateTime = dateTime
+                                });
+                            }
+                            context.MyobTaxCodes.AddRange(newtaxcodes);
+                            context.SaveChanges();
+                            #endregion
+
+                            var items = context.MyobItems.Where(x => x.AccountProfileId == apId).ToList();
+
+                            foreach (var item in items)
+                            {
+                                if (item.itmIsTaxedWhenSold != null && (bool)item.itmIsTaxedWhenSold)
+                                {
+                                    item.itmTaxCode = taxcode;
+                                    item.itmTaxPc = taxrate;
+                                }
+                            }
+
+                            ModelHelper.WriteLog(context, "Import Tax data from Central done", "ExportFrmCentral");
+                            context.SaveChanges();
+                            transaction.Commit();
+
+                        }
+                        catch (DbEntityValidationException e)
+                        {
+                            transaction.Rollback();
+
+                            foreach (var eve in e.EntityValidationErrors)
+                            {
+                                sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                                foreach (var ve in eve.ValidationErrors)
+                                {
+                                    sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                    ve.PropertyName,
+                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                    ve.ErrorMessage);
+                                }
+                            }
+
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(sb.ToString()))
+                    {
+                        using var _context = new SBDbContext(Session["DBName"].ToString());
+                        ModelHelper.WriteLog(_context, string.Format("Import Tax data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
+                    }
                 }
+
+                if (filename.StartsWith("Account_"))
+                {
+                    List<AccountModel> accountlist = MYOBHelper.GetAccountList(AbssConnectionString);
+                    StringBuilder sb = new StringBuilder();
+                    using (var transaction = context.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            #region remove current data first
+                            List<Account> accounts = context.Accounts.Where(x => x.AccountProfileId == apId).ToList();
+                            context.Accounts.RemoveRange(accounts);
+                            context.SaveChanges();
+                            #endregion
+
+                            List<Account> newaccounts = new List<Account>();
+                            foreach (var account in accountlist)
+                            {
+                                Account ac = new Account();
+                                ac.AccountProfileId = apId;
+                                ac.AccountName = account.AccountName;
+                                ac.AccountNumber = account.AccountNumber;
+                                ac.AccountID = account.AccountID;
+                                ac.AccountClassificationID = account.AccountClassificationID;
+                                ac.AccountTypeID = account.AccountTypeID;
+                                ac.AccountLevel = account.AccountLevel;
+                                newaccounts.Add(ac);
+                            }
+
+                            context.Accounts.AddRange(newaccounts);
+                            ModelHelper.WriteLog(context, "Import Account data from Central done", "ExportFrmCentral");
+                            transaction.Commit();
+
+                        }
+                        catch (DbEntityValidationException e)
+                        {
+                            transaction.Rollback();
+
+                            foreach (var eve in e.EntityValidationErrors)
+                            {
+                                sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                                foreach (var ve in eve.ValidationErrors)
+                                {
+                                    sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                    ve.PropertyName,
+                    eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                    ve.ErrorMessage);
+                                }
+                            }
+
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(sb.ToString()))
+                    {
+                        using var _context = new SBDbContext(Session["DBName"].ToString());
+                        ModelHelper.WriteLog(_context, string.Format("Import Account data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
+                    }
+                }
+
+                return Json(new { msg });
             }
-
-            if (filename.StartsWith("Account_"))
-            {
-                List<AccountModel> accountlist = MYOBHelper.GetAccountList(AbssConnectionString);
-                StringBuilder sb = new StringBuilder();
-                using (var transaction = context.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        #region remove current data first
-                        List<Account> accounts = context.Accounts.Where(x => x.AccountProfileId == apId).ToList();
-                        context.Accounts.RemoveRange(accounts);
-                        context.SaveChanges();
-                        #endregion
-
-                        List<Account> newaccounts = new List<Account>();
-                        foreach (var account in accountlist)
-                        {
-                            Account ac = new Account();
-                            ac.AccountProfileId = apId;
-                            ac.AccountName = account.AccountName;
-                            ac.AccountNumber = account.AccountNumber;
-                            ac.AccountID = account.AccountID;
-                            ac.AccountClassificationID = account.AccountClassificationID;
-                            ac.AccountTypeID = account.AccountTypeID;
-                            ac.AccountLevel = account.AccountLevel;
-                            newaccounts.Add(ac);
-                        }
-
-                        context.Accounts.AddRange(newaccounts);
-                        ModelHelper.WriteLog(context, "Import Account data from Central done", "ExportFrmCentral");
-                        transaction.Commit();
-
-                    }
-                    catch (DbEntityValidationException e)
-                    {
-                        transaction.Rollback();
-
-                        foreach (var eve in e.EntityValidationErrors)
-                        {
-                            sb.AppendFormat("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                            foreach (var ve in eve.ValidationErrors)
-                            {
-                                sb.AppendFormat("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
-                ve.PropertyName,
-                eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
-                ve.ErrorMessage);
-                            }
-                        }
-
-                    }
-                }
-                if (!string.IsNullOrEmpty(sb.ToString()))
-                {
-                    using var _context = new SBDbContext(Session["DBName"].ToString());
-                    ModelHelper.WriteLog(_context, string.Format("Import Account data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
-                }
-            }
-
-            return Json(new { msg });
+           
         }
 
 
@@ -622,11 +629,12 @@ namespace SmartBusinessWeb.Controllers
             bool approvalmode = (bool)comInfo.ApprovalMode;          
 
             using var context = new SBDbContext(Session["DBName"].ToString());
-            string ConnectionString = GetAbssConnectionString(context, "READ_WRITE");
 
             if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
             using (SqlConnection)
             {
+                string ConnectionString = GetAbssConnectionString(SqlConnection, "READ_WRITE");
+
                 if (filename.StartsWith("IA_"))
                 {
                     var session = ModelHelper.GetCurrentSession(context);
@@ -992,7 +1000,7 @@ namespace SmartBusinessWeb.Controllers
                     ModelHelper.GetDataTransferData(context, CheckOutType.Suppliers, ref dmodel);
                     if (dmodel.Supplierlist.Count > 0)
                     {
-                        WriteSupplierToABSS(apId, ref onlineModeItem, dmodel);
+                        WriteSupplierToABSS(ref onlineModeItem, dmodel);
                         updateDB(onlineModeItem.checkoutcodes.ToArray(), CheckOutType.Suppliers);
                     }
                 }
@@ -1084,47 +1092,52 @@ namespace SmartBusinessWeb.Controllers
 
 
 
-        private void WriteSupplierToABSS(int accountprofileId, ref OnlineModeItem onlineModeItem, DataTransferModel dmodel)
+        private void WriteSupplierToABSS(ref OnlineModeItem onlineModeItem, DataTransferModel dmodel)
         {
             using var context = new SBDbContext(Session["DBName"].ToString());
+            string ConnectionString;
+            string sql;
+            if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
+            using (SqlConnection) {
+                ConnectionString = GetAbssConnectionString(SqlConnection, "READ_WRITE");
+                ModelHelper.GetDataTransferData(context, CheckOutType.Suppliers, ref dmodel);
 
-            string ConnectionString = GetAbssConnectionString(context, "READ_WRITE");
-            ModelHelper.GetDataTransferData(context, CheckOutType.Suppliers, ref dmodel);
+                List<string> columns = new List<string>();
 
-            List<string> columns = new List<string>();
+                sql = MyobHelper.InsertImportSupplierSql;
+                int colcount = MyobHelper.ImportSupplierColCount;
+                for (int j = 0; j < colcount; j++)
+                {
+                    columns.Add("'{" + j + "}'");
+                }
+                string strcolumn = string.Join(",", columns);
 
-            var sql = MyobHelper.InsertImportSupplierSql;
-            int colcount = MyobHelper.ImportSupplierColCount;
-            for (int j = 0; j < colcount; j++)
-            {
-                columns.Add("'{" + j + "}'");
+                List<string> values = new List<string>();
+
+                foreach (var supplier in dmodel.Supplierlist)
+                {
+                    string value = "";
+                    string cardstatus = supplier.supIsActive ? "N" : "Y";
+                    /*
+                     * "CoLastName", "CardID", "CardStatus", "Address1Phone1", "CustomField3", "Address1Email", "PaymentIsDue", "DiscountDays", "BalanceDueDays", "Address1ContactName", "Address1AddressLine1", "Address1AddressLine2", "Address1AddressLine3", "Address1AddressLine4", "Address1Phone2", "Address1Phone3", "Address1City", "Address1Country", "Address1Website","RecordID"
+                     */
+                    supplier.supAddrStreetLine1 = CommonHelper.StringHandleAddress(supplier.supAddrStreetLine1);
+                    supplier.supAddrStreetLine2 = CommonHelper.StringHandleAddress(supplier.supAddrStreetLine2);
+                    supplier.supAddrStreetLine3 = CommonHelper.StringHandleAddress(supplier.supAddrStreetLine3);
+                    supplier.supAddrStreetLine4 = CommonHelper.StringHandleAddress(supplier.supAddrStreetLine4);
+
+                    value = string.Format("(" + strcolumn + ")", StringHandlingForSQL(supplier.supName), StringHandlingForSQL(supplier.supCode), cardstatus, StringHandlingForSQL(supplier.supPhone), "", StringHandlingForSQL(supplier.supEmail), "", "", "", "", supplier.supAddrStreetLine1, supplier.supAddrStreetLine2, supplier.supAddrStreetLine3, supplier.supAddrStreetLine4, StringHandlingForSQL(supplier.supAddrPhone2), StringHandlingForSQL(supplier.supAddrPhone3), StringHandlingForSQL(supplier.CityTxt), StringHandlingForSQL(supplier.CountryTxt), StringHandlingForSQL(supplier.supAddrWeb), supplier.supId);
+
+                    values.Add(value);
+                }
+
+                sql += string.Join(",", values) + ")";
+                ModelHelper.WriteLog(context, sql, "ExportFrmShop#Supplier");
+                onlineModeItem.checkoutcodes = dmodel.CheckOutCodes_Supplier;
+
+                context.SaveChanges();
             }
-            string strcolumn = string.Join(",", columns);
-
-            List<string> values = new List<string>();
-
-            foreach (var supplier in dmodel.Supplierlist)
-            {
-                string value = "";
-                string cardstatus = supplier.supIsActive ? "N" : "Y";
-                /*
-				 * "CoLastName", "CardID", "CardStatus", "Address1Phone1", "CustomField3", "Address1Email", "PaymentIsDue", "DiscountDays", "BalanceDueDays", "Address1ContactName", "Address1AddressLine1", "Address1AddressLine2", "Address1AddressLine3", "Address1AddressLine4", "Address1Phone2", "Address1Phone3", "Address1City", "Address1Country", "Address1Website","RecordID"
-				 */
-                supplier.supAddrStreetLine1 = CommonHelper.StringHandleAddress(supplier.supAddrStreetLine1);
-                supplier.supAddrStreetLine2 = CommonHelper.StringHandleAddress(supplier.supAddrStreetLine2);
-                supplier.supAddrStreetLine3 = CommonHelper.StringHandleAddress(supplier.supAddrStreetLine3);
-                supplier.supAddrStreetLine4 = CommonHelper.StringHandleAddress(supplier.supAddrStreetLine4);
-
-                value = string.Format("(" + strcolumn + ")", StringHandlingForSQL(supplier.supName), StringHandlingForSQL(supplier.supCode), cardstatus, StringHandlingForSQL(supplier.supPhone), "", StringHandlingForSQL(supplier.supEmail), "", "", "", "", supplier.supAddrStreetLine1, supplier.supAddrStreetLine2, supplier.supAddrStreetLine3, supplier.supAddrStreetLine4, StringHandlingForSQL(supplier.supAddrPhone2), StringHandlingForSQL(supplier.supAddrPhone3), StringHandlingForSQL(supplier.CityTxt), StringHandlingForSQL(supplier.CountryTxt), StringHandlingForSQL(supplier.supAddrWeb), supplier.supId);
-
-                values.Add(value);
-            }
-
-            sql += string.Join(",", values) + ")";
-            ModelHelper.WriteLog(context, sql, "ExportFrmShop#Supplier");
-            onlineModeItem.checkoutcodes = dmodel.CheckOutCodes_Supplier;
-
-            context.SaveChanges();
+            
 
             using localhost.Dayends dayends = new localhost.Dayends();
             dayends.Url = ComInfo.WebServiceUrl;
@@ -1188,12 +1201,14 @@ namespace SmartBusinessWeb.Controllers
 
         private void WriteMyobCustomerToABSS(ref OnlineModeItem onlineModeItem, DataTransferModel dmodel)
         {
+            string ConnectionString;
             string sql = MyobHelper.InsertImportCustomer4ApprovalSql.Replace("0", "{0}");
             List<string> sqllist = new List<string>();
 
-            using (var context = new SBDbContext(Session["DBName"].ToString()))
-            {
-                string ConnectionString = GetAbssConnectionString(context, "READ_WRITE");
+            using var context = new SBDbContext(Session["DBName"].ToString());
+            if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
+            using (SqlConnection) {
+                ConnectionString = GetAbssConnectionString(SqlConnection, "READ_WRITE");
                 ModelHelper.GetDataTransferData(context, CheckOutType.Customers, ref dmodel);
 
                 if (dmodel.CustomerList.Count > 0)
@@ -1213,71 +1228,15 @@ namespace SmartBusinessWeb.Controllers
                 }
             }
         }
-
-        private void WriteVipToABSS()
+     
+        private string GetAbssConnectionString(SqlConnection connection, string accesstype)
         {
-            string sql = ApprovalMode ? MyobHelper.InsertImportCustomerBasicSql4Approval : MyobHelper.InsertImportCustomerBasicSql;
-            List<string> sqllist = [];
-
-            using (var context = new SBDbContext(Session["DBName"].ToString()))
-            {
-                string ConnectionString = GetAbssConnectionString(context, "READ_WRITE");
-                List<string> columns = [];
-
-                int colcount = ApprovalMode ? MyobHelper.ImportCustomerBasicColCount4Approval : MyobHelper.ImportCustomerBasicColCount;
-                for (int j = 0; j < colcount; j++)
-                {
-                    columns.Add("'{" + j + "}'");
-                }
-                string strcolumn = string.Join(",", columns);
-
-                List<string> values = [];
-
-                var customerpointpricelevels = (
-                from cp in context.CustomerPointPriceLevels
-                join pl in context.PriceLevels
-                on cp.PriceLevelID equals pl.PriceLevelID
-                select new CustomerPointPriceLevelModel
-                {
-                    Id = cp.Id,
-                    PriceLevelID = cp.PriceLevelID
-                }
-                ).ToList();
-
-                if (VipList.Count > 0)
-                {
-                    var groupedviplist = VipList.GroupBy(x => x.cusCustomerID).ToList();
-
-                    foreach (var group in groupedviplist)
-                    {
-                        var vip = group.FirstOrDefault();
-                        if (customerpointpricelevels.Any(x => x.PriceLevelID == vip.cusPriceLevelID))
-                        {
-                            vip.iPriceLevel = customerpointpricelevels.FirstOrDefault(x => x.PriceLevelID == vip.cusPriceLevelID).Id - 1;
-                        }
-                        string value = "";
-                        string deliverystatus = "A";
-                        string cardstatus = vip.cusIsActive ? "N" : "Y";
-                        value = ApprovalMode ? string.Format("(" + strcolumn + ")", StringHandlingForSQL(vip.cusName), StringHandlingForSQL(vip.cusCode), cardstatus, vip.iPriceLevel, deliverystatus, "", StringHandlingForSQL(vip.cusWhatsappPhoneNo)) : string.Format("(" + strcolumn + ")", StringHandlingForSQL(vip.cusName), StringHandlingForSQL(vip.cusCode), cardstatus, vip.iPriceLevel, deliverystatus, "");
-                        values.Add(value);
-                    }
-
-                    sql += string.Join(",", values) + ")";
-
-                    using (localhost.Dayends dayends = new localhost.Dayends())
-                    {
-                        dayends.WriteMYOB(ConnectionString, sql);
-                    }
-
-                    sqllist.Add(sql);
-
-                    ModelHelper.WriteLog(context, string.Join(",", sqllist), "ExportFrmShop");
-                }
-            }
+            return MYOBHelper.GetConnectionString(connection, accesstype, apId);
         }
-        private string GetAbssConnectionString(SBDbContext context, string accesstype)
+
+        private string GetAbssConnectionString(ComInfoModel comInfo, string accesstype)
         {
-            return MYOBHelper.GetConnectionString(context, accesstype, apId);
+            return MYOBHelper.GetConnectionString(comInfo, accesstype);
         }
     }
 }

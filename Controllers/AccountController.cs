@@ -1,10 +1,12 @@
 ﻿using CommonLib.Helpers;
 using DAL;
+using Dapper;
 using SBLib.Helpers;
 using SBLib.Models;
 using SBLib.Models.User;
 using System;
 using System.Configuration;
+using System.Data;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Security;
@@ -52,80 +54,82 @@ namespace SmartBusinessWeb.Controllers
             {
                 Session["DBName"] = UserDbName;
                 using var context1 = new SBDbContext(UserDbName);
-
-                ComInfo comInfo = context1.ComInfoes.AsNoTracking().FirstOrDefault(x => x.AccountProfileId == _user.AccountProfileId);
-
-                var _roleuser = context1.LoginPCUser8(model.Email, hash, model.SelectedDevice, model.SelectedShop).ToList();//because of multi-roles!
-                var roles = _roleuser.Select(x => x.rlCode).Distinct().ToList();
-                if (_roleuser != null && _roleuser.Count >= 1)
-                {
-                    Session["AccountProfileId"] = _user.AccountProfileId;
-                    Session["ComInfo"] = comInfo;
-
-                    model.UserCode = _user.UserCode;
-                    model.CompanyCode = _user.CompanyCode;
-                    model.SelectedShop = _user.shopCode;
-                    model.SelectedDevice = _user.dvcCode;
-                    model.AccountProfileId = _user.AccountProfileId;
-                    model.IsCentral = _user.IsCentral;
-
-                    var __user = _roleuser.FirstOrDefault();
-                    user = new SessUser
+                if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
+                using (SqlConnection) {                   
+                    var _roleuser = context1.LoginPCUser8(model.Email, hash, model.SelectedDevice, model.SelectedShop).ToList();//because of multi-roles!
+                    var roles = _roleuser.Select(x => x.rlCode).Distinct().ToList();
+                    if (_roleuser != null && _roleuser.Count >= 1)
                     {
-                        surUID = __user.surUID,
-                        surIsActive = __user.surIsActive,
-                        UserCode = __user.UserCode,
-                        UserName = __user.UserName,
-                        UserRole = string.Join(",", roles),
-                        DisplayName = __user.DisplayName,
-                        Email = __user.Email,
-                        dvcCode = model.SelectedDevice,
-                        shopCode = model.SelectedShop,
-                        dvcIP = __user.dvcIP,
-                        surNetworkName = __user.surNetworkName,
-                        ManagerId = __user.ManagerId,
-                        surDesc = __user.surDesc,
-                        surNotes = __user.surNotes,
-                        PrinterName = "",
-                        AccountProfileId = apId,
-                        surCreateTime = __user.surCreateTime,
-                        surModifyTime = __user.surModifyTime,
-                    };
-                    user.Roles = UserHelper.GetUserRoles(user);
-                    UserEditModel.GetUserInRoles(user);
-                    Session["User"] = user;
-                    DeviceModel device = user.IsAdmin ? null : Helpers.ModelHelper.GetDevice(user.surUID);//don't move to below
+                        Session["AccountProfileId"] = _user.AccountProfileId;
+                        ComInfoModel comInfo = SqlConnection.QueryFirstOrDefault<ComInfoModel>("EXEC dbo.GetComInfo @apId=@apId", new { apId=_user.AccountProfileId });
+                        Session["ComInfo"] = comInfo;
 
-                    _login(user, context1, model, device);
+                        model.UserCode = _user.UserCode;
+                        model.CompanyCode = _user.CompanyCode;
+                        model.SelectedShop = _user.shopCode;
+                        model.SelectedDevice = _user.dvcCode;
+                        model.AccountProfileId = _user.AccountProfileId;
+                        model.IsCentral = _user.IsCentral;
 
-                    if (user.IsAdmin)
-                    {
-                        model.RedirectUrl = ApprovalMode ? "/BasicSettings/Index" : ComInfo.comLandingPage;
-                        return Redirect(model.RedirectUrl);
-                    }
-                    if (user.IsManager)
-                    {
-                        if (string.IsNullOrEmpty(model.RedirectUrl)) model.RedirectUrl = ApprovalMode ? "/WholeSales/SalesOrderList" : ComInfo.comLandingPage;
-                        else model.RedirectUrl += "&ireadonly=1";
-                        return Redirect(model.RedirectUrl);
-                    }
-                    else
-                    {
-                        if (device != null)
+                        var __user = _roleuser.FirstOrDefault();
+                        user = new SessUser
                         {
-                            if (string.IsNullOrEmpty(model.RedirectUrl)) model.RedirectUrl = ComInfo.comLandingPage;
+                            surUID = __user.surUID,
+                            surIsActive = __user.surIsActive,
+                            UserCode = __user.UserCode,
+                            UserName = __user.UserName,
+                            UserRole = string.Join(",", roles),
+                            DisplayName = __user.DisplayName,
+                            Email = __user.Email,
+                            dvcCode = model.SelectedDevice,
+                            shopCode = model.SelectedShop,
+                            dvcIP = __user.dvcIP,
+                            surNetworkName = __user.surNetworkName,
+                            ManagerId = __user.ManagerId,
+                            surDesc = __user.surDesc,
+                            surNotes = __user.surNotes,
+                            PrinterName = "",
+                            AccountProfileId = apId,
+                            surCreateTime = __user.surCreateTime,
+                            surModifyTime = __user.surModifyTime,
+                        };
+                        user.Roles = UserHelper.GetUserRoles(user);
+                        UserEditModel.GetUserInRoles(user);
+                        Session["User"] = user;
+                        DeviceModel device = user.IsAdmin ? null : Helpers.ModelHelper.GetDevice(user.surUID);//don't move to below
+
+                        _login(user, context1, model, device);
+
+                        if (user.IsAdmin)
+                        {
+                            model.RedirectUrl = ApprovalMode ? "/BasicSettings/Index" : ComInfo.comLandingPage;
+                            return Redirect(model.RedirectUrl);
+                        }
+                        if (user.IsManager)
+                        {
+                            if (string.IsNullOrEmpty(model.RedirectUrl)) model.RedirectUrl = ApprovalMode ? "/WholeSales/SalesOrderList" : ComInfo.comLandingPage;
+                            else model.RedirectUrl += "&ireadonly=1";
                             return Redirect(model.RedirectUrl);
                         }
                         else
                         {
-                            return RedirectToAction("Login", new { err = "1" });
+                            if (device != null)
+                            {
+                                if (string.IsNullOrEmpty(model.RedirectUrl)) model.RedirectUrl = ComInfo.comLandingPage;
+                                return Redirect(model.RedirectUrl);
+                            }
+                            else
+                            {
+                                return RedirectToAction("Login", new { err = "1" });
+                            }
                         }
                     }
+                    else
+                    {
+                        return RedirectToAction("Login", new { err = "2" });
+                    }
                 }
-                else
-                {
-                    return RedirectToAction("Login", new { err = "2" });
-                }
+               
             }
             catch(Exception ex)
             {

@@ -14,7 +14,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpPost]
         public JsonResult SaveStocks(int selectedProfileId)
         {
-            AbssConn abssConn = ModelHelper.GetCompanyProfiles(selectedProfileId);            
+            AbssConn abssConn = ModelHelper.GetAbssConnByApId(selectedProfileId);            
             var stocks = MYOBHelper.GetStockList(abssConn);
             ModelHelper.SaveStocksToDB(selectedProfileId, stocks);
             return Json("Done", JsonRequestBehavior.AllowGet);
