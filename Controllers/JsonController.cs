@@ -1,9 +1,9 @@
 ﻿using Microsoft.Data.SqlClient;
-using PPWDAL;
-using PPWLib.Models;
-using PPWLib.Models.POS.Sales;
-using PPWLib.Models.Purchase;
-using PPWLib.Models.WholeSales;
+using DAL;
+using SBLib.Models;
+using SBLib.Models.POS.Sales;
+using SBLib.Models.Purchase;
+using SBLib.Models.WholeSales;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Mvc;
-using ModelHelper = PPWLib.Helpers.ModelHelper;
+using ModelHelper = SBLib.Helpers.ModelHelper;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -27,7 +27,7 @@ namespace SmartBusinessWeb.Controllers
 		{
 			HttpRequestMessage request = new HttpRequestMessage();
 			string dbname = GetDbName(apId);
-			using var context = new PPWDbContext(dbname);
+			using var context = new SBDbContext(dbname);
 			ModelHelper.WriteLog(context, form["msg"], form["type"]);		
 			return request.CreateResponse(System.Net.HttpStatusCode.OK);
 		}
@@ -37,7 +37,7 @@ namespace SmartBusinessWeb.Controllers
 		public string GetTest(int apId)
 		{
 			string dbname = GetDbName(apId);
-			using var context = new PPWDbContext(dbname);
+			using var context = new SBDbContext(dbname);
 			return string.Concat("User Count:" + context.SysUsers.Count());
 		}
 
@@ -46,7 +46,7 @@ namespace SmartBusinessWeb.Controllers
         {            
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
-            using var context = new PPWDbContext(dbname);
+            using var context = new SBDbContext(dbname);
             foreach(var log in logs) ModelHelper.WriteLog(context, log.Message, log.LogType);           
             return request.CreateResponse(System.Net.HttpStatusCode.OK);
         }       
@@ -56,7 +56,7 @@ namespace SmartBusinessWeb.Controllers
         {
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
-            using var context = new PPWDbContext(dbname);
+            using var context = new SBDbContext(dbname);
             List<RtlSale> retaillist = context.RtlSales.Where(x => x.AccountProfileId == apId && checkoutIds.Any(y => x.rtsUID == y)).ToList();
             foreach (var retail in retaillist)
             {
@@ -71,7 +71,7 @@ namespace SmartBusinessWeb.Controllers
         {
             UploadAbssData data = new UploadAbssData();
             string dbname = GetDbName(apId);
-            using var context = new PPWDbContext(dbname);
+            using var context = new SBDbContext(dbname);
             ComInfo comInfo = context.ComInfoes.FirstOrDefault(x => x.AccountProfileId == apId);
             if (comInfo != null)
             {
@@ -104,7 +104,7 @@ namespace SmartBusinessWeb.Controllers
         {
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
-            using var context = new PPWDbContext(dbname);
+            using var context = new SBDbContext(dbname);
             List<WholeSale> wslist = context.WholeSales.Where(x => x.AccountProfileId == apId && checkoutIds.Any(y => x.wsUID == y)).ToList();
             foreach (var ws in wslist)
             {
@@ -119,7 +119,7 @@ namespace SmartBusinessWeb.Controllers
         {
             UploadAbssData data = new UploadAbssData();
             string dbname = GetDbName(apId);
-            using var context = new PPWDbContext(dbname);
+            using var context = new SBDbContext(dbname);
             ComInfo comInfo = context.ComInfoes.FirstOrDefault(x => x.AccountProfileId == apId);
             if (comInfo != null)
             {
@@ -148,7 +148,7 @@ namespace SmartBusinessWeb.Controllers
         public int GetWSCount(int apId, string strfrmdate, string strtodate, string location)
         {
             string dbname = GetDbName(apId);
-            using var context = new PPWDbContext(dbname);
+            using var context = new SBDbContext(dbname);
             #region Date Ranges
             DateTime frmdate, todate;
             HandleDateRanges(strfrmdate, strtodate, out frmdate, out todate);
@@ -160,7 +160,7 @@ namespace SmartBusinessWeb.Controllers
         public int GetRetailCount(int apId, string strfrmdate, string strtodate, string location)
         {
             string dbname = GetDbName(apId);
-            using var context = new PPWDbContext(dbname);
+            using var context = new SBDbContext(dbname);
             #region Date Ranges
             DateTime frmdate, todate;
             HandleDateRanges(strfrmdate, strtodate, out frmdate, out todate);
@@ -173,8 +173,8 @@ namespace SmartBusinessWeb.Controllers
         {
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
-            using var context = new PPWDbContext(dbname);
-            List<PPWDAL.Purchase> pslist = context.Purchases.Where(x => x.AccountProfileId == apId && checkoutIds.Any(y => x.Id == y)).ToList();
+            using var context = new SBDbContext(dbname);
+            List<DAL.Purchase> pslist = context.Purchases.Where(x => x.AccountProfileId == apId && checkoutIds.Any(y => x.Id == y)).ToList();
             foreach (var ps in pslist)
             {
                 ps.pstCheckout = true;
@@ -188,7 +188,7 @@ namespace SmartBusinessWeb.Controllers
         {
             UploadAbssData data = new UploadAbssData();
             string dbname = GetDbName(apId);
-            using var context = new PPWDbContext(dbname);
+            using var context = new SBDbContext(dbname);
             ComInfo comInfo = context.ComInfoes.FirstOrDefault(x => x.AccountProfileId == apId);
             if (comInfo != null)
             {
@@ -214,7 +214,7 @@ namespace SmartBusinessWeb.Controllers
         public int GetPoCount(int apId, string strfrmdate, string strtodate, string location)
         {
             string dbname = GetDbName(apId);
-            using var context = new PPWDbContext(dbname);
+            using var context = new SBDbContext(dbname);
             #region Date Ranges
             DateTime frmdate, todate;
             HandleDateRanges(strfrmdate, strtodate, out frmdate, out todate);
@@ -227,7 +227,7 @@ namespace SmartBusinessWeb.Controllers
         {
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
-            using var context = new PPWDbContext(dbname);
+            using var context = new SBDbContext(dbname);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -297,7 +297,7 @@ namespace SmartBusinessWeb.Controllers
             }
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                using var _context = new SBDbContext(Session["DBName"].ToString());
                 ModelHelper.WriteLog(_context, string.Format("Import customer data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
             }
            
@@ -310,7 +310,7 @@ namespace SmartBusinessWeb.Controllers
         {
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
-            using var context = new PPWDbContext(dbname);
+            using var context = new SBDbContext(dbname);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -356,7 +356,7 @@ namespace SmartBusinessWeb.Controllers
             }
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                using var _context = new SBDbContext(Session["DBName"].ToString());
                 ModelHelper.WriteLog(_context, string.Format("Import customerInfo data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
             }
          
@@ -369,7 +369,7 @@ namespace SmartBusinessWeb.Controllers
         {
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
-            using var context = new PPWDbContext(dbname);
+            using var context = new SBDbContext(dbname);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -411,7 +411,7 @@ namespace SmartBusinessWeb.Controllers
             }
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                using var _context = new SBDbContext(Session["DBName"].ToString());
                 ModelHelper.WriteLog(_context, string.Format("Import supplier data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
             }
            
@@ -423,7 +423,7 @@ namespace SmartBusinessWeb.Controllers
         {
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
-            using var context = new PPWDbContext(dbname);
+            using var context = new SBDbContext(dbname);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -468,7 +468,7 @@ namespace SmartBusinessWeb.Controllers
             }
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                using var _context = new SBDbContext(Session["DBName"].ToString());
                 ModelHelper.WriteLog(_context, string.Format("Import supplierInfo data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
             }
        
@@ -481,7 +481,7 @@ namespace SmartBusinessWeb.Controllers
         {
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
-            using var context = new PPWDbContext(dbname);
+            using var context = new SBDbContext(dbname);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -523,7 +523,7 @@ namespace SmartBusinessWeb.Controllers
             }
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                using var _context = new SBDbContext(Session["DBName"].ToString());
                 ModelHelper.WriteLog(_context, string.Format("Import location data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
             }
            
@@ -535,7 +535,7 @@ namespace SmartBusinessWeb.Controllers
         {
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
-            using var context = new PPWDbContext(dbname);
+            using var context = new SBDbContext(dbname);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -578,7 +578,7 @@ namespace SmartBusinessWeb.Controllers
             }
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                using var _context = new SBDbContext(Session["DBName"].ToString());
                 ModelHelper.WriteLog(_context, string.Format("Import item data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
             }
           
@@ -590,7 +590,7 @@ namespace SmartBusinessWeb.Controllers
         {
             HttpRequestMessage request = new HttpRequestMessage();
             string dbname = GetDbName(apId);
-            using var context = new PPWDbContext(dbname);
+            using var context = new SBDbContext(dbname);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -632,7 +632,7 @@ namespace SmartBusinessWeb.Controllers
             }
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                using var _context = new SBDbContext(Session["DBName"].ToString());
                 ModelHelper.WriteLog(_context, string.Format("Import stock data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
             }
            
@@ -644,7 +644,7 @@ namespace SmartBusinessWeb.Controllers
 		{
 			HttpRequestMessage request = new HttpRequestMessage();
 			string dbname = GetDbName(apId);
-			using var context = new PPWDbContext(dbname);
+			using var context = new SBDbContext(dbname);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
 			{
@@ -686,7 +686,7 @@ namespace SmartBusinessWeb.Controllers
 			}
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                using var _context = new SBDbContext(Session["DBName"].ToString());
                 ModelHelper.WriteLog(_context, string.Format("Import itemPrice data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
             }        
          
@@ -697,7 +697,7 @@ namespace SmartBusinessWeb.Controllers
 		{
 			HttpRequestMessage request = new HttpRequestMessage();
 			string dbname = GetDbName(apId);
-			using var context = new PPWDbContext(dbname);
+			using var context = new SBDbContext(dbname);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
 			{
@@ -739,7 +739,7 @@ namespace SmartBusinessWeb.Controllers
 			}
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                using var _context = new SBDbContext(Session["DBName"].ToString());
                 ModelHelper.WriteLog(_context, string.Format("Import account data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
             }          
             
@@ -751,7 +751,7 @@ namespace SmartBusinessWeb.Controllers
 		{
 			HttpRequestMessage request = new HttpRequestMessage();
 			string dbname = GetDbName(apId);
-			using var context = new PPWDbContext(dbname);
+			using var context = new SBDbContext(dbname);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
 			{
@@ -793,7 +793,7 @@ namespace SmartBusinessWeb.Controllers
 			}
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var _context = new PPWDbContext(Session["DBName"].ToString());
+                using var _context = new SBDbContext(Session["DBName"].ToString());
                 ModelHelper.WriteLog(_context, string.Format("Import job data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
             }
             return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);

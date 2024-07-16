@@ -95,6 +95,7 @@ let sortByName: boolean = false;
 let DicCodeLocQty: { [Key: string]: { [Key: string]: number } }; //Dictionary<string, Dictionary < string, int >> DicCodeLocQty;
 let DicCodeLocId: { [Key: string]: { [Key: string]: string } };
 let DicItemReservedQty: { [Key: string]: number };
+//let DicSelectedItemCount: { [Key: string]: number };//for simple sales item barcode
 interface IEnquiryGroup {
 	RemarkDisplay: any;
 	CompanyNames: any;

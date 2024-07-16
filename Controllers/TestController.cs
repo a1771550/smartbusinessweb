@@ -1,15 +1,14 @@
 ﻿using CommonLib.Helpers;
 using CommonLib.Models;
-using LumenWorks.Framework.IO.Csv;
 using Newtonsoft.Json;
-using PPWCommonLib.BaseModels;
-using PPWCommonLib.Models;
-using PPWDAL;
-using PPWLib.Models;
-using PPWLib.Models.Item;
-using PPWLib.Models.MYOB;
-using PPWLib.Models.WholeSales;
-using PPWMyobLib;
+using SBCommonLib.BaseModels;
+using SBCommonLib.Models;
+using DAL;
+using SBLib.Models;
+using SBLib.Models.Item;
+using SBLib.Models.MYOB;
+using SBLib.Models.WholeSales;
+using SBMyobLib;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -22,7 +21,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Printing;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,20 +29,16 @@ using System.Web.Mvc;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Xml;
-using Helpers = PPWLib.Helpers;
+using Helpers = SBLib.Helpers;
 using Resources = CommonLib.App_GlobalResources;
 using Microsoft.Data.SqlClient;
 using Dapper;
-using DocumentFormat.OpenXml;
 using CommonLib.Models.MYOB;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
-using PPWLib.Models.User;
-using PPWLib.Models.POS.Sales;
-using CommonLib.BaseModels.MYOB;
-using PPWLib.Helpers;
-using PPWLib.Models.AbssReport;
-using PPWLib.Models.Promotion;
+using SBLib.Models.User;
+using SBLib.Models.POS.Sales;
+using SBLib.Models.Promotion;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -55,7 +49,7 @@ namespace SmartBusinessWeb.Controllers
         private string DefaultConnection { get { return Session["DBName"] == null ? ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", "SmartBusinessWeb_db") : ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", Session["DBName"].ToString()); } }
         private SqlConnection connection { get { return new SqlConnection(DefaultConnection); } }
         public string DbName { get { return "SmartBusinessWeb_db"; } }
-        private PPWDbContext DBContext { get { return new PPWDbContext(DbName); } }
+        private SBDbContext DBContext { get { return new SBDbContext(DbName); } }
 
         private string centralbaseUrl = UriHelper.GetAppUrl();
         protected string DateFormat { get { return ConfigurationManager.AppSettings["DateFormat"]; } }
@@ -111,14 +105,14 @@ namespace SmartBusinessWeb.Controllers
 
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var context = new PPWDbContext("SmartBusinessWeb_db");
+                using var context = new SBDbContext("SmartBusinessWeb_db");
                 Helpers.ModelHelper.WriteLog(context, sb.ToString(), "AlertFollowUp:Done");
             }
         }
 
         public void AddTest()
         {
-            using var context = new PPWDbContext(DbName);
+            using var context = new SBDbContext(DbName);
             
                 context.DebugLogs.Add(new DebugLog
                 {
@@ -136,7 +130,7 @@ namespace SmartBusinessWeb.Controllers
         }
         public void Device()
         {
-            using var context = new PPWDbContext("SmartBusinessWeb_db");
+            using var context = new SBDbContext("SmartBusinessWeb_db");
             Device device = context.Devices.Where(x => x.AccountProfileId == 2 && x.dvcSalesId == 18).FirstOrDefault();
             Response.Write(device.dvcNextRtlSalesNo);
         }
@@ -155,13 +149,13 @@ namespace SmartBusinessWeb.Controllers
     */
             PayService payService = new PayService();
 
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 var _ps = context.ePayments.FirstOrDefault(x => x.out_trade_no.ToUpper() == salescode.ToUpper());
                 if (_ps != null)
                 {
                     payService = new PayService(_ps.auth_code, _ps.out_trade_no, _ps.body.Split(',').ToList(), _ps.total_fee, ePayMode.Refund);
-                    PPWLib.Models.POS.Sales.SalesEditModel.GenEpaySignature(ref payService, ePayMode.Refund);
+                    SBLib.Models.POS.Sales.SalesEditModel.GenEpaySignature(ref payService, ePayMode.Refund);
 
                     string xml = $"<xml><auth_code><![CDATA[{payService.AuthCode}]]></auth_code><body><![CDATA[{payService.Body}]]></body><mch_create_ip><![CDATA[{payService.MachineCreateIP}]]></mch_create_ip><mch_id><![CDATA[{payService.MerchantID}]]></mch_id><nonce_str><![CDATA[{payService.Nonce}]]></nonce_str><op_user_id><![CDATA[{payService.MerchantID}]]></op_user_id><out_refund_no><![CDATA[{payService.OutRefundNo}]]></out_refund_no><out_trade_no><![CDATA[{payService.OutTradeNo}]]></out_trade_no><refund_fee><![CDATA[{payService.RefundFee}]]></refund_fee><service><![CDATA[{payService.Service}]]></service><total_fee><![CDATA[{payService.TotalFee}]]></total_fee><sign><![CDATA[{payService.Signature}]]></sign><notify_url><![CDATA[{payService.NotifyUrl}]]></notify_url></xml>";
 
@@ -174,7 +168,7 @@ namespace SmartBusinessWeb.Controllers
                     if (nodelist != null)
                     {
 
-                        PayService ps = PPWLib.Models.POS.Sales.SalesEditModel.GetStatusResult(nodelist);
+                        PayService ps = SBLib.Models.POS.Sales.SalesEditModel.GetStatusResult(nodelist);
 
                         var status = ps.Status;
                         var resultcode = ps.ResultCode;
@@ -186,13 +180,13 @@ namespace SmartBusinessWeb.Controllers
                             {
                                 if (resultcode == "1")
                                 {
-                                    PPWLib.Models.POS.Sales.SalesEditModel.HandleUnSuccessfulResult(context, payService, nodelist, status, resultcode, ePayMode.Refund, apId);
+                                    SBLib.Models.POS.Sales.SalesEditModel.HandleUnSuccessfulResult(context, payService, nodelist, status, resultcode, ePayMode.Refund, apId);
                                     context.SaveChanges();
                                     return Json(new { msg = Resources.Resource.PaymentRefundFailed, epaystatus = 0 }, JsonRequestBehavior.AllowGet);
                                 }
                                 else if (resultcode == "0")
                                 {
-                                    PPWLib.Models.POS.Sales.SalesEditModel.HandleSuccessfulResult(context, payService, nodelist, status, resultcode, ePayMode.Refund);
+                                    SBLib.Models.POS.Sales.SalesEditModel.HandleSuccessfulResult(context, payService, nodelist, status, resultcode, ePayMode.Refund);
                                     context.SaveChanges();
                                     return Json(new { msg = Resources.Resource.PaymentRefunded, epaystatus = 1 }, JsonRequestBehavior.AllowGet);
                                 }
@@ -265,7 +259,7 @@ namespace SmartBusinessWeb.Controllers
 
         public void Debug81()
         {
-            using var context = new PPWDbContext("SmartBusinessWeb_db");
+            using var context = new SBDbContext("SmartBusinessWeb_db");
             Response.Write(context.Journals.Count());
         }
 
@@ -291,7 +285,7 @@ namespace SmartBusinessWeb.Controllers
         {
             try
             {
-                using var context = new PPWDbContext(dbname);
+                using var context = new SBDbContext(dbname);
                 Response.Write("user count:" + context.SysUsers.Where(x => x.surIsActive).Count());
             }
             catch (Exception ex)
@@ -303,7 +297,7 @@ namespace SmartBusinessWeb.Controllers
         public void Debug79()
         {
             var stritemcodes = "T0009";
-            using var context = new PPWDbContext(Session["DBName"].ToString());
+            using var context = new SBDbContext(Session["DBName"].ToString());
 
             var itemvtInfo = context.GetValidThruInfo12(apId, location, stritemcodes).ToList();
             // Response.Write(itemvtInfo.Count);
@@ -479,7 +473,7 @@ namespace SmartBusinessWeb.Controllers
                         _file.SaveAs(fname);
                         filenamelist.Add(filename);
                     }
-                    using (var context = new PPWDbContext(Session["DBName"].ToString()))
+                    using (var context = new SBDbContext(Session["DBName"].ToString()))
                     {
                         WholeSale wholeSale = context.WholeSales.FirstOrDefault(x => x.wsCode == wscode && x.AccountProfileId == apId);
                         if (wholeSale != null)
@@ -622,7 +616,7 @@ namespace SmartBusinessWeb.Controllers
 
         public void Debug75()
         {
-            using var context = new PPWDbContext(Session["DBName"].ToString());
+            using var context = new SBDbContext(Session["DBName"].ToString());
             var purchaseitems = context.PurchaseItems.Where(x => x.pstCode == "IP100014").ToList();
             string status = purchaseitems.Any(x => x.IsPartial != null && (bool)x.IsPartial) ? "B" : "O";
             Response.Write(status + "<br>");
@@ -643,7 +637,7 @@ namespace SmartBusinessWeb.Controllers
         public void Debug72()
         {
             var stritemcodes = string.Join(",", new string[] { "COCA-COLA" });
-            using var context = new PPWDbContext(Session["DBName"].ToString());
+            using var context = new SBDbContext(Session["DBName"].ToString());
             var itemvtInfo = context.GetValidThruInfo12(AccountProfileId, location, stritemcodes).ToList();
             var ivqList = from item in itemvtInfo
                           where item.piValidThru != null
@@ -690,7 +684,7 @@ namespace SmartBusinessWeb.Controllers
 
         public void Debug69()
         {
-            var context = new PPWDbContext(Session["DBName"].ToString());
+            var context = new SBDbContext(Session["DBName"].ToString());
             var itemattrlist = context.ItemAttributes.AsNoTracking().Where(x => x.itmCode == "TEST023").ToList();
             var groupedlist = itemattrlist.GroupBy(x => x.itmCode + x.iaName).ToList();
             Response.Write(groupedlist.Count + "<hr>");
@@ -722,7 +716,7 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public JsonResult Debug65()
         {
-            using var context = new PPWDbContext(Session["DBName"].ToString());
+            using var context = new SBDbContext(Session["DBName"].ToString());
             DeviceModel device = Session["Device"] as DeviceModel;
             //DeviceModel device = GetDevice(model, context);
             //Response.Write($"next deposit no:{device.dvcNextDepositNo}");
@@ -742,7 +736,7 @@ namespace SmartBusinessWeb.Controllers
         }
         public void Debug61()
         {
-            using var context = new PPWDbContext(Session["DBName"].ToString());
+            using var context = new SBDbContext(Session["DBName"].ToString());
             //string[] itemcodelist = new string[] { "TEST008", "TEST009", "TEST010", "TEST011", "TEST012", "TEST013", "TEST014" };
             string[] itemcodelist = new string[] { "TEST009" };
             string stritemcodes = string.Join(",", itemcodelist);
@@ -779,7 +773,7 @@ TEST014:d4:btest1:
 
         public void Debug62()
         {
-            using var context = new PPWDbContext(Session["DBName"].ToString());
+            using var context = new SBDbContext(Session["DBName"].ToString());
 
             string[] itemcodelist = new string[] { "TEST005" };
             string stritemcodes = string.Join(",", itemcodelist);
@@ -848,7 +842,7 @@ TEST014:d4:btest1:
 
         public void Debug54()
         {
-            using var context = new PPWDbContext(Session["DBName"].ToString());
+            using var context = new SBDbContext(Session["DBName"].ToString());
 
             var DicIBVQList = new Dictionary<string, Dictionary<string, List<string>>>();
             var DicItemBVList = new Dictionary<string, Dictionary<string, List<string>>>();
@@ -1041,7 +1035,7 @@ btest3
 
         public void Debug51()
         {
-            using var context = new PPWDbContext(Session["DBName"].ToString());
+            using var context = new SBDbContext(Session["DBName"].ToString());
             //var listinfo = context.GetStockTransferListByCode1(1, 1, "ST000005").ToList();
             //var variancesum = listinfo.Sum(x => x.stVariance);
 
@@ -1053,7 +1047,7 @@ btest3
         }
         public void Debug50()
         {
-            using var context = new PPWDbContext(Session["DBName"].ToString());
+            using var context = new SBDbContext(Session["DBName"].ToString());
             var stlist = context.StockTransfers.ToList();
             var newstlist = new List<StockTransfer>();
 
@@ -1214,7 +1208,7 @@ btest3
         public void Debug42()
         {
             var deliveryAddressId = 3417;
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 var customerinfo = context.CustomerInfo4Abss.Where(x => x.Id == deliveryAddressId).FirstOrDefault();
                 var deliveryAddress = string.Concat(customerinfo.StreetLine1, " ", customerinfo.StreetLine2, " ", customerinfo.StreetLine3, " ", customerinfo.StreetLine4, " ", customerinfo.City, " ", customerinfo.State, " ", customerinfo.Country);
@@ -1256,7 +1250,7 @@ btest3
 
         public void JsonTest()
         {
-            Response.Write(PPWLib.Helpers.JsonHelper.Test());
+            Response.Write(SBLib.Helpers.JsonHelper.Test());
         }        
 
         public async Task UploadRefund()
@@ -1290,7 +1284,7 @@ btest3
                 todate = new DateTime(year, mth, day);
             }
             #endregion
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 var icount = context.GetSalesRefundCount(frmdate, todate).FirstOrDefault().GetValueOrDefault();
                 if (icount > 0)
@@ -1337,7 +1331,7 @@ btest3
                 todate = new DateTime(year, mth, day);
             }
             #endregion
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 var icount = context.GetSalesInvoicesCount(frmdate, todate, false).FirstOrDefault().GetValueOrDefault();
                 if (icount > 0)
@@ -1412,7 +1406,7 @@ btest3
 
         public ActionResult SubmitTest(string attrname = "", string attrval = "")
         {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 TestModel model = new TestModel();
                 var list = context.EmailSettings.ToList();
@@ -1436,7 +1430,7 @@ btest3
 
         public void Debug25()
         {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 var model = new EmailSettingsModel();
                 EmailSetting EmailSetting = context.EmailSettings.FirstOrDefault(x => x.Id == 1 && x.AccountProfileId == 1);
@@ -1476,7 +1470,7 @@ btest3
 
         public void Debug22()
         {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 var sql = $"Select count(itemID) From MyobItemPrice Where AccountProfileId=1 and (SellingPrice>0 || UnitPrice>0);";
                 var mvaliditemscount = context.Database.SqlQuery<int>(sql);
@@ -1489,7 +1483,7 @@ btest3
             var month = new DateTime(today.Year, today.Month, 1);
             var first = month.AddMonths(-1);
             Response.Write(first.Date.ToString());
-            //using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            //using (var context = new SBDbContext(Session["DBName"].ToString()))
             //{
 
             //}
@@ -1576,7 +1570,7 @@ btest3
             var myobfilename = "UT POS LITE GEN3";
             string strfrmdate = "28/03/2022";
             string strtodate = "28/03/2022";
-            var filelist = PPWCommonLib.CommonHelpers.FileHelper.GetDayendFileList4Central(shop, myobfilename, strfrmdate, strtodate, ref filedirs);
+            var filelist = SBCommonLib.CommonHelpers.FileHelper.GetDayendFileList4Central(shop, myobfilename, strfrmdate, strtodate, ref filedirs);
             foreach (var file in filelist)
             {
                 Response.Write(file + "<br>");
@@ -1593,7 +1587,7 @@ btest3
             string authcode = "285230095494351364";
             string salescode = "ST000001";
             List<string> salesitemcodes = new List<string>();
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 salesitemcodes = (from i in context.MyobItems.Where(x => x.AccountProfileId == 2).Take(2)
                                   select i.itmCode
@@ -1649,7 +1643,7 @@ btest3
 
         public void Debug7()
         {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
 
                 var salesitemcodes = (from i in context.MyobItems.Where(x => x.AccountProfileId == 2).Take(2)
@@ -1668,7 +1662,7 @@ btest3
      
         public void Debug4()
         {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 int apId = 1;
 
@@ -1740,7 +1734,7 @@ btest3
             var devicecode = device;
             decimal refundamt = 0;
 
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 var refunds = context.RtlSales.Where(x => (x.rtsRefCode != null && x.rtsRefCode == receiptno) && x.rtsType == "RF" && x.rtsDvc == devicecode && x.rtsSalesLoc == shop).ToList();
                 if (refunds.Count > 0)
@@ -1795,7 +1789,7 @@ btest3
         public void SearchItem()
         {
             string keyword = "ac";
-            //using(var context=new PPWDbContext(Session["DBName"].ToString()))
+            //using(var context=new SBDbContext(Session["DBName"].ToString()))
             //{
             //	var itemlist = ModelHelper.GetItemList(context, keyword);
             //	Response.Write(itemlist.Count);
@@ -1819,50 +1813,11 @@ btest3
             //Response.Write("Url:" + url);
             Response.Write(Path.Combine(UriHelper.GetAppUrl(), ConfigurationManager.AppSettings["ReceiptLogo"]));
         }
-        public void Vip()
-        {
-            var csvTable = new DataTable();
-            string file = @"C:\Users\kevinlau\Documents\SmartPOSLiteG3\Uploads\UT POS LITE GEN2\Shops\office\20211202\Vip_20211202181729.csv";
-            //string dsn = ModelHelper.GetDSNbyMyob(file.Split('\\')[6]);
-            //string connectionString = string.Format("DSN={0}", dsn);
-            using (var csvReader = new CsvReader(new StreamReader(System.IO.File.OpenRead(file)), true))
-            {
-                csvTable.Load(csvReader);
-            }
-            var Rows = csvTable.Rows;
-
-            //List<Models.CustomerModel> customers = new List<Models.CustomerModel>();
-            if (Rows.Count > 0)
-            {
-                //List<string> columns = new List<string>();
-                //string sql = "INSERT INTO Import_Customer_Cards (CoLastName,CardID,CardStatus,ItemPriceLevel,InvoiceDelivery,Address1Phone1,CustomField3) VALUES(";
-                for (int i = 0; i < Rows.Count; i++)
-                {
-                    var Row = Rows[i];
-                    Response.Write("lastname:" + Row[0] + ";cardid:" + Row[1] + ";status:" + Row[2]);
-                    Response.Write("<hr>");
-                }
-            }
-        }
-        //public void CustomerPoint()
-        //{
-        //    using (var context = new PPWDbContext(Session["DBName"].ToString()))
-        //    {
-        //        CustomerModel customer = (from c in context.PGCustomers
-        //                                  where c.cusCode == "GUEST"
-        //                                  select new Models.CustomerModel
-        //                                  {
-        //                                      cusPointsSoFar = c.cusPointsSoFar,
-        //                                      cusPointsUsed = c.cusPointsUsed
-        //                                  }
-        //                                        ).FirstOrDefault();
-        //        Response.Write("active:" + customer.cusPointsActive + ";sofar:" + customer.cusPointsSoFar);
-        //    }
-        //}
+     
 
         public void DayendsFileList()
         {
-            var filelist = PPWCommonLib.CommonHelpers.FileHelper.GetDayendFileList4Shop("UT POS LITE GEN2", "office", @"12/01/2021", @"12/01/2021");
+            var filelist = SBCommonLib.CommonHelpers.FileHelper.GetDayendFileList4Shop("UT POS LITE GEN2", "office", @"12/01/2021", @"12/01/2021");
             foreach (var file in filelist)
             {
                 Response.Write(file + "<br>");
@@ -1907,37 +1862,7 @@ btest3
             Domain domain = Domain.GetComputerDomain();
             return domain.Name;
         }
-        //public void PrintTest(string salescode = "")
-        //{
-        //	//if (string.IsNullOrEmpty(uploadpath))
-        //	//{
-        //	//	uploadpath = @"C:\SmartBusinessWeb\Uploads";
-        //	//	//uploadpath = Server.MapPath("~/Uploads");
-        //	//}
-
-        //	string printername;
-        //	string uploadpath;
-        //	if (CommonHelper.Computername() == "UT-J302YMG5-KEV")
-        //	{
-        //		uploadpath = Server.MapPath("~/Uploads");
-        //		if (string.IsNullOrEmpty(salescode))
-        //		{
-        //			salescode = "SA100262";
-        //		}
-
-        //		printername = "EPSON TM-T88VI Receipt5";
-        //		localhost.Dayends dayends = new localhost.Dayends();
-        //		dayends.PrintTest(uploadpath, salescode, printername);
-        //	}
-        //	else
-        //	{
-        //		uploadpath = @"C:\SmartBusinessWeb\Uploads";
-        //		salescode = "SA100265";
-        //		printername = Path.Combine(string.Format(@"\\{0}", CommonHelper.Computername()), "EPSON TM-T88VI Receipt5");
-        //		mobile.united.com.hk.Dayends dayends = new mobile.united.com.hk.Dayends();
-        //		dayends.PrintTest(uploadpath, salescode, printername);
-        //	}
-        //}
+       
         public string GetPaths()
         {
             return string.Join(",", CommonHelper.GetPaths());
@@ -1945,48 +1870,8 @@ btest3
             //string basepath = Server.MapPath(@"~/");
             //return string.Format("uploadpath:{0}; basepath:{1}",uploadpath,basepath);
         }
-        public void PrinterList()
-        {
-            //EPSON TM-T88VI Receipt5
-            var server = new PrintServer();
-            Response.Write("<h2>Listing Shared Printers</h2>");
-            var queues = server.GetPrintQueues(new[]
-            { EnumeratedPrintQueueTypes.Shared, EnumeratedPrintQueueTypes.Connections });
-            foreach (var item in queues)
-            {
-                Response.Write(string.Format("fullname:{0}; name:{1}", item.FullName, item.Name));
-                Response.Write("<br>");
-            }
-            Response.Write("\n<h2>Listing Local Printers Now</h2>");
-            queues = server.GetPrintQueues(new[]
-            { EnumeratedPrintQueueTypes.Local });
-            foreach (var item in queues)
-            {
-                Response.Write(string.Format("fullname:{0}; name:{1}", item.FullName, item.Name));
-                Response.Write("<br>");
-            }
-            //Console.ReadLine();
-        }
-        //public void PrintPDF()
-        //{
-        //	bool islocal = CommonHelper.IsLocal();
-        //	if (!islocal)
-        //	{
-        //		mobile.united.com.hk.Dayends dayends = new mobile.united.com.hk.Dayends();
-        //		dayends.PrintPDFAsync(true, "SA100262", "lcm", CommonHelper.GetPaths()[0], CommonHelper.GetPaths()[1], "");
-        //	}
-        //	else
-        //	{
-        //		localhost.Dayends dayends = new localhost.Dayends();
-        //		dayends.PrintPDFAsync(true, "SA100262", "lcm", CommonHelper.GetPaths()[0], CommonHelper.GetPaths()[1], "");
-        //	}
-        //}
-        public string WsParameter(string salescode)
-        {
-            localhost.Dayends dayends = new localhost.Dayends();
-            return dayends.ParameterTest(salescode);
-        }
-
+       
+        
         public string FilePath()
         {
             string filepath = @"~/Content/site/printreceipt.css";
@@ -2108,12 +1993,7 @@ btest3
         {
             return CommonHelper.GetLocalIPAddress();
         }
-        public void ConsoleArgs()
-        {
-            localhost.Dayends dayends = new localhost.Dayends();
-            dayends.ConsoleArgs();
-        }
-
+       
 
         //public void ExportFrmCentral(string dsn)
         //{
@@ -2197,80 +2077,31 @@ btest3
 
         public void TruncateTable()
         {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 context.Database.ExecuteSqlCommand("TRUNCATE TABLE [CustomerHistory]");
             }
 
         }
-        public void ReadCSVFile()
-        {
-            var csvTable = new DataTable();
-            string filepath = Path.Combine(Server.MapPath(@"~/Uploads/Shops/UT POS LITE GEN2/20211129"), "ItemSales_20211129122253.csv");
-            int fieldCount = 0;
-            using (var csvReader = new CsvReader(new StreamReader(System.IO.File.OpenRead(filepath)), true))
-            {
-                csvTable.Load(csvReader);
-                fieldCount = csvReader.FieldCount;
-            }
-            var Rows = csvTable.Rows;
-
-            //Response.Write("fieldcount:" + fieldCount);
-            //Response.Write("<hr>");
-            string sql = "INSERT INTO Import_Item_Sales(CoLastName,InvoiceNumber,SaleDate,ItemNumber,Quantity,Price,Discount,Total,SaleStatus,Location,CardID,AmountPaid,PaymentMethod,PaymentIsDue,DiscountDays,BalanceDueDays,PercentDiscount,PercentMonthlyCharge,DeliveryStatus,CustomersNumber,JobName,Comment,SalespersonLastName,Memo)  VALUES(";
-            List<string> values = new List<string>();
-
-            //for (int i = 0; i < Rows.Count; i++)
-            //{
-            //	for(int j = 0; j < fieldCount; j++)
-            //	{
-            //		Response.Write(Rows[i][j].ToString());
-            //		Response.Write(",");
-            //	}
-
-            //	Response.Write("<hr>");
-            //}
-
-            for (int i = 0; i < Rows.Count; i++)
-            {
-                List<string> _values = new List<string>();
-                for (int j = 0; j < fieldCount - 1; j++)
-                {
-                    _values.Add(string.Format("'{0}'", Rows[i][j].ToString()));
-                }
-                string value = string.Format("({0})", string.Join(",", _values));
-                //Response.Write(value);
-                values.Add(value);
-                //Response.Write(string.Join(",", values));
-                //Response.Write("<hr>");
-            }
-
-            //string strvalues = string.Join(",", values);
-            //Response.Write(strvalues + "<hr>");
-            sql += string.Join(",", values) + ")";
-            Response.Write(sql);
-            /*
-			 * INSERT INTO Import_Item_Sales(CoLastName,InvoiceNumber,SaleDate,ItemNumber,Quantity,Price,Discount,Total,SaleStatus,Location,CardID,AmountPaid,PaymentMethod,PaymentIsDue,DiscountDays,BalanceDueDays,PercentDiscount,PercentMonthlyCharge,DeliveryStatus,CustomersNumber,Job,Comment,SalespersonLastName,Memo) VALUES(('GUEST','SZ100475','11-29-2021','ABSS-PP-V22.3-1U','0','5888','0','5888','I','office','GUEST','5888','Cash','0','0','0','0','0','A','','office','Cash','LCM','Cash:5888.00'),('GUEST','SZ100476','11-29-2021','ABSS-PP-V22.3-1U','0','5888','0','5888','I','office','GUEST','5888','Cash','0','0','0','0','0','A','','office','Cash','LCM','Cash:5888.00'))
-			 */
-        }
+    
 
         public string GetFileInfoList()
         {
             StringBuilder sb = new StringBuilder();
-            List<FileInfo> filelist = PPWCommonLib.CommonHelpers.FileHelper.GetFileInfoList(@"~/Uploads", true);
+            List<FileInfo> filelist = SBCommonLib.CommonHelpers.FileHelper.GetFileInfoList(@"~/Uploads", true);
             foreach (FileInfo fileInfo in filelist)
             {
-                sb.AppendFormat("{0};", PPWCommonLib.CommonHelpers.FileHelper.GetFileNameFromPath(fileInfo.Name));
+                sb.AppendFormat("{0};", SBCommonLib.CommonHelpers.FileHelper.GetFileNameFromPath(fileInfo.Name));
             }
             return sb.ToString();
         }
         public string GetFileList()
         {
             StringBuilder sb = new StringBuilder();
-            List<string> filelist = PPWCommonLib.CommonHelpers.FileHelper.GetFileList(@"~/Uploads", true);
+            List<string> filelist = SBCommonLib.CommonHelpers.FileHelper.GetFileList(@"~/Uploads", true);
             foreach (string path in filelist)
             {
-                sb.AppendFormat("{0};", PPWCommonLib.CommonHelpers.FileHelper.GetFileNameFromPath(path));
+                sb.AppendFormat("{0};", SBCommonLib.CommonHelpers.FileHelper.GetFileNameFromPath(path));
             }
             return sb.ToString();
         }
@@ -2301,7 +2132,7 @@ btest3
 
         public string EncodingTest()
         {
-            using (var context = new PPWDbContext(Session["DBName"].ToString()))
+            using (var context = new SBDbContext(Session["DBName"].ToString()))
             {
                 string test = context.MyobLocStocks.FirstOrDefault().lstSellUnit;
                 return test;
@@ -2310,7 +2141,7 @@ btest3
 
         public string GetFile()
         {
-            return PPWCommonLib.CommonHelpers.ModelHelper.GetReceiptLogo(ProjectEnum.G3);
+            return SBCommonLib.CommonHelpers.ModelHelper.GetReceiptLogo(ProjectEnum.G3);
         }
 
         public string Token()
@@ -2326,13 +2157,13 @@ btest3
         // GET: Test
         public string ReadFile(string filename = @"deviceinfo.txt")
         {
-            return PPWCommonLib.CommonHelpers.FileHelper.Read(filename);
+            return SBCommonLib.CommonHelpers.FileHelper.Read(filename);
         }
 
         public void WriteFile(string device, string shop, string filename = @"deviceinfo.txt")
         {
             string content = string.Concat(HashHelper.ComputeHash(device), @";;", HashHelper.ComputeHash(shop));
-            PPWCommonLib.CommonHelpers.FileHelper.Write(filename, content);
+            SBCommonLib.CommonHelpers.FileHelper.Write(filename, content);
         }
 
         public string HashPass(string pass)

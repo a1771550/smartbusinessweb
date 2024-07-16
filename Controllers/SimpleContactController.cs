@@ -1,4 +1,4 @@
-﻿using PPWLib.Models.Contact;
+﻿using SBLib.Models.Contact;
 using System.Web.Mvc;
 using Resource = CommonLib.App_GlobalResources.Resource;
 

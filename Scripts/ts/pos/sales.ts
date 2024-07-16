@@ -149,7 +149,7 @@ function handleProductCheck(ele: HTMLElement | null, discpc: number, increment: 
 
 	if (SelectedSimpleItemList.length > 0) {
 		let idx = SelectedSimpleItemList.findIndex(x => { return x.itmItemID == Id; });
-
+		//console.log("idx:" + idx);
 		if (increment) {
 			if (idx < 0) {
 				populateSimpleItem();
@@ -158,6 +158,9 @@ function handleProductCheck(ele: HTMLElement | null, discpc: number, increment: 
 				//update discpc & price:
 				SelectedSimpleItemList[idx].discpc = discpc;
 				SelectedSimpleItemList[idx].itmBaseSellingPrice = Number($(ele!).data("price"));
+				console.log("qtysellable#0:" + SelectedSimpleItemList[idx].QtySellable);
+				if (selectedItemCode == SelectedSimpleItemList[idx].itmCode) SelectedSimpleItemList[idx].QtySellable += 1;
+				console.log("qtysellable#1:" + SelectedSimpleItemList[idx].QtySellable);
 			}
 		} else {
 			if (idx >= 0) SelectedSimpleItemList.splice(idx, 1);
@@ -211,7 +214,7 @@ function populateProductList() {
 												<div class="increment-decrement">
 													<div class="input-groups">
 														<input type="button" value="-" class="button-minus dec button operator" data-id="${x.itmItemID}">
-														<input type="text" name="child" value="${x.QtySellable}" class="quantity-field simpleqty" data-id="${x.itmItemID}">
+														<input type="text" name="child" value="${x.QtySellable}" class="quantity-field simpleqty" data-qtysellable="${x.QtySellable}" data-id="${x.itmItemID}">
 														<input type="button" value="+" class="button-plus inc button operator" data-id="${x.itmItemID}">
 													</div>
 												</div>
@@ -426,16 +429,18 @@ function populateProductBlk(itemList: ISimpleItem[]): string {
 
 	return html;
 }
-$(document).on("change", "#searchItem", function () {
+$(document).on("change", "#searchItem", function (e) {
+	e.preventDefault();
+	e.stopPropagation();
+
 	keyword = $(this).val() as string;
 	//console.log("keyword:", keyword);
-	filteredItemList = [];
+	//if(!filteredItemList)
+		filteredItemList = [];
 	if (keyword != "") {
 		//console.log("SimpleItemList:", SimpleItemList);
-		SimpleItemList.forEach((x) => {
-			/*	console.log("x.itmcode:" + x.itmCode + ";x.namedesc:" + x.NameDesc + ";x.itmCode.indexOf(keyword):" + x.itmCode.indexOf(keyword) + ";x.NameDesc.indexOf(keyword):" + x.NameDesc.indexOf(keyword));*/
+		SimpleItemList.forEach((x) => {			
 			if (x.itmCode.toLowerCase().indexOf(keyword.toLowerCase()) >= 0 || x.NameDesc.toLowerCase().indexOf(keyword.toLowerCase()) >= 0) filteredItemList.push(x);
-
 		});
 		//console.log("filteredItemList#keyword:", filteredItemList);		
 		if (filteredItemList.length === 0) {
@@ -448,14 +453,20 @@ $(document).on("change", "#searchItem", function () {
 			$(".productblk").empty().append(populateProductBlk(filteredItemList));
 
 			if (filteredItemList.length == 1) {
-				//console.log(filteredItemList);
+				selectedItemCode = filteredItemList[0].itmCode;
+				//if (!(selectedItemCode in DicSelectedItemCount)) DicSelectedItemCount[selectedItemCode] += 1;
+				console.log(filteredItemList);
 				$(".productset").each(function () {
-					if ($(this).data("code") == filteredItemList[0].itmCode)
+					if ($(this).data("code") == selectedItemCode) {
 						handleProductSelected.call(this);
+						return false;
+					}
+						
 				});
 			}
 		}
-	} else {
+	}
+	else {
 		if (filteredItemList.length === 0) {
 			filteredItemList = $infoblk.data("filtereditemlist");			
 			$(".productblk").empty().append(populateProductBlk(filteredItemList));
