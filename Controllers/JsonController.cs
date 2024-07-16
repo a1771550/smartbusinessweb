@@ -272,7 +272,7 @@ namespace SmartBusinessWeb.Controllers
                     await context.SaveChangesAsync();
 
 
-                    ModelHelper.WriteLog(context, "Import Customer data from Central done", "ImportFrmCentral");                
+                    ModelHelper.WriteLog(context, "Import CustomerAS data from Central done", "ImportFrmCentral");                
                     transaction.Commit();
 
                     return request.CreateResponse(System.Net.HttpStatusCode.OK);

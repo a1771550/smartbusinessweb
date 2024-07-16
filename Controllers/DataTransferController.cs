@@ -373,6 +373,7 @@ namespace SmartBusinessWeb.Controllers
                             ac.AccountClassificationID = account.AccountClassificationID;
                             ac.AccountTypeID = account.AccountTypeID;
                             ac.AccountLevel = account.AccountLevel;
+                            ac.CreateTime = dateTime;
                             newaccounts.Add(ac);
                         }
 

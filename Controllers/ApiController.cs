@@ -1400,7 +1400,7 @@ namespace SmartBusinessWeb.Controllers
                         }
                         context.Contacts.AddRange(newcontacts);
                         context.SaveChanges();
-                        ModelHelper.WriteLog(context, "Import Customer data from Central done", "ImportFrmCentral");
+                        ModelHelper.WriteLog(context, "Import CustomerAS data from Central done", "ImportFrmCentral");
 
                     }
                     catch (DbEntityValidationException e)
@@ -1424,7 +1424,7 @@ namespace SmartBusinessWeb.Controllers
                 if (!string.IsNullOrEmpty(sb.ToString()))
                 {
                     using var _context = new SBDbContext(Session["DBName"].ToString());
-                    ModelHelper.WriteLog(_context, string.Format("Import Customer data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
+                    ModelHelper.WriteLog(_context, string.Format("Import CustomerAS data from Central failed:{0}", sb.ToString()), "ExportFrmCentral");
                 }
 
             }

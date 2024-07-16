@@ -141,7 +141,7 @@ namespace SmartBusinessWeb.Controllers.Customer.Enquiry
         {
             CustomerEditModel model = new CustomerEditModel();
             model.ConvertFrmEnquiry(apId, enqId, overwrite == 1);
-            return RedirectToAction("Index", "Customer");
+            return RedirectToAction("Index", "CustomerAS");
         }
 
         [HandleError]
