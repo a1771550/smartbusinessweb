@@ -474,6 +474,11 @@ $(document).on("change", "#searchItem", function (e) {
 		}
 	}
 });
+
+$(document).on("change", "#txtPhone", function (e) {
+	if ($(this).val()) selectedCusCodeName = $(this).val();
+	searchCustomer(selectedCusCodeName);
+});
 function initTapContent() {
 	openTapContent($infoblk.data("defaultcatname"), selectedCatId);
 	$(".tab").find("button").first().addClass("active");
