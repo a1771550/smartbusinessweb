@@ -3,19 +3,16 @@ SimpleSalesLns = [];
 $(function () {
 	forsales = true;
 	setFullPage();
+	triggerMenuByCls("menusales", 3);
 	initModals();
 
-	salesType = SalesType.retail;
-	batchidx = 5;
-	snidx = batchidx + 1;
-	vtidx = snidx + 1;
+	salesType = SalesType.retail;	
 
 	SalesOrder = $infoblk.data("sales");
 	//console.log("SalesOrder:", SalesOrder);
 	gTblId = "tblSales";
 
 	cpplList = $infoblk.data("customerpointpricelevels");
-
 	DicPayTypes = $infoblk.data("dicpaytypes");
 	defaultcustomer = $infoblk.data("defaultcustomer");
 	taxModel = $infoblk.data("taxmodel");
@@ -46,8 +43,7 @@ $(function () {
 		selectCus();
 
 		SimpleSalesLns = $infoblk.data("saleslnlist");
-		console.log("SimpleSalesLns:", SimpleSalesLns);
-
+		//console.log("SimpleSalesLns:", SimpleSalesLns);
 		DicItemSNs = $infoblk.data("dicitemsns");
 		DicItemOptions = $infoblk.data("dicitemoptions");
 		//console.log(DicItemOptions);
@@ -71,7 +67,8 @@ $(function () {
 			//console.log(e.Item);
 			selectedItemCode = e.itmCode;
 			//console.log("selectedItemCode:" + selectedItemCode);
-			selectedSimpleSalesLn = structuredClone(e);			
+			selectedSimpleSalesLn = structuredClone(e);		
+			//console.log(selectedSimpleSalesLn);
 			populateSalesRow();		
 		});
 

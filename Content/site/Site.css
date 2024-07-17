@@ -691,6 +691,13 @@ input[type="checkbox"].danger {
 tr.selected{
     background-color:#f8d4d4!important;
 }
+input.disabled {   
+    cursor: default;
+    background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
+    color: light-dark(rgb(84, 84, 84), rgb(170, 170, 170));
+    border-color: rgba(118, 118, 118, 0.3);
+}
+
 .jexcel input.disabled{
     padding:0!important;
     margin:0!important;

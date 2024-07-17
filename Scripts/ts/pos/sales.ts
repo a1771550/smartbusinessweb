@@ -519,14 +519,14 @@ $(function () {
 	initTapContent();
 
 	Sales = initSimpleSales();
+	$("#txtCustomerName").val(defaultcustomer.cusName);
+	selectedCus = defaultcustomer;
 
 	$norecordfound = $("#norecordfound");
 
 	if (SimpleItemList.length == 0)
 		$norecordfound.show();
 	else $norecordfound.hide();
-
-	$("#txtCustomerName").val(defaultcustomer.cusName);
 
 	setInputs4NumberOnly(["number", "paymenttype"]);
 

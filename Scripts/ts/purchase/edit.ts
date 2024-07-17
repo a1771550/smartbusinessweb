@@ -732,7 +732,7 @@ $(function () {
 
 	setInput4NumberOnly("number");
 
-	let idx = (!reviewmode && !editmode) ? 0 : 2;
+	let idx = reviewmode?2:editmode?1: 0;
 	triggerMenuByCls("menupurchase", idx);
 
 

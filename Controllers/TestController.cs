@@ -793,7 +793,7 @@ TEST014:d4:btest1:
 
             if (ivqList != null && ivqList.Count() > 0)
             {
-                var vtdelInfo = context.GetValidThruDeliveryInfo8(stritemcodes, AccountProfileId).ToList();
+                var vtdelInfo = context.GetValidThruDeliveryInfo9(stritemcodes, AccountProfileId).ToList();
                 foreach (var vi in ivqList)
                 {
                     int delqty = 0;
@@ -859,7 +859,7 @@ TEST014:d4:btest1:
             var itembtInfo = context.GetBatchVtInfoByItemCodes12(AccountProfileId, "office", stritemcodes).ToList();
             string strbatcodes = string.Join(",", itembtInfo.Select(x => x.batCode).ToList());
 
-            var batdelInfo = context.GetBatchDeliveryInfo12(strbatcodes, stritemcodes, AccountProfileId).ToList();
+            var batdelInfo = context.GetBatchDeliveryInfo13(strbatcodes, stritemcodes, AccountProfileId).ToList();
 
             var ibqList = from item in itembtInfo
                               //join delitem in batdelInfo

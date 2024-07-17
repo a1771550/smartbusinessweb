@@ -19,7 +19,7 @@ namespace SmartBusinessWeb.Controllers.Sales
         public ActionResult Get(long Id)
         {
             ViewBag.ParentPage = "sales";
-            SalesOrderEditInfo model = new SalesOrderEditInfo();
+            SalesOrderEditInfo model = new();
             model.Get(Id);
             return View(model);
         }

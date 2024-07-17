@@ -65,9 +65,9 @@
 			@foreach (var item in Model.PagingPSList)
 			{
 				string bgcls = "";
-				string approvedisabled = "";
-				string rejectdisabled = "";
-				string voiddisabled = "";
+				//string approvedisabled = "";
+				//string rejectdisabled = "";
+				//string voiddisabled = "";
 				//string passdisabled;
 				string btncls = (item.pstType == "PS" || approvalmode) ? "" : "disabled";
 				string statustxt = "";
@@ -75,15 +75,21 @@
 
 				switch (item.pstStatus)
 				{
+					case "partialreceival":
+						bgcls = "openedstatusbg";
+						statustxt = Resources.Resource.PartialReceival; ;
+						//voiddisabled = "disabled";
+						_readonly = "1";
+						break;
 					case "opened":
 						bgcls = "openedstatusbg";
 						statustxt = Resources.Resource.Received4Purchase;;
-						voiddisabled = "disabled";
+						//voiddisabled = "disabled";
 						_readonly = "1";
 						break;
 					case "VOIDED":
 						bgcls = "voidedstatusbg";
-						voiddisabled = "disabled";
+						//voiddisabled = "disabled";
 						statustxt = Resources.Resource.Voided;
 						break;
 					case "PASSED":
@@ -96,16 +102,16 @@
 					case "created":
 					case "CREATED":
 						bgcls = "approvedstatusbg";
-						approvedisabled = "disabled";
-						rejectdisabled = "disabled";
-						voiddisabled = "disabled";
+						//approvedisabled = "disabled";
+						//rejectdisabled = "disabled";
+						//voiddisabled = "disabled";
 						//passdisabled = "disabled";
 						statustxt = Resources.Resource.Ready4ReceiveItems;
 						_readonly = "0";
 						break;
 					case "REJECTED":
 						bgcls = "rejectedstatusbg";
-						rejectdisabled = "disabled";
+						//rejectdisabled = "disabled";
 						statustxt = Resources.Resource.Rejected;
 						_readonly = "0";
 						break;
@@ -126,7 +132,7 @@
 						break;
 				}
 
-				<tr>
+				<tr data-status="@item.pstStatus">
 					<td class="text-center">
 						@Html.DisplayFor(modelPurchaseStock => item.pstCode)
 					</td>

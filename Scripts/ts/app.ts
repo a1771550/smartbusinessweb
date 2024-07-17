@@ -825,7 +825,7 @@ let selectedSimpleSalesLn: ISimpleSalesLn | null;
 let selectedCus: ICustomer;
 let selectedStockInItem: IStockInItem;
 let SelectedPurchaseItem: IPurchaseItem | null;
-let selectedWholesalesLn: IWholeSalesLn | null;
+let SelectedWholeSalesLn: IWholeSalesLn | null;
 
 let SimpleItemList: ISimpleItem[];
 let ItemList: Array<IItem>;

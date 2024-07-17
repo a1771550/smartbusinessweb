@@ -1,9 +1,8 @@
-﻿@model SBLib.Models.RefundViewModel
+﻿@model SBLib.Models.POS.Sales.SalesEditModel
 
 @{
 	ViewBag.Title = Resources.Resource.Refunds;
 	int rand = new Random().Next(10000, 100000);
-	int ispng = Model.IsPNG ? 1 : 0;
 	string devicecode = (HttpContext.Current.Session["Device"] as DeviceModel).dvcCode;
 }
 
@@ -114,16 +113,15 @@
 				<col width="100">
 				<col width="100">
 
-				@if (Model.EnableTax && !Model.InclusiveTax)
-				{
-					<col width="100">
-				}
+
+				<col width="100">
+
 				<col width="100" />
 				<col width="70">
 				<col width="100">
 				<col width="50">
 			</colgroup>
-			@{ int idx = (Model.EnableTax && !Model.InclusiveTax) ? 11 : 10;}
+
 			<thead class="resizable">
 				<tr>
 					<td data-x="1" title="@Resources.Resource.ItemCode" style="text-align: center;">@Resources.Resource.ItemCode</td>
@@ -137,17 +135,16 @@
 					<td data-x="7" title="@Resources.Resource.Price" style="text-align: right;">@Resources.Resource.Price</td>
 					<td data-x="8" title="@Resources.Resource.DiscountItemHeader" style="text-align: right;">@Resources.Resource.DiscountItemHeader</td>
 
-					@if (Model.EnableTax && !Model.InclusiveTax)
-					{
-						<td data-x="10" title="@Resources.Resource.TaxItemHeader" style="text-align: right;">@Resources.Resource.TaxItemHeader</td>
-					}
-					<td data-x="9" title="@Resources.Resource.Location" style="text-align: center;">@Resources.Resource.Location</td>
-					<td data-x="@idx" title="@Resources.Resource.RefundQty" style="text-align: right;">@Resources.Resource.RefundQty</td>
 
-					@{ idx++;}
-					<td data-x="@idx" title="@Resources.Resource.RefundAmtHeader" style="text-align: right;">@Resources.Resource.RefundAmtHeader</td>
-					@{ idx++;}
-					<td data-x="@idx" class="text-center">@Resources.Resource.Sequence</td>
+					<td data-x="9" title="@Resources.Resource.TaxItemHeader" style="text-align: right;">@Resources.Resource.TaxItemHeader</td>
+
+					<td data-x="10" title="@Resources.Resource.Location" style="text-align: center;">@Resources.Resource.Location</td>
+					<td data-x="11" title="@Resources.Resource.RefundQty" style="text-align: right;">@Resources.Resource.RefundQty</td>
+
+				
+					<td data-x="12" title="@Resources.Resource.RefundAmtHeader" style="text-align: right;">@Resources.Resource.RefundAmtHeader</td>
+					
+					<td data-x="13" class="text-center">@Resources.Resource.Sequence</td>
 				</tr>
 			</thead>
 			<tbody></tbody>
@@ -204,7 +201,7 @@
 
 @Html.Partial("_WaitingModal")
 
-<div id="infoblk" data-ispng="@ispng" data-inclusivetax="@Model.InclusiveTax" data-inclusivetaxrate="@Model.InclusiveTaxRate" data-checkoutportal="@Model.ComInfo.DefaultCheckoutPortal" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)"></div>
+<div id="infoblk" data-checkoutportal="@Model.ComInfo.DefaultCheckoutPortal" data-diccurrencyexrate="@JsonSerializer.Serialize(Model.DicCurrencyExRate)" data-cominfo="@JsonSerializer.Serialize(Model.ComInfo)"></div>
 <link rel="stylesheet" type="text/css" href="~/Scripts/jspreadsheet/dist/jexcel.css" />
 <link rel="stylesheet" type="text/css" href="~/Scripts/jsuites/dist/jsuites.css" />
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>

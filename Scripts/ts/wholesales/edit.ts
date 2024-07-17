@@ -481,76 +481,76 @@ function updateWholesales() {
 
 		let seq = parseInt(<string>$(e).find("td:first").text());
 		if (WholeSalesLns.length > 0) {
-			selectedWholesalesLn = WholeSalesLns.filter(
+			SelectedWholeSalesLn = WholeSalesLns.filter(
 				(x) => x.wslSeq == seq
 			)[0];
-			if (!selectedWholesalesLn) selectedWholesalesLn = initWholeSalesLn();
+			if (!SelectedWholeSalesLn) SelectedWholeSalesLn = initWholeSalesLn();
 		} else {
-			selectedWholesalesLn = initWholeSalesLn();
+			SelectedWholeSalesLn = initWholeSalesLn();
 		}
-		selectedWholesalesLn.wslUID = Number($(e).data("id"));
-		selectedWholesalesLn.MissingItemOptions = itemoptionmissing;
+		SelectedWholeSalesLn.wslUID = Number($(e).data("id"));
+		SelectedWholeSalesLn.MissingItemOptions = itemoptionmissing;
 
-		selectedWholesalesLn.wslStatus = WholeSales.wsStatus;
-		selectedWholesalesLn.wslItemCode = <string>(
+		SelectedWholeSalesLn.wslStatus = WholeSales.wsStatus;
+		SelectedWholeSalesLn.wslItemCode = <string>(
 			$(e).find(".itemcode").val()
 		);
-		selectedWholesalesLn.wslSeq = seq;
-		selectedWholesalesLn.itmNameDesc = <string>(
+		SelectedWholeSalesLn.wslSeq = seq;
+		SelectedWholeSalesLn.itmNameDesc = <string>(
 			$(e).find(".itemdesc").data("itemname")
 		);
-		selectedWholesalesLn.wslDesc = <string>(
+		SelectedWholeSalesLn.wslDesc = <string>(
 			$(e).find(".itemdesc").val()
 		);
-		selectedWholesalesLn.wslSellUnit = <string>(
+		SelectedWholeSalesLn.wslSellUnit = <string>(
 			$(e).find(".sellunit").val()
 		);
 		let qty = 0;
 		qty = Number($(e).find(".qty").val());
-		selectedWholesalesLn.wslQty = qty;
+		SelectedWholeSalesLn.wslQty = qty;
 
 		if (isInvoice) {
-			selectedWholesalesLn.wslDelQty = Number($(e).find(".delqty").val());;
+			SelectedWholeSalesLn.wslDelQty = Number($(e).find(".delqty").val());;
 		}
 
-		selectedWholesalesLn.wslHasSn =
-			selectedWholesalesLn.snvtList && selectedWholesalesLn.snvtList.length > 0;
+		SelectedWholeSalesLn.wslHasSn =
+			SelectedWholeSalesLn.snvtList && SelectedWholeSalesLn.snvtList.length > 0;
 
-		selectedWholesalesLn.JsValidThru = $(e).find(".validthru").val() as string ?? "";
+		SelectedWholeSalesLn.JsValidThru = $(e).find(".validthru").val() as string ?? "";
 
 		let _price: number = Number($(e).find(".price").val());
-		selectedWholesalesLn.wslSellingPrice = _price;
+		SelectedWholeSalesLn.wslSellingPrice = _price;
 
 		let _discpc: number = Number(
 			$(e).find(".discpc").val()
 		);
-		selectedWholesalesLn.wslLineDiscPc = _discpc;
+		SelectedWholeSalesLn.wslLineDiscPc = _discpc;
 
-		selectedWholesalesLn.wslLineDiscAmt =
-			selectedWholesalesLn.wslSellingPrice *
-			(selectedWholesalesLn.wslLineDiscPc / 100) *
+		SelectedWholeSalesLn.wslLineDiscAmt =
+			SelectedWholeSalesLn.wslSellingPrice *
+			(SelectedWholeSalesLn.wslLineDiscPc / 100) *
 			qty;
 
 		if (enableTax && !inclusivetax) {
-			selectedWholesalesLn.wslTaxPc = Number(
+			SelectedWholeSalesLn.wslTaxPc = Number(
 				$(e).find(".taxpc").val()
 			);
-			selectedWholesalesLn.wslTaxAmt =
-				selectedWholesalesLn.wslSellingPrice *
-				(1 - selectedWholesalesLn.wslLineDiscPc / 100) *
-				(selectedWholesalesLn.wslTaxPc / 100) *
+			SelectedWholeSalesLn.wslTaxAmt =
+				SelectedWholeSalesLn.wslSellingPrice *
+				(1 - SelectedWholeSalesLn.wslLineDiscPc / 100) *
+				(SelectedWholeSalesLn.wslTaxPc / 100) *
 				qty;
 		}
 
-		selectedWholesalesLn.wslStockLoc = $(e)
+		SelectedWholeSalesLn.wslStockLoc = $(e)
 			.find(".location")
 			.val() as string;
-		selectedWholesalesLn.JobID = Number($(e)
+		SelectedWholeSalesLn.JobID = Number($(e)
 			.find(".job")
 			.val());
 		let _amt: number = Number($(e).find(".amount").val());
 		// console.log("_amt:" + _amt);
-		selectedWholesalesLn.wslSalesAmt = _amt;
+		SelectedWholeSalesLn.wslSalesAmt = _amt;
 		// console.log(selectedWholesalesLn);
 		salesamt += _amt;
 
@@ -558,8 +558,8 @@ function updateWholesales() {
 			let idx = -1;
 			$.each(WholeSalesLns, function (i, e) {
 				//console.log("selectedWholesalesLn!.wslSeq:" + selectedWholesalesLn!.wslSeq + ";e.wlseq:" + e.wslSeq);
-				if (e.wslSeq == selectedWholesalesLn!.wslSeq) {
-					e = structuredClone(selectedWholesalesLn)!;
+				if (e.wslSeq == SelectedWholeSalesLn!.wslSeq) {
+					e = structuredClone(SelectedWholeSalesLn)!;
 					//console.log("idx#loop:" + idx);
 					idx = i;
 					return false;
@@ -568,11 +568,11 @@ function updateWholesales() {
 			//console.log("idx:" + idx);
 			if (idx === -1) {
 				//console.log("push#1");
-				WholeSalesLns.push(selectedWholesalesLn);
+				WholeSalesLns.push(SelectedWholeSalesLn);
 			}
 		} else {
 			//console.log("push#0");
-			WholeSalesLns.push(selectedWholesalesLn);
+			WholeSalesLns.push(SelectedWholeSalesLn);
 		}
 
 	});

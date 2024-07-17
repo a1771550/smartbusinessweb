@@ -7,7 +7,10 @@
 }
 <link rel="stylesheet" type="text/css" href="~/Content/pos/Sales.css?v=@rand" />
 
-<h3>@ViewBag.Title</h3>
+<h3>
+	@ViewBag.Title
+	<span class="float-right font-weight-bold small70">@Model.SalesOrder.rtsCode</span>
+</h3>
 
 
 @Html.Partial("_SalesBlk", null, new ViewDataDictionary { { "editmode", editmode }, { "Currency", Model.Currency }, { "rtsCurrency", Model.SalesOrder.rtsCurrency }, { "LocationList", Model.LocationList }, { "showrecur", false }, { "Device", Model.ComInfo.Device }, { "Devices", Model.ComInfo.Devices }, { "NextSalesCode", Model.SalesOrder.rtsCode }, { "DefaultSalesNotesTxt", Model.SalesOrder.rtsRmks }, { "forsales", true } })

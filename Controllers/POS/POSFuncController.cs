@@ -231,7 +231,7 @@ namespace SmartBusinessWeb.Controllers
         {
             ViewBag.ParentPage = "sales";
             ViewBag.PageName = "refund";
-            RefundViewModel model = new RefundViewModel(ComInfo.Currency);
+            SalesEditModel model = new(SalesType.refund);
             return View(model);
         }
 
@@ -435,18 +435,19 @@ namespace SmartBusinessWeb.Controllers
 
             if (device.dvcCode == devicecode)
             {
-                bool minusqtyonrefund = context.AppParams.FirstOrDefault(x => x.appParam == "EnableMinusStockOnRefund" && x.AccountProfileId == apId).appVal == "1";
-                if (!minusqtyonrefund)
-                {
+                //bool minusqtyonrefund = context.AppParams.FirstOrDefault(x => x.appParam == "EnableMinusStockOnRefund" && x.AccountProfileId == apId).appVal == "1";
+                //if (!minusqtyonrefund)
+                //{
                     SalesEditModel.HandleStockQty(context, dicItemLocQty, false);
-                    SalesModel sale = new SalesModel
+                    SalesModel sale = new()
                     {
-                        rtsCode = refundcode,
+                        rtsCode = salescode,
+                        rtsRefCode = refundcode,
                         rtsDvc = devicecode,
                         rtsSalesLoc = device.dvcShop
                     };
                     SalesEditModel.HandleSalesItemVariOptions(context, sale, null, null, RefundList);
-                }
+                //}
             }
 
             RtlPay rtlPay = new RtlPay
@@ -598,7 +599,7 @@ namespace SmartBusinessWeb.Controllers
         public ActionResult AdvSales(int? reserveId)
         { 
             ViewBag.ParentPage = "sales";
-            SalesEditModel model = new(false, reserveId);
+            SalesEditModel model = new(SalesType.advsales, reserveId);
             return View(model);
         }
 
@@ -607,7 +608,7 @@ namespace SmartBusinessWeb.Controllers
         public ActionResult Sales()
         { 
             ViewBag.ParentPage = "sales";
-            SalesEditModel model = new(true);
+            SalesEditModel model = new(SalesType.simplesales);
             return View(model);
         }
 

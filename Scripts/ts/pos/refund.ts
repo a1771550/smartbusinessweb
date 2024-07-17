@@ -4,8 +4,6 @@ let selectedRefundLn = [];
 let refundLns: Array<IRefundSales> = [];
 priceeditable = false; //item price in refund should not be editable
 amteditable = false;
-inclusivetax = $infoblk.data("inclusivetax") === "True";
-//let selectedRefItem: IRefundBase;
 
 let RefundSales: IRefundSales;
 let RefundSalesList: Array<IRefundSales> = [];
@@ -17,10 +15,7 @@ let epaytype: string = "";
 RefundList = [];
 function updateRefRow() {
 	$target = $("#tblRefund tbody tr").eq(currentY);
-	// console.log("refundsalesln#updaterefrow:", refundsalesln);
-	/* if (!inclusivetax) {*/
-	//if (enableTax && !inclusivetax) {
-	//}
+	
 	refundsalesln.rtlSalesAmt = inclusivetax
 		? calAmount(
 			refundsalesln.qtyToRefund,
@@ -570,9 +565,9 @@ function fillinRefundForm() {
 					return false;
 				}
 			});
-			console.log("itotalamt1:" + itotalamt);
+			//console.log("itotalamt1:" + itotalamt);
 		}
-
+		//console.log("here");
 		genRefundRows();
 		const $rows = $("#tblRefund tbody tr");
 		if ($rows.length === 1) {
@@ -580,7 +575,7 @@ function fillinRefundForm() {
 			$seq.prop("checked", true).trigger("change");
 		}
 
-		console.log("itotalamt2:" + itotalamt);
+		//console.log("itotalamt2:" + itotalamt);
 		if (isEpay || RefundableSalesList.length == 1) { $("#txtTotal").val(formatnumber(itotalamt)); refundsalesln = RefundableSalesList[0]; genRefund(); }
 
 	} else {
@@ -621,23 +616,34 @@ function genRefundRows() {
 						batdelqty.batSn ?? "",
 						e.rtlValidThru
 					);
+				else html += addRefRow(e, i, null, "", "", null);					
 			}
 			else {
 				// sn & vt or sn only
 				if (itemOptions.ChkSN) {
-					$.each(snlist, function (k, v) {
-						html += addRefRow(e, k, null, "", v.snoCode, null);
-					});
+					if (snlist.length > 0) {						$.each(snlist, function (k, v) {
+							html += addRefRow(e, k, null, "", v.snoCode, null);
+						});
+					} else {
+						html += addRefRow(e, i, null, "", "", null);
+					}
+					
+					//console.log("html#1:", html);
 				} else {
 					//vt only
-					html += addRefRow(e, i, null, "", "", e.rtlValidThru);
+					//console.log("html#2:", html);
+					if(e.rtlValidThru)
+						html += addRefRow(e, i, null, "", "", e.rtlValidThru);
+					else html += addRefRow(e, i, null, "", "", null);
 				}
 			}
 		} else {
+			//console.log("html#3:", html);
 			html += addRefRow(e, i, null, "", "", null);
 		}
 	});
 
+	//console.log("html#final:", html);
 	$target.empty().append(html);
 }
 
@@ -1096,8 +1102,8 @@ function fillInRefundRow(
 	fillInRowData(refundsalesln);
 
 	const itemcode: string = refundsalesln.rtlItemCode.toString();
-	$target.find("td:eq(0)").find(".itemcode").val(itemcode);
-	$target.find("td:eq(1)").find(".itemdesc").text(refundsalesln.rtlDesc);
+	$target.find(".itemcode").val(itemcode);
+	$target.find(".itemdesc").text(refundsalesln.rtlDesc);
 
 	console.log("refundsalslnlengthEq1:", refundsalslnlengthEq1);
 
@@ -1121,61 +1127,53 @@ function fillInRefundRow(
 			? "nonitemoptions"
 			: "";
 
-	let idx = 3;
-	const $bat = $target.find("td").eq(idx).find(".batch");
+
+	const $bat = $target.find(".batch");
 
 	$bat.data("type", "bat");
 
 	$bat.prop("title", batmsg);
 
-	idx++;
-	const $sn = $target.find("td").eq(idx).find(".serialno");
+	
+	const $sn = $target.find(".serialno");
 	$sn.data("type", "sn");
 
 	$sn.prop("title", snmsg);
-
-	idx++;
-	const $vt = $target.find("td").eq(idx).find(".validthru");
+	
+	const $vt = $target.find(".validthru");
 	$vt.data("type", "vt");
 	$vt.addClass(vtcls).prop("title", vtmsg);
-
-	idx = 6;
-	$target
-		.find("td")
-		.eq(idx)
+	
+	$target		
 		.find(".price")
 		.val(formatnumber(refundsalesln.rtlSellingPrice));
 
-	idx++;
+
 	let _disc: any = refundsalslnlengthEq1
 		? formatnumber(refundsalesln.rtlLineDiscPc)
 		: "";
-	$target.find("td").eq(idx).find(".discpc").val(_disc);
+	$target.find(".discpc").val(_disc);
 
 	if (refundsalslnlengthEq1) {
-		idx = enableTax && !inclusivetax ? 8 : 7;
-
-		$target
-			.find("td")
-			.eq(idx)
+		$target					
 			.find(".taxpc")
 			.val(formatnumber(refundsalesln.rtlTaxPc));
 
-		const $refundableQty = $target.find("td").eq(-3).find(".qtytorefund");
+		const $refundableQty = $target.find(".qtytorefund");
 		$refundableQty.val(refundsalesln.refundableQty);
 
 		if (batdelId || vtdelId) {
 			const clsDel = batdelId ? "bat" : "vt";
 			const chkDel: string = `<input class="form-check-input ${clsDel}" type="checkbox" value="${batdelId}">
   <label class="form-check-label">${refundsalesln.rtlSeq}</label>`;
-			$target.find("td").last().find(".rtlSeq").val(chkDel);
+			$target.find(".rtlSeq").val(chkDel);
 		} else {
-			$target.find("td").last().find(".rtlSeq").val(refundsalesln.rtlSeq);
+			$target.find(".rtlSeq").val(refundsalesln.rtlSeq);
 		}
 		// return false;
 		updateRefRow();
 	} else {
-		$target.find("td").eq(-2).find(".amount").val(formatnumber(0));
+		$target.find(".amount").val(formatnumber(0));
 	}
 }
 
@@ -1203,7 +1201,7 @@ function submitRefund() {
 	Refund.rtsFinalTotal = itotalamt;
 	Refund.epaytype = epaytype;
 	Refund.rtsCusCode = selectedCus.cusCode;
-
+	//console.log("here");
 	if (RefundList.length > 0) {
 		const url = "/POSFunc/ProcessRefund";
 		openWaitingModal();
@@ -1274,7 +1272,7 @@ function focusRefItemCode(idx: number = -1) {
 }
 
 function openRefPayModal() {
-	payModal.dialog("option", { width: 500, title: processrefund });
+	payModal.dialog("option", { width: 700, title: processrefund });
 	payModal.dialog("open");
 	// console.log("itotalamt#paymodal:" + itotalamt);
 	let totalamt = 0;

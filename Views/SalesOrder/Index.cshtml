@@ -182,17 +182,7 @@ else
 
 <div id="infoblk" class="hide" data-apid="@ConfigurationManager.AppSettings["AccountProfileId"]" data-approvedmsg="@Resources.Resource.ApprovedInvoiceMsgFormat" data-rejectedmsg="@Resources.Resource.RejectedInvoiceMsgFormat" data-whatsapplinkurl="@ConfigurationManager.AppSettings["WhatsappLinkUrl"]" data-usercode="@user.UserCode" data-isapprover="@isapprover"></div>
 
-<script type="text/javascript" src="~/Scripts/daterangepicker/moment.min.js"></script>
-<script type="text/javascript" src="~/Scripts/daterangepicker/daterangepicker.min.js"></script>
-<link rel="stylesheet" type="text/css" href="~/Scripts/daterangepicker/daterangepicker.css" />
-
 <script src="~/Scripts/paginationjs/pagination.js"></script>
-<script>
-	$(function () {
-		initDatePickers(StartDayEnum.LastMonthToday, 'YYYY-MM-DD');
-	});
-</script>
-
 <script src="~/Scripts/ts/js/pos/salesorderlist.js?v=@rand"></script>
 
 

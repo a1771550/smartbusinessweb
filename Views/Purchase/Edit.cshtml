@@ -2,9 +2,10 @@
 
 @{
 	PurchaseModel Purchase = Model.Purchase;
-	bool editmode = Purchase.pstStatus != PurchaseStatus.draft.ToString();
-	string edittxt = editmode ? Resources.Resource.Edit : Resources.Resource.Add;
-	ViewBag.Title = edittxt + " " + Resources.Resource.Purchase;
+	bool reviewmode = Purchase.pstStatus == PurchaseStatus.opened.ToString() || Purchase.pstStatus == PurchaseStatus.partialreceival.ToString();
+	bool editmode = Purchase.pstStatus != PurchaseStatus.draft.ToString() && !reviewmode;
+	string edittxt = editmode ? Resources.Resource.EditFormat : Resources.Resource.AddFormat;
+	ViewBag.Title = reviewmode?string.Format(Resources.Resource.ReviewFormat, Resources.Resource.Purchase): string.Format(edittxt, Resources.Resource.Purchase);
 	int rand = CommonHelper.GetVersionRandomNo();
 	long lastppId = 0;
 
@@ -296,92 +297,95 @@
 		</div>
 	</div>
 
-	<div id="btnblk" class="row justify-content-end px-4" data-approvalmode="@approvalmode" data-isapprover="@user.IsApprover" data-editmode="@editmode" data-status="@Purchase.pstStatus" data-ismanager="@user.IsManager" data-issalesperson="@user.IsSalesPerson">
+	<div id="btnblk" class="row justify-content-end px-4" data-reviewmode="@reviewmode" data-approvalmode="@approvalmode" data-isapprover="@user.IsApprover" data-editmode="@editmode" data-status="@Purchase.pstStatus" data-ismanager="@user.IsManager" data-issalesperson="@user.IsSalesPerson">
 
-		@if (approvalmode)
+		@if (!reviewmode)
 		{
-			<input type="hidden" id="mode" value="@Purchase.Mode" />
-
-			if (user.IsApprover)
+			if (approvalmode)
 			{
-				if ((Request.QueryString["ireadonly"] != null && Request.QueryString["ireadonly"] == "1") && Purchase.pstStatus.ToLower() != PurchaseStatus.created.ToString())
-				{
-					<div class="d-none d-md-block text-right">
-						<button type="button" id="" class="btn btn-primary mx-1 respond btnApprove" data-type="approve" data-code="">@Resources.Resource.Approve</button>
-						<button type="button" id="" class="btn btn-danger mx-1 respond btnReject" data-type="reject" data-code="">@Resources.Resource.Reject</button>
-					</div>
-					<div class="d-block d-md-none">
-						<button type="button" id="" class="btn btn-primary d-flex respond btnApprove" data-type="approve" data-code="">@Resources.Resource.Approve</button>
-						<button type="button" id="" class="btn btn-danger d-flex respond btnReject" data-type="reject" data-code="">@Resources.Resource.Reject</button>
-					</div>
-				}
-			}
+				<input type="hidden" id="mode" value="@Purchase.Mode" />
 
-			if (user.IsSalesPerson)
-			{
-				if (editmode)
+				if (user.IsApprover)
 				{
-					if (Purchase.pstStatus.ToLower() == PurchaseStatus.order.ToString() || Purchase.pstStatus.ToLower() == PurchaseStatus.created.ToString() || Purchase.pstStatus.ToLower() == PurchaseStatus.rejected.ToString()||Purchase.pstStatus.ToUpper()==PurchaseStatus.REQUESTING.ToString())
+					if ((Request.QueryString["ireadonly"] != null && Request.QueryString["ireadonly"] == "1") && Purchase.pstStatus.ToLower() != PurchaseStatus.created.ToString())
 					{
-						<div class="text-right">
-							@Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "purchasemode", Purchase.Mode }, { "showViewBtn", Purchase.FileList.Count > 0 }, { "status", Purchase.pstStatus }, { "approvalmode", approvalmode } })
+						<div class="d-none d-md-block text-right">
+							<button type="button" id="" class="btn btn-primary mx-1 respond btnApprove" data-type="approve" data-code="">@Resources.Resource.Approve</button>
+							<button type="button" id="" class="btn btn-danger mx-1 respond btnReject" data-type="reject" data-code="">@Resources.Resource.Reject</button>
+						</div>
+						<div class="d-block d-md-none">
+							<button type="button" id="" class="btn btn-primary d-flex respond btnApprove" data-type="approve" data-code="">@Resources.Resource.Approve</button>
+							<button type="button" id="" class="btn btn-danger d-flex respond btnReject" data-type="reject" data-code="">@Resources.Resource.Reject</button>
 						</div>
 					}
 				}
-				else
+
+				if (user.IsSalesPerson)
 				{
-					<div class="d-none d-md-block text-right my-2">
-						<button id="" type="button" class="btn btn-primary mx-1 request makeorder btnRequestApproval">@Resources.Resource.Request4Approval</button>
-						@if (showrecur)
+					if (editmode)
+					{
+						if (Purchase.pstStatus.ToLower() == PurchaseStatus.order.ToString() || Purchase.pstStatus.ToLower() == PurchaseStatus.created.ToString() || Purchase.pstStatus.ToLower() == PurchaseStatus.rejected.ToString() || Purchase.pstStatus.ToUpper() == PurchaseStatus.REQUESTING.ToString())
 						{
-							<button id="" type="button" class="btn btn-info mx-1 btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
+							<div class="text-right">
+								@Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "purchasemode", Purchase.Mode }, { "showViewBtn", Purchase.FileList.Count > 0 }, { "status", Purchase.pstStatus }, { "approvalmode", approvalmode } })
+							</div>
 						}
+					}
+					else
+					{
+						<div class="d-none d-md-block text-right my-2">
+							<button id="" type="button" class="btn btn-primary mx-1 request makeorder btnRequestApproval">@Resources.Resource.Request4Approval</button>
+							@if (showrecur)
+							{
+								<button id="" type="button" class="btn btn-info mx-1 btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
+							}
 
-						@if (Purchase.pstStatus == PurchaseStatus.draft.ToString())
-						{
-							<button type="button" id="btnSaveDraft" class="btn btn-success mx-1">@string.Format(Resources.Resource.SaveFormat, Resources.Resource.Draft)</button>
-						}
-						else
-						{
-							<a id="" role="button" class="btn btn-outline-success mx-1" href="/Purchase/Edit?Id=0">@string.Format(Resources.Resource.NewFormat, Resources.Resource.Purchase)</a>
-						}
-					</div>
+							@if (Purchase.pstStatus == PurchaseStatus.draft.ToString())
+							{
+								<button type="button" id="btnSaveDraft" class="btn btn-success mx-1">@string.Format(Resources.Resource.SaveFormat, Resources.Resource.Draft)</button>
+							}
+							else
+							{
+								<a id="" role="button" class="btn btn-outline-success mx-1" href="/Purchase/Edit?Id=0">@string.Format(Resources.Resource.NewFormat, Resources.Resource.Purchase)</a>
+							}
+						</div>
 
-					<div class="d-block d-sm-block d-md-none text-right my-2">
-						<button id="" type="button" class="btn btn-primary d-flex request btnRequestApproval makeorder">@Resources.Resource.Request4Approval</button>
-						@if (showrecur)
-						{
-							<button id="" type="button" class="btn btn-info d-flex btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
-						}
+						<div class="d-block d-sm-block d-md-none text-right my-2">
+							<button id="" type="button" class="btn btn-primary d-flex request btnRequestApproval makeorder">@Resources.Resource.Request4Approval</button>
+							@if (showrecur)
+							{
+								<button id="" type="button" class="btn btn-info d-flex btnSaveRecur makeorder">@Resources.Resource.SaveAsRecurring</button>
+							}
 
-						@if (Purchase.pstStatus == PurchaseStatus.draft.ToString())
-						{
-							<button type="button" id="btnSaveDraft" class="btn btn-success d-flex">@string.Format(Resources.Resource.SaveFormat, Resources.Resource.Draft)</button>
-						}
-						else
-						{
-							<a id="" role="button" class="btn btn-outline-success d-flex" href="/Purchase/Edit?Id=0">@string.Format(Resources.Resource.NewFormat, Resources.Resource.Purchase)</a>
-						}
-					</div>
+							@if (Purchase.pstStatus == PurchaseStatus.draft.ToString())
+							{
+								<button type="button" id="btnSaveDraft" class="btn btn-success d-flex">@string.Format(Resources.Resource.SaveFormat, Resources.Resource.Draft)</button>
+							}
+							else
+							{
+								<a id="" role="button" class="btn btn-outline-success d-flex" href="/Purchase/Edit?Id=0">@string.Format(Resources.Resource.NewFormat, Resources.Resource.Purchase)</a>
+							}
+						</div>
+					}
+				}
+
+				if (user.IsManagerSalesAdmin)
+				{
+					@Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "purchasemode", Purchase.Mode }, { "status", Purchase.pstStatus }, { "showViewBtn", false } })
+
+					if (Purchase.pstStatus != PurchaseStatus.draft.ToString() && Purchase.Mode != "readonly")
+					{
+						<a id="" role="button" class="btn btn-outline-success mx-1" href="/Purchase/Edit?Id=0">@string.Format(Resources.Resource.NewFormat, Resources.Resource.Purchase)</a>
+					}
 				}
 			}
-			
-			if (user.IsManagerSalesAdmin)
+			else
 			{
 				@Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "purchasemode", Purchase.Mode }, { "status", Purchase.pstStatus }, { "showViewBtn", false } })
-
-				if (Purchase.pstStatus != PurchaseStatus.draft.ToString()&&Purchase.Mode!="readonly")
+				if (Purchase.pstStatus != PurchaseStatus.draft.ToString())
 				{
-					<a id="" role="button" class="btn btn-outline-success mx-1" href="/Purchase/Edit?Id=0">@string.Format(Resources.Resource.NewFormat, Resources.Resource.Purchase)</a>
+					<button id="" type="button" class="btn btn-outline-success d-flex btnNewPurchase">@string.Format(Resources.Resource.NewFormat, Resources.Resource.Purchase)</button>
 				}
-			}
-		}
-		else
-		{
-			@Html.Partial("_NormalSaveBlk4Purchase", null, new ViewDataDictionary { { "editmode", editmode }, { "purchasemode", Purchase.Mode }, { "status", Purchase.pstStatus }, { "showViewBtn", false } })
-			if (Purchase.pstStatus != PurchaseStatus.draft.ToString())
-			{
-				<button id="" type="button" class="btn btn-outline-success d-flex btnNewPurchase">@string.Format(Resources.Resource.NewFormat, Resources.Resource.Purchase)</button>
 			}
 		}
 

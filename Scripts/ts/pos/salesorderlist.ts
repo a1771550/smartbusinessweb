@@ -113,7 +113,4 @@ $(function () {
 	initModals();	
 
 	$(".disabled").off("click");
-
-	if (!$("#norecord").length)
-		initDatePickers(StartDayEnum.LastMonthToday, 'YYYY-MM-DD');
 });

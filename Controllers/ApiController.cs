@@ -2711,70 +2711,68 @@ namespace SmartBusinessWeb.Controllers
         [HttpGet]
         public async Task<ActionResult> GetReceipt(string devicecode, string receiptno = "", string phoneno = "", int refund = 1)
         {
-            using (var context = new SBDbContext(Session["DBName"].ToString()))
+            using var context = new SBDbContext(Session["DBName"].ToString());
+            Session currsess = ModelHelper.GetCurrentSession(context);
+            var shop = currsess.sesShop;
+            var device = currsess.sesDvc;
+            var lang = currsess.sesLang;
+
+            if (devicecode == device)
             {
-                Session currsess = ModelHelper.GetCurrentSession(context);
-                var shop = currsess.sesShop;
-                var device = currsess.sesDvc;
-                var lang = currsess.sesLang;
+                CentralDataModel model = getReceiptData(context, receiptno, phoneno, lang);
 
-                if (devicecode == device)
+                if (model.noreceiptFound == 0)
                 {
-                    CentralDataModel model = getReceiptData(context, receiptno, phoneno, lang);
-
-                    if (model.noreceiptFound == 0)
+                    if (model.toBeRefunded <= 0)
                     {
-                        if (model.toBeRefunded <= 0)
-                        {
-                            return Json(new { msg = Resource.AlreadyRefundedFullAmt }, JsonRequestBehavior.AllowGet);
-                        }
-                        else
-                        {
-                            if (model.hascustomer)
-                            {
-                                var itemcodelist = model.items.Select(x => x.itmCode).Distinct().ToHashSet();
-                                ModelHelper.GetItemOptionsVariInfo(apId, shop, context, itemcodelist, null, model);
-
-                                model.DicItemOptions = ModelHelper.GetDicItemOptions(apId, context);
-                                return Json(model, JsonRequestBehavior.AllowGet);
-                            }
-                            else
-                            {
-                                return Json(new { msg = Resource.NoReceiptFound }, JsonRequestBehavior.AllowGet);
-                            }
-                        }
+                        return Json(new { msg = Resource.AlreadyRefundedFullAmt }, JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
-                        return Json(new { msg = Resource.NoReceiptFound }, JsonRequestBehavior.AllowGet);
+                        if (model.hascustomer)
+                        {
+                            var itemcodelist = model.items.Select(x => x.itmCode).Distinct().ToHashSet();
+                            ModelHelper.GetItemOptionsVariInfo(apId, shop, context, itemcodelist, null, model);
+
+                            model.DicItemOptions = ModelHelper.GetDicItemOptions(apId, context);
+                            return Json(model, JsonRequestBehavior.AllowGet);
+                        }
+                        else
+                        {
+                            return Json(new { msg = Resource.NoReceiptFound }, JsonRequestBehavior.AllowGet);
+                        }
                     }
                 }
                 else
                 {
-                    string url = string.Format(CentralApiUrl4Receipt, shop, devicecode, receiptno, phoneno, lang, refund, CentralBaseUrl);
-                    HttpClient _client = new HttpClient();
-                    var content = await _client.GetStringAsync(url);
-                    var model = JsonConvert.DeserializeObject<CentralDataModel>(content);
-                    if (model.noreceiptFound == 1)
+                    return Json(new { msg = Resource.NoReceiptFound }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                string url = string.Format(CentralApiUrl4Receipt, shop, devicecode, receiptno, phoneno, lang, refund, CentralBaseUrl);
+                HttpClient _client = new HttpClient();
+                var content = await _client.GetStringAsync(url);
+                var model = JsonConvert.DeserializeObject<CentralDataModel>(content);
+                if (model.noreceiptFound == 1)
+                {
+                    return Json(new { msg = Resource.NoReceiptFound }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    if (model.toBeRefunded <= 0)
                     {
-                        return Json(new { msg = Resource.NoReceiptFound }, JsonRequestBehavior.AllowGet);
+                        return Json(new { msg = Resource.AlreadyRefundedFullAmt }, JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
-                        if (model.toBeRefunded <= 0)
+                        if (model.customer != null)
                         {
-                            return Json(new { msg = Resource.AlreadyRefundedFullAmt }, JsonRequestBehavior.AllowGet);
+                            return Json(model, JsonRequestBehavior.AllowGet);
                         }
                         else
                         {
-                            if (model.customer != null)
-                            {
-                                return Json(model, JsonRequestBehavior.AllowGet);
-                            }
-                            else
-                            {
-                                return Json(new { msg = Resource.NoReceiptFound }, JsonRequestBehavior.AllowGet);
-                            }
+                            return Json(new { msg = Resource.NoReceiptFound }, JsonRequestBehavior.AllowGet);
                         }
                     }
                 }

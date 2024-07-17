@@ -28,7 +28,7 @@ namespace SmartBusinessWeb.Controllers
 		{			
 			bool _issales = issales == 1;
 			//SessUser user = (SessUser)Session["User"];
-			PrintModel model = new PrintModel(_issales,salesrefundcode, ComInfo.Currency);
+			PrintModel model = new(_issales,salesrefundcode, ComInfo.Currency);
 			return Json(new { html = Helpers.PrintHelper.GetPrintHtml(model) }, JsonRequestBehavior.AllowGet);
 		}
 	}

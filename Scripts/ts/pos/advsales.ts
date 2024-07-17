@@ -76,6 +76,7 @@ function getSessionStartDataOk(data) {
     }
 
     if (defaultcustomer !== null) {
+        selectedCus = defaultcustomer;
         selectedCusCodeName = defaultcustomer.cusCode;
         selectCus();
     } else {
