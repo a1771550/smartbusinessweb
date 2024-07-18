@@ -39,6 +39,7 @@ using System.Security.Cryptography.X509Certificates;
 using SBLib.Models.User;
 using SBLib.Models.POS.Sales;
 using SBLib.Models.Promotion;
+using SBLib.Helpers;
 
 namespace SmartBusinessWeb.Controllers
 {
@@ -46,27 +47,16 @@ namespace SmartBusinessWeb.Controllers
     public class TestController : Controller
     {
         int AccountProfileId = 1;    
-        private string DefaultConnection { get { return Session["DBName"] == null ? ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", "SmartBusinessWeb_db") : ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", Session["DBName"].ToString()); } }
+        private string DefaultConnection { get { return ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", "SB_VM"); } }
         private SqlConnection connection { get { return new SqlConnection(DefaultConnection); } }
-        public string DbName { get { return "SmartBusinessWeb_db"; } }
+        public string DbName { get { return "SB_VM"; } }
         private SBDbContext DBContext { get { return new SBDbContext(DbName); } }
 
         private string centralbaseUrl = UriHelper.GetAppUrl();
         protected string DateFormat { get { return ConfigurationManager.AppSettings["DateFormat"]; } }
-
-        private static string KingdeeCloudUrl = ConfigurationManager.AppSettings["KingdeeCloudUrl"];
-        private static string KingdeeDbId = ConfigurationManager.AppSettings["KingdeeDbId"];
-        private static string KingdeeLoginId = ConfigurationManager.AppSettings["KingdeeLoginId"];
-        private static string KingdeeLoginPass = ConfigurationManager.AppSettings["KingdeeLoginPass"];
-        private static int KingdeeLangId = int.Parse(ConfigurationManager.AppSettings["KingdeeLangId"]);
-        private static string KingdeeInvoiceFormId = ConfigurationManager.AppSettings["KingdeeInvoiceFormId"];
-        private static string Kingdee_CustomerFormId = ConfigurationManager.AppSettings["Kingdee_CustomerFormId"];
-        private static string KingdeeMaterialFormId = ConfigurationManager.AppSettings["KingdeeMaterialFormId"];
-        private static string KingdeeInventoryFormId = ConfigurationManager.AppSettings["KingdeeInventoryFormId"];
-        private static string Kingdee_ItemPriceListFormId = ConfigurationManager.AppSettings["Kingdee_ItemPriceListFormId"];
+       
         private string CentralApiUrl = ConfigurationManager.AppSettings["CentralApiUrl"];
         private string shopApiUrl = ConfigurationManager.AppSettings["ShopApiUrl"];
-        private string kingdeeApiBaseUrl = ConfigurationManager.AppSettings["KingdeeApiBaseUrl"];
         private string CentralBaseUrl = UriHelper.GetAppUrl();
         private string location = "office";
         //private string Shop = "office";
@@ -81,7 +71,20 @@ namespace SmartBusinessWeb.Controllers
         
         private SqlConnection SqlConnection { get { return new SqlConnection(DefaultConnection); } }
 
-       
+        public void JsonTest()
+        {           
+            using var context = new SBDbContext(DbName);
+            if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
+            using (SqlConnection) {
+                var comInfo = SqlConnection.QueryFirstOrDefault<ComInfoModel>("EXEC dbo.GetComInfo @apId=@apId", new {apId});
+                 var MyobConnectionString4Read = MYOBHelper.GetConnectionString(comInfo, "READ");
+                var MyobAccounts = MYOBHelper.GetAccountList(MyobConnectionString4Read);
+                var SelectedIds = MyobAccounts.Select(x => x.AccountID).Distinct().ToHashSet();
+               //todo:
+            }
+           
+        }
+
         public void PromotionalEmail()
         {
             StringBuilder sb = new();
@@ -1247,117 +1250,6 @@ btest3
             var emplist = JsonConvert.DeserializeObject<List<MyobEmployeeModel>>(content);
             Response.Write(emplist.Count);
         }
-
-        public void JsonTest()
-        {
-            Response.Write(SBLib.Helpers.JsonHelper.Test());
-        }        
-
-        public async Task UploadRefund()
-        {
-            var strfrmdate = @"12/08/2022";
-            var strtodate = @"14/08/2022";
-            #region Date Ranges
-            int year = DateTime.Now.Year;
-            DateTime frmdate;
-            DateTime todate;
-            if (string.IsNullOrEmpty(strfrmdate))
-            {
-                frmdate = new DateTime(year, 1, 1);
-            }
-            else
-            {
-                int mth = int.Parse(strfrmdate.Split('/')[1]);
-                int day = int.Parse(strfrmdate.Split('/')[0]);
-                year = int.Parse(strfrmdate.Split('/')[2]);
-                frmdate = new DateTime(year, mth, day);
-            }
-            if (string.IsNullOrEmpty(strtodate))
-            {
-                todate = new DateTime(year, 12, 31);
-            }
-            else
-            {
-                int mth = int.Parse(strtodate.Split('/')[1]);
-                int day = int.Parse(strtodate.Split('/')[0]);
-                year = int.Parse(strtodate.Split('/')[2]);
-                todate = new DateTime(year, mth, day);
-            }
-            #endregion
-            using (var context = new SBDbContext(Session["DBName"].ToString()))
-            {
-                var icount = context.GetSalesRefundCount(frmdate, todate).FirstOrDefault().GetValueOrDefault();
-                if (icount > 0)
-                {
-                    strfrmdate = frmdate.ToString("yyyyMMdd");
-                    strtodate = todate.ToString("yyyyMMdd");
-                    string url = kingdeeApiBaseUrl + "UploadRefund?strfrmdate=" + strfrmdate + "&strtodate=" + strtodate + "&device=" + "P10" + "&shop=" + "office";
-                    HttpClient _client = new HttpClient();
-                    _client.MaxResponseContentBufferSize = int.MaxValue;
-                    var content = await _client.GetStringAsync(url);
-                    Response.Write(content);
-                }
-            }
-        }
-
-        public async Task UploadInvoice()
-        {
-            var strfrmdate = @"10/08/2022";
-            var strtodate = @"12/08/2022";
-            #region Date Ranges
-            int year = DateTime.Now.Year;
-            DateTime frmdate;
-            DateTime todate;
-            if (string.IsNullOrEmpty(strfrmdate))
-            {
-                frmdate = new DateTime(year, 1, 1);
-            }
-            else
-            {
-                int mth = int.Parse(strfrmdate.Split('/')[1]);
-                int day = int.Parse(strfrmdate.Split('/')[0]);
-                year = int.Parse(strfrmdate.Split('/')[2]);
-                frmdate = new DateTime(year, mth, day);
-            }
-            if (string.IsNullOrEmpty(strtodate))
-            {
-                todate = new DateTime(year, 12, 31);
-            }
-            else
-            {
-                int mth = int.Parse(strtodate.Split('/')[1]);
-                int day = int.Parse(strtodate.Split('/')[0]);
-                year = int.Parse(strtodate.Split('/')[2]);
-                todate = new DateTime(year, mth, day);
-            }
-            #endregion
-            using (var context = new SBDbContext(Session["DBName"].ToString()))
-            {
-                var icount = context.GetSalesInvoicesCount(frmdate, todate, false).FirstOrDefault().GetValueOrDefault();
-                if (icount > 0)
-                {
-                    //SessUser user = Session["User"] as SessUser;
-                    int iIncludeUploaded = 0;
-                    //int lang = CultureHelper.CurrentCulture;
-                    int lang = 2;
-                    strfrmdate = frmdate.ToString("yyyyMMdd");
-                    strtodate = todate.ToString("yyyyMMdd");
-                    string url = kingdeeApiBaseUrl + "UploadInvoice?strfrmdate=" + strfrmdate + "&strtodate=" + strtodate + "&device=" + "P10" + "&shop=" + "office" + "&iIncludeUploaded=" + iIncludeUploaded + "&lang=" + lang;
-                    HttpClient _client = new HttpClient();
-                    _client.MaxResponseContentBufferSize = int.MaxValue;
-                    var content = await _client.GetStringAsync(url);
-                    Response.Write(content);
-                }
-                else
-                {
-
-                }
-            }
-
-
-
-        }
-
         public void PlaceHolder()
         {
             var sJson = "{\"NumberSearch\":\"true\",\"ValidateFlag\":\"true\",\"IsDeleteEntry\":\"true\",\"IsEntryBatchFill\":\"true\",\"NeedUpDateFields\":[],\"NeedReturnFields\":[],\"SubSystemId\":\"\",\"InterationFlags\":\"\",\"Model\":[[0]],\"BatchCount\":0,\"IsVerifyBaseDataField\":\"false\",\"IsAutoAdjustField\":\"false\",\"IgnoreInterationFlag\":\"false\"}".Replace("[0]", "test");

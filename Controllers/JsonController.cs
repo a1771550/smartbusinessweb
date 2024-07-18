@@ -21,13 +21,16 @@ namespace SmartBusinessWeb.Controllers
     [System.Web.Http.AllowAnonymous]
     public class JsonController : Controller
     {
+        private int apId { get; set; }
+        private string DbName { get { return GetDbName(apId,true); } }
+
         [System.Web.Mvc.AllowAnonymous]
 		[System.Web.Mvc.HttpPost]
 		public HttpResponseMessage PostTest(int apId, FormCollection form)
 		{
 			HttpRequestMessage request = new HttpRequestMessage();
-			string dbname = GetDbName(apId);
-			using var context = new SBDbContext(dbname);
+			this.apId = apId;
+			using var context = new SBDbContext(DbName);
 			ModelHelper.WriteLog(context, form["msg"], form["type"]);		
 			return request.CreateResponse(System.Net.HttpStatusCode.OK);
 		}
@@ -35,18 +38,18 @@ namespace SmartBusinessWeb.Controllers
 		[System.Web.Mvc.AllowAnonymous]
 		[System.Web.Mvc.HttpGet]
 		public string GetTest(int apId)
-		{
-			string dbname = GetDbName(apId);
-			using var context = new SBDbContext(dbname);
+		{ 
+            this.apId = apId;
+			using var context = new SBDbContext(DbName);
 			return string.Concat("User Count:" + context.SysUsers.Count());
 		}
 
 		[System.Web.Http.HttpPost]
         public HttpResponseMessage HttpPost(int apId, [FromBody] List<DebugLog> logs)
-        {            
-            HttpRequestMessage request = new HttpRequestMessage();
-            string dbname = GetDbName(apId);
-            using var context = new SBDbContext(dbname);
+        {
+            this.apId = apId;
+            HttpRequestMessage request = new HttpRequestMessage();           
+            using var context = new SBDbContext(DbName);
             foreach(var log in logs) ModelHelper.WriteLog(context, log.Message, log.LogType);           
             return request.CreateResponse(System.Net.HttpStatusCode.OK);
         }       
@@ -54,9 +57,9 @@ namespace SmartBusinessWeb.Controllers
 		[System.Web.Http.HttpPost]
         public async Task<HttpResponseMessage> CheckOutRetail(int apId, [FromBody] HashSet<long> checkoutIds)
         {
+            this.apId = apId;
             HttpRequestMessage request = new HttpRequestMessage();
-            string dbname = GetDbName(apId);
-            using var context = new SBDbContext(dbname);
+            using var context = new SBDbContext(DbName);
             List<RtlSale> retaillist = context.RtlSales.Where(x => x.AccountProfileId == apId && checkoutIds.Any(y => x.rtsUID == y)).ToList();
             foreach (var retail in retaillist)
             {
@@ -69,13 +72,13 @@ namespace SmartBusinessWeb.Controllers
         [System.Web.Http.HttpGet]
         public string GetUploadRetailData(int apId, string strfrmdate, string strtodate, string location, int includeUploaded)
         {
-            UploadAbssData data = new UploadAbssData();
-            string dbname = GetDbName(apId);
-            using var context = new SBDbContext(dbname);
+            this.apId = apId;
+            UploadAbssData data = new UploadAbssData();           
+            using var context = new SBDbContext(DbName);
             ComInfo comInfo = context.ComInfoes.FirstOrDefault(x => x.AccountProfileId == apId);
             if (comInfo != null)
             {
-                string DefaultConnection = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", dbname);
+                string DefaultConnection = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", DbName);
                 using var connection = new SqlConnection(DefaultConnection);
                 connection.Open();
                 DataTransferModel dmodel = new DataTransferModel
@@ -103,8 +106,8 @@ namespace SmartBusinessWeb.Controllers
         public async Task<HttpResponseMessage> CheckOutWS(int apId, [FromBody] HashSet<long> checkoutIds)
         {
             HttpRequestMessage request = new HttpRequestMessage();
-            string dbname = GetDbName(apId);
-            using var context = new SBDbContext(dbname);
+            this.apId = apId;
+            using var context = new SBDbContext(DbName);
             List<WholeSale> wslist = context.WholeSales.Where(x => x.AccountProfileId == apId && checkoutIds.Any(y => x.wsUID == y)).ToList();
             foreach (var ws in wslist)
             {
@@ -118,12 +121,12 @@ namespace SmartBusinessWeb.Controllers
         public string GetUploadWSData(int apId, string strfrmdate, string strtodate, string location, int includeUploaded)
         {
             UploadAbssData data = new UploadAbssData();
-            string dbname = GetDbName(apId);
-            using var context = new SBDbContext(dbname);
+            this.apId = apId;
+            using var context = new SBDbContext(DbName);
             ComInfo comInfo = context.ComInfoes.FirstOrDefault(x => x.AccountProfileId == apId);
             if (comInfo != null)
             {
-                string DefaultConnection = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", dbname);
+                string DefaultConnection = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", DbName);
                 using var connection = new SqlConnection(DefaultConnection);
                 connection.Open();
                 DataTransferModel dmodel = new DataTransferModel
@@ -147,8 +150,8 @@ namespace SmartBusinessWeb.Controllers
         [System.Web.Http.HttpGet]
         public int GetWSCount(int apId, string strfrmdate, string strtodate, string location)
         {
-            string dbname = GetDbName(apId);
-            using var context = new SBDbContext(dbname);
+            this.apId = apId;
+            using var context = new SBDbContext(DbName);
             #region Date Ranges
             DateTime frmdate, todate;
             HandleDateRanges(strfrmdate, strtodate, out frmdate, out todate);
@@ -159,8 +162,8 @@ namespace SmartBusinessWeb.Controllers
         [System.Web.Http.HttpGet]
         public int GetRetailCount(int apId, string strfrmdate, string strtodate, string location)
         {
-            string dbname = GetDbName(apId);
-            using var context = new SBDbContext(dbname);
+            this.apId = apId;
+            using var context = new SBDbContext(DbName);
             #region Date Ranges
             DateTime frmdate, todate;
             HandleDateRanges(strfrmdate, strtodate, out frmdate, out todate);
@@ -172,8 +175,8 @@ namespace SmartBusinessWeb.Controllers
         public async Task<HttpResponseMessage> CheckOutPo(int apId, [FromBody] HashSet<long> checkoutIds)
         {
             HttpRequestMessage request = new HttpRequestMessage();
-            string dbname = GetDbName(apId);
-            using var context = new SBDbContext(dbname);
+            this.apId = apId;
+            using var context = new SBDbContext(DbName);
             List<DAL.Purchase> pslist = context.Purchases.Where(x => x.AccountProfileId == apId && checkoutIds.Any(y => x.Id == y)).ToList();
             foreach (var ps in pslist)
             {
@@ -187,8 +190,8 @@ namespace SmartBusinessWeb.Controllers
         public string GetUploadPoData(int apId, string strfrmdate, string strtodate, string location, int includeUploaded)
         {
             UploadAbssData data = new UploadAbssData();
-            string dbname = GetDbName(apId);
-            using var context = new SBDbContext(dbname);
+            this.apId = apId;
+            using var context = new SBDbContext(DbName);
             ComInfo comInfo = context.ComInfoes.FirstOrDefault(x => x.AccountProfileId == apId);
             if (comInfo != null)
             {
@@ -203,7 +206,7 @@ namespace SmartBusinessWeb.Controllers
                 HandleDateRanges(strfrmdate, strtodate, out frmdate, out todate);
                 #endregion
 
-                var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", dbname);
+                var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", DbName);
 
                 data.sqllist = PurchaseEditModel.GetUploadPurchaseSqlList(ref dmodel, comInfo, context, frmdate, todate, apId);
                 data.checkoutIds = dmodel.PoCheckOutIds;
@@ -213,8 +216,8 @@ namespace SmartBusinessWeb.Controllers
         [System.Web.Http.HttpGet]
         public int GetPoCount(int apId, string strfrmdate, string strtodate, string location)
         {
-            string dbname = GetDbName(apId);
-            using var context = new SBDbContext(dbname);
+            this.apId = apId;
+            using var context = new SBDbContext(DbName);
             #region Date Ranges
             DateTime frmdate, todate;
             HandleDateRanges(strfrmdate, strtodate, out frmdate, out todate);
@@ -226,8 +229,8 @@ namespace SmartBusinessWeb.Controllers
         public async Task<HttpResponseMessage> PostAbssCustomerData(int apId, [FromBody] List<MyobCustomer> customers)
         {
             HttpRequestMessage request = new HttpRequestMessage();
-            string dbname = GetDbName(apId);
-            using var context = new SBDbContext(dbname);
+            this.apId = apId;
+            using var context = new SBDbContext(DbName);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -272,7 +275,7 @@ namespace SmartBusinessWeb.Controllers
                     await context.SaveChangesAsync();
 
 
-                    ModelHelper.WriteLog(context, "Import CustomerAS data from Central done", "ImportFrmCentral");                
+                    ModelHelper.WriteLog(context, "Import CustomerAS data from Connector done", "ImportFrmConnector");                
                     transaction.Commit();
 
                     return request.CreateResponse(System.Net.HttpStatusCode.OK);
@@ -297,8 +300,8 @@ namespace SmartBusinessWeb.Controllers
             }
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var _context = new SBDbContext(Session["DBName"].ToString());
-                ModelHelper.WriteLog(_context, string.Format("Import customer data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+                using var _context = new SBDbContext(DbName);
+                ModelHelper.WriteLog(_context, string.Format("Import customer data from Connector failed:{0}", sb.ToString()), "ImportFrmConnector");
             }
            
             
@@ -309,8 +312,8 @@ namespace SmartBusinessWeb.Controllers
         public async Task<HttpResponseMessage> PostCustomerInfo4AbssData(int apId, [FromBody] List<CustomerInfo4Abss> customerInfos)
         {
             HttpRequestMessage request = new HttpRequestMessage();
-            string dbname = GetDbName(apId);
-            using var context = new SBDbContext(dbname);
+            this.apId = apId;
+            using var context = new SBDbContext(DbName);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -329,7 +332,7 @@ namespace SmartBusinessWeb.Controllers
                     await context.SaveChangesAsync();
 
 
-                    ModelHelper.WriteLog(context, "Import CustomerInfo4Abss data from Central done", "ImportFrmCentral");
+                    ModelHelper.WriteLog(context, "Import CustomerInfo4Abss data from Connector done", "ImportFrmConnector");
                   
                     transaction.Commit();
 
@@ -356,8 +359,8 @@ namespace SmartBusinessWeb.Controllers
             }
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var _context = new SBDbContext(Session["DBName"].ToString());
-                ModelHelper.WriteLog(_context, string.Format("Import customerInfo data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+                using var _context = new SBDbContext(DbName);
+                ModelHelper.WriteLog(_context, string.Format("Import customerInfo data from Connector failed:{0}", sb.ToString()), "ImportFrmConnector");
             }
          
            
@@ -368,8 +371,8 @@ namespace SmartBusinessWeb.Controllers
         public async Task<HttpResponseMessage> PostAbssSupplierData(int apId, [FromBody] List<MyobSupplier> suppliers)
         {
             HttpRequestMessage request = new HttpRequestMessage();
-            string dbname = GetDbName(apId);
-            using var context = new SBDbContext(dbname);
+            this.apId = apId;
+            using var context = new SBDbContext(DbName);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -386,7 +389,7 @@ namespace SmartBusinessWeb.Controllers
 
                     context.MyobSuppliers.AddRange(suppliers);
                     await context.SaveChangesAsync();
-                    ModelHelper.WriteLog(context, "Import Supplier data from Central done", "ImportFrmCentral");                   
+                    ModelHelper.WriteLog(context, "Import Supplier data from Connector done", "ImportFrmConnector");                   
                     transaction.Commit();
 
                     return request.CreateResponse(System.Net.HttpStatusCode.OK);
@@ -411,8 +414,8 @@ namespace SmartBusinessWeb.Controllers
             }
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var _context = new SBDbContext(Session["DBName"].ToString());
-                ModelHelper.WriteLog(_context, string.Format("Import supplier data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+                using var _context = new SBDbContext(DbName);
+                ModelHelper.WriteLog(_context, string.Format("Import supplier data from Connector failed:{0}", sb.ToString()), "ImportFrmConnector");
             }
            
             return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
@@ -422,8 +425,8 @@ namespace SmartBusinessWeb.Controllers
         public async Task<HttpResponseMessage> PostSupplierInfo4AbssData(int apId, [FromBody] List<SupplierInfo4Abss> supplierInfos)
         {
             HttpRequestMessage request = new HttpRequestMessage();
-            string dbname = GetDbName(apId);
-            using var context = new SBDbContext(dbname);
+            this.apId = apId;
+            using var context = new SBDbContext(DbName);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -442,8 +445,7 @@ namespace SmartBusinessWeb.Controllers
                     await context.SaveChangesAsync();
 
 
-                    ModelHelper.WriteLog(context, "Import SupplierInfo4Abss data from Central done", "ImportFrmCentral");
-                    context.SaveChanges();
+                    ModelHelper.WriteLog(context, "Import SupplierInfo4Abss data from Connector done", "ImportFrmConnector");                   
                     transaction.Commit();
 
                     return request.CreateResponse(System.Net.HttpStatusCode.OK);
@@ -468,8 +470,8 @@ namespace SmartBusinessWeb.Controllers
             }
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var _context = new SBDbContext(Session["DBName"].ToString());
-                ModelHelper.WriteLog(_context, string.Format("Import supplierInfo data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+                using var _context = new SBDbContext(DbName);
+                ModelHelper.WriteLog(_context, string.Format("Import supplierInfo data from Connector failed:{0}", sb.ToString()), "ImportFrmConnector");
             }
        
             return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
@@ -480,8 +482,8 @@ namespace SmartBusinessWeb.Controllers
         public async Task<HttpResponseMessage> PostAbssLocationData(int apId, [FromBody] List<MyobLocation> locations)
         {
             HttpRequestMessage request = new HttpRequestMessage();
-            string dbname = GetDbName(apId);
-            using var context = new SBDbContext(dbname);
+            this.apId = apId;
+            using var context = new SBDbContext(DbName);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -496,8 +498,7 @@ namespace SmartBusinessWeb.Controllers
                     #endregion
                     context.MyobLocations.AddRange(locations);
                     await context.SaveChangesAsync();
-                    ModelHelper.WriteLog(context, "Import Location data from Central done", "ImportFrmCentral");
-                    await context.SaveChangesAsync();
+                    ModelHelper.WriteLog(context, "Import Location data from Connector done", "ImportFrmConnector");                   
                     transaction.Commit();
 
                     return request.CreateResponse(System.Net.HttpStatusCode.OK);
@@ -523,8 +524,8 @@ namespace SmartBusinessWeb.Controllers
             }
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var _context = new SBDbContext(Session["DBName"].ToString());
-                ModelHelper.WriteLog(_context, string.Format("Import location data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+                using var _context = new SBDbContext(DbName);
+                ModelHelper.WriteLog(_context, string.Format("Import location data from Connector failed:{0}", sb.ToString()), "ImportFrmConnector");
             }
            
             return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
@@ -534,8 +535,8 @@ namespace SmartBusinessWeb.Controllers
         public async Task<HttpResponseMessage> PostAbssItemData(int apId, [FromBody] List<MyobItem> items)
         {
             HttpRequestMessage request = new HttpRequestMessage();
-            string dbname = GetDbName(apId);
-            using var context = new SBDbContext(dbname);
+            this.apId = apId;
+            using var context = new SBDbContext(DbName);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -551,8 +552,7 @@ namespace SmartBusinessWeb.Controllers
 
                     context.MyobItems.AddRange(items);
                     await context.SaveChangesAsync();
-                    ModelHelper.WriteLog(context, "Import Item data from Central done", "ImportFrmCentral");
-                    await context.SaveChangesAsync();
+                    ModelHelper.WriteLog(context, "Import Item data from Connector done", "ImportFrmConnector");                  
                     transaction.Commit();
 
                     return request.CreateResponse(System.Net.HttpStatusCode.OK);
@@ -578,8 +578,8 @@ namespace SmartBusinessWeb.Controllers
             }
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var _context = new SBDbContext(Session["DBName"].ToString());
-                ModelHelper.WriteLog(_context, string.Format("Import item data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+                using var _context = new SBDbContext(DbName);
+                ModelHelper.WriteLog(_context, string.Format("Import item data from Connector failed:{0}", sb.ToString()), "ImportFrmConnector");
             }
           
             return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
@@ -589,8 +589,8 @@ namespace SmartBusinessWeb.Controllers
         public async Task<HttpResponseMessage> PostAbssStockData(int apId, [FromBody] List<MyobLocStock> stocks)
         {
             HttpRequestMessage request = new HttpRequestMessage();
-            string dbname = GetDbName(apId);
-            using var context = new SBDbContext(dbname);
+            this.apId = apId;
+            using var context = new SBDbContext(DbName);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -605,8 +605,7 @@ namespace SmartBusinessWeb.Controllers
                     #endregion
                     context.MyobLocStocks.AddRange(stocks);
                     await context.SaveChangesAsync();
-                    ModelHelper.WriteLog(context, "Import LocStock data from Central done", "ImportFrmCentral");
-                    await context.SaveChangesAsync();
+                    ModelHelper.WriteLog(context, "Import LocStock data from Connector done", "ImportFrmConnector");                 
                     transaction.Commit();
 
                     return request.CreateResponse(System.Net.HttpStatusCode.OK);
@@ -632,8 +631,8 @@ namespace SmartBusinessWeb.Controllers
             }
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var _context = new SBDbContext(Session["DBName"].ToString());
-                ModelHelper.WriteLog(_context, string.Format("Import stock data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+                using var _context = new SBDbContext(DbName);
+                ModelHelper.WriteLog(_context, string.Format("Import stock data from Connector failed:{0}", sb.ToString()), "ImportFrmConnector");
             }
            
             return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
@@ -643,8 +642,8 @@ namespace SmartBusinessWeb.Controllers
 		public async Task<HttpResponseMessage> PostAbssPriceData(int apId, [FromBody] List<MyobItemPrice> itemPrices)
 		{
 			HttpRequestMessage request = new HttpRequestMessage();
-			string dbname = GetDbName(apId);
-			using var context = new SBDbContext(dbname);
+			this.apId = apId;
+			using var context = new SBDbContext(DbName);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
 			{
@@ -659,8 +658,7 @@ namespace SmartBusinessWeb.Controllers
 					#endregion
 					context.MyobItemPrices.AddRange(itemPrices);
 					await context.SaveChangesAsync();
-					ModelHelper.WriteLog(context, "Import ItemPrice data from Central done", "ImportFrmCentral");
-					await context.SaveChangesAsync();
+					ModelHelper.WriteLog(context, "Import ItemPrice data from Connector done", "ImportFrmConnector");					
 					transaction.Commit();
 
 					return request.CreateResponse(System.Net.HttpStatusCode.OK);
@@ -686,8 +684,8 @@ namespace SmartBusinessWeb.Controllers
 			}
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var _context = new SBDbContext(Session["DBName"].ToString());
-                ModelHelper.WriteLog(_context, string.Format("Import itemPrice data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+                using var _context = new SBDbContext(DbName);
+                ModelHelper.WriteLog(_context, string.Format("Import itemPrice data from Connector failed:{0}", sb.ToString()), "ImportFrmConnector");
             }        
          
             return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
@@ -695,10 +693,10 @@ namespace SmartBusinessWeb.Controllers
 		[System.Web.Http.HttpPost]
 		public async Task<HttpResponseMessage> PostAbssAccountData(int apId, [FromBody] List<Account> accounts)
 		{
-			HttpRequestMessage request = new HttpRequestMessage();
-			string dbname = GetDbName(apId);
-			using var context = new SBDbContext(dbname);
-            StringBuilder sb = new StringBuilder();
+			HttpRequestMessage request = new();
+			this.apId = apId;
+			using var context = new SBDbContext(DbName);
+            StringBuilder sb = new();
             using (var transaction = context.Database.BeginTransaction())
 			{
 				try
@@ -712,8 +710,7 @@ namespace SmartBusinessWeb.Controllers
 					#endregion
 					context.Accounts.AddRange(accounts);
 					await context.SaveChangesAsync();
-					ModelHelper.WriteLog(context, "Import Account data from Central done", "ImportFrmCentral");
-					await context.SaveChangesAsync();
+					ModelHelper.WriteLog(context, "Import Account data from Connector done", "ImportFrmConnector");
 					transaction.Commit();
 
 					return request.CreateResponse(System.Net.HttpStatusCode.OK);
@@ -739,8 +736,8 @@ namespace SmartBusinessWeb.Controllers
 			}
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var _context = new SBDbContext(Session["DBName"].ToString());
-                ModelHelper.WriteLog(_context, string.Format("Import account data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+                using var _context = new SBDbContext(DbName);
+                ModelHelper.WriteLog(_context, string.Format("Import account data from Connector failed:{0}", sb.ToString()), "ImportFrmConnector");
             }          
             
             return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
@@ -750,8 +747,8 @@ namespace SmartBusinessWeb.Controllers
 		public async Task<HttpResponseMessage> PostAbssJobData(int apId, [FromBody] List<MyobJob> jobs)
 		{
 			HttpRequestMessage request = new HttpRequestMessage();
-			string dbname = GetDbName(apId);
-			using var context = new SBDbContext(dbname);
+			this.apId = apId;
+			using var context = new SBDbContext(DbName);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
 			{
@@ -766,8 +763,7 @@ namespace SmartBusinessWeb.Controllers
 					#endregion
 					context.MyobJobs.AddRange(jobs);
 					await context.SaveChangesAsync();
-					ModelHelper.WriteLog(context, "Import MyobJob data from Central done", "ImportFrmCentral");
-					await context.SaveChangesAsync();
+					ModelHelper.WriteLog(context, "Import MyobJob data from Connector done", "ImportFrmConnector");					
 					transaction.Commit();
 
 					return request.CreateResponse(System.Net.HttpStatusCode.OK);
@@ -793,14 +789,14 @@ namespace SmartBusinessWeb.Controllers
 			}
             if (!string.IsNullOrEmpty(sb.ToString()))
             {
-                using var _context = new SBDbContext(Session["DBName"].ToString());
-                ModelHelper.WriteLog(_context, string.Format("Import job data from Central failed:{0}", sb.ToString()), "ImportFrmCentral");
+                using var _context = new SBDbContext(DbName);
+                ModelHelper.WriteLog(_context, string.Format("Import job data from Connector failed:{0}", sb.ToString()), "ImportFrmConnector");
             }
             return request.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
 		}
-		private static string GetDbName(int apId)
+		private static string GetDbName(int apId, bool forVM=false)
         {
-            return ModelHelper.GetDbName(apId);
+            return ModelHelper.GetDbName(apId, forVM);
         }
 
         private static void HandleDateRanges(string strfrmdate, string strtodate, out DateTime frmdate, out DateTime todate)
