@@ -102,12 +102,12 @@ namespace SmartBusinessWeb.Controllers
 
                         if (user.IsAdmin)
                         {
-                            model.RedirectUrl = ApprovalMode ? "/BasicSettings/Index" : ComInfo.comLandingPage;
+                            model.RedirectUrl = ApprovalMode ? ConfigurationManager.AppSettings["AdminLandingPage"] : ComInfo.comLandingPage;
                             return Redirect(model.RedirectUrl);
                         }
                         if (user.IsManager)
                         {
-                            if (string.IsNullOrEmpty(model.RedirectUrl)) model.RedirectUrl = ApprovalMode ? "/WholeSales/SalesOrderList" : ComInfo.comLandingPage;
+                            if (string.IsNullOrEmpty(model.RedirectUrl)) model.RedirectUrl = ApprovalMode ? ConfigurationManager.AppSettings["ManagerSalesLandingPage"] : ComInfo.comLandingPage;
                             else model.RedirectUrl += "&ireadonly=1";
                             return Redirect(model.RedirectUrl);
                         }

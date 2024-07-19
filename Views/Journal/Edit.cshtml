@@ -47,8 +47,8 @@
 					<tr>
 						<th>@Resources.Resource.AccountClassification</th>
 						<th>@string.Format(Resources.Resource.NameFormat, Resources.Resource.Account4Journal)</th>
-						<th>@Resources.Resource.Debit (@Model.Currency)</th>
-						<th>@Resources.Resource.Credit (@Model.Currency)</th>
+						<th class="text-right">@Resources.Resource.Debit (@Model.Currency)</th>
+						<th class="text-right">@Resources.Resource.Credit (@Model.Currency)</th>
 						<th>@Resources.Resource.Job4Myob</th>
 						<th>@Resources.Resource.AllocationMemo</th>
 					</tr>
@@ -62,7 +62,7 @@
 		<div class="form-inline mb-2">
 			<div class="form-group">
 				<label for="debitAmt" class="col-form-label mx-sm-3">@string.Format(Resources.Resource.TotalFormat, Resources.Resource.Debit) (@Currency)</label>
-				<input type="number" class="form-control" id="debitAmt" readonly value="0.00" />
+				<input type="text" class="form-control number" id="debitAmt" readonly value="0.00" />
 			</div>
 		</div>
 	</div>
@@ -70,7 +70,7 @@
 		<div class="form-inline mb-2">
 			<div class="form-group">
 				<label for="creditAmt" class="col-form-label mx-sm-3">@string.Format(Resources.Resource.TotalFormat, Resources.Resource.Credit) (@Currency)</label>
-				<input type="number" class="form-control" id="creditAmt" readonly value="0.00" />
+				<input type="text" class="form-control number" id="creditAmt" readonly value="0.00" />
 			</div>
 		</div>
 	</div>
@@ -78,7 +78,7 @@
 		<div class="form-inline mb-2">
 			<div class="form-group">
 				<label for="outOfBalance" class="col-form-label mx-sm-3">@Resources.Resource.OutOfBalance (@Currency)</label>
-				<input type="number" class="form-control" id="outOfBalance" readonly value="0.00" />
+				<input type="text" class="form-control number" id="outOfBalance" readonly value="0.00" />
 			</div>
 		</div>
 	</div>
@@ -96,5 +96,5 @@
 @Html.Partial("_TextAreaModal")
 
 <div id="infoblk" data-joblist="@JsonSerializer.Serialize(Model.JobList)" data-dicacaccounts="@JsonSerializer.Serialize(Model.DicAcAccounts)" data-dcaccerrtxt="@Resources.Resource.DebitAccMustNotEqCreditAcc" data-journallnlist="@JsonSerializer.Serialize(Model.JournalLnList)"></div>
-<script src="~/Scripts/ts/js/records/journaledit.js?v=@rand"></script>
+<script src="~/Scripts/ts/js/records/journal/edit.js?v=@rand"></script>
 

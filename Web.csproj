@@ -397,7 +397,7 @@
     <Content Include="Content\customer\attr\common.css" />
     <Content Include="Content\customer\attr\globalattribute.css" />
     <Content Include="Content\customer\edit.css" />
-    <Content Include="Content\customer\email\index.css" />
+    <Content Include="Content\promotion\email\index.css" />
     <Content Include="Content\customer\followup.css" />
     <Content Include="Content\customer\group\index.css" />
     <Content Include="Content\customer\index.css" />
@@ -2729,6 +2729,7 @@
     <Content Include="Content\purchase\edit.css" />
     <Content Include="Content\records\attendance.css" />
     <Content Include="Content\records\job.css" />
+    <Content Include="Content\records\journal\index.css" />
     <Content Include="Content\records\training.css" />
     <Content Include="Content\select2\custom.css" />
     <Content Include="Content\select2\select2.css" />
@@ -3115,7 +3116,11 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Content Include="Scripts\ts\js\records\journal\edit.js.map" />
+    <Content Include="Scripts\ts\js\records\journal\index.js.map" />
     <None Include="Web References\localhost\Dayends.disco" />
+    <Content Include="Scripts\ts\js\records\journal\edit.js" />
+    <Content Include="Scripts\ts\js\records\journal\index.js" />
     <Content Include="Web.favdoc.user" />
     <Content Include="_app_offline.htm" />
     <Content Include="PrivateSettings.config" />
@@ -4339,8 +4344,6 @@
     <Content Include="Scripts\ts\js\purchase\orderlist.js" />
     <Content Include="Scripts\ts\js\records\attendance.js" />
     <Content Include="Scripts\ts\js\records\job.js" />
-    <Content Include="Scripts\ts\js\records\journaledit.js" />
-    <Content Include="Scripts\ts\js\records\journallist.js" />
     <Content Include="Scripts\ts\js\records\training.js" />
     <Content Include="Scripts\ts\js\reports\repotbase.js" />
     <Content Include="Scripts\ts\js\settings\basicsettings.js" />
@@ -4630,8 +4633,6 @@
     <Content Include="Scripts\ts\js\purchase\orderlist.js.map" />
     <Content Include="Scripts\ts\js\records\attendance.js.map" />
     <Content Include="Scripts\ts\js\records\job.js.map" />
-    <Content Include="Scripts\ts\js\records\journaledit.js.map" />
-    <Content Include="Scripts\ts\js\records\journallist.js.map" />
     <Content Include="Scripts\ts\js\records\training.js.map" />
     <Content Include="Scripts\ts\js\reports\repotbase.js.map" />
     <Content Include="Scripts\ts\js\settings\basicsettings.js.map" />
@@ -5214,8 +5215,8 @@
     <TypeScriptCompile Include="Scripts\ts\purchase\orderlist.ts" />
     <TypeScriptCompile Include="Scripts\ts\records\attendance.ts" />
     <TypeScriptCompile Include="Scripts\ts\records\job.ts" />
-    <TypeScriptCompile Include="Scripts\ts\records\journaledit.ts" />
-    <TypeScriptCompile Include="Scripts\ts\records\journallist.ts" />
+    <TypeScriptCompile Include="Scripts\ts\records\journal\edit.ts" />
+    <TypeScriptCompile Include="Scripts\ts\records\journal\index.ts" />
     <TypeScriptCompile Include="Scripts\ts\records\training.ts" />
     <TypeScriptCompile Include="Scripts\ts\reports\repotbase.ts" />
     <TypeScriptCompile Include="Scripts\ts\settings\basicsettings.ts" />

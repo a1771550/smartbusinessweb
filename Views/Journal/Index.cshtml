@@ -4,108 +4,138 @@
 @{
 	int rand = CommonHelper.GetVersionRandomNo();
 }
-
+<link href="~/Content/records/journal/index.css?v=@rand" rel="stylesheet" type="text/css" />
 <h2 class="clearfix">
 	@ViewBag.Title
 	<a href="/Journal/Edit" class="btn btn-info btnsmall40 float-right" title="@Resources.Resource.Add">@Resources.Resource.Add</a>
-
 </h2>
-
-@if (Model.PagingJournalList == null)
-{
-	@Html.Partial("_NoRecordFound");
-	return;
-}
 
 @using (Html.BeginForm("Index", "Journal", FormMethod.Get, new { @Id = "frmJournal" }))
 {
-	<div class="form-inline my-4">
-		<div class="form-group">
-			<input type="text" class="form-control" id="txtKeyword" name="Keyword" value="@Model.Keyword" placeholder="@Resources.Resource.KeywordRequired" />
-			<button id="btnSearch" type="submit" class="btn btn-success ml-4">@Resources.Resource.Search</button>
+	if (Model.JournalLnList != null && Model.JournalLnList.Count > 0)
+	{
+		@Html.Partial("_SearchBlk", null, new ViewDataDictionary { { "Keyword", Model.Keyword }, { "additionalcls", "my-4" } })
 
-			<button id="btnReload" type="button" class="btn btn-warning ml-4">@Resources.Resource.Reload</button>
-		</div>
-	</div>
+		int idx = 0;
 
-	int idx = 0;
+		<table id="tblJournal" class="table table-bordered  table-hover table-condensed">
+			<thead class="gray-header">
+				<tr>
+					<th class="text-center colheader" data-col="@idx">
+						@Resources.Resource.ID
+					</th>
+					@{idx++;}
+					<th class="text-center colheader" data-col="@idx">
+						@Resources.Resource.AccountNo
+					</th>
+					@{idx++;}
+					<th class="text-center colheader" data-col="@idx">
+						@Resources.Resource.AccountName
+					</th>
+					@{idx++;}
+					<th class="text-center colheader" data-col="@idx">
+						@Resources.Resource.Debit (@Model.Currency)
+					</th>
+					@{idx++;}
+					<th class="text-center colheader" data-col="@idx">
+						@Resources.Resource.Credit (@Model.Currency)
+					</th>
+					<th class="text-center">
+						@Resources.Resource.Job4Myob
+					</th>
+					@{idx++;}
+					<th class="text-center">
+						@Resources.Resource.AllocationMemo
+					</th>
+					@{idx++;}
+					<th class="text-center colheader" data-col="@idx">
+						@Resources.Resource.Date
+					</th>
+					@{idx++;}
+					<th class="text-center colheader" data-col="@idx">
+						Abss
+					</th>
+					<th></th>
+				</tr>
+			</thead>
+			@{
+				HashSet<string> JournalNoList = new HashSet<string>();
+				HashSet<string> MemoDisplayList = new HashSet<string>();
+			}
+			@foreach (var item in Model.PagingJournalList)
+			{
+				string JournalNo = (!JournalNoList.Contains(item.JournalNumber)) ? item.JournalNumber : "";
+				JournalNoList.Add(item.JournalNumber);
 
-	<div id="norecord" class="alert alert-warning hide">@Resources.Resource.NoDataFound</div>
-	<table id="tblJournal" class="table table-bordered  table-hover table-condensed">
-		<thead class="gray-header">
-			<tr>
-				<th scope="col" class="text-center colheader" data-col="@idx">
-					@Resources.Resource.ID
-				</th>
-				@{idx++;}
-				<th scope="col" class="text-center colheader" data-col="@idx">
-					@Resources.Resource.AccountNo
-				</th>
-				@{idx++;}
-				<th scope="col" class="text-center colheader" data-col="@idx">
-					@Resources.Resource.AccountName
-				</th>
-				@{idx++;}
-			<th scope="col" class="text-center colheader" data-col="@idx">
-				@Resources.Resource.Debit (@Model.Currency)
-			</th>
-				@{idx++;}
-			<th scope="col" class="text-center colheader" data-col="@idx">
-				@Resources.Resource.Credit (@Model.Currency)
-			</th>				
-				<th scope="col" class="text-center">
-					@Resources.Resource.Job4Myob
-				</th>
-				@{idx++;}
-				<th scope="col" class="text-center colheader" data-col="@idx">
-					@Resources.Resource.Date
-				</th>
-				<th></th>
-			</tr>
-		</thead>
-		@foreach (var item in Model.PagingJournalList)
-		{
-			<tr>
-				<td class="text-center">
-					@Html.DisplayFor(model => item.JournalNumber)
-				</td>
-				<td class="text-center">
-					@item.AccountNumber
-				</td>
-				<td class="text-center">
-					@item.AccountName
-				</td>
-				<td class="text-center">
-					@CommonHelper.FormatNumber(item.DebitExTaxAmount ?? 0)
-				</td>
-				<td class="text-center">
-					@CommonHelper.FormatNumber(item.CreditExTaxAmount ?? 0)
-				</td>
-				<td class="text-center">
-					@Html.DisplayFor(model => item.JobName)
-				</td>
-				<td class="text-center">
-					@Html.DisplayFor(model => item.DateDisplay)
-				</td>
-				<td>
-					@Html.ActionLink(Resources.Resource.Edit, "Edit", new { Id = item.mainId }, new { @class = "btn btn-info", @role = "button" })
+				string MemoDisplay = (!MemoDisplayList.Contains(item.MemoDisplay)) ? item.MemoDisplay : "";
+				
+				<tr>
+					<td class="text-center pointer" title="@(string.IsNullOrEmpty(item.MemoDisplay)?"":item.Memo)" data-md="@MemoDisplay">
+						@if (!string.IsNullOrEmpty(JournalNo))
+						{
+							@JournalNo
+						}
+						else
+						{
+							if (!string.IsNullOrEmpty(MemoDisplay))
+							{
+								@MemoDisplay
+								MemoDisplayList.Add(item.MemoDisplay);
+							}
+						}
+					</td>
+					<td class="text-center">
+						@item.AccountNumber
+					</td>
+					<td class="text-center">
+						@item.AccountName
+					</td>
+					<td class="text-center">
+						@CommonHelper.FormatNumber(item.DebitExTaxAmount ?? 0)
+					</td>
+					<td class="text-center">
+						@CommonHelper.FormatNumber(item.CreditExTaxAmount ?? 0)
+					</td>
+					<td class="text-center">
+						@Html.DisplayFor(model => item.JobName)
+					</td>
+					<td class="text-center pointer" title="@item.AllocationMemo">
+						@Html.DisplayFor(model => item.AllocationMemoDisplay)
+					</td>
+					<td class="text-center">
+						@Html.DisplayFor(model => item.DateDisplay)
+					</td>
+					<td class="text-center">
+						@if (!string.IsNullOrEmpty(JournalNo))
+						{
+							@item.IsCheckOutDisplay
+						}
+					</td>
+					<td>
+						@if (!string.IsNullOrEmpty(JournalNo))
+						{
+							<a role="button" class="btn btn-info" href="/Journal/Edit?Id=@item.mainId">@Resources.Resource.Edit</a>
+							<button type="button" class="btn btn-danger remove" data-id="@item.mainId">@Resources.Resource.Remove</button>
+						}
+					</td>
+				</tr>
+			}
 
-					<button type="button" class="btn btn-danger remove" data-id="@item.mainId">@Resources.Resource.Remove</button>
-				</td>
-			</tr>
-		}
+		</table>
 
-	</table>
+		<div id="pagingblk" class="my-3">
 
-	<div id="pagingblk" class="my-3">
-		
 			@Html.PagedListPager(Model.PagingJournalList, PageNo => Url.Action("Index",
-new { PageNo, SortOrder = Model.CurrentSortOrder, SortCol = Model.SortCol, Keyword = Model.Keyword }))
-		
-	</div>
-	<input type="hidden" name="CurrentSortOrder" id="currentsortorder" value="@Model.CurrentSortOrder" />
-	<input type="hidden" name="SortOrder" id="sortorder" value="@Model.SortOrder" />
-	<input type="hidden" id="sortcol" name="sortCol" value="@Model.SortCol" />
+new { PageNo, SortOrder = Model.CurrentSortOrder, SortCol = Model.SortCol, Keyword = Model.Keyword, PageSize = Model.PageSize }))
+
+		</div>
+		@Html.Partial("_SortOrderColHidden")
+	}
+	else
+	{
+		@Html.Partial("_NoRecordFound")
+	}
+
 
 }
 
@@ -113,5 +143,5 @@ new { PageNo, SortOrder = Model.CurrentSortOrder, SortCol = Model.SortCol, Keywo
 <div id="infoblk"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
-<script src="/Scripts/ts/js/records/journallist.js?v=@rand"></script>
+<script src="/Scripts/ts/js/records/journal/index.js?v=@rand"></script>
 

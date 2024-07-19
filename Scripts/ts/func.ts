@@ -1994,8 +1994,8 @@ function openTextAreaModal(title: string = "") {
 	} else {
 		textareaModal.dialog({ title: title });
 	}
-	if (forjournal && selectedJournalLn1) {
-		$txtfield.val(selectedJournalLn1.AllocationMemo);
+	if (forjournal && selectedJournalLn) {
+		$txtfield.val(selectedJournalLn.AllocationMemo);
 	}
 	if (forIA && IALs.length > 0) {
 		let idx = IALs.findIndex((x) => { return x.Seq == (currentY + 1); });
@@ -2762,9 +2762,9 @@ function initModals() {
 							}
 						}
 						if (forjournal) {
-							if (selectedJournalLn1) {
+							if (selectedJournalLn) {
 								if (remark !== "") {
-									selectedJournalLn1.AllocationMemo = remark;
+									selectedJournalLn.AllocationMemo = remark;
 									$tr.find(".memo").data("remark", remark).val("...");
 								}
 
@@ -15074,25 +15074,14 @@ $(document).on("click", "#btnViewFile", function () {
 	openViewFileModal();
 });
 
-function initJournalLnPair(journalno: string) {
-	//console.log("currentY#initpair:" + currentY);
-	if (currentY % 2 == 0) {
-		selectedJournalLn1 = {} as IJournalLn;
-		selectedJournalLn1.JournalNumber = journalno;
-		selectedJournalLn1.Seq = currentY + 1;
-		selectedJournalLn1.AccountNumber = "";
-		selectedJournalLn1.AccountName = "";
-		selectedJournalLn1.DebitExTaxAmount = 0;
-		selectedJournalLn1.CreditExTaxAmount = 0;
-
-		selectedJournalLn2 = {} as IJournalLn;
-		selectedJournalLn2.JournalNumber = journalno;
-		selectedJournalLn2.Seq = currentY + 2;
-		selectedJournalLn2.AccountNumber = "";
-		selectedJournalLn2.AccountName = "";
-		selectedJournalLn2.DebitExTaxAmount = 0;
-		selectedJournalLn2.CreditExTaxAmount = 0;
-	}
+function initJournalLn(journalno: string) {
+		selectedJournalLn = {} as IJournalLn;
+		selectedJournalLn.JournalNumber = journalno;
+		selectedJournalLn.Seq = currentY;
+		selectedJournalLn.AccountNumber = "";
+		selectedJournalLn.AccountName = "";
+		selectedJournalLn.DebitExTaxAmount = 0;
+		selectedJournalLn.CreditExTaxAmount = 0;
 }
 function filterEnquiry(smail: string): boolean {
 	//no-reply@hkdigitalsale.com
@@ -17448,7 +17437,7 @@ function populateDrpAccount(): string {
 $(document).on("change", ".drpAccount", function () {
 	currentY = $(this).parent("td").parent("tr").index();
 
-	if (forjournal) GetSetJournalLnPair();
+	if (forjournal) GetSetJournalLn();
 
 	AcClfID = $(this).val()!.toString();
 	if (AcClfID !== "") {

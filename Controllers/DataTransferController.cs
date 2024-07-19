@@ -616,13 +616,11 @@ namespace SmartBusinessWeb.Controllers
         }
 
         private void ExportData4SB(DataTransferModel dmodel, string filename, DateTime frmdate, DateTime todate, bool includeUploaded = false, int lang = 0)
-        {
-            var comInfo = Session["ComInfo"] as ComInfo;
-            SessUser curruser = Session["User"] as SessUser;
+        { 
             OnlineModeItem onlineModeItem = new OnlineModeItem();
             DateTime dateTime = DateTime.Now;
             string checkoutportal = string.Empty;
-            bool approvalmode = (bool)comInfo.ApprovalMode;
+            bool approvalmode = (bool)ComInfo.ApprovalMode;
 
             using var context = new SBDbContext(Session["DBName"].ToString());
 
@@ -641,14 +639,14 @@ namespace SmartBusinessWeb.Controllers
                     dmodel.SelectedLocation = location;
                     dmodel.Device = device;
 
-                    List<string> sqllist = IAEditModel.GetUploadSqlList(includeUploaded, comInfo, apId, context, SqlConnection, frmdate, todate, ref dmodel);
+                    List<string> sqllist = IAEditModel.GetUploadSqlList(includeUploaded, ComInfo, apId, context, SqlConnection, frmdate, todate, ref dmodel);
 
                     if (sqllist.Count > 0)
                     {
                         #region Write to MYOB
                         using (localhost.Dayends dayends = new localhost.Dayends())
                         {
-                            dayends.Url = comInfo.WebServiceUrl;
+                            dayends.Url = ComInfo.WebServiceUrl;
                             dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
                         }
                         #endregion
@@ -708,14 +706,14 @@ namespace SmartBusinessWeb.Controllers
                     dmodel.SelectedLocation = location;
                     dmodel.Device = device;
 
-                    List<string> sqllist = JournalEditModel.GetUploadSqlList(includeUploaded, comInfo, apId, context, frmdate, todate, ref dmodel);
+                    List<string> sqllist = JournalEditModel.GetUploadSqlList(includeUploaded, ComInfo, SqlConnection, apId, context, frmdate, todate, ref dmodel);
 
                     if (sqllist.Count > 0)
                     {
                         #region Write to MYOB
                         using (localhost.Dayends dayends = new localhost.Dayends())
                         {
-                            dayends.Url = comInfo.WebServiceUrl;
+                            dayends.Url = ComInfo.WebServiceUrl;
                             dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
                         }
                         #endregion
@@ -775,14 +773,14 @@ namespace SmartBusinessWeb.Controllers
                     dmodel.Device = device;
 
                     RetailEditModel model = new RetailEditModel();
-                    List<string> sqllist = model.GetUploadSqlList(includeUploaded, lang, comInfo, apId, context, SqlConnection, frmdate, todate, ref dmodel);
+                    List<string> sqllist = model.GetUploadSqlList(includeUploaded, lang, ComInfo, apId, context, SqlConnection, frmdate, todate, ref dmodel);
 
                     if (sqllist.Count > 0)
                     {
                         #region Write to MYOB
                         using (localhost.Dayends dayends = new localhost.Dayends())
                         {
-                            dayends.Url = comInfo.WebServiceUrl;
+                            dayends.Url = ComInfo.WebServiceUrl;
                             dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
                         }
                         #endregion
@@ -841,13 +839,13 @@ namespace SmartBusinessWeb.Controllers
                     dmodel.SelectedLocation = location;
                     dmodel.Device = device;
 
-                    List<string> sqllist = WholeSalesEditModel.GetUploadSqlList4WS(includeUploaded, lang, comInfo, apId, context, SqlConnection, frmdate, todate, ref dmodel);
+                    List<string> sqllist = WholeSalesEditModel.GetUploadSqlList4WS(includeUploaded, lang, ComInfo, apId, context, SqlConnection, frmdate, todate, ref dmodel);
 
                     if (sqllist.Count > 0)
                     {
                         using (localhost.Dayends dayends = new localhost.Dayends())
                         {
-                            dayends.Url = comInfo.WebServiceUrl;
+                            dayends.Url = ComInfo.WebServiceUrl;
                             dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
                         }
 
@@ -897,13 +895,13 @@ namespace SmartBusinessWeb.Controllers
 
                 if (filename == "Purchase_")
                 {
-                    List<string> sqllist = PurchaseEditModel.GetUploadPurchaseSqlList(ref dmodel, comInfo, context, frmdate, todate);
+                    List<string> sqllist = PurchaseEditModel.GetUploadPurchaseSqlList(ref dmodel, ComInfo, context, frmdate, todate);
 
                     if (sqllist.Count > 0)
                     {
                         using (localhost.Dayends dayends = new localhost.Dayends())
                         {
-                            dayends.Url = comInfo.WebServiceUrl;
+                            dayends.Url = ComInfo.WebServiceUrl;
                             dayends.WriteMYOBBulk(ConnectionString, sqllist.ToArray());
                         }
 
@@ -953,7 +951,7 @@ namespace SmartBusinessWeb.Controllers
                             string sell = item.itmIsSold ? "Y" : "N";
                             string inventory = item.itmIsNonStock ? "N" : "Y";
                             string usedesc = item.itmUseDesc ? "Y" : "N";
-                            string taxcode = item.itmIsTaxedWhenSold == null ? "" : (bool)item.itmIsTaxedWhenSold ? comInfo.DefaultTaxCode : "";
+                            string taxcode = item.itmIsTaxedWhenSold == null ? "" : (bool)item.itmIsTaxedWhenSold ? ComInfo.DefaultTaxCode : "";
                             string inactivetxt = item.itmIsActive ? "N" : "Y";
                             string inventoryacc = item.InventoryAccountNo == 0 ? "" : item.InventoryAccountNo.ToString();
                             string incomeacc = item.IncomeAccountNo == 0 ? "" : item.IncomeAccountNo.ToString();
@@ -963,7 +961,7 @@ namespace SmartBusinessWeb.Controllers
                             /*
                              * ItemNumber,ItemName,Buy,Sell,Inventory,AssetAccount,IncomeAccount,ExpenseAccount,ItemPicture,Description,UseDescriptionOnSale,CustomList1,CustomList2,CustomList3,CustomField1,CustomField2,CustomField3,PrimarySupplier,SupplierItemNumber,TaxWhenBought,BuyUnitMeasure,NumberItemsBuyUnit,ReorderQuantity,MinimumLevel,SellingPrice,SellUnitMeasure,NumberItemsSellUnit,TaxWhenSold,QuantityBreak1,PriceLevelAQtyBreak1,PriceLevelBQtyBreak1,PriceLevelCQtyBreak1,PriceLevelDQtyBreak1,PriceLevelEQtyBreak1,PriceLevelFQtyBreak1,InactiveItem,StandardCost,DefaultShipSellLocation,DefaultReceiveAutoBuildLocation
                              */
-                            value = string.Format("(" + strcolumn + ")", item.itmCode, item.itmName, buy, sell, inventory, inventoryacc, incomeacc, expenseacc, "", itemdesc, usedesc, "", "", "", "", "", "", "", item.itmSupCode, "", item.itmBuyUnit, 1, 0, 0, item.itmBaseSellingPrice, item.itmSellUnit, item.itmSellUnitQuantity, taxcode, 0, item.PLA, item.PLB, item.PLC, item.PLD, item.PLE, item.PLF, inactivetxt, item.itmBuyStdCost, comInfo.PrimaryLocation, "");
+                            value = string.Format("(" + strcolumn + ")", item.itmCode, item.itmName, buy, sell, inventory, inventoryacc, incomeacc, expenseacc, "", itemdesc, usedesc, "", "", "", "", "", "", "", item.itmSupCode, "", item.itmBuyUnit, 1, 0, 0, item.itmBaseSellingPrice, item.itmSellUnit, item.itmSellUnitQuantity, taxcode, 0, item.PLA, item.PLB, item.PLC, item.PLD, item.PLE, item.PLF, inactivetxt, item.itmBuyStdCost, ComInfo.PrimaryLocation, "");
                             values.Add(value);
                         }
 
@@ -972,7 +970,7 @@ namespace SmartBusinessWeb.Controllers
 
                         using (localhost.Dayends dayends = new localhost.Dayends())
                         {
-                            dayends.Url = comInfo.WebServiceUrl;
+                            dayends.Url = ComInfo.WebServiceUrl;
                             dayends.WriteMYOB(ConnectionString, sql);
                         }
 

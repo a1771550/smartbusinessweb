@@ -158,9 +158,9 @@ function handleProductCheck(ele: HTMLElement | null, discpc: number, increment: 
 				//update discpc & price:
 				SelectedSimpleItemList[idx].discpc = discpc;
 				SelectedSimpleItemList[idx].itmBaseSellingPrice = Number($(ele!).data("price"));
-				console.log("qtysellable#0:" + SelectedSimpleItemList[idx].QtySellable);
+				//console.log("qtysellable#0:" + SelectedSimpleItemList[idx].QtySellable);
 				if (selectedItemCode == SelectedSimpleItemList[idx].itmCode) SelectedSimpleItemList[idx].QtySellable += 1;
-				console.log("qtysellable#1:" + SelectedSimpleItemList[idx].QtySellable);
+				//console.log("qtysellable#1:" + SelectedSimpleItemList[idx].QtySellable);
 			}
 		} else {
 			if (idx >= 0) SelectedSimpleItemList.splice(idx, 1);
@@ -378,12 +378,16 @@ $(document).on("change", ".itmprice", function () {
 	let $discpc = $parent.find(".sdiscpc");
 	//console.log("$discpc:", $discpc);
 	$discpc.data("price", price).trigger("change");
+
+	let $pricebox = $(this).parent(".price-box");	
+	let html = `<h6><span class="itmprice">$${formatnumber(price)}</span></h6>`;
+	$pricebox.replaceWith(html);
 });
 $(document).on("dblclick", ".itmprice", function () {
 	let $parent = $(this).parent("h6").parent("div");
 	let html = `<div class="price-box">
 													<label class="small">${currency}</label>
-													 <input type="text" class="number itmprice small flex" data-id="${$(this).data("id")}" data-namedesc="${$(this).data("namedesc")}" data-code="${$(this).data("code")}" data-price="${$(this).data("price")}" data-file="${$(this).data("file")}" value="${$(this).data("pricetxt")}" />
+													 <input type="text" class="number itmprice small flex" data-id="${$(this).data("id")}" data-namedesc="${$(this).data("namedesc")}" data-code="${$(this).data("code")}" data-price="${$(this).data("price")}" data-file="${$(this).data("file")}" value="${formatnumber($(this).data("price")??0)}" />
 												</div>`;
 
 	$(this).replaceWith(html);

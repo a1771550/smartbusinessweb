@@ -6,48 +6,41 @@ const dcaccerrtxt: string = $infoblk.data("dcaccerrtxt");
 
 $(document).on("change", ".amt", function () {
 	getRowCurrentY.call(this);
-	//console.log("currentY#amtchange:" + currentY);
-	let amt = Number($(this).val());
-	//console.log("amt:" + amt);
+	console.log("currentY:" + currentY);
 
-	let isDebit = $(this).hasClass("debit");
+	let amt = Number($(this).val());	
+	console.log("amt:", amt);
 
-	if (isDebit) {
-		JournalLns.forEach((x) => {
-			if (x!.Seq == currentY + 1) {
-				//console.log("isdebit 1");
-				if (editmode) x.DebitExTaxAmount = amt;
-				else if (x.DebitExTaxAmount == 0) x.DebitExTaxAmount = amt;
+	if (amt) {
+		//don't make these three variables global ones!!!
+		let totalDebit: number = 0;
+		let totalCredit: number = 0;
+
+		if ($(this).hasClass("debit")) { totalDebit += amt; $tr.find(".credit").prop("readonly", true); }
+		if ($(this).hasClass("credit")) { totalCredit += amt; $tr.find(".debit").prop("readonly", true); }
+
+		console.log("totaldebit#0:" + totalDebit + ";totalcredit#0:" + totalCredit);
+
+		$(`#${gTblId} tbody tr`).each(function () {
+			if ($(this).index() != currentY) {
+				let $debit = $(this).find(".debit");
+				let $credit = $(this).find(".credit");
+				totalDebit += Number($debit.val()??0);
+				totalCredit += Number($credit.val()??0);
 			}
 		});
+
+		console.log("totaldebit#1:" + totalDebit + ";totalcredit#1:" + totalCredit);
+
+		setAmtsDisplay(totalDebit, totalCredit);
+
+		$("#btnSave").prop("disabled", totalDebit != totalCredit);
 	} else {
-		JournalLns.forEach((x) => {
-			if (x!.Seq == currentY + 1) {
-				//console.log("iscredit 1");
-				if (editmode) x.CreditExTaxAmount = amt;
-				else if (x.CreditExTaxAmount == 0) x.CreditExTaxAmount = amt;
-			}
-		});
+		if ($(this).hasClass("debit")) { $tr.find(".credit").prop("readonly", false); }		
+		if ($(this).hasClass("credit")) { $tr.find(".debit").prop("readonly", false); }
+		$(this).val(formatzero);
 	}
-	//console.log("JournalLns#amtchange:", JournalLns);
-
-	//don't make these three variables global ones!!!
-	let totalDebit: number = 0;
-	let totalCredit: number = 0;
-
-	JournalLns.forEach((x) => {
-		//console.log("x.creditamt:"+ x!.CreditExTaxAmount+";x.debitamt:"+x!.DebitExTaxAmount);
-		if (x!.CreditExTaxAmount == 0) totalDebit += x!.DebitExTaxAmount!;
-		if (x!.DebitExTaxAmount == 0) totalCredit += x!.CreditExTaxAmount!;
-		//console.log("totaldebit:" + totalDebit + ";totalcredit:" + totalCredit);
-	});
-
-	//console.log("totaldebit:" + totalDebit + ";totalcredit:" + totalCredit);
-
-	setAmts(totalDebit, totalCredit);
-	//toggleJournalAmt(currentY, false);
-
-	$("#btnSave").prop("disabled", totalDebit != totalCredit);
+	
 });
 $(document).on("change", ".memo", function () {
 	let memo = $(this).val() as string;
@@ -64,15 +57,14 @@ $(document).on("change", ".job", function () {
 	});
 });
 
-function setAmts(totalDebit: number, totalCredit: number) {
+function setAmtsDisplay(totalDebit: number, totalCredit: number) {
 	$("#debitAmt").val(formatnumber(totalDebit));
 	$("#creditAmt").val(formatnumber(totalCredit));
-	let outOfBalance = totalDebit - totalCredit;
-	let isDeficit = totalDebit > totalCredit;
-	if (isDeficit) {
-		$("#outOfBalance").addClass("alert-danger");
+	let outOfBalance = totalCredit - totalDebit;		
+	if (outOfBalance == 0) {
+		$("#outOfBalance").removeClass("alert-danger");		
 	} else {
-		$("#outOfBalance").removeClass("alert-danger");
+		$("#outOfBalance").addClass("alert-danger");
 	}
 	$("#outOfBalance").val(formatnumber(outOfBalance));
 	return outOfBalance;
@@ -86,20 +78,20 @@ function fillInJournal() {
 
 	if (!editmode) {
 		JournalLns = [];
-		$("#tblJournal tbody tr").each(function (i, e) {
+		$(`#${gTblId} tbody tr`).each(function (i, e) {
 			/*
 			 Seq = item.Seq,
-                                    AccountNumber = item.AccountNumber,
-                                    DebitExTaxAmount = item.DebitExTaxAmount,
-                                    CreditExTaxAmount = item.CreditExTaxAmount,
-                                    JobID = item.JobID,
-                                    AllocationMemo = item.AllocationMemo,
+									AccountNumber = item.AccountNumber,
+									DebitExTaxAmount = item.DebitExTaxAmount,
+									CreditExTaxAmount = item.CreditExTaxAmount,
+									JobID = item.JobID,
+									AllocationMemo = item.AllocationMemo,
 			*/
 			if ($(e).find(".acno").length) {
-				JournalLns.push({ Seq: $(e).index() + 1, AccountNumber: $(e).find(".acno").val(), DebitExTaxAmount: Number($(e).find(".debit").val()), CreditExTaxAmount: Number($(e).find(".credit").val()), JobID: Number($(e).find(".job").val()), AllocationMemo:$(e).find(".memo").val() } as IJournalLn);
-			}			
+				JournalLns.push({ Seq: $(e).index() + 1, AccountNumber: $(e).find(".acno").val(), DebitExTaxAmount: Number($(e).find(".debit").val()), CreditExTaxAmount: Number($(e).find(".credit").val()), JobID: Number($(e).find(".job").val()), AllocationMemo: $(e).find(".memo").val() } as IJournalLn);
+			}
 		});
-	}	
+	}
 }
 
 $(document).on("click", "#btnSave", function () {
@@ -170,54 +162,39 @@ $(document).on("dblclick", ".memo", function () {
 	openTextAreaModal(allocationmemotxt);
 });
 
-function GetSetJournalLnPair() {
+function GetSetJournalLn() {
 	//console.log("JournalLns#getset:", JournalLns);
 	//console.log("currentY#getset:" + currentY);
 	if (JournalLns.length > 0) {
-		getJournalPair();
-		//console.log("selectedJournal1==null:", selectedJournalLn1 == null);
-		//console.log("selectedJournal2==null:", selectedJournalLn2 == null);
-		if (selectedJournalLn1 == null && selectedJournalLn2 == null) {
-			//console.log("about to setpair");
-			setJournalPair();
+		getJournalLn();
+		if (selectedJournalLn == null) {
+			handleJournalLnList();
 		}
 	} else {
-		//console.log("about to setpair");
-		setJournalPair();
+		handleJournalLnList();
 	}
 }
 
-function getJournalPair() {
+function getJournalLn() {
 	if (JournalLns.length === 0) return false;
-	//console.log("JournalLns#getpair:", JournalLns);
 	JournalLns.forEach((x) => {
-		if (currentY % 2 == 0) selectedJournalLn1 = structuredClone(x);
-		//selectedJournalLn1 = x;
-		if (currentY % 2 == 1) selectedJournalLn2 = structuredClone(x);
-		//selectedJournalLn2 = x;		
+		if (x.Seq == (currentY + 1))
+			selectedJournalLn = structuredClone(x);
 	});
 }
-function setJournalPair() {
-	initJournalLnPair(journalno);
-	JournalLns.push(selectedJournalLn1!);
-	JournalLns.push(selectedJournalLn2!);
+function handleJournalLnList() {
+	initJournalLn(journalno);
+	JournalLns.push(selectedJournalLn!);
 }
-
-
 function addJournalRow() {
-	let html = "";
-	for (let i = 0; i <= 1; i++) {
-
-		html += `<tr>`;
-
-		html += `<td>${populateDrpAccount()}</td>`;
-
-		html += `<td><input type="text" class="acname form-control" readonly></td><td><input type="number" class="form-control debit amt" readonly></td><td><input type="number" class="form-control credit amt" readonly></td><td><select class="job flex form-control">${setJobListOptions(0)}</select></td><td><input type="text" class="memo form-control"></td>`;
-
-		html += "</tr>";
-	}
-
+		let html = "";
+	html += `<tr>`;
+	html += `<td>${populateDrpAccount()}</td>`;
+	html += `<td><input type="text" class="acname form-control" readonly></td><td class="text-right"><input type="text" class="form-control debit amt number text-right" value="${formatzero}" readonly></td><td class="text-right"><input type="text" class="form-control credit amt number text-right" value="${formatzero}" readonly></td><td><select class="job flex form-control">${setJobListOptions(0)}</select></td><td><input type="text" class="memo form-control"></td>`;
+	html += "</tr>";
 	$(`#${gTblId} tbody`).append(html);
+
+	setInput4NumberOnly("number");
 }
 
 $(document).on("dblclick", ".acno", function () {
@@ -242,16 +219,14 @@ $(document).on("dblclick", ".acno", function () {
 });
 
 $(document).on("click", "#btnAdd", function () {
-	if (JournalLns.length === 0) return false;
 	addMode = true;
 	addJournalRow();
-	currentY = $(`#${gTblId} tbody tr`).length - 2;
-	//console.log("currentY#btnadd:" + currentY);
-	selectedJournalLn1 = null;
-	selectedJournalLn2 = null;
-	setJournalPair();
+	currentY = $(`#${gTblId} tbody tr`).index();
+	selectedJournalLn = null;
+	handleJournalLnList();
 	addMode = false;
 });
+
 $(function () {
 	forjournal = true;
 	setFullPage();
@@ -271,34 +246,33 @@ $(function () {
 	if (editmode) {
 		fillInJournal();
 		JournalLns = $infoblk.data("journallnlist");
-		//console.log(JournalLns);
-		for (let i = 0; i < (JournalLns.length / 2); i++) {
-			addJournalRow();
-		}
+		//console.log(JournalLns);	
 
 		let totalDebit = 0;
 		let totalCredit = 0;
 		JournalLns.forEach((x, i) => {
-			currentY = i;
-			$tr = $(`#${gTblId} tbody tr`).eq(currentY);
+			addJournalRow();			
+			$tr = $(`#${gTblId} tbody tr`).eq(i);
 			setAccName($tr, x.AccountNumber, x.AccountName);
-			let idx = 2;
-			$tr.find("td").eq(idx).find(".amt").prop("readonly", (x.DebitExTaxAmount!) == 0).val(formatnumber(x.DebitExTaxAmount!));
+			
+			$tr.find(".debit").prop("readonly", (x.DebitExTaxAmount!) == 0).val(formatnumber(x.DebitExTaxAmount!));
 			totalDebit += x.DebitExTaxAmount!;
-			idx++;
-			$tr.find("td").eq(idx).find(".amt").prop("readonly", (x.CreditExTaxAmount!) == 0).val(formatnumber(x.CreditExTaxAmount!));
+			
+			$tr.find(".credit").prop("readonly", (x.CreditExTaxAmount!) == 0).val(formatnumber(x.CreditExTaxAmount!));
 			totalCredit += x.CreditExTaxAmount!;
-			idx++;
+		
 			if (x.JobID != null)
-				$tr.find("td").eq(idx).find(".job").val(x.JobID!);
-			idx++;
-			$tr.find("td").eq(idx).find(".memo").val(x.AllocationMemo ?? "");
+				$tr.find(".job").val(x.JobID!);
+		
+			$tr.find(".memo").val(x.AllocationMemo ?? "");
 		});
 
-		setAmts(totalDebit, totalCredit);
+		setAmtsDisplay(totalDebit, totalCredit);
 
 	} else {
 		JournalLns = [];
 		addJournalRow();
 	}
+
+	setInput4NumberOnly("number");
 });

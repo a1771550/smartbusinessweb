@@ -30,7 +30,7 @@ namespace SmartBusinessWeb.Controllers
 		{
 			HttpRequestMessage request = new HttpRequestMessage();
 			this.apId = apId;
-			using var context = new SBDbContext(DbName);
+			using var context = new SBDbContext(apId);
 			ModelHelper.WriteLog(context, form["msg"], form["type"]);		
 			return request.CreateResponse(System.Net.HttpStatusCode.OK);
 		}
@@ -40,7 +40,7 @@ namespace SmartBusinessWeb.Controllers
 		public string GetTest(int apId)
 		{ 
             this.apId = apId;
-			using var context = new SBDbContext(DbName);
+			using var context = new SBDbContext(apId);
 			return string.Concat("User Count:" + context.SysUsers.Count());
 		}
 
@@ -49,7 +49,7 @@ namespace SmartBusinessWeb.Controllers
         {
             this.apId = apId;
             HttpRequestMessage request = new HttpRequestMessage();           
-            using var context = new SBDbContext(DbName);
+            using var context = new SBDbContext(apId);
             foreach(var log in logs) ModelHelper.WriteLog(context, log.Message, log.LogType);           
             return request.CreateResponse(System.Net.HttpStatusCode.OK);
         }       
@@ -59,7 +59,7 @@ namespace SmartBusinessWeb.Controllers
         {
             this.apId = apId;
             HttpRequestMessage request = new HttpRequestMessage();
-            using var context = new SBDbContext(DbName);
+            using var context = new SBDbContext(apId);
             List<RtlSale> retaillist = context.RtlSales.Where(x => x.AccountProfileId == apId && checkoutIds.Any(y => x.rtsUID == y)).ToList();
             foreach (var retail in retaillist)
             {
@@ -74,7 +74,7 @@ namespace SmartBusinessWeb.Controllers
         {
             this.apId = apId;
             UploadAbssData data = new UploadAbssData();           
-            using var context = new SBDbContext(DbName);
+            using var context = new SBDbContext(apId);
             ComInfo comInfo = context.ComInfoes.FirstOrDefault(x => x.AccountProfileId == apId);
             if (comInfo != null)
             {
@@ -107,7 +107,7 @@ namespace SmartBusinessWeb.Controllers
         {
             HttpRequestMessage request = new HttpRequestMessage();
             this.apId = apId;
-            using var context = new SBDbContext(DbName);
+            using var context = new SBDbContext(apId);
             List<WholeSale> wslist = context.WholeSales.Where(x => x.AccountProfileId == apId && checkoutIds.Any(y => x.wsUID == y)).ToList();
             foreach (var ws in wslist)
             {
@@ -122,7 +122,7 @@ namespace SmartBusinessWeb.Controllers
         {
             UploadAbssData data = new UploadAbssData();
             this.apId = apId;
-            using var context = new SBDbContext(DbName);
+            using var context = new SBDbContext(apId);
             ComInfo comInfo = context.ComInfoes.FirstOrDefault(x => x.AccountProfileId == apId);
             if (comInfo != null)
             {
@@ -151,7 +151,7 @@ namespace SmartBusinessWeb.Controllers
         public int GetWSCount(int apId, string strfrmdate, string strtodate, string location)
         {
             this.apId = apId;
-            using var context = new SBDbContext(DbName);
+            using var context = new SBDbContext(apId);
             #region Date Ranges
             DateTime frmdate, todate;
             HandleDateRanges(strfrmdate, strtodate, out frmdate, out todate);
@@ -163,7 +163,7 @@ namespace SmartBusinessWeb.Controllers
         public int GetRetailCount(int apId, string strfrmdate, string strtodate, string location)
         {
             this.apId = apId;
-            using var context = new SBDbContext(DbName);
+            using var context = new SBDbContext(apId);
             #region Date Ranges
             DateTime frmdate, todate;
             HandleDateRanges(strfrmdate, strtodate, out frmdate, out todate);
@@ -176,7 +176,7 @@ namespace SmartBusinessWeb.Controllers
         {
             HttpRequestMessage request = new HttpRequestMessage();
             this.apId = apId;
-            using var context = new SBDbContext(DbName);
+            using var context = new SBDbContext(apId);
             List<DAL.Purchase> pslist = context.Purchases.Where(x => x.AccountProfileId == apId && checkoutIds.Any(y => x.Id == y)).ToList();
             foreach (var ps in pslist)
             {
@@ -191,7 +191,7 @@ namespace SmartBusinessWeb.Controllers
         {
             UploadAbssData data = new UploadAbssData();
             this.apId = apId;
-            using var context = new SBDbContext(DbName);
+            using var context = new SBDbContext(apId);
             ComInfo comInfo = context.ComInfoes.FirstOrDefault(x => x.AccountProfileId == apId);
             if (comInfo != null)
             {
@@ -217,7 +217,7 @@ namespace SmartBusinessWeb.Controllers
         public int GetPoCount(int apId, string strfrmdate, string strtodate, string location)
         {
             this.apId = apId;
-            using var context = new SBDbContext(DbName);
+            using var context = new SBDbContext(apId);
             #region Date Ranges
             DateTime frmdate, todate;
             HandleDateRanges(strfrmdate, strtodate, out frmdate, out todate);
@@ -230,7 +230,7 @@ namespace SmartBusinessWeb.Controllers
         {
             HttpRequestMessage request = new HttpRequestMessage();
             this.apId = apId;
-            using var context = new SBDbContext(DbName);
+            using var context = new SBDbContext(apId);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -313,7 +313,7 @@ namespace SmartBusinessWeb.Controllers
         {
             HttpRequestMessage request = new HttpRequestMessage();
             this.apId = apId;
-            using var context = new SBDbContext(DbName);
+            using var context = new SBDbContext(apId);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -372,7 +372,7 @@ namespace SmartBusinessWeb.Controllers
         {
             HttpRequestMessage request = new HttpRequestMessage();
             this.apId = apId;
-            using var context = new SBDbContext(DbName);
+            using var context = new SBDbContext(apId);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -426,7 +426,7 @@ namespace SmartBusinessWeb.Controllers
         {
             HttpRequestMessage request = new HttpRequestMessage();
             this.apId = apId;
-            using var context = new SBDbContext(DbName);
+            using var context = new SBDbContext(apId);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -483,7 +483,7 @@ namespace SmartBusinessWeb.Controllers
         {
             HttpRequestMessage request = new HttpRequestMessage();
             this.apId = apId;
-            using var context = new SBDbContext(DbName);
+            using var context = new SBDbContext(apId);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -536,7 +536,7 @@ namespace SmartBusinessWeb.Controllers
         {
             HttpRequestMessage request = new HttpRequestMessage();
             this.apId = apId;
-            using var context = new SBDbContext(DbName);
+            using var context = new SBDbContext(apId);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -590,7 +590,7 @@ namespace SmartBusinessWeb.Controllers
         {
             HttpRequestMessage request = new HttpRequestMessage();
             this.apId = apId;
-            using var context = new SBDbContext(DbName);
+            using var context = new SBDbContext(apId);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -643,7 +643,7 @@ namespace SmartBusinessWeb.Controllers
 		{
 			HttpRequestMessage request = new HttpRequestMessage();
 			this.apId = apId;
-			using var context = new SBDbContext(DbName);
+			using var context = new SBDbContext(apId);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
 			{
@@ -695,16 +695,15 @@ namespace SmartBusinessWeb.Controllers
 		{
 			HttpRequestMessage request = new();
 			this.apId = apId;
-			using var context = new SBDbContext(DbName);
+			using var context = new SBDbContext(apId);
             StringBuilder sb = new();
             using (var transaction = context.Database.BeginTransaction())
 			{
 				try
 				{
 					#region remove current data first:
-					//context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Item]");
 					List<int> accountIds = accounts.Select(x => x.AccountID!).Distinct().ToList();
-					List<Account> _accounts = context.Accounts.Where(x => x.AccountProfileId == apId && accountIds.Contains(x.AccountID!)).ToList();
+					List<Account> _accounts = [.. context.Accounts.Where(x => x.AccountProfileId == apId && accountIds.Contains(x.AccountID!))];
 					context.Accounts.RemoveRange(_accounts);
 					await context.SaveChangesAsync();
 					#endregion
@@ -748,7 +747,7 @@ namespace SmartBusinessWeb.Controllers
 		{
 			HttpRequestMessage request = new HttpRequestMessage();
 			this.apId = apId;
-			using var context = new SBDbContext(DbName);
+			using var context = new SBDbContext(apId);
             StringBuilder sb = new StringBuilder();
             using (var transaction = context.Database.BeginTransaction())
 			{
@@ -757,7 +756,7 @@ namespace SmartBusinessWeb.Controllers
 					#region remove current data first:
 					//context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Item]");
 					List<int> jobIds = jobs.Select(x => x.JobID!).Distinct().ToList();
-					List<MyobJob> _jobs = context.MyobJobs.Where(x => x.AccountProfileId == apId && jobIds.Contains(x.JobID!)).ToList();
+					List<MyobJob> _jobs = [.. context.MyobJobs.Where(x => x.AccountProfileId == apId && jobIds.Contains(x.JobID!))];
 					context.MyobJobs.RemoveRange(_jobs);
 					await context.SaveChangesAsync();
 					#endregion

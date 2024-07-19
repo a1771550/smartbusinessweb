@@ -19,7 +19,7 @@ $(function () {
     $("#drpWarehouse").val($infoblk.data("shop"));
     stocklocation = <string>$("#drpLocation").val();
 
-    DicCodeItemOptions = $infoblk.data("jsondiciditemoptions");
+    DicCodeItemOptions = $infoblk.data("jsondiccodeitemoptions");
 
     sortByName = true;
     ConfigSimpleSortingHeaders();

@@ -40,13 +40,15 @@ using SBLib.Models.User;
 using SBLib.Models.POS.Sales;
 using SBLib.Models.Promotion;
 using SBLib.Helpers;
+using Azure;
+using System.Windows.Forms;
 
 namespace SmartBusinessWeb.Controllers
 {
     [AllowAnonymous]
     public class TestController : Controller
     {
-        int AccountProfileId = 1;    
+        int AccountProfileId = 1;
         private string DefaultConnection { get { return ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString.Replace("_DBNAME_", "SB_VM"); } }
         private SqlConnection connection { get { return new SqlConnection(DefaultConnection); } }
         public string DbName { get { return "SB_VM"; } }
@@ -54,7 +56,7 @@ namespace SmartBusinessWeb.Controllers
 
         private string centralbaseUrl = UriHelper.GetAppUrl();
         protected string DateFormat { get { return ConfigurationManager.AppSettings["DateFormat"]; } }
-       
+
         private string CentralApiUrl = ConfigurationManager.AppSettings["CentralApiUrl"];
         private string shopApiUrl = ConfigurationManager.AppSettings["ShopApiUrl"];
         private string CentralBaseUrl = UriHelper.GetAppUrl();
@@ -68,21 +70,92 @@ namespace SmartBusinessWeb.Controllers
         private string MyobConnectionString { get { return string.Format(@"Driver={0};TYPE=MYOB;UID={1};PWD={2};DATABASE={3};HOST_EXE_PATH={4};NETWORK_PROTOCOL=NONET;DRIVER_COMPLETION=DRIVER_NOPROMPT;KEY={5};ACCESS_TYPE=READ;", ConfigurationManager.AppSettings["MYOBDriver"], ConfigurationManager.AppSettings["MYOBUId"], ConfigurationManager.AppSettings["MYOBPass"], ConfigurationManager.AppSettings["MYOBDb"], ConfigurationManager.AppSettings["MYOBExe"], ConfigurationManager.AppSettings["MYOBKey"]); } }
         protected string UploadsWSDir { get { return ConfigurationManager.AppSettings["UploadsWSDir"]; } }
         protected string UploadsPODir { get { return ConfigurationManager.AppSettings["UploadsPODir"]; } }
-        
+
         private SqlConnection SqlConnection { get { return new SqlConnection(DefaultConnection); } }
 
-        public void JsonTest()
-        {           
+        public async Task JsonTest()
+        {
             using var context = new SBDbContext(DbName);
             if (SqlConnection.State == ConnectionState.Closed) SqlConnection.Open();
-            using (SqlConnection) {
-                var comInfo = SqlConnection.QueryFirstOrDefault<ComInfoModel>("EXEC dbo.GetComInfo @apId=@apId", new {apId});
-                 var MyobConnectionString4Read = MYOBHelper.GetConnectionString(comInfo, "READ");
+            using (SqlConnection)
+            {
+                var comInfo = SqlConnection.QueryFirstOrDefault<ComInfoModel>("EXEC dbo.GetComInfo @apId=@apId", new { apId });
+                var MyobConnectionString4Read = MYOBHelper.GetConnectionString(comInfo, "READ");
                 var MyobAccounts = MYOBHelper.GetAccountList(MyobConnectionString4Read);
                 var SelectedIds = MyobAccounts.Select(x => x.AccountID).Distinct().ToHashSet();
-               //todo:
+                List<AccountModel> selectedAccounts = [];
+                List<Account> accounts = [];
+
+                foreach (int Id in SelectedIds) selectedAccounts.Add(MyobAccounts.Find(x => x.AccountID == Id));
+
+                if (selectedAccounts.Count > 0)
+                {
+                    accounts.AddRange(AccountHelper.ConvertModel(selectedAccounts, apId));
+
+                    var endpoint = $"https://localhost:7777/abss-json/1/accounts";
+                    HttpClient client = new HttpClient
+                    {
+                        BaseAddress = new Uri(endpoint),
+                        MaxResponseContentBufferSize = int.MaxValue
+                    };
+                    StringContent stringContent;
+
+                    var UploadBatchSize = 5;
+                    var currentPage = 1;
+                    var totalPages = (int)Math.Ceiling((decimal)accounts.Count / UploadBatchSize);
+
+                    List<bool> returnstatus = new List<bool>();
+
+                    if (accounts.Count > UploadBatchSize)
+                    {
+                        while (currentPage <= totalPages)
+                        {
+                            if (currentPage < 1)
+                            {
+                                currentPage = 1;
+                            }
+                            else if (currentPage > totalPages)
+                            {
+                                currentPage = totalPages;
+                            }
+                            var pagingAccounts = accounts.Skip((currentPage - 1) * UploadBatchSize).Take(UploadBatchSize).ToList();
+
+                            stringContent = new StringContent(System.Text.Json.JsonSerializer.Serialize(pagingAccounts), Encoding.UTF8, "application/json");
+
+                            try
+                            {
+                                //var response = await client.PostAsync(endpoint, stringContent);
+                                //returnstatus.Add(response.IsSuccessStatusCode);
+
+                                List<int> accountIds = accounts.Select(x => x.AccountID!).Distinct().ToList();
+                                List<Account> _accounts = [.. context.Accounts.Where(x => x.AccountProfileId == apId && accountIds.Contains(x.AccountID!))];
+                                context.Accounts.RemoveRange(_accounts);
+                                await context.SaveChangesAsync();
+
+                                context.Accounts.AddRange(accounts);
+                                await context.SaveChangesAsync();
+                                Helpers.ModelHelper.WriteLog(context, "Import Account data from Connector done", "ImportFrmConnector");
+                                currentPage++;
+                            }
+                            catch (HttpRequestException ex)
+                            {
+                                MessageBox.Show(new Form() { TopMost = true }, "Error Msg:" + ex.Message + ";Inner Error Msg:" + ex.InnerException.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                            catch (WebException ex)
+                            {
+                                MessageBox.Show(new Form() { TopMost = true }, "Error Msg:" + ex.Message + ";Inner Error Msg:" + ex.InnerException.Message + ";Status:" + ex.Status + ";WebExceptionStatus.NameResolutionFailure:" + WebExceptionStatus.NameResolutionFailure, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        stringContent = new StringContent(System.Text.Json.JsonSerializer.Serialize(accounts), Encoding.UTF8, "application/json");
+                        var response = await client.PostAsync(endpoint, stringContent);
+                        returnstatus.Add(response.IsSuccessStatusCode);
+                    }
+                }
+
             }
-           
         }
 
         public void PromotionalEmail()
@@ -116,15 +189,15 @@ namespace SmartBusinessWeb.Controllers
         public void AddTest()
         {
             using var context = new SBDbContext(DbName);
-            
-                context.DebugLogs.Add(new DebugLog
-                {
-                    Message = "test",
-                    CreateTime = DateTime.Now,
-                    LogType = "test"
-                });
-                context.SaveChanges();
-            
+
+            context.DebugLogs.Add(new DebugLog
+            {
+                Message = "test",
+                CreateTime = DateTime.Now,
+                LogType = "test"
+            });
+            context.SaveChanges();
+
         }
 
         public ViewResult TimePicker()
@@ -139,7 +212,7 @@ namespace SmartBusinessWeb.Controllers
         }
         public void GetDate4Sql(string strDate)
         {
-           
+
             var date = CommonHelper.GetDateFrmString4SQL(strDate);
             Response.Write(date);
         }
@@ -389,7 +462,7 @@ namespace SmartBusinessWeb.Controllers
         }
 
 
-    
+
 
         public void DapperQuery()
         {
@@ -635,7 +708,7 @@ namespace SmartBusinessWeb.Controllers
             FileInfo fileInfo = new FileInfo(file);
             Response.Write(FileHelper.IsFileLocked(fileInfo));
         }
-      
+
 
         public void Debug72()
         {
@@ -673,7 +746,7 @@ namespace SmartBusinessWeb.Controllers
                        DateTimeStyles.None, out datetimeValue);
             Response.Write(datetimeValue);
         }
-      
+
 
         public void GetAppUrl()
         {
@@ -1159,8 +1232,8 @@ btest3
         {
             Dictionary<string, decimal> exchangeRateToEuro = CommonHelper.GetExchangeRateToEuro();
             Response.Write(CommonHelper.GetExRate(exchangeRateToEuro, "USD", "HKD")); //7.85
-            //Response.Write("<br>");
-            //Response.Write(CommonHelper.CurrencyConversion(amount, "USD", "HK"));
+                                                                                      //Response.Write("<br>");
+                                                                                      //Response.Write(CommonHelper.CurrencyConversion(amount, "USD", "HK"));
         }
 
         public void Debug47()
@@ -1170,9 +1243,9 @@ btest3
             string showtext = string.Concat(test.Substring(0, icount), " ...");
             Response.Write(showtext);
         }
-    
-       
-      
+
+
+
         public void DeviceIP()
         {
             Response.Write(CommonHelper.GetIPAddress());
@@ -1453,8 +1526,8 @@ btest3
             System.Threading.Thread.Sleep(TimeSpan.FromSeconds(3));
             Response.Write("debug13 done");
         }
-    
-     
+
+
         public void Debug9()
         {
             List<string> filedirs = new List<string>();
@@ -1550,8 +1623,8 @@ btest3
         {
             Response.Write(HashHelper.GenerateNonce());
         }
-        
-     
+
+
         public void Debug4()
         {
             using (var context = new SBDbContext(Session["DBName"].ToString()))
@@ -1705,7 +1778,7 @@ btest3
             //Response.Write("Url:" + url);
             Response.Write(Path.Combine(UriHelper.GetAppUrl(), ConfigurationManager.AppSettings["ReceiptLogo"]));
         }
-     
+
 
         public void DayendsFileList()
         {
@@ -1754,7 +1827,7 @@ btest3
             Domain domain = Domain.GetComputerDomain();
             return domain.Name;
         }
-       
+
         public string GetPaths()
         {
             return string.Join(",", CommonHelper.GetPaths());
@@ -1762,8 +1835,8 @@ btest3
             //string basepath = Server.MapPath(@"~/");
             //return string.Format("uploadpath:{0}; basepath:{1}",uploadpath,basepath);
         }
-       
-        
+
+
         public string FilePath()
         {
             string filepath = @"~/Content/site/printreceipt.css";
@@ -1781,7 +1854,7 @@ btest3
         }
 
 
-      
+
 
         private static void AddText(FileStream fs, string value)
         {
@@ -1885,7 +1958,7 @@ btest3
         {
             return CommonHelper.GetLocalIPAddress();
         }
-       
+
 
         //public void ExportFrmCentral(string dsn)
         //{
@@ -1975,7 +2048,7 @@ btest3
             }
 
         }
-    
+
 
         public string GetFileInfoList()
         {

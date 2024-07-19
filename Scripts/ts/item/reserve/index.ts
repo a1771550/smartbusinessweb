@@ -51,7 +51,7 @@ $(function () {
 	sortByName = true;
 	ConfigSimpleSortingHeaders();
 
-	DicCodeItemOptions = $infoblk.data("jsondiciditemoptions");
+	DicCodeItemOptions = $infoblk.data("jsondiccodeitemoptions");
 
 	setInput4NumberOnly("number");	
 	

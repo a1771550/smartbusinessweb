@@ -39,7 +39,10 @@ i.fa-plus, i.fa-minus {
 .navbar {
 	padding: 0;
 }
-
+/*$(".product-lists").find("img").css("max-width","none");*/
+.product-lists img{
+	max-width:none;
+}
 
 
 .fc-content .list-group-item {

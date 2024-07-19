@@ -126,7 +126,7 @@ new { PageNo, SortName = Model.SortName, SortOrder = Model.CurrentSortOrder, Key
 @Html.Partial("_WaitingModal")
 @Html.Partial("_DescModal")
 @Html.AntiForgeryToken()
-<div id="infoblk" data-shop="@user.shopCode" data-shops="@string.Join(",",Model.Shops)" data-enablebuysellunits="@Model.EnableBuySellUnits" data-idlist="@string.Join(",",Model.ItemIdList)" data-jsondiciditemoptions="@JsonSerializer.Serialize(Model.DicIDItemOptions)" data-referrer="stock"></div>
+<div id="infoblk" data-shop="@user.shopCode" data-shops="@string.Join(",",Model.Shops)" data-enablebuysellunits="@Model.EnableBuySellUnits" data-idlist="@string.Join(",",Model.ItemIdList)" data-jsondiccodeitemoptions="@JsonSerializer.Serialize(Model.DicCodeItemOptions)" data-referrer="stock"></div>
 
 <script src="~/Scripts/ASPSnippets_Pager.min.js"></script>
 <script src="~/Scripts/ts/js/item/stock.js?v=@rand"></script>

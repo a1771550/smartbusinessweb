@@ -182,7 +182,7 @@ let PhoneNameEmailList: IPhoneNameEmail[] = [];
 let Supplier: ISupplier;
 
 let triggerReferrer: TriggerReferrer;
-let formatzero:string="";
+let formatzero: string;
 let $norecordfound: any;
 let $appInfo = $("#appInfo");
 let $txtblk = $(".txtblk");
@@ -4069,8 +4069,7 @@ interface IAttendance {
 
 let Journal: IJournal;
 let JournalLns: IJournalLn[] = [];
-let selectedJournalLn1: IJournalLn | null;
-let selectedJournalLn2: IJournalLn | null;
+let selectedJournalLn: IJournalLn | null;
 interface IJournal {
 	Id: string;
 	JournalNumber: string;
